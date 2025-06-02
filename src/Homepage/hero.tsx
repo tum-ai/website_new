@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 
 // Tech grid element with subtle particles
@@ -224,10 +224,7 @@ export const Hero = () => {
           className="flex flex-col items-center justify-center space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4"
         >
           <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-            <Button
-              asChild
-              className="w-full rounded-md px-6 py-3 sm:w-auto"
-            >
+            <Button asChild className="w-full rounded-md px-6 py-3 sm:w-auto">
               <a href="mailto:partners@tum-ai.com">Become a Partner</a>
             </Button>
           </motion.div>

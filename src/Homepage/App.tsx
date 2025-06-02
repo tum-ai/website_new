@@ -1,18 +1,18 @@
-import { Button } from '@/components/ui/button'
-import { Slack } from 'lucide-react';
-import { Hero } from "./hero";
-import type { Organization, WithContext } from "schema-dts";
-import {
-  initiatives_collabrated_with,
-  partners_collabrated_with,
-} from "@/data/partners";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardTitle,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
+import {
+  initiatives_collabrated_with,
+  partners_collabrated_with,
+} from "@/data/partners";
+import { Slack } from "lucide-react";
+import type { Organization, WithContext } from "schema-dts";
+import { Hero } from "./hero";
 
 export const metadata = {
   title: "TUM.ai - Student Initiative focused on Artificial Intelligence",
@@ -332,7 +332,7 @@ export default function Index() {
                     </Button>
 
                     <Button
-                      variant ="ghost"
+                      variant="ghost"
                       asChild
                       className="rounded-md border border-white/20 bg-white/10 backdrop-blur-sm hover:bg-white/20"
                     >
@@ -454,10 +454,7 @@ export default function Index() {
                         <span className="absolute inset-0 bg-[radial-gradient(circle_at_center,white_0%,transparent_50%)] opacity-0 transition-opacity duration-300 group-hover:opacity-20"></span>
                         <span className="absolute inset-0 rounded-xl border border-white/20"></span>
                         <span className="relative flex items-center gap-3">
-                          <Slack
-
-                            className="text-white/90"
-                          />
+                          <Slack className="text-white/90" />
                           <span>Join TUM.ai Public Slack</span>
                           <svg
                             className="ml-1 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1"
@@ -518,9 +515,7 @@ function ProgramCard({
   status: string;
 }) {
   return (
-    <Card
-      className="group flex h-full flex-col overflow-hidden py-0 transition-all duration-200 hover:translate-y-[-2px] hover:shadow-md"
-    >
+    <Card className="group flex h-full flex-col overflow-hidden py-0 transition-all duration-200 hover:translate-y-[-2px] hover:shadow-md">
       <div className="relative h-40 overflow-hidden">
         <img
           src={icon}
