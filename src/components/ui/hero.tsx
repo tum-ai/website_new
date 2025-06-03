@@ -181,7 +181,7 @@ export const Hero = () => {
           className="mx-auto flex items-center justify-center"
         >
           <img
-            src="../../public/assets/logo_new_white_standard.png"
+            src="/assets/logo_new_white_standard.png"
             alt="TUM.ai Logo"
             width={300}
             height={66}

@@ -10,9 +10,12 @@ import {
   initiatives_collabrated_with,
   partners_collabrated_with,
 } from "@/data/partners";
-import { Slack } from "lucide-react";
+import { Slack } from "lucide-react"; // TODO: replace with non-deprecated icon
+import { Route, Routes } from "react-router-dom";
 import type { Organization, WithContext } from "schema-dts";
-import { Hero } from "./hero";
+import { Hero } from "../components/ui/hero";
+import Community from "./Community";
+import Events from "./Events";
 
 export const metadata = {
   title: "TUM.ai - Student Initiative focused on Artificial Intelligence",
@@ -114,7 +117,7 @@ const jsonLd: WithContext<Organization> = {
   },
 };
 
-export default function Index() {
+function Homepage() {
   return (
     <>
       <section>
@@ -159,7 +162,7 @@ export default function Index() {
               {/* E-Lab Card */}
               <ProgramCard
                 title="AI Entrepreneurship Lab"
-                icon="../../public/assets/home_img4.jpg"
+                icon="/assets/home_img4.jpg"
                 description="14-week equity-free AI startup incubator with full support from Munich's innovation ecosystem"
                 link="/e-lab"
                 cta="Learn more"
@@ -169,7 +172,7 @@ export default function Index() {
               {/* AI Academy Card */}
               <ProgramCard
                 title="AI Academy"
-                icon="../../public/assets/home_img1.jpg"
+                icon="/assets/home_img1.jpg"
                 description="Advanced AI workshops with hands-on coding tutorials from exciting tech companies"
                 link="https://education.tum-ai.com/"
                 cta="Explore education"
@@ -179,7 +182,7 @@ export default function Index() {
               {/* Makeathon Card */}
               <ProgramCard
                 title="Makeathon Competitions"
-                icon="../../public/assets/home_img2.png"
+                icon="/assets/home_img2.png"
                 description="48-hour AI product development hackathon solving real industry challenges"
                 link="https://makeathon.tum-ai.com/"
                 cta="View hackathons"
@@ -189,7 +192,7 @@ export default function Index() {
               {/* Industry Projects Card */}
               <ProgramCard
                 title="Industry Projects"
-                icon="../../public/assets/home_img3.png"
+                icon="/assets/home_img3.png"
                 description="Paid student teams implementing data-driven solutions for partner companies"
                 link="/industry"
                 cta="Explore projects"
@@ -256,7 +259,7 @@ export default function Index() {
                   <div className="absolute inset-0 -m-1 rounded-2xl bg-gradient-to-br from-purple-100/20 to-blue-100/20 backdrop-blur-[2px]"></div>
                   <div className="absolute inset-1 overflow-hidden rounded-xl border border-white/20 shadow-lg">
                     <img
-                      src="../../public/assets/aibootcamp.jpg"
+                      src="/assets/aibootcamp.jpg"
                       alt="TUM.ai members collaborating"
                       className="h-full w-full object-cover"
                     />
@@ -292,7 +295,7 @@ export default function Index() {
                   <div className="absolute inset-0 -m-1 rounded-2xl bg-gradient-to-br from-purple-300/10 to-blue-300/10 backdrop-blur-[2px]"></div>
                   <div className="absolute inset-1 overflow-hidden rounded-xl border border-white/10 shadow-lg">
                     <img
-                      src="../../public/assets/partners/martin_talk.jpg"
+                      src="/assets/partners/martin_talk.jpg"
                       alt="Industry collaboration"
                       className="h-full w-full object-cover"
                     />
@@ -497,7 +500,6 @@ export default function Index() {
     </>
   );
 }
-
 // Program Card Component
 function ProgramCard({
   title,
@@ -548,5 +550,20 @@ function ProgramCard({
         </CardFooter>
       </CardContent>
     </Card>
+  );
+}
+
+export default function Index() {
+  return (
+    <Routes>
+      <Route path="/" element={<Homepage />} />
+      <Route path="/events" element={<Events />} />
+      <Route path="/community" element={<Community />} />
+      {/*}
+      <Route path="/partners" element={<Partners />} />
+      <Route path="/e-lab" element={<ELab />} />
+      <Route path="/industry" element={<IndustryProjects />} />
+      <Route path="/data-privacy" element={<DataPrivacy />} /> */}
+    </Routes>
   );
 }
