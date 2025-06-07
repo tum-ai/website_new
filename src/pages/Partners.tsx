@@ -76,6 +76,14 @@ export default function Partners() {
               Get access to Munich&apos;s largest student talent pool of AI
               enthusiasts
             </p>
+            <Button
+              variant="outline"
+              className="border border-white/10"
+            >
+              <a href="mailto:partners@tum-ai.com">
+                Become a partner
+              </a>
+            </Button>
           </div>
         </div>
       </section>
