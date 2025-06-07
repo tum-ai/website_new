@@ -16,6 +16,7 @@ import type { Organization, WithContext } from "schema-dts";
 import { Hero } from "../components/ui/hero";
 import Community from "./Community";
 import Events from "./Events";
+import Partners from "./Partners";
 
 export const metadata = {
   title: "TUM.ai - Student Initiative focused on Artificial Intelligence",
@@ -559,8 +560,8 @@ export default function Index() {
       <Route path="/" element={<Homepage />} />
       <Route path="/events" element={<Events />} />
       <Route path="/community" element={<Community />} />
-      {/*}
       <Route path="/partners" element={<Partners />} />
+      {/*}
       <Route path="/e-lab" element={<ELab />} />
       <Route path="/industry" element={<IndustryProjects />} />
       <Route path="/data-privacy" element={<DataPrivacy />} /> */}
