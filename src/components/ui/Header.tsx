@@ -26,7 +26,6 @@ interface NavigationProps {
 }
 
 const Navigation = ({ open, setOpen }: NavigationProps) => {
-  // TODO: implement endpoints
   const links = [
     { href: "/events", text: "Events" },
     { href: "/research", text: "Research" },

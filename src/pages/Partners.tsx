@@ -13,7 +13,7 @@ import {
 export const metadata = {
   title: "TUM.ai - Partners",
   description:
-    "Is your company currently facing challenges with data-driven technologies or you are looking for the greatest talent in artificial intelligence? If one of the answers is yes, become a partners.",
+    "Is your company currently facing challenges with data-driven technologies or you are looking for the greatest talent in artificial intelligence? If one of the answers is yes, become a partner.",
 };
 
 export default function Partners() {
