@@ -1,5 +1,5 @@
-import { type LucideIcon } from "lucide-react";
 import { type VariantProps, cva } from "class-variance-authority";
+import { type LucideIcon } from "lucide-react";
 
 interface Benefit {
   icon: LucideIcon;

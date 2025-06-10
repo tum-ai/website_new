@@ -1,8 +1,7 @@
-import { cx } from "class-variance-authority";
 import { bitter } from "@/styles/fonts";
+import { cx } from "class-variance-authority";
 
 export default function Research() {
-
   return (
     <>
       {/* Hero Section */}
@@ -32,7 +31,6 @@ export default function Research() {
                 "animate-fade-in-up",
               )}
               style={{ fontFamily: bitter }}
-
             >
               Research
             </h1>
@@ -59,11 +57,9 @@ export default function Research() {
                 Research Projects
               </h2>
             </div>
-
           </div>
         </div>
       </section>
-
     </>
   );
 }

@@ -25,30 +25,23 @@
     "@tailwindcss/vite": "^4.1.8",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "font-awesome": "^4.7.0",
     "framer-motion": "^12.15.0",
-    "lucide-react": "^0.511.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-fontawesome": "^1.7.1",
     "react-image": "^4.1.0",
     "react-router-dom": "^7.6.1",
     "schema-dts": "^1.1.5",
-    "tailwind-merge": "^3.3.0",
-    "tailwindcss": "^4.1.8"
+    "tailwind-merge": "^3.3.0"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
-    "@tailwindcss/postcss": "^4.1.8",
     "@types/node": "^22.15.29",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@vitejs/plugin-react": "^4.4.1",
-    "autoprefixer": "^10.4.21",
-    "globals": "^16.0.0",
-    "tw-animate-css": "^1.3.3",
+    "lucide-react": "^0.513.0",
     "typescript": "~5.8.3",
-    "typescript-eslint": "^8.30.1",
     "vite": "^6.3.5"
   }
 }

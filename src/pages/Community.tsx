@@ -10,7 +10,6 @@ import {
   Scale,
   Users,
 } from "lucide-react";
-import { Img } from "react-image";
 
 interface Department {
   name: string;

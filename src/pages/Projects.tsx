@@ -1,8 +1,7 @@
-import { cx } from "class-variance-authority";
 import { bitter } from "@/styles/fonts";
+import { cx } from "class-variance-authority";
 
 export default function Projects() {
-
   return (
     <>
       {/* Hero Section */}
@@ -32,7 +31,6 @@ export default function Projects() {
                 "animate-fade-in-up",
               )}
               style={{ fontFamily: bitter }}
-
             >
               Innovation Departments and their projects
             </h1>
@@ -87,7 +85,6 @@ export default function Projects() {
           </div>
         </div>
       </section>
-
     </>
   );
 }

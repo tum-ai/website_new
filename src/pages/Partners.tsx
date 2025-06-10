@@ -1,14 +1,14 @@
-import { Button } from "@/components/ui/button";
-import { cx } from "class-variance-authority";
-import { bitter } from "@/styles/fonts";
-import { Heart, Megaphone, Handshake, Users } from "lucide-react";
 import Benefits from "@/components/Benefit";
 import Logos from "@/components/Logos";
+import { Button } from "@/components/ui/button";
 import {
   enablers_supporters,
   project_partners,
   strategic_partnerts,
 } from "@/data/partners";
+import { bitter } from "@/styles/fonts";
+import { cx } from "class-variance-authority";
+import { Handshake, Heart, Megaphone, Users } from "lucide-react";
 
 export const metadata = {
   title: "TUM.ai - Partners",
@@ -76,13 +76,8 @@ export default function Partners() {
               Get access to Munich&apos;s largest student talent pool of AI
               enthusiasts
             </p>
-            <Button
-              variant="outline"
-              className="border border-white/10"
-            >
-              <a href="mailto:partners@tum-ai.com">
-                Become a partner
-              </a>
+            <Button variant="outline" className="border border-white/10">
+              <a href="mailto:partners@tum-ai.com">Become a partner</a>
             </Button>
           </div>
         </div>
@@ -90,7 +85,10 @@ export default function Partners() {
 
       <section className="relative bg-white p-8 sm:py-16 lg:py-32">
         <div className="container mx-auto">
-          <h2 className="mb-8 text-3xl font-semibold" style={{ fontFamily: bitter }}>
+          <h2
+            className="mb-8 text-3xl font-semibold"
+            style={{ fontFamily: bitter }}
+          >
             Strategic Partners
           </h2>
           <Logos logos={strategic_partnerts} />
@@ -225,12 +223,10 @@ export default function Partners() {
                   </div>
 
                   <Button
-                    variant={'ghost'}
+                    variant={"ghost"}
                     className="w-full border border-white/10"
                   >
-                    <a href="mailto:partners@tum-ai.com">
-                      Become a partner
-                    </a>
+                    <a href="mailto:partners@tum-ai.com">Become a partner</a>
                   </Button>
                 </div>
               </div>
@@ -238,7 +234,7 @@ export default function Partners() {
               <div className="relative">
                 <div className="group relative aspect-4/3 overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm">
                   <img
-                    src={'/assets/partners/martin_talk.jpg'}
+                    src={"/assets/partners/martin_talk.jpg"}
                     alt="Martin talk"
                     className="object-cover transition-all duration-500 group-hover:scale-105"
                   />

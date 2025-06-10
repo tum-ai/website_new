@@ -1,8 +1,7 @@
-import { cx } from "class-variance-authority";
 import { bitter } from "@/styles/fonts";
+import { cx } from "class-variance-authority";
 
 export default function Entrepreneurship() {
-
   return (
     <>
       {/* Hero Section */}

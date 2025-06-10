@@ -1,0 +1,73 @@
+import { Button } from "../ui/button";
+
+export const AboutSection = () => {
+  return (
+    <section className="relative overflow-hidden bg-gradient-to-b from-white to-gray-50 p-8 sm:py-16 lg:py-24">
+      {/* Glass-like shapes */}
+      <div className="absolute top-1/4 right-0 h-[20vw] max-h-64 w-[20vw] max-w-64 rounded-full bg-gradient-to-br from-purple-300/10 to-blue-300/5 blur-3xl"></div>
+      <div className="absolute bottom-1/3 left-0 h-[25vw] max-h-96 w-[25vw] max-w-96 rounded-full bg-gradient-to-tr from-blue-300/10 to-purple-300/5 blur-3xl"></div>
+
+      <div className="container mx-auto">
+        <div className="relative z-10 mx-auto max-w-7xl px-4">
+          <div className="flex flex-col gap-16 lg:flex-row">
+            <div className="lg:w-1/2">
+              <h2 className="mb-8 text-3xl font-semibold">
+                Germany&apos;s leading
+                <br />
+                <span className="text-purple-600">AI student initiative</span>
+              </h2>
+
+              <div className="space-y-6 text-gray-700">
+                <p className="font-medium text-black">
+                  With over 170 active members, TUM.ai connects students and
+                  stakeholders to drive positive societal impact through AI.
+                </p>
+
+                <p>
+                  Founded in 2020, TUM.ai thrives to deploy AI solutions into
+                  new fields and industries, creating a diverse and inclusive
+                  community of AI enthusiasts.
+                </p>
+
+                <p>
+                  Together with our highly-talented members, we run data science
+                  projects with industry partners, organize workshops, and
+                  develop AI-powered solutions that address real-world
+                  challenges.
+                </p>
+
+                <p>
+                  We aim to lower the entry barriers to AI creation and usage
+                  for people from every domain by establishing a platform for
+                  practical experience through diverse applied AI projects.
+                </p>
+              </div>
+
+              <div className="mt-10">
+                <Button asChild>
+                  <a href="/members">
+                    <span className="relative z-10">Meet our Members</span>
+                  </a>
+                </Button>
+              </div>
+            </div>
+
+            <div className="lg:w-1/2">
+              <div className="relative h-[500px] w-full overflow-hidden rounded-2xl">
+                <div className="absolute inset-0 -m-1 rounded-2xl bg-gradient-to-br from-purple-100/20 to-blue-100/20 backdrop-blur-[2px]"></div>
+                <div className="absolute inset-1 overflow-hidden rounded-xl border border-white/20 shadow-lg">
+                  <img
+                    src="/assets/aibootcamp.jpg"
+                    alt="TUM.ai members collaborating"
+                    className="h-full w-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 to-blue-900/30"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};

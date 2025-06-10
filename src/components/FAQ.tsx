@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, type SetStateAction } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as Accordion from "@radix-ui/react-accordion";
 import { cx } from "class-variance-authority";
+import { type SetStateAction, useState } from "react";
 
 interface FAQProps {
   questions: { question: string; answer: string }[];
@@ -18,7 +18,9 @@ const FAQ = ({ questions }: FAQProps) => {
       type="single"
       className="AccordionRoot grid grid-cols-1 gap-6 sm:grid-cols-2"
       collapsible
-      onValueChange={(value: SetStateAction<string | undefined>) => setOpenIndex(value)}
+      onValueChange={(value: SetStateAction<string | undefined>) =>
+        setOpenIndex(value)
+      }
     >
       {questions.map((question) => (
         <Accordion.Item

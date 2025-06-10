@@ -1,6 +1,6 @@
-import { cx } from "class-variance-authority";
-import { bitter } from "@/styles/fonts";
 import FAQ from "@/components/FAQ";
+import { bitter } from "@/styles/fonts";
+import { cx } from "class-variance-authority";
 
 const faq = [
   {
@@ -81,7 +81,6 @@ export default function QandA() {
                 "animate-fade-in-up",
               )}
               style={{ fontFamily: bitter }}
-
             >
               Q & A
             </h1>
