@@ -224,7 +224,11 @@ export const Hero = () => {
           className="flex flex-col items-center justify-center space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4"
         >
           <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-            <Button asChild className="w-full rounded-md px-6 py-3 sm:w-auto">
+            <Button
+              asChild
+              variant="primary"
+              className="w-full rounded-md px-6 py-3 sm:w-auto"
+            >
               <a href="mailto:partners@tum-ai.com">Become a Partner</a>
             </Button>
           </motion.div>
@@ -232,9 +236,8 @@ export const Hero = () => {
           <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
             <Button
               asChild
-              variant="ghost"
-              className="w-full rounded-md border border-white/20 px-6 py-3 shadow-sm backdrop-blur-sm hover:shadow-md sm:w-auto"
-            >
+              className="w-full rounded-md px-6 py-3 sm:w-auto">
+
               <a href="https://join.tum-ai.com/">Become a Member</a>
             </Button>
           </motion.div>
@@ -248,11 +251,12 @@ export const Hero = () => {
         transition={{ duration: 0.7, delay: staggerDelay * 3, ease: "easeOut" }}
       >
         <motion.button
+          className="group flex !rounded-full !border !border-white/20 !bg-white/10 !p-0 !h-10 !w-10 !items-center !justify-center"
+
           onClick={() =>
             window.scrollBy({ top: window.innerHeight, behavior: "smooth" })
           }
           title="Scroll down"
-          className="group flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 backdrop-blur-sm transition-all hover:bg-white/20"
           whileHover={{ y: 3 }}
           whileTap={{ scale: 0.9 }}
           animate={{ y: [0, 10, 0] }}

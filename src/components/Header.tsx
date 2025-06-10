@@ -61,9 +61,15 @@ const Navigation = ({ open, setOpen }: NavigationProps) => {
             </Link>
           ),
         )}
-        <Link to="https://join.tum-ai.com/" rel="noopener noreferrer">
-          <Button>Join us</Button>
-        </Link>
+        <Button
+          asChild
+          variant="primary"
+          className="w-full rounded-md px-6 py-3 sm:w-auto"
+        >
+          <Link to="https://join.tum-ai.com/" rel="noopener noreferrer">
+            Join us
+          </Link>
+        </Button>
 
         <div className="ml-4 flex items-center space-x-3">
           <a

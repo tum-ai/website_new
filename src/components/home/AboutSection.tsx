@@ -44,7 +44,7 @@ export const AboutSection = () => {
               </div>
 
               <div className="mt-10">
-                <Button asChild>
+                <Button asChild variant="primary">
                   <a href="/members">
                     <span className="relative z-10">Meet our Members</span>
                   </a>

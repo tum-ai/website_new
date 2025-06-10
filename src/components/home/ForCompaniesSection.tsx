@@ -57,7 +57,7 @@ export const ForCompaniesSection = () => {
                 </p>
 
                 <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-                  <Button asChild>
+                  <Button asChild variant="primary">
                     <a href="mailto:partners@tum-ai.com">
                       <span className="relative z-10">Become a Partner</span>
                     </a>
