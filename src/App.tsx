@@ -1,12 +1,13 @@
 import { Route, Routes } from "react-router-dom";
-import Community from "./pages/Community";
-import Entrepreneurship from "./pages/Entrepreneurship";
-import Events from "./pages/Events";
+import Community from "./pages/headerPages/Community";
+import Entrepreneurship from "./pages/headerPages/Entrepreneurship";
+import Events from "./pages/headerPages/Events";
 import Homepage from "./pages/Homepage";
-import Partners from "./pages/Partners";
-import Projects from "./pages/Projects";
-import QandA from "./pages/QandA";
-import Research from "./pages/Research";
+import Partners from "./pages/headerPages/Partners";
+import Projects from "./pages/headerPages/Projects";
+import QandA from "./pages/headerPages/QandA";
+import Research from "./pages/headerPages/Research";
+import Imprint from "./pages/footer/Imprint";
 
 export default function Index() {
   return (
@@ -19,6 +20,8 @@ export default function Index() {
       <Route path="/community" element={<Community />} />
       <Route path="/partners" element={<Partners />} />
       <Route path="/qanda" element={<QandA />} />
+      <Route path="/imprint" element={<Imprint />} />
+
     </Routes>
   );
 }
