@@ -64,7 +64,6 @@ export const ForCompaniesSection = () => {
                   </Button>
 
                   <Button
-                    variant="ghost"
                     asChild
                     className="rounded-md border border-white/20 bg-white/10 backdrop-blur-sm hover:bg-white/20"
                   >
