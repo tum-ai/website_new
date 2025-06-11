@@ -1,94 +1,5 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-
-// Tech grid element with subtle particles
-const TechGrid = () => {
-  return (
-    <div className="absolute inset-0 z-0 opacity-20" suppressHydrationWarning>
-      {/* Circuit-like tech grid pattern */}
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px)
-          `,
-          backgroundSize: "30px 30px",
-        }}
-      />
-
-      {/* Circuit nodes */}
-      <div className="absolute inset-0">
-        {Array.from({ length: 30 }).map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute h-[3px] w-[3px] rounded-full bg-white"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              opacity: [0.2, 0.8, 0.2],
-              scale: [1, 1.5, 1],
-            }}
-            transition={{
-              duration: Math.random() * 3 + 2,
-              repeat: Infinity,
-              delay: Math.random() * 5,
-            }}
-            suppressHydrationWarning
-          />
-        ))}
-      </div>
-
-      {/* Horizontal lines */}
-      {Array.from({ length: 5 }).map((_, i) => (
-        <motion.div
-          key={`h-line-${i}`}
-          className="absolute h-[1px] bg-gradient-to-r from-transparent via-blue-500/30 to-transparent"
-          style={{
-            top: `${15 + i * 20}%`,
-            left: 0,
-            right: 0,
-          }}
-          initial={{ scaleX: 0, opacity: 0 }}
-          animate={{ scaleX: 1, opacity: 0.2 }}
-          transition={{
-            duration: 3,
-            delay: i * 0.5,
-            repeat: Infinity,
-            repeatType: "reverse",
-            repeatDelay: 5,
-          }}
-        />
-      ))}
-
-      {/* Vertical lines */}
-      {Array.from({ length: 3 }).map((_, i) => (
-        <motion.div
-          key={`v-line-${i}`}
-          className="absolute w-[1px] bg-gradient-to-b from-transparent via-purple-500/30 to-transparent"
-          style={{
-            left: `${25 + i * 25}%`,
-            top: 0,
-            bottom: 0,
-          }}
-          initial={{ scaleY: 0, opacity: 0 }}
-          animate={{ scaleY: 1, opacity: 0.2 }}
-          transition={{
-            duration: 2,
-            delay: i * 0.7 + 1,
-            repeat: Infinity,
-            repeatType: "reverse",
-            repeatDelay: 4,
-          }}
-        />
-      ))}
-    </div>
-  );
-};
 
 // Subtle floating background elements
 const BackgroundCircle = ({
@@ -166,9 +77,6 @@ export const Hero = () => {
         />
       </div>
 
-      {/* Tech grid overlay */}
-      <TechGrid />
-
       {/* Subtle glow effects */}
       <div className="absolute top-1/4 left-1/4 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/5 blur-[100px]" />
       <div className="absolute right-1/4 bottom-1/3 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-purple-600/5 blur-[100px]" />
@@ -223,24 +131,20 @@ export const Hero = () => {
           }}
           className="flex flex-col items-center justify-center space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4"
         >
-          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-            <Button
-              asChild
-              variant="primary"
-              className="w-full rounded-md px-6 py-3 sm:w-auto"
-            >
-              <a href="mailto:partners@tum-ai.com">Become a Partner</a>
-            </Button>
-          </motion.div>
+          <Button
+            asChild
+            variant="primary"
+            className="w-full rounded-md px-6 py-3 sm:w-auto"
+          >
+            <a href="mailto:partners@tum-ai.com">Become a Partner</a>
+          </Button>
 
-          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-            <Button
-              asChild
-              className="w-full rounded-md px-6 py-3 sm:w-auto">
+          <Button
+            asChild
+            className="w-full rounded-md px-6 py-3 sm:w-auto">
 
-              <a href="https://join.tum-ai.com/">Become a Member</a>
-            </Button>
-          </motion.div>
+            <a href="https://join.tum-ai.com/">Become a Member</a>
+          </Button>
         </motion.div>
       </div>
 

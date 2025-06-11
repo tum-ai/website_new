@@ -1,3 +1,4 @@
+import { JourneySection } from "@/components/community/JourneySection";
 import { Card } from "@/components/ui/card";
 import { cx } from "class-variance-authority";
 import {
@@ -18,6 +19,8 @@ interface Department {
   gradient: string;
 }
 
+
+
 const departments: Department[] = [
   {
     name: "Makeathon",
@@ -34,10 +37,10 @@ const departments: Department[] = [
     gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
   },
   {
-    name: "Industry",
+    name: "Innovation",
     icon: GraduationCap,
     description:
-      "Connecting TUM.ai members with industry partners for real-world AI projects during lecture-free periods.",
+      "TODO...",
     gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
   },
   {
@@ -84,32 +87,37 @@ const departments: Department[] = [
   },
 ];
 
+
+
 const DepartmentCard = ({ department }: { department: Department }) => {
   const Icon = department.icon;
   return (
-    <Card className="h-full p-8">
+    <Card className={cx("h-full p-8", department.gradient)}>
       <div className="relative mb-5 flex items-center gap-4">
         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 transition-colors group-hover:bg-white/15">
-          <Icon className="h-5 w-5 text-white" />
+          <Icon className="h-5 w-5 text-slate-900" />
         </div>
-        <h3 className="text-lg font-semibold tracking-tight text-white">
+        <h3 className="text-lg font-semibold tracking-tight text-slate-900">
           {department.name}
         </h3>
       </div>
-      <p className="text-sm leading-relaxed text-slate-300">
+      <p className="text-sm leading-relaxed text-slate-700">
         {department.description}
       </p>
     </Card>
   );
 };
 
+
 export default function Community() {
   return (
     <>
-      {/* Main Content */}
 
-      {/* Departments Section - Dark gradient background */}
-      <div className="relative bg-linear-to-br from-slate-900 via-slate-800 to-slate-900">
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-900 to-purple-900 p-8 text-white sm:py-16 lg:py-24">
+
+        <JourneySection />
+        {/* Departments Section - Dark gradient background */}
+
         <div className="absolute inset-0 overflow-hidden">
           <div className="bg-grid-slate-100 absolute inset-0 opacity-5 [mask-image:linear-gradient(0deg,white,transparent)]" />
           <div className="absolute inset-0 bg-linear-to-br from-blue-500/10 via-transparent to-purple-500/10" />
@@ -137,7 +145,21 @@ export default function Community() {
             ))}
           </div>
         </div>
-      </div>
+        <div className="mb-20 text-center">
+
+          <div className="mb-4 inline-flex items-center gap-2">
+
+            <h2
+              className={cx(
+                "text-3xl font-semibold tracking-tight text-white",
+              )}
+            >
+              Member Stories
+            </h2>
+          </div>
+        </div>
+
+      </section>
     </>
   );
 }
