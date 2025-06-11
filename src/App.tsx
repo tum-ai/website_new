@@ -8,6 +8,7 @@ import Projects from "./pages/headerPages/Projects";
 import QandA from "./pages/headerPages/QandA";
 import Research from "./pages/headerPages/Research";
 import Imprint from "./pages/footer/Imprint";
+import DataPrivacy from "./pages/footer/Privacy";
 
 export default function Index() {
   return (
@@ -21,6 +22,7 @@ export default function Index() {
       <Route path="/partners" element={<Partners />} />
       <Route path="/qanda" element={<QandA />} />
       <Route path="/imprint" element={<Imprint />} />
+      <Route path="/data-privacy" element={<DataPrivacy />} />
 
     </Routes>
   );
