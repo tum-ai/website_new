@@ -25,7 +25,7 @@ export default function Partners() {
     },
     {
       title: "Marketing & Awareness",
-      text: "As a partner, you will be featured on our website. Plus, we will advertise your company as a supporter of TUM.ai in our marketing campaigns. (8k+ followers on LinkedIn) Boost the perception of your brand among students across Munich and beyond.",
+      text: "As a partner, you will be featured on our website. Plus, we will advertise your company as a supporter of TUM.ai in our marketing campaigns. (14k+ followers on LinkedIn) Boost the perception of your brand among students across Munich and beyond.",
       icon: Megaphone,
     },
     {
