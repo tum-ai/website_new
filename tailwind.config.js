@@ -1,3 +1,1 @@
-export const plugins = [
-    require('@tailwindcss/typography'),
-];
+export const plugins = [require("@tailwindcss/typography")];

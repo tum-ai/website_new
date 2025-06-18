@@ -1,6 +1,5 @@
-import React from "react";
 import { type VariantProps, cva } from "class-variance-authority";
-
+import React from "react";
 
 const styles = cva("relative p-8 sm:py-16 lg:py-32", {
   variants: {

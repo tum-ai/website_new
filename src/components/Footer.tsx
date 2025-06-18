@@ -1,11 +1,11 @@
-import { Link } from "react-router-dom";
-import Section from "./ui/Section";
 import {
-  faLinkedin,
   faInstagram,
+  faLinkedin,
   faSlack,
 } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Link } from "react-router-dom";
+import Section from "./ui/Section";
 
 export default function Footer() {
   return (
