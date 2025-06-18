@@ -231,15 +231,15 @@ export default function Partners() {
               </div>
 
               <div className="relative">
-                <div className="group relative aspect-4/3 overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm">
+                <div className="group relative aspect-4/3 overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm">
                   <img
                     src={"/assets/partners/martin_talk.jpg"}
                     alt="Martin talk"
-                    className="object-cover transition-all duration-500 group-hover:scale-105"
+                    className="h-full w-full object-cover transition-all duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
                   <div className="absolute right-0 bottom-0 left-0 p-8">
-                    <p className="text-lg text-white">
+                    <p className="text-lg text-white font-semibold">
                       Join our network of industry leaders and innovators
                     </p>
                   </div>
