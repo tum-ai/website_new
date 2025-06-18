@@ -1,5 +1,8 @@
 import { Route, Routes } from "react-router-dom";
 import Homepage from "./pages/Homepage";
+import Berlin from "./pages/apply/Berlin";
+import Munich from "./pages/apply/Munich";
+import Apply from "./pages/apply/apply";
 import Imprint from "./pages/footer/Imprint";
 import DataPrivacy from "./pages/footer/Privacy";
 import Community from "./pages/headerPages/Community";
@@ -23,6 +26,9 @@ export default function Index() {
       <Route path="/qanda" element={<QandA />} />
       <Route path="/imprint" element={<Imprint />} />
       <Route path="/data-privacy" element={<DataPrivacy />} />
+      <Route path="/apply" element={<Apply />} />
+      <Route path="/apply/munich" element={<Munich />} />
+      <Route path="/apply/berlin" element={<Berlin />} />
     </Routes>
   );
 }

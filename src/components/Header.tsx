@@ -64,7 +64,7 @@ const Navigation = ({ open, setOpen }: NavigationProps) => {
           variant="primary"
           className="w-full rounded-md px-6 py-3 sm:w-auto"
         >
-          <Link to="https://join.tum-ai.com/" rel="noopener noreferrer">
+          <Link to="/apply" rel="noopener noreferrer">
             Join us
           </Link>
         </Button>
