@@ -6,6 +6,7 @@ import {
   project_partners,
   strategic_partnerts,
 } from "@/data/partners";
+import { scrollToSection } from "@/lib/utils";
 import { bitter } from "@/styles/fonts";
 import { cx } from "class-variance-authority";
 import { Handshake, Heart, Megaphone, Users } from "lucide-react";
@@ -57,7 +58,6 @@ export default function Partners() {
 
         {/* Content Container */}
         <div className="relative container mx-auto flex min-h-[80vh] max-w-4xl flex-col justify-center p-8 text-white md:p-16">
-
           {/* Main Content */}
           <div className="space-y-6">
             <h1
@@ -74,9 +74,7 @@ export default function Partners() {
               Get access to Munich&apos;s largest student talent pool of AI
               enthusiasts
             </p>
-            <Button variant="outline" className="border border-white/10">
-              <a href="mailto:partners@tum-ai.com">Become a partner</a>
-            </Button>
+            <Button onClick={scrollToSection}>Become a partner</Button>
           </div>
         </div>
       </section>
@@ -107,7 +105,10 @@ export default function Partners() {
         </div>
       </section>
 
-      <section className="relative bg-linear-to-b from-blue-700 to-blue-800 p-8 text-white sm:py-16 lg:py-32">
+      <section
+        className="relative bg-linear-to-b from-blue-700 to-blue-800 p-8 text-white sm:py-16 lg:py-32"
+        id="become-partner"
+      >
         <div className="container mx-auto">
           <div className="mx-auto max-w-7xl">
             {/* Background dots pattern */}
@@ -221,7 +222,7 @@ export default function Partners() {
                   </div>
 
                   <Button
-                    variant={"ghost"}
+                    variant="primary"
                     className="w-full border border-white/10"
                   >
                     <a href="mailto:partners@tum-ai.com">Become a partner</a>

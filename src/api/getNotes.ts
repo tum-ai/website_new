@@ -1,5 +1,5 @@
-import { Client } from '@notionhq/client';
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { Client } from "@notionhq/client";
+import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 const notion = new Client({ auth: process.env.NOTION_TOKEN });
 

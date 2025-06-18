@@ -1,14 +1,14 @@
 import { Route, Routes } from "react-router-dom";
+import Homepage from "./pages/Homepage";
+import Imprint from "./pages/footer/Imprint";
+import DataPrivacy from "./pages/footer/Privacy";
 import Community from "./pages/headerPages/Community";
 import Entrepreneurship from "./pages/headerPages/Entrepreneurship";
 import Events from "./pages/headerPages/Events";
-import Homepage from "./pages/Homepage";
 import Partners from "./pages/headerPages/Partners";
 import Projects from "./pages/headerPages/Projects";
 import QandA from "./pages/headerPages/QandA";
 import Research from "./pages/headerPages/Research";
-import Imprint from "./pages/footer/Imprint";
-import DataPrivacy from "./pages/footer/Privacy";
 
 export default function Index() {
   return (
@@ -23,7 +23,6 @@ export default function Index() {
       <Route path="/qanda" element={<QandA />} />
       <Route path="/imprint" element={<Imprint />} />
       <Route path="/data-privacy" element={<DataPrivacy />} />
-
     </Routes>
   );
 }

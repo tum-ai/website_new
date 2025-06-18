@@ -19,8 +19,6 @@ interface Department {
   gradient: string;
 }
 
-
-
 const departments: Department[] = [
   {
     name: "Makeathon",
@@ -39,8 +37,7 @@ const departments: Department[] = [
   {
     name: "Innovation",
     icon: GraduationCap,
-    description:
-      "TODO...",
+    description: "TODO...",
     gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
   },
   {
@@ -87,8 +84,6 @@ const departments: Department[] = [
   },
 ];
 
-
-
 const DepartmentCard = ({ department }: { department: Department }) => {
   const Icon = department.icon;
   return (
@@ -108,13 +103,10 @@ const DepartmentCard = ({ department }: { department: Department }) => {
   );
 };
 
-
 export default function Community() {
   return (
     <>
-
       <section className="relative overflow-hidden bg-gradient-to-br from-blue-900 to-purple-900 p-8 text-white sm:py-16 lg:py-24">
-
         <JourneySection />
         {/* Departments Section - Dark gradient background */}
 
@@ -146,19 +138,14 @@ export default function Community() {
           </div>
         </div>
         <div className="mb-20 text-center">
-
           <div className="mb-4 inline-flex items-center gap-2">
-
             <h2
-              className={cx(
-                "text-3xl font-semibold tracking-tight text-white",
-              )}
+              className={cx("text-3xl font-semibold tracking-tight text-white")}
             >
               Member Stories
             </h2>
           </div>
         </div>
-
       </section>
     </>
   );
