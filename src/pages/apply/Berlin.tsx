@@ -1,46 +1,30 @@
-import { motion } from "framer-motion";
+import { useMemo } from "react";
+import { munichFaqs, values, requirements, stories } from "@/data/munich";
+import Hero from "@/components/munich/Hero";
+import About from "@/components/munich/About";
+import Milestones from "@/components/munich/Milestones";
+import MemberJourney from "@/components/munich/MemberJourney";
+import Values from "@/components/munich/Values";
+import MemberStories from "@/components/munich/MemberStories";
+import Requirements from "@/components/munich/Requirements";
+import FAQ from "@/components/munich/FAQ";
+import Outro from "@/components/munich/Outro";
 
-export default function Berlin() {
-    const staggerDelay = 0.1;
+export default function Munich() {
+    const valuesWithIcons = useMemo(() => values, []);
+    const requirementsWithIcons = useMemo(() => requirements, []);
 
     return (
-        <>
-            <section className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-blue-950 to-purple-950 px-4 text-white">
-                <div className="relative z-10 max-w-4xl space-y-16 text-center">
-                    <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.7, ease: "easeOut" }}
-                        className="mx-auto flex items-center justify-center"
-                    >
-                        <img
-                            src="/assets/logo_new_white_standard.png"
-                            alt="TUM.ai Logo"
-                            width={300}
-                            height={66}
-                            className="mx-auto"
-                        />
-                    </motion.div>
-                    <motion.h2
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.7, delay: staggerDelay, ease: "easeOut" }}
-                        className="text-xl font-light tracking-wide md:text-2xl"
-                    >
-                        <span className="relative">Berlin</span>
-                    </motion.h2>
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{
-                            duration: 0.7,
-                            delay: staggerDelay * 2,
-                            ease: "easeOut",
-                        }}
-                        className="flex flex-col items-center justify-center space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4"
-                    ></motion.div>
-                </div>
-            </section>
-        </>
+        <div className="flex flex-col">
+            <Hero />
+            <About />
+            <Milestones />
+            <MemberJourney />
+            <Values valuesWithIcons={valuesWithIcons} />
+            <MemberStories stories={stories} />
+            <Requirements requirementsWithIcons={requirementsWithIcons} />
+            <FAQ munichFaqs={munichFaqs} />
+            <Outro />
+        </div>
     );
 }

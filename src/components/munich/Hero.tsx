@@ -33,13 +33,14 @@ export default function Hero() {
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-                        className="hidden md:flex items-center justify-center"
+                        className="hidden md:flex flex-col items-center justify-center"
                     >
                         <img
                             src="/assets/logo_new_white_standard.png"
                             alt="TUM.ai Logo"
                             className="w-full max-w-md"
                         />
+                        <div className="mt-4 text-3xl text-purple-400 tracking-wide text-center">Munich</div>
                     </motion.div>
                 </div>
             </div>

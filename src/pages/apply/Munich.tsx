@@ -2,13 +2,13 @@ import { useMemo } from "react";
 import { munichFaqs, values, requirements, stories } from "@/data/munich";
 import Hero from "@/components/munich/Hero";
 import About from "@/components/munich/About";
-import Milestones from "@/components/munich/Milestones";
 import MemberJourney from "@/components/munich/MemberJourney";
 import Values from "@/components/munich/Values";
 import MemberStories from "@/components/munich/MemberStories";
 import Requirements from "@/components/munich/Requirements";
 import FAQ from "@/components/munich/FAQ";
 import Outro from "@/components/munich/Outro";
+import Milestones from "@/components/munich/Milestones";
 
 export default function Munich() {
     const valuesWithIcons = useMemo(() => values, []);
