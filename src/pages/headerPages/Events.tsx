@@ -1,32 +1,52 @@
 import { useEffect, useState } from "react";
+import EventCard from "@/components/events/EventsCard";
+
+type EventData = {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+};
 
 export default function Events() {
-  const [notes, setNotes] = useState<any[]>([]);
+  const [events, setEvents] = useState<EventData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   useEffect(() => {
-    fetch("/api/getNotes")
-      .then((res) => res.json())
-      .then((data) => setNotes(data))
-      .catch((err) => console.error(err));
+    const fetchEvents = async () => {
+      try {
+        const res = await fetch("http://localhost:3001/api/getNotes");
+        if (!res.ok) throw new Error("Failed to fetch events");
+        const data = await res.json();
+        setEvents(data);
+      } catch (err) {
+        console.error(err);
+        setError("Could not load events.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
   }, []);
 
+  if (loading) return <div>Loading events...</div>;
+  if (error) return <div style={{ color: "red" }}>{error}</div>;
+
   return (
-    <div>
-      Upcoming Events
-      {notes.map((note) => (
-        <div key={note.id}>
-          <h1>{note.properties.title.title[0]?.plain_text}</h1>
-          <p>{note.properties.desc.rich_text[0]?.plain_text}</p>
-          {note.properties["Files & media"].files.length > 0 &&
-            note.properties["Files & media"].files[0].file?.url && (
-              <img
-                src={note.properties["Files & media"].files[0].file.url}
-                alt="Event"
-                style={{ width: "300px", height: "auto", marginTop: "1rem" }}
-              />
-            )}
-        </div>
+  <div className="mt-16 flex flex-col">
+    <h1>Upcoming Events</h1>
+    <div className="flex flex-row justify-evenly">
+      {events.map((event) => (
+        <EventCard
+          key={event.id}
+          title={event.title}
+          description={event.description}
+          image={event.image}
+        />
       ))}
-      <h2>End of the Events</h2>
+    </div>
     </div>
   );
 }
