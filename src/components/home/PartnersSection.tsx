@@ -1,9 +1,40 @@
 import {
   initiatives_collabrated_with,
-  partners_collabrated_with,
+  // partners_collabrated_with,
 } from "@/data/partners";
+import { useEffect, useState } from "react";
+
+type PartnersData = {
+  id: string;
+  name: string;
+  link: string;
+  image: string;
+};
 
 export const PartnersSection = () => {
+  const [partners, setPartners] = useState<PartnersData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    const fetchPartners = async () => {
+      try {
+        const res = await fetch("http://localhost:3001/api/getPartners"); // change this once deployed to /api/getPartners
+        if (!res.ok) throw new Error("Failed to fetch events");
+        const data = await res.json();
+        setPartners(data);
+      } catch (err) {
+        console.error(err);
+        setError("Could not load events.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPartners();
+  }, []);
+
+  if (loading) return <div>Loading partners...</div>;
+  if (error) return <div style={{ color: "red" }}>{error}</div>;
   return (
     <section className="relative overflow-hidden p-8 py-24 sm:py-16 lg:py-24">
       {/* Glass-like glow */}
@@ -17,16 +48,18 @@ export const PartnersSection = () => {
           </h2>
 
           <div className="grid grid-cols-2 items-center justify-items-center gap-8 md:grid-cols-4 lg:grid-cols-6">
-            {partners_collabrated_with.map((partner, index) => (
+            {[...partners].reverse().map((partner) => (
               <div
-                key={index}
+                key={partner.id}
                 className="flex transform items-center justify-center p-4 grayscale transition-all duration-300 hover:scale-105 hover:grayscale-0"
               >
+                <a href={partner.link} target="_blank">
                 <img
-                  src={partner.src}
-                  alt={partner.alt}
+                  src={partner.image}
+                  alt={partner.name}
                   className="h-12 object-contain"
                 />
+                </a>
               </div>
             ))}
           </div>

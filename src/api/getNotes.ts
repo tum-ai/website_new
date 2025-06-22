@@ -7,7 +7,7 @@ let cache: any[] | null = null;
 let lastFetch = 0;
 const CACHE_TTL = 1000 * 60 * 5; // 5 minutes
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(_: VercelRequest, res: VercelResponse) {
   const now = Date.now();
 
   if (cache && now - lastFetch < CACHE_TTL) {
