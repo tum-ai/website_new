@@ -49,7 +49,7 @@ export default function Partners() {
         <img
           src="/assets/partners.jpg"
           alt="Hero background image"
-          className="absolute scale-110 object-cover transition-transform duration-700 hover:scale-105"
+          className="absolute w-full h-full scale-110 object-cover transition-transform duration-700 hover:scale-105"
         />
 
         {/* Gradient Overlays */}
