@@ -140,7 +140,7 @@ export const Hero = () => {
           </Button>
 
           <Button asChild className="w-full rounded-md px-6 py-3 sm:w-auto">
-            <a href="https://join.tum-ai.com/">Become a Member</a>
+            <a href="/apply">Become a Member</a>
           </Button>
         </motion.div>
       </div>
