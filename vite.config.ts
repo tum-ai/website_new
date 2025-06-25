@@ -11,4 +11,11 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    watch: {
+      // Enable polling for WSL filesystem
+      usePolling: true,
+      interval: 100, 
+    },
+  },
 });
