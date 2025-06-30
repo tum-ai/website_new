@@ -47,7 +47,7 @@ export const berlinFaqs = [
       "TUM.ai Berlin will host regular meetups, AI talks, and networking events to build a strong, engaged community. Members will also have opportunities to travel to Munich for major TUM.ai events, hackathons, and summits.",
   },
   {
-    question: "Contact us if you have more questions",
+    question: "Where can I contact TUM.ai Berlin for recruitment purposes?",
     answer:
       "If you have further questions, feel free to write us an email at berlin-contact@tum-ai.com.",
   },

@@ -5,9 +5,9 @@ export const faqs = [
       "You don't need to be an AI expert to join TUM.ai. We believe that individuals can learn and adapt quickly with the right mindset. Even if you're not an AI specialist but have a genuine interest in the field and are eager to learn and contribute, you could be a perfect fit for our team. After all, diverse perspectives and backgrounds can often bring fresh insights and innovative ideas. Note that the ML projects in your first semester are based on your area and level of expertise.",
   },
   {
-    question: "Contact us if you have more questions",
+    question: "Where can I contact TUM.ai?",
     answer:
-      "If you have further questions, feel free to write us an email at berlin-contact@tum-ai.com.",
+      "If you have further questions, feel free to write us an email at contact@tum-ai.com.",
   },
   {
     question: "Disclaimer",
