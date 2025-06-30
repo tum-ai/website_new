@@ -1,11 +1,11 @@
-import { Client } from '@notionhq/client';
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { Client } from "@notionhq/client";
+import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 const notion = new Client({ auth: process.env.NOTION_TOKEN_PARTNERS });
 
 let cache: any[] | null = null;
 let lastFetch = 0;
-const CACHE_TTL = 1000 * 60 * 5; 
+const CACHE_TTL = 1000 * 60 * 5;
 
 export default async function handler(_: VercelRequest, res: VercelResponse) {
   const now = Date.now();
@@ -21,9 +21,9 @@ export default async function handler(_: VercelRequest, res: VercelResponse) {
 
     const data = response.results.map((page: any) => ({
       id: page.id,
-      name: page.properties?.name?.title?.[0]?.plain_text || 'Untitled',
-      link: page.properties?.link?.rich_text?.[0]?.plain_text || '',
-      image: page.properties?.image?.files?.[0]?.file?.url || '',
+      name: page.properties?.name?.title?.[0]?.plain_text || "Untitled",
+      link: page.properties?.link?.rich_text?.[0]?.plain_text || "",
+      image: page.properties?.image?.files?.[0]?.file?.url || "",
     }));
 
     cache = data;

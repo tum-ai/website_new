@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import EventCard from "@/components/events/EventsCard";
+import { useEffect, useState } from "react";
 
 type EventData = {
   id: string;
@@ -16,7 +16,7 @@ export default function Events() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await fetch("http://localhost:3001/api/getNotes");// change this once deployed to /api/getNotes
+        const res = await fetch("http://localhost:3001/api/getNotes"); // change this once deployed to /api/getNotes
         if (!res.ok) throw new Error("Failed to fetch events");
         const data = await res.json();
         setEvents(data);
@@ -35,18 +35,18 @@ export default function Events() {
   if (error) return <div style={{ color: "red" }}>{error}</div>;
 
   return (
-  <div className="mt-16 flex flex-col">
-    <h1>Upcoming Events</h1>
-    <div className="flex flex-row justify-evenly">
-      {events.map((event) => (
-        <EventCard
-          key={event.id}
-          title={event.title}
-          description={event.description}
-          image={event.image}
-        />
-      ))}
-    </div>
+    <div className="mt-16 flex flex-col">
+      <h1>Upcoming Events</h1>
+      <div className="flex flex-row justify-evenly">
+        {events.map((event) => (
+          <EventCard
+            key={event.id}
+            title={event.title}
+            description={event.description}
+            image={event.image}
+          />
+        ))}
+      </div>
     </div>
   );
 }

@@ -49,3 +49,75 @@ export const steps: Step[] = [
       "Having been with TUM.ai for two or more semesters, you can join the Alumni Program, opening up opportunities for continued networking and collaboration.",
   },
 ];
+
+export interface Department {
+  name: string;
+  icon: string;
+  description: string;
+  gradient: string;
+}
+
+export const departments: Department[] = [
+  {
+    name: "Makeathon",
+    icon: "Rocket",
+    description:
+      "Organizing Munich's largest AI Makeathon - a 48-hour virtual challenge where teams develop real-world business cases with AI. Features workshops, talks, and expert mentorship.",
+    gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
+  },
+  {
+    name: "Venture",
+    icon: "Building2",
+    description:
+      "Bridging the gap between ideas and successful AI startups. We foster innovation and entrepreneurial spirit within TUM.ai.",
+    gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
+  },
+  {
+    name: "Innovation",
+    icon: "GraduationCap",
+    description: "TODO...",
+    gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
+  },
+  {
+    name: "Education",
+    icon: "GraduationCap",
+    description:
+      "Creating and delivering AI educational content and events for all skill levels - from beginner to expert.",
+    gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
+  },
+  {
+    name: "Software Dev",
+    icon: "Code",
+    description:
+      "Building and maintaining TUM.ai's digital infrastructure, from in-house tools to cloud services.",
+    gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
+  },
+  {
+    name: "Legal & Finance",
+    icon: "Scale",
+    description:
+      "Ensuring TUM.ai's compliance and financial sustainability while maintaining our non-profit status.",
+    gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
+  },
+  {
+    name: "Community",
+    icon: "Users",
+    description:
+      "Building and nurturing our community through events, buddy programs, and recruitment.",
+    gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
+  },
+  {
+    name: "Marketing",
+    icon: "Megaphone",
+    description:
+      "Shaping TUM.ai's public image and promoting our vision through strategic communication.",
+    gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
+  },
+  {
+    name: "Partners & Sponsors",
+    icon: "Handshake",
+    description:
+      "Building strategic partnerships and securing sponsorships to enable ambitious events and projects.",
+    gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
+  },
+];
