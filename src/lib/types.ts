@@ -16,6 +16,15 @@ export interface EventFilters {
   city: string
 }
 
+export interface Research {
+  id: string;
+  title: string;
+  description: string;
+  image?: string;
+  publication?: string;
+  status?: string;
+}
+
 export interface NotionPage {
   id: string
   properties: {
