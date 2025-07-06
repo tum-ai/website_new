@@ -6,7 +6,6 @@ import {
   Handshake,
   MessageCircle,
   Star,
-  User,
   Zap,
 } from "lucide-react";
 
