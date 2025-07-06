@@ -16,7 +16,7 @@ export const munichFaqs = [
       "To prepare for the interview, ensure you have a comprehensive understanding of what TUM.ai stands for and its objectives. Familiarize yourself with the content on the TUM.ai website. Additionally, keep up-to-date with the latest trends and developments in AI. The more prepared you are, the more comfortable and confident you'll feel during the interview.",
   },
   {
-    question: "Contact us if you have more questions?",
+    question: "Where can I contact TUM.ai for recruitment purposes?",
     answer:
       "If you have further questions, feel free to write us an email at recruitment@tum-ai.com.",
   },

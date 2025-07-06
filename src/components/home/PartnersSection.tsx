@@ -54,11 +54,11 @@ export const PartnersSection = () => {
                 className="flex transform items-center justify-center p-4 grayscale transition-all duration-300 hover:scale-105 hover:grayscale-0"
               >
                 <a href={partner.link} target="_blank">
-                <img
-                  src={partner.image}
-                  alt={partner.name}
-                  className="h-12 object-contain"
-                />
+                  <img
+                    src={partner.image}
+                    alt={partner.name}
+                    className="h-12 object-contain"
+                  />
                 </a>
               </div>
             ))}

@@ -4,14 +4,14 @@ import { ArrowDown } from "lucide-react";
 import { Card } from "../ui/card";
 
 const StepCard = ({ step }: { step: Step }) => (
-  <Card className="px-12 py-10 text-center">
-    <div className="absolute top-8 left-8 text-xs font-medium tracking-wide text-slate-500">
+  <Card className="h-full bg-slate-800/50 p-12 text-center text-white border-slate-700">
+    <div className="absolute top-8 left-8 text-xs font-medium tracking-wide text-slate-400">
       {step.step}
     </div>
-    <h3 className="mb-6 text-2xl font-semibold tracking-tight text-slate-900">
+    <h3 className="mb-6 text-2xl font-semibold tracking-tight text-white">
       {step.name}
     </h3>
-    <p className="mx-auto max-w-[85%] text-sm leading-relaxed text-slate-600">
+    <p className="mx-auto max-w-[85%] text-sm leading-relaxed text-slate-300">
       {step.description}
     </p>
   </Card>
@@ -26,9 +26,9 @@ const Arrow = ({ color = "white" }: { color?: string }) => (
 export const JourneySection = () => {
   return (
     <div className="relative flex items-center justify-center">
-      <div className="relative z-10 max-w-4xl space-y-16 text-center">
-        <div className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-          <div className="mb-24 text-center">
+      <div className="relative z-10 w-full max-w-4xl space-y-16 text-center">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-16 text-center">
             <h2
               className={cx(
                 "mb-6 text-4xl font-semibold tracking-tight text-white",
