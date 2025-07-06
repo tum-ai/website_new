@@ -1,8 +1,8 @@
 import { Route, Routes } from "react-router-dom";
 import Homepage from "./pages/Homepage";
+import Apply from "./pages/apply/Apply";
 import Berlin from "./pages/apply/Berlin";
 import Munich from "./pages/apply/Munich";
-import Apply from "./pages/apply/Apply";
 import Imprint from "./pages/footer/Imprint";
 import DataPrivacy from "./pages/footer/Privacy";
 import Community from "./pages/headerPages/Community";

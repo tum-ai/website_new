@@ -4,7 +4,11 @@ type EventCardProps = {
   image?: string;
 };
 
-export default function EventCard({ title, description, image }: EventCardProps) {
+export default function EventCard({
+  title,
+  description,
+  image,
+}: EventCardProps) {
   return (
     <div className="max-w-sm bg-purple-900 text-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
       {image && (

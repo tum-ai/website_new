@@ -15,7 +15,7 @@ export default defineConfig({
     watch: {
       // Enable polling for WSL filesystem
       usePolling: true,
-      interval: 100, 
+      interval: 100,
     },
   },
 });
