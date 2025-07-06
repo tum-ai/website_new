@@ -8,6 +8,7 @@ export interface Event {
   category?: string;
   image?: string;
   sign_up?: string;
+  detail?: string;
 }
 
 export interface EventFilters {

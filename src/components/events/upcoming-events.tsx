@@ -3,8 +3,11 @@ import { Button } from "@/components/ui/button"
 import { ArrowRightIcon } from "lucide-react"
 import type { Event } from "@/lib/types"
 import { groupEventsByMonth } from "@/lib/utils"
+import { Link } from "react-router-dom"
 
 export default function UpcomingEvents({ events }: { events: Event[] }) {
+
+  events.sort((a, b) => new Date(a.event_date).getTime() - new Date(b.event_date).getTime())
   const groupedEvents = groupEventsByMonth(events)
 
   if (events.length === 0) {
@@ -35,7 +38,7 @@ function UpcomingEventCard({ event }: { event: Event }) {
   const eventDate = new Date(event.event_date)
 
   return (
-    <div className="flex gap-6 p-6 rounded-lg border border-gray-500 transition-colors min-h-[200px]">
+    <div className="flex gap-6 p-6 rounded-lg border border-gray-500 transition-colors">
       {/* Left Column - Date/Time and Category */}
       <div className="flex flex-col items-center min-w-[100px]">
         {/* Category Badge */}
@@ -57,20 +60,30 @@ function UpcomingEventCard({ event }: { event: Event }) {
       {/* Content - Takes up remaining space */}
       <div className="flex-1 flex flex-col justify-center">
         <h4 className="text-xl font-semibold mb-2">{event.title}</h4>
-        <p className="text-muted-foreground line-clamp-3 mb-4">{event.description}</p>
+        <p className="text-muted-foreground mb-4">{event.description}</p>
         {event.location && <div className="text-sm text-muted-foreground">📍 {event.location}</div>}
       </div>
 
       {/* Buttons - Vertically Centered and Full Height */}
-      <div className="flex flex-col justify-center gap-4 min-w-[140px]">
-        <Button variant="outline" className="h-12">
-          More Details
-        </Button>
-        <Button className="h-12">
-          Sign Up
-          <ArrowRightIcon className="ml-2 h-4 w-4" />
-        </Button>
-      </div>
+      {(event.sign_up || event.detail) && (
+        <div className="flex flex-col justify-center gap-4 min-w-[140px]">
+          {event.detail && (
+            <Button variant="outline" className="h-12">
+              <Link to={event.detail || "#"} >
+                More Details
+              </Link>
+            </Button>
+          )}
+          {event.sign_up && (
+            <Button asChild className="h-12">
+              <Link to={event.sign_up || "#"}>
+                Sign Up
+                <ArrowRightIcon className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   )
 }
