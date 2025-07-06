@@ -21,7 +21,7 @@ export default function PastEvents({ events }: { events: Event[] }) {
 }
 
 function PastEventCard({ event }: { event: Event }) {
-  const eventDate = new Date(event.date)
+  const eventDate = new Date(event.event_date)
 
   return (
     <Card className="relative overflow-hidden h-full flex flex-col hover:shadow-md transition-shadow bg-transparent">
@@ -33,7 +33,7 @@ function PastEventCard({ event }: { event: Event }) {
       <div className=" w-full">
         {/* Category Badge on top-left of image */}
         <img
-          src={event.imageUrl || "../../../public/assets/home_img1.jpg"}
+          src={event.image || "../../../public/assets/home_img1.jpg"}
           alt={event.title}
           className="object-cover"
         />

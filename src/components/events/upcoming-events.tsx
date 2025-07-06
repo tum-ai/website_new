@@ -32,7 +32,7 @@ export default function UpcomingEvents({ events }: { events: Event[] }) {
 }
 
 function UpcomingEventCard({ event }: { event: Event }) {
-  const eventDate = new Date(event.date)
+  const eventDate = new Date(event.event_date)
 
   return (
     <div className="flex gap-6 p-6 rounded-lg border border-gray-500 transition-colors min-h-[200px]">

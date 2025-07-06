@@ -9,7 +9,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export function groupEventsByMonth(events: Event[]) {
   return events.reduce((groups: Record<string, Event[]>, event) => {
-    const date = new Date(event.date)
+    const date = new Date(event.event_date)
     const month = format(date, "MMMM yyyy")
 
     if (!groups[month]) {

@@ -1,58 +1,58 @@
 import { useEffect, useState, useMemo } from "react";
-import { mockEvents } from "@/lib/mock-data"
+// import { mockEvents } from "@/lib/mock-data"
 import EventsVerticalText from "@/components/events/events-vertical-text"
 import EventFiltersComponent from "@/components/events/events-filters"
 import UpcomingEvents from "@/components/events/upcoming-events"
 import PastEvents from "@/components/events/past-events"
 import { filterEvents } from "@/lib/utils"
-import type { EventFilters } from "@/lib/types"
+import type { EventFilters,Event } from "@/lib/types"
 
 export default function Events() {
-  const [notes, setNotes] = useState<any[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   useEffect(() => {
-    fetch("/api/getNotes")
-      .then((res) => res.json())
-      .then((data) => setNotes(data))
-      .catch((err) => console.error(err));
+    const fetchEvents = async () => {
+      try {
+        const res = await fetch("http://localhost:3001/api/getNotes");// change this once deployed to /api/getNotes
+        if (!res.ok) throw new Error("Failed to fetch events");
+        const data = await res.json();
+        setEvents(data);
+      } catch (err) {
+        console.error(err);
+        setError("Could not load events.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
   }, []);
 
+
+  
   const [filters, setFilters] = useState<EventFilters>({
     category: "All Categories",
     city: "All Cities",
   })
   // Filter events based on current filters
   const filteredEvents = useMemo(() => {
-    return filterEvents(mockEvents, filters)
-  }, [filters])
+    return filterEvents(events, filters)
+  }, [events,filters])
 
   // Split filtered events into upcoming and past
   const currentDate = new Date()
-  const upcomingEvents = filteredEvents.filter((event) => new Date(event.date) >= currentDate)
+  const upcomingEvents = filteredEvents.filter((event) => new Date(event.event_date) >= currentDate)
   const pastEvents = filteredEvents
-    .filter((event) => new Date(event.date) < currentDate)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-
+    .filter((event) => new Date(event.event_date) < currentDate)
+    .sort((a, b) => new Date(b.event_date).getTime() - new Date(a.event_date).getTime())
+    
+  if (loading) return <div>Loading events...</div>;
+  if (error) return <div style={{ color: "red" }}>{error}</div>;
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-blue-900 to-purple-900 p-8 text-white sm:py-16 lg:py-24">
 
-      {/* <div>
-        Upcoming Events
-        {notes.map((note) => (
-          <div key={note.id}>
-            <h1>{note.properties.title.title[0]?.plain_text}</h1>
-            <p>{note.properties.desc.rich_text[0]?.plain_text}</p>
-            {note.properties["Files & media"].files.length > 0 &&
-              note.properties["Files & media"].files[0].file?.url && (
-                <img
-                  src={note.properties["Files & media"].files[0].file.url}
-                  alt="Event"
-                  style={{ width: "300px", height: "auto", marginTop: "1rem" }}
-                />
-              )}
-          </div>
-        ))}
-        <h2>End of the Events</h2>
-      </div> */}
 
       <div className="min-h-screen flex flex-col md:flex-row">
         {/* Fixed Left Column - 1/4 width for "Events" text */}

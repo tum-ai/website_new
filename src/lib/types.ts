@@ -1,13 +1,13 @@
 export interface Event {
-  id: string
-  title: string
-  description: string
-  date: string
-  imageUrl?: string
-  location?: string
-  city?: string
-  category?: string
-  url?: string
+  id: string;
+  title: string;
+  description: string;
+  event_date: string; 
+  location?: string;
+  city?: string;
+  category?: string;
+  image?: string;
+  sign_up?: string;
 }
 
 export interface EventFilters {
