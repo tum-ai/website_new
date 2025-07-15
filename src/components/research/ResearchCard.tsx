@@ -33,16 +33,14 @@ export default function ResearchCard({
       </CardContent>
       {publication && (
         <CardFooter className="flex justify-end">
-          {publication && (
-            <a
-              href={publication}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block text-purple-300 hover:text-purple-100 transition-colors"
-            >
-              Read Publication
-            </a>
-          )}
+          <a
+            href={publication}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block text-purple-300 hover:text-purple-100 transition-colors"
+          >
+            Read Publication
+          </a>
         </CardFooter>
       )}
     </Card>

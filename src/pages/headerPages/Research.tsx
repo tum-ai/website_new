@@ -1,34 +1,12 @@
-import { bitter } from "@/styles/fonts";
-import { cx } from "class-variance-authority";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Logos from "@/components/Logos";
 import { project_partners } from "@/data/partners";
 import { Separator } from "@/components/ui/separator";
 import type { Research } from "@/lib/types";
-import { useEffect, useState, useMemo, use } from "react";
+import { useEffect, useState } from "react";
 import ResearchCard from "@/components/research/ResearchCard";
+import PastEvents from "@/components/events/past-events";
 
-// Define project type based on the existing data structure
-interface ProjectLink {
-  url: string;
-  displayText: string;
-}
-
-interface ProjectSection {
-  text?: string;
-  link?: ProjectLink[];
-  moreText?: string;
-}
-
-interface Project {
-  title: string;
-  image: string;
-  description: ProjectSection[];
-  organization: string;
-  organizationLink: string;
-  time: string;
-}
 
 export default function Research() {
   const [projects, setProjects] = useState<Research[]>([]);
@@ -40,7 +18,7 @@ export default function Research() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const res = await fetch("http://localhost:3001/api/getResearch");
+        const res = await fetch("http://localhost:3001/api/getResearch");// change this once deployed to /api/gerResearch
         if (!res.ok) throw new Error("Failed to fetch projects");
         const data = await res.json();
         setProjects(data);
@@ -61,8 +39,8 @@ export default function Research() {
       const past = projects.filter((project) => project.status === "completed");
       setOngoingProjects(ongoing);
       setPastProjects(past);
-      console.log("Ongoing Projects:", ongoing);
-      console.log("Past Projects:", past);
+      // console.log("Ongoing Projects:", ongoing);
+      // console.log("Past Projects:", past);
     }
   }, [projects]);
 
@@ -120,7 +98,7 @@ export default function Research() {
                         TUM.ai conducts applied AI research through collaborative projects that address real-world challenges, resulting in academic publications or open-source contributions.
                       </p>
 
-                      {ongoingProjects.length > 0 && Object.entries(ongoingProjects).map(([id, project]) => (
+                      {ongoingProjects.length > 0 && ongoingProjects.map((project) => (
                         <ResearchCard title={project.title} description={project.description} image={project.image} publication={project.publication} />
                       ))}
 
@@ -139,7 +117,7 @@ export default function Research() {
                       Past Projects
                     </h3>
                     <div className="flex flex-col items-center gap-4">
-                      {pastProjects.length > 0 && Object.entries(pastProjects).map(([id, project]) => (
+                      {pastProjects.length > 0 && pastProjects.map((project) => (
                         <ResearchCard title={project.title} description={project.description} image={project.image} publication={project.publication} />
                       ))}
 
