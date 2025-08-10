@@ -1,5 +1,66 @@
 import { bitter } from "@/styles/fonts";
 import { cx } from "class-variance-authority";
+import { ProjectCard } from "@/components/innovation/InnovationProjectCard";
+
+
+const sampleDepartments = [
+  {
+    name: "MED.ai",
+    description: "MED.ai is TUM.ai’s elite taskforce dedicated to identifying current challenges at the intersection of healthcare and AI, conducting cutting-edge research, and engaging with leading industry experts. Semesterly research projects in this field with institutions like Helmholtz AI leverages our members to draw new frontiers in the medical research field. With our MED Talks Speaker Series we make one of AI‘s most exciting application fields accessible to the broader audience.",
+    image: "/public/assets/innovation/robotics_discussion.png",
+    detailedDescription: "MED.ai is TUM.ai’s elite taskforce dedicated to identifying current challenges at the intersection of healthcare and AI, conducting cutting-edge research, and engaging with leading industry experts. Semesterly research projects in this field with institutions like Helmholtz AI leverages our members to draw new frontiers in the medical research field. With our MED Talks Speaker Series we make one of AI‘s most exciting application fields accessible to the broader audience.",
+    members: 8,
+    established: "2022",
+    location: "Hybrid",
+    projects: ["Neural Architecture Search", "Federated Learning", "Explainable AI", "Quantum ML"],
+    contact: "contact email",
+    website: "website",
+  },
+  {
+    name: "Quant Finance",
+    description:
+      "The members of the Quant Finance Task Force are passionate about quantitative trading strategies and financial market modeling. We integrate theoretical knowledge in statistics, probability theory, and financial instruments with practical applications to enhance our understanding of market dynamics, quantitative approaches, and associated risks. Our team has successfully participated in the IMC Prosperity 3 Challenge and the AlgoTrade 2025 Hackathon, continuously eager to learn and expand our expertise in quantitative finance.",
+    image: "/public/assets/innovation/robotics_arm.png",
+    detailedDescription:
+      "The members of the Quant Finance Task Force are passionate about quantitative trading strategies and financial market modeling. We integrate theoretical knowledge in statistics, probability theory, and financial instruments with practical applications to enhance our understanding of market dynamics, quantitative approaches, and associated risks. Our team has successfully participated in the IMC Prosperity 3 Challenge and the AlgoTrade 2025 Hackathon, continuously eager to learn and expand our expertise in quantitative finance.",
+    members: 8,
+    established: "2024",
+    location: "Hybrid",
+    projects: ["Smart Manufacturing", "Predictive Maintenance", "Supply Chain Optimization", "Digital Twins"],
+    contact: "contact email",
+    website: "website",
+  },
+  {
+    name: "Robotics",
+    description:
+      "We explore cutting-edge approaches in robotic intelligence, currently focusing on imitation learning using the LeRobot framework. Our work is rapidly expanding toward reinforcement learning and robotics foundation models. As a team, we actively participate in robotics hackathons, organize paper reading sessions, and develop our own experimental projects—bridging research and hands-on innovation.",
+    image: "/public/assets/innovation/robotics_writing.png",
+    detailedDescription:
+      "We explore cutting-edge approaches in robotic intelligence, currently focusing on imitation learning using the LeRobot framework. Our work is rapidly expanding toward reinforcement learning and robotics foundation models. As a team, we actively participate in robotics hackathons, organize paper reading sessions, and develop our own experimental projects—bridging research and hands-on innovation.",
+    members: 4,
+    established: "2023",
+    location: "Munich",
+    projects: ["AI Bootcamp", "Online Courses", "School Outreach", "Certification Programs"],
+    contact: "contact email",
+    website: "website",
+  },
+  {
+    name: "Applied Accelerated Computing",
+    description:
+      "TODO",
+    image: "/ethics-balance-justice-ai.png",
+    detailedDescription:
+      "TODO",
+    members: 2,
+    established: "2024",
+    location: "Munich",
+    projects: ["AI Governance Framework", "Bias Detection Tools", "Privacy-Preserving AI", "Algorithmic Auditing"],
+    contact: "contact email",
+    website: "website",
+  },
+  
+]
+
 
 export default function Projects() {
   return (
@@ -49,8 +110,14 @@ export default function Projects() {
                 ))}
               </div>
             </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
+              {sampleDepartments.map((department) => (
+                <ProjectCard key={department.name} {...department} />
+              ))}
+            </div>
 
-            <div className="relative mb-16 flex flex-col items-center text-center">
+
+            {/* <div className="relative mb-16 flex flex-col items-center text-center">
               <h2
                 className="mb-6 text-3xl font-semibold text-white"
                 style={{ fontFamily: bitter }}
@@ -82,6 +149,7 @@ export default function Projects() {
             >
               Robotics
             </h2>
+          </div> */}
           </div>
         </div>
       </section>
