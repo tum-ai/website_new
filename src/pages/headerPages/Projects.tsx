@@ -19,10 +19,10 @@ const sampleDepartments = [
   {
     name: "Quant Finance",
     description:
-      "The members of the Quant Finance Task Force are passionate about quantitative trading strategies and financial market modeling. We integrate theoretical knowledge in statistics, probability theory, and financial instruments with practical applications to enhance our understanding of market dynamics, quantitative approaches, and associated risks. Our team has successfully participated in the IMC Prosperity 3 Challenge and the AlgoTrade 2025 Hackathon, continuously eager to learn and expand our expertise in quantitative finance.",
+      "The QuantFinance Task Force is made up of TUM.ai members interested in Quantitative Finance or FinTech, who either want to participate in related hackathons or pursue a career in these fields. Our members take part individually or as a team in hackathons, estimathons, and other events. A highlight from last year was our participation in Algotrade 2025 where spent an extended weekend with friends from all of Germany in the biggest EU hackathon. Beyond competitions, we work together to understand the finance world and work towards careers in Quantitative Finance or FinTech.",
     image: "/public/assets/innovation/robotics_arm.png",
     detailedDescription:
-      "The members of the Quant Finance Task Force are passionate about quantitative trading strategies and financial market modeling. We integrate theoretical knowledge in statistics, probability theory, and financial instruments with practical applications to enhance our understanding of market dynamics, quantitative approaches, and associated risks. Our team has successfully participated in the IMC Prosperity 3 Challenge and the AlgoTrade 2025 Hackathon, continuously eager to learn and expand our expertise in quantitative finance.",
+      "The QuantFinance Task Force is made up of TUM.ai members interested in Quantitative Finance or FinTech, who either want to participate in related hackathons or pursue a career in these fields. Our members take part individually or as a team in hackathons, estimathons, and other events. A highlight from last year was our participation in Algotrade 2025 where spent an extended weekend with friends from all of Germany in the biggest EU hackathon. Beyond competitions, we work together to understand the finance world and work towards careers in Quantitative Finance or FinTech.",
     members: 8,
     established: "2024",
     location: "Hybrid",
@@ -47,10 +47,10 @@ const sampleDepartments = [
   {
     name: "Applied Accelerated Computing",
     description:
-      "TODO",
+      "At TUM.ai's Applied Accelerated Computing task force, we go beyond theoretical AI to unravel the hardware powering it all. We equip members with in-depth knowledge of GPUs and compute accelerators, enabling them to understand their workings and optimize AI workflows at a fundamental level. Through practical workshops on Nvidia CUDA and OpenCL programming and hands-on challenges in kernel development and performance benchmarking, we provide the critical system-level understanding that sets our members apart in the AI landscape.",
     image: "/ethics-balance-justice-ai.png",
     detailedDescription:
-      "TODO",
+      "At TUM.ai's Applied Accelerated Computing task force, we go beyond theoretical AI to unravel the hardware powering it all. We equip members with in-depth knowledge of GPUs and compute accelerators, enabling them to understand their workings and optimize AI workflows at a fundamental level. Through practical workshops on Nvidia CUDA and OpenCL programming and hands-on challenges in kernel development and performance benchmarking, we provide the critical system-level understanding that sets our members apart in the AI landscape.",
     members: 2,
     established: "2024",
     location: "Munich",
