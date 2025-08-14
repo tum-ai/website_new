@@ -1,5 +1,5 @@
-import { startups, Startup } from "@data/e-lab-startups";
 import StartupDetails from "@components/StartupDetails";
+import { Startup, startups } from "@data/e-lab-startups";
 
 export default async function StartupPage(props: {
   params: Promise<{ id: string }>;

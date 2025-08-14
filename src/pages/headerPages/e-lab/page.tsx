@@ -1,11 +1,11 @@
+import { ExpectationELab } from "@/components/e-lab/ExpectationELab";
+import FAQ from "@/components/ui/FAQ";
 import Section from "@/components/ui/Section";
-import { Hero } from "./hero";
-import type { Organization, WithContext } from "schema-dts";
-import { useState, useEffect, useRef } from "react";
-import { faq as additionalFaqs } from "@/data/e-lab/data/e-lab";
+import { faq } from "@/data/e-lab/FAQ";
 import { archivo } from "@/styles/fonts";
-import { WhatToExpect } from "@/components/e-lab/WhatToExpect";
-
+import { useEffect, useRef, useState } from "react";
+import type { Organization, WithContext } from "schema-dts";
+import { Hero } from "./hero";
 
 export default function ELab() {
   const jsonLd: WithContext<Organization> = {
@@ -43,44 +43,6 @@ export default function ELab() {
     },
   };
 
-  const hardcodedFaqItems = [
-    {
-      question: "Can I apply as a solo founder?",
-      answer:
-        "Yes, you can absolutely apply as a solo founder! We welcome individual applicants who are passionate about building AI startups. During the program, you'll have opportunities to find co-founders through our team-building activities and networking events.",
-    },
-    {
-      question: "Do I need an idea to apply?",
-      answer:
-        "No, you don't need a fully formed idea to apply. The AI E-Lab is designed to help you develop and validate ideas during the program. We provide ideation workshops and guidance to help you discover the right opportunity to pursue.",
-    },
-    {
-      question: "Does the AI E Lab require me to work from Munich?",
-      answer:
-        "Yes, the AI E-Lab is an in-person program based in Munich. You'll be working from our headquarters at TUM.ai, collaborating with other founders and having access to our physical workspace, mentors, and the local startup ecosystem.",
-    },
-    {
-      question: "What is the time commitment for the program?",
-      answer:
-        "The AI E-Lab is a 12-week intensive program that requires significant time commitment. We expect participants to dedicate substantial time each week to building their startups, attending workshops, and participating in program activities.",
-    },
-    {
-      question: "Do you take equity in my startup?",
-      answer:
-        "No, the AI E-Lab is completely equity-free! We don't take any equity stake in your venture. Our mission is to make AI entrepreneurship accessible to everyone, which is why we provide all support and resources without any financial investment or equity requirements.",
-    },
-  ];
-
-  const allFaqItems = [...hardcodedFaqItems, ...additionalFaqs];
-
-  const [openFAQ, setOpenFAQ] = useState<number | null>(null);
-
-  const toggleFAQ = (index: number) => {
-    setOpenFAQ(openFAQ === index ? null : index);
-  };
-
-  // Removed legacy Notable Startups dataset and state; logos now link directly in the rotating strip
-
   // Interactive Timeline Component
   const InteractiveTimeline = () => {
     const [scrollProgress, setScrollProgress] = useState(0);
@@ -97,35 +59,52 @@ export default function ELab() {
           // Calculate progress based on how much of the timeline is visible
           const visibleTop = Math.max(0, windowHeight - timelineTop);
           const visibleHeight = Math.min(visibleTop, timelineHeight);
-          const progress = Math.min(1, Math.max(0, visibleHeight / timelineHeight));
+          const progress = Math.min(
+            1,
+            Math.max(0, visibleHeight / timelineHeight),
+          );
 
           setScrollProgress(progress);
         }
       };
 
-      window.addEventListener('scroll', handleScroll);
+      window.addEventListener("scroll", handleScroll);
       handleScroll(); // Initial calculation
 
-      return () => window.removeEventListener('scroll', handleScroll);
+      return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
     const timelineItems = [
       { title: "Start", description: "October", side: "right" },
-      { title: "Onboarding Weekend", description: "3 days intensive", side: "left" },
+      {
+        title: "Onboarding Weekend",
+        description: "3 days intensive",
+        side: "left",
+      },
       { title: "Education Sessions", description: "Learning", side: "right" },
       { title: "Build & Iterate I", description: "4 weeks", side: "left" },
-      { title: "Midterm-Pitch", description: "Initial Feedback", side: "right" },
+      {
+        title: "Midterm-Pitch",
+        description: "Initial Feedback",
+        side: "right",
+      },
       { title: "Build & Iterate II", description: "6 weeks", side: "left" },
-      { title: "Pre-Demo Day Pitch", description: "The Final Test", side: "right" },
-      { title: "Demo Day", description: "January", side: "left" }
+      {
+        title: "Pre-Demo Day Pitch",
+        description: "The Final Test",
+        side: "right",
+      },
+      { title: "Demo Day", description: "January", side: "left" },
     ];
 
     return (
       <Section className="flex flex-col items-center justify-center py-12 sm:py-12 lg:py-16 bg-white w-full">
-        <h2 className={`text-3xl md:text-4xl tracking-tight font-normal mb-8 text-black text-center uppercase `}
-
+        <h2
+          className={`text-3xl md:text-4xl tracking-tight font-normal mb-8 text-black text-center uppercase `}
           style={{ fontFamily: archivo }}
-        >Program</h2>
+        >
+          Program
+        </h2>
         <div ref={timelineRef} className="relative max-w-4xl mx-auto w-full">
           {/* Vertical line with gradient animation */}
           <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gray-300 rounded-full">
@@ -133,7 +112,10 @@ export default function ELab() {
               className="absolute top-0 left-0 w-full bg-gradient-to-b from-purple-600 to-purple-400 rounded-full transition-all duration-300 ease-out"
               style={{
                 height: `${scrollProgress * 100}%`,
-                boxShadow: scrollProgress > 0 ? '0 0 20px rgba(168, 85, 247, 0.5)' : 'none'
+                boxShadow:
+                  scrollProgress > 0
+                    ? "0 0 20px rgba(168, 85, 247, 0.5)"
+                    : "none",
               }}
             />
           </div>
@@ -141,7 +123,10 @@ export default function ELab() {
           {/* Timeline items */}
           <div className="relative space-y-16">
             {timelineItems.map((item, index) => {
-              const itemProgress = Math.max(0, Math.min(1, (scrollProgress * timelineItems.length) - index));
+              const itemProgress = Math.max(
+                0,
+                Math.min(1, scrollProgress * timelineItems.length - index),
+              );
               const isActive = itemProgress > 0;
 
               return (
@@ -149,24 +134,29 @@ export default function ELab() {
                   {item.side === "left" ? (
                     <>
                       <div className="w-1/2 pr-12 text-right">
-                        <div className={`transition-all duration-500 ${isActive ? 'translate-x-0 opacity-100' : 'translate-x-8 opacity-60'}`}>
-                          <h3 className={`font-semibold text-xl mb-2 transition-colors duration-300 ${isActive ? 'text-purple-700' : 'text-gray-800'}`}
-
+                        <div
+                          className={`transition-all duration-500 ${isActive ? "translate-x-0 opacity-100" : "translate-x-8 opacity-60"}`}
+                        >
+                          <h3
+                            className={`font-semibold text-xl mb-2 transition-colors duration-300 ${isActive ? "text-purple-700" : "text-gray-800"}`}
                             style={{ fontFamily: archivo }}
                           >
                             {item.title}
                           </h3>
-                          <p className={`text-sm transition-colors duration-300 ${isActive ? 'text-purple-600' : 'text-gray-600'}`}>
+                          <p
+                            className={`text-sm transition-colors duration-300 ${isActive ? "text-purple-600" : "text-gray-600"}`}
+                          >
                             {item.description}
                           </p>
                         </div>
                       </div>
                       <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
                         <div
-                          className={`w-8 h-8 rounded-full border-4 transition-all duration-300 ${isActive
-                            ? 'bg-purple-600 border-purple-300 shadow-lg shadow-purple-300/50 scale-110'
-                            : 'bg-white border-gray-400 scale-100'
-                            }`}
+                          className={`w-8 h-8 rounded-full border-4 transition-all duration-300 ${
+                            isActive
+                              ? "bg-purple-600 border-purple-300 shadow-lg shadow-purple-300/50 scale-110"
+                              : "bg-white border-gray-400 scale-100"
+                          }`}
                         >
                           {isActive && (
                             <div className="absolute inset-0 rounded-full bg-purple-600 animate-ping opacity-30" />
@@ -180,10 +170,11 @@ export default function ELab() {
                       <div className="w-1/2"></div>
                       <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
                         <div
-                          className={`w-8 h-8 rounded-full border-4 transition-all duration-300 ${isActive
-                            ? 'bg-purple-600 border-purple-300 shadow-lg shadow-purple-300/50 scale-110'
-                            : 'bg-white border-gray-400 scale-100'
-                            }`}
+                          className={`w-8 h-8 rounded-full border-4 transition-all duration-300 ${
+                            isActive
+                              ? "bg-purple-600 border-purple-300 shadow-lg shadow-purple-300/50 scale-110"
+                              : "bg-white border-gray-400 scale-100"
+                          }`}
                         >
                           {isActive && (
                             <div className="absolute inset-0 rounded-full bg-purple-600 animate-ping opacity-30" />
@@ -191,13 +182,18 @@ export default function ELab() {
                         </div>
                       </div>
                       <div className="w-1/2 pl-12">
-                        <div className={`transition-all duration-500 ${isActive ? 'translate-x-0 opacity-100' : '-translate-x-8 opacity-60'}`}>
-                          <h3 className={`font-semibold text-xl mb-2 transition-colors duration-300 ${isActive ? 'text-purple-700' : 'text-gray-800'}`}
+                        <div
+                          className={`transition-all duration-500 ${isActive ? "translate-x-0 opacity-100" : "-translate-x-8 opacity-60"}`}
+                        >
+                          <h3
+                            className={`font-semibold text-xl mb-2 transition-colors duration-300 ${isActive ? "text-purple-700" : "text-gray-800"}`}
                             style={{ fontFamily: archivo }}
                           >
                             {item.title}
                           </h3>
-                          <p className={`text-sm transition-colors duration-300 ${isActive ? 'text-purple-600' : 'text-gray-600'}`}>
+                          <p
+                            className={`text-sm transition-colors duration-300 ${isActive ? "text-purple-600" : "text-gray-600"}`}
+                          >
                             {item.description}
                           </p>
                         </div>
@@ -207,13 +203,13 @@ export default function ELab() {
                 </div>
               );
             })}
-
           </div>
-
         </div>
         {/* Subtitle */}
         <div className="text-center mt-12">
-          <p className={`text-base text-gray-700 font-medium`}>Your journey continues...</p>
+          <p className={`text-base text-gray-700 font-medium`}>
+            Your journey continues...
+          </p>
         </div>
       </Section>
     );
@@ -229,12 +225,18 @@ export default function ELab() {
       </section>
       <Hero />
 
-      <WhatToExpect />
+      <ExpectationELab />
 
       {/* Alumni Testimonials Carousel */}
       <Section className="flex flex-col items-center justify-center py-12 sm:py-12 lg:py-16 bg-gradient-to-br from-gray-50 to-white w-full">
-        <h2 className={`text-3xl md:text-4xl tracking-tight font-normal mb-4 text-black text-center uppercase `}>Our Community</h2>
-        <p className={`text-base text-gray-600 mt-4 mb-10 text-center`}>Hear more from voices from our network</p>
+        <h2
+          className={`text-3xl md:text-4xl tracking-tight font-normal mb-4 text-black text-center uppercase `}
+        >
+          Our Community
+        </h2>
+        <p className={`text-base text-gray-600 mt-4 mb-10 text-center`}>
+          Hear more from voices from our network
+        </p>
 
         {/* Animated Cards Container */}
         <div className="relative w-full overflow-hidden py-4">
@@ -256,17 +258,38 @@ export default function ELab() {
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className={`font-semibold text-lg text-gray-900 truncate`}>Leon Hergert</h3>
-                  <p className={`text-sm text-gray-600 truncate`}>Co-Founder @ Spherecast</p>
-                  <p className={`text-xs text-purple-600 font-medium`}>AI E-Lab 1.0</p>
+                  <h3
+                    className={`font-semibold text-lg text-gray-900 truncate`}
+                  >
+                    Leon Hergert
+                  </h3>
+                  <p className={`text-sm text-gray-600 truncate`}>
+                    Co-Founder @ Spherecast
+                  </p>
+                  <p className={`text-xs text-purple-600 font-medium`}>
+                    AI E-Lab 1.0
+                  </p>
                 </div>
               </div>
-              <p className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}>"The AI E-Lab gave us the foundation to build Spherecast from idea to YC. The community and mentorship were game-changing."</p>
+              <p
+                className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}
+              >
+                "The AI E-Lab gave us the foundation to build Spherecast from
+                idea to YC. The community and mentorship were game-changing."
+              </p>
               <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
                 <div className="w-8 h-8 flex items-center justify-center">
-                  <img src="/assets/e-lab/partners/YC.png" alt="Y Combinator" width={32} height={24} className="object-contain" />
+                  <img
+                    src="/assets/e-lab/partners/YC.png"
+                    alt="Y Combinator"
+                    width={32}
+                    height={24}
+                    className="object-contain"
+                  />
                 </div>
-                <span className={`text-xs text-gray-500`}>Y Combinator S24</span>
+                <span className={`text-xs text-gray-500`}>
+                  Y Combinator S24
+                </span>
               </div>
             </div>
 
@@ -283,15 +306,34 @@ export default function ELab() {
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className={`font-semibold text-lg text-gray-900 truncate`}>Benedikt Wieser</h3>
-                  <p className={`text-sm text-gray-600 truncate`}>Winner AI E-Lab 2.0</p>
-                  <p className={`text-xs text-purple-600 font-medium`}>AI E-Lab 2.0</p>
+                  <h3
+                    className={`font-semibold text-lg text-gray-900 truncate`}
+                  >
+                    Benedikt Wieser
+                  </h3>
+                  <p className={`text-sm text-gray-600 truncate`}>
+                    Winner AI E-Lab 2.0
+                  </p>
+                  <p className={`text-xs text-purple-600 font-medium`}>
+                    AI E-Lab 2.0
+                  </p>
                 </div>
               </div>
-              <p className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}>"The AI E-Lab is probably the best program for creating top-end entrepreneurs out there. It's simply incredible."</p>
+              <p
+                className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}
+              >
+                "The AI E-Lab is probably the best program for creating top-end
+                entrepreneurs out there. It's simply incredible."
+              </p>
               <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
                 <div className="w-8 h-8 flex items-center justify-center">
-                  <img src="/assets/e-lab/partners/CDTM.png" alt="CDTM" width={32} height={24} className="object-contain" />
+                  <img
+                    src="/assets/e-lab/partners/CDTM.png"
+                    alt="CDTM"
+                    width={32}
+                    height={24}
+                    className="object-contain"
+                  />
                 </div>
                 <span className={`text-xs text-gray-500`}>CDTM Alumni</span>
               </div>
@@ -310,15 +352,34 @@ export default function ELab() {
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className={`font-semibold text-lg text-gray-900 truncate`}>Leonardo Benini</h3>
-                  <p className={`text-sm text-gray-600 truncate`}>Founder @ Stealth Startup</p>
-                  <p className={`text-xs text-purple-600 font-medium`}>AI E-Lab 3.0</p>
+                  <h3
+                    className={`font-semibold text-lg text-gray-900 truncate`}
+                  >
+                    Leonardo Benini
+                  </h3>
+                  <p className={`text-sm text-gray-600 truncate`}>
+                    Founder @ Stealth Startup
+                  </p>
+                  <p className={`text-xs text-purple-600 font-medium`}>
+                    AI E-Lab 3.0
+                  </p>
                 </div>
               </div>
-              <p className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}>"Structured, fast, and insanely effective. Every founder should experience this."</p>
+              <p
+                className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}
+              >
+                "Structured, fast, and insanely effective. Every founder should
+                experience this."
+              </p>
               <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
                 <div className="w-8 h-8 flex items-center justify-center">
-                  <img src="/assets/e-lab/partners/ewor.png" alt="EWOR" width={32} height={24} className="object-contain" />
+                  <img
+                    src="/assets/e-lab/partners/ewor.png"
+                    alt="EWOR"
+                    width={32}
+                    height={24}
+                    className="object-contain"
+                  />
                 </div>
                 <span className={`text-xs text-gray-500`}>EWOR Fellow</span>
               </div>
@@ -337,15 +398,34 @@ export default function ELab() {
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className={`font-semibold text-lg text-gray-900 truncate`}>Oliver Schoppe</h3>
-                  <p className={`text-sm text-gray-600 truncate`}>Principal @ UVC Partners</p>
-                  <p className={`text-xs text-purple-600 font-medium`}>Mentor & Investor</p>
+                  <h3
+                    className={`font-semibold text-lg text-gray-900 truncate`}
+                  >
+                    Oliver Schoppe
+                  </h3>
+                  <p className={`text-sm text-gray-600 truncate`}>
+                    Principal @ UVC Partners
+                  </p>
+                  <p className={`text-xs text-purple-600 font-medium`}>
+                    Mentor & Investor
+                  </p>
                 </div>
               </div>
-              <p className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}>"The quality of founders coming out of AI E-Lab is exceptional. We're proud to be part of this community."</p>
+              <p
+                className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}
+              >
+                "The quality of founders coming out of AI E-Lab is exceptional.
+                We're proud to be part of this community."
+              </p>
               <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
                 <div className="w-8 h-8 flex items-center justify-center">
-                  <img src="/assets/e-lab/partners/uvc_b.png" alt="UVC Partners" width={32} height={24} className="object-contain" />
+                  <img
+                    src="/assets/e-lab/partners/uvc_b.png"
+                    alt="UVC Partners"
+                    width={32}
+                    height={24}
+                    className="object-contain"
+                  />
                 </div>
                 <span className={`text-xs text-gray-500`}>UVC Partners</span>
               </div>
@@ -364,15 +444,35 @@ export default function ELab() {
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className={`font-semibold text-lg text-gray-900 truncate`}>Viktor Shen</h3>
-                  <p className={`text-sm text-gray-600 truncate`}>Founder of Tenmin</p>
-                  <p className={`text-xs text-purple-600 font-medium`}>AI E-Lab 3.0</p>
+                  <h3
+                    className={`font-semibold text-lg text-gray-900 truncate`}
+                  >
+                    Viktor Shen
+                  </h3>
+                  <p className={`text-sm text-gray-600 truncate`}>
+                    Founder of Tenmin
+                  </p>
+                  <p className={`text-xs text-purple-600 font-medium`}>
+                    AI E-Lab 3.0
+                  </p>
                 </div>
               </div>
-              <p className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}>"We went from zero to being a funded startup - the AI E-Lab accelerated our journey far beyond what we thought was possible."</p>
+              <p
+                className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}
+              >
+                "We went from zero to being a funded startup - the AI E-Lab
+                accelerated our journey far beyond what we thought was
+                possible."
+              </p>
               <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
                 <div className="w-8 h-8 flex items-center justify-center">
-                  <img src="/assets/e-lab/partners/tenmin.svg" alt="Tenmin AI" width={32} height={24} className="object-contain" />
+                  <img
+                    src="/assets/e-lab/partners/tenmin.svg"
+                    alt="Tenmin AI"
+                    width={32}
+                    height={24}
+                    className="object-contain"
+                  />
                 </div>
                 <span className={`text-xs text-gray-500`}>Tenmin AI</span>
               </div>
@@ -391,17 +491,38 @@ export default function ELab() {
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className={`font-semibold text-lg text-gray-900 truncate`}>Leon Hergert</h3>
-                  <p className={`text-sm text-gray-600 truncate`}>Co-Founder @ Spherecast</p>
-                  <p className={`text-xs text-purple-600 font-medium`}>AI E-Lab 1.0</p>
+                  <h3
+                    className={`font-semibold text-lg text-gray-900 truncate`}
+                  >
+                    Leon Hergert
+                  </h3>
+                  <p className={`text-sm text-gray-600 truncate`}>
+                    Co-Founder @ Spherecast
+                  </p>
+                  <p className={`text-xs text-purple-600 font-medium`}>
+                    AI E-Lab 1.0
+                  </p>
                 </div>
               </div>
-              <p className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}>"The AI E-Lab gave us the foundation to build Spherecast from idea to YC. The community and mentorship were game-changing."</p>
+              <p
+                className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}
+              >
+                "The AI E-Lab gave us the foundation to build Spherecast from
+                idea to YC. The community and mentorship were game-changing."
+              </p>
               <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
                 <div className="w-8 h-8 flex items-center justify-center">
-                  <img src="/assets/e-lab/partners/YC.png" alt="Y Combinator" width={32} height={24} className="object-contain" />
+                  <img
+                    src="/assets/e-lab/partners/YC.png"
+                    alt="Y Combinator"
+                    width={32}
+                    height={24}
+                    className="object-contain"
+                  />
                 </div>
-                <span className={`text-xs text-gray-500`}>Y Combinator S24</span>
+                <span className={`text-xs text-gray-500`}>
+                  Y Combinator S24
+                </span>
               </div>
             </div>
 
@@ -417,15 +538,34 @@ export default function ELab() {
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className={`font-semibold text-lg text-gray-900 truncate`}>Benedikt Wieser</h3>
-                  <p className={`text-sm text-gray-600 truncate`}>Winner AI E-Lab 2.0</p>
-                  <p className={`text-xs text-purple-600 font-medium`}>AI E-Lab 2.0</p>
+                  <h3
+                    className={`font-semibold text-lg text-gray-900 truncate`}
+                  >
+                    Benedikt Wieser
+                  </h3>
+                  <p className={`text-sm text-gray-600 truncate`}>
+                    Winner AI E-Lab 2.0
+                  </p>
+                  <p className={`text-xs text-purple-600 font-medium`}>
+                    AI E-Lab 2.0
+                  </p>
                 </div>
               </div>
-              <p className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}>"The AI E-Lab is probably the best program for creating top-end entrepreneurs out there. It's simply incredible."</p>
+              <p
+                className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}
+              >
+                "The AI E-Lab is probably the best program for creating top-end
+                entrepreneurs out there. It's simply incredible."
+              </p>
               <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
                 <div className="w-8 h-8 flex items-center justify-center">
-                  <img src="/assets/e-lab/partners/CDTM.png" alt="CDTM" width={32} height={24} className="object-contain" />
+                  <img
+                    src="/assets/e-lab/partners/CDTM.png"
+                    alt="CDTM"
+                    width={32}
+                    height={24}
+                    className="object-contain"
+                  />
                 </div>
                 <span className={`text-xs text-gray-500`}>CDTM Alumni</span>
               </div>
@@ -443,15 +583,35 @@ export default function ELab() {
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className={`font-semibold text-lg text-gray-900 truncate`}>Leonardo Benini</h3>
-                  <p className={`text-sm text-gray-600 truncate`}>Founder @ Stealth Startup</p>
-                  <p className={`text-xs text-purple-600 font-medium`}>AI E-Lab 3.0</p>
+                  <h3
+                    className={`font-semibold text-lg text-gray-900 truncate`}
+                  >
+                    Leonardo Benini
+                  </h3>
+                  <p className={`text-sm text-gray-600 truncate`}>
+                    Founder @ Stealth Startup
+                  </p>
+                  <p className={`text-xs text-purple-600 font-medium`}>
+                    AI E-Lab 3.0
+                  </p>
                 </div>
               </div>
-              <p className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}>"We went from zero to being a funded startup - the AI E-Lab accelerated our journey far beyond what we thought was possible."</p>
+              <p
+                className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}
+              >
+                "We went from zero to being a funded startup - the AI E-Lab
+                accelerated our journey far beyond what we thought was
+                possible."
+              </p>
               <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
                 <div className="w-8 h-8 flex items-center justify-center">
-                  <img src="/assets/e-lab/partners/ewor.png" alt="EWOR" width={32} height={24} className="object-contain" />
+                  <img
+                    src="/assets/e-lab/partners/ewor.png"
+                    alt="EWOR"
+                    width={32}
+                    height={24}
+                    className="object-contain"
+                  />
                 </div>
                 <span className={`text-xs text-gray-500`}>EWOR Fellow</span>
               </div>
@@ -469,15 +629,34 @@ export default function ELab() {
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className={`font-semibold text-lg text-gray-900 truncate`}>Oliver Schoppe</h3>
-                  <p className={`text-sm text-gray-600 truncate`}>Principal @ UVC Partners</p>
-                  <p className={`text-xs text-purple-600 font-medium`}>Mentor & Investor</p>
+                  <h3
+                    className={`font-semibold text-lg text-gray-900 truncate`}
+                  >
+                    Oliver Schoppe
+                  </h3>
+                  <p className={`text-sm text-gray-600 truncate`}>
+                    Principal @ UVC Partners
+                  </p>
+                  <p className={`text-xs text-purple-600 font-medium`}>
+                    Mentor & Investor
+                  </p>
                 </div>
               </div>
-              <p className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}>"The quality of founders coming out of AI E-Lab is exceptional. We're proud to be part of this community."</p>
+              <p
+                className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}
+              >
+                "The quality of founders coming out of AI E-Lab is exceptional.
+                We're proud to be part of this community."
+              </p>
               <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
                 <div className="w-8 h-8 flex items-center justify-center">
-                  <img src="/assets/e-lab/partners/uvc_b.png" alt="UVC Partners" width={32} height={24} className="object-contain" />
+                  <img
+                    src="/assets/e-lab/partners/uvc_b.png"
+                    alt="UVC Partners"
+                    width={32}
+                    height={24}
+                    className="object-contain"
+                  />
                 </div>
                 <span className={`text-xs text-gray-500`}>UVC Partners</span>
               </div>
@@ -496,15 +675,35 @@ export default function ELab() {
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className={`font-semibold text-lg text-gray-900 truncate`}>Viktor Shen</h3>
-                  <p className={`text-sm text-gray-600 truncate`}>Founder of Tenmin</p>
-                  <p className={`text-xs text-purple-600 font-medium`}>AI E-Lab 3.0</p>
+                  <h3
+                    className={`font-semibold text-lg text-gray-900 truncate`}
+                  >
+                    Viktor Shen
+                  </h3>
+                  <p className={`text-sm text-gray-600 truncate`}>
+                    Founder of Tenmin
+                  </p>
+                  <p className={`text-xs text-purple-600 font-medium`}>
+                    AI E-Lab 3.0
+                  </p>
                 </div>
               </div>
-              <p className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}>"We went from zero to being a funded startup - the AI E-Lab accelerated our journey far beyond what we thought was possible."</p>
+              <p
+                className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}
+              >
+                "We went from zero to being a funded startup - the AI E-Lab
+                accelerated our journey far beyond what we thought was
+                possible."
+              </p>
               <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
                 <div className="w-8 h-8 flex items-center justify-center">
-                  <img src="/assets/e-lab/partners/tenmin.svg" alt="Tenmin AI" width={32} height={24} className="object-contain" />
+                  <img
+                    src="/assets/e-lab/partners/tenmin.svg"
+                    alt="Tenmin AI"
+                    width={32}
+                    height={24}
+                    className="object-contain"
+                  />
                 </div>
                 <span className={`text-xs text-gray-500`}>Tenmin AI</span>
               </div>
@@ -520,7 +719,6 @@ export default function ELab() {
       {/* Removed: Community is created by working together section */}
 
       <Section className="relative overflow-hidden py-12 sm:py-12 lg:py-16 w-full bg-gradient-to-br from-purple-50 via-white to-blue-50">
-
         {/* Decorative gradient blobs for depth */}
         <div className="pointer-events-none absolute -top-24 -left-24 h-72 w-72 rounded-full bg-gradient-to-br from-purple-400/40 to-fuchsia-400/30 blur-3xl"></div>
         <div className="pointer-events-none absolute -bottom-24 -right-16 h-80 w-80 rounded-full bg-gradient-to-br from-indigo-400/30 to-sky-400/30 blur-3xl"></div>
@@ -551,13 +749,19 @@ export default function ELab() {
 
                 <div className="relative px-12 py-18 md:px-18 md:py-20">
                   <div className="text-center">
-                    <h2 className={`mb-5 text-3xl md:text-4xl font-bold text-black`}>
+                    <h2
+                      className={`mb-5 text-3xl md:text-4xl font-bold text-black`}
+                    >
                       <style></style>
                       Applications for AI E-Lab 4.0 are open!
                     </h2>
 
-                    <p className={`mx-auto mb-10 max-w-2xl text-base leading-relaxed text-slate-700`}>
-                      Secure your spot in one of Europe’s leading AI incubators and join a network of top founders, mentors, and investors.
+                    <p
+                      className={`mx-auto mb-10 max-w-2xl text-base leading-relaxed text-slate-700`}
+                    >
+                      Secure your spot in one of Europe’s leading AI incubators
+                      and join a network of top founders, mentors, and
+                      investors.
                     </p>
 
                     <div className="flex justify-center">
@@ -566,7 +770,6 @@ export default function ELab() {
                         <div className="absolute -inset-2 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg opacity-50 blur-xl"></div>
 
                         {/* Sparkling effects - always visible */}
-
 
                         <a
                           href="https://forms.tum-ai.com/ai-e-lab-3.0-application"
@@ -619,51 +822,191 @@ export default function ELab() {
               <div className="flex animate-scroll-left items-center whitespace-nowrap gap-8 md:gap-12">
                 {/* First set */}
                 <div className="flex items-center gap-8 md:gap-12 flex-none">
-                  <a href="https://tenmin.ai/" target="_blank" rel="noopener noreferrer" className="h-10 md:h-12 w-20 md:w-24 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300">
-                    <img src="/assets/e-lab/startups/Tenmin.svg" alt="Tenmin" width={120} height={48} className="h-8 md:h-10 w-auto object-contain" />
+                  <a
+                    href="https://tenmin.ai/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-10 md:h-12 w-20 md:w-24 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300"
+                  >
+                    <img
+                      src="/assets/e-lab/startups/Tenmin.svg"
+                      alt="Tenmin"
+                      width={120}
+                      height={48}
+                      className="h-8 md:h-10 w-auto object-contain"
+                    />
                   </a>
-                  <a href="https://explaino.ai/" target="_blank" rel="noopener noreferrer" className="h-10 md:h-12 w-24 md:w-32 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300">
-                    <img src="/assets/e-lab/startups/LogoExplaino.svg" alt="Explaino" width={160} height={48} className="h-6 md:h-8 w-auto object-contain" />
+                  <a
+                    href="https://explaino.ai/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-10 md:h-12 w-24 md:w-32 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300"
+                  >
+                    <img
+                      src="/assets/e-lab/startups/LogoExplaino.svg"
+                      alt="Explaino"
+                      width={160}
+                      height={48}
+                      className="h-6 md:h-8 w-auto object-contain"
+                    />
                   </a>
-                  <a href="https://www.spherecast.ai/" target="_blank" rel="noopener noreferrer" className="h-10 md:h-12 w-22 md:w-28 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300">
-                    <img src="/assets/e-lab/startups/Spherecast.webp" alt="Spherecast" width={140} height={48} className="h-8 md:h-10 w-auto object-contain" />
+                  <a
+                    href="https://www.spherecast.ai/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-10 md:h-12 w-22 md:w-28 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300"
+                  >
+                    <img
+                      src="/assets/e-lab/startups/Spherecast.webp"
+                      alt="Spherecast"
+                      width={140}
+                      height={48}
+                      className="h-8 md:h-10 w-auto object-contain"
+                    />
                   </a>
-                  <a href="https://www.get-ikigai.com/" target="_blank" rel="noopener noreferrer" className="h-10 md:h-12 w-24 md:w-32 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300">
-                    <img src="/assets/e-lab/startups/get-ilkigai.svg" alt="Get Ikigai" width={135} height={25} className="h-6 md:h-8 w-auto object-contain" />
+                  <a
+                    href="https://www.get-ikigai.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-10 md:h-12 w-24 md:w-32 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300"
+                  >
+                    <img
+                      src="/assets/e-lab/startups/get-ilkigai.svg"
+                      alt="Get Ikigai"
+                      width={135}
+                      height={25}
+                      className="h-6 md:h-8 w-auto object-contain"
+                    />
                   </a>
-                  <a href="https://www.tau-robotics.com/" target="_blank" rel="noopener noreferrer" className="h-10 md:h-12 w-auto flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300">
+                  <a
+                    href="https://www.tau-robotics.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-10 md:h-12 w-auto flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300"
+                  >
                     <div className="flex items-center">
-                      <img src="/assets/e-lab/startups/TauRobotics.svg" alt="Tau Robotics" width={40} height={40} className="h-8 md:h-10 w-auto object-contain mr-2 sm:mr-4" />
-                      <span className={`text-sm md:text-base font-bold text-black `}>Tau Robotics</span>
+                      <img
+                        src="/assets/e-lab/startups/TauRobotics.svg"
+                        alt="Tau Robotics"
+                        width={40}
+                        height={40}
+                        className="h-8 md:h-10 w-auto object-contain mr-2 sm:mr-4"
+                      />
+                      <span
+                        className={`text-sm md:text-base font-bold text-black `}
+                      >
+                        Tau Robotics
+                      </span>
                     </div>
                   </a>
-                  <a href="https://www.helmit.org/" target="_blank" rel="noopener noreferrer" className="h-10 md:h-12 w-22 md:w-28 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300">
-                    <img src="/assets/e-lab/startups/helmit.svg" alt="Helmit" width={40} height={40} className="h-8 md:h-10 w-auto object-contain" />
+                  <a
+                    href="https://www.helmit.org/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-10 md:h-12 w-22 md:w-28 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300"
+                  >
+                    <img
+                      src="/assets/e-lab/startups/helmit.svg"
+                      alt="Helmit"
+                      width={40}
+                      height={40}
+                      className="h-8 md:h-10 w-auto object-contain"
+                    />
                   </a>
                 </div>
 
                 {/* Duplicate set for seamless loop */}
                 <div className="flex space-x-8 md:space-x-12 items-center shrink-0">
-                  <a href="https://tenmin.ai/" target="_blank" rel="noopener noreferrer" className="h-10 md:h-12 w-20 md:w-24 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300">
-                    <img src="/assets/e-lab/startups/Tenmin.svg" alt="Tenmin" width={120} height={48} className="h-8 md:h-10 w-auto object-contain" />
+                  <a
+                    href="https://tenmin.ai/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-10 md:h-12 w-20 md:w-24 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300"
+                  >
+                    <img
+                      src="/assets/e-lab/startups/Tenmin.svg"
+                      alt="Tenmin"
+                      width={120}
+                      height={48}
+                      className="h-8 md:h-10 w-auto object-contain"
+                    />
                   </a>
-                  <a href="https://explaino.ai/" target="_blank" rel="noopener noreferrer" className="h-10 md:h-12 w-24 md:w-32 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300">
-                    <img src="/assets/e-lab/startups/LogoExplaino.svg" alt="Explaino" width={160} height={48} className="h-6 md:h-8 w-auto object-contain" />
+                  <a
+                    href="https://explaino.ai/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-10 md:h-12 w-24 md:w-32 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300"
+                  >
+                    <img
+                      src="/assets/e-lab/startups/LogoExplaino.svg"
+                      alt="Explaino"
+                      width={160}
+                      height={48}
+                      className="h-6 md:h-8 w-auto object-contain"
+                    />
                   </a>
-                  <a href="https://www.spherecast.ai/" target="_blank" rel="noopener noreferrer" className="h-10 md:h-12 w-22 md:w-28 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300">
-                    <img src="/assets/e-lab/startups/Spherecast.webp" alt="Spherecast" width={140} height={48} className="h-8 md:h-10 w-auto object-contain" />
+                  <a
+                    href="https://www.spherecast.ai/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-10 md:h-12 w-22 md:w-28 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300"
+                  >
+                    <img
+                      src="/assets/e-lab/startups/Spherecast.webp"
+                      alt="Spherecast"
+                      width={140}
+                      height={48}
+                      className="h-8 md:h-10 w-auto object-contain"
+                    />
                   </a>
-                  <a href="https://www.get-ikigai.com/" target="_blank" rel="noopener noreferrer" className="h-10 md:h-12 w-24 md:w-32 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300">
-                    <img src="/assets/e-lab/startups/get-ilkigai.svg" alt="Get Ikigai" width={135} height={25} className="h-6 md:h-8 w-auto object-contain" />
+                  <a
+                    href="https://www.get-ikigai.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-10 md:h-12 w-24 md:w-32 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300"
+                  >
+                    <img
+                      src="/assets/e-lab/startups/get-ilkigai.svg"
+                      alt="Get Ikigai"
+                      width={135}
+                      height={25}
+                      className="h-6 md:h-8 w-auto object-contain"
+                    />
                   </a>
-                  <a href="https://www.tau-robotics.com/" target="_blank" rel="noopener noreferrer" className="h-10 md:h-12 w-auto flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300">
+                  <a
+                    href="https://www.tau-robotics.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-10 md:h-12 w-auto flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300"
+                  >
                     <div className="flex items-center">
-                      <img src="/assets/e-lab/startups/TauRobotics.svg" alt="Tau Robotics" width={40} height={40} className="h-8 md:h-10 w-auto object-contain mr-2 sm:mr-4" />
-                      <span className={`text-sm md:text-base font-bold text-black `}>Tau Robotics</span>
+                      <img
+                        src="/assets/e-lab/startups/TauRobotics.svg"
+                        alt="Tau Robotics"
+                        width={40}
+                        height={40}
+                        className="h-8 md:h-10 w-auto object-contain mr-2 sm:mr-4"
+                      />
+                      <span
+                        className={`text-sm md:text-base font-bold text-black `}
+                      >
+                        Tau Robotics
+                      </span>
                     </div>
                   </a>
-                  <a href="https://www.helmit.org/" target="_blank" rel="noopener noreferrer" className="h-10 md:h-12 w-22 md:w-28 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300">
-                    <img src="/assets/e-lab/startups/helmit.svg" alt="Helmit" width={40} height={40} className="h-8 md:h-10 w-auto object-contain" />
+                  <a
+                    href="https://www.helmit.org/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-10 md:h-12 w-22 md:w-28 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300"
+                  >
+                    <img
+                      src="/assets/e-lab/startups/helmit.svg"
+                      alt="Helmit"
+                      width={40}
+                      height={40}
+                      className="h-8 md:h-10 w-auto object-contain"
+                    />
                   </a>
                 </div>
               </div>
@@ -672,29 +1015,7 @@ export default function ELab() {
         </div>
       </Section>
 
-      <Section className="flex flex-col items-center justify-center py-12 sm:py-12 lg:py-16 bg-white w-full">
-        <h2 className={`text-3xl md:text-4xl tracking-tight font-normal mb-8 text-black text-center uppercase `}>Frequently Asked Questions</h2>
-        <div className="w-full max-w-4xl mx-auto space-y-4">
-          {allFaqItems.map((item, index) => (
-            <div key={`${item.question}-${index}`} className="border-b border-gray-200 pb-4">
-              <div
-                className="flex justify-between items-center cursor-pointer"
-                onClick={() => toggleFAQ(index)}
-              >
-                <h3 className={`text-base font-normal text-gray-800`}>{item.question}</h3>
-                <span className={`text-2xl text-gray-400 transition-transform ${openFAQ === index ? 'rotate-45' : ''}`}>
-                  +
-                </span>
-              </div>
-              {openFAQ === index && (
-                <div className={`mt-4 text-gray-600 text-base animate-in slide-in-from-top-2 duration-200`}>
-                  {item.answer}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </Section>
+      <FAQ faq={faq}></FAQ>
     </>
   );
 }

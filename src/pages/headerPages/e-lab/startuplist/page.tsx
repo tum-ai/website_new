@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
-import { archivoSemiExpandedBold } from "../../../styles/fonts";
-import Section from "@components/ui/Section";
-import Link from "next/link";
 import StartupList from "@components/ELabStartupList";
+import Section from "@components/ui/Section";
 import { startups } from "data/e-lab-startups";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { archivoSemiExpandedBold } from "../../../styles/fonts";
 
 // Define the metadata for the page
 export const metadata: Metadata = {
@@ -20,7 +20,9 @@ export default function Page() {
       {/* Header Section */}
       <Section className="bg-purple-950 text-white">
         <div className="md:w-3/5 lg:mb-8">
-          <h2 className={`bg-linear-to-r from-yellow-500 to-red-500 bg-clip-text text-5xl font-semibold text-transparent uppercase ${archivoSemiExpandedBold.className}`}>
+          <h2
+            className={`bg-linear-to-r from-yellow-500 to-red-500 bg-clip-text text-5xl font-semibold text-transparent uppercase ${archivoSemiExpandedBold.className}`}
+          >
             E-Lab Startup Directory
           </h2>
           <p className="mt-2 text-lg">Registry of all E-Lab based Startups.</p>
@@ -29,7 +31,9 @@ export default function Page() {
 
       {/* Main Content Section */}
       <Section className="bg-purple-950 pt-0 text-white">
-        <p className={`mb-8 text-center text-4xl ${archivoSemiExpandedBold.className}`}>
+        <p
+          className={`mb-8 text-center text-4xl ${archivoSemiExpandedBold.className}`}
+        >
           Since <span className="text-yellow-500">2022</span>, we have founded{" "}
           <span className="text-yellow-500">16 startups</span> within the{" "}
           <span className="text-yellow-500">E-LAB</span>

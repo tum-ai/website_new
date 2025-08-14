@@ -2,7 +2,7 @@ export interface Event {
   id: string;
   title: string;
   description: string;
-  event_date: string; 
+  event_date: string;
   location?: string;
   city?: string;
   category?: string;
@@ -12,36 +12,36 @@ export interface Event {
 }
 
 export interface EventFilters {
-  category: string
-  city: string
+  category: string;
+  city: string;
 }
 
 export interface NotionPage {
-  id: string
+  id: string;
   properties: {
     Title?: {
-      title?: [{ plain_text?: string }]
-    }
+      title?: [{ plain_text?: string }];
+    };
     Description?: {
-      rich_text?: [{ plain_text?: string }]
-    }
+      rich_text?: [{ plain_text?: string }];
+    };
     Date?: {
-      date?: { start?: string }
-    }
+      date?: { start?: string };
+    };
     Image?: {
-      files?: [{ file?: { url?: string }; external?: { url?: string } }]
-    }
+      files?: [{ file?: { url?: string }; external?: { url?: string } }];
+    };
     Location?: {
-      rich_text?: [{ plain_text?: string }]
-    }
+      rich_text?: [{ plain_text?: string }];
+    };
     City?: {
-      select?: { name?: string }
-    }
+      select?: { name?: string };
+    };
     Category?: {
-      select?: { name?: string }
-    }
+      select?: { name?: string };
+    };
     URL?: {
-      url?: string
-    }
-  }
+      url?: string;
+    };
+  };
 }

@@ -42,7 +42,7 @@ export const partners = [
   {
     href: "https://www.rohde-schwarz.com/de",
     src: "/assets/industry/partners/RandS.png",
-    alt: "Rhode-Schwarz",
+    alt: "Rohde-Schwarz",
   },
 ];
 
@@ -432,50 +432,5 @@ export const alumni: Person[] = [
       website: "",
       email: "",
     },
-  },
-];
-
-export const faq = [
-  {
-    question: "I don’t feel experienced yet. Should I still apply?",
-    answer:
-      "Definitely. Our program is designed to equip you with all relevant knowledge and to make your founding experience as convenient as possible.",
-  },
-  {
-    question: "Do I need to be enrolled at a university?",
-    answer:
-      "No. It doesn't matter whether you are are enrolled at TUM, LMU or a student in Munich at all. We want to make founding accessible to everyone and fair. Regardless of your background, we would like to help you with founding your AI startup. You only have to be present in Munich during the program.",
-  },
-
-
-  {
-    question: "When is the application deadline?",
-    answer: "The application phase closes on 07.09.2025 at 23:59.",
-  },
-  {
-    question: "Can I apply with a team?",
-    answer:
-      "Yes, you can, we will consider your application then as a team application.",
-  },
-  {
-    question:
-      "What if I don’t find a team during the first week of the AI E-Lab?",
-    answer:
-      "No worries, if you don’t find a team, you’ll still be able to continue your journey in the E-Lab.",
-  },
-  {
-    question: "Am I legally bound to TUM.ai or a partner company?",
-    answer:
-      "No. We are equity-free and do not want a share in your startup. You only need to invest your dedication and eagerness and we would like to help you with your AI startup.",
-  },
-  {
-    question: "Do you provide funding?",
-    answer:
-      "We do not provide direct cash investment. However, teams in the program receive access to valuable perks such as office space, cloud credits, software tools, and introductions to potential investors. Our focus is on helping you validate your idea and become investor-ready.",
-  },
-  {
-    question: "Can I apply if I’m still a student or working full-time?",
-    answer:
-      "Yes. Many of our participants balance studies or jobs alongside the program. The main requirement is that you can commit enough time to make consistent progress, attend key workshops, and engage with mentors.",
   },
 ];

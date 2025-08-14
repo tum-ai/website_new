@@ -1,4 +1,4 @@
-import { Person, SocialMedia } from "@data/e-lab";
+import type { Person, SocialMedia } from "./e-lab";
 
 export interface Startup {
   id: string;
