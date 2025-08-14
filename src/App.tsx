@@ -11,7 +11,7 @@ import Partners from "./pages/headerPages/Partners";
 import Projects from "./pages/headerPages/Projects";
 import QandA from "./pages/headerPages/QandA";
 import Research from "./pages/headerPages/Research";
-import ELab from "./pages/headerPages/e-lab/page";
+import ELab from "./pages/headerPages/e-lab/ELab";
 
 export default function Index() {
   return (
