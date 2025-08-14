@@ -244,3 +244,35 @@ button:focus-visible {
     overflow-x: hidden;
   }
 }
+
+/* globals.css (or wherever you import Tailwind) */
+@layer utilities {
+  @keyframes marquee-left {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(-50%);
+    }
+
+    /* move by exactly one set */
+  }
+
+  .animate-scroll-left {
+    animation: marquee-left 28s linear infinite;
+    will-change: transform;
+  }
+
+  /* Optional: pause on hover */
+  .group/marquee:hover .animate-scroll-left {
+    animation-play-state: paused;
+  }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-scroll-left {
+      animation: none;
+    }
+  }
+}
