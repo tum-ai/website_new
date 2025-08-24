@@ -6,7 +6,7 @@ import FAQ from "@/components/ui/FAQ";
 import Section from "@/components/ui/Section";
 import { faq } from "@/data/e-lab/FAQ";
 import type { Organization, WithContext } from "schema-dts";
-import { Hero } from "./Hero";
+import { Hero } from "./hero";
 
 export default function ELab() {
   const jsonLd: WithContext<Organization> = {
@@ -95,7 +95,7 @@ export default function ELab() {
                       className={`mb-5 text-3xl md:text-4xl font-bold text-black`}
                     >
                       <style></style>
-                      Applications for AI E-Lab 4.0 are open!
+                      Applications for AI E-Lab are now open
                     </h2>
 
                     <p
@@ -126,7 +126,7 @@ export default function ELab() {
                           <div className="absolute inset-0 rounded-2xl ring-1 ring-white/30"></div>
                           <div className="absolute inset-0 rounded-2xl bg-[radial-gradient(ellipse_at_top_left,_rgba(255,255,255,0.35),_transparent_60%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
                           <span className="relative z-10 flex items-center gap-2">
-                            <span>Apply until 01.09.2025</span>
+                            <span>Apply Now</span>
                             <svg
                               className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1"
                               fill="none"
