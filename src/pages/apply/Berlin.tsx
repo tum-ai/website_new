@@ -7,7 +7,7 @@ import Outro from "@/components/apply/shared/Outro";
 import Requirements from "@/components/apply/shared/Requirements";
 import Values from "@/components/apply/shared/Values";
 import FAQ from "@/components/ui/FAQ";
-import { berlinFaqs } from "@/data/apply/berlin";
+import { berlinFaqs } from "@/data/apply/berlinFAQ";
 import { requirements, stories, values } from "@/data/apply/shared";
 import { useMemo } from "react";
 

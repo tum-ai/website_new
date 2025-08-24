@@ -28,7 +28,7 @@ const Navigation = ({ open, setOpen }: NavigationProps) => {
     { href: "/events", text: "Events" },
     { href: "/research", text: "Research" },
     { href: "/projects", text: "Projects" },
-    { href: "/entrepreneur", text: "Entrepreneurship" },
+    { href: "/e-lab", text: "Entrepreneurship" },
     { href: "/community", text: "Community" },
     { href: "/partners", text: "Partners" },
     { href: "/qanda", text: "Q&A" },

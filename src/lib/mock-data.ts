@@ -1,15 +1,15 @@
-import type { Event } from "./types.ts"
+import type { Event } from "./types.ts";
 
 // Current date for reference
-const currentDate = new Date()
+const currentDate = new Date();
 
 // Helper to create dates relative to current date
 const createDate = (dayOffset: number, hour = 18, minute = 0): string => {
-  const date = new Date(currentDate)
-  date.setDate(date.getDate() + dayOffset)
-  date.setHours(hour, minute, 0, 0)
-  return date.toISOString()
-}
+  const date = new Date(currentDate);
+  date.setDate(date.getDate() + dayOffset);
+  date.setHours(hour, minute, 0, 0);
+  return date.toISOString();
+};
 
 export const mockEvents: Event[] = [
   // Upcoming events
@@ -95,7 +95,8 @@ export const mockEvents: Event[] = [
   {
     id: "8",
     title: "Reinforcement Learning Workshop",
-    description: "Introduction to reinforcement learning concepts and practical applications in robotics and game AI.",
+    description:
+      "Introduction to reinforcement learning concepts and practical applications in robotics and game AI.",
     date: createDate(-90), // 3 months ago
     location: "TUM Informatics Building",
     city: "Munich",
@@ -135,8 +136,16 @@ export const mockEvents: Event[] = [
     category: "Symposium",
     imageUrl: "",
   },
-]
+];
 
-export const eventCategories = ["All Categories", "Workshop", "Hackathon", "Talk", "Symposium", "Career", "Showcase"]
+export const eventCategories = [
+  "All Categories",
+  "Workshop",
+  "Hackathon",
+  "Talk",
+  "Symposium",
+  "Career",
+  "Showcase",
+];
 
-export const eventCities = ["All Cities", "Munich", "Berlin", "Online"]
+export const eventCities = ["All Cities", "Munich", "Berlin", "Online"];
