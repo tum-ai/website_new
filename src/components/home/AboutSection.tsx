@@ -19,28 +19,13 @@ export const AboutSection = () => {
 
               <div className="space-y-6 text-gray-700">
                 <p className="font-medium text-black">
-                  With over 170 active members, TUM.ai connects students and
-                  stakeholders to drive positive societal impact through AI.
+                  Founded in 2020, <strong>TUM.ai</strong> is a community of <strong>250+ students</strong> driving positive impact with AI.
                 </p>
 
-                <p>
-                  Founded in 2020, TUM.ai thrives to deploy AI solutions into
-                  new fields and industries, creating a diverse and inclusive
-                  community of AI enthusiasts.
+                <p className="font-medium text-black">
+                  We partner with <strong>companies, researchers, and innovators</strong> on research, industry projects, our <strong>entrepreneurship lab</strong>, and <strong>speaker events</strong> to turn ideas into action.
                 </p>
 
-                <p>
-                  Together with our highly-talented members, we run data science
-                  projects with industry partners, organize workshops, and
-                  develop AI-powered solutions that address real-world
-                  challenges.
-                </p>
-
-                <p>
-                  We aim to lower the entry barriers to AI creation and usage
-                  for people from every domain by establishing a platform for
-                  practical experience through diverse applied AI projects.
-                </p>
               </div>
 
               <div className="mt-10">
