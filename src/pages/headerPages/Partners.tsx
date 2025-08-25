@@ -18,28 +18,29 @@ export const metadata = {
 };
 
 export default function Partners() {
-  const benefits = [
-    {
-      title: "AI Talent Pool",
-      text: "Get access to our network of highly motivated students with a specialization in artificial intelligence technologies. Many of our members are interested in internships and working student positions.",
-      icon: Heart,
-    },
-    {
-      title: "Marketing & Awareness",
-      text: "As a partner, you will be featured on our website. Plus, we will advertise your company as a supporter of TUM.ai in our marketing campaigns. (14k+ followers on LinkedIn) Boost the perception of your brand among students across Munich and beyond.",
-      icon: Megaphone,
-    },
-    {
-      title: "Project Collaborations",
-      text: "Being a partner opens the door for many sorts of collaboration, like becoming a challenge setter for our Makeathons, joining for an industry project or hosting networking workshops with our members. We are only limited by your creativity!",
-      icon: Handshake,
-    },
-    {
-      title: "Network & Ecosystem",
-      text: "We invite you to benefit from our entrepreneurial ecosystem, our own AI startup founders, as well as insights from our own R&D projects. We invite you to leverage our connections to other top university AI clubs, as well as the association to the TUM brand to drive AI in your company.",
-      icon: Users,
-    },
-  ];
+const benefits = [
+  {
+    title: "AI Talent Pool",
+    text: "Connect with motivated AI students for internships or working roles.",
+    icon: Heart,
+  },
+  {
+    title: "Marketing & Awareness",
+    text: "Boost your brand through our website and campaigns (14k+ followers).",
+    icon: Megaphone,
+  },
+  {
+    title: "Project Collaborations",
+    text: "Join Hackathons, research, or industry projects with our members.",
+    icon: Handshake,
+  },
+  {
+    title: "Network & Ecosystem",
+    text: "Tap into AI startups, R&D insights, and Germany's leading AI student community.",
+    icon: Users,
+  },
+];
+
 
   return (
     <>
@@ -71,7 +72,7 @@ export default function Partners() {
               Partners & Sponsors
             </h1>
             <p className="animate-fade-in-up text-xl text-gray-300 [animation-delay:200ms]">
-              Get access to Munich&apos;s largest student talent pool of AI
+              Get access to Germany&apos;s largest student talent pool of AI
               enthusiasts
             </p>
             <Button onClick={scrollToSection}>Become a partner</Button>

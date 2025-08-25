@@ -4,21 +4,22 @@ import { ArrowDown } from "lucide-react";
 import { Card } from "../ui/card";
 
 const StepCard = ({ step }: { step: Step }) => (
-  <Card className="h-full bg-slate-800/50 p-12 text-center text-white border-slate-700">
-    <div className="absolute top-8 left-8 text-xs font-medium tracking-wide text-slate-400">
+  <Card className="h-auto bg-slate-800/50 p-6 text-center text-white border-slate-700">
+    <div className="absolute top-4 left-4 text-[10px] font-medium tracking-wide text-slate-400">
       {step.step}
     </div>
-    <h3 className="mb-6 text-2xl font-semibold tracking-tight text-white">
+    <h3 className="mb-4 text-xl font-semibold tracking-tight text-white">
       {step.name}
     </h3>
-    <p className="mx-auto max-w-[85%] text-sm leading-relaxed text-slate-300">
+    <p className="mx-auto max-w-[90%] text-sm leading-snug text-slate-300">
       {step.description}
     </p>
   </Card>
+
 );
 
 const Arrow = ({ color = "white" }: { color?: string }) => (
-  <div className="my-8 flex items-center justify-center">
+  <div className="my-4 flex items-center justify-center"> {/* reduced from my-8 */}
     <ArrowDown className={`text-${color} text-lg opacity-40`} />
   </div>
 );
@@ -26,9 +27,9 @@ const Arrow = ({ color = "white" }: { color?: string }) => (
 export const JourneySection = () => {
   return (
     <div className="relative flex items-center justify-center">
-      <div className="relative z-10 w-full max-w-4xl space-y-16 text-center">
+      <div className="relative z-10 w-full max-w-4xl space-y-8 text-center"> {/* reduced from space-y-16 */}
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-16 text-center">
+          <div className="mb-12 text-center"> {/* reduced from mb-16 */}
             <h2
               className={cx(
                 "mb-6 text-4xl font-semibold tracking-tight text-white",
@@ -37,16 +38,12 @@ export const JourneySection = () => {
               The TUM.ai Member Journey
             </h2>
             <p className="mx-auto max-w-2xl text-lg text-white">
-              All of our active members embark on an exciting journey - working
-              on projects, driving AI innovation, and helping shape the TUM.ai
-              community. At the heart of it all is our community, which empowers
-              every member to grow, take initiative, and turn bold ideas into
-              reality. No matter your ambition, TUM.ai is here to help you
-              pursue it and make a meaningful impact - together.
+              At TUM.ai, members contribute through AI projects, workshops, 
+              and community initiatives — turning bold ideas into real-world impact.
             </p>
           </div>
 
-          <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-6"> {/* reduced from gap-8 */}
             {/* First Card */}
             <div className="relative w-full">
               <StepCard step={steps[0]} />
@@ -54,7 +51,7 @@ export const JourneySection = () => {
 
             <Arrow />
 
-            <div className="flex flex-col justify-center gap-8 lg:flex-row lg:gap-16">
+            <div className="flex flex-col justify-center gap-6 lg:flex-row lg:gap-12"> {/* reduced gaps */}
               {steps.slice(1, 3).map((step) => (
                 <div key={step.name} className="relative w-full lg:flex-1">
                   <StepCard step={step} />
@@ -63,7 +60,7 @@ export const JourneySection = () => {
             </div>
 
             {/* Double Arrows */}
-            <div className="flex flex-col justify-center gap-8 lg:flex-row lg:gap-16">
+            <div className="flex flex-col justify-center gap-6 lg:flex-row lg:gap-12">
               <div className="flex justify-center lg:flex-1">
                 <Arrow color="white" />
               </div>

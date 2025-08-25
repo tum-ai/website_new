@@ -30,7 +30,28 @@ export const ProgramsSection = () => {
           </h2>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-            {/* E-Lab Card */}
+            {/* Research Card */}
+            <ProgramCard
+              title="Research Projects"
+              icon="/assets/home_img4.jpg"
+              description="Research projects in AI and machine learning"
+              link="/research"
+              cta="See past publications and projects"
+              status="New projects starting in October"
+            />
+            
+
+            {/* Hackathon Card */}
+            <ProgramCard
+              title="Hackathon Competitions"
+              icon="/assets/home_img2.png"
+              description="48-hour AI product development hackathon solving real industry challenges"
+              link="https://makeathon.tum-ai.com/"
+              cta="View hackathons"
+              status="Stay tuned for next event"
+            />
+            
+              {/* E-Lab Card */}
             <ProgramCard
               title="AI Entrepreneurship Lab"
               icon="/assets/home_img4.jpg"
@@ -40,25 +61,6 @@ export const ProgramsSection = () => {
               status="Applications open in August"
             />
 
-            {/* AI Academy Card */}
-            <ProgramCard
-              title="AI Academy"
-              icon="/assets/home_img1.jpg"
-              description="Advanced AI workshops with hands-on coding tutorials from exciting tech companies"
-              link="https://education.tum-ai.com/"
-              cta="Explore education"
-              status="Open for everyone"
-            />
-
-            {/* Makeathon Card */}
-            <ProgramCard
-              title="Makeathon Competitions"
-              icon="/assets/home_img2.png"
-              description="48-hour AI product development hackathon solving real industry challenges"
-              link="https://makeathon.tum-ai.com/"
-              cta="View hackathons"
-              status="Stay tuned for next event"
-            />
 
             {/* Industry Projects Card */}
             <ProgramCard

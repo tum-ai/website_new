@@ -11,35 +11,35 @@ export const steps: Step[] = [
     name: "Batch Introduction",
     gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
     description:
-      "Kick off your journey with the Batch Introduction! During the onboarding weekend, you'll get introduced to TUM.ai, meet current and new members, and take part in social events - setting the foundation for your journey. The experience continues with a getaway trip designed to deepen connections with both previous and new members in an unforgettable setting.",
+      "Kick off your journey at the onboarding weekend! Meet members, join social events, and deepen connections on our getaway.",
   },
   {
     step: "01A",
     name: "Research Track",
     gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
     description:
-      "Join a dedicated team working on an Impact Project aligned with your skills and interests, applying AI to address real-world challenges in a collaborative environment. These projects are designed to contribute to the broader research and technology community through tangible outcomes such as academic publications or open-source contributions. Along the way, you'll have the opportunity to engage deeply with our vibrant community, develop new skills, and take part in learning opportunities, trips, and special events—all while experiencing the hands-on, team-oriented culture that defines TUM.ai.",
+      "Join a team on an Impact Project applying AI to real-world challenges. Contribute to research, academic publications, or open-source work, and engage with the TUM.ai community through trips, events, and hands-on learning.",
   },
   {
     step: "01B",
     name: "Initiative Track",
     gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
     description:
-      "Join one of our core departments and become a driving force behind everything that makes TUM.ai stand out. In this track, you'll dive into exciting projects, collaborate with motivated peers, and help shape the future of our community. Whether it's launching new ideas, strengthening our network, or making the day-to-day magic happen - you'll be at the heart of it all, growing your skills while making TUM.ai better for everyone. Alongside your work, you'll have the chance to engage deeply with our vibrant network, develop new skills, and take part in learning opportunities, trips, and special events.",
+      "Join one of our core departments and become a driving force behind everything that makes TUM.ai stand out. Shape the future of TUM.ai, and develop your skills while engaging in trips, events, and learning opportunities.",
   },
   {
     step: "02",
     name: "Growth Opportunities",
     gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
     description:
-      "After your first semester, your journey at TUM.ai doesn't end with your initial project. You'll have the opportunity to further shape the initiative by founding a strategic task force, joining a department or task force that's new to you or continuing in your current department, potentially taking on a Team Lead role.",
+      "After your first semester, expand your impact — join new teams, lead a task force, or take on a Team Lead role.",
   },
   {
     step: "03",
     name: "Research Exchange (REX) Program",
     gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
     description:
-      "After completing one semester, you become eligible for the REX Program-your gateway to conducting research at world-renowned institutions like MIT, Harvard, or Cambridge. Through our strong alumni network, we'll help you find the right research topic, navigate the application process, and support you every step of the way. It's a unique chance to take your AI journey global and contribute to cutting-edge research on an international stage.",
+      "After one semester, you can join the REX Program — conduct research at top institutions like MIT, Harvard, or Cambridge. With our alumni network, we guide you in finding a topic, navigating applications, and contributing to cutting-edge AI research globally.",
   },
   {
     step: "04",
@@ -62,7 +62,7 @@ export const departments: Department[] = [
     name: "Makeathon",
     icon: "Rocket",
     description:
-      "Organizing Munich's largest AI Makeathon - a 48-hour virtual challenge where teams develop real-world business cases with AI. Features workshops, talks, and expert mentorship.",
+      "Organizing Munich's largest AI Hackathon - a 48-hour virtual challenge where teams develop real-world business cases with AI. Features workshops, talks, and expert mentorship.",
     gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
   },
   {
@@ -75,7 +75,7 @@ export const departments: Department[] = [
   {
     name: "Innovation",
     icon: "GraduationCap",
-    description: "TODO...",
+    description: "Explore AI applications such as in quantitative finance, robotics, medicine, and accelerating GPUs.",
     gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
   },
   {

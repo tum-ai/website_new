@@ -40,21 +40,18 @@ export const ForCompaniesSection = () => {
 
               <div className="space-y-6">
                 <p className="text-xl font-medium text-white">
-                  Get access to our exclusive pre-selected talent pool of
-                  qualified Software/Data Engineers and AI Strategists.
+                 
+                  Access pre-selected top AI talent, from ML Engineers to AI Strategists.
                 </p>
 
-                <p className="text-white/80">
-                  Join TUM.ai as a sponsor or cooperation partner. Engage with
-                  our community through workshops, speaker events, or as a
-                  challenge setter for our Makeathon competitions.
+                <p className="text-xl font-medium text-white">
+                  Partner with TUM.ai — host workshops, speak at events, or set Hackathon challenges.
                 </p>
 
-                <p className="text-white/80">
-                  Looking for affordable, high-quality AI talent? Consider our
-                  industry project format where student teams solve real-world
-                  problems for your company.
+                <p className="text-xl font-medium text-white">
+                  Let student teams tackle your real-world AI projects affordably and effectively.
                 </p>
+
 
                 <div className="mt-10 flex flex-col gap-4 sm:flex-row">
                   <Button asChild variant="primary">
