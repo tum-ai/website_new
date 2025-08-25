@@ -75,7 +75,7 @@ export const departments: Department[] = [
   {
     name: "Innovation",
     icon: "GraduationCap",
-    description: "Explore AI applications such as in quantitative finance, robotics, medicine, and accelerating GPUs.",
+    description: "Exploring AI applications such as in quantitative finance, robotics, medicine, and accelerating GPUs.",
     gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
   },
   {
