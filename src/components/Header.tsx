@@ -65,47 +65,47 @@ const Navigation = ({ open, setOpen }: NavigationProps) => {
           className="w-full rounded-md px-6 py-3 sm:w-auto"
         >
           <Link to="/apply" rel="noopener noreferrer">
-            Join us
+            Become a member
           </Link>
         </Button>
-
-        <div className="ml-4 flex items-center space-x-3">
-          <a
-            href="https://www.instagram.com/tum.ai_official/"
-            className="flex h-8 w-8 items-center justify-center rounded-md text-white/70 transition-colors hover:text-white"
-            aria-label="Instagram"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FontAwesomeIcon icon={faInstagram} size="sm" />
-          </a>
-          <a
-            href="https://de.linkedin.com/company/tum-ai"
-            className="flex h-8 w-8 items-center justify-center rounded-md text-white/70 transition-colors hover:text-white"
-            aria-label="LinkedIn"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FontAwesomeIcon icon={faLinkedin} size="sm" />
-          </a>
-          <a
-            href="https://join.slack.com/t/tumaipublic/shared_invite/zt-10kg0t1f9-JLRXDxY_d_vprKWgab0cVw"
-            className="flex h-8 w-8 items-center justify-center rounded-md text-white/70 transition-colors hover:text-white"
-            aria-label="Slack"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FontAwesomeIcon icon={faSlack} size="sm" />
-          </a>
-          <a
-            href="mailto:contact@tum-ai.com"
-            className="flex h-8 w-8 items-center justify-center rounded-md text-white/70 transition-colors hover:text-white"
-            aria-label="Email"
-          >
-            <FontAwesomeIcon icon={faEnvelope} size="sm" />
-          </a>
-        </div>
       </nav>
+
+      <div className="ml-4 flex items-center space-x-3">
+        <a
+          href="https://www.instagram.com/tum.ai_official/"
+          className="flex h-8 w-8 items-center justify-center rounded-md text-white/70 transition-colors hover:text-white"
+          aria-label="Instagram"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <FontAwesomeIcon icon={faInstagram} size="sm" />
+        </a>
+        <a
+          href="https://de.linkedin.com/company/tum-ai"
+          className="flex h-8 w-8 items-center justify-center rounded-md text-white/70 transition-colors hover:text-white"
+          aria-label="LinkedIn"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <FontAwesomeIcon icon={faLinkedin} size="sm" />
+        </a>
+        <a
+          href="https://join.slack.com/t/tumaipublic/shared_invite/zt-10kg0t1f9-JLRXDxY_d_vprKWgab0cVw"
+          className="flex h-8 w-8 items-center justify-center rounded-md text-white/70 transition-colors hover:text-white"
+          aria-label="Slack"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <FontAwesomeIcon icon={faSlack} size="sm" />
+        </a>
+        <a
+          href="mailto:contact@tum-ai.com"
+          className="flex h-8 w-8 items-center justify-center rounded-md text-white/70 transition-colors hover:text-white"
+          aria-label="Email"
+        >
+          <FontAwesomeIcon icon={faEnvelope} size="sm" />
+        </a>
+      </div>
 
       {/* Mobile Navigation */}
       <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -181,7 +181,7 @@ const Navigation = ({ open, setOpen }: NavigationProps) => {
                             rel="noopener noreferrer"
                             onClick={() => setOpen(false)}
                           >
-                            Join us
+                            Become a member
                           </a>
                         </li>
                       </ul>
@@ -256,11 +256,11 @@ export const Header = () => {
         scrolled && !navOpen && "bg-purple-950/95 backdrop-blur-xl",
       )}
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
+      <div className="flex px-2 h-16 items-center justify-between">
+        <div className="flex items-center">
           <Logo scrolled={scrolled} navOpen={navOpen} />
-          <Navigation open={navOpen} setOpen={setNavOpen} />
         </div>
+        <Navigation open={navOpen} setOpen={setNavOpen} />
       </div>
     </motion.header>
   );
