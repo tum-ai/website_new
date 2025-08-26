@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import NewHomepage from "./pages/NewHomePage";
+import NewHomepage from "./pages/NewHomepage";
 import Apply from "./pages/apply/Apply";
 import Berlin from "./pages/apply/Berlin";
 import Munich from "./pages/apply/Munich";
