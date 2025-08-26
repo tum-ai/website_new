@@ -224,7 +224,6 @@ export const Header = () => {
           <Logo scrolled={scrolled} navOpen={navOpen} />
         </div>
 
-        {/* This container will expand and center the navigation */}
         <div className="flex-1 flex justify-center">
           <Navigation open={navOpen} setOpen={setNavOpen} />
         </div>
@@ -285,7 +284,6 @@ const Logo = ({
   return (
     <div className="flex items-center">
       <Link to="/" className="flex items-center">
-        {/* Always visible part (the "A") */}
         <svg
           className="h-8 w-auto fill-white"
           viewBox="0 0 300 228"
@@ -297,7 +295,6 @@ const Logo = ({
           <title id="tumaiHomepage">TUM.ai Homepage</title>
           <desc id="tumaiLogoDesc">TUM.ai Logo</desc>
           <g>
-            {/* Only the "A" path(s) */}
             <path
               fillRule="evenodd"
               clipRule="evenodd"
@@ -315,10 +312,9 @@ const Logo = ({
           </g>
         </svg>
       </Link>
-      {/* The rest of the logo, controlled by visibility */}
       <svg
         className="h-8 w-auto fill-white transition-opacity duration-300"
-        viewBox="220 0 731 228" // cropped viewBox for rest of logo
+        viewBox="220 0 731 228"
         xmlns="http://www.w3.org/2000/svg"
       >
         <g
