@@ -98,7 +98,7 @@ const Navigation = ({ open, setOpen }: NavigationProps) => {
             <FontAwesomeIcon icon={faSlack} size="sm" />
           </a>
           <a
-            href="mailto:partners@tum-ai.com" // TODO: replace with actual email
+            href="mailto:contact@tum-ai.com"
             className="flex h-8 w-8 items-center justify-center rounded-md text-white/70 transition-colors hover:text-white"
             aria-label="Email"
           >
