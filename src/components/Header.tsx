@@ -303,7 +303,7 @@ const Logo = ({ scrolled, navOpen }: LogoProps) => {
         <g
           className={cx(
             "transition-opacity duration-300",
-            scrolled && !navOpen && "opacity-0",
+            !scrolled && !navOpen && "opacity-0",
           )}
         >
           <path d="M427.875 86.7339V179.486H402.834V86.7339H371.697V64.4933H459.012V86.7339H427.875Z" />
