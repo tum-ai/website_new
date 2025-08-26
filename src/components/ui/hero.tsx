@@ -44,7 +44,7 @@ export const Hero = () => {
   const staggerDelay = 0.1;
 
   return (
-    <section className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-blue-950 to-purple-950 px-4 text-white">
+    <section className="relative flex h-[80vh] w-full flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-blue-950 to-purple-950 px-4 text-white">
       {/* Combined background elements */}
       <div className="absolute inset-0 opacity-30">
         <BackgroundCircle
@@ -144,46 +144,6 @@ export const Hero = () => {
           </Button>
         </motion.div>
       </div>
-
-      <motion.div
-        className="absolute right-0 bottom-8 left-0 flex justify-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.7, delay: staggerDelay * 3, ease: "easeOut" }}
-      >
-        <motion.button
-          className="group flex !rounded-full !border !border-white/20 !bg-white/10 !p-0 !h-10 !w-10 !items-center !justify-center"
-          onClick={() =>
-            window.scrollBy({ top: window.innerHeight, behavior: "smooth" })
-          }
-          title="Scroll down"
-          whileHover={{ y: 3 }}
-          whileTap={{ scale: 0.9 }}
-          animate={{ y: [0, 10, 0] }}
-          transition={{
-            y: {
-              repeat: Infinity,
-              duration: 2,
-              ease: "easeInOut",
-              repeatDelay: 1,
-            },
-          }}
-        >
-          <svg
-            className="h-4 w-4 text-white/70"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 14l-7 7m0 0l-7-7m7 7V3"
-            />
-          </svg>
-        </motion.button>
-      </motion.div>
     </section>
   );
 };

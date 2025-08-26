@@ -15,7 +15,9 @@ export default function FAQ({ faq }: FaqProps) {
   return (
     <section className="container mx-auto max-w-4xl px-2 py-16">
       <h3 className="text-3xl md:text-4xl font-bold mb-4">
-        <span className="text-purple-600">FAQ</span>
+        <span className="flex items-center text-purple-600">
+          Frequently Asked Questions
+        </span>
       </h3>
       <div className="space-y-6">
         {faq.map((faq, index) => (

@@ -1,6 +1,6 @@
-import { format } from "date-fns"
-import type { Event } from "@/lib/types"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import type { Event } from "@/lib/types";
+import { format } from "date-fns";
 
 export default function PastEvents({ events }: { events: Event[] }) {
   if (events.length === 0) {
@@ -8,7 +8,7 @@ export default function PastEvents({ events }: { events: Event[] }) {
       <div className="py-12 text-center">
         <p className="text-muted-foreground">No past events to display.</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -17,11 +17,11 @@ export default function PastEvents({ events }: { events: Event[] }) {
         <PastEventCard key={event.id} event={event} />
       ))}
     </div>
-  )
+  );
 }
 
 function PastEventCard({ event }: { event: Event }) {
-  const eventDate = new Date(event.event_date)
+  const eventDate = new Date(event.event_date);
 
   return (
     <Card className="relative overflow-hidden h-full flex flex-col hover:shadow-md transition-shadow bg-transparent">
@@ -39,10 +39,16 @@ function PastEventCard({ event }: { event: Event }) {
         />
       </div>
       <CardContent className="">
-        <h4 className="text-xl font-semibold mb-3 line-clamp-2 text-white">{event.title}</h4>
-        <p className="text-muted-foreground text-sm line-clamp-4 leading-relaxed">{event.description}</p>
+        <h4 className="text-xl font-semibold mb-3 line-clamp-2 text-white">
+          {event.title}
+        </h4>
+        <p className="text-muted-foreground text-sm line-clamp-4 leading-relaxed">
+          {event.description}
+        </p>
       </CardContent>
-      <CardFooter className="text-sm text-muted-foreground pt-0">{format(eventDate, "MMMM d, yyyy")}</CardFooter>
+      <CardFooter className="text-sm text-muted-foreground pt-0">
+        {format(eventDate, "MMMM d, yyyy")}
+      </CardFooter>
     </Card>
-  )
+  );
 }

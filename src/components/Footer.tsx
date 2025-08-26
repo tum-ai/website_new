@@ -116,7 +116,7 @@ export default function Footer() {
                   <li>
                     <a
                       className="text-sm text-white/80 transition-colors duration-300 hover:text-purple-300"
-                      href="https://github.com/tum-ai/website_new/" // TODO: replace when done
+                      href="https://github.com/tum-ai/"
                       target="_blank"
                       rel="noopener noreferrer"
                     >

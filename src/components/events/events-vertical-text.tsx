@@ -14,5 +14,5 @@ export default function EventsVerticalText() {
         EVENTS
       </h1>
     </div>
-  )
+  );
 }

@@ -21,14 +21,14 @@ export default async function handler(_: VercelRequest, res: VercelResponse) {
 
     const data = response.results.map((page: any) => ({
       id: page.id,
-      title: page.properties?.title?.title?.[0]?.plain_text || 'Untitled',
-      description: page.properties?.desc?.rich_text?.[0]?.plain_text || '',
-      event_date: page.properties?.event_date?.date?.start || '',
-      location: page.properties?.location?.rich_text?.[0]?.plain_text || '',
-      city: page.properties?.city?.rich_text?.[0]?.plain_text || '',
-      category: page.properties?.category?.rich_text?.[0]?.plain_text || '',
-      image: page.properties?.img?.files?.[0]?.file?.url || '',
-      sign_up: page.properties?.sign_up?.rich_text?.[0]?.plain_text || '',
+      title: page.properties?.title?.title?.[0]?.plain_text || "Untitled",
+      description: page.properties?.desc?.rich_text?.[0]?.plain_text || "",
+      event_date: page.properties?.event_date?.date?.start || "",
+      location: page.properties?.location?.rich_text?.[0]?.plain_text || "",
+      city: page.properties?.city?.rich_text?.[0]?.plain_text || "",
+      category: page.properties?.category?.rich_text?.[0]?.plain_text || "",
+      image: page.properties?.img?.files?.[0]?.file?.url || "",
+      sign_up: page.properties?.sign_up?.rich_text?.[0]?.plain_text || "",
     }));
 
     cache = data;

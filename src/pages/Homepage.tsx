@@ -9,7 +9,7 @@ import { SlackSection } from "@/components/home/SlackSection";
 import type { Organization, WithContext } from "schema-dts";
 import { Hero } from "../components/ui/hero";
 
-export const metadata = {
+const metadata = {
   title: "TUM.ai - Student Initiative focused on Artificial Intelligence",
   description:
     "TUM.ai is a student initiative based at the Technical University of Munich. We connect students and all relevant stakeholders to facilitate the application of AI across domains to drive positive societal impact through interdisciplinary projects. Together with our highly talented members, we organize Hackathons, Working Student Positions, Research Projects, Lectures, Workshops, Conferences and a Startup Incubator around Artificial Intelligence.",
@@ -118,14 +118,6 @@ export default function Homepage() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </section>
-
-      {/* Decorative background elements */}
-      <div className="pointer-events-none fixed inset-0 z-[-1] overflow-hidden">
-        <div className="bg-grid-slate-100 absolute top-0 left-0 h-full w-full opacity-5 [mask-image:linear-gradient(0deg,transparent,white)]" />
-        <div className="absolute top-48 right-10 h-[15vw] max-h-72 w-[15vw] max-w-72 rounded-full bg-purple-400 opacity-10 blur-[clamp(40px,5vw,100px)]" />
-        <div className="absolute top-96 left-10 h-[20vw] max-h-96 w-[20vw] max-w-96 rounded-full bg-blue-300 opacity-10 blur-[clamp(50px,6vw,120px)]" />
-        <div className="absolute right-48 bottom-48 h-[15vw] max-h-64 w-[15vw] max-w-64 rounded-full bg-indigo-400 opacity-10 blur-[clamp(30px,4vw,80px)]" />
-      </div>
 
       <Hero />
       <ProgramsSection />
