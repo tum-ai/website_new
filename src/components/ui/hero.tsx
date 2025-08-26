@@ -44,7 +44,7 @@ export const Hero = () => {
   const staggerDelay = 0.1;
 
   return (
-    <section className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-blue-950 to-purple-950 px-4 text-white">
+    <section className="relative flex h-[80vh] w-full flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-blue-950 to-purple-950 px-4 text-white">
       {/* Combined background elements */}
       <div className="absolute inset-0 opacity-30">
         <BackgroundCircle
@@ -144,13 +144,6 @@ export const Hero = () => {
           </Button>
         </motion.div>
       </div>
-
-      <motion.div
-        className="absolute right-0 bottom-8 left-0 flex justify-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.7, delay: staggerDelay * 3, ease: "easeOut" }}
-      ></motion.div>
     </section>
   );
 };
