@@ -70,43 +70,6 @@ const Navigation = ({ open, setOpen }: NavigationProps) => {
         </Button>
       </nav>
 
-      <div className="ml-4 flex items-center space-x-3">
-        <a
-          href="https://www.instagram.com/tum.ai_official/"
-          className="flex h-8 w-8 items-center justify-center rounded-md text-white/70 transition-colors hover:text-white"
-          aria-label="Instagram"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <FontAwesomeIcon icon={faInstagram} size="sm" />
-        </a>
-        <a
-          href="https://de.linkedin.com/company/tum-ai"
-          className="flex h-8 w-8 items-center justify-center rounded-md text-white/70 transition-colors hover:text-white"
-          aria-label="LinkedIn"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <FontAwesomeIcon icon={faLinkedin} size="sm" />
-        </a>
-        <a
-          href="https://join.slack.com/t/tumaipublic/shared_invite/zt-10kg0t1f9-JLRXDxY_d_vprKWgab0cVw"
-          className="flex h-8 w-8 items-center justify-center rounded-md text-white/70 transition-colors hover:text-white"
-          aria-label="Slack"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <FontAwesomeIcon icon={faSlack} size="sm" />
-        </a>
-        <a
-          href="mailto:contact@tum-ai.com"
-          className="flex h-8 w-8 items-center justify-center rounded-md text-white/70 transition-colors hover:text-white"
-          aria-label="Email"
-        >
-          <FontAwesomeIcon icon={faEnvelope} size="sm" />
-        </a>
-      </div>
-
       {/* Mobile Navigation */}
       <Dialog.Root open={open} onOpenChange={setOpen}>
         <AnimatePresence>
@@ -256,13 +219,60 @@ export const Header = () => {
         scrolled && !navOpen && "bg-purple-950/95 backdrop-blur-xl",
       )}
     >
-      <div className="flex px-2 h-16 items-center justify-between">
+      <div className="flex px-3 h-16 items-center justify-between">
         <div className="flex items-center">
           <Logo scrolled={scrolled} navOpen={navOpen} />
         </div>
-        <Navigation open={navOpen} setOpen={setNavOpen} />
+
+        {/* This container will expand and center the navigation */}
+        <div className="flex-1 flex justify-center">
+          <Navigation open={navOpen} setOpen={setNavOpen} />
+        </div>
+
+        <Contact />
       </div>
     </motion.header>
+  );
+};
+
+const Contact = () => {
+  return (
+    <div className="ml-4 flex items-center space-x-3">
+      <a
+        href="https://www.instagram.com/tum.ai_official/"
+        className="flex h-8 w-8 items-center justify-center rounded-md text-white/70 transition-colors hover:text-white"
+        aria-label="Instagram"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <FontAwesomeIcon icon={faInstagram} size="sm" />
+      </a>
+      <a
+        href="https://de.linkedin.com/company/tum-ai"
+        className="flex h-8 w-8 items-center justify-center rounded-md text-white/70 transition-colors hover:text-white"
+        aria-label="LinkedIn"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <FontAwesomeIcon icon={faLinkedin} size="sm" />
+      </a>
+      <a
+        href="https://join.slack.com/t/tumaipublic/shared_invite/zt-10kg0t1f9-JLRXDxY_d_vprKWgab0cVw"
+        className="flex h-8 w-8 items-center justify-center rounded-md text-white/70 transition-colors hover:text-white"
+        aria-label="Slack"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <FontAwesomeIcon icon={faSlack} size="sm" />
+      </a>
+      <a
+        href="mailto:contact@tum-ai.com"
+        className="flex h-8 w-8 items-center justify-center rounded-md text-white/70 transition-colors hover:text-white"
+        aria-label="Email"
+      >
+        <FontAwesomeIcon icon={faEnvelope} size="sm" />
+      </a>
+    </div>
   );
 };
 

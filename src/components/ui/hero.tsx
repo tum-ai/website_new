@@ -150,40 +150,7 @@ export const Hero = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.7, delay: staggerDelay * 3, ease: "easeOut" }}
-      >
-        <motion.button
-          className="group flex !rounded-full !border !border-white/20 !bg-white/10 !p-0 !h-10 !w-10 !items-center !justify-center"
-          onClick={() =>
-            window.scrollBy({ top: window.innerHeight, behavior: "smooth" })
-          }
-          title="Scroll down"
-          whileHover={{ y: 3 }}
-          whileTap={{ scale: 0.9 }}
-          animate={{ y: [0, 10, 0] }}
-          transition={{
-            y: {
-              repeat: Infinity,
-              duration: 2,
-              ease: "easeInOut",
-              repeatDelay: 1,
-            },
-          }}
-        >
-          <svg
-            className="h-4 w-4 text-white/70"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 14l-7 7m0 0l-7-7m7 7V3"
-            />
-          </svg>
-        </motion.button>
-      </motion.div>
+      ></motion.div>
     </section>
   );
 };
