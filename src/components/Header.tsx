@@ -272,6 +272,7 @@ interface LogoProps {
 }
 
 const Logo = ({ scrolled, navOpen }: LogoProps) => {
+    const textHidden = !scrolled && !navOpen;
   return (
     <Link to="/" className="flex items-center">
       <svg
@@ -303,7 +304,7 @@ const Logo = ({ scrolled, navOpen }: LogoProps) => {
         <g
           className={cx(
             "transition-opacity duration-300",
-            scrolled && !navOpen && "opacity-0",
+            textHidden? "opacity-0 pointer-events-none hidden" : "opacity-100 pointer-events-auto"
           )}
         >
           <path d="M427.875 86.7339V179.486H402.834V86.7339H371.697V64.4933H459.012V86.7339H427.875Z" />

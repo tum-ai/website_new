@@ -4,14 +4,14 @@ import "./styles/index.css";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App.tsx";
 import Footer from "./components/Footer.tsx";
-import { Header } from "./components/Header.tsx";
+import { NewHeader } from "./components/NewHeader.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <Header />
+      <NewHeader />
       <App />
       <Footer />
     </BrowserRouter>
-  </StrictMode>,
+  </StrictMode>
 );
