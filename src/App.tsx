@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import NewHomepage from "./pages/NewHomepage";
+import Homepage from "./pages/Homepage";
 import Apply from "./pages/apply/Apply";
 import Berlin from "./pages/apply/Berlin";
 import Munich from "./pages/apply/Munich";
@@ -16,7 +16,7 @@ import ELab from "./pages/headerPages/e-lab/ELab";
 export default function Index() {
   return (
     <Routes>
-      <Route path="/" element={<NewHomepage />} />
+      <Route path="/" element={<Homepage />} />
       <Route path="/events" element={<Events />} />
       <Route path="/research" element={<Research />} />
       <Route path="/projects" element={<Projects />} />

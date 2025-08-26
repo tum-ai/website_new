@@ -1,189 +1,63 @@
-import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
-
-// Subtle floating background elements
-const BackgroundCircle = ({
-  size,
-  initialPosition,
-  duration,
-  delay,
-  opacity,
-}: {
-  size: number;
-  initialPosition: { x: number; y: number };
-  duration: number;
-  delay: number;
-  opacity: number;
-}) => (
-  <motion.div
-    className="absolute rounded-full bg-white"
-    style={{
-      width: size,
-      height: size,
-      opacity: opacity,
-      left: initialPosition.x + "%",
-      top: initialPosition.y + "%",
-      filter: "blur(40px)",
-    }}
-    initial={{ scale: 0.8 }}
-    animate={{
-      y: [0, -15, 0, 15, 0],
-      scale: [0.8, 1, 0.9, 1, 0.8],
-    }}
-    transition={{
-      repeat: Infinity,
-      duration: duration,
-      delay: delay,
-      ease: "easeInOut",
-    }}
-    suppressHydrationWarning
-  />
-);
+import { Button } from "./button";
 
 export const Hero = () => {
-  const staggerDelay = 0.1;
-
   return (
-    <section className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-blue-950 to-purple-950 px-4 text-white">
-      {/* Combined background elements */}
-      <div className="absolute inset-0 opacity-30">
-        <BackgroundCircle
-          size={160}
-          initialPosition={{ x: 10, y: 20 }}
-          duration={8}
-          delay={0}
-          opacity={0.15}
-        />
-        <BackgroundCircle
-          size={200}
-          initialPosition={{ x: 75, y: 30 }}
-          duration={12}
-          delay={1}
-          opacity={0.1}
-        />
-        <BackgroundCircle
-          size={120}
-          initialPosition={{ x: 60, y: 70 }}
-          duration={10}
-          delay={2}
-          opacity={0.12}
-        />
-        <BackgroundCircle
-          size={180}
-          initialPosition={{ x: 25, y: 80 }}
-          duration={9}
-          delay={3}
-          opacity={0.08}
-        />
-      </div>
-
-      {/* Subtle glow effects */}
-      <div className="absolute top-1/4 left-1/4 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/5 blur-[100px]" />
-      <div className="absolute right-1/4 bottom-1/3 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-purple-600/5 blur-[100px]" />
-
-      <div className="relative z-10 max-w-4xl space-y-16 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
-          className="mx-auto flex items-center justify-center"
-        >
-          <img
-            src="/assets/logo_new_white_standard.png"
-            alt="TUM.ai Logo"
-            width={300}
-            height={66}
-            className="mx-auto"
-          />
-        </motion.div>
-
-        <motion.h2
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.7, delay: staggerDelay, ease: "easeOut" }}
-          className="text-xl font-light tracking-wide md:text-2xl"
-        >
-          Germany&apos;s leading student initiative focused on
-          <span className="relative">
-            <span className="relative z-10 ml-2 font-medium">
-              Artificial Intelligence
-            </span>
-            <motion.span
-              className="absolute bottom-0 left-0 z-0 h-[6px] w-full bg-purple-500/30"
-              initial={{ width: 0 }}
-              animate={{ width: "100%" }}
-              transition={{
-                duration: 0.8,
-                delay: staggerDelay + 0.5,
-                ease: "easeOut",
-              }}
-            />
-          </span>
-        </motion.h2>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            duration: 0.7,
-            delay: staggerDelay * 2,
-            ease: "easeOut",
-          }}
-          className="flex flex-col items-center justify-center space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4"
-        >
-          <Button
-            asChild
-            variant="primary"
-            className="w-full rounded-md px-6 py-3 sm:w-auto"
-          >
-            <a href="mailto:partners@tum-ai.com">Become a Partner</a>
-          </Button>
-
-          <Button asChild className="w-full rounded-md px-6 py-3 sm:w-auto">
-            <a href="/apply">Become a Member</a>
-          </Button>
-        </motion.div>
-      </div>
-
-      <motion.div
-        className="absolute right-0 bottom-8 left-0 flex justify-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.7, delay: staggerDelay * 3, ease: "easeOut" }}
+    <div className="flex flex-col items-start justify-center px-4 py-6 sm:px-8 sm:py-12">
+      {/* Logo */}
+      <svg
+        className="h-10 w-auto fill-white mb-4"
+        viewBox="0 0 951 228"
+        aria-labelledby="tumaiHomepage tumaiLogoDesc"
+        role="img"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
       >
-        <motion.button
-          className="group flex !rounded-full !border !border-white/20 !bg-white/10 !p-0 !h-10 !w-10 !items-center !justify-center"
-          onClick={() =>
-            window.scrollBy({ top: window.innerHeight, behavior: "smooth" })
-          }
-          title="Scroll down"
-          whileHover={{ y: 3 }}
-          whileTap={{ scale: 0.9 }}
-          animate={{ y: [0, 10, 0] }}
-          transition={{
-            y: {
-              repeat: Infinity,
-              duration: 2,
-              ease: "easeInOut",
-              repeatDelay: 1,
-            },
-          }}
+        <title id="tumaiHomepage">TUM.ai Homepage</title>
+        <desc id="tumaiLogoDesc">TUM.ai Logo</desc>
+        <g>
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M12.4218 197.181L87.9235 14.9033C91.4067 6.49417 99.6125 1.01123 108.715 1.01123C108.9 1.01123 109.084 1.0134 109.268 1.01772C109.451 1.0134 109.636 1.01123 109.821 1.01123C118.923 1.01123 127.079 8.33295 130.562 16.7421L206.114 197.181C212.101 211.636 201.477 227.536 185.831 227.536C177.003 227.536 169.034 222.249 165.603 214.115L125.035 117.94C119.151 103.992 99.3844 103.992 93.5005 117.94L52.932 214.115C49.5011 222.249 41.532 227.536 32.7043 227.536C17.0584 227.536 6.43436 211.636 12.4218 197.181Z"
+          ></path>
+          <path
+            d="M88.0771 14.9034L12.5753 197.181C6.58791 211.636 17.2119 227.536 32.8579 227.536C41.6856 227.536 49.6546 222.249 53.0856 214.115L118.63 58.7301L129.656 32.1335C135.8 17.3153 124.909 1.01123 108.868 1.01123C99.766 1.01123 91.5603 6.49417 88.0771 14.9034Z"
+            fill="white"
+            stroke="white"
+            strokeWidth="0.629236"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          ></path>
+          <path d="M199.509 14.9034L275.011 197.181C280.998 211.636 270.374 227.536 254.728 227.536C245.9 227.536 237.931 222.249 234.5 214.115L168.956 58.7301L157.93 32.1335C151.786 17.3153 162.677 1.01123 178.718 1.01123C187.82 1.01123 196.026 6.49417 199.509 14.9034Z"></path>
+        </g>
+      </svg>
+
+      {/* Text */}
+      <p className="mt-2 font-thin text-2xl sm:text-4xl">Welcome to TUM.ai,</p>
+      <p className="font-thin text-2xl sm:text-4xl mt-1">
+        Germany’s leading student initiative focused on{" "}
+        <b>Artificial Intelligence.</b>
+      </p>
+
+      {/* Buttons */}
+      <div className="mt-4 flex flex-col gap-3 w-full sm:flex-row sm:gap-4 justify-between lg:justify-start">
+        <Button
+          asChild
+          variant="primary"
+          className="w-full rounded-md px-6 py-3 text-center sm:w-auto"
         >
-          <svg
-            className="h-4 w-4 text-white/70"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+          <a href="mailto:partners@tum-ai.com">Become a Partner</a>
+        </Button>
+
+        <Button asChild>
+          <a
+            href="/apply"
+            className="w-full bg-transparent border border-[#A144E9] rounded-md px-6 py-3 text-[#A144E9] text-center sm:w-auto"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 14l-7 7m0 0l-7-7m7 7V3"
-            />
-          </svg>
-        </motion.button>
-      </motion.div>
-    </section>
+            Become a Member
+          </a>
+        </Button>
+      </div>
+    </div>
   );
 };

@@ -1,58 +1,113 @@
 import { Button } from "../ui/button";
+import { archivo } from "@/styles/fonts";
+import { MotionValue } from "framer-motion";
+import {
+  motion,
+  useInView,
+  useMotionValue,
+  useSpring,
+  useTransform,
+} from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 
 export const AboutSection = () => {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-white to-gray-50 p-8 sm:py-16 lg:py-24">
-      {/* Glass-like shapes */}
-      <div className="absolute top-1/4 right-0 h-[20vw] max-h-64 w-[20vw] max-w-64 rounded-full bg-gradient-to-br from-purple-300/10 to-blue-300/5 blur-3xl"></div>
-      <div className="absolute bottom-1/3 left-0 h-[25vw] max-h-96 w-[25vw] max-w-96 rounded-full bg-gradient-to-tr from-blue-300/10 to-purple-300/5 blur-3xl"></div>
+    <div className="flex flex-col min-h-screen px-10 py-10 md:py-16">
+      {/* Image */}
+      <div className="w-full flex items-center justify-center flex-1">
+        <img
+          className="w-full h-[300px] md:h-[500px] object-cover bg-gray-200 rounded-xl"
+          src="/assets/aibootcamp.jpg"
+          alt="TUM.ai ai bootcamp"
+        />
+      </div>
 
-      <div className="container mx-auto">
-        <div className="relative z-10 mx-auto max-w-7xl px-4">
-          <div className="flex flex-col gap-16 lg:flex-row">
-            <div className="lg:w-1/2">
-              <h2 className="mb-8 text-3xl font-semibold">
-                Germany&apos;s leading
-                <br />
-                <span className="text-purple-600">AI student initiative</span>
-              </h2>
+      {/* Content */}
+      <div className="flex flex-col md:flex-row items-center gap-8 flex-1">
+        <div className="flex flex-col gap-4 w-full md:w-2/5 text-center md:text-left">
+          <p className="text-xl md:text-2xl">
+            With over <b>90 active members</b>, TUM.ai connects students and
+            stakeholders to drive positive societal impact through AI.
+          </p>
+          <Button className="w-48 self-center md:self-start !bg-[#6517A1]">
+            Meet our Members
+          </Button>
+        </div>
 
-              <div className="space-y-6 text-gray-700">
-                <p className="font-medium text-black">
-                  Founded in 2020, <strong>TUM.ai</strong> is a community of <strong>250+ students</strong> driving positive impact with AI.
-                </p>
-
-                <p className="font-medium text-black">
-                  We partner with <strong>companies, researchers, and innovators</strong> on research, industry projects, our <strong>entrepreneurship lab</strong>, and <strong>speaker events</strong> to turn ideas into action.
-                </p>
-
-              </div>
-
-              <div className="mt-10">
-                <Button asChild variant="primary">
-                  <a href="/members">
-                    <span className="relative z-10">Meet our Members</span>
-                  </a>
-                </Button>
-              </div>
-            </div>
-
-            <div className="lg:w-1/2">
-              <div className="relative h-[500px] w-full overflow-hidden rounded-2xl">
-                <div className="absolute inset-0 -m-1 rounded-2xl bg-gradient-to-br from-purple-100/20 to-blue-100/20 backdrop-blur-[2px]"></div>
-                <div className="absolute inset-1 overflow-hidden rounded-xl border border-white/20 shadow-lg">
-                  <img
-                    src="/assets/aibootcamp.jpg"
-                    alt="TUM.ai members collaborating"
-                    className="h-full w-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 to-blue-900/30"></div>
-                </div>
-              </div>
-            </div>
-          </div>
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full md:w-3/5">
+          <Stat title={"Alumni Members"} from={0} to={400} suffix="+" />
+          <Stat title={"Founding Year"} from={0} to={2020} suffix="" />
+          <Stat title={"Nationalities"} from={0} to={33} suffix="+" />
+          <Stat title={"Majors"} from={0} to={15} suffix="+" />
         </div>
       </div>
-    </section>
+    </div>
   );
 };
+
+function Stat({
+  title,
+  from = 0,
+  to,
+  suffix = "",
+}: {
+  title: string;
+  from?: number;
+  to: number;
+  suffix?: string;
+  isMoney?: boolean;
+}) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const inView = useInView(ref, { once: true, margin: "-50px" });
+  const mv = useMotionValue(from);
+  const spring = useSpring(mv, { stiffness: 50, damping: 26 });
+  const rounded = useTransform(spring, (latest) => Math.round(latest));
+
+  useEffect(() => {
+    if (inView) {
+      mv.set(to);
+    }
+  }, [inView, mv, to]);
+
+  return (
+    <div ref={ref} className="flex flex-col justify-start items-start">
+      <motion.div className={`text-4xl font-bold`}>
+        <span className="inline-flex items-start justify-start px-3 py-2 text-[#6517A1E5] ">
+          <AnimatedText value={rounded} suffix={suffix} />
+        </span>
+      </motion.div>
+      <div
+        className={`mt-2 text-xl text-gray-600`}
+        style={{ fontFamily: archivo }}
+      >
+        {title}
+      </div>
+    </div>
+  );
+}
+
+function AnimatedText({
+  value,
+  prefix = "",
+  suffix = "",
+  decimals = 0,
+}: {
+  value: MotionValue<number>;
+  prefix?: string;
+  suffix?: string;
+  decimals?: number;
+}) {
+  const [text, setText] = useState("0");
+  useEffect(() => {
+    const unsub = value.on("change", (v: number) => {
+      const num =
+        decimals > 0
+          ? (Math.round(v * 10) / 10).toFixed(decimals)
+          : Math.round(v).toString();
+      setText(`${prefix}${num}${suffix}`);
+    });
+    return () => unsub();
+  }, [value, prefix, suffix, decimals]);
+  return <span>{text}</span>;
+}
