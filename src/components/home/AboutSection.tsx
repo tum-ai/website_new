@@ -30,7 +30,8 @@ export const AboutSection = () => {
             stakeholders to drive positive societal impact through AI.
           </p>
           <Button className="w-48 self-center md:self-start !bg-[#6517A1]">
-            Meet our Members
+            <a href="/community">Meet our Members</a>{" "}
+            {/* add a link to community */}
           </Button>
         </div>
 

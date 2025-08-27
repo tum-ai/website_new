@@ -1,6 +1,7 @@
-import Grid from "@/components/Grid.tsx";
+import Grid from "@/components/home/Grid";
 import { Hero } from "../components/ui/hero";
 import { AboutSection } from "@/components/home/AboutSection";
+import { PartnersSection } from "@/components/home/PartnersSection";
 
 export default function Header() {
   return (
@@ -12,6 +13,7 @@ export default function Header() {
         <Grid />
       </div>
       <AboutSection />
+      <PartnersSection />
     </div>
   );
 }
