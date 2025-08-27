@@ -61,9 +61,12 @@ function UpcomingEventCard({ event }: { event: Event }) {
           <span className="text-sm font-medium text-muted-foreground">
             {format(eventDate, "MMM")}
           </span>
-          <span className="text-sm font-medium text-purple-500 mt-1">
-            {format(eventDate, "h:mm a")}
-          </span>
+          {format(eventDate, "h:mm a") !== "2:00 AM" && (
+            <span className="text-sm font-medium text-purple-500 mt-1">
+              {format(eventDate, "h:mm a")}
+            </span>
+          )}
+
         </div>
       </div>
 

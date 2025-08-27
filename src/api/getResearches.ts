@@ -26,7 +26,9 @@ export default async function handler(_: VercelRequest, res: VercelResponse) {
       image: page.properties?.img?.files?.[0]?.file?.url || '',
       publication: page.properties?.publication?.rich_text?.[0]?.plain_text || '',
       status: page.properties?.status?.select?.name || 'Unknown',
+      keywords: page.properties?.keywords?.rich_text?.[0]?.plain_text || '', // <-- add this
     }));
+
 
     cache = data;
     lastFetch = now;
