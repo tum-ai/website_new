@@ -2,6 +2,8 @@ import Grid from "@/components/home/Grid";
 import { Hero } from "../components/ui/hero";
 import { AboutSection } from "@/components/home/AboutSection";
 import { PartnersSection } from "@/components/home/PartnersSection";
+import Carousel from "@/components/home/Carousel";
+import ScrollSection from "@/components/home/ScrollSection";
 
 export default function Header() {
   return (
@@ -14,6 +16,8 @@ export default function Header() {
       </div>
       <AboutSection />
       <PartnersSection />
+      <Carousel />
+      <ScrollSection />
     </div>
   );
 }
