@@ -58,6 +58,12 @@ export const values = [
 // stories shortened, can original version commented out
 export const stories = [
   {
+    name: "Jasmin El-Wafi",
+    role: "Mathematics in Data Science, TUM",
+    story: "I lead the SDE team at TUM.ai, where we rebuilt this website for easier maintenance and developed an internal IT tool to automate processes and support data-driven recruiting and team building. I joined to work on ML research, contributed to a NeurIPS-published project with the MIT, and stayed for TUM.ai’s ambition, intelligence, and collaborative spirit.",
+    image: "/assets/apply/jasmin_el-wafi.jpg"
+  },
+  {
     name: "Xabier Irizar",
     role: "Robotics, Cognition and Intelligence, TUM",
     story:
