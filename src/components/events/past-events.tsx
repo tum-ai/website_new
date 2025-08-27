@@ -1,4 +1,11 @@
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 import type { Event } from "@/lib/types";
 import { format } from "date-fns";
 
@@ -12,7 +19,7 @@ export default function PastEvents({ events }: { events: Event[] }) {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div className="flex flex-col gap-4">
       {events.map((event) => (
         <PastEventCard key={event.id} event={event} />
       ))}
@@ -24,31 +31,51 @@ function PastEventCard({ event }: { event: Event }) {
   const eventDate = new Date(event.event_date);
 
   return (
-    <Card className="relative overflow-hidden h-full flex flex-col hover:shadow-md transition-shadow bg-transparent">
-      {event.category && (
-        <span className="absolute top-3 left-3 z-10 inline-block px-2 py-1 text-xs font-medium bg-purple-500/20 rounded-full">
-          {event.category}
-        </span>
-      )}
-      <div className=" w-full">
-        {/* Category Badge on top-left of image */}
-        <img
-          src={event.image || "../../../public/assets/home_img1.jpg"}
-          alt={event.title}
-          className="object-cover"
-        />
+    <Card className="flex flex-row h-80"> {/* Increased height for more text space */}
+      <div className="relative w-80 h-80 group"> {/* Added group for hover effects */}
+        <Carousel className="w-full h-full">
+          <CarouselContent className="h-full">
+            {event.images.map((_, index) => (
+              <CarouselItem key={index} className="h-full">
+                <div className="h-full p-1">
+                  <div className="aspect-square w-full relative overflow-hidden rounded-lg">
+                    <img
+                      src={event.images[index]}
+                      alt={`${event.title} Image ${index + 1}`}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          {/* Overlay buttons - only visible on hover */}
+          <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out" />
+          <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out" />
+        </Carousel>
       </div>
-      <CardContent className="">
-        <h4 className="text-xl font-semibold mb-3 line-clamp-2 text-white">
-          {event.title}
-        </h4>
-        <p className="text-muted-foreground text-sm line-clamp-4 leading-relaxed">
-          {event.description}
-        </p>
-      </CardContent>
-      <CardFooter className="text-sm text-muted-foreground pt-0">
-        {format(eventDate, "MMMM d, yyyy")}
-      </CardFooter>
+
+      <div className="flex flex-col justify-normal flex-1 min-w-0 py-2">
+
+        <CardHeader className="pb-0">
+          <CardTitle className="text-purple-800 text-lg">
+            {format(eventDate, "PPP")}
+          </CardTitle>
+          <CardTitle className="text-xl">
+            {event.title}
+          </CardTitle>
+          <CardDescription className="text-sm text-muted-foreground">
+            {event.location ? `${event.location}` : ""}
+            {event.city ? `, ${event.city}` : ""}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm">
+            {event.description}
+          </p>
+        </CardContent>
+
+      </div>
     </Card>
   );
 }
