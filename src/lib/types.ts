@@ -23,7 +23,7 @@ export interface Research {
   image?: string;
   publication?: string;
   status?: string;
-  keywords?: string[];
+  keywords?: string;
 }
 
 export interface NotionPage {
@@ -51,10 +51,11 @@ export interface NotionPage {
       select?: { name?: string };
     };
     URL?: {
-      url?: string };
-    };
-    Keywords?: {            // <-- string property
-      rich_text?: [{ plain_text?: string }];
+      url?: string;
     };
   };
-
+  Keywords?: {
+    // <-- string property
+    rich_text?: [{ plain_text?: string }];
+  };
+}
