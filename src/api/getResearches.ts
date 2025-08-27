@@ -21,14 +21,14 @@ export default async function handler(_: VercelRequest, res: VercelResponse) {
 
     const data = response.results.map((page: any) => ({
       id: page.id,
-      title: page.properties?.title?.title?.[0]?.plain_text || 'Untitled',
-      description: page.properties?.desc?.rich_text?.[0]?.plain_text || '',
-      image: page.properties?.img?.files?.[0]?.file?.url || '',
-      publication: page.properties?.publication?.rich_text?.[0]?.plain_text || '',
-      status: page.properties?.status?.select?.name || 'Unknown',
-      keywords: page.properties?.keywords?.rich_text?.[0]?.plain_text || '', // <-- add this
+      title: page.properties?.title?.title?.[0]?.plain_text || "Untitled",
+      description: page.properties?.desc?.rich_text?.[0]?.plain_text || "",
+      image: page.properties?.img?.files?.[0]?.file?.url || "",
+      publication:
+        page.properties?.publication?.rich_text?.[0]?.plain_text || "",
+      status: page.properties?.status?.select?.name || "Unknown",
+      keywords: page.properties?.keywords?.rich_text?.[0]?.plain_text || "", // <-- add this
     }));
-
 
     cache = data;
     lastFetch = now;

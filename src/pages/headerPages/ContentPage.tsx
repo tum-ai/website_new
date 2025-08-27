@@ -1,7 +1,7 @@
-// components/ContentPage.tsx
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Logos from "@/components/Logos";
 import { Separator } from "@/components/ui/separator";
+// components/ContentPage.tsx
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface ContentPageProps<T> {
   title: string;

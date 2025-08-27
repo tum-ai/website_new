@@ -40,18 +40,19 @@ export const ForCompaniesSection = () => {
 
               <div className="space-y-6">
                 <p className="text-xl font-medium text-white">
-                 
-                  Access pre-selected top AI talent, from ML Engineers to AI Strategists.
+                  Access pre-selected top AI talent, from ML Engineers to AI
+                  Strategists.
                 </p>
 
                 <p className="text-xl font-medium text-white">
-                  Partner with TUM.ai — host workshops, speak at events, or set Hackathon challenges.
+                  Partner with TUM.ai — host workshops, speak at events, or set
+                  Hackathon challenges.
                 </p>
 
                 <p className="text-xl font-medium text-white">
-                  Let student teams tackle your real-world AI projects affordably and effectively.
+                  Let student teams tackle your real-world AI projects
+                  affordably and effectively.
                 </p>
-
 
                 <div className="mt-10 flex flex-col gap-4 sm:flex-row">
                   <Button asChild variant="primary">

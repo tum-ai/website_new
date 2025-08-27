@@ -1,4 +1,10 @@
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "../ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
 
 type ResearchCardProps = {
   title: string;
@@ -21,13 +27,8 @@ export default function ResearchCard({
         <CardTitle className="text-xl font-semibold text-white line-clamp-3">
           {title}
         </CardTitle>
-        {keywords && (
-          <p className="text-sm text-purple-300 ">
-            {keywords}
-          </p>
-        )}
+        {keywords && <p className="text-sm text-purple-300 ">{keywords}</p>}
       </CardHeader>
-
 
       <CardContent className="flex flex-col flex-1 gap-4">
         {image && (
