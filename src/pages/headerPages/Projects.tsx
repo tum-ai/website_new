@@ -1,5 +1,5 @@
-import { ContentPage } from "@/pages/headerPages/ContentPage";
 import { ProjectCard } from "@/components/innovation/InnovationProjectCard";
+import { ContentPage } from "@/pages/headerPages/ContentPage";
 
 const departments = [
   {
@@ -12,7 +12,12 @@ const departments = [
     members: 8,
     established: "2022",
     location: "Hybrid",
-    projects: ["Neural Architecture Search", "Federated Learning", "Explainable AI", "Quantum ML"],
+    projects: [
+      "Neural Architecture Search",
+      "Federated Learning",
+      "Explainable AI",
+      "Quantum ML",
+    ],
     contact: "medai@tum.ai",
     website: "https://medai.tum.ai",
   },
@@ -26,7 +31,12 @@ const departments = [
     members: 4,
     established: "2023",
     location: "Munich",
-    projects: ["AI Bootcamp", "Online Courses", "School Outreach", "Certification Programs"],
+    projects: [
+      "AI Bootcamp",
+      "Online Courses",
+      "School Outreach",
+      "Certification Programs",
+    ],
     contact: "robotics@tum.ai",
     website: "https://robotics.tum.ai",
   },
@@ -40,7 +50,12 @@ const departments = [
     members: 8,
     established: "2024",
     location: "Hybrid",
-    projects: ["Smart Manufacturing", "Predictive Maintenance", "Supply Chain Optimization", "Digital Twins"],
+    projects: [
+      "Smart Manufacturing",
+      "Predictive Maintenance",
+      "Supply Chain Optimization",
+      "Digital Twins",
+    ],
     contact: "quantfinance@tum.ai",
     website: "https://quantfinance.tum.ai",
   },
@@ -54,7 +69,12 @@ const departments = [
     members: 2,
     established: "2024",
     location: "Munich",
-    projects: ["AI Governance Framework", "Bias Detection Tools", "Privacy-Preserving AI", "Algorithmic Auditing"],
+    projects: [
+      "AI Governance Framework",
+      "Bias Detection Tools",
+      "Privacy-Preserving AI",
+      "Algorithmic Auditing",
+    ],
     contact: "accelerated@tum.ai",
     website: "https://accelerated.tum.ai",
   },

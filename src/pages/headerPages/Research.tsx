@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
 import ResearchCard from "@/components/research/ResearchCard";
-import { ContentPage } from "@/pages/headerPages/ContentPage";
 import { project_partners } from "@/data/partners";
 import type { Research } from "@/lib/types";
+import { ContentPage } from "@/pages/headerPages/ContentPage";
+import { useEffect, useState } from "react";
 
 export default function Research() {
   const [projects, setProjects] = useState<Research[]>([]);
@@ -86,7 +86,7 @@ export default function Research() {
       value: "exchange",
       label: "Research Exchange (REX) Program",
       content: (
-          <div className="max-w-4xl mx-auto space-y-6">
+        <div className="max-w-4xl mx-auto space-y-6">
           <h2 className="text-3xl font-bold tracking-tight text-purple-300">
             Research Exchange (REX) Program
           </h2>
@@ -94,7 +94,8 @@ export default function Research() {
           <p className="text-lg leading-relaxed">
             Our Research Exchange (REX) Program provides TUM.ai members with
             opportunities to conduct research abroad. Offers range from final
-            theses to research internships with leading labs at institutions like
+            theses to research internships with leading labs at institutions
+            like
             <span className="font-semibold"> Harvard, MIT, Cambridge,</span> or{" "}
             <span className="font-semibold">INRIA</span>.
           </p>
@@ -109,13 +110,12 @@ export default function Research() {
 
           <p className="text-lg leading-relaxed">
             REX was launched based on the observation that members were already
-            conducting research abroad and recommending others to follow in their
-            footsteps. It is therefore a testament to our tight-knit community
-            that we could build a network of great researchers who eagerly
-            introduce our members to their respective fields and trust TUM.ai to
-            provide curious minds.
+            conducting research abroad and recommending others to follow in
+            their footsteps. It is therefore a testament to our tight-knit
+            community that we could build a network of great researchers who
+            eagerly introduce our members to their respective fields and trust
+            TUM.ai to provide curious minds.
           </p>
-        
         </div>
       ),
     },

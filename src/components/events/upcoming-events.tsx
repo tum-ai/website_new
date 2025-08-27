@@ -66,7 +66,6 @@ function UpcomingEventCard({ event }: { event: Event }) {
               {format(eventDate, "h:mm a")}
             </span>
           )}
-
         </div>
       </div>
 

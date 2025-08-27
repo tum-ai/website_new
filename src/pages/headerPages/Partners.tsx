@@ -18,29 +18,28 @@ export const metadata = {
 };
 
 export default function Partners() {
-const benefits = [
-  {
-    title: "AI Talent Pool",
-    text: "Connect with motivated AI students for internships or working roles.",
-    icon: Heart,
-  },
-  {
-    title: "Marketing & Awareness",
-    text: "Boost your brand through our website and campaigns (14k+ followers).",
-    icon: Megaphone,
-  },
-  {
-    title: "Project Collaborations",
-    text: "Join Hackathons, research, or industry projects with our members.",
-    icon: Handshake,
-  },
-  {
-    title: "Network & Ecosystem",
-    text: "Tap into AI startups, R&D insights, and Germany's leading AI student community.",
-    icon: Users,
-  },
-];
-
+  const benefits = [
+    {
+      title: "AI Talent Pool",
+      text: "Connect with motivated AI students for internships or working roles.",
+      icon: Heart,
+    },
+    {
+      title: "Marketing & Awareness",
+      text: "Boost your brand through our website and campaigns (14k+ followers).",
+      icon: Megaphone,
+    },
+    {
+      title: "Project Collaborations",
+      text: "Join Hackathons, research, or industry projects with our members.",
+      icon: Handshake,
+    },
+    {
+      title: "Network & Ecosystem",
+      text: "Tap into AI startups, R&D insights, and Germany's leading AI student community.",
+      icon: Users,
+    },
+  ];
 
   return (
     <>

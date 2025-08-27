@@ -1,23 +1,35 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 // import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card"
-import { ExternalLink, Users, Calendar, MapPin, X } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Calendar, ExternalLink, MapPin, Users, X } from "lucide-react";
+import { useState } from "react";
 
 interface ProjectCardProps {
-  name: string
-  description: string
-  image: string
-  detailedDescription: string
-  members: number
-  established: string
-  location: string
-  projects: string[]
-  contact: string
-  website?: string
+  name: string;
+  description: string;
+  image: string;
+  detailedDescription: string;
+  members: number;
+  established: string;
+  location: string;
+  projects: string[];
+  contact: string;
+  website?: string;
 }
 
 export function ProjectCard({
@@ -32,7 +44,7 @@ export function ProjectCard({
   contact,
   website,
 }: ProjectCardProps) {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -50,7 +62,9 @@ export function ProjectCard({
 
           {/* Content */}
           <CardContent className="relative z-10 p-6 text-white">
-            <CardTitle className="text-2xl font-bold mb-2 leading-tight drop-shadow-lg">{name}</CardTitle>
+            <CardTitle className="text-2xl font-bold mb-2 leading-tight drop-shadow-lg">
+              {name}
+            </CardTitle>
             <CardDescription className="text-sm opacity-95 leading-relaxed line-clamp-3 text-gray-200 drop-shadow-md">
               {description}
             </CardDescription>
@@ -58,7 +72,10 @@ export function ProjectCard({
         </Card>
       </DialogTrigger>
 
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto " showCloseButton={false}>
+      <DialogContent
+        className="max-w-2xl max-h-[80vh] overflow-y-auto "
+        showCloseButton={false}
+      >
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-foreground flex items-center gap-3">
             {name}
@@ -69,7 +86,9 @@ export function ProjectCard({
           {/* Detailed Description */}
           <div>
             <h4 className="text-lg font-semibold mb-2">About</h4>
-            <p className="text-muted-foreground leading-relaxed">{detailedDescription}</p>
+            <p className="text-muted-foreground leading-relaxed">
+              {detailedDescription}
+            </p>
           </div>
 
           {/* Department Stats */}
@@ -120,7 +139,11 @@ export function ProjectCard({
               </div>
 
               {website && (
-                <Button variant="outline" className="flex items-center gap-2 bg-transparent" asChild>
+                <Button
+                  variant="outline"
+                  className="flex items-center gap-2 bg-transparent"
+                  asChild
+                >
                   <a href={website} target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="w-4 h-4" />
                     Visit Website
@@ -132,5 +155,5 @@ export function ProjectCard({
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
