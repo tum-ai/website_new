@@ -84,10 +84,38 @@ export default function Research() {
     },
     {
       value: "exchange",
-      label: "REX Program",
+      label: "Research Exchange (REX) Program",
       content: (
-        <div className="text-white text-lg">
-          {/* REX Program content */}
+          <div className="max-w-4xl mx-auto space-y-6">
+          <h2 className="text-3xl font-bold tracking-tight text-purple-300">
+            Research Exchange (REX) Program
+          </h2>
+
+          <p className="text-lg leading-relaxed">
+            Our Research Exchange (REX) Program provides TUM.ai members with
+            opportunities to conduct research abroad. Offers range from final
+            theses to research internships with leading labs at institutions like
+            <span className="font-semibold"> Harvard, MIT, Cambridge,</span> or{" "}
+            <span className="font-semibold">INRIA</span>.
+          </p>
+
+          <p className="text-lg leading-relaxed">
+            We collect project proposals from our partners, inform members about
+            the requirements and usual processes, preselect applicants based on
+            prior relevant (research) experience, recommend them to our partner
+            labs, and eventually support their journey abroad with alumni
+            experience in visa processes, housing, etc.
+          </p>
+
+          <p className="text-lg leading-relaxed">
+            REX was launched based on the observation that members were already
+            conducting research abroad and recommending others to follow in their
+            footsteps. It is therefore a testament to our tight-knit community
+            that we could build a network of great researchers who eagerly
+            introduce our members to their respective fields and trust TUM.ai to
+            provide curious minds.
+          </p>
+        
         </div>
       ),
     },
