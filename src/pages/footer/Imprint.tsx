@@ -1,4 +1,3 @@
-import Section from "@/components/ui/Section";
 import { bitter } from "@/styles/fonts";
 import { cx } from "class-variance-authority";
 
