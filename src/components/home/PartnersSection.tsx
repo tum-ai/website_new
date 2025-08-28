@@ -1,7 +1,4 @@
-import {
-  initiatives_collabrated_with,
-  // partners_collabrated_with,
-} from "@/data/partners";
+import { initiativePartners } from "@/data/partners";
 import { useEffect, useState } from "react";
 
 type PartnersData = {
@@ -88,7 +85,7 @@ export const InitiativePartnersSection = () => {
           </h2>
 
           <div className="grid grid-cols-2 items-center justify-items-center gap-8 md:grid-cols-4 lg:grid-cols-6">
-            {initiatives_collabrated_with.map((initiative, index) => (
+            {initiativePartners.map((initiative, index) => (
               <div
                 key={index}
                 className="flex transform items-center justify-center p-4 grayscale transition-all duration-300 hover:scale-105 hover:grayscale-0"

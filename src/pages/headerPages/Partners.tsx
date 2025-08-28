@@ -2,11 +2,13 @@ import Benefits from "@/components/Benefit";
 import Logos from "@/components/Logos";
 import { Button } from "@/components/ui/button";
 import {
-  enablers_supporters,
-  project_partners,
-  strategic_partnerts,
+  industryPartners,
+  initiativePartners,
+  longtermPartners,
+  researchPartners,
+  technicalPartners,
+  VCPartners,
 } from "@/data/partners";
-import { scrollToSection } from "@/lib/utils";
 import { bitter } from "@/styles/fonts";
 import { cx } from "class-variance-authority";
 import { Handshake, Heart, Megaphone, Users } from "lucide-react";
@@ -87,23 +89,48 @@ export default function Partners() {
             className="mb-8 text-3xl font-semibold"
             style={{ fontFamily: bitter }}
           >
-            Strategic Partners
+            Long-Term Partnerships
           </h2>
-          <Logos logos={strategic_partnerts} />
+          <Logos logos={longtermPartners} />
+
           <h2
-            className="mt-32 mb-8 text-3xl font-semibold"
+            className="mb-8 text-3xl font-semibold"
             style={{ fontFamily: bitter }}
           >
-            Enablers and Supporters
+            Technical Partners
           </h2>
-          <Logos logos={enablers_supporters} />
+          <Logos logos={technicalPartners} />
+
           <h2
-            className="mt-32 mb-8 text-3xl font-semibold"
+            className="mb-8 text-3xl font-semibold"
             style={{ fontFamily: bitter }}
           >
-            Project Partners
+            Industry Partners
           </h2>
-          <Logos logos={project_partners} />
+          <Logos logos={industryPartners} />
+
+          <h2
+            className="mb-8 text-3xl font-semibold"
+            style={{ fontFamily: bitter }}
+          >
+            Research Partners
+          </h2>
+          <Logos logos={researchPartners} />
+
+          <h2
+            className="mb-8 text-3xl font-semibold"
+            style={{ fontFamily: bitter }}
+          >
+            Venture Capital
+          </h2>
+          <Logos logos={VCPartners} />
+          <h2
+            className="mb-8 text-3xl font-semibold"
+            style={{ fontFamily: bitter }}
+          >
+            Initiatives
+          </h2>
+          <Logos logos={initiativePartners} />
         </div>
       </section>
 

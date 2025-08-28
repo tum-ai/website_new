@@ -1,6 +1,146 @@
 import { partners_ip4, partners_ip5 } from "./industry";
+export const longtermPartners = [
+  {
+    href: "https://quantco.com/",
+    src: "/assets/partners_sponsors/quantco_logo.png",
+    alt: "QuantCo",
+  },
+  // anthropic, pwc
+];
 
-export const partners_collabrated_with = [
+export const technicalPartners = [
+  {
+    href: "https://about.google/",
+    src: "/assets/partners_sponsors/google_logo.png",
+    alt: "Google",
+  },
+  {
+    href: "https://www.ibm.com/de-de",
+    src: "/assets/partners_sponsors/ibm_logo.png",
+    alt: "IBM",
+  },
+  {
+    href: "https://www.nvidia.com",
+    src: "/assets/partners/strategic_partners/Nvidia_(logo).svg.png",
+    alt: "nvidia",
+    width: 130,
+  },
+  {
+    href: "https://www.microsoft.com/de-de/about",
+    src: "/assets/partners_sponsors/Microsoft_Logo.png",
+    alt: "Microsoft",
+  },
+  {
+    href: "https://openai.com/",
+    src: "/assets/partners_sponsors/openai_logo.png",
+    alt: "OpenAI",
+  },
+  // aws, google x, hugging face, lovable, vercel, n8n, elevenlabs, beyond presence, co-browser
+];
+
+export const industryPartners = [
+  {
+    href: "https://www.janestreet.com",
+    src: "/assets/partners/enablers_and_supporters/120px-Jane_Street_Capital_Logo.svg.png",
+    alt: "janestreet",
+  },
+  {
+    href: "https://www.bmw.com",
+    src: "/assets/partners/project_partners/bmw-7.svg",
+    alt: "BMW",
+    width: 100,
+  },
+  {
+    href: "https://www.siemens.com/de/de.html",
+    src: "/assets/partners_sponsors/siemens-logo-default.svg",
+    alt: "Siemens",
+  },
+  {
+    href: "https://www.aleph-alpha.com/",
+    src: "/assets/partners_sponsors/alephalpha.png",
+    alt: "Aleph Alpha",
+  },
+  {
+    href: "https://www.appliedai.de/de/",
+    src: "/assets/partners_sponsors/appliedai_logo.png",
+    alt: "Applied AI",
+  },
+  {
+    href: "https://unite.eu/de-de",
+    src: "/assets/partners_sponsors/Unite_logo.png",
+    alt: "Unite",
+  },
+  {
+    href: "https://www.rohde-schwarz.com/de",
+    src: "/assets/industry/partners/IP4/RandS.svg.png",
+    alt: "Rohde-Schwarz",
+  },
+  {
+    href: "https://www.infineon.com/cms/de/",
+    src: "/assets/industry/partners/IP4/infineon_logo.png",
+    alt: "infineon",
+  },
+  {
+    href: "https://www.heimkapital.de/",
+    src: "/assets/industry/project_cards/heimkapital_resized.jpg",
+    alt: "Heimkapital",
+  },
+  {
+    href: "https://www.stmd.bayern.de",
+    src: "/assets/partners/enablers_and_supporters/StMD_logo_grey.svg",
+    alt: "ministry_for_digital_affairs",
+  },
+  {
+    href: "https://www.recogni.com",
+    src: "/assets/industry/partners/IP5/Recogni_Logo.jpg.webp",
+    alt: "Recogni",
+  },
+  {
+    href: "https://www.cdtm.de/",
+    src: "/assets/partners_sponsors/cdtm_logo.png",
+    alt: "CDTM",
+  },
+  {
+    href: "https://www.unternehmertum.de/",
+    src: "/assets/partners_sponsors/UnternehmerTUM.webp",
+    alt: "UnternehmerTUM",
+  },
+  // bkw, check24, auswärtiges amt, netlight, itcs, stanfordtum venture labs
+];
+
+export const researchPartners = [
+  {
+    href: "https://www.ibm.com/de-de",
+    src: "/assets/partners_sponsors/ibm_logo.png",
+    alt: "IBM",
+  },
+  {
+    href: "https://www.mri.tum.de/",
+    src: "/assets/partners_sponsors/Klinikum_rechts_der_Isar_logo.svg",
+    alt: "Klinikum Rechts der Isar",
+  },
+  // MIT, LMU, flowerlabs, MI4people, helmholtz
+];
+
+export const VCPartners = [
+  {
+    src: "/assets/e-lab/partners/uvc_b.png",
+    alt: "UVC Partners",
+    href: "https://www.uvcpartners.com/",
+  },
+  {
+    href: "https://www.speedinvest.com/",
+    src: "/assets/partners_sponsors/speedinvest.png",
+    alt: "Speedinvest",
+  },
+  {
+    href: "https://www.10xfounders.com/",
+    src: "/assets/partners_sponsors/10xfounderslogo.png",
+    alt: "10x Founders",
+  },
+  // Project A, EWOR,
+];
+const partners_collabrated_with = [
   {
     href: "https://unite.eu/de-de",
     src: "/assets/partners_sponsors/Unite_logo.png",
@@ -133,7 +273,7 @@ export const partners_collabrated_with = [
   },
 ];
 
-export const initiatives_collabrated_with = [
+export const initiativePartners = [
   {
     href: "https://www.cdtm.de/",
     src: "/assets/partners_sponsors/cdtm_logo.png",
@@ -186,7 +326,7 @@ export const initiatives_collabrated_with = [
   },
 ];
 
-export const strategic_partnerts = [
+const strategic_partnerts = [
   {
     href: "https://www.nvidia.com",
     src: "/assets/partners/strategic_partners/Nvidia_(logo).svg.png",
@@ -210,7 +350,7 @@ export const strategic_partnerts = [
   },
 ];
 
-export const enablers_supporters = [
+const enablers_supporters = [
   {
     href: "https://www.janestreet.com",
     src: "/assets/partners/enablers_and_supporters/120px-Jane_Street_Capital_Logo.svg.png",
@@ -280,7 +420,7 @@ export const enablers_supporters = [
   },
 ];
 
-export const project_partners = [
+const project_partners = [
   {
     href: "https://www.esa.int",
     src: "/assets/partners/project_partners/1ESA_logo.svg.png",

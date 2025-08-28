@@ -1,5 +1,5 @@
 import ResearchCard from "@/components/research/ResearchCard";
-import { project_partners } from "@/data/partners";
+import { researchPartners } from "@/data/partners";
 import type { Research } from "@/lib/types";
 import { ContentPage } from "@/pages/headerPages/ContentPage";
 import { useEffect, useState } from "react";
@@ -126,7 +126,7 @@ export default function Research() {
       title="Research"
       description="Our research offerings - from projects to exchange programs..."
       tabs={tabs}
-      collaborators={{ logos: project_partners }}
+      collaborators={{ logos: researchPartners }}
     />
   );
 }
