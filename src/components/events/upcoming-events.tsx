@@ -23,13 +23,20 @@ export default function UpcomingEvents({ events }: { events: Event[] }) {
   }
 
   return (
-    <div className="space-y-16">
+    <div className="space-y-16 max-w-full">
       {Object.entries(groupedEvents).map(([month, monthEvents]) => (
         <div key={month} className="space-y-8">
           <h3 className="text-2xl font-semibold text-purple-500">{month}</h3>
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+          <div className="flex flex-wrap mx-[-0.75rem]">
             {monthEvents.map((event) => (
-              <UpcomingEventCard key={event.id} event={event} />
+              <div 
+                key={event.id} 
+                className="w-full px-3 pb-6 
+                          lg:w-[calc(50%-1.5rem)] 
+                          xl:w-[calc(33.333%-1.5rem)]"
+              >
+                <UpcomingEventCard event={event} />
+              </div>
             ))}
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
   Carousel,
   CarouselContent,
@@ -31,8 +31,8 @@ function PastEventCard({ event }: { event: Event }) {
   const eventDate = new Date(event.event_date);
 
   return (
-    <Card className="flex flex-row h-80"> {/* Increased height for more text space */}
-      <div className="relative w-80 h-80 group"> {/* Added group for hover effects */}
+    <Card className="flex flex-col md:flex-row w-full overflow-hidden">
+      <div className="relative w-full aspect-square md:w-[calc(33%-1rem)] md:max-w-[320px] group mb-3 md:mb-0 flex-shrink-0">
         <Carousel className="w-full h-full">
           <CarouselContent className="h-full">
             {event.images.map((_, index) => (
@@ -49,32 +49,29 @@ function PastEventCard({ event }: { event: Event }) {
               </CarouselItem>
             ))}
           </CarouselContent>
-          {/* Overlay buttons - only visible on hover */}
           <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out" />
           <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out" />
         </Carousel>
       </div>
 
-      <div className="flex flex-col justify-normal flex-1 min-w-0 py-2">
-
-        <CardHeader className="pb-0">
+      <div className="flex flex-col justify-normal flex-1 min-w-0 p-4 md:pl-6">
+        <CardHeader className="pb-0 px-0">
           <CardTitle className="text-purple-800 text-lg">
             {format(eventDate, "PPP")}
           </CardTitle>
           <CardTitle className="text-xl">
             {event.title}
           </CardTitle>
-          <CardDescription className="text-sm text-muted-foreground">
+          <CardDescription className="text-sm text-muted-foreground pb-2">
             {event.location ? `${event.location}` : ""}
             {event.city ? `, ${event.city}` : ""}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-0">
           <p className="text-sm">
             {event.description}
           </p>
         </CardContent>
-
       </div>
     </Card>
   );
