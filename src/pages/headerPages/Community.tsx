@@ -65,7 +65,9 @@ export default function Community() {
         <JourneySection />
       </Section>
       <DepartmentsSection />
-      <MemberStories stories={stories} />
+      <section id="memberStories">
+        <MemberStories stories={stories} />
+      </section>
     </>
   );
 }
