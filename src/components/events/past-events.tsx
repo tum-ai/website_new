@@ -35,19 +35,37 @@ function PastEventCard({ event }: { event: Event }) {
       <div className="relative w-full aspect-square md:w-[calc(33%-1rem)] md:max-w-[320px] group mb-3 md:mb-0 flex-shrink-0">
         <Carousel className="w-full h-full">
           <CarouselContent className="h-full">
-            {event.images?.map((_, index) => (
-              <CarouselItem key={index} className="h-full">
+            {event.images && event.images.length > 0 ? (
+              event.images.map((image, index) => (
+                <CarouselItem key={index} className="h-full">
+                  <div className="h-full p-1">
+                    <div className="aspect-square w-full relative overflow-hidden rounded-lg">
+                      <img
+                        src={image}
+                        alt={`${event.title} Image ${index + 1}`}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  </div>
+                </CarouselItem>
+              ))
+            ) : (
+              <CarouselItem className="h-full">
                 <div className="h-full p-1">
-                  <div className="aspect-square w-full relative overflow-hidden rounded-lg">
+                  <div className="aspect-square w-full relative overflow-hidden rounded-lg bg-accent-foreground flex items-center justify-center">
                     <img
-                      src={event.images ? event.images[index] : ""}
-                      alt={`${event.title} Image ${index + 1}`}
-                      className="h-full w-full object-cover"
+                      src="/assets/logo_new_white_standard.png"
+                      alt="Placeholder"
+                      className="h-3/4 w-3/4 object-contain opacity-50"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='3' rx='2' ry='2'/%3E%3Ccircle cx='9' cy='9' r='2'/%3E%3Cpath d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'/%3E%3C/svg%3E";
+                      }}
                     />
                   </div>
                 </div>
               </CarouselItem>
-            ))}
+            )}
           </CarouselContent>
           <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out" />
           <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out" />
