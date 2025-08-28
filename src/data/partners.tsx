@@ -1,11 +1,20 @@
 import { partners_ip4, partners_ip5 } from "./industry";
 export const longtermPartners = [
   {
+    href: "https://www.anthropic.com/",
+    src: "/assets/partners_sponsors/anthropic_logo.svg.png",
+    alt: "Anthropic",
+  },
+  {
     href: "https://quantco.com/",
     src: "/assets/partners_sponsors/quantco_logo.png",
     alt: "QuantCo",
   },
-  // anthropic, pwc
+  {
+    href: "https://pwc.com/",
+    src: "public/assets/partners_sponsors/PwC_2025_Logo.svg.png",
+    alt: "PwC",
+  },
 ];
 
 export const technicalPartners = [
@@ -105,7 +114,37 @@ export const industryPartners = [
     src: "/assets/partners_sponsors/UnternehmerTUM.webp",
     alt: "UnternehmerTUM",
   },
-  // bkw, check24, auswärtiges amt, netlight, itcs, stanfordtum venture labs
+  {
+    href: "https://www.bkw.de/de",
+    src: "/assets/partners_sponsors/bkw.png",
+    alt: "bkw",
+  },
+  {
+    href: "https://www.check24.de",
+    src: "/assets/partners_sponsors/check24.png",
+    alt: "check24",
+  },
+  {
+    // TODO: fix logo size
+    href: "https://www.auswaertiges-amt.de",
+    src: "/assets/partners_sponsors/auswaertiges-amt.png",
+    alt: "auswaertiges-amt",
+  },
+  {
+    href: "https://www.netlight.com",
+    src: "/assets/partners_sponsors/netlight.png",
+    alt: "netlight",
+  },
+  {
+    href: "https://it-cs.io/",
+    src: "/assets/partners_sponsors/itcs.png",
+    alt: "itcs",
+  },
+  {
+    href: "https://www.tum-venture-labs.de",
+    src: "/assets/partners/strategic_partners/TUMVentureLabs.jpg",
+    alt: "TumVentureLabs",
+  },
 ];
 
 export const researchPartners = [
@@ -119,7 +158,31 @@ export const researchPartners = [
     src: "/assets/partners_sponsors/Klinikum_rechts_der_Isar_logo.svg",
     alt: "Klinikum Rechts der Isar",
   },
-  // MIT, LMU, flowerlabs, MI4people, helmholtz
+  {
+    href: "https://www.mit.edu/",
+    src: "/assets/partners_sponsors/mit.png",
+    alt: "MIT",
+  },
+  {
+    href: "https://www.lmu.de/",
+    src: "/assets/partners_sponsors/LMU_Muenchen_Logo.svg.png",
+    alt: "LMU",
+  },
+  {
+    href: "https://flower.ai/",
+    src: "/assets/partners_sponsors/flowerlabs.png",
+    alt: "flowerlabs",
+  },
+  {
+    href: "https://de.mi4people.org/",
+    src: "/assets/partners_sponsors/MI4People.png",
+    alt: "MI4People",
+  },
+  {
+    href: "https://www.helmholtz.de/",
+    src: "/assets/partners_sponsors/helmholtz.png",
+    alt: "Helmholtz",
+  },
 ];
 
 export const VCPartners = [
@@ -138,7 +201,16 @@ export const VCPartners = [
     src: "/assets/partners_sponsors/10xfounderslogo.png",
     alt: "10x Founders",
   },
-  // Project A, EWOR,
+  {
+    href: "https://www.project-a.vc/",
+    src: "/assets/partners_sponsors/project-a.png",
+    alt: "Project-A",
+  },
+  {
+    href: "https://www.ewor.com/",
+    src: "/assets/partners_sponsors/ewor.png",
+    alt: "EWOR",
+  },
 ];
 const partners_collabrated_with = [
   {

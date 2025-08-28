@@ -60,14 +60,16 @@ export const stories = [
   {
     name: "Jasmin El-Wafi",
     role: "Mathematics in Data Science, TUM",
-    story: "TUM.ai has enabled me to grow from ML research with the MIT to leading the SDE team. I rebuilt this website for minimal maintenance and developed tools to automize and optimize internal processes. Being part of such an ambitious and intelligent community inspires learning, aiming high, and building lasting friendships.",
+    story:
+      "TUM.ai has enabled me to grow from ML research with the MIT to leading the SDE team. I rebuilt this website for minimal maintenance and developed tools to automize and optimize internal processes. Being part of such an ambitious and intelligent community inspires learning, aiming high, and building lasting friendships.",
     image: "/assets/apply/jasmin_el-wafi.jpg",
   },
   {
     name: "Sami Haddouti",
     role: "Robotics, Cognition and Intelligence, TUM",
-    story: "TUM.ai has enabled me to evolve from conducting applied AI research in collaboration with MIT to negotiating partnership contracts with leading AI companies. The breadth of responsibilities and leadership opportunities here is truly unmatched.",
-    image: "/assets/apply/sami_haddouti.jpg"
+    story:
+      "TUM.ai has enabled me to evolve from conducting applied AI research in collaboration with MIT to negotiating partnership contracts with leading AI companies. The breadth of responsibilities and leadership opportunities here is truly unmatched.",
+    image: "/assets/apply/sami_haddouti.jpg",
   },
   {
     name: "Xabier Irizar",
@@ -100,8 +102,7 @@ export const stories = [
       "image": "/assets/simon_huang.jpeg",
     },
     */
-  
-  
+
   {
     name: "Marco Lorenz",
     role: "Robotics, Cognition and Intelligence, TUM",
