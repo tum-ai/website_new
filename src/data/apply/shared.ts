@@ -60,8 +60,14 @@ export const stories = [
   {
     name: "Jasmin El-Wafi",
     role: "Mathematics in Data Science, TUM",
-    story: "I lead the SDE team at TUM.ai, where we rebuilt this website for easier maintenance and developed an internal IT tool to automate processes and support data-driven recruiting and team building. I joined to work on ML research, contributed to a NeurIPS-published project with the MIT, and stayed for TUM.ai’s ambition, intelligence, and collaborative spirit.",
-    image: "/assets/apply/jasmin_el-wafi.jpg"
+    story: "TUM.ai has enabled me to grow from ML research with the MIT to leading the SDE team. I rebuilt this website for minimal maintenance and developed tools to automize and optimize internal processes. Along the way, I learned and took initiative alongside ambitious, intelligent peers.",
+    image: "/assets/apply/jasmin_el-wafi.jpg",
+  },
+  {
+    name: "Sami Haddouti",
+    role: "Robotics, Cognition and Intelligence, TUM",
+    story: "TUM.ai has enabled me to evolve from conducting applied AI research in collaboration with MIT to negotiating partnership contracts with leading AI companies. The breadth of responsibilities and leadership opportunities here is truly unmatched.",
+    image: "/assets/apply/sami_haddouti.jpg"
   },
   {
     name: "Xabier Irizar",
