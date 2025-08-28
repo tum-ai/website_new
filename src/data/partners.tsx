@@ -5,11 +5,11 @@ export const longtermPartners = [
     src: "/assets/partners_sponsors/anthropic_logo.svg.png",
     alt: "Anthropic",
   },
-  {
+  /* {
     href: "https://quantco.com/",
     src: "/assets/partners_sponsors/quantco_logo.png",
     alt: "QuantCo",
-  },
+  }, */
   {
     href: "https://pwc.com/",
     src: "public/assets/partners_sponsors/PwC_2025_Logo.svg.png",
