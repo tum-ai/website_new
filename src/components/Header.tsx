@@ -3,6 +3,7 @@ import { useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import { Button } from "./ui/button";
 
 export const Header = () => {
   const [open, setOpen] = useState(false);
@@ -48,10 +49,10 @@ export const Header = () => {
       <div className="ml-auto flex lg:hidden ">
         <Dialog.Root open={open} onOpenChange={setOpen}>
           <Dialog.Trigger asChild>
-            <button className="flex h-9 w-9 items-center justify-center rounded-md text-white/90 hover:bg-purple-800/50">
-              <Menu size={20} />
+            <Button className="flex h-9 w-9 items-center justify-center rounded-md text-white/90 hover:bg-purple-800/50">
+              <Menu size={20} className="" />
               <span className="sr-only">Open menu</span>
-            </button>
+            </Button>
           </Dialog.Trigger>
 
           <AnimatePresence>
@@ -77,14 +78,14 @@ export const Header = () => {
                   >
                     <div className="flex justify-end">
                       <Dialog.Close asChild>
-                        <button
+                        <Button
                           type="button"
                           className="flex h-9 w-9 items-center justify-center rounded-md text-white/90 hover:bg-purple-800/50"
                           onClick={() => setOpen(false)}
                         >
                           <X size={20} />
                           <span className="sr-only">Close menu</span>
-                        </button>
+                        </Button>
                       </Dialog.Close>
                     </div>
 
