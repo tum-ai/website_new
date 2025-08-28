@@ -74,7 +74,9 @@ export default function Partners() {
               Get access to Germany&apos;s largest student talent pool of AI
               enthusiasts
             </p>
-            <Button onClick={scrollToSection}>Become a partner</Button>
+            <Button>
+              <a href="mailto:partners@tum-ai.com">Become a partner</a>
+            </Button>
           </div>
         </div>
       </section>
