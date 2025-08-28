@@ -6,6 +6,7 @@ type CarouselItemProps = {
   title: string;
   desc: string;
   buttonText: string;
+  link: string;
 };
 
 const CarouselItem = ({
@@ -14,6 +15,7 @@ const CarouselItem = ({
   title,
   desc,
   buttonText,
+  link,
 }: CarouselItemProps) => {
   return (
     <div className="relative flex flex-col md:flex-row gap-6 md:gap-8 px-4 md:px-10 py-14 md:py-12 justify-center w-full">
@@ -28,7 +30,13 @@ const CarouselItem = ({
 
       {/* card */}
       <div className="hidden w-full md:w-1/2 md:flex items-center">
-        <Card text={text} title={title} desc={desc} buttonText={buttonText} />
+        <Card
+          link={link}
+          text={text}
+          title={title}
+          desc={desc}
+          buttonText={buttonText}
+        />
       </div>
     </div>
   );

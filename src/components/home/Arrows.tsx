@@ -7,13 +7,13 @@ const Arrows = ({ onPrev, onNext }: ArrowsProps) => {
     <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex gap-4">
       <button
         onClick={onPrev}
-        className="w-[57px] h-[57px] flex items-center !justify-center !rounded-full !bg-white shadow-md hover:bg-gray-100 transition"
+        className="w-[3.5rem] h-[3.5rem] flex items-center !justify-center !rounded-full !bg-white shadow-md hover:bg-gray-100 transition"
       >
         <span className="text-lg font-bold text-gray-700">&lt;</span>
       </button>
       <button
         onClick={onNext}
-        className="w-[57px] h-[57px] flex items-center !justify-center !rounded-full !bg-white shadow-md hover:bg-gray-100 transition"
+        className="w-[3.5rem] h-[3.5rem] flex items-center !justify-center !rounded-full !bg-white shadow-md hover:bg-gray-100 transition"
       >
         <span className="text-lg font-bold text-gray-700">&gt;</span>
       </button>

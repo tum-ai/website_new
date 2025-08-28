@@ -12,6 +12,7 @@ const Carousel = () => {
       title: "AI Entrepreneurship Lab (AI E-Lab)",
       desc: "14-week equity-free AI startup incubator with full support from Munich's innovation ecosystem",
       buttonText: "Learn more about AI E-Lab",
+      link: "",
     },
     {
       imgSrc: "/assets/home_img1.jpg",
@@ -19,6 +20,7 @@ const Carousel = () => {
       title: "AI Founders Network",
       desc: "Connect with innovators, mentors, and investors shaping the future of AI startups.",
       buttonText: "Explore the Network",
+      link: "",
     },
   ];
 
