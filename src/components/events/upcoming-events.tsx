@@ -47,16 +47,25 @@ export default function UpcomingEvents({ events }: { events: Event[] }) {
 
 function UpcomingEventCard({ event }: { event: Event }) {
   const eventDate = new Date(event.event_date);
+  // Local flag: some events may include a runtime-only `disabled` property not present in the global Event type
+  const applicationsClosed = !(() => {
+              try {
+                new URL(event.sign_up!);
+                return true;
+              } catch {
+                return false;
+              }
+            })();
 
   return (
-    <Card className="hover:shadow-lg transition-shadow">
+    <Card className="hover:shadow-lg transition-shadow justify-between">
       <div className="p-6">
         <AspectRatio ratio={1 / 1}>
           {event.poster ? (
             <img
               src={event.poster}
               alt={event.title}
-              className="h-full w-full rounded-lg object-cover"
+              className="h-full w-full rounded-lg object-cover shadow-xl"
             />
           ) : (
             <div className="h-full w-full rounded-lg bg-accent-foreground flex items-center justify-center">
@@ -80,7 +89,7 @@ function UpcomingEventCard({ event }: { event: Event }) {
         <CardTitle className="text-xl">
           {event.title}
         </CardTitle>
-        <CardDescription className="text-sm text-muted-foreground">
+        <CardDescription className="text-sm text-muted-foreground mt-1 mb-3">
           {event.location ? `${event.location}` : ""}
           {event.city ? `, ${event.city}` : ""}
         </CardDescription>
@@ -95,21 +104,17 @@ function UpcomingEventCard({ event }: { event: Event }) {
       <CardFooter className="pb-6">
         {event.sign_up && (
           <Button
+            size={"xl"}
             variant="primary"
             className="text-white w-full"
-            disabled={!(() => {
-              try {
-                new URL(event.sign_up);
-                return true;
-              } catch {
-                return false;
-              }
-            })()}
+            disabled={applicationsClosed}
             onClick={() => {
-              window.open(event.sign_up, '_blank');
+              if (!applicationsClosed) {
+                window.open(event.sign_up, '_blank');
+              }
             }}
           >
-            Apply Now!
+            {applicationsClosed ? 'Applications Closed' : 'Apply Now!'}
           </Button>
         )}
       </CardFooter>
