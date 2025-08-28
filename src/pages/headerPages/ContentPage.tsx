@@ -49,18 +49,6 @@ export function ContentPage<T>({
         defaultValue={tabs[0].value}
         className="w-full flex items-center justify-center px-30"
       >
-        <TabsList className="w-full bg-transparent gap-4 justify-center text-xl">
-          {tabs.map((tab) => (
-            <TabsTrigger
-              key={tab.value}
-              value={tab.value}
-              className="text-white"
-            >
-              {tab.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-
         <Separator className="bg-gray-700 my-2" />
 
         {tabs.map((tab) => (
