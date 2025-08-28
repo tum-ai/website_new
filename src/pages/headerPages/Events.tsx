@@ -56,14 +56,8 @@ export default function Events() {
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-blue-900 to-purple-900 p-8 text-white sm:py-16 lg:py-24">
       <div className="min-h-screen flex flex-col md:flex-row">
-        {/* Fixed Left Column - 1/4 width for "Events" text */}
-        <div className="relative flex-1/4 h-screen z-10 top-0 flex">
-          <EventsVerticalText />
-        </div>
 
-        {/* Right Column - 3/4 width for content with left margin */}
-        <div className="flex-3/4 px-6 py-12 md:px-12">
-          <h1 className="sr-only">TUM.ai Events</h1>
+        <div className="px-6 py-12 md:px-12">
 
           {/* Filters */}
           <EventFiltersComponent

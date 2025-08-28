@@ -6,7 +6,8 @@ export interface Event {
   location?: string;
   city?: string;
   category?: string;
-  image?: string;
+  poster?: string;
+  images?: [string];
   sign_up?: string;
   detail?: string;
 }
@@ -38,7 +39,10 @@ export interface NotionPage {
     Date?: {
       date?: { start?: string };
     };
-    Image?: {
+    Poster?: {
+      files?: [{ file?: { url?: string }; external?: { url?: string } }];
+    };
+    Images?: {
       files?: [{ file?: { url?: string }; external?: { url?: string } }];
     };
     Location?: {
