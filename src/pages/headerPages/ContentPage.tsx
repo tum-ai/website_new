@@ -24,9 +24,8 @@ export function ContentPage<T>({
 }: ContentPageProps<T>) {
   return (
     <section
-      className={`relative overflow-hidden p-8 text-white ${
-        gradientColors || "bg-gradient-to-br from-blue-900 to-purple-900"
-      } sm:py-16 lg:py-24`}
+      className={`relative overflow-hidden p-8 text-white ${gradientColors || "bg-gradient-to-br from-blue-900 to-purple-900"
+        } sm:py-16 lg:py-24`}
     >
       {/* Hero Section */}
       <div className="inset-0 flex items-center justify-center flex-col mb-8">
@@ -45,18 +44,35 @@ export function ContentPage<T>({
       </div>
 
       {/* Tabs Section */}
-      <Tabs
-        defaultValue={tabs[0].value}
-        className="w-full flex items-center justify-center px-30"
-      >
-        <Separator className="bg-gray-700 my-2" />
+      {tabs.length > 1 ? (
+        <Tabs
+          defaultValue={tabs[0].value}
+          className="w-full flex items-center justify-center px-30"
+        >
+          <TabsList className="w-full bg-transparent gap-4 justify-center text-xl">
+            {tabs.map((tab) => (
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                className="text-white"
+              >
+                {tab.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          <Separator className="bg-gray-700 my-2" />
 
-        {tabs.map((tab) => (
-          <TabsContent key={tab.value} value={tab.value}>
-            {tab.content}
-          </TabsContent>
-        ))}
-      </Tabs>
+          {tabs.map((tab) => (
+            <TabsContent key={tab.value} value={tab.value}>
+              {tab.content}
+            </TabsContent>
+          ))}
+        </Tabs>
+      ) : (
+        <div className="w-full flex items-center justify-center">
+          {tabs[0].content}
+        </div>
+      )}
 
       {collaborators?.logos && (
         <>
