@@ -35,12 +35,12 @@ function PastEventCard({ event }: { event: Event }) {
       <div className="relative w-full aspect-square md:w-[calc(33%-1rem)] md:max-w-[320px] group mb-3 md:mb-0 flex-shrink-0">
         <Carousel className="w-full h-full">
           <CarouselContent className="h-full">
-            {event.images.map((_, index) => (
+            {event.images?.map((_, index) => (
               <CarouselItem key={index} className="h-full">
                 <div className="h-full p-1">
                   <div className="aspect-square w-full relative overflow-hidden rounded-lg">
                     <img
-                      src={event.images[index]}
+                      src={event.images ? event.images[index] : ""}
                       alt={`${event.title} Image ${index + 1}`}
                       className="h-full w-full object-cover"
                     />

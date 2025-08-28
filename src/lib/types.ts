@@ -7,7 +7,7 @@ export interface Event {
   city?: string;
   category?: string;
   poster?: string;
-  images?: string;
+  images?: [string];
   sign_up?: string;
   detail?: string;
 }
