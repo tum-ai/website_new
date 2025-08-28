@@ -72,7 +72,7 @@ export function ContentPage<T>({
 
       {collaborators?.logos && (
         <>
-          <div className="my-8 h-1 w-16 rounded-full bg-gradient-to-r from-purple-500 to-blue-500"></div>
+          <div className="my-8 h-1 w-16 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 mx-auto"></div>
           <h3 className="mb-4 text-center text-3xl font-semibold">
             Collaborators
           </h3>
