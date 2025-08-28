@@ -85,21 +85,6 @@ export const stories = [
     },
     */
   {
-    name: "Maria Aysina",
-    role: "Computational Linguistics, LMU",
-    story:
-      "Within one semester, I gained hands-on skills in designing graphics, managing social media channels, and co-organizing events. Being part of TUM.ai made me realize how much you can achieve when you step out of your comfort zone and take on new challenges.",
-    image: "/assets/apply/maria_aysina.png",
-  },
-  /*
-    {
-      "title": "Maria Aysina, Computational Linguistics, LMU",
-      "paragraph_highlighted": "I joined TUM.ai ",
-      "paragraph": "as a member of the Marketing team. At the time, I didn’t have much experience in this area, but I was eager to learn. Within one semester, I gained hands-on skills in designing graphics, managing social media channels, and co-organizing events. It was a fast-paced and collaborative environment where I learned a lot from my teammates. After just one semester, I was offered the chance to lead the Marketing department. In this role, I took on more responsibility—planning campaigns, coordinating the team, and ensuring our communication stayed consistent and creative. It was a big step that helped me grow both personally and professionally. I learned how to balance creative work with strategy, and how important it is to keep a team motivated and aligned. Along the way, I met incredible people who not only became very good friends but also helped me build a strong professional network. Being part of TUM.ai made me realize how much you can achieve when you step out of your comfort zone and take on new challenges. It sparked my passion for working at the intersection of creativity, communication, and technology. ",
-      "image": "/assets/maria_aysina.png"
-    },
-    */
-  {
     name: "Simon Huang",
     role: "Computer Science, TUM",
     story:
@@ -115,21 +100,8 @@ export const stories = [
       "image": "/assets/simon_huang.jpeg",
     },
     */
-  {
-    name: "Louisa Kron",
-    role: "Finance and Informationtechnology, TUM",
-    story:
-      "I joined TUM.ai to step out of my comfort zone and meet people working on real-world AI applications. Even as a non-technical member, I can pursue my interest in AI and learn from interdisciplinary exchange. What inspires me most is the community—everyone brings their own ideas, making TUM.ai a unique and motivating place to grow.",
-    image: "/assets/apply/louisa_kron.jpg",
-  },
-  /* {
-        name: "Louisa Kron",
-        role: "Finance and Informationtechnology, TUM",
-        story:
-            "I joined TUM.ai in the Winter Semester 2024/2025 because I wanted to step out of my comfort zone and meet new, interesting people who are working on the concrete application of artificial intelligence. I believe that this technology is one of the most groundbreaking of our time, and that’s why I wanted to be part of it. Through TUM.ai, I can pursue my interest in artificial intelligence even as a non-technical member. The interdisciplinary exchange between people from various fields allows me to learn a lot and engage in discussions on a wide range of topics—from medicine to finance. What connects us all is a certain spirit that enables us to bring exciting projects to life, such as the Impact Projects. What fascinates me most about TUM.ai is the people—everyone can contribute their own ideas, which creates a unique and inspiring movement. Moreover, TUM.ai offers the opportunity to explore different interests, such as start-ups or robotics, through dedicated task forces. I encourage everyone to engage in interdisciplinary exchange—no matter your background, your contribution is valuable. We can all learn from each other’s perspectives, experiences, and ideas.",
-        image: "/assets/apply/louisa_kron.jpg",
-    }, */
-
+  
+  
   {
     name: "Marco Lorenz",
     role: "Robotics, Cognition and Intelligence, TUM",
