@@ -65,6 +65,13 @@ export const stories = [
     image: "/assets/apply/jasmin_el-wafi.jpg",
   },
   {
+    name: "Zexin Gong",
+    role: "Information Systems, TUM",
+    story:
+      "Becoming co-team-lead of the DEV team shortly after joining TUM.ai enabled me to take initiative, collaborate with talented and passionate individuals, and develop impactful tools used by hundreds of people. Being part of this community not only enhanced my technical, leadership, and project management skills, but also helped me forge incredible friendships.",
+    image: "/assets/apply/zexin_gong.png",
+  },
+  {
     name: "Sami Haddouti",
     role: "Robotics, Cognition and Intelligence, TUM",
     story:
