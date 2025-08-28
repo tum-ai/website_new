@@ -100,7 +100,7 @@ export default function Projects() {
       title="Innovation Departments and Projects"
       description="Explore TUM.ai’s innovation departments and the exciting projects they lead."
       tabs={tabs}
-      gradientColors="bg-gradient-to-br from-blue-700 to-blue-900"
+      gradientColors="bg-gradient-to-br from-blue-900 to-purple-900"
     />
   );
 }

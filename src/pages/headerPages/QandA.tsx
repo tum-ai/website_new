@@ -4,7 +4,7 @@ import { faqs } from "@/data/qanda";
 export default function QandA() {
   return (
     <main>
-      <div className="relative bg-gradient-to-br from-blue-950 to-purple-950 py-32 text-white">
+      <div className="relative bg-gradient-to-br from-blue-900 to-purple-900 py-32 text-white">
         <div className="container mx-auto max-w-4xl px-4 text-center">
           <h1 className="text-5xl font-bold md:text-6xl">
             Frequently Asked <span className="text-purple-400">Questions</span>
