@@ -3,7 +3,7 @@ import { Separator } from "@/components/ui/separator";
 // components/ContentPage.tsx
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-interface ContentPageProps<T> {
+interface ContentPageProps {
   title: string;
   description: string;
   tabs: {
@@ -11,17 +11,23 @@ interface ContentPageProps<T> {
     label: string;
     content: React.ReactNode;
   }[];
-  collaborators?: { logos: string[] };
+  collaborators?: { 
+    logos: {
+      href: string;
+      src: string;
+      alt: string;
+    }[]
+  };
   gradientColors?: string; // optional gradient for hero section
 }
 
-export function ContentPage<T>({
+export function ContentPage({
   title,
   description,
   tabs,
   collaborators,
   gradientColors,
-}: ContentPageProps<T>) {
+}: ContentPageProps) {
   return (
     <section
       className={`relative overflow-hidden p-8 text-white ${gradientColors || "bg-gradient-to-br from-blue-900 to-purple-900"
@@ -45,31 +51,35 @@ export function ContentPage<T>({
 
       {/* Tabs Section */}
       {tabs.length > 1 ? (
-        <Tabs
-          defaultValue={tabs[0].value}
-          className="w-full flex items-center justify-center px-30"
-        >
-          <TabsList className="w-full bg-transparent gap-4 justify-center text-xl">
-            {tabs.map((tab) => (
-              <TabsTrigger
-                key={tab.value}
-                value={tab.value}
-                className="text-white"
-              >
-                {tab.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-          <Separator className="bg-gray-700 my-2" />
+        <div className="w-full px-6 sm:px-8 lg:px-12">
+          <Tabs
+            defaultValue={tabs[0].value}
+            className="w-full"
+          >
+            <div className="flex justify-center mb-4">
+              <TabsList className="flex flex-wrap items-center bg-transparent gap-4 justify-center text-xl">
+                {tabs.map((tab) => (
+                  <TabsTrigger
+                    key={tab.value}
+                    value={tab.value}
+                    className="text-white"
+                  >
+                    {tab.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </div>
+            <Separator className="bg-gray-700 my-4" />
 
-          {tabs.map((tab) => (
-            <TabsContent key={tab.value} value={tab.value}>
-              {tab.content}
-            </TabsContent>
-          ))}
-        </Tabs>
+            {tabs.map((tab) => (
+              <TabsContent key={tab.value} value={tab.value} className="w-full">
+                {tab.content}
+              </TabsContent>
+            ))}
+          </Tabs>
+        </div>
       ) : (
-        <div className="w-full flex items-center justify-center">
+        <div className="w-full px-6 sm:px-8 lg:px-12">
           {tabs[0].content}
         </div>
       )}
