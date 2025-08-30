@@ -15,7 +15,7 @@ export const PartnersSection = () => {
   useEffect(() => {
     const fetchPartners = async () => {
       try {
-        const res = await fetch("http://localhost:3001/api/getPartners"); // change this once deployed to /api/getPartners
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/getPartners`); // change this once deployed to /api/getPartners
         if (!res.ok) throw new Error("Failed to fetch events");
         const data = await res.json();
         setPartners(data);
