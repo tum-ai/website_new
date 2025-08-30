@@ -92,7 +92,7 @@ export function ProjectCard({
           </div>
 
           {/* Department Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
               <Users className="w-5 h-5 text-primary" />
               <div>
@@ -116,7 +116,7 @@ export function ProjectCard({
                 <p className="font-semibold">{location}</p>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Current Projects */}
           {/* <div>
@@ -131,7 +131,7 @@ export function ProjectCard({
           </div> */}
 
           {/* Contact Information */}
-          <div className="border-t pt-4">
+          {/* <div className="border-t pt-4">
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
               <div>
                 <h4 className="font-semibold mb-1">Contact</h4>
@@ -151,7 +151,7 @@ export function ProjectCard({
                 </Button>
               )}
             </div>
-          </div>
+          </div> */}
         </div>
       </DialogContent>
     </Dialog>

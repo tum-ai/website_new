@@ -70,7 +70,7 @@ export default function EventFiltersComponent({
       {isExpanded && (
         <div className="mt-4 space-y-4">
           {/* Category Filter */}
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row gap-4">
             <Label className="text-xs font-medium text-muted-foreground min-w-[60px]">
               Category:
             </Label>
@@ -92,7 +92,7 @@ export default function EventFiltersComponent({
           </div>
 
           {/* City Filter */}
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row gap-4">
             <Label className="text-xs font-medium text-muted-foreground min-w-[60px]">
               City:
             </Label>

@@ -12,7 +12,7 @@ const DepartmentCard = ({ department }: { department: Department }) => {
   const Icon = LucideIcons[department.icon as IconName] as React.ElementType;
 
   return (
-    <Card className="h-full p-8 text-white bg-slate-800/50 border-slate-700">
+    <Card className="h-full p-8 text-white bg-purple-900 border-slate-700">
       <div className="relative mb-5 flex items-center gap-4">
         {Icon && (
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 transition-colors group-hover:bg-white/15">

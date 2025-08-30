@@ -5,7 +5,7 @@ const styles = cva("relative p-8 sm:py-16 lg:py-32", {
   variants: {
     background: {
       white: "",
-      inverted: "bg-linear-to-b from-blue-700 to-blue-800 text-white",
+      inverted: "bg-gradient-to-br from-blue-900 to-purple-900 text-white",
     },
   },
   defaultVariants: {
