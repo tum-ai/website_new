@@ -1,9 +1,9 @@
-import { Link } from "react-router-dom";
 import { useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
+import { NavLink } from "react-router-dom";
 
 export const Header = () => {
   const [open, setOpen] = useState(false);
@@ -24,25 +24,27 @@ export const Header = () => {
       {/* Desktop nav */}
       <div className="hidden lg:flex items-center gap-8 ml-auto">
         {links.map(({ href, text }) => (
-          <Link
+          <NavLink
             key={href}
-            className={`${
-              href !== "/"
-                ? "text-gray-300 hover:text-white"
-                : "text-[#A144E9] font-semibold"
-            } text-[16px] cursor-pointer`}
             to={href}
+            className={({ isActive }) =>
+              `${
+                isActive
+                  ? "text-[#A144E9] font-semibold"
+                  : "text-gray-300 hover:text-white"
+              } text-[16px] cursor-pointer`
+            }
           >
             {text}
-          </Link>
+          </NavLink>
         ))}
-        <Link
+        <a
           target="_blank"
-          to="https://join.tum-ai.com/"
+          href="https://join.tum-ai.com/"
           className="ml-4 px-4 py-1.5 border border-[#A144E9] text-white rounded-md hover:bg-[#A144E9] hover:text-white transition"
         >
           Join Us
-        </Link>
+        </a>
       </div>
 
       {/* Mobile nav button */}
@@ -50,7 +52,7 @@ export const Header = () => {
         <Dialog.Root open={open} onOpenChange={setOpen}>
           <Dialog.Trigger asChild>
             <Button className="flex h-9 w-9 items-center justify-center rounded-md text-white/90 hover:bg-purple-800/50">
-              <Menu size={20} className="" />
+              <Menu size={20} />
               <span className="sr-only">Open menu</span>
             </Button>
           </Dialog.Trigger>
@@ -91,26 +93,29 @@ export const Header = () => {
 
                     <nav className="mt-6 space-y-4">
                       {links.map(({ href, text }) => (
-                        <Link
+                        <NavLink
                           key={href}
                           to={href}
                           onClick={() => setOpen(false)}
-                          className={`block rounded-md px-4 py-2 text-lg ${
-                            href !== "/"
-                              ? "text-gray-300 hover:bg-purple-800/50 hover:text-white"
-                              : "text-[#A144E9] font-semibold"
-                          }`}
+                          className={({ isActive }) =>
+                            `block rounded-md px-4 py-2 text-lg ${
+                              isActive
+                                ? "text-[#A144E9] font-semibold"
+                                : "text-gray-300 hover:bg-purple-800/50 hover:text-white"
+                            }`
+                          }
                         >
                           {text}
-                        </Link>
+                        </NavLink>
                       ))}
-                      <Link
-                        to="https://join.tum-ai.com/"
+                      <a
+                        href="https://join.tum-ai.com/"
+                        target="_blank"
                         onClick={() => setOpen(false)}
                         className="mt-4 block rounded-md bg-[#A144E9] px-4 py-2 text-lg text-white hover:bg-[#8727c7]"
                       >
                         Join Us
-                      </Link>
+                      </a>
                     </nav>
                   </motion.div>
                 </Dialog.Content>
