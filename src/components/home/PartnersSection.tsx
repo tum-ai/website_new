@@ -1,4 +1,11 @@
-import { Button } from "../ui/button";
+import { useEffect, useState } from "react";
+
+type PartnersData = {
+  id: string;
+  name: string;
+  link: string;
+  image: string;
+};
 
 export const PartnersSection = () => {
   const [partners, setPartners] = useState<PartnersData[]>([]);
@@ -7,7 +14,9 @@ export const PartnersSection = () => {
   useEffect(() => {
     const fetchPartners = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/getPartners`); // change this once deployed to /api/getPartners
+        const res = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/getPartners`
+        ); // change this once deployed to /api/getPartners
         if (!res.ok) throw new Error("Failed to fetch events");
         const data = await res.json();
         setPartners(data);
@@ -57,4 +66,3 @@ export const PartnersSection = () => {
     </section>
   );
 };
-
