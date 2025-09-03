@@ -74,7 +74,7 @@ function Stat({
   return (
     <div ref={ref} className="flex flex-col justify-start items-start">
       <motion.div className={`text-4xl font-bold`}>
-        <span className="inline-flex items-start justify-start px-3 py-2 text-[#6517A1E5] ">
+        <span className="inline-flex items-start justify-start py-2 text-[#6517A1E5]">
           <AnimatedText value={rounded} suffix={suffix} />
         </span>
       </motion.div>

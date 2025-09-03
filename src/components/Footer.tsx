@@ -4,6 +4,7 @@ import {
   faSlack,
 } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import Section from "./ui/Section";
 
@@ -28,45 +29,6 @@ export default function Footer() {
                 Building the next generation of AI leaders and innovators
                 through community, education, and real-world projects.
               </p>
-
-              <div className="flex space-x-5">
-                <a
-                  href="https://www.instagram.com/tum.ai_official/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group relative flex h-10 w-10 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm transition-all duration-300 hover:bg-white/20"
-                  aria-label="Instagram"
-                >
-                  <FontAwesomeIcon
-                    icon={faInstagram}
-                    className="text-white transition-all duration-300 group-hover:scale-110"
-                  />
-                </a>
-                <a
-                  href="https://de.linkedin.com/company/tum-ai"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group relative flex h-10 w-10 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm transition-all duration-300 hover:bg-white/20"
-                  aria-label="LinkedIn"
-                >
-                  <FontAwesomeIcon
-                    icon={faLinkedin}
-                    className="text-white transition-all duration-300 group-hover:scale-110"
-                  />
-                </a>
-                <a
-                  href="https://join.slack.com/t/tumaipublic/shared_invite/zt-10kg0t1f9-JLRXDxY_d_vprKWgab0cVw"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group relative flex h-10 w-10 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm transition-all duration-300 hover:bg-white/20"
-                  aria-label="Slack"
-                >
-                  <FontAwesomeIcon
-                    icon={faSlack}
-                    className="text-white transition-all duration-300 group-hover:scale-110"
-                  />
-                </a>
-              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-x-12 gap-y-2 sm:grid-cols-4 sm:gap-x-16 md:gap-x-8">
@@ -74,16 +36,57 @@ export default function Footer() {
                 <p className="mb-3 text-xs font-medium tracking-wider text-white/50 uppercase">
                   Connect
                 </p>
-                <ul className="space-y-2">
-                  <li>
-                    <a
-                      className="text-sm text-white/80 transition-colors duration-300 hover:text-purple-300"
-                      href="mailto:contact@tum-ai.com"
-                    >
-                      Contact
-                    </a>
-                  </li>
-                </ul>
+
+                <div className="flex space-x-5">
+                  <a
+                    href="https://www.instagram.com/tum.ai_official/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group relative flex items-center justify-center duration-100"
+                    aria-label="Instagram"
+                  >
+                    <FontAwesomeIcon
+                      icon={faInstagram}
+                      className="text-white transition-all duration-300 group-hover:scale-110"
+                    />
+                  </a>
+                  <a
+                    href="https://de.linkedin.com/company/tum-ai"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group relative flex items-center justify-center duration-100"
+                    aria-label="LinkedIn"
+                  >
+                    <FontAwesomeIcon
+                      icon={faLinkedin}
+                      className="text-white transition-all duration-300 group-hover:scale-110"
+                    />
+                  </a>
+                  <a
+                    href="https://join.slack.com/t/tumaipublic/shared_invite/zt-10kg0t1f9-JLRXDxY_d_vprKWgab0cVw"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group relative flex items-center justify-center duration-100"
+                    aria-label="Slack"
+                  >
+                    <FontAwesomeIcon
+                      icon={faSlack}
+                      className="text-white transition-all duration-300 group-hover:scale-110"
+                    />
+                  </a>
+                  <a
+                    href="mailto:contact@tum-ai.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group relative flex items-center justify-center duration-100"
+                    aria-label="Slack"
+                  >
+                    <FontAwesomeIcon
+                      icon={faEnvelope}
+                      className="text-white transition-all duration-300 group-hover:scale-110"
+                    />
+                  </a>
+                </div>
               </div>
               <div className="col-span-1">
                 <p className="mb-3 text-xs font-medium tracking-wider text-white/50 uppercase">
