@@ -13,7 +13,7 @@ function ScrollSection() {
   const doubledData = [...data, ...data]; // duplicate for seamless scroll
 
   return (
-    <div className="overflow-hidden w-full my-40">
+    <div className="overflow-hidden w-full my-20 md:my-40">
       <div className="flex animate-scroll-left">
         {doubledData.map((imgObj, idx) => (
           <img
