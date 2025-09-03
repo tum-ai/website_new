@@ -25,7 +25,7 @@ const departments = [
     name: "Robotics",
     description:
       "We explore cutting-edge approaches in robotic intelligence, currently focusing on imitation learning and reinforcement learning.",
-    image: "/assets/innovation/robotics_writing.png",
+    image: "/assets/innovation/robotics_arm.png",
     detailedDescription:
       "We explore cutting-edge approaches in robotic intelligence, currently focusing on imitation learning using the LeRobot framework. Our work is rapidly expanding toward reinforcement learning and robotics foundation models. As a team, we actively participate in robotics hackathons, organize paper reading sessions, and develop our own experimental projects—bridging research and hands-on innovation.",
     members: 4,
@@ -44,7 +44,7 @@ const departments = [
     name: "Quant Finance",
     description:
       "The QuantFinance Task Force focuses on quantitative finance, hackathons, and fintech research.",
-    image: "/assets/innovation/robotics_arm.png",
+    image: "",
     detailedDescription:
       "The QuantFinance Task Force is made up of TUM.ai members interested in Quantitative Finance or FinTech, who either want to participate in related hackathons or pursue a career in these fields. Our members take part individually or as a team in hackathons, estimathons, and other events.",
     members: 8,
@@ -86,7 +86,7 @@ export default function Projects() {
       value: "departments",
       label: "Departments",
       content: (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 justify-items-center">
           {departments.map((dept) => (
             <ProjectCard key={dept.name} {...dept} />
           ))}
