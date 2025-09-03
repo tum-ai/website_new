@@ -11,7 +11,7 @@ import { Button } from "../ui/button";
 
 export const AboutSection = () => {
   return (
-    <div className="flex flex-col min-h-screen px-10 py-10 md:py-16">
+    <div className="flex flex-col gap-4 min-h-screen px-10 py-10 md:py-16">
       {/* Image */}
       <div className="w-full flex items-center justify-center flex-1">
         <img
@@ -34,7 +34,7 @@ export const AboutSection = () => {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full md:w-3/5">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 w-full md:w-3/5">
           <Stat title={"Alumni Members"} from={0} to={400} suffix="+" />
           <Stat title={"Founding Year"} from={0} to={2020} suffix="" />
           <Stat title={"Nationalities"} from={0} to={33} suffix="+" />
