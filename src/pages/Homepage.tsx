@@ -1,10 +1,10 @@
-import { AboutSection } from "@/components/home/AboutSection";
-import Carousel from "@/components/home/Carousel";
-import EventsSection from "@/components/home/EventsSection";
 import Grid from "@/components/home/Grid";
-import { PartnersSection } from "@/components/home/PartnersSection";
-import ScrollSection from "@/components/home/ScrollSection";
 import { Hero } from "../components/ui/hero";
+import { AboutSection } from "@/components/home/AboutSection";
+import { PartnersSection } from "@/components/home/PartnersSection";
+import Carousel from "@/components/home/Carousel";
+import ScrollSection from "@/components/home/ScrollSection";
+import EventsSection from "@/components/home/EventsSection";
 
 export default function Homepage() {
   return (
@@ -15,7 +15,7 @@ export default function Homepage() {
         <Grid />
       </div>
       <AboutSection />
-      {<PartnersSection />}
+      <PartnersSection />
       <Carousel />
       <ScrollSection />
       <EventsSection />
