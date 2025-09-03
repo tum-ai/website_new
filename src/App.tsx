@@ -13,7 +13,7 @@ import QandA from "./pages/headerPages/QandA";
 import Research from "./pages/headerPages/Research";
 import ELab from "./pages/headerPages/e-lab/ELab";
 
-export default function Index() {
+export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Homepage />} />

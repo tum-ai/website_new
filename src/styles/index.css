@@ -74,11 +74,6 @@ body {
   font-family: "IBM Plex Sans", sans-serif;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -140,6 +135,10 @@ button:focus-visible {
   --color-purple-900: #220836;
   --color-purple-950: #11041b;
 
+  --text-title: 1.4em;
+  --text-subtitle: 1.25em;
+  --text-base: 1em;
+  --text-subtext: 0.9em;
   --animate-fade-in: fadeIn 700ms ease-out;
 
   @keyframes fadeIn {

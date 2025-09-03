@@ -29,8 +29,7 @@ export const AboutSection = () => {
             stakeholders to drive positive societal impact through AI.
           </p>
           <Button className="w-48 self-center md:self-start !bg-[#6517A1]">
-            <a href="/community">Meet our Members</a>{" "}
-            {/* add a link to community */}
+            <a href="/community#memberStories">Meet our Members</a>
           </Button>
         </div>
 

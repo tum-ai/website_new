@@ -29,16 +29,12 @@ export const JourneySection = () => {
   return (
     <div className="relative flex items-center justify-center">
       <div className="relative z-10 w-full max-w-4xl space-y-8 text-center">
-        {" "}
-        {/* reduced from space-y-16 */}
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center">
-            {" "}
-            {/* reduced from mb-16 */}
             <h2
-              className={cx(
-                "mb-6 text-4xl font-semibold tracking-tight text-white",
-              )}
+              className={
+                "mb-6 text-title font-semibold tracking-tight text-white"
+              }
             >
               The TUM.ai Member Journey
             </h2>
