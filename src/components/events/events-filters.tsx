@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { eventCategories, eventCities } from "@/lib/mock-data.ts";
 import type { EventFilters } from "@/lib/types.ts";
 import { X } from "lucide-react";
 import { useState } from "react";
@@ -10,6 +9,21 @@ interface EventFiltersProps {
   onFiltersChange: (filters: EventFilters) => void;
   eventCount: number;
 }
+
+const eventCategories = [
+  "All Categories",
+  "Workshop",
+  "Hackathon",
+  "Speaker",
+  "E-Lab",
+];
+
+const eventCities = [
+  "All Cities",
+  "Munich",
+  "Berlin",
+  "Online",
+];
 
 export default function EventFiltersComponent({
   filters,
