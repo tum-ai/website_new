@@ -38,8 +38,7 @@ export const Header = () => {
           </NavLink>
         ))}
         <a
-          target="_blank"
-          href="https://join.tum-ai.com/"
+          href="/apply"
           className="ml-4 px-4 py-1.5 border border-[#A144E9] text-white rounded-md hover:bg-[#A144E9] hover:text-white transition"
         >
           Become a Member
