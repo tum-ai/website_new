@@ -17,7 +17,7 @@ export const faq = [
   {
     question: "What is the time commitment for the program?",
     answer:
-      "The AI E-Lab is a 12-week intensive program that requires significant time commitment. We expect participants to dedicate substantial time each week to building their startups, attending workshops, and participating in program activities.",
+      "The AI E-Lab is a 14-week intensive program that requires significant time commitment. We expect participants to dedicate substantial time each week to building their startups, attending workshops, and participating in program activities.",
   },
   {
     question: "Do you take equity in my startup?",
