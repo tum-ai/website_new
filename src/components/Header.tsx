@@ -1,9 +1,9 @@
-import { useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { Button } from "./ui/button";
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
+import { Button } from "./ui/button";
 
 export const Header = () => {
   const [open, setOpen] = useState(false);
@@ -28,10 +28,9 @@ export const Header = () => {
             key={href}
             to={href}
             className={({ isActive }) =>
-              `${
-                isActive
-                  ? "text-[#A144E9] font-semibold"
-                  : "text-gray-300 hover:text-white"
+              `${isActive
+                ? "text-[#A144E9] font-semibold"
+                : "text-gray-300 hover:text-white"
               } text-[16px] cursor-pointer`
             }
           >
@@ -43,7 +42,7 @@ export const Header = () => {
           href="https://join.tum-ai.com/"
           className="ml-4 px-4 py-1.5 border border-[#A144E9] text-white rounded-md hover:bg-[#A144E9] hover:text-white transition"
         >
-          Join Us
+          Become a Member
         </a>
       </div>
 
@@ -98,10 +97,9 @@ export const Header = () => {
                           to={href}
                           onClick={() => setOpen(false)}
                           className={({ isActive }) =>
-                            `block rounded-md px-4 py-2 text-lg ${
-                              isActive
-                                ? "text-[#A144E9] font-semibold"
-                                : "text-gray-300 hover:bg-purple-800/50 hover:text-white"
+                            `block rounded-md px-4 py-2 text-lg ${isActive
+                              ? "text-[#A144E9] font-semibold"
+                              : "text-gray-300 hover:bg-purple-800/50 hover:text-white"
                             }`
                           }
                         >

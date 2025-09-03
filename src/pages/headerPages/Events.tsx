@@ -15,7 +15,9 @@ export default function Events() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/getNotes`); // change this once deployed to /api/getNotes
+        const res = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/getNotes`,
+        ); // change this once deployed to /api/getNotes
         if (!res.ok) throw new Error("Failed to fetch events");
         const data = await res.json();
         setEvents(data);
@@ -42,13 +44,13 @@ export default function Events() {
   // Split filtered events into upcoming and past
   const currentDate = new Date();
   const upcomingEvents = filteredEvents.filter(
-    (event) => new Date(event.event_date) >= currentDate
+    (event) => new Date(event.event_date) >= currentDate,
   );
   const pastEvents = filteredEvents
     .filter((event) => new Date(event.event_date) < currentDate)
     .sort(
       (a, b) =>
-        new Date(b.event_date).getTime() - new Date(a.event_date).getTime()
+        new Date(b.event_date).getTime() - new Date(a.event_date).getTime(),
     );
 
   if (loading) return <div>Loading events...</div>;
@@ -56,9 +58,7 @@ export default function Events() {
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-blue-900 to-purple-900 p-8 text-white sm:py-16 lg:py-24">
       <div className="min-h-screen flex flex-col md:flex-row">
-
         <div className="px-6 py-12 md:px-12">
-
           {/* Filters */}
           <EventFiltersComponent
             filters={filters}

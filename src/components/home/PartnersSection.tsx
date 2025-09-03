@@ -25,9 +25,24 @@ export const PartnersSection = () => {
           Get access to our exclusive pre-selected talent pool of qualified
           Software/Data Engineers and AI Strategists.
         </p>
-        <Button className="w-48 self-center md:self-start !bg-[#6517A1]">
-          <a href="mailto:partners@tum-ai.com">Become a Partner</a>
-        </Button>
+        <div className="mt-4 flex flex-col gap-3 w-full sm:flex-row sm:gap-4 justify-between lg:justify-start">
+          <Button
+            asChild
+            variant="primary"
+            className="w-full rounded-md px-6 py-3 text-center sm:w-auto"
+          >
+            <a href="mailto:partners@tum-ai.com">Become a Partner</a>
+          </Button>
+
+          <Button asChild>
+            <a
+              href="/partners"
+              className="w-full bg-black rounded-md px-6 py-3 text-black text-center sm:w-auto"
+            >
+              View Our Partners
+            </a>
+          </Button>
+        </div>
       </div>
     </div>
   );

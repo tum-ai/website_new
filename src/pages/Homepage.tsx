@@ -6,17 +6,16 @@ import Carousel from "@/components/home/Carousel";
 import ScrollSection from "@/components/home/ScrollSection";
 import EventsSection from "@/components/home/EventsSection";
 
-export default function Header() {
+export default function Homepage() {
   return (
     <div className="">
       <div className="relative flex flex-row bg-[#0B0213] text-white min-h-screen pt-16 px-6">
-        {/* Hero content */}
         <Hero />
         {/* Grid of squares (bottom right) */}
         <Grid />
       </div>
       <AboutSection />
-      {<PartnersSection />}
+      <PartnersSection />
       <Carousel />
       <ScrollSection />
       <EventsSection />

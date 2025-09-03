@@ -1,4 +1,3 @@
-import { Button } from "../ui/button";
 import { archivo } from "@/styles/fonts";
 import { MotionValue } from "framer-motion";
 import {
@@ -9,6 +8,7 @@ import {
   useTransform,
 } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { Button } from "../ui/button";
 
 export const AboutSection = () => {
   return (
