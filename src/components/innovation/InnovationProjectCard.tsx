@@ -1,7 +1,7 @@
 "use client";
 
 // import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -10,13 +10,12 @@ import {
 } from "@/components/ui/card";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Calendar, ExternalLink, MapPin, Users, X } from "lucide-react";
+// import { Calendar, ExternalLink, MapPin, Users, X } from "lucide-react";
 import { useState } from "react";
 
 interface ProjectCardProps {
@@ -37,12 +36,12 @@ export function ProjectCard({
   description,
   image,
   detailedDescription,
-  members,
-  established,
-  location,
-  projects,
-  contact,
-  website,
+  // members,
+  // established,
+  // location,
+  // projects,
+  // contact,
+  // website,
 }: ProjectCardProps) {
   const [isOpen, setIsOpen] = useState(false);
 
