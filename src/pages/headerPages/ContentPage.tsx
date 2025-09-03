@@ -30,9 +30,8 @@ export function ContentPage({
 }: ContentPageProps) {
   return (
     <section
-      className={`relative overflow-hidden p-8 text-white ${
-        gradientColors || "bg-gradient-to-br from-blue-900 to-purple-900"
-      } sm:py-16 lg:py-24`}
+      className={`relative overflow-hidden p-8 text-white ${gradientColors || "bg-gradient-to-br from-blue-900 to-purple-900"
+        } sm:py-16 lg:py-24`}
     >
       {/* Hero Section */}
       <div className="inset-0 flex items-center justify-center flex-col mb-8">

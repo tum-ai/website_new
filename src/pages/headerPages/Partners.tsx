@@ -9,7 +9,6 @@ import {
   researchPartners,
   technicalPartners,
 } from "@/data/partners";
-import { bitter } from "@/styles/fonts";
 import { cx } from "class-variance-authority";
 import { Handshake, Heart, Megaphone, Users } from "lucide-react";
 
@@ -68,7 +67,6 @@ export default function Partners() {
                 "bg-linear-to-r from-white to-gray-300 bg-clip-text text-transparent",
                 "animate-fade-in-up",
               )}
-              style={{ fontFamily: bitter }}
             >
               Partners & Sponsors
             </h1>
@@ -85,51 +83,23 @@ export default function Partners() {
 
       <section className="relative bg-white p-8 sm:py-16 lg:py-32">
         <div className="container mx-auto">
-          <h2
-            className="mb-8 text-3xl font-semibold"
-            style={{ fontFamily: bitter }}
-          >
+          <h2 className="mb-8 text-3xl font-semibold">
             Long-Term Partnerships
           </h2>
           <Logos logos={longtermPartners} />
 
-          <h2
-            className="mb-8 text-3xl font-semibold"
-            style={{ fontFamily: bitter }}
-          >
-            Technical Partners
-          </h2>
+          <h2 className="mb-8 text-3xl font-semibold">Technical Partners</h2>
           <Logos logos={technicalPartners} />
 
-          <h2
-            className="mb-8 text-3xl font-semibold"
-            style={{ fontFamily: bitter }}
-          >
-            Industry Partners
-          </h2>
+          <h2 className="mb-8 text-3xl font-semibold">Industry Partners</h2>
           <Logos logos={industryPartners} />
 
-          <h2
-            className="mb-8 text-3xl font-semibold"
-            style={{ fontFamily: bitter }}
-          >
-            Research Partners
-          </h2>
+          <h2 className="mb-8 text-3xl font-semibold">Research Partners</h2>
           <Logos logos={researchPartners} />
 
-          <h2
-            className="mb-8 text-3xl font-semibold"
-            style={{ fontFamily: bitter }}
-          >
-            Venture Capital
-          </h2>
+          <h2 className="mb-8 text-3xl font-semibold">Venture Capital</h2>
           <Logos logos={VCPartners} />
-          <h2
-            className="mb-8 text-3xl font-semibold"
-            style={{ fontFamily: bitter }}
-          >
-            Initiatives
-          </h2>
+          <h2 className="mb-8 text-3xl font-semibold">Initiatives</h2>
           <Logos logos={initiativePartners} />
         </div>
       </section>
@@ -150,10 +120,7 @@ export default function Partners() {
             </div>
 
             <div className="relative mb-16 flex flex-col items-center text-center">
-              <h2
-                className="mb-6 text-3xl font-semibold text-white"
-                style={{ fontFamily: bitter }}
-              >
+              <h2 className="mb-6 text-3xl font-semibold text-white">
                 Partner with TUM.ai
               </h2>
               <p className="max-w-2xl text-xl text-white/90">
@@ -171,11 +138,8 @@ export default function Partners() {
                   <div className="absolute inset-y-0 left-0 w-[1px] bg-gradient-to-b from-transparent via-purple-300/50 to-transparent"></div>
 
                   <div className="space-y-6">
-                    <h3
-                      className="text-2xl font-semibold text-white"
-                      style={{ fontFamily: bitter }}
-                    >
-                      Ways to Collaborate
+                    <h3 className="text-2xl font-semibold text-white">
+                      Collaboration Opportunities
                     </h3>
                     <p className="text-white/80">
                       We&apos;re always open to new ideas and creative ways to
@@ -228,10 +192,7 @@ export default function Partners() {
                   </div>
 
                   <div className="space-y-6">
-                    <h3
-                      className="text-2xl font-semibold text-white"
-                      style={{ fontFamily: bitter }}
-                    >
+                    <h3 className="text-2xl font-semibold text-white">
                       Education & Knowledge
                     </h3>
                     <ul className="space-y-3 text-white/80">
@@ -281,10 +242,7 @@ export default function Partners() {
 
       <section className="relative bg-white p-8 sm:py-16 lg:py-32">
         <div className="container mx-auto">
-          <h2
-            className="text-uppercase mb-8 w-full text-3xl font-semibold"
-            style={{ fontFamily: bitter }}
-          >
+          <h2 className="text-uppercase mb-8 w-full text-3xl font-semibold">
             What we offer
           </h2>
           <Benefits

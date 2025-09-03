@@ -1,5 +1,4 @@
 import Section from "@/components/ui/Section";
-import { archivo } from "@/styles/fonts";
 import { MotionValue } from "framer-motion";
 import {
   motion,
@@ -19,15 +18,11 @@ export function ExpectationELab() {
         <div className="w-full">
           <h2
             className={`text-center text-3xl md:text-4xl font-semibold uppercase tracking-tight text-black }`}
-            style={{ fontFamily: archivo }}
           >
             What to expect
           </h2>
 
-          <p
-            className="mt-4 text-center text-base leading-relaxed text-gray-700"
-            style={{ fontFamily: archivo }}
-          >
+          <p className="mt-4 text-center text-base leading-relaxed text-gray-700">
             Built by founders, for founders - 3 month's optimized for speed,
             learning, and real traction.
           </p>
@@ -56,10 +51,7 @@ export function ExpectationELab() {
             />
           </div>
 
-          <p
-            className={`mt-6 text-center text-base text-gray-600 }`}
-            style={{ fontFamily: archivo }}
-          >
+          <p className={`mt-6 text-center text-base text-gray-600 }`}>
             Have an idea, a prototype, or just relentless drive, and are ready
             to build? Build it here. No equity. No theory.
             <br />
@@ -120,16 +112,8 @@ function FeatureCard({
           {icon}
         </div>
         <div>
-          <h3
-            className={`text-lg font-semibold text-gray-900 }`}
-            style={{ fontFamily: archivo }}
-          >
-            {title}
-          </h3>
-          <p
-            className={`mt-1 text-sm leading-relaxed text-gray-700 `}
-            style={{ fontFamily: archivo }}
-          >
+          <h3 className={`text-lg font-semibold text-gray-900 }`}>{title}</h3>
+          <p className={`mt-1 text-sm leading-relaxed text-gray-700 `}>
             {body}
           </p>
         </div>
@@ -191,12 +175,7 @@ function Stat({
           )}
         </span>
       </motion.div>
-      <div
-        className={`mt-2 text-sm text-gray-600`}
-        style={{ fontFamily: archivo }}
-      >
-        {title}
-      </div>
+      <div className={`mt-2 text-sm text-gray-600`}>{title}</div>
     </div>
   );
 }

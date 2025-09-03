@@ -1,5 +1,3 @@
-// import Section from "@/components/ui/Section";
-import { bitter } from "@/styles/fonts";
 import { cx } from "class-variance-authority";
 
 export default function Imprint() {
@@ -23,7 +21,6 @@ export default function Imprint() {
                 "bg-linear-to-r from-white to-gray-300 bg-clip-text text-transparent",
                 "animate-fade-in-up",
               )}
-              style={{ fontFamily: bitter }}
             >
               Impressum
             </h1>

@@ -1,4 +1,3 @@
-import { bitter } from "@/styles/fonts";
 import { cx } from "class-variance-authority";
 
 export default function DataPrivacy() {
@@ -29,7 +28,6 @@ export default function DataPrivacy() {
                 "bg-linear-to-r from-white to-gray-300 bg-clip-text text-transparent",
                 "animate-fade-in-up",
               )}
-              style={{ fontFamily: bitter }}
             >
               Datenschutzerklärung TUM.ai e.V.
             </h1>

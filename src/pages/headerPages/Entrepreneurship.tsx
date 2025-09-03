@@ -1,4 +1,3 @@
-import { bitter } from "@/styles/fonts";
 import { cx } from "class-variance-authority";
 
 export default function Entrepreneurship() {
@@ -30,7 +29,6 @@ export default function Entrepreneurship() {
                 "bg-linear-to-r from-white to-gray-300 bg-clip-text text-transparent",
                 "animate-fade-in-up",
               )}
-              style={{ fontFamily: bitter }}
             >
               E-Lab
             </h1>
@@ -40,10 +38,7 @@ export default function Entrepreneurship() {
 
       <section className="relative bg-white p-8 sm:py-16 lg:py-32">
         <div className="container mx-auto">
-          <h2
-            className="text-uppercase mb-8 w-full text-3xl font-semibold"
-            style={{ fontFamily: bitter }}
-          >
+          <h2 className="text-uppercase mb-8 w-full text-3xl font-semibold">
             Information about E-Lab
           </h2>
         </div>

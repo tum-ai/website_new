@@ -1,4 +1,3 @@
-import { archivo } from "@/styles/fonts";
 import { useEffect, useRef, useState } from "react";
 import Section from "../ui/Section";
 
@@ -58,7 +57,6 @@ export const Timeline = () => {
     <Section className="flex flex-col items-center justify-center py-12 sm:py-12 lg:py-16 bg-white w-full">
       <h2
         className={`text-3xl md:text-4xl tracking-tight font-normal mb-8 text-black text-center uppercase `}
-        style={{ fontFamily: archivo }}
       >
         Program
       </h2>
@@ -96,7 +94,6 @@ export const Timeline = () => {
                       >
                         <h3
                           className={`font-semibold text-xl mb-2 transition-colors duration-300 ${isActive ? "text-purple-700" : "text-gray-800"}`}
-                          style={{ fontFamily: archivo }}
                         >
                           {item.title}
                         </h3>
@@ -109,11 +106,10 @@ export const Timeline = () => {
                     </div>
                     <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
                       <div
-                        className={`w-8 h-8 rounded-full border-4 transition-all duration-300 ${
-                          isActive
+                        className={`w-8 h-8 rounded-full border-4 transition-all duration-300 ${isActive
                             ? "bg-purple-600 border-purple-300 shadow-lg shadow-purple-300/50 scale-110"
                             : "bg-white border-gray-400 scale-100"
-                        }`}
+                          }`}
                       >
                         {isActive && (
                           <div className="absolute inset-0 rounded-full bg-purple-600 animate-ping opacity-30" />
@@ -127,11 +123,10 @@ export const Timeline = () => {
                     <div className="w-1/2"></div>
                     <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
                       <div
-                        className={`w-8 h-8 rounded-full border-4 transition-all duration-300 ${
-                          isActive
+                        className={`w-8 h-8 rounded-full border-4 transition-all duration-300 ${isActive
                             ? "bg-purple-600 border-purple-300 shadow-lg shadow-purple-300/50 scale-110"
                             : "bg-white border-gray-400 scale-100"
-                        }`}
+                          }`}
                       >
                         {isActive && (
                           <div className="absolute inset-0 rounded-full bg-purple-600 animate-ping opacity-30" />
@@ -144,7 +139,6 @@ export const Timeline = () => {
                       >
                         <h3
                           className={`font-semibold text-xl mb-2 transition-colors duration-300 ${isActive ? "text-purple-700" : "text-gray-800"}`}
-                          style={{ fontFamily: archivo }}
                         >
                           {item.title}
                         </h3>

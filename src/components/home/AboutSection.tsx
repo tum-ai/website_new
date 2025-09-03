@@ -1,4 +1,3 @@
-import { archivo } from "@/styles/fonts";
 import { MotionValue } from "framer-motion";
 import {
   motion,
@@ -78,12 +77,7 @@ function Stat({
           <AnimatedText value={rounded} suffix={suffix} />
         </span>
       </motion.div>
-      <div
-        className={`mt-2 text-xl text-gray-600`}
-        style={{ fontFamily: archivo }}
-      >
-        {title}
-      </div>
+      <div className={`mt-2 text-xl text-gray-600`}>{title}</div>
     </div>
   );
 }
