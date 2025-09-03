@@ -18,12 +18,7 @@ const eventCategories = [
   "E-Lab",
 ];
 
-const eventCities = [
-  "All Cities",
-  "Munich",
-  "Berlin",
-  "Online",
-];
+const eventCities = ["All Cities", "Munich", "Berlin", "Online"];
 
 export default function EventFiltersComponent({
   filters,

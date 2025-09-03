@@ -19,7 +19,6 @@ const Card = ({ text, title, desc, buttonText, link }: CardProps) => {
           </span>
         </h1>
         <p className="text-2xl">{desc}</p>
-
       </div>
       <Button className="!bg-[#6517A1] !p-4 !text-2xl w-full h-[4rem]">
         <a href={link}>{buttonText}</a> {/* TODO: change the link here */}

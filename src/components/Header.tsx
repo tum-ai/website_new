@@ -28,9 +28,10 @@ export const Header = () => {
             key={href}
             to={href}
             className={({ isActive }) =>
-              `${isActive
-                ? "text-[#A144E9] font-semibold"
-                : "text-gray-300 hover:text-white"
+              `${
+                isActive
+                  ? "text-[#A144E9] font-semibold"
+                  : "text-gray-300 hover:text-white"
               } text-[16px] cursor-pointer`
             }
           >
@@ -96,9 +97,10 @@ export const Header = () => {
                           to={href}
                           onClick={() => setOpen(false)}
                           className={({ isActive }) =>
-                            `block rounded-md px-4 py-2 text-lg ${isActive
-                              ? "text-[#A144E9] font-semibold"
-                              : "text-gray-300 hover:bg-purple-800/50 hover:text-white"
+                            `block rounded-md px-4 py-2 text-lg ${
+                              isActive
+                                ? "text-[#A144E9] font-semibold"
+                                : "text-gray-300 hover:bg-purple-800/50 hover:text-white"
                             }`
                           }
                         >
