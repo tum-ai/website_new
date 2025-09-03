@@ -2,12 +2,12 @@ import Benefits from "@/components/Benefit";
 import Logos from "@/components/Logos";
 import { Button } from "@/components/ui/button";
 import {
+  VCPartners,
   industryPartners,
   initiativePartners,
   longtermPartners,
   researchPartners,
   technicalPartners,
-  VCPartners,
 } from "@/data/partners";
 import { bitter } from "@/styles/fonts";
 import { cx } from "class-variance-authority";

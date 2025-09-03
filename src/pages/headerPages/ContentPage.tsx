@@ -11,12 +11,12 @@ interface ContentPageProps {
     label: string;
     content: React.ReactNode;
   }[];
-  collaborators?: { 
+  collaborators?: {
     logos: {
       href: string;
       src: string;
       alt: string;
-    }[]
+    }[];
   };
   gradientColors?: string; // optional gradient for hero section
 }
@@ -30,8 +30,9 @@ export function ContentPage({
 }: ContentPageProps) {
   return (
     <section
-      className={`relative overflow-hidden p-8 text-white ${gradientColors || "bg-gradient-to-br from-blue-900 to-purple-900"
-        } sm:py-16 lg:py-24`}
+      className={`relative overflow-hidden p-8 text-white ${
+        gradientColors || "bg-gradient-to-br from-blue-900 to-purple-900"
+      } sm:py-16 lg:py-24`}
     >
       {/* Hero Section */}
       <div className="inset-0 flex items-center justify-center flex-col mb-8">
@@ -52,10 +53,7 @@ export function ContentPage({
       {/* Tabs Section */}
       {tabs.length > 1 ? (
         <div className="w-full px-6 sm:px-8 lg:px-12">
-          <Tabs
-            defaultValue={tabs[0].value}
-            className="w-full"
-          >
+          <Tabs defaultValue={tabs[0].value} className="w-full">
             <div className="flex justify-center mb-4">
               <TabsList className="flex flex-wrap items-center bg-transparent gap-4 justify-center text-xl">
                 {tabs.map((tab) => (
@@ -79,9 +77,7 @@ export function ContentPage({
           </Tabs>
         </div>
       ) : (
-        <div className="w-full px-6 sm:px-8 lg:px-12">
-          {tabs[0].content}
-        </div>
+        <div className="w-full px-6 sm:px-8 lg:px-12">{tabs[0].content}</div>
       )}
 
       {collaborators?.logos && (

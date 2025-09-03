@@ -1,7 +1,6 @@
-import EventCard from "./EventCard";
 import type { Event } from "@/lib/types";
 import { useEffect, useState } from "react";
-
+import EventCard from "./EventCard";
 
 const EventsSection = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -11,7 +10,9 @@ const EventsSection = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/getNotes`); // change this once deployed to /api/getNotes
+        const res = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/getNotes`,
+        ); // change this once deployed to /api/getNotes
         if (!res.ok) throw new Error("Failed to fetch events");
         const data = await res.json();
         setEvents(data);
@@ -31,14 +32,14 @@ const EventsSection = () => {
     .filter((event) => new Date(event.event_date) < currentDate)
     .sort(
       (a, b) =>
-        new Date(b.event_date).getTime() - new Date(a.event_date).getTime()
+        new Date(b.event_date).getTime() - new Date(a.event_date).getTime(),
     )
     .map((event) => ({
       img: event.images![0] || "",
       title: event.title,
       date: {
         day: new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(
-          new Date(event.event_date)
+          new Date(event.event_date),
         ),
         date: new Intl.DateTimeFormat("en-US", {
           year: "numeric",

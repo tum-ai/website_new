@@ -1,9 +1,9 @@
-import { useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { Button } from "./ui/button";
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
+import { Button } from "./ui/button";
 
 export const Header = () => {
   const [open, setOpen] = useState(false);

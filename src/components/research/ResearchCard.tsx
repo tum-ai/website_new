@@ -1,3 +1,5 @@
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -5,8 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { Button } from "@/components/ui/button";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 type ResearchCardProps = {
   title: string;
@@ -78,29 +78,29 @@ export default function ResearchCard({
         </AspectRatio>
       </div>
       <CardHeader className="pb-0">
-        <CardTitle className="text-xl">
-          {title}
-        </CardTitle>
+        <CardTitle className="text-xl">{title}</CardTitle>
       </CardHeader>
       <CardContent className="pb-6">
         <div>
-          {keywords && <p className="text-sm text-purple-500 mb-2">{keywords}</p>}
-          <p className="text-sm my-2">
-            {description}
-          </p>
+          {keywords && (
+            <p className="text-sm text-purple-500 mb-2">{keywords}</p>
+          )}
+          <p className="text-sm my-2">{description}</p>
         </div>
       </CardContent>
       <CardFooter>
-
-        {publication && (<Button size={"lg"}
-          variant="primary"
-          onClick={() => {
-              window.open(publication, '_blank');
+        {publication && (
+          <Button
+            size={"lg"}
+            variant="primary"
+            onClick={() => {
+              window.open(publication, "_blank");
             }}
-          className="text-white w-full mb-5 shadow-xl">                        
-          Read Publication
-        </Button>)}
-
+            className="text-white w-full mb-5 shadow-xl"
+          >
+            Read Publication
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );

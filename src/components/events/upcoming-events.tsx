@@ -1,6 +1,13 @@
-import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { Card, CardContent, CardHeader, CardDescription, CardTitle, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import type { Event } from "@/lib/types";
 import { groupEventsByMonth } from "@/lib/utils";
 import { format } from "date-fns";
@@ -29,8 +36,8 @@ export default function UpcomingEvents({ events }: { events: Event[] }) {
           <h3 className="text-2xl font-semibold text-purple-500">{month}</h3>
           <div className="flex flex-wrap mx-[-0.75rem]">
             {monthEvents.map((event) => (
-              <div 
-                key={event.id} 
+              <div
+                key={event.id}
                 className="w-full px-3 pb-6 
                           lg:w-[calc(50%-1.5rem)] 
                           xl:w-[calc(33.333%-1.5rem)]"
@@ -49,13 +56,13 @@ function UpcomingEventCard({ event }: { event: Event }) {
   const eventDate = new Date(event.event_date);
   // Local flag: some events may include a runtime-only `disabled` property not present in the global Event type
   const applicationsClosed = !(() => {
-              try {
-                new URL(event.sign_up!);
-                return true;
-              } catch {
-                return false;
-              }
-            })();
+    try {
+      new URL(event.sign_up!);
+      return true;
+    } catch {
+      return false;
+    }
+  })();
 
   return (
     <Card className="hover:shadow-lg transition-shadow justify-between">
@@ -75,7 +82,8 @@ function UpcomingEventCard({ event }: { event: Event }) {
                 className="h-3/4 w-3/4 object-contain opacity-50"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
-                  target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='3' rx='2' ry='2'/%3E%3Ccircle cx='9' cy='9' r='2'/%3E%3Cpath d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'/%3E%3C/svg%3E";
+                  target.src =
+                    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='3' rx='2' ry='2'/%3E%3Ccircle cx='9' cy='9' r='2'/%3E%3Cpath d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'/%3E%3C/svg%3E";
                 }}
               />
             </div>
@@ -86,9 +94,7 @@ function UpcomingEventCard({ event }: { event: Event }) {
         <CardTitle className="text-purple-800 text-lg">
           {format(eventDate, "PPP")}
         </CardTitle>
-        <CardTitle className="text-xl">
-          {event.title}
-        </CardTitle>
+        <CardTitle className="text-xl">{event.title}</CardTitle>
         <CardDescription className="text-sm text-muted-foreground mt-1 mb-3">
           {event.location ? `${event.location}` : ""}
           {event.city ? `, ${event.city}` : ""}
@@ -110,11 +116,11 @@ function UpcomingEventCard({ event }: { event: Event }) {
             disabled={applicationsClosed}
             onClick={() => {
               if (!applicationsClosed) {
-                window.open(event.sign_up, '_blank');
+                window.open(event.sign_up, "_blank");
               }
             }}
           >
-            {applicationsClosed ? 'Applications Closed' : 'Apply Now!'}
+            {applicationsClosed ? "Applications Closed" : "Apply Now!"}
           </Button>
         )}
       </CardFooter>

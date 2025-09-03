@@ -1,6 +1,6 @@
 import { useState } from "react";
-import CarouselItem from "./CarouselItem";
 import Arrows from "./Arrows";
+import CarouselItem from "./CarouselItem";
 
 const Carousel = () => {
   const [current, setCurrent] = useState(0);
