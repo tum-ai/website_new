@@ -49,14 +49,41 @@ export function ProjectCard({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Card
-          className="group cursor-pointer w-full max-w-sm overflow-hidden relative h-[300px] flex flex-col justify-end p-0 border-none shadow-lg hover:shadow-xl transition-all duration-300"
-          style={{
-            backgroundImage: `url(${image || "/placeholder.svg"})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        >
+        <Card className="group cursor-pointer w-full max-w-sm overflow-hidden relative h-[300px] flex flex-col justify-end p-0 border-none shadow-lg hover:shadow-xl transition-all duration-300">
+          {/* Background Image or Placeholder */}
+          <div className="absolute inset-0">
+            {image ? (
+              <img
+                src={image}
+                alt={`${name} Project`}
+                className="h-full w-full object-cover"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  const placeholder = target.nextElementSibling as HTMLElement;
+                  if (placeholder) {
+                    placeholder.style.display = 'flex';
+                  }
+                }}
+              />
+            ) : (
+              <div
+                className={`h-full w-full bg-accent-foreground ${image ? 'hidden' : 'flex'} items-center justify-center`}
+                style={{ display: image ? 'none' : 'flex' }}
+              >
+                <img
+                  src="/assets/logo_new_white_standard.png"
+                  alt="Placeholder"
+                  className="h-3/4 w-3/4 object-contain opacity-50"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='3' rx='2' ry='2'/%3E%3Ccircle cx='9' cy='9' r='2'/%3E%3Cpath d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'/%3E%3C/svg%3E";
+                  }}
+                />
+              </div>
+            )}
+          </div>
+
           {/* Overlay for better text readability */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent" />
 
