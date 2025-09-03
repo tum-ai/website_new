@@ -7,20 +7,36 @@ const Carousel = () => {
 
   const data = [
     {
+      imgSrc: "/assets/open_ai_speaker_event.jpg",
+      text: "JOIN THE COMMUNITY",
+      title: "Hackathons, Talks, Workshops, ...",
+      desc: "AI for Everyone - We offer a variety of events to help you learn and grow.",
+      buttonText: "Explore Events",
+      link: "/events",
+    },
+    {
+      imgSrc: "/assets/innovation/robotics_discussion.png",
+      text: "JOIN THE COMMUNITY",
+      title: "Research",
+      desc: "Research projects and the Research Exchange (REX) Program for academically inclined minds",
+      buttonText: "Ongoing projects and publications",
+      link: "/research",
+    },
+    {
+      imgSrc: "/assets/innovation/robotics_writing.png",
+      text: "JOIN THE COMMUNITY",
+      title: "Innovation Departments",
+      desc: "",
+      buttonText: "Explore Departments and Projets",
+      link: "/projects",
+    },
+    {
       imgSrc: "/assets/home_img4.jpg",
       text: "APPLICATIONS OPEN IN AUGUST",
       title: "AI Entrepreneurship Lab (AI E-Lab)",
       desc: "14-week equity-free AI startup incubator with full support from Munich's innovation ecosystem",
       buttonText: "Learn more about AI E-Lab",
-      link: "",
-    },
-    {
-      imgSrc: "/assets/home_img1.jpg",
-      text: "JOIN THE COMMUNITY",
-      title: "AI Founders Network",
-      desc: "Connect with innovators, mentors, and investors shaping the future of AI startups.",
-      buttonText: "Explore the Network",
-      link: "",
+      link: "/e-lab",
     },
   ];
 
@@ -33,7 +49,7 @@ const Carousel = () => {
   };
 
   return (
-    <div className="relative overflow-hidden rounded-2xl w-full">
+    <div className="relative overflow-hidden rounded-2xl w-full max-w-full">
       {/* slider wrapper */}
       <div
         className="flex transition-transform duration-700 ease-in-out"
@@ -43,7 +59,7 @@ const Carousel = () => {
         }}
       >
         {data.map((item, index) => (
-          <div key={index} className="w-full md:w-full flex-shrink-0">
+          <div key={index} className="w-full md:w-full flex flex-shrink-0">
             <CarouselItem {...item} />
           </div>
         ))}
