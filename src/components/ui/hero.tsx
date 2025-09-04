@@ -40,7 +40,7 @@ export const Hero = () => {
       </p>
 
       {/* Buttons */}
-      <div className="mt-4 flex flex-col gap-3 w-full sm:flex-row sm:gap-4 justify-between lg:justify-start">
+      <div className="mt-4 flex flex-col gap-3 w-full sm:flex-row sm:gap-4 justify-start">
         <Button
           asChild
           variant="primary"
