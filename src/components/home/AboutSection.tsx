@@ -12,16 +12,13 @@ import { Button } from "../ui/button";
 export const AboutSection = () => {
   return (
     <div className="flex flex-col gap-4 min-h-screen px-10 py-10 md:py-16">
-      {/* Image */}
       <div className="w-full flex items-center justify-center flex-1">
         <img
-          className="w-full h-[19rem] md:h-[30rem] object-cover bg-gray-200 rounded-xl"
+          className="w-full aspect-[7/4] object-cover bg-gray-200 rounded-xl"
           src="/assets/aibootcamp.jpg"
           alt="TUM.ai ai bootcamp"
         />
       </div>
-
-      {/* Content */}
       <div className="flex flex-col md:flex-row items-center gap-8 flex-1">
         <div className="flex flex-col gap-4 w-full md:w-2/5 text-center md:text-left">
           <p className="text-xl md:text-2xl">

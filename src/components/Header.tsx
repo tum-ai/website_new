@@ -21,7 +21,11 @@ export const Header = () => {
   return (
     <div className="fixed top-0 left-0 w-full z-50 bg-[#0B0213] h-16 flex items-center px-6">
       <a href="/">
-        <img src="/assets/logo_new_white_standard.png" alt="Logo" className="h-10" />
+        <img
+          src="/assets/logo_new_white_standard.png"
+          alt="Logo"
+          className="h-10"
+        />
       </a>
       {/* Desktop nav */}
       <div className="hidden lg:flex items-center gap-8 ml-auto">
