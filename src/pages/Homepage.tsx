@@ -1,6 +1,6 @@
 import { AboutSection } from "@/components/home/AboutSection";
 import { Carousel } from "@/components/home/Carousel";
-import { EventsSection } from "@/components/home/EventsSection";
+// import { EventsSection } from "@/components/home/EventsSection";
 import { Grid } from "@/components/home/Grid";
 import { PartnersSection } from "@/components/home/PartnersSection";
 import { ScrollSection } from "@/components/home/ScrollSection";

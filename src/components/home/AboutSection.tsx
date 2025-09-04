@@ -29,7 +29,7 @@ export const AboutSection = () => {
             <Button
               asChild
               variant="primary"
-              className="w-16 rounded-md px-6 py-3 text-center sm:w-auto"
+              className="w-full rounded-md px-6 py-3 text-center sm:w-auto"
             >
               <a href="/community#memberStories">Meet our Members</a>
             </Button>
