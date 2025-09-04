@@ -81,14 +81,14 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #6517A1;
+  background-color: oklch(0.52 0.25 302.91);
   cursor: pointer;
   transition: border-color background-color 0.5s;
 }
 
 button:hover {
   border-color: #ffffff;
-  background-color: #B57CFF;
+  background-color: #6517A1;
 }
 
 button:focus,

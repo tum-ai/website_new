@@ -116,7 +116,7 @@ function PastEventCard({ event }: { event: Event }) {
                 <Button size={"xl"}
                   variant="primary"
                   className="text-white w-full"
-                >View Details</Button>
+                >Read More</Button>
               </DialogTrigger>
 
               <DialogContent
