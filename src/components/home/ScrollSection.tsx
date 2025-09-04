@@ -7,18 +7,18 @@ export function ScrollSection() {
       id: 2,
       src: "/assets/home_img2.png",
     },
-    { id: 3, src: "public/assets/e-lab/e-phases/ideation.jpeg" },
+    { id: 3, src: "/assets/e-lab/e-phases/ideation.jpeg" },
     {
       id: 4,
-      src: "public/assets/innovation/med_ai.jpg",
+      src: "/assets/innovation/med_ai.jpg",
     },
     { id: 5, src: "/assets/home_img5.jpeg" },
     { id: 6, src: "/assets/home_img4.jpg" },
     {
       id: 7,
-      src: "public/assets/innovation/robotics_discussion.png",
+      src: "/assets/innovation/robotics_discussion.png",
     },
-    { id: 8, src: "public/assets/innovation/accelerated_computing.png" },
+    { id: 8, src: "/assets/innovation/accelerated_computing.png" },
   ];
 
   const doubledData = [...data, ...data]; // duplicate for seamless scroll
