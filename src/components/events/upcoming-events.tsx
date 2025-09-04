@@ -38,9 +38,7 @@ export default function UpcomingEvents({ events }: { events: Event[] }) {
             {monthEvents.map((event) => (
               <div
                 key={event.id}
-                className="w-full px-3 pb-6 
-                          lg:w-[calc(50%-1.5rem)] 
-                          xl:w-[calc(33.333%-1.5rem)]"
+                className="flex-shrink-0 px-3 pb-6"
               >
                 <UpcomingEventCard event={event} />
               </div>
@@ -65,7 +63,7 @@ function UpcomingEventCard({ event }: { event: Event }) {
   })();
 
   return (
-    <Card className="hover:shadow-lg transition-shadow justify-between">
+    <Card className="hover:shadow-lg transition-shadow justify-between w-[320px] md:w-[360px]">
       <div className="p-6">
         <AspectRatio ratio={1 / 1}>
           {event.poster ? (
