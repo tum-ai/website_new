@@ -10,7 +10,7 @@ export const Carousel = () => {
       imgSrc: "/assets/open_ai_speaker_event.jpg",
       text: "JOIN THE COMMUNITY",
       title: "Hackathons, Talks, Workshops, ...",
-      desc: "AI for Everyone - We offer a variety of events to help you learn and grow.",
+      desc: "AI for Everyone - We offer a variety of events to help you learn and grow",
       buttonText: "Explore Events",
       link: "/events",
     },
@@ -27,7 +27,7 @@ export const Carousel = () => {
       text: "JOIN THE COMMUNITY",
       title: "Innovation Departments",
       desc: "",
-      buttonText: "Explore Departments and Projets",
+      buttonText: "Explore Departments and Projects",
       link: "/projects",
     },
     {
