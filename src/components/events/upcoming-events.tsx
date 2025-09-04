@@ -100,8 +100,8 @@ function UpcomingEventCard({ event }: { event: Event }) {
       </CardHeader>
       <CardContent className="pb-6">
         <p className="text-sm">
-          {event.description.length > 200
-            ? event.description.slice(0, 200) + "..."
+          {event.description.length > 300
+            ? event.description.slice(0, 300) + "..."
             : event.description}
         </p>
       </CardContent>
