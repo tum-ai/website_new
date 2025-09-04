@@ -61,11 +61,13 @@ export const ForCompaniesSection = () => {
                     </a>
                   </Button>
 
-                  <Button
-                    asChild
-                    className="rounded-md border border-white/20 bg-white/10 backdrop-blur-sm hover:bg-white/20"
-                  >
-                    <a href="/partners">View our Partners</a>
+                  <Button asChild>
+                    <a
+                      href="/partners"
+                      className="w-full bg-transparent border border-[#A144E9] rounded-md px-6 py-3 text-[#A144E9] text-center sm:w-auto"
+                    >
+                      View our Partners
+                    </a>
                   </Button>
                 </div>
               </div>

@@ -1,9 +1,9 @@
 import { AboutSection } from "@/components/home/AboutSection";
-import Carousel from "@/components/home/Carousel";
-import EventsSection from "@/components/home/EventsSection";
-import Grid from "@/components/home/Grid";
+import { Carousel } from "@/components/home/Carousel";
+import { EventsSection } from "@/components/home/EventsSection";
+import { Grid } from "@/components/home/Grid";
 import { PartnersSection } from "@/components/home/PartnersSection";
-import ScrollSection from "@/components/home/ScrollSection";
+import { ScrollSection } from "@/components/home/ScrollSection";
 import { Hero } from "../components/ui/hero";
 
 export default function Homepage() {
@@ -15,10 +15,10 @@ export default function Homepage() {
         <Grid />
       </div>
       <AboutSection />
+      <ScrollSection />
       <PartnersSection />
       <Carousel />
-      <ScrollSection />
-      <EventsSection />
+      {/* <EventsSection /> */}
     </div>
   );
 }
