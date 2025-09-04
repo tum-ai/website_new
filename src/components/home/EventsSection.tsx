@@ -2,7 +2,7 @@ import type { Event } from "@/lib/types";
 import { useEffect, useState } from "react";
 import EventCard from "./EventCard";
 
-const EventsSection = () => {
+export const EventsSection = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");

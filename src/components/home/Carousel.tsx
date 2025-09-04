@@ -2,7 +2,7 @@ import { useState } from "react";
 import Arrows from "./Arrows";
 import CarouselItem from "./CarouselItem";
 
-const Carousel = () => {
+export const Carousel = () => {
   const [current, setCurrent] = useState(0);
 
   const data = [

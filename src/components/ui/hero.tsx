@@ -33,10 +33,10 @@ export const Hero = () => {
       </svg>
 
       {/* Text */}
-      <p className="mt-2 font-thin text-2xl sm:text-4xl">Welcome to TUM.ai,</p>
-      <p className="font-thin text-2xl sm:text-4xl mt-1">
-        Germany’s leading student initiative focused on{" "}
-        <b>Artificial Intelligence.</b>
+      <p className="mt-2 font-thin text-title sm:text-4xl leading-normal">
+        Welcome to TUM.ai, <br />
+        Germany’s leading student initiative focused on
+        <b className="font-bold"> Artificial Intelligence.</b>
       </p>
 
       {/* Buttons */}

@@ -28,13 +28,19 @@ export const AboutSection = () => {
             With over <b>90 active members</b>, TUM.ai connects students and
             stakeholders to drive positive societal impact through AI.
           </p>
-          <Button className="w-48 self-center md:self-start !bg-[#6517A1]">
-            <a href="/community#memberStories">Meet our Members</a>
-          </Button>
+          <div className="mt-4 flex flex-col gap-3 w-full sm:flex-row sm:gap-4 justify-between lg:justify-start">
+            <Button
+              asChild
+              variant="primary"
+              className="w-16 rounded-md px-6 py-3 text-center sm:w-auto"
+            >
+              <a href="/community#memberStories">Meet our Members</a>
+            </Button>
+          </div>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 w-full md:w-3/5">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6 w-full md:w-3/5">
           <Stat title={"Alumni Members"} from={0} to={400} suffix="+" />
           <Stat title={"Founding Year"} from={0} to={2020} suffix="" />
           <Stat title={"Nationalities"} from={0} to={33} suffix="+" />
