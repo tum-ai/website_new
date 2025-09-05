@@ -2,6 +2,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -12,8 +13,17 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import type { Event } from "@/lib/types";
 import { format } from "date-fns";
+import { Button } from "../ui/button";
 
 export default function PastEvents({ events }: { events: Event[] }) {
   if (events.length === 0) {
@@ -25,9 +35,15 @@ export default function PastEvents({ events }: { events: Event[] }) {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-wrap mx-[-0.75rem]">
       {events.map((event) => (
-        <PastEventCard key={event.id} event={event} />
+        <div
+          key={event.id}
+          className="flex-shrink-0 px-3 pb-6"
+        >
+
+          <PastEventCard key={event.id} event={event} />
+        </div>
       ))}
     </div>
   );
@@ -37,14 +53,14 @@ function PastEventCard({ event }: { event: Event }) {
   const eventDate = new Date(event.event_date);
 
   return (
-    <Card className="flex flex-col md:flex-row w-full overflow-hidden">
-      <div className="relative w-full aspect-square md:w-[calc(33%-1rem)] md:max-w-[320px] group mb-3 md:mb-0 flex-shrink-0">
+    <Card className="flex flex-col w-full overflow-hidden w-[320px] md:w-[360px]">
+      <div className="relative w-full aspect-square group p-4 flex-shrink-0">
         <Carousel className="w-full h-full">
           <CarouselContent className="h-full">
             {event.images && event.images.length > 0 ? (
               event.images.map((image, index) => (
                 <CarouselItem key={index} className="h-full">
-                  <div className="h-full p-1">
+                  <div className="h-full">
                     <div className="aspect-square w-full relative overflow-hidden rounded-lg">
                       <img
                         src={image}
@@ -57,7 +73,7 @@ function PastEventCard({ event }: { event: Event }) {
               ))
             ) : (
               <CarouselItem className="h-full">
-                <div className="h-full p-1">
+                <div className="h-full">
                   <div className="aspect-square w-full relative overflow-hidden rounded-lg bg-accent-foreground flex items-center justify-center">
                     <img
                       src="/assets/logo_new_white_standard.png"
@@ -79,7 +95,7 @@ function PastEventCard({ event }: { event: Event }) {
         </Carousel>
       </div>
 
-      <div className="flex flex-col justify-normal flex-1 min-w-0 p-4 md:pl-6">
+      <div className="flex flex-col justify-normal flex-1 min-w-0 p-4 pt-0">
         <CardHeader className="pb-0 px-0">
           <CardTitle className="text-purple-800 text-lg">
             {format(eventDate, "PPP")}
@@ -91,8 +107,51 @@ function PastEventCard({ event }: { event: Event }) {
           </CardDescription>
         </CardHeader>
         <CardContent className="px-0">
-          <p className="text-sm">{event.description}</p>
+          <p className="text-sm">
+            {event.description.length > 300
+              ? event.description.slice(0, 300) + "..."
+              : event.description
+            }
+          </p>
         </CardContent>
+        {event.description.length > 300 && (
+          <CardFooter className="px-0 pt-4">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button size={"xl"}
+                  variant="primary"
+                  className="text-white w-full"
+                >Read More</Button>
+              </DialogTrigger>
+
+              <DialogContent
+                className="max-w-2xl max-h-[80vh] overflow-y-auto "
+                showCloseButton={false}
+              >
+                <DialogHeader>
+                  <DialogTitle className="text-purple-800 text-lg">
+                    {format(eventDate, "PPP")}
+                  </DialogTitle>
+                  <DialogTitle className="text-xl">{event.title}</DialogTitle>
+                  <DialogDescription className="text-sm text-muted-foreground pb-2">
+                    {event.location ? `${event.location}` : ""}
+                    {event.city ? `, ${event.city}` : ""}
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="space-y-6">
+                  {/* Detailed Description */}
+                  <div>
+                    <p className="text-muted-foreground leading-relaxed">
+                      {event.description}
+                    </p>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+
+          </CardFooter>
+        )}
       </div>
     </Card>
   );
