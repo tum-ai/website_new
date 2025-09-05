@@ -4,7 +4,7 @@ type ArrowsProps = {
 };
 const Arrows = ({ onPrev, onNext }: ArrowsProps) => {
   return (
-    <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex gap-4">
+    <div className="md:absolute md:bottom-16 md:right-0 md:-translate-x-1/2 relative flex items-center justify-center bottom-5 gap-4">
       <button
         onClick={onPrev}
         className="w-[3.5rem] h-[3.5rem] flex items-center !justify-center !rounded-full !bg-white shadow-md hover:bg-gray-100 transition"
