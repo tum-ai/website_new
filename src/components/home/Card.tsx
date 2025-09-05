@@ -10,10 +10,10 @@ type CardProps = {
 
 const Card = ({ text, title, desc, buttonText, link }: CardProps) => {
   return (
-    <div className="w-full md:absolute z-10 md:w-[38rem] md:h-[20rem] md:left-[3rem] md:bottom-[0.625rem] bg-white shadow-2xl md:shadow-lg rounded-xl flex flex-col items-start px-6 py-8 justify-between">
-      <div className="flex flex-col md:gap-4 gap-2">
+    <div className="w-full md:absolute z-10 md:w-[38rem] md:h-[20rem] md:left-[3rem] md:bottom-[0.625rem] bg-white shadow-2xl md:shadow-lg rounded-xl flex flex-col items-start px-6 py-6 justify-between">
+      <div className="flex flex-col w-full md:gap-4 gap-2">
         <p className="md:text-xl">{text}</p>
-        <h1 className="font-bold md:!text-[2rem]">
+        <h1 className="font-bold text-[1.5rem] md:!text-[2rem]">
           <span className="bg-gradient-to-r from-[#6517A1] to-[#B55BD1] bg-clip-text text-transparent">
             {title}
           </span>
