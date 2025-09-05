@@ -15,7 +15,8 @@ export const AboutSection = () => {
       <div className="w-full flex items-center justify-center flex-1">
         <img
           className="w-full aspect-[7/4] object-cover bg-gray-200 rounded-xl"
-          src="public/assets/apply/new_section_photo_1.jpg"
+          src="/assets/apply/new_section_photo_1.jpg"
+          // src="/assets/aibootcamp.jpg"
           alt="TUM.ai members"
         />
       </div>
