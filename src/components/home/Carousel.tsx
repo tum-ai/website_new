@@ -26,7 +26,7 @@ export const Carousel = () => {
       imgSrc: "/assets/innovation/robotics_writing.png",
       text: "JOIN THE COMMUNITY",
       title: "Innovation Departments",
-      desc: "",
+      desc: "Explore TUM.ai’s innovation departments and the exciting projects they lead",
       buttonText: "Explore Departments and Projects",
       link: "/projects",
     },

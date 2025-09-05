@@ -10,7 +10,7 @@ import {
   technicalPartners,
 } from "@/data/partners";
 import { cx } from "class-variance-authority";
-import { Handshake, Heart, Megaphone, Users } from "lucide-react";
+import { Brain, Handshake, Megaphone, Users } from "lucide-react";
 
 export const metadata = {
   title: "TUM.ai - Partners",
@@ -23,7 +23,7 @@ export default function Partners() {
     {
       title: "AI Talent Pool",
       text: "Connect with motivated AI students for internships or working roles.",
-      icon: Heart,
+      icon: Brain,
     },
     {
       title: "Marketing & Awareness",

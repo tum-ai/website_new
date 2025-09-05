@@ -74,7 +74,7 @@ export const departments: Department[] = [
   },
   {
     name: "Innovation",
-    icon: "GraduationCap",
+    icon: "Lightbulb",
     description:
       "Exploring AI applications such as in quantitative finance, robotics, medicine, and accelerating GPUs.",
     gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
@@ -87,7 +87,7 @@ export const departments: Department[] = [
     gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
   },
   {
-    name: "Software Dev",
+    name: "Software Development",
     icon: "Code",
     description:
       "Building and maintaining TUM.ai's digital infrastructure, from in-house tools to cloud services.",
