@@ -14,7 +14,7 @@ export const PartnersSection = () => {
 
       {/* Right content */}
       <div className="flex flex-col gap-4 md:w-3/7 w-full justify-end text-center md:text-left">
-        <h1 className="text-xl sm:text-2xl md:text-[2rem] font-semibold">
+        <h1 className="text-title sm:text-2xl md:text-[2rem] font-semibold">
           Join{" "}
           <span className="bg-gradient-to-r from-[#6517A1] to-[#B57CFF] bg-clip-text text-transparent">
             TUM.ai
@@ -25,7 +25,7 @@ export const PartnersSection = () => {
           Get access to our exclusive pre-selected talent pool of qualified
           Software/Data Engineers and AI Strategists.
         </p>
-        <div className="mt-4 flex flex-col gap-3 w-full sm:flex-row sm:gap-4 justify-between lg:justify-start">
+        <div className="mt-4 flex flex-col gap-3 w-full sm:flex-row sm:gap-4 justify-start">
           <Button
             asChild
             variant="primary"
@@ -37,7 +37,7 @@ export const PartnersSection = () => {
           <Button asChild>
             <a
               href="/partners"
-              className="w-full bg-black rounded-md px-6 py-3 text-black text-center sm:w-auto"
+              className="w-full bg-black border border-[#A144E9] rounded-md px-6 py-3 text-[#A144E9] text-center sm:w-auto"
             >
               View Our Partners
             </a>

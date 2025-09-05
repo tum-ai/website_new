@@ -2,7 +2,7 @@ import { useState } from "react";
 import Arrows from "./Arrows";
 import CarouselItem from "./CarouselItem";
 
-const Carousel = () => {
+export const Carousel = () => {
   const [current, setCurrent] = useState(0);
 
   const data = [
@@ -10,7 +10,7 @@ const Carousel = () => {
       imgSrc: "/assets/open_ai_speaker_event.jpg",
       text: "JOIN THE COMMUNITY",
       title: "Hackathons, Talks, Workshops, ...",
-      desc: "AI for Everyone - We offer a variety of events to help you learn and grow.",
+      desc: "AI for Everyone - We offer a variety of events to help you learn and grow",
       buttonText: "Explore Events",
       link: "/events",
     },
@@ -26,8 +26,8 @@ const Carousel = () => {
       imgSrc: "/assets/innovation/robotics_writing.png",
       text: "JOIN THE COMMUNITY",
       title: "Innovation Departments",
-      desc: "",
-      buttonText: "Explore Departments and Projets",
+      desc: "Explore TUM.ai’s innovation departments and the exciting projects they lead",
+      buttonText: "Explore Departments and Projects",
       link: "/projects",
     },
     {

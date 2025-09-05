@@ -12,29 +12,33 @@ import { Button } from "../ui/button";
 export const AboutSection = () => {
   return (
     <div className="flex flex-col gap-4 min-h-screen px-10 py-10 md:py-16">
-      {/* Image */}
       <div className="w-full flex items-center justify-center flex-1">
         <img
-          className="w-full h-[19rem] md:h-[30rem] object-cover bg-gray-200 rounded-xl"
-          src="/assets/aibootcamp.jpg"
-          alt="TUM.ai ai bootcamp"
+          className="w-full aspect-[7/4] object-cover bg-gray-200 rounded-xl"
+          src="/assets/apply/new_section_photo_1.jpg"
+          // src="/assets/aibootcamp.jpg"
+          alt="TUM.ai members"
         />
       </div>
-
-      {/* Content */}
       <div className="flex flex-col md:flex-row items-center gap-8 flex-1">
         <div className="flex flex-col gap-4 w-full md:w-2/5 text-center md:text-left">
           <p className="text-xl md:text-2xl">
             With over <b>90 active members</b>, TUM.ai connects students and
             stakeholders to drive positive societal impact through AI.
           </p>
-          <Button className="w-48 self-center md:self-start !bg-[#6517A1]">
-            <a href="/community#memberStories">Meet our Members</a>
-          </Button>
+          <div className="mt-4 flex flex-col gap-3 w-full sm:flex-row sm:gap-4 justify-between lg:justify-start">
+            <Button
+              asChild
+              variant="primary"
+              className="w-full rounded-md px-6 py-3 text-center sm:w-auto"
+            >
+              <a href="/community#memberStories">Meet our Members</a>
+            </Button>
+          </div>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 w-full md:w-3/5">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6 w-full md:w-3/5">
           <Stat title={"Alumni Members"} from={0} to={400} suffix="+" />
           <Stat title={"Founding Year"} from={0} to={2020} suffix="" />
           <Stat title={"Nationalities"} from={0} to={33} suffix="+" />
