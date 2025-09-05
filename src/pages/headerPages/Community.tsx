@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { stories } from "@/data/apply/shared";
 import { type Department, departments } from "@/data/community";
 import * as LucideIcons from "lucide-react";
+import { useEffect } from "react";
 
 type IconName = keyof typeof LucideIcons;
 
@@ -52,6 +53,27 @@ const DepartmentsSection = () => (
 );
 
 export default function Community() {
+  useEffect(() => {
+    // Handle hash fragment scrolling
+    const hash = window.location.hash;
+    if (hash) {
+      const element = document.getElementById(hash.substring(1));
+      if (element) {
+        // Add a small delay to ensure the page is fully rendered
+        setTimeout(() => {
+          const headerOffset = 64; // Height of the fixed header (h-16 = 64px)
+          const elementPosition = element.offsetTop;
+          const offsetPosition = elementPosition - headerOffset;
+          
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }, 100);
+      }
+    }
+  }, []);
+
   return (
     <>
       <div className="pointer-events-none fixed inset-0 z-[-1] overflow-hidden">
