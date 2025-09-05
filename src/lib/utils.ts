@@ -49,3 +49,18 @@ export const scrollToSection = () => {
     });
   }
 };
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { routes } from "@/data/routes";
+const SITE_NAME = "TUM.ai";
+
+export function TitleManager({}) {
+  const location = useLocation();
+
+  useEffect(() => {
+    const route = routes.find((r) => r.path === location.pathname);
+    document.title = route?.title ? `${route.title} - ${SITE_NAME}` : SITE_NAME;
+  }, [location.pathname]);
+
+  return null;
+}
