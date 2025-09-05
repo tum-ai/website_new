@@ -8,20 +8,20 @@ export const Grid = () => {
     },
     {
       id: 3,
-      src: "public/assets/innovation/robotics_writing.png",
+      src: "/assets/innovation/robotics_writing.png",
       opacity: "opacity-20",
     },
     { id: 4, src: "/assets/home_img1.jpg", opacity: "opacity-10" },
     {
       id: 5,
-      src: "public/assets/innovation/med_ai.jpg",
+      src: "/assets/innovation/med_ai.jpg",
       opacity: "opacity-20",
     },
     { id: 6, src: "/assets/home_img5.jpeg", opacity: "opacity-30" },
     { id: 7, src: "/assets/home_img4.jpg", opacity: "opacity-20" },
     {
       id: 8,
-      src: "public/assets/innovation/robotics_discussion.png",
+      src: "/assets/innovation/robotics_discussion.png",
       opacity: "opacity-30",
     },
     { id: 9, src: "/assets/home_img1.jpg", opacity: "opacity-30" },
