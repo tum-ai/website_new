@@ -125,7 +125,7 @@ function PastEventCard({ event }: { event: Event }) {
               </DialogTrigger>
 
               <DialogContent
-                className="max-w-2xl max-h-[80vh] overflow-y-auto "
+                className="max-w-[calc(100vw-4rem)] max-h-[calc(100vh-4rem)] overflow-y-auto"
                 showCloseButton={false}
               >
                 <DialogHeader>
@@ -133,7 +133,7 @@ function PastEventCard({ event }: { event: Event }) {
                     {format(eventDate, "PPP")}
                   </DialogTitle>
                   <DialogTitle className="text-xl">{event.title}</DialogTitle>
-                  <DialogDescription className="text-sm text-muted-foreground pb-2">
+                  <DialogDescription className="text-sm text-muted-foreground">
                     {event.location ? `${event.location}` : ""}
                     {event.city ? `, ${event.city}` : ""}
                   </DialogDescription>
