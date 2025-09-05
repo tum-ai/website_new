@@ -24,7 +24,7 @@ export function ScrollSection() {
   const doubledData = [...data, ...data]; // duplicate for seamless scroll
 
   return (
-    <div className="overflow-hidden w-full my-10">
+    <div className="overflow-hidden w-full">
       <div className="flex flex-nowrap animate-scroll-left">
         {doubledData.map((imgObj, idx) => (
           <img
