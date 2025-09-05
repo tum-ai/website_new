@@ -21,7 +21,6 @@ import {
   DialogTrigger,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 import type { Event } from "@/lib/types";
 import { format } from "date-fns";
 import { Button } from "../ui/button";
@@ -36,9 +35,15 @@ export default function PastEvents({ events }: { events: Event[] }) {
   }
 
   return (
-    <div className="flex flex-wrap gap-4">
+    <div className="flex flex-wrap mx-[-0.75rem]">
       {events.map((event) => (
-        <PastEventCard key={event.id} event={event} />
+        <div
+          key={event.id}
+          className="flex-shrink-0 px-3 pb-6"
+        >
+
+          <PastEventCard key={event.id} event={event} />
+        </div>
       ))}
     </div>
   );
@@ -49,13 +54,13 @@ function PastEventCard({ event }: { event: Event }) {
 
   return (
     <Card className="flex flex-col w-full overflow-hidden w-[320px] md:w-[360px]">
-      <div className="relative w-full aspect-square group mb-3 flex-shrink-0">
+      <div className="relative w-full aspect-square group p-4 flex-shrink-0">
         <Carousel className="w-full h-full">
           <CarouselContent className="h-full">
             {event.images && event.images.length > 0 ? (
               event.images.map((image, index) => (
                 <CarouselItem key={index} className="h-full">
-                  <div className="h-full p-1">
+                  <div className="h-full">
                     <div className="aspect-square w-full relative overflow-hidden rounded-lg">
                       <img
                         src={image}
@@ -68,7 +73,7 @@ function PastEventCard({ event }: { event: Event }) {
               ))
             ) : (
               <CarouselItem className="h-full">
-                <div className="h-full p-1">
+                <div className="h-full">
                   <div className="aspect-square w-full relative overflow-hidden rounded-lg bg-accent-foreground flex items-center justify-center">
                     <img
                       src="/assets/logo_new_white_standard.png"
@@ -90,7 +95,7 @@ function PastEventCard({ event }: { event: Event }) {
         </Carousel>
       </div>
 
-      <div className="flex flex-col justify-normal flex-1 min-w-0 p-4 md:pl-6">
+      <div className="flex flex-col justify-normal flex-1 min-w-0 p-4 pt-0">
         <CardHeader className="pb-0 px-0">
           <CardTitle className="text-purple-800 text-lg">
             {format(eventDate, "PPP")}

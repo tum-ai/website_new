@@ -64,7 +64,7 @@ function UpcomingEventCard({ event }: { event: Event }) {
 
   return (
     <Card className="hover:shadow-lg transition-shadow justify-between w-[320px] md:w-[360px]">
-      <div className="p-6">
+      <div className="p-4">
         <AspectRatio ratio={1 / 1}>
           {event.poster ? (
             <img
@@ -88,40 +88,43 @@ function UpcomingEventCard({ event }: { event: Event }) {
           )}
         </AspectRatio>
       </div>
-      <CardHeader className="pb-0">
-        <CardTitle className="text-purple-800 text-lg">
-          {format(eventDate, "PPP")}
-        </CardTitle>
-        <CardTitle className="text-xl">{event.title}</CardTitle>
-        <CardDescription className="text-sm text-muted-foreground mt-1 mb-3">
-          {event.location ? `${event.location}` : ""}
-          {event.city ? `, ${event.city}` : ""}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="pb-6">
-        <p className="text-sm">
-          {event.description.length > 300
-            ? event.description.slice(0, 300) + "..."
-            : event.description}
-        </p>
-      </CardContent>
-      <CardFooter className="pb-6">
-        {event.sign_up && (
-          <Button
-            size={"xl"}
-            variant="primary"
-            className="text-white w-full"
-            disabled={applicationsClosed}
-            onClick={() => {
-              if (!applicationsClosed) {
-                window.open(event.sign_up, "_blank");
-              }
-            }}
-          >
-            {applicationsClosed ? "Applications Closed" : "Apply Now!"}
-          </Button>
-        )}
-      </CardFooter>
+      <div className="flex flex-col justify-normal flex-1 min-w-0 p-4 pt-0">
+
+        <CardHeader className="pb-0 px-0">
+          <CardTitle className="text-purple-800 text-lg">
+            {format(eventDate, "PPP")}
+          </CardTitle>
+          <CardTitle className="text-xl">{event.title}</CardTitle>
+          <CardDescription className="text-sm text-muted-foreground pb-2">
+            {event.location ? `${event.location}` : ""}
+            {event.city ? `, ${event.city}` : ""}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="px-0">
+          <p className="text-sm">
+            {event.description.length > 300
+              ? event.description.slice(0, 300) + "..."
+              : event.description}
+          </p>
+        </CardContent>
+        <CardFooter className="px-0 pt-4">
+          {event.sign_up && (
+            <Button
+              size={"xl"}
+              variant="primary"
+              className="text-white w-full"
+              disabled={applicationsClosed}
+              onClick={() => {
+                if (!applicationsClosed) {
+                  window.open(event.sign_up, "_blank");
+                }
+              }}
+            >
+              {applicationsClosed ? "Applications Closed" : "Apply Now!"}
+            </Button>
+          )}
+        </CardFooter>
+      </div>
     </Card>
   );
 }
