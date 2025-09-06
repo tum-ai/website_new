@@ -10,10 +10,19 @@ export default function Homepage() {
   return (
     <>
       <title>Home - TUM.ai</title>
-      <div className="relative flex flex-row bg-[#0B0213] text-white min-h-screen pt-16 px-6">
-        <Hero />
-        {/* Grid of squares (bottom right) */}
-        <Grid />
+      <div className="relative bg-[#0B0213] text-white min-h-screen">
+        <div className="hidden sm:block">
+          <Grid />
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: "linear-gradient(to top right, #0D0214 20%, transparent)",
+            }}
+          />
+        </div>
+        <div className="relative z-10 flex items-center justify-center min-h-screen sm:items-end sm:justify-start sm:pl-8 sm:pb-8">
+          <Hero />
+        </div>
       </div>
       <AboutSection />
       <ScrollSection />

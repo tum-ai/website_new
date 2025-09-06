@@ -1,12 +1,16 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
 
 export const Header = () => {
   const [open, setOpen] = useState(false);
+  const [showLogo, setShowLogo] = useState(false);
+  const [headerOpacity, setHeaderOpacity] = useState(0);
+  const [headerBlur, setHeaderBlur] = useState(0);
+  const location = useLocation();
 
   const links = [
     { href: "/events", text: "Events" },
@@ -18,9 +22,56 @@ export const Header = () => {
     { href: "/qanda", text: "Q&A" },
   ];
 
+  useEffect(() => {
+    if (location.pathname !== "/") {
+      setShowLogo(true);
+      setHeaderOpacity(0.8);
+      setHeaderBlur(10);
+      return;
+    }
+
+    const handleScroll = () => {
+      const isMobile = window.innerWidth < 768;
+      const threshold = isMobile ? window.innerHeight * 0.3 : window.innerHeight * 0.6;
+
+      if (window.scrollY > threshold) {
+        setShowLogo(true);
+        setHeaderOpacity(0.8);
+        setHeaderBlur(10);
+      } else {
+        setShowLogo(false);
+        setHeaderOpacity(0);
+        setHeaderBlur(0);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [location.pathname]);
+
   return (
-    <div className="fixed top-0 left-0 w-full z-50 bg-[#0B0213] h-16 flex items-center px-6">
-      <a href="/">
+    <div
+      className="fixed top-0 left-0 w-full z-50 h-16 flex items-center px-6 py-10"
+      style={{
+        backgroundColor: `rgba(11, 2, 19, ${headerOpacity})`,
+        backdropFilter: `blur(${headerBlur}px)`,
+      }}
+    >
+      {!showLogo && location.pathname === "/" && (
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: "linear-gradient(to bottom, #0D0214 10%, transparent)",
+            zIndex: -1,
+          }}
+        ></div>
+      )}
+      <a
+        href="/"
+        className={`transition-opacity duration-300 ${
+          showLogo ? "opacity-100" : "opacity-0"
+        }`}
+      >
         <img
           src="/assets/logo_new_white_standard.png"
           alt="Logo"
@@ -44,12 +95,18 @@ export const Header = () => {
             {text}
           </NavLink>
         ))}
-        <a
-          href="/apply"
-          className="ml-4 px-4 py-1.5 border border-[#A144E9] text-white rounded-md hover:bg-[#A144E9] hover:text-white transition"
+        <Button
+          asChild
+          variant="outline2"
+          className="w-full rounded-md px-6 py-3 text-center sm:w-auto"
         >
-          Become a Member
-        </a>
+          <a
+            href="/apply"
+            className="w-full bg-transparent border border-[#A144E9] rounded-md px-6 py-3 text-[#A144E9] text-center sm:w-auto"
+          >
+            Become a Member
+          </a>
+        </Button>
       </div>
 
       {/* Mobile nav button */}
