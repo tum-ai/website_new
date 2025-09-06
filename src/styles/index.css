@@ -257,7 +257,8 @@ button:focus-visible {
   }
 
   .animate-scroll-left {
-    animation: marquee-left 28s linear infinite;
+    /* default duration can be overridden with inline style --marquee-duration */
+    animation: marquee-left var(--marquee-duration, 28s) linear infinite;
     will-change: transform;
   }
 
