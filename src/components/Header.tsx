@@ -61,7 +61,7 @@ export const Header = () => {
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: "linear-gradient(to bottom, #0D0214 10%, transparent)",
+            background: "linear-gradient(to bottom, #0D0214 30%, transparent)",
             zIndex: -1,
           }}
         ></div>
