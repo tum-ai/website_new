@@ -88,8 +88,8 @@ export const Header = () => {
               `${
                 isActive
                   ? "text-[#A144E9] font-semibold"
-                  : "text-gray-300 hover:text-white"
-              } text-[16px] cursor-pointer`
+                  : "text-gray-300 hover:text-[#A144E9]"
+              } text-[16px] font-bold cursor-pointer`
             }
           >
             {text}
