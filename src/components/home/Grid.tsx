@@ -16,13 +16,13 @@ export const Grid = () => {
 
   const [tileSize, setTileSize] = useState(164); // Default tile size
   const [tileCount, setTileCount] = useState(0);
-  const [gap, setGap] = useState(24);
+  const [gap, setGap] = useState(0);
 
   useEffect(() => {
     const calculateGrid = () => {
-      const minTileSize = 120; // Minimum tile size
-      const maxTileSize = 200; // Maximum tile size
-      const gap = 24; // Gap between tiles
+      const minTileSize = 116; // Minimum tile size
+      const maxTileSize = 214; // Maximum tile size
+      const gap = 12; // Gap between tiles
 
       const cols = Math.floor((window.innerWidth + gap) / (maxTileSize + gap));
       const rows = Math.floor((window.innerHeight + gap) / (maxTileSize + gap));
@@ -55,6 +55,7 @@ export const Grid = () => {
         gridTemplateColumns: `repeat(auto-fill, ${tileSize}px)`,
         gridTemplateRows: `repeat(auto-fill, ${tileSize}px)`,
         gap: `${gap}px`,
+        overflow: "hidden",
       }}
     >
       {Array.from({ length: tileCount }).map((_, index) => {
