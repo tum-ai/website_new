@@ -54,10 +54,10 @@ export const AboutSection = () => {
             </div>
           </div>
           <div className="flex w-full md:w-2/3 items-center">
-            <p className="text-lg md:text-xl">
-              Together with our highly-talented members, we conduct cutting-edge research projects, develop AI-powered solutions with industry partners, incubate innovative startups, and organize workshops that bridge academic knowledge with real-world applications. 
-              Through strategic partnerships and connections with leading AI tech and industry companies, we create unique opportunities for collaboration, mentorship, and career development. 
-              We aim to lower the entry barriers to AI creation and usage for people from every domain by establishing a platform for practical experience through diverse applied AI projects, research initiatives, and entrepreneurial opportunities.
+            <p className="text-lg md:text-xl text-stone-400">
+              Together with our highly-talented members, we conduct <b className="text-black">cutting-edge research projects</b>, develop <b className="text-black">AI-powered solutions with industry partners</b>, incubate <b className="text-black">innovative startups</b>, and <b className="text-black">organize workshops</b> that bridge academic knowledge with real-world applications. 
+              Through strategic <b className="text-black">partnerships and connections</b> with leading AI tech and industry companies, we create unique opportunities for <b className="text-black">collaboration, mentorship, and career development</b>. 
+              We aim to <b className="text-black">lower the entry barriers to AI</b> creation and usage for people from every domain by establishing a platform for practical experience through diverse applied AI projects, research initiatives, and entrepreneurial opportunities.
             </p>
           </div>
         </div>
