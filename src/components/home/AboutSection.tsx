@@ -9,11 +9,98 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
 import "../../styles/index.css";
+import gsap from "gsap";
+import ScrollTrigger from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export const AboutSection = () => {
+  const textRef = useRef<HTMLDivElement | null>(null);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+
+    // disable animations on small screens (mobile) and respect reduced motion
+    if (typeof window !== "undefined") {
+      const mm = window.matchMedia && window.matchMedia("(max-width: 767px)");
+      const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
+      if ((mm && mm.matches) || (reduce && reduce.matches)) {
+        return;
+      }
+    }
+
+    if (!textRef.current || !wrapperRef.current) return;
+
+    // select the word spans inside the text container
+    const words = textRef.current.querySelectorAll("span.word");
+    if (!words || words.length === 0) return;
+
+    // make sure words are hidden before animation (start slightly below and fade in)
+    gsap.set(words, { opacity: 0, y: 20 });
+
+    // timeline controlled by ScrollTrigger: scrub ties the timeline progress to scroll position
+    // compute a scroll distance proportional to the number of words so the stagger has room to play
+    const estimatedScroll = Math.min(1200, 200 + words.length * 18); // pixels
+    // keep the section pinned a little longer after the animation completes
+    const extraHold = 300; // extra pixels to remain pinned after the reveal finishes
+    const totalScroll = estimatedScroll + extraHold;
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        // pin the whole showcase wrapper (so the placeholder stays visible while text animates)
+        trigger: wrapperRef.current,
+        // pin the full-viewport container so nothing else is visible while the animation runs
+        start: "top top",
+        end: `+=${totalScroll}`,
+        scrub: 0.2, // link animation progress to scrolling; use a small smoothing value
+        pin: true,
+        pinSpacing: true,
+        // markers: true, // uncomment for debugging
+      },
+    });
+
+    tl.to(words, {
+      opacity: 1,
+      y: 0,
+      stagger: { each: 0.035, from: "start" },
+      duration: 0.2,
+      ease: "none", // keep a linear mapping between scroll position and animation progress
+    });
+
+    return () => {
+      // cleanup timeline and ScrollTrigger when component unmounts
+      try {
+        if (tl && tl.scrollTrigger) tl.scrollTrigger.kill();
+        tl.kill();
+      } catch (e) {
+        /* ignore cleanup errors */
+      }
+    };
+  }, []);
+
+  // keywords to highlight inside the paragraph
+  const gradientKeywords = new Set([
+
+  ]);
+  const primaryKeywords = new Set([
+    "members",
+    "partnerships",
+    "collaboration",
+    "mentorship",
+    "opportunities",
+    "solutions",
+    "entrepreneurial",
+    "tumai",
+    "ai",
+    "research",
+    "projects",
+    "startups",
+    "workshops",
+  ]);
+
   return (
     <div className="flex flex-col gap-8 min-h-screen p-8 md:p-10">
-      <div className="w-full flex items-center md:max-h-2/3 flex-1">
+      <div className="w-full flex min-h-2/3 items-center md:max-h-2/3 flex-1">
         <img
           className="object-cover bg-gray-200 rounded-xl"
           src="/assets/apply/new_section_photo_1.jpg"
@@ -32,11 +119,11 @@ export const AboutSection = () => {
             </h1>
             <p className="text-xl md:text-2xl">
               With over 90 active members, TUM.ai empowers the next generation of AI innovators.
-              Founded in 2020, our mission is to create 
+              Founded in 2020, our mission is to create
               <span className="text-primary font-bold"> {" "}
                 a community of students who innovate, research, and build at the forefront of AI</span>
-                , fostering both groundbreaking research and entrepreneurial ventures across diverse industries.
-                
+              , fostering both groundbreaking research and entrepreneurial ventures across diverse industries.
+
             </p>
             <Button
               asChild
@@ -58,12 +145,33 @@ export const AboutSection = () => {
           </div>
         </div>
       </div>
-      <div className="flex w-full md:w-2/3 items-center">
-        <p className="text-lg md:text-xl text-stone-400">
-          Together with our highly-talented members, we conduct <b className="text-black">cutting-edge research projects</b>, develop <b className="text-black">AI-powered solutions with industry partners</b>, incubate <b className="text-black">innovative startups</b>, and <b className="text-black">organize workshops</b> that bridge academic knowledge with real-world applications.
-          Through strategic <b className="text-black">partnerships and connections</b> with leading AI tech and industry companies, we create unique opportunities for <b className="text-black">collaboration, mentorship, and career development</b>.
-          We aim to <b className="text-black">lower the entry barriers to AI</b> creation and usage for people from every domain by establishing a platform for practical experience through diverse applied AI projects, research initiatives, and entrepreneurial opportunities.
-        </p>
+      <div className="hidden md:flex h-[100dvh] w-full md:flex-row md:pt-16" ref={wrapperRef}>
+        <div className="w-full md:w-1/2 lg:w-1/3 flex items-center justify-center" ref={textRef}>
+          <p className="text-lg md:text-2xl text-start md:text-left px-4">
+            {"Together with our highly-talented members, we conduct cutting-edge research projects, develop AI-powered solutions with industry partners, incubate innovative startups, and organize workshops that bridge academic knowledge with real-world applications. Through strategic partnerships and connections with leading AI tech and industry companies, we create unique opportunities for collaboration, mentorship, and career development. We aim to lower the entry barriers to AI creation and usage for people from every domain by establishing a platform for practical experience through diverse applied AI projects, research initiatives, and entrepreneurial opportunities.".split(" ").map((word, index) => {
+              const stripped = word.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+              const isGradient = gradientKeywords.has(stripped);
+              const isPrimary = primaryKeywords.has(stripped);
+              const extraClass = isGradient
+                ? "gradient-text font-bold"
+                : isPrimary
+                  ? "text-primary font-semibold"
+                  : "";
+              return (
+                <span key={index} className={`word inline-block ${extraClass}`}>
+                  {word}&nbsp;
+                </span>
+              );
+            })}
+          </p>
+        </div>
+        <div className="w-full md:w-2/3 flex items-center justify-center">
+          <img
+            className="object-cover w-full h-[70vh] rounded-xl"
+            src="/assets/apply/new_section_photo_2.jpg"
+            alt="TUM.ai members placeholder"
+          />
+        </div>
       </div>
     </div>
   );
