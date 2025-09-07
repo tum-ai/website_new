@@ -118,7 +118,9 @@ export const PartnersSection = () => {
             <a href="mailto:partners@tum-ai.com">Become a Partner</a>
           </Button>
 
-          <Button asChild>
+          <Button asChild
+            variant="outline2"
+            className="w-full rounded-md px-6 py-3 text-center sm:w-auto text-primary hover:text-white hover:bg-primary/80">
             <a
               href="/partners"
               className="w-full bg-black border border-[#A144E9] rounded-md px-6 py-3 text-[#A144E9] text-center sm:w-auto"
