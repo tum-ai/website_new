@@ -1,8 +1,36 @@
 import { Button } from "./button";
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
 
 export const Hero = () => {
+  const heroRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!heroRef.current) return;
+
+    const mm = window.matchMedia && window.matchMedia("(max-width: 767px)");
+    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
+    const el = heroRef.current as HTMLElement;
+    if ((mm && mm.matches) || (reduce && reduce.matches)) {
+      el.style.opacity = "1";
+      el.style.transform = "none";
+      return;
+    }
+
+    gsap.set(el, { opacity: 0, y: 20 });
+  const tween = gsap.to(el, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out", delay: 1 });
+
+    return () => {
+      try {
+        tween.kill();
+      } catch (e) {
+        /* ignore */
+      }
+    };
+  }, []);
   return (
-    <div className="flex flex-col items-start justify-center sm:justify-end px-4 py-6 sm:px-8 sm:py-12">
+    <div ref={heroRef} className="flex flex-col items-start justify-center sm:justify-end px-4 py-6 sm:px-8 sm:py-12">
       {/* Logo */}
       <svg
         className="h-10 w-auto fill-white mb-4"

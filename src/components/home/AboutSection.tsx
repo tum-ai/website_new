@@ -17,6 +17,8 @@ gsap.registerPlugin(ScrollTrigger);
 export const AboutSection = () => {
   const textRef = useRef<HTMLDivElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const revealRef = useRef<HTMLDivElement | null>(null);
+  const picRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
 
@@ -78,8 +80,101 @@ export const AboutSection = () => {
     };
   }, []);
 
+  // reveal animation specifically for the picture further down the section
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!picRef.current) return;
+
+    const mm = window.matchMedia && window.matchMedia("(max-width: 767px)");
+    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
+    if ((mm && mm.matches) || (reduce && reduce.matches)) {
+      // make sure picture is visible when animations are disabled
+      const el = picRef.current as HTMLElement;
+      el.style.opacity = "1";
+      el.style.transform = "none";
+      return;
+    }
+
+    const el = picRef.current as HTMLElement;
+    gsap.set(el, { opacity: 0, y: 20 });
+
+    const trig = ScrollTrigger.create({
+      trigger: picRef.current,
+      start: "top 80%",
+      end: "bottom 20%",
+      onEnter: () => {
+        gsap.to(el, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" });
+      },
+      onEnterBack: () => {
+        gsap.to(el, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" });
+  },
+    });
+
+    return () => {
+      try {
+        trig.kill();
+      } catch (e) {
+        /* ignore */
+      }
+    };
+  }, []);
+
+  // reveal animation for the main info block (heading, paragraph, buttons, stats)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!revealRef.current) return;
+
+    const mm = window.matchMedia && window.matchMedia("(max-width: 767px)");
+    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
+    if ((mm && mm.matches) || (reduce && reduce.matches)) {
+      const elms = revealRef.current.querySelectorAll<HTMLElement>(".animate-item");
+      elms.forEach((el) => {
+        el.style.opacity = "1";
+        el.style.transform = "none";
+      });
+      return;
+    }
+
+    const elms = revealRef.current.querySelectorAll<HTMLElement>(".animate-item");
+    if (!elms || elms.length === 0) return;
+
+    gsap.set(elms, { opacity: 0, y: 20 });
+
+    const trig = ScrollTrigger.create({
+      trigger: revealRef.current,
+      start: "top 80%",
+      end: "bottom 20%",
+      onEnter: () => {
+        gsap.to(elms, {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          stagger: 0,
+          ease: "power2.out",
+        });
+      },
+      onEnterBack: () => {
+        gsap.to(elms, {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          stagger: 0,
+          ease: "power2.out",
+        });
+      },
+    });
+
+    return () => {
+      try {
+        trig.kill();
+      } catch (e) {
+        /* ignore */
+      }
+    };
+  }, []);
+
   // keywords to highlight inside the paragraph
-  const gradientKeywords = new Set([
+  const gradientKeywords: Set<string> = new Set([
 
   ]);
   const primaryKeywords = new Set([
@@ -107,17 +202,17 @@ export const AboutSection = () => {
           alt="TUM.ai members"
         />
       </div>
-      <div className="flex flex-wrap md:min-h-1/3 my-2 w-full justify-between">
+      <div className="flex flex-wrap md:min-h-1/3 my-2 w-full justify-between" ref={revealRef}>
         <div className="flex flex-col w-full md:w-3/6 text-start md:text-left">
           <div className="flex flex-col gap-4">
-            <h1 className="text-title sm:text-2xl md:text-[2rem] font-semibold">
+            <h1 className="text-title sm:text-2xl md:text-[2rem] font-semibold animate-item">
               What is{" "}
               <span className="gradient-text font-bold">
                 TUM.ai
               </span>
               {"?"}
             </h1>
-            <p className="text-xl md:text-2xl">
+            <p className="text-xl md:text-2xl animate-item">
               With over 90 active members, TUM.ai empowers the next generation of AI innovators.
               Founded in 2020, our mission is to create
               <span className="text-primary font-bold"> {" "}
@@ -128,7 +223,7 @@ export const AboutSection = () => {
             <Button
               asChild
               variant="primary"
-              className="w-full rounded-md px-6 py-3 mt-4 mb-6 md:mb-0 text-center md:w-auto"
+              className="w-full rounded-md px-6 py-3 mt-4 mb-6 md:mb-0 text-center md:w-auto animate-item"
             >
               <a href="/community#memberStories">Meet our Members</a>
             </Button>
@@ -137,10 +232,10 @@ export const AboutSection = () => {
         <div className="flex flex-col justify-center-safe items-center w-full md:w-3/7">
           <div className="flex w-full justify-center items-center">
             <div className="grid grid-cols-2 sm:grid-cols-2 gap-6 w-full">
-              <Stat title={"Alumni Members"} from={0} to={400} suffix="+" />
-              <Stat title={"Founding Year"} from={0} to={2020} suffix="" />
-              <Stat title={"Nationalities"} from={0} to={33} suffix="+" />
-              <Stat title={"Majors"} from={0} to={15} suffix="+" />
+              <div className="animate-item"><Stat title={"Alumni Members"} from={0} to={400} suffix="+" /></div>
+              <div className="animate-item"><Stat title={"Founding Year"} from={0} to={2020} suffix="" /></div>
+              <div className="animate-item"><Stat title={"Nationalities"} from={0} to={33} suffix="+" /></div>
+              <div className="animate-item"><Stat title={"Majors"} from={0} to={15} suffix="+" /></div>
             </div>
           </div>
         </div>
@@ -165,7 +260,7 @@ export const AboutSection = () => {
             })}
           </p>
         </div>
-        <div className="w-full md:w-2/3 flex items-center justify-center">
+  <div ref={picRef} className="w-full md:w-2/3 flex items-center justify-center">
           <img
             className="object-cover w-full h-[70vh] rounded-xl"
             src="/assets/apply/new_section_photo_2.jpg"
