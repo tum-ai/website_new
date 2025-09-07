@@ -100,9 +100,9 @@ export const AboutSection = () => {
 
   return (
     <div className="flex flex-col gap-8 min-h-screen p-8 md:p-10">
-      <div className="w-full flex min-h-2/3 items-center md:max-h-2/3 flex-1">
+      <div className="w-full flex min-h-[350px] items-center md:max-h-2/3 flex-1">
         <img
-          className="object-cover bg-gray-200 rounded-xl"
+          className="object-cover min-h-[350px]  bg-gray-200 rounded-xl"
           src="/assets/apply/new_section_photo_1.jpg"
           alt="TUM.ai members"
         />
