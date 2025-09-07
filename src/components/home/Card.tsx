@@ -14,7 +14,7 @@ const Card = ({ text, title, desc, buttonText, link }: CardProps) => {
       <div className="flex flex-col w-full md:gap-4 gap-2">
         <p className="md:text-xl">{text}</p>
         <h1 className="font-bold text-[1.5rem] md:!text-[2rem]">
-          <span className="bg-gradient-to-r from-[#6517A1] to-[#B55BD1] bg-clip-text text-transparent">
+          <span className="gradient-text">
             {title}
           </span>
         </h1>

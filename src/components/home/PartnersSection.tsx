@@ -100,7 +100,7 @@ export const PartnersSection = () => {
       >
         <h1 className="text-title sm:text-2xl md:text-[2rem] font-semibold animate-item">
           Join{" "}
-          <span className="bg-gradient-to-r from-[#6517A1] to-[#B57CFF] bg-clip-text text-transparent">
+          <span className="gradient-text">
             TUM.ai
           </span>{" "}
           as a sponsor or cooperation partner.
