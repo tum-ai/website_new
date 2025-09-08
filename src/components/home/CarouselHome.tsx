@@ -1,10 +1,13 @@
-import { useState } from "react";
-import Arrows from "./Arrows";
-import CarouselItem from "./CarouselItem";
+import {
+  Carousel,
+  CarouselNext,
+  CarouselPrevious,
+  CarouselContent,
+  CarouselItem,
+} from "../ui/carousel";
+import Card from "./Card";
 
-export const Carousel = () => {
-  const [current, setCurrent] = useState(0);
-
+export const CarouselHome = () => {
   const data = [
     {
       imgSrc: "/assets/open_ai_speaker_event.jpg",
@@ -39,36 +42,41 @@ export const Carousel = () => {
       link: "/e-lab",
     },
   ];
-
-  const prevSlide = () => {
-    setCurrent((prev) => (prev === 0 ? data.length - 1 : prev - 1));
-  };
-
-  const nextSlide = () => {
-    setCurrent((prev) => (prev === data.length - 1 ? 0 : prev + 1));
-  };
-
+  // TODO: refactor!!!
   return (
-    <div className="relative overflow-hidden rounded-2xl w-full max-w-full">
+    <Carousel className="w-full max-w-full group">
       {/* slider wrapper */}
-      <div
-        className="flex transition-transform duration-700 ease-in-out"
-        style={{
-          transform: `translateX(-${current * 100}%)`,
-          width: `${data.length * 100}%`,
-        }}
-      >
+      <CarouselContent className="h-full">
         {data.map((item, index) => (
-          <div key={index} className="w-full md:w-full flex flex-shrink-0">
-            <CarouselItem {...item} />
-          </div>
-        ))}
-      </div>
+          <CarouselItem
+            key={index}
+            className="w-full md:w-full flex flex-shrink-0"
+          >
+            {" "}
+            <div className="relative flex flex-col md:flex-row md:gap-8 px-4 md:px-10 py-14 md:py-12 justify-center w-dvw max-w-full">
+              <img
+                className="aspect-[16/9] object-cover rounded-md"
+                src={item.imgSrc}
+              />
 
-      {/* arrows */}
-      <Arrows onPrev={prevSlide} onNext={nextSlide} />
-    </div>
+              {/* card */}
+              <div className="flex items-center">
+                <Card
+                  link={item.link}
+                  text={item.text}
+                  title={item.title}
+                  desc={item.desc}
+                  buttonText={item.buttonText}
+                />
+              </div>
+              <CarouselPrevious className="absolute left-8 top-1/2 -translate-y-1/2 z-10" />
+              <CarouselNext className="absolute right-16 top-1/2 -translate-y-1/2 z-10" />
+            </div>
+          </CarouselItem>
+        ))}
+      </CarouselContent>
+    </Carousel>
   );
 };
 
-export default Carousel;
+export default CarouselHome;

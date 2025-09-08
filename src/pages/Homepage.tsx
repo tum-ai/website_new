@@ -1,5 +1,5 @@
 import { AboutSection } from "@/components/home/AboutSection";
-import { Carousel } from "@/components/home/Carousel";
+import { CarouselHome } from "@/components/home/CarouselHome";
 // import { EventsSection } from "@/components/home/EventsSection";
 import { Grid } from "@/components/home/Grid";
 import { PartnersSection } from "@/components/home/PartnersSection";
@@ -27,7 +27,7 @@ export default function Homepage() {
       </div>
       <AboutSection />
       <ScrollSection />
-      <Carousel />
+      <CarouselHome />
       <PartnersSection />
       {/* <EventsSection /> */}
     </>
