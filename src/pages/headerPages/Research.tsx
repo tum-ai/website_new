@@ -4,6 +4,8 @@ import { researchPartners } from "@/data/partners";
 import type { Research } from "@/lib/types";
 import { useEffect, useRef, useState } from "react";
 import type React from "react";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 export default function Research() {
   const [projects, setProjects] = useState<Research[]>([]);
@@ -41,7 +43,7 @@ export default function Research() {
     }
   }, [projects]);
 
-  if (loading) return <div>Loading projects...</div>;
+  if (loading) return <div>Loading research projects...</div>;
   if (error) return <div style={{ color: "red" }}>{error}</div>;
 
   const tabs = [
@@ -160,8 +162,7 @@ export default function Research() {
 
   return (
     <section
-      className={`relative overflow-hidden p-8 mt-16 md:mt-0 "bg-gradient-to-br from-blue-900 to-purple-900"
-         sm:py-16 lg:py-24`}
+      className={`relative overflow-hidden p-8 mt-16 md:mt-0 "bg-gradient-to-br from-blue-900 to-purple-900" sm:py-16 lg:py-24`}
     >
       {/* Hero Section */}
       <div className="inset-0 flex items-center justify-center flex-col mb-8">
@@ -185,12 +186,12 @@ export default function Research() {
           <div
             role="tablist"
             aria-label="Research tabs"
-            className="flex items-center justify-center gap-2 overflow-x-auto px-2 sm:px-0"
+            className="flex flex-col sm:flex-row items-center justify-center gap-2 mb-4"
           >
             {tabs.map((tab, idx) => {
               const selected = activeTab === tab.value;
               return (
-                <button
+                <Button
                   key={tab.value}
                   ref={(el) => {
                     tabRefs.current[idx] = el;
@@ -203,17 +204,21 @@ export default function Research() {
                   onClick={() => setActiveTab(tab.value)}
                   onKeyDown={(e) => handleKeyDown(e, idx)}
                   className={
-                    "whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium transition-colors " +
+                    "w-full sm:w-auto text-center rounded-md text-sm transition-colors " 
+                    +
                     (selected
                       ? "bg-white/10 text-white shadow-inner ring-1 ring-white/20"
                       : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white")
                   }
                 >
                   {tab.label}
-                </button>
+                </Button>
+
               );
             })}
           </div>
+
+          <Separator className="" />
 
           {tabs.map((tab) => (
             <div
