@@ -38,7 +38,7 @@ export const JourneySection = () => {
             >
               The TUM.ai Member Journey
             </h2>
-            <p className="mx-auto max-w-2xl text-lg text-white">
+            <p className="mx-auto max-w-2xl text-subtext text-white">
               At TUM.ai, members contribute through AI projects, workshops, and
               community initiatives — turning bold ideas into real-world impact.
             </p>

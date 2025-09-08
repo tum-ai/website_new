@@ -50,7 +50,10 @@ export function ContentPage({
       {/* Tabs Section */}
       {tabs.length > 1 ? (
         <div className="w-full ">
-          <Tabs defaultValue={tabs[0].value} className="w-full flex justify-center ">
+          <Tabs
+            defaultValue={tabs[0].value}
+            className="w-full flex justify-center "
+          >
             <TabsList className="flex items-center bg-transparent gap-2 justify-center w-full">
               {tabs.map((tab) => (
                 <TabsTrigger
@@ -64,7 +67,11 @@ export function ContentPage({
             </TabsList>
 
             {tabs.map((tab) => (
-              <TabsContent key={tab.value} value={tab.value} className="w-full pt-4">
+              <TabsContent
+                key={tab.value}
+                value={tab.value}
+                className="w-full pt-4"
+              >
                 {tab.content}
               </TabsContent>
             ))}
