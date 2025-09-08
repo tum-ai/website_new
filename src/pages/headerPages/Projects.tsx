@@ -86,9 +86,11 @@ export default function Projects() {
       value: "departments",
       label: "Departments",
       content: (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 justify-items-center">
+        <div className="flex flex-wrap mx-[-0.75rem]">
           {departments.map((dept) => (
-            <ProjectCard key={dept.name} {...dept} />
+            <div className="flex-shrink-0 px-3 pb-6">
+              <ProjectCard key={dept.name} {...dept} />
+            </div>
           ))}
         </div>
       ),

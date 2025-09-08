@@ -48,7 +48,7 @@ export function ProjectCard({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Card className="group cursor-pointer w-full max-w-sm overflow-hidden relative h-[300px] flex flex-col justify-end p-0 border-none shadow-lg hover:shadow-xl transition-all duration-300">
+        <Card className="group cursor-pointer max-w-sm overflow-hidden relative h-[360px] w-[320px] md:w-[360px] flex flex-col justify-end p-0 border-none shadow-lg hover:shadow-xl transition-all duration-300">
           {/* Background Image or Placeholder */}
           <div className="absolute inset-0">
             {image ? (
