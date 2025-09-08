@@ -53,16 +53,19 @@ export default function Research() {
       content: (
         <div className="">
           {/* Ongoing projects */}
-          <div className="flex flex-wrap">
+          <div className="flex flex-wrap mx-[-0.75rem]">
+
             {ongoingProjects.map((p) => (
-              <ResearchCard
-                key={p.title}
-                title={p.title}
-                description={p.description}
-                image={p.image}
-                publication={p.publication}
-                keywords={p.keywords} // Keywords under title
-              />
+              <div className="flex-shrink-0 px-3 pb-6">
+                <ResearchCard
+                  key={p.title}
+                  title={p.title}
+                  description={p.description}
+                  image={p.image}
+                  publication={p.publication}
+                  keywords={p.keywords} // Keywords under title
+                />
+              </div>
             ))}
           </div>
 
@@ -72,16 +75,19 @@ export default function Research() {
               <h3 className="text-3xl font-semibold text-center mt-12 mb-6">
                 Past Projects
               </h3>
-              <div className="flex flex-wrap">
+              <div className="flex flex-wrap mx-[-0.75rem]">
                 {pastProjects.map((p) => (
-                  <ResearchCard
-                    key={p.title}
-                    title={p.title}
-                    description={p.description}
-                    image={p.image}
-                    publication={p.publication}
-                    keywords={p.keywords} // Keywords under title
-                  />
+                  <div className="flex-shrink-0 px-3 pb-6">
+
+                    <ResearchCard
+                      key={p.title}
+                      title={p.title}
+                      description={p.description}
+                      image={p.image}
+                      publication={p.publication}
+                      keywords={p.keywords} // Keywords under title
+                    />
+                  </div>
                 ))}
               </div>
             </>
@@ -165,19 +171,13 @@ export default function Research() {
       className={`relative overflow-hidden p-8 mt-16 md:mt-0 "bg-gradient-to-br from-blue-900 to-purple-900" sm:py-16 lg:py-24`}
     >
       {/* Hero Section */}
-      <div className="inset-0 flex items-center justify-center flex-col mb-8">
-        <div className="relative z-10 w-full max-w-5xl px-6">
-          <div className="flex flex-col items-center text-center">
-            <div className="mb-8 w-full max-w-2xl">
-              <h1 className="text-4xl font-bold md:text-5xl">
-                Research
-              </h1>
-            </div>
-            <p className="mx-auto max-w-2xl text-lg">
-              Our research offerings - from projects to exchange programs
-            </p>
-          </div>
-        </div>
+      <div className="flex flex-col items-center gap-4 mb-4 px-6 text-center">
+        <h1 className="text-4xl font-bold md:text-5xl">
+          Research
+        </h1>
+        <p className="mx-auto max-w-2xl text-lg">
+          Our research offerings - from projects to exchange programs
+        </p>
       </div>
 
       {/* Tabs Section */}
@@ -204,7 +204,7 @@ export default function Research() {
                   onClick={() => setActiveTab(tab.value)}
                   onKeyDown={(e) => handleKeyDown(e, idx)}
                   className={
-                    "w-full sm:w-auto text-center rounded-md text-sm transition-colors " 
+                    "w-full sm:w-auto text-center rounded-md text-sm transition-colors "
                     +
                     (selected
                       ? "bg-white/10 text-white shadow-inner ring-1 ring-white/20"
