@@ -49,9 +49,9 @@ export default function Research() {
       value: "projects",
       label: "Projects",
       content: (
-        <>
+        <div className="">
           {/* Ongoing projects */}
-          <div className="flex flex-wrap gap-8">
+          <div className="flex flex-wrap">
             {ongoingProjects.map((p) => (
               <ResearchCard
                 key={p.title}
@@ -70,34 +70,29 @@ export default function Research() {
               <h3 className="text-3xl font-semibold text-center mt-12 mb-6">
                 Past Projects
               </h3>
-              <div className="flex flex-wrap mx-[-0.75rem]">
+              <div className="flex flex-wrap">
                 {pastProjects.map((p) => (
-                  <div
-                    className="flex-shrink-0 px-3 pb-6"
-                  >
-
-                    <ResearchCard
-                      key={p.title}
-                      title={p.title}
-                      description={p.description}
-                      image={p.image}
-                      publication={p.publication}
-                      keywords={p.keywords} // Keywords under title
-                    />
-                  </div>
+                  <ResearchCard
+                    key={p.title}
+                    title={p.title}
+                    description={p.description}
+                    image={p.image}
+                    publication={p.publication}
+                    keywords={p.keywords} // Keywords under title
+                  />
                 ))}
               </div>
             </>
           )}
-        </>
+        </div>
       ),
     },
     {
       value: "exchange",
       label: "Research Exchange Program",
       content: (
-        <div className="max-w-4xl mx-auto space-y-6">
-          <h2 className="text-3xl font-bold tracking-tight text-purple-300">
+        <div className="space-y-6">
+          <h2 className="text-3xl font-bold tracking-tight text-center">
             Research Exchange (REX) Program
           </h2>
 
@@ -184,9 +179,9 @@ export default function Research() {
         </div>
       </div>
 
-      {/* Tabs Section (custom, accessible, responsive) */}
+      {/* Tabs Section */}
       {tabs.length > 1 ? (
-        <div className="w-full">
+        <div className="w-full px-6 md:px-12">
           <div
             role="tablist"
             aria-label="Research tabs"
