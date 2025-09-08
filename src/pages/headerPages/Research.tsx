@@ -1,3 +1,4 @@
+import Layout from "@/components/Layout";
 import ResearchCard from "@/components/research/ResearchCard";
 import { researchPartners } from "@/data/partners";
 import type { Research } from "@/lib/types";
@@ -15,7 +16,7 @@ export default function Research() {
     const fetchProjects = async () => {
       try {
         const res = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/getResearch`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/getResearch`
         );
         if (!res.ok) throw new Error("Failed to fetch projects");
         const data = await res.json();
@@ -46,42 +47,45 @@ export default function Research() {
       value: "projects",
       label: "Projects",
       content: (
-        <>
-          {/* Ongoing projects */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
-            {ongoingProjects.map((p) => (
-              <ResearchCard
-                key={p.title}
-                title={p.title}
-                description={p.description}
-                image={p.image}
-                publication={p.publication}
-                keywords={p.keywords} // Keywords under title
-              />
-            ))}
-          </div>
+        <Layout>
+          <>
+            {/* Ongoing projects */}
 
-          {/* Past projects */}
-          {pastProjects.length > 0 && (
-            <>
-              <h3 className="text-3xl font-semibold text-center mt-12 mb-6">
-                Past Projects
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
-                {pastProjects.map((p) => (
-                  <ResearchCard
-                    key={p.title}
-                    title={p.title}
-                    description={p.description}
-                    image={p.image}
-                    publication={p.publication}
-                    keywords={p.keywords} // Keywords under title
-                  />
-                ))}
-              </div>
-            </>
-          )}
-        </>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
+              {ongoingProjects.map((p) => (
+                <ResearchCard
+                  key={p.title}
+                  title={p.title}
+                  description={p.description}
+                  image={p.image}
+                  publication={p.publication}
+                  keywords={p.keywords} // Keywords under title
+                />
+              ))}
+            </div>
+
+            {/* Past projects */}
+            {pastProjects.length > 0 && (
+              <>
+                <h3 className="text-3xl font-semibold text-center mt-12 mb-6">
+                  Past Projects
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
+                  {pastProjects.map((p) => (
+                    <ResearchCard
+                      key={p.title}
+                      title={p.title}
+                      description={p.description}
+                      image={p.image}
+                      publication={p.publication}
+                      keywords={p.keywords} // Keywords under title
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </>
+        </Layout>
       ),
     },
     {
@@ -98,8 +102,10 @@ export default function Research() {
             opportunities to conduct research abroad. Offers range from final
             theses to research internships with leading labs at institutions
             like
-            <span className="font-semibold"> Harvard, MIT, Cambridge,</span> or{" "}
-            <span className="font-semibold">INRIA</span>.
+            <span className="font-semibold">
+              {" "}
+              Harvard, MIT, Cambridge,
+            </span> or <span className="font-semibold">INRIA</span>.
           </p>
 
           <p className="text-lg leading-relaxed">

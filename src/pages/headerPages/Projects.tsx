@@ -1,4 +1,5 @@
 import { ProjectCard } from "@/components/innovation/InnovationProjectCard";
+import Layout from "@/components/Layout";
 import { ContentPage } from "@/pages/headerPages/ContentPage";
 
 const departments = [
@@ -86,11 +87,13 @@ export default function Projects() {
       value: "departments",
       label: "Departments",
       content: (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 justify-items-center">
-          {departments.map((dept) => (
-            <ProjectCard key={dept.name} {...dept} />
-          ))}
-        </div>
+        <Layout>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 justify-items-center">
+            {departments.map((dept) => (
+              <ProjectCard key={dept.name} {...dept} />
+            ))}
+          </div>
+        </Layout>
       ),
     },
   ];
