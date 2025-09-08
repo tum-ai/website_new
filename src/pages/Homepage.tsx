@@ -16,7 +16,8 @@ export default function Homepage() {
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
-              background: "linear-gradient(to top right, #0D0214 20%, transparent)",
+              background:
+                "linear-gradient(to top right, #0D0214 20%, transparent)",
             }}
           />
         </div>
@@ -26,8 +27,8 @@ export default function Homepage() {
       </div>
       <AboutSection />
       <ScrollSection />
-      <PartnersSection />
       <Carousel />
+      <PartnersSection />
       {/* <EventsSection /> */}
     </>
   );
