@@ -1,5 +1,4 @@
 import { ProjectCard } from "@/components/innovation/InnovationProjectCard";
-import { ContentPage } from "@/pages/headerPages/ContentPage";
 
 const departments = [
   {
@@ -81,11 +80,22 @@ const departments = [
 ];
 
 export default function Projects() {
-  const tabs = [
-    {
-      value: "departments",
-      label: "Departments",
-      content: (
+
+  return (
+    <section
+      className={`relative overflow-hidden p-8 mt-16 md:mt-0 "bg-gradient-to-br from-blue-900 to-purple-900" sm:py-16 lg:py-24`}
+    >
+      {/* Hero Section */}
+      <div className="flex flex-col items-center gap-4 mb-4 px-6 text-center">
+        <h1 className="text-4xl font-bold md:text-5xl">
+          Innovation Departments and Projects
+        </h1>
+        <p className="mx-auto max-w-2xl text-lg">
+          Explore TUM.ai’s innovation departments and the exciting projects they lead.
+        </p>
+      </div>
+      {/* Projects Grid */}
+      <div className="w-full px-6 md:px-12 py-4">
         <div className="flex flex-wrap mx-[-0.75rem]">
           {departments.map((dept) => (
             <div className="flex-shrink-0 px-3 pb-6">
@@ -93,16 +103,9 @@ export default function Projects() {
             </div>
           ))}
         </div>
-      ),
-    },
-  ];
+      </div>
+    </section>
 
-  return (
-    <ContentPage
-      title="Innovation Departments and Projects"
-      description="Explore TUM.ai’s innovation departments and the exciting projects they lead."
-      tabs={tabs}
-      gradientColors="bg-gradient-to-br from-blue-900 to-purple-900"
-    />
+
   );
 }

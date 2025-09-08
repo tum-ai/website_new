@@ -100,7 +100,7 @@ export function ProjectCard({
       </DialogTrigger>
 
       <DialogContent
-        className="max-w-2xl max-h-[80vh] overflow-y-auto "
+        className="max-w-2xl max-h-[80vh] overflow-y-auto w-[calc(100vw-4rem)]"
         showCloseButton={false}
       >
         <DialogHeader>
