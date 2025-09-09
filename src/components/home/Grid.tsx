@@ -30,9 +30,9 @@ export const Grid = () => {
       const optimalTileSize = Math.min(
         Math.max(
           Math.floor((window.innerWidth - gap * (cols - 1)) / cols),
-          minTileSize
+          minTileSize,
         ),
-        maxTileSize
+        maxTileSize,
       );
 
       setTileSize(optimalTileSize);

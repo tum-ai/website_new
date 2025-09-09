@@ -1,10 +1,5 @@
-import {
-  Carousel,
-  CarouselNext,
-  CarouselPrevious,
-  CarouselContent,
-  CarouselItem,
-} from "../ui/carousel";
+import { Carousel, CarouselContent, CarouselItem } from "../ui/carousel";
+import Arrows from "./Arrows";
 import Card from "./Card";
 
 export const CarouselHome = () => {
@@ -42,6 +37,7 @@ export const CarouselHome = () => {
       link: "/e-lab",
     },
   ];
+
   // TODO: refactor!!!
   return (
     <Carousel className="w-full max-w-full group">
@@ -58,7 +54,6 @@ export const CarouselHome = () => {
                 className="aspect-[16/9] object-cover rounded-md"
                 src={item.imgSrc}
               />
-
               {/* card */}
               <div className="flex items-center">
                 <Card
@@ -69,12 +64,11 @@ export const CarouselHome = () => {
                   buttonText={item.buttonText}
                 />
               </div>
-              <CarouselPrevious className="absolute left-8 top-1/2 -translate-y-1/2 z-10" />
-              <CarouselNext className="absolute right-16 top-1/2 -translate-y-1/2 z-10" />
             </div>
           </CarouselItem>
         ))}
       </CarouselContent>
+      <Arrows />
     </Carousel>
   );
 };

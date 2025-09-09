@@ -1,6 +1,6 @@
-import { Button } from "./button";
-import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { useEffect, useRef } from "react";
+import { Button } from "./button";
 
 export const Hero = () => {
   const heroRef = useRef<HTMLDivElement | null>(null);
@@ -10,7 +10,9 @@ export const Hero = () => {
     if (!heroRef.current) return;
 
     const mm = window.matchMedia && window.matchMedia("(max-width: 767px)");
-    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
+    const reduce =
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)");
     const el = heroRef.current as HTMLElement;
     if ((mm && mm.matches) || (reduce && reduce.matches)) {
       el.style.opacity = "1";
@@ -19,7 +21,13 @@ export const Hero = () => {
     }
 
     gsap.set(el, { opacity: 0, y: 20 });
-  const tween = gsap.to(el, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out", delay: 1 });
+    const tween = gsap.to(el, {
+      opacity: 1,
+      y: 0,
+      duration: 0.6,
+      ease: "power2.out",
+      delay: 1,
+    });
 
     return () => {
       try {
@@ -30,7 +38,10 @@ export const Hero = () => {
     };
   }, []);
   return (
-    <div ref={heroRef} className="flex flex-col items-start justify-center sm:justify-end px-4 py-6 sm:px-8 sm:py-12">
+    <div
+      ref={heroRef}
+      className="flex flex-col items-start justify-center sm:justify-end px-4 py-6 sm:px-8 sm:py-12"
+    >
       {/* Logo */}
       <svg
         className="h-10 w-auto fill-white mb-4"

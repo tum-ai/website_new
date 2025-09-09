@@ -88,7 +88,7 @@ button {
 
 button:hover {
   border-color: #ffffff;
-  background-color: #6517A1;
+  background-color: #6517a1;
 }
 
 button:focus,
@@ -272,7 +272,7 @@ button:focus-visible {
 
 /* Adding reusable gradient text style without @apply */
 .gradient-text {
-  background: linear-gradient(to right, #891FDB, #E0189A);
+  background: linear-gradient(to right, #891fdb, #e0189a);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

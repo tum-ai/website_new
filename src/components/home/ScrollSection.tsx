@@ -1,6 +1,6 @@
 import "../../styles/index.css";
-import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { useEffect, useRef } from "react";
 
 type Props = {
   speed?: number;
@@ -66,7 +66,14 @@ type Props = {
  * <ScrollSection speed={30} aspect="4:3" widthMode="viewport" />
  * <ScrollSection widthClass="w-[90vw] flex-none" aspectW={4} aspectH={3} />
  */
-export function ScrollSection({ speed = 40, aspect = "16:10", aspectW, aspectH, widthClass, widthMode = "viewport" }: Props) {
+export function ScrollSection({
+  speed = 40,
+  aspect = "16:10",
+  aspectW,
+  aspectH,
+  widthClass,
+  widthMode = "viewport",
+}: Props) {
   const data = [
     { id: 1, src: "/assets/home_img1.jpg" },
     { id: 2, src: "/assets/home_img2.png" },
@@ -92,7 +99,14 @@ export function ScrollSection({ speed = 40, aspect = "16:10", aspectW, aspectH, 
         return [parts[0], parts[1]];
       }
     }
-    if (aspectW && aspectH && isFinite(aspectW) && isFinite(aspectH) && aspectW > 0 && aspectH > 0) {
+    if (
+      aspectW &&
+      aspectH &&
+      isFinite(aspectW) &&
+      isFinite(aspectH) &&
+      aspectW > 0 &&
+      aspectH > 0
+    ) {
       return [aspectW, aspectH];
     }
     return [16, 9];
@@ -154,12 +168,18 @@ export function ScrollSection({ speed = 40, aspect = "16:10", aspectW, aspectH, 
             (widthMode === "viewport"
               ? "w-[80vw] lg:w-[66.666vw] flex-none"
               : widthMode === "fixed"
-              ? "w-80 sm:w-96 lg:w-[32rem] flex-none"
-              : "w-[80%] lg:w-2/3 flex-none");
+                ? "w-80 sm:w-96 lg:w-[32rem] flex-none"
+                : "w-[80%] lg:w-2/3 flex-none");
 
           return (
-            <div key={`${imgObj.id}-${idx}`} className={`${resolvedWidthClass} mx-4`}>
-              <div className="relative rounded-lg overflow-hidden" style={{ paddingTop: `${paddingTopPercent}%` }}>
+            <div
+              key={`${imgObj.id}-${idx}`}
+              className={`${resolvedWidthClass} mx-4`}
+            >
+              <div
+                className="relative rounded-lg overflow-hidden"
+                style={{ paddingTop: `${paddingTopPercent}%` }}
+              >
                 <img
                   src={imgObj.src}
                   alt=""

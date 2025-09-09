@@ -1,5 +1,5 @@
-import ResearchCard from "@/components/research/ResearchCard";
 import Logos from "@/components/Logos";
+import ResearchCard from "@/components/research/ResearchCard";
 import { researchPartners } from "@/data/partners";
 import type { Research } from "@/lib/types";
 import { useEffect, useRef, useState } from "react";
@@ -72,10 +72,7 @@ export default function Research() {
               </h3>
               <div className="flex flex-wrap mx-[-0.75rem]">
                 {pastProjects.map((p) => (
-                  <div
-                    className="flex-shrink-0 px-3 pb-6"
-                  >
-
+                  <div className="flex-shrink-0 px-3 pb-6">
                     <ResearchCard
                       key={p.title}
                       title={p.title}
@@ -173,9 +170,7 @@ export default function Research() {
         <div className="relative z-10 w-full max-w-5xl px-6">
           <div className="flex flex-col items-center text-center">
             <div className="mb-8 w-full max-w-2xl">
-              <h1 className="text-4xl font-bold md:text-5xl">
-                Research
-              </h1>
+              <h1 className="text-4xl font-bold md:text-5xl">Research</h1>
             </div>
             <p className="mx-auto max-w-2xl text-lg">
               Our research offerings - from projects to exchange programs
@@ -246,5 +241,6 @@ export default function Research() {
           <Logos logos={researchPartners} />
         </>
       )}
-    </section>);
+    </section>
+  );
 }
