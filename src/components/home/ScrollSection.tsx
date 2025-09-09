@@ -1,7 +1,7 @@
 import "../../styles/index.css";
 import gsap from "gsap";
 import { useEffect, useRef } from "react";
-
+import { pictures as data } from "@/data/homepage";
 type Props = {
   speed?: number;
   aspect?: string;
@@ -74,20 +74,6 @@ export function ScrollSection({
   widthClass,
   widthMode = "fixed",
 }: Props) {
-  const data = [
-    { src: "/assets/homepage/IBM_visit.jpg" },
-    { src: "/assets/innovation/med_ai.jpg" },
-    { src: "/assets/homepage/nvidia-5.jpg" },
-    { src: "/assets/homepage/Makeathon.jpg" },
-    { src: "/assets/innovation/robotics_discussion.png" },
-    { src: "/assets/homepage/venture_onboarding25.jpeg" },
-    { src: "/assets/home_img2.png" },
-    { src: "/assets/innovation/accelerated_computing.png" },
-    { src: "/assets/homepage/getaway24.jpeg" },
-    { src: "/assets/home_img5.jpeg" },
-    { src: "/assets/homepage/Antler25.JPG" },
-  ];
-
   // create two copies programmatically for a seamless marquee
   const doubledData = Array.from({ length: 2 }).flatMap(() => data);
 
