@@ -84,21 +84,24 @@ export default function Projects() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 to-purple-900">
       <Layout>
-        <section className="relative pt-20 pb-12 px-8">
+        <section className="relative pt-32 pb-16 px-8">
           {/* Hero Section */}
           <div className="flex flex-col items-center gap-4 mb-12 px-6 text-center">
-            <h1 className="text-4xl font-bold md:text-5xl text-white">
+            <h1 className="text-title font-bold md:text-5xl text-white">
               Innovation Departments and Projects
             </h1>
-            <p className="mx-auto max-w-2xl text-lg text-gray-200">
-              Explore TUM.ai's innovation departments and the exciting projects they lead.
+            <p className="mx-auto max-w-2xl text-subtitle text-gray-200">
+              Explore TUM.ai's innovation departments and the exciting projects
+              they lead.
             </p>
           </div>
-          {/* Projects Grid */}
           <div className="w-full px-6 md:px-12">
             <div className="flex flex-wrap mx-[-0.75rem]">
               {departments.map((dept) => (
-                <div key={dept.name} className="flex-shrink-0 px-3 pb-6">
+                <div
+                  key={dept.name}
+                  className="flex-shrink-0 px-3 pb-6 transition-transform duration-150 hover:scale-101"
+                >
                   <ProjectCard {...dept} />
                 </div>
               ))}

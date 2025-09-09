@@ -1,19 +1,7 @@
 import "../../styles/Grid.css"; // Import CSS for animations
 import { useEffect, useState } from "react";
-
+import { pictures as squares } from "@/data/homepage";
 export const Grid = () => {
-  const squares = [
-    { id: 1, src: "/assets/home_img1.jpg" },
-    { id: 2, src: "/assets/home_img2.png" },
-    { id: 3, src: "/assets/innovation/robotics_writing.png" },
-    { id: 4, src: "/assets/home_img1.jpg" },
-    { id: 5, src: "/assets/innovation/med_ai.jpg" },
-    { id: 6, src: "/assets/home_img5.jpeg" },
-    { id: 7, src: "/assets/home_img4.jpg" },
-    { id: 8, src: "/assets/innovation/robotics_discussion.png" },
-    { id: 9, src: "/assets/home_img1.jpg" },
-  ];
-
   const [tileSize, setTileSize] = useState(164); // Default tile size
   const [tileCount, setTileCount] = useState(0);
   const [gap, setGap] = useState(0);

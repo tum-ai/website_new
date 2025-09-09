@@ -1,13 +1,40 @@
 export const faqs = [
   {
-    question: "Do I need to be an AI expert to join TUM.ai?",
+    question: "What types of activities do your members engage in?",
     answer:
-      "You don't need to be an AI expert to join TUM.ai. We believe that individuals can learn and adapt quickly with the right mindset. Even if you're not an AI specialist but have a genuine interest in the field and are eager to learn and contribute, you could be a perfect fit for our team. After all, diverse perspectives and backgrounds can often bring fresh insights and innovative ideas. Note that the ML projects in your first semester are based on your area and level of expertise.",
+      "Our members are involved in a wide range of activities, including applied AI research, developing solutions with industry partners, incubating startups, and hosting workshops that connect theory with practice.",
   },
   {
-    question: "Where can I contact TUM.ai?",
+    question: "How do you collaborate with industry partners?",
     answer:
-      "If you have further questions, feel free to write us an email at contact@tum-ai.com.",
+      "We partner with leading companies to co-develop AI solutions, share expertise, organize events and create opportunities for mentorship and career pathways.",
+  },
+  {
+    question: "What role do startups play in your initiatives?",
+    answer:
+      "Startups are a key part of our ecosystem. We provide support for early-stage ideas, help founders validate their concepts, and connect them with resources to scale innovative AI products.",
+  },
+  {
+    question: "What kind of opportunities do strategic partnerships create?",
+    answer:
+      "Our strategic partnerships allow us to provide members with unique opportunities such as industry collaborations, mentorship programs, joint research, and exposure to cutting-edge technologies.",
+  },
+  {
+    question:
+      "What is your mission regarding accessibility in AI creation and usage?",
+    answer:
+      "Our mission is to make AI accessible to everyone, regardless of their background, by lowering entry barriers and providing platforms for learning, experimentation, and collaboration.",
+  },
+  {
+    question: "How do you provide practical experience in AI?",
+    answer:
+      "We emphasize hands-on learning through applied projects, hackathons, and research initiatives, giving members direct exposure to real-world challenges.",
+  },
+  {
+    question: "How does the member journey look like?",
+    answer: `Members can join one of two tracks:
+      In the initiative track you will join one of our core departments and become a driving force behind everything that makes TUM.ai stand out. 
+      In the research track you will join a team on an Impact Project applying AI to real-world challenges. Contribute to research and write academic publications.`,
   },
   {
     question: "What is our Mission?",

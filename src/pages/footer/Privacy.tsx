@@ -3,7 +3,7 @@ import { cx } from "class-variance-authority";
 export default function DataPrivacy() {
   return (
     <>
-      <section className="relative overflow-hidden">
+      <section className="relative pt-16 overflow-hidden">
         {/* Background Image with Enhanced Effects */}
         <img
           src="/assets/tu_cropped.jpg"
@@ -26,7 +26,7 @@ export default function DataPrivacy() {
               className={cx(
                 "text-6xl font-medium tracking-tight md:text-7xl",
                 "bg-linear-to-r from-white to-gray-300 bg-clip-text text-transparent",
-                "animate-fade-in-up",
+                "animate-fade-in-up"
               )}
             >
               Datenschutzerklärung TUM.ai e.V.
