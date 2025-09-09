@@ -173,8 +173,8 @@ export const AboutSection = () => {
   // keywords to highlight inside the paragraph
 
   return (
-    <div className="flex flex-col gap-8 min-h-screen p-8 md:p-10">
-      <div className="w-full flex min-h-[350px] items-center md:max-h-2/3 flex-1">
+    <div className="flex flex-col gap-8 p-8 md:p-10">
+      <div className="w-full flex min-h-[350px] items-center md:max-h-2/3 h-fitlex-1">
         <img
           className="object-cover min-h-[350px]  bg-gray-200 rounded-xl"
           src="/assets/apply/new_section_photo_1.jpg"
@@ -202,18 +202,18 @@ export const AboutSection = () => {
               , fostering both groundbreaking research and entrepreneurial
               ventures across diverse industries.
             </p>
-            <div className="flex gap-4 md:gap-8 justify-start flex-col md:flex-row">
+            <div className="flex gap-4 md:gap-8 justify-start flex-col md:flex-row mb-4 md:mb-0">
               <Button
                 asChild
                 variant="primary"
-                className="w-full rounded-md px-6 py-3 mt-4 mb-6 md:mb-0 text-center md:w-auto animate-item"
+                className="w-full rounded-md px-6 py-3 text-center md:w-auto animate-item"
               >
                 <a href="/community#memberStories">Meet our Members</a>
               </Button>
               <Button
                 asChild
                 variant="outline2"
-                className="w-full rounded-md px-6 py-3 mt-4 mb-6 md:mb-0 text-center md:w-auto animate-item !text-primary"
+                className="w-full rounded-md px-6 py-3 text-center md:w-auto animate-item !text-primary"
               >
                 <a href="/qanda">More on our Mission</a>
               </Button>
