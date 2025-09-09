@@ -193,7 +193,7 @@ export const AboutSection = () => {
   ]);
 
   return (
-    <div className="flex flex-col gap-8 min-h-screen p-8 md:p-10">
+    <div className="flex flex-col gap-8 p-8 md:p-10">
       <div className="w-full min-h-[350px] items-center md:max-h-2/3 flex justify-center">
         <img
           className="object-cover bg-gray-200 rounded-xl w-full h-auto"

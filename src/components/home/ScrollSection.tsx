@@ -137,7 +137,6 @@ export function ScrollSection({
       ro.disconnect();
       tweenRef.current?.kill?.();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [speed]);
 
   const handleImgLoad = () => {
