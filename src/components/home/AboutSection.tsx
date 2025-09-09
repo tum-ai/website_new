@@ -9,6 +9,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
 import "../../styles/index.css";
+import { aboutText } from "@/data/homepage";
 // import gsap from "gsap";
 // import ScrollTrigger from "gsap/ScrollTrigger";
 //
@@ -195,7 +196,7 @@ export const AboutSection = () => {
     <div className="flex flex-col gap-8 min-h-screen p-8 md:p-10">
       <div className="w-full flex min-h-[350px] items-center md:max-h-2/3 flex-1">
         <img
-          className="object-cover min-h-[350px]  bg-gray-200 rounded-xl"
+          className="object-cover min-h-[350px] bg-gray-200 rounded-xl"
           src="/assets/apply/new_section_photo_1.jpg"
           alt="TUM.ai members"
         />
@@ -258,28 +259,21 @@ export const AboutSection = () => {
           ref={textRef}
         >
           <p className="text-lg md:text-2xl text-start md:text-left px-4">
-            {"Together with our highly-talented members, we conduct cutting-edge research projects, develop AI-powered solutions with industry partners, incubate innovative startups, and organize workshops that bridge academic knowledge with real-world applications. Through strategic partnerships and connections with leading AI tech and industry companies, we create unique opportunities for collaboration, mentorship, and career development. We aim to lower the entry barriers to AI creation and usage for people from every domain by establishing a platform for practical experience through diverse applied AI projects, research initiatives, and entrepreneurial opportunities."
-              .split(" ")
-              .map((word, index) => {
-                const stripped = word
-                  .replace(/[^a-zA-Z0-9]/g, "")
-                  .toLowerCase();
-                const isGradient = gradientKeywords.has(stripped);
-                const isPrimary = primaryKeywords.has(stripped);
-                const extraClass = isGradient
-                  ? "gradient-text font-bold"
-                  : isPrimary
-                    ? "text-primary font-semibold"
-                    : "";
-                return (
-                  <span
-                    key={index}
-                    className={`word inline-block ${extraClass}`}
-                  >
-                    {word}&nbsp;
-                  </span>
-                );
-              })}
+            {aboutText.split(" ").map((word, index) => {
+              const stripped = word.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+              const isGradient = gradientKeywords.has(stripped);
+              const isPrimary = primaryKeywords.has(stripped);
+              const extraClass = isGradient
+                ? "gradient-text font-bold"
+                : isPrimary
+                  ? "text-primary font-semibold"
+                  : "";
+              return (
+                <span key={index} className={`word inline-block ${extraClass}`}>
+                  {word}&nbsp;
+                </span>
+              );
+            })}
           </p>
         </div>
         <div
@@ -287,7 +281,7 @@ export const AboutSection = () => {
           className="w-full md:w-2/3 flex items-center justify-center"
         >
           <img
-            className="object-cover w-full h-[70vh] rounded-xl"
+            className="object-cover min-h-[200px] bg-gray-200 rounded-xl"
             src="/assets/apply/new_section_photo_2.jpg"
             alt="TUM.ai members placeholder"
           />
