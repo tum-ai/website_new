@@ -21,7 +21,7 @@ export default function Research() {
     const fetchProjects = async () => {
       try {
         const res = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/getResearch`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/getResearch`
         );
         if (!res.ok) throw new Error("Failed to fetch projects");
         const data = await res.json();
@@ -55,6 +55,7 @@ export default function Research() {
         <div>
           {/* Ongoing projects */}
           <div className="flex flex-wrap mx-[-0.75rem]">
+
             {ongoingProjects.map((p) => (
               <div className="flex-shrink-0 px-3 pb-6">
                 <ResearchCard
@@ -108,11 +109,8 @@ export default function Research() {
             opportunities to conduct research abroad. Offers range from final
             theses to research internships with leading labs at institutions
             like
-            <span className="font-semibold text-white">
-              {" "}
-              Harvard, MIT, Cambridge,
-            </span>{" "}
-            or <span className="font-semibold text-white">INRIA</span>.
+            <span className="font-semibold text-white"> Harvard, MIT, Cambridge,</span> or{" "}
+            <span className="font-semibold text-white">INRIA</span>.
           </p>
 
           <p className="text-lg leading-relaxed text-gray-200">
@@ -169,84 +167,91 @@ export default function Research() {
   };
 
   return (
-    <section className="min-h-screen relative pt-20 pb-12 px-8 bg-gradient-to-br from-blue-900 to-purple-900">
+    <section className="relative pt-20 pb-12 px-8 bg-gradient-to-br from-blue-900 to-purple-900">
       <Layout>
         {/* Hero Section */}
-        <div className="flex flex-col items-center gap-4 mb-4 px-6 text-center">
-          <h1 className="text-4xl font-bold md:text-5xl text-white">
-            Research
-          </h1>
-          <p className="mx-auto max-w-2xl text-lg text-gray-200">
-            Our research offerings - from projects to exchange programs
-          </p>
-        </div>
+        <div className="min-h-screen flex flex-col justify-center">
+          <div className="flex flex-col items-center gap-4 mb-4 px-6 text-center">
+            <h1 className="text-4xl font-bold md:text-5xl text-white">
+              Research
+            </h1>
+            <p className="mx-auto max-w-2xl text-lg text-gray-200">
+              Our research offerings - from projects to exchange programs
+            </p>
+          </div>
 
-        {/* Tabs Section */}
-        {tabs.length > 1 ? (
-          <div className="w-full px-6 md:px-12">
-            <div
-              role="tablist"
-              aria-label="Research tabs"
-              className="flex flex-col sm:flex-row items-center justify-center gap-2 mb-4"
-            >
-              {tabs.map((tab, idx) => {
-                const selected = activeTab === tab.value;
-                return (
-                  <Button
-                    key={tab.value}
-                    ref={(el) => {
-                      tabRefs.current[idx] = el;
-                    }}
-                    role="tab"
-                    id={`tab-${tab.value}`}
-                    aria-selected={selected}
-                    aria-controls={`panel-${tab.value}`}
-                    tabIndex={selected ? 0 : -1}
-                    onClick={() => setActiveTab(tab.value)}
-                    onKeyDown={(e) => handleKeyDown(e, idx)}
-                    className={
-                      "w-full sm:w-auto text-center rounded-md text-sm transition-colors " +
-                      (!selected
-                        ? "bg-white/10 text-white shadow-inner ring-1 ring-white/20"
-                        : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white")
-                    }
-                  >
-                    {tab.label}
-                  </Button>
-                );
-              })}
-            </div>
 
-            {tabs.map((tab) => (
+          {/* Tabs Section */}
+          {tabs.length > 1 ? (
+            <div className="w-full px-6 md:px-12">
               <div
-                key={tab.value}
-                role="tabpanel"
-                id={`panel-${tab.value}`}
-                aria-labelledby={`tab-${tab.value}`}
-                hidden={activeTab !== tab.value}
-                className="w-full pt-4"
+                role="tablist"
+                aria-label="Research tabs"
+                className="flex flex-col sm:flex-row items-center justify-center gap-2 mb-4"
               >
-                {tab.content}
+                {tabs.map((tab, idx) => {
+                  const selected = activeTab === tab.value;
+                  return (
+                    <Button
+                      key={tab.value}
+                      ref={(el) => {
+                        tabRefs.current[idx] = el;
+                      }}
+                      role="tab"
+                      id={`tab-${tab.value}`}
+                      aria-selected={selected}
+                      aria-controls={`panel-${tab.value}`}
+                      tabIndex={selected ? 0 : -1}
+                      onClick={() => setActiveTab(tab.value)}
+                      onKeyDown={(e) => handleKeyDown(e, idx)}
+                      className={
+                        "w-full sm:w-auto text-center rounded-md text-sm transition-colors "
+                        +
+                        (!selected
+                          ? "bg-white/10 text-white shadow-inner ring-1 ring-white/20"
+                          : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white")
+                      }
+                    >
+                      {tab.label}
+                    </Button>
+                  );
+                })}
               </div>
-            ))}
-          </div>
-        ) : (
-          <div className="w-full px-6 sm:px-8 lg:px-12">{tabs[0].content}</div>
-        )}
 
-        {Array.isArray(researchPartners) && researchPartners.length > 0 && (
-          <div className="px-6 md:px-12 mt-12">
-            <h3 className="mb-4 text-center text-3xl font-semibold text-white">
-              Collaborators
-            </h3>
+              <div className="h-1 w-16 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 mx-auto"></div>
 
-            <Card>
-              <CardContent className="px-0">
-                <Logos logos={researchPartners} />
-              </CardContent>
-            </Card>
-          </div>
-        )}
+              {tabs.map((tab) => (
+                <div
+                  key={tab.value}
+                  role="tabpanel"
+                  id={`panel-${tab.value}`}
+                  aria-labelledby={`tab-${tab.value}`}
+                  hidden={activeTab !== tab.value}
+                  className="w-full pt-4"
+                >
+                  {tab.content}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="w-full px-6 sm:px-8 lg:px-12">{tabs[0].content}</div>
+          )}
+
+
+          {Array.isArray(researchPartners) && researchPartners.length > 0 && (
+            <div className="px-6 md:px-12 mt-12">
+              <h3 className="mb-4 text-center text-3xl font-semibold text-white">
+                Collaborators
+              </h3>
+
+              <Card>
+                <CardContent className="px-0">
+                  <Logos logos={researchPartners} />
+                </CardContent>
+              </Card>
+            </div>
+          )}
+        </div>
       </Layout>
     </section>
   );
