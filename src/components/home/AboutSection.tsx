@@ -194,9 +194,9 @@ export const AboutSection = () => {
 
   return (
     <div className="flex flex-col gap-8 min-h-screen p-8 md:p-10">
-      <div className="w-full flex min-h-[350px] items-center md:max-h-2/3 flex-1">
+      <div className="w-full min-h-[350px] items-center md:max-h-2/3 flex justify-center">
         <img
-          className="object-cover max-h-[80vh] bg-gray-200 rounded-xl"
+          className="object-cover bg-gray-200 rounded-xl w-full h-auto"
           src="/assets/apply/new_section_photo_1.jpg"
           alt="TUM.ai members"
         />
@@ -281,7 +281,7 @@ export const AboutSection = () => {
           className="w-full md:w-2/3 flex items-center justify-center"
         >
           <img
-            className="object-cover min-h-[200px]  bg-gray-200 rounded-xl"
+            className="object-cover min-h-[200px] bg-gray-200 rounded-xl"
             src="/assets/apply/new_section_photo_2.jpg"
             alt="TUM.ai members placeholder"
           />
