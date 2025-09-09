@@ -15,7 +15,7 @@ export default function Events() {
     const fetchEvents = async () => {
       try {
         const res = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/getNotes`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/getNotes`
         ); // change this once deployed to /api/getNotes
         if (!res.ok) throw new Error("Failed to fetch events");
         const data = await res.json();
@@ -43,13 +43,13 @@ export default function Events() {
   // Split filtered events into upcoming and past
   const currentDate = new Date();
   const upcomingEvents = filteredEvents.filter(
-    (event) => new Date(event.event_date) >= currentDate,
+    (event) => new Date(event.event_date) >= currentDate
   );
   const pastEvents = filteredEvents
     .filter((event) => new Date(event.event_date) < currentDate)
     .sort(
       (a, b) =>
-        new Date(b.event_date).getTime() - new Date(a.event_date).getTime(),
+        new Date(b.event_date).getTime() - new Date(a.event_date).getTime()
     );
 
   if (loading) return <div>Loading events...</div>;

@@ -44,7 +44,9 @@ export default function Partners() {
 
   return (
     <>
+      {/* Hero Section */}
       <section className="relative overflow-hidden">
+        {/* Background Image with Enhanced Effects */}
         <img
           src="/assets/partners.jpg"
           alt="Hero background image"
@@ -55,19 +57,20 @@ export default function Partners() {
         <div className="absolute inset-0 bg-linear-to-b from-black/80 via-black/60 to-black/80" />
         <div className="absolute inset-0 bg-linear-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10" />
 
-        {/* Content */}
+        {/* Content Container */}
         <div className="relative container mx-auto flex min-h-[80vh] max-w-4xl flex-col justify-center p-8 text-white md:p-16">
+          {/* Main Content */}
           <div className="space-y-6">
             <h1
               className={cx(
-                "text-title font-medium tracking-tight md:text-7xl",
+                "text-6xl font-medium tracking-tight md:text-7xl",
                 "bg-linear-to-r from-white to-gray-300 bg-clip-text text-transparent",
                 "animate-fade-in-up",
               )}
             >
               Partners & Sponsors
             </h1>
-            <p className="animate-fade-in-up text-subtitle text-gray-300 [animation-delay:200ms]">
+            <p className="animate-fade-in-up text-xl text-gray-300 [animation-delay:200ms]">
               Get access to Germany&apos;s largest student talent pool of AI
               enthusiasts
             </p>
@@ -80,23 +83,23 @@ export default function Partners() {
 
       <section className="relative bg-white p-8 sm:py-16 lg:py-32">
         <div className="container mx-auto">
-          <h2 className="mb-8 text-title font-semibold">
+          <h2 className="mb-8 text-3xl font-semibold">
             Long-Term Partnerships
           </h2>
           <Logos logos={longtermPartners} />
 
-          <h2 className="mb-8 text-title font-semibold">Technical Partners</h2>
+          <h2 className="mb-8 text-3xl font-semibold">Technical Partners</h2>
           <Logos logos={technicalPartners} />
 
-          <h2 className="mb-8 text-title font-semibold">Industry Partners</h2>
+          <h2 className="mb-8 text-3xl font-semibold">Industry Partners</h2>
           <Logos logos={industryPartners} />
 
-          <h2 className="mb-8 text-title font-semibold">Research Partners</h2>
+          <h2 className="mb-8 text-3xl font-semibold">Research Partners</h2>
           <Logos logos={researchPartners} />
 
-          <h2 className="mb-8 text-title font-semibold">Venture Capital</h2>
+          <h2 className="mb-8 text-3xl font-semibold">Venture Capital</h2>
           <Logos logos={VCPartners} />
-          <h2 className="mb-8 text-title font-semibold">Initiatives</h2>
+          <h2 className="mb-8 text-3xl font-semibold">Initiatives</h2>
           <Logos logos={initiativePartners} />
         </div>
       </section>
@@ -107,11 +110,20 @@ export default function Partners() {
       >
         <div className="container mx-auto">
           <div className="mx-auto max-w-7xl">
+            {/* Background dots pattern */}
+            <div className="absolute inset-0 overflow-hidden">
+              <div className="absolute inset-0 grid grid-cols-8 grid-rows-8 gap-8 opacity-10">
+                {Array.from({ length: 64 }).map((_, i) => (
+                  <div key={i} className="h-1 w-1 rounded-full bg-purple-300" />
+                ))}
+              </div>
+            </div>
+
             <div className="relative mb-16 flex flex-col items-center text-center">
-              <h2 className="mb-6 text-title font-semibold text-white">
+              <h2 className="mb-6 text-3xl font-semibold text-white">
                 Partner with TUM.ai
               </h2>
-              <p className="max-w-2xl text-subtitle text-white/90">
+              <p className="max-w-2xl text-xl text-white/90">
                 Access our exclusive talent pool of AI enthusiasts, experienced
                 in software development, data science, and AI strategy.
               </p>
@@ -126,10 +138,10 @@ export default function Partners() {
                   <div className="absolute inset-y-0 left-0 w-[1px] bg-gradient-to-b from-transparent via-purple-300/50 to-transparent"></div>
 
                   <div className="space-y-6">
-                    <h3 className="text-title font-semibold text-white">
+                    <h3 className="text-2xl font-semibold text-white">
                       Collaboration Opportunities
                     </h3>
-                    <p className="text-white/80 text-subtitle">
+                    <p className="text-white/80">
                       We&apos;re always open to new ideas and creative ways to
                       collaborate.
                     </p>
@@ -180,10 +192,10 @@ export default function Partners() {
                   </div>
 
                   <div className="space-y-6">
-                    <h3 className="text-title font-semibold text-white">
+                    <h3 className="text-2xl font-semibold text-white">
                       Education & Knowledge
                     </h3>
-                    <ul className="space-y-3 text-base text-white/80">
+                    <ul className="space-y-3 text-white/80">
                       <li className="flex items-center gap-2">
                         <span className="h-1 w-1 rounded-full bg-purple-300" />
                         <span>AI Academy Lecturer</span>
@@ -230,7 +242,7 @@ export default function Partners() {
 
       <section className="relative bg-white p-8 sm:py-16 lg:py-32">
         <div className="container mx-auto">
-          <h2 className="text-uppercase mb-8 w-full text-title font-semibold">
+          <h2 className="text-uppercase mb-8 w-full text-3xl font-semibold">
             What we offer
           </h2>
           <Benefits

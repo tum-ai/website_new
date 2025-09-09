@@ -1,5 +1,7 @@
 import Homepage from "@/pages/Homepage";
 import Apply from "@/pages/apply/Apply";
+import Berlin from "@/pages/apply/Berlin";
+import Munich from "@/pages/apply/Munich";
 import Imprint from "@/pages/footer/Imprint";
 import DataPrivacy from "@/pages/footer/Privacy";
 import Community from "@/pages/headerPages/Community";
@@ -22,4 +24,6 @@ export const routes = [
   { path: "/imprint", element: <Imprint />, title: "Imprint" },
   { path: "/data-privacy", element: <DataPrivacy />, title: "Data Privacy" },
   { path: "/apply", element: <Apply />, title: "Apply" },
+  { path: "/apply/munich", element: <Munich />, title: "Application Munich" },
+  { path: "/apply/berlin", element: <Berlin />, title: "Application Berlin" },
 ];

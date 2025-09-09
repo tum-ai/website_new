@@ -54,7 +54,7 @@ const articleStyles = cva("flex flex-col gap-4 transition-all duration-200", {
 
 interface Props
   extends VariantProps<typeof iconContainerStyles>,
-  VariantProps<typeof gridStyles> {
+    VariantProps<typeof gridStyles> {
   benefits: Benefit[];
   showShadow?: boolean;
 }
@@ -73,7 +73,7 @@ const Benefits = ({ benefits, color, columns, showShadow = false }: Props) => {
             </div>
             <div className="space-y-2">
               <h3 className={headingStyles({ color })}>{benefit.title}</h3>
-              <p className="text-muted-foreground text-subtext leading-relaxed">
+              <p className="text-muted-foreground text-sm leading-relaxed">
                 {benefit.text}
               </p>
             </div>

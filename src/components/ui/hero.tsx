@@ -51,6 +51,7 @@ export const Hero = () => {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
+        <title id="tumaiHomepage">TUM.ai Homepage</title>
         <desc id="tumaiLogoDesc">TUM.ai Logo</desc>
         <g>
           <path
@@ -78,6 +79,7 @@ export const Hero = () => {
         </g>
       </svg>
 
+      {/* Text */}
       <p className="mt-2 font-thin text-title sm:text-4xl leading-snug w-full sm:max-w-8/12 mb-2">
         Germany’s leading student initiative focused on
         <b className="bg-gradient-to-r font-medium from-[#891FDB] to-[#E0189A] bg-clip-text text-transparent">
@@ -86,6 +88,7 @@ export const Hero = () => {
         </b>
       </p>
 
+      {/* Buttons */}
       <div className="mt-4 flex flex-col gap-3 w-full sm:flex-row sm:gap-4 justify-start">
         <Button
           asChild
