@@ -32,24 +32,22 @@ const DepartmentCard = ({ department }: { department: Department }) => {
 };
 
 const DepartmentsSection = () => (
-  <Section background="inverted">
-    <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div className="mb-20 text-center">
-        <h2 className="text-title font-semibold tracking-tight text-white">
-          Our Core Departments
-        </h2>
-        <p className="mx-auto mt-4 max-w-2xl text-subtext text-slate-300">
-          Discover the diverse teams that make TUM.ai thrive. Each department
-          plays a crucial role in our mission to shape the future of AI.
-        </p>
-      </div>
-      <div className="grid auto-rows-fr grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-        {departments.map((dept) => (
-          <DepartmentCard key={dept.name} department={dept} />
-        ))}
-      </div>
+  <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16">
+    <div className="mb-20 text-center">
+      <h2 className="text-title font-semibold tracking-tight text-white">
+        Our Core Departments
+      </h2>
+      <p className="mx-auto mt-4 max-w-2xl text-subtext text-slate-300">
+        Discover the diverse teams that make TUM.ai thrive. Each department
+        plays a crucial role in our mission to shape the future of AI.
+      </p>
     </div>
-  </Section>
+    <div className="grid auto-rows-fr grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+      {departments.map((dept) => (
+        <DepartmentCard key={dept.name} department={dept} />
+      ))}
+    </div>
+  </div>
 );
 
 export default function Community() {
@@ -85,8 +83,8 @@ export default function Community() {
 
       <Section background="inverted" className="pt-32">
         <JourneySection />
+        <DepartmentsSection />
       </Section>
-      <DepartmentsSection />
       <section id="memberStories">
         <MemberStories stories={stories} />
       </section>
