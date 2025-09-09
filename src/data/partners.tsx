@@ -1,10 +1,10 @@
 import { partners_ip4, partners_ip5 } from "./industry";
 export const longtermPartners = [
-  {
-    href: "https://www.anthropic.com/",
-    src: "/assets/partners_sponsors/anthropic_logo.svg.png",
-    alt: "Anthropic",
-  },
+  // {
+  //   href: "https://www.anthropic.com/",
+  //   src: "/assets/partners_sponsors/anthropic_logo.svg.png",
+  //   alt: "Anthropic",
+  // },
   /* {
     href: "https://quantco.com/",
     src: "/assets/partners_sponsors/quantco_logo.png",
