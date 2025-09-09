@@ -1,10 +1,5 @@
-import {
-  Carousel,
-  CarouselNext,
-  CarouselPrevious,
-  CarouselContent,
-  CarouselItem,
-} from "../ui/carousel";
+import { Carousel, CarouselContent, CarouselItem } from "../ui/carousel";
+import Arrows from "./Arrows";
 import Card from "./Card";
 
 export const CarouselHome = () => {
@@ -69,12 +64,11 @@ export const CarouselHome = () => {
                   buttonText={item.buttonText}
                 />
               </div>
-              <CarouselPrevious className="absolute left-8 top-1/2 -translate-y-1/2 z-10" />
-              <CarouselNext className="absolute right-16 top-1/2 -translate-y-1/2 z-10" />
             </div>
           </CarouselItem>
         ))}
       </CarouselContent>
+      <Arrows />
     </Carousel>
   );
 };
