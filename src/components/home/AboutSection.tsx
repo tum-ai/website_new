@@ -15,10 +15,7 @@ import "../../styles/index.css";
 // gsap.registerPlugin(ScrollTrigger);
 //
 export const AboutSection = () => {
-  const textRef = useRef<HTMLDivElement | null>(null);
-  const wrapperRef = useRef<HTMLDivElement | null>(null);
   const revealRef = useRef<HTMLDivElement | null>(null);
-  const picRef = useRef<HTMLDivElement | null>(null);
   //
   //   useEffect(() => {
   //
@@ -174,22 +171,6 @@ export const AboutSection = () => {
   //   }, []);
 
   // keywords to highlight inside the paragraph
-  const gradientKeywords: Set<string> = new Set([]);
-  const primaryKeywords = new Set([
-    "members",
-    "partnerships",
-    "collaboration",
-    "mentorship",
-    "opportunities",
-    "solutions",
-    "entrepreneurial",
-    "tumai",
-    "ai",
-    "research",
-    "projects",
-    "startups",
-    "workshops",
-  ]);
 
   return (
     <div className="flex flex-col gap-8 min-h-screen p-8 md:p-10">
@@ -221,13 +202,22 @@ export const AboutSection = () => {
               , fostering both groundbreaking research and entrepreneurial
               ventures across diverse industries.
             </p>
-            <Button
-              asChild
-              variant="primary"
-              className="w-full rounded-md px-6 py-3 mt-4 mb-6 md:mb-0 text-center md:w-auto animate-item"
-            >
-              <a href="/community#memberStories">Meet our Members</a>
-            </Button>
+            <div className="flex gap-4 md:gap-8 justify-between flex-col md:flex-row">
+              <Button
+                asChild
+                variant="primary"
+                className="w-full rounded-md px-6 py-3 mt-4 mb-6 md:mb-0 text-center md:w-auto animate-item"
+              >
+                <a href="/community#memberStories">Meet our Members</a>
+              </Button>
+              <Button
+                asChild
+                variant="primary"
+                className="w-full rounded-md px-6 py-3 mt-4 mb-6 md:mb-0 text-center md:w-auto animate-item"
+              >
+                <a href="/qanda">Our Mission</a>
+              </Button>
+            </div>
           </div>
         </div>
         <div className="flex flex-col justify-center-safe items-center w-full md:w-3/7">
@@ -247,50 +237,6 @@ export const AboutSection = () => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
-      <div
-        className="hidden md:flex w-full md:flex-row md:pt-16"
-        ref={wrapperRef}
-      >
-        <div
-          className="w-full md:w-1/2 lg:w-1/3 flex items-center justify-center"
-          ref={textRef}
-        >
-          <p className="text-lg md:text-2xl text-start md:text-left px-4">
-            {"Together with our highly-talented members, we conduct cutting-edge research projects, develop AI-powered solutions with industry partners, incubate innovative startups, and organize workshops that bridge academic knowledge with real-world applications. Through strategic partnerships and connections with leading AI tech and industry companies, we create unique opportunities for collaboration, mentorship, and career development. We aim to lower the entry barriers to AI creation and usage for people from every domain by establishing a platform for practical experience through diverse applied AI projects, research initiatives, and entrepreneurial opportunities."
-              .split(" ")
-              .map((word, index) => {
-                const stripped = word
-                  .replace(/[^a-zA-Z0-9]/g, "")
-                  .toLowerCase();
-                const isGradient = gradientKeywords.has(stripped);
-                const isPrimary = primaryKeywords.has(stripped);
-                const extraClass = isGradient
-                  ? "gradient-text font-bold"
-                  : isPrimary
-                    ? "text-primary font-semibold"
-                    : "";
-                return (
-                  <span
-                    key={index}
-                    className={`word inline-block ${extraClass}`}
-                  >
-                    {word}&nbsp;
-                  </span>
-                );
-              })}
-          </p>
-        </div>
-        <div
-          ref={picRef}
-          className="w-full md:w-2/3 flex items-center justify-center"
-        >
-          <img
-            className="object-cover w-full h-[70vh] rounded-xl"
-            src="/assets/apply/new_section_photo_2.jpg"
-            alt="TUM.ai members placeholder"
-          />
         </div>
       </div>
     </div>
