@@ -67,12 +67,12 @@ type Props = {
  * <ScrollSection widthClass="w-[90vw] flex-none" aspectW={4} aspectH={3} />
  */
 export function ScrollSection({
-  speed = 40,
+  speed = 60,
   aspect = "16:10",
   aspectW,
   aspectH,
   widthClass,
-  widthMode = "viewport",
+  widthMode = "fixed",
 }: Props) {
   const data = [
     { id: 1, src: "/assets/home_img1.jpg" },
