@@ -206,7 +206,7 @@ export default function Research() {
                   className={
                     "w-full sm:w-auto text-center rounded-md text-sm transition-colors "
                     +
-                    (selected
+                    (!selected
                       ? "bg-white/10 text-white shadow-inner ring-1 ring-white/20"
                       : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white")
                   }
