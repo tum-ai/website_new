@@ -1,5 +1,4 @@
-// Munich-specific FAQ data
-export const munichFaqs = [
+export const faq = [
   {
     question: "Do I need to be an AI expert to join TUM.ai?",
     answer:
