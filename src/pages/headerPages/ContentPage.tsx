@@ -28,9 +28,8 @@ export function ContentPage({
 }: ContentPageProps) {
   return (
     <section
-      className={`relative overflow-hidden p-8 mt-16 md:mt-0 text-white ${
-        gradientColors || "bg-gradient-to-br from-blue-900 to-purple-900"
-      } sm:py-16 lg:py-24`}
+      className={`relative overflow-hidden p-8 mt-16 md:mt-0 text-white ${gradientColors || "bg-gradient-to-br from-blue-900 to-purple-900"
+        } sm:py-16 lg:py-24`}
     >
       {/* Hero Section */}
       <div className="inset-0 flex items-center justify-center flex-col mb-8">
@@ -51,10 +50,7 @@ export function ContentPage({
       {/* Tabs Section */}
       {tabs.length > 1 ? (
         <div className="w-full ">
-          <Tabs
-            defaultValue={tabs[0].value}
-            className="w-full flex justify-center "
-          >
+          <Tabs defaultValue={tabs[0].value} className="w-full flex justify-center ">
             <TabsList className="flex items-center bg-transparent gap-2 justify-center w-full">
               {tabs.map((tab) => (
                 <TabsTrigger
@@ -68,11 +64,7 @@ export function ContentPage({
             </TabsList>
 
             {tabs.map((tab) => (
-              <TabsContent
-                key={tab.value}
-                value={tab.value}
-                className="w-full pt-4"
-              >
+              <TabsContent key={tab.value} value={tab.value} className="w-full pt-4">
                 {tab.content}
               </TabsContent>
             ))}
