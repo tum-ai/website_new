@@ -16,10 +16,10 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogDescription,
 } from "@/components/ui/dialog";
 import type { Event } from "@/lib/types";
 import { format } from "date-fns";
@@ -37,11 +37,7 @@ export default function PastEvents({ events }: { events: Event[] }) {
   return (
     <div className="flex flex-wrap mx-[-0.75rem]">
       {events.map((event) => (
-        <div
-          key={event.id}
-          className="flex-shrink-0 px-3 pb-6"
-        >
-
+        <div key={event.id} className="flex-shrink-0 px-3 pb-6">
           <PastEventCard key={event.id} event={event} />
         </div>
       ))}
@@ -53,7 +49,7 @@ function PastEventCard({ event }: { event: Event }) {
   const eventDate = new Date(event.event_date);
 
   return (
-    <Card className="flex flex-col w-full overflow-hidden w-[320px] md:w-[360px]">
+    <Card className="flex flex-col overflow-hidden w-[320px] md:w-[360px]">
       <div className="relative w-full aspect-square group p-4 flex-shrink-0">
         <Carousel className="w-full h-full">
           <CarouselContent className="h-full">
@@ -110,18 +106,20 @@ function PastEventCard({ event }: { event: Event }) {
           <p className="text-sm">
             {event.description.length > 300
               ? event.description.slice(0, 300) + "..."
-              : event.description
-            }
+              : event.description}
           </p>
         </CardContent>
         {event.description.length > 300 && (
           <CardFooter className="px-0 pt-4">
             <Dialog>
               <DialogTrigger asChild>
-                <Button size={"xl"}
+                <Button
+                  size={"xl"}
                   variant="primary"
                   className="text-white w-full"
-                >Read More</Button>
+                >
+                  Read More
+                </Button>
               </DialogTrigger>
 
               <DialogContent
@@ -149,7 +147,6 @@ function PastEventCard({ event }: { event: Event }) {
                 </div>
               </DialogContent>
             </Dialog>
-
           </CardFooter>
         )}
       </div>

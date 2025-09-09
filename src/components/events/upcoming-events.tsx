@@ -36,10 +36,7 @@ export default function UpcomingEvents({ events }: { events: Event[] }) {
           <h3 className="text-2xl font-semibold text-purple-500">{month}</h3>
           <div className="flex flex-wrap mx-[-0.75rem]">
             {monthEvents.map((event) => (
-              <div
-                key={event.id}
-                className="flex-shrink-0 px-3 pb-6"
-              >
+              <div key={event.id} className="flex-shrink-0 px-3 pb-6">
                 <UpcomingEventCard event={event} />
               </div>
             ))}
@@ -89,7 +86,6 @@ function UpcomingEventCard({ event }: { event: Event }) {
         </AspectRatio>
       </div>
       <div className="flex flex-col justify-normal flex-1 min-w-0 p-4 pt-0">
-
         <CardHeader className="pb-0 px-0">
           <CardTitle className="text-purple-800 text-lg">
             {format(eventDate, "PPP")}

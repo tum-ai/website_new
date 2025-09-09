@@ -1,0 +1,13 @@
+@keyframes opacityAnimation {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+.animate-opacity {
+  animation: opacityAnimation 5s infinite ease-in-out;
+}
