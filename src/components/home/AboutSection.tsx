@@ -282,7 +282,7 @@ export const AboutSection = () => {
         >
           <img
             className="object-cover min-h-[200px] bg-gray-200 rounded-xl"
-            src="/assets/apply/new_section_photo_2.jpg"
+            src="/assets/homepage/Onboarding25.jpg"
             alt="TUM.ai members placeholder"
           />
         </div>

@@ -75,14 +75,17 @@ export function ScrollSection({
   widthMode = "fixed",
 }: Props) {
   const data = [
-    { id: 1, src: "/assets/home_img1.jpg" },
-    { id: 2, src: "/assets/home_img2.png" },
-    { id: 3, src: "/assets/e-lab/e-phases/ideation.jpeg" },
-    { id: 4, src: "/assets/innovation/med_ai.jpg" },
-    { id: 5, src: "/assets/home_img5.jpeg" },
-    { id: 6, src: "/assets/home_img4.jpg" },
-    { id: 7, src: "/assets/innovation/robotics_discussion.png" },
-    { id: 8, src: "/assets/innovation/accelerated_computing.png" },
+    { src: "/assets/homepage/IBM_visit.jpg" },
+    { src: "/assets/innovation/med_ai.jpg" },
+    { src: "/assets/homepage/nvidia-5.jpg" },
+    { src: "/assets/homepage/Makeathon.jpg" },
+    { src: "/assets/innovation/robotics_discussion.png" },
+    { src: "/assets/homepage/venture_onboarding25.jpeg" },
+    { src: "/assets/home_img2.png" },
+    { src: "/assets/innovation/accelerated_computing.png" },
+    { src: "/assets/homepage/getaway24.jpeg" },
+    { src: "/assets/home_img5.jpeg" },
+    { src: "/assets/homepage/Antler25.JPG" },
   ];
 
   // create two copies programmatically for a seamless marquee
@@ -178,7 +181,7 @@ export function ScrollSection({
 
           return (
             <div
-              key={`${imgObj.id}-${idx}`}
+              key={`${imgObj}-${idx}`}
               className={`${resolvedWidthClass} mx-4`}
             >
               <div
