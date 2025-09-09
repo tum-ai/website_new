@@ -1,8 +1,47 @@
+import gsap from "gsap";
+import { useEffect, useRef } from "react";
 import { Button } from "./button";
 
 export const Hero = () => {
+  const heroRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!heroRef.current) return;
+
+    const mm = window.matchMedia && window.matchMedia("(max-width: 767px)");
+    const reduce =
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)");
+    const el = heroRef.current as HTMLElement;
+    if ((mm && mm.matches) || (reduce && reduce.matches)) {
+      el.style.opacity = "1";
+      el.style.transform = "none";
+      return;
+    }
+
+    gsap.set(el, { opacity: 0, y: 20 });
+    const tween = gsap.to(el, {
+      opacity: 1,
+      y: 0,
+      duration: 0.6,
+      ease: "power2.out",
+      delay: 1,
+    });
+
+    return () => {
+      try {
+        tween.kill();
+      } catch (e) {
+        /* ignore */
+      }
+    };
+  }, []);
   return (
-    <div className="flex flex-col items-start justify-center px-4 py-6 sm:px-8 sm:py-12">
+    <div
+      ref={heroRef}
+      className="flex flex-col items-start justify-center sm:justify-end px-4 py-6 sm:px-8 sm:py-12"
+    >
       {/* Logo */}
       <svg
         className="h-10 w-auto fill-white mb-4"
@@ -30,13 +69,23 @@ export const Hero = () => {
           ></path>
           <path d="M199.509 14.9034L275.011 197.181C280.998 211.636 270.374 227.536 254.728 227.536C245.9 227.536 237.931 222.249 234.5 214.115L168.956 58.7301L157.93 32.1335C151.786 17.3153 162.677 1.01123 178.718 1.01123C187.82 1.01123 196.026 6.49417 199.509 14.9034Z"></path>
         </g>
+        <g>
+          <path d="M427.9,86.7v92.8h-25v-92.8h-31.1v-22.2h87.3v22.2h-31.1Z" />
+          <path d="M508.1,64.5v70.5c0,8.1,1.6,14.2,4.8,18.3,3.2,4,8.5,5.9,16,5.9s12.8-2,16-5.9c3.2-4.1,4.8-10.2,4.8-18.3v-70.5h24.4v67.9c0,8.5-.8,15.8-2.5,22.1-1.5,6.2-4.1,11.3-7.7,15.3-3.6,4-8.3,6.9-14,8.9-5.7,1.9-12.7,2.8-20.9,2.8s-15.2-.9-20.9-2.8c-5.7-2-10.4-4.9-14-8.9-3.6-4.1-6.3-9.2-7.9-15.3-1.5-6.3-2.3-13.6-2.3-22.1v-67.9h24.4Z" />
+          <path d="M693,104h-.5l-8.4,16.8-22.4,40.7-21.9-40.5-8.7-18.1h-.5v76.6h-23.6v-115h26.5l28.2,53.9h.3l27.8-53.9h26.7v115h-23.6v-75.5Z" />
+          <path d="M763.1,181.3c-4.9,0-8.6-1.2-11-3.6-2.3-2.5-3.5-5.7-3.5-9.6v-3.3c0-3.8,1.2-7,3.5-9.4,2.4-2.5,6.1-3.8,11-3.8s8.6,1.3,10.9,3.8c2.4,2.4,3.6,5.5,3.6,9.4v3.3c0,3.8-1.2,7-3.6,9.6-2.3,2.4-5.9,3.6-10.9,3.6Z" />
+          <path d="M872.9,179.5c-4.4,0-8.1-1.4-11-4.1-2.9-2.7-4.7-6.4-5.4-11h-1c-1.3,5.6-4.2,9.9-8.7,12.9-4.5,2.9-10,4.3-16.6,4.3s-15.3-2.3-19.9-6.9c-4.6-4.6-6.9-10.7-6.9-18.3s3.3-15.9,9.9-20.3c6.7-4.5,15.8-6.8,27.2-6.8h13.7v-5.4c0-4.2-1.1-7.5-3.3-9.9-2.2-2.5-5.9-3.8-11-3.8s-8.7,1-11.5,3.1c-2.9,2.1-5.2,4.4-7.1,7.1l-14.5-12.9c3.5-5.2,7.9-9.2,13.2-12,5.4-3,12.6-4.4,21.7-4.4s21.5,2.7,27.7,8.1c6.2,5.4,9.2,13.2,9.2,23.6v37.9h8.1v18.9h-13.5ZM839.1,164.5c4.1,0,7.5-.9,10.4-2.6,3-1.8,4.4-4.6,4.4-8.6v-10.2h-11.9c-9.6,0-14.3,3.2-14.3,9.7v2.5c0,3.2,1,5.5,3,7.1,2,1.4,4.8,2.1,8.4,2.1Z" />
+          <path d="M923.2,83.8c-4.9,0-8.6-1.1-10.9-3.3-2.2-2.3-3.3-5.2-3.3-8.7v-3.6c0-3.5,1.1-6.4,3.3-8.6,2.3-2.3,5.9-3.5,10.9-3.5s8.5,1.2,10.7,3.5c2.3,2.2,3.5,5.1,3.5,8.6v3.6c0,3.5-1.2,6.4-3.5,8.7-2.2,2.2-5.8,3.3-10.7,3.3ZM911,93h24.4v86.5h-24.4v-86.5Z" />
+        </g>
       </svg>
 
       {/* Text */}
-      <p className="mt-2 font-thin text-title sm:text-4xl leading-normal">
-        Welcome to TUM.ai, <br />
+      <p className="mt-2 font-thin text-title sm:text-4xl leading-snug w-full sm:max-w-8/12 mb-2">
         Germany’s leading student initiative focused on
-        <b className="font-bold"> Artificial Intelligence.</b>
+        <b className="bg-gradient-to-r font-medium from-[#891FDB] to-[#E0189A] bg-clip-text text-transparent">
+          {" "}
+          Artificial Intelligence.
+        </b>
       </p>
 
       {/* Buttons */}
@@ -49,7 +98,11 @@ export const Hero = () => {
           <a href="mailto:partners@tum-ai.com">Become a Partner</a>
         </Button>
 
-        <Button asChild>
+        <Button
+          asChild
+          variant="outline2"
+          className="w-full rounded-md px-6 py-3 text-center sm:w-auto"
+        >
           <a
             href="/apply"
             className="w-full bg-transparent border border-[#A144E9] rounded-md px-6 py-3 text-[#A144E9] text-center sm:w-auto"

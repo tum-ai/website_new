@@ -14,13 +14,15 @@ const Card = ({ text, title, desc, buttonText, link }: CardProps) => {
       <div className="flex flex-col w-full md:gap-4 gap-2">
         <p className="md:text-xl">{text}</p>
         <h1 className="font-bold text-[1.5rem] md:!text-[2rem]">
-          <span className="bg-gradient-to-r from-[#6517A1] to-[#B55BD1] bg-clip-text text-transparent">
-            {title}
-          </span>
+          <span className="gradient-text">{title}</span>
         </h1>
         <p className="md:text-2xl">{desc}</p>
-        <Button className="!bg-[#6517A1] !p-4 md:!text-2xl w-full md:h-[4rem]">
-          <a href={link}>{buttonText}</a> {/* TODO: change the link here */}
+        <Button
+          variant="primary"
+          className="!p-4 md:!text-2xl w-full md:h-[4rem]"
+        >
+          {" "}
+          <a href={link}>{buttonText}</a>
         </Button>
       </div>
     </div>
