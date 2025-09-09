@@ -202,7 +202,7 @@ export const AboutSection = () => {
               , fostering both groundbreaking research and entrepreneurial
               ventures across diverse industries.
             </p>
-            <div className="flex gap-4 md:gap-8 justify-between flex-col md:flex-row">
+            <div className="flex gap-4 md:gap-8 justify-start flex-col md:flex-row">
               <Button
                 asChild
                 variant="primary"
@@ -212,10 +212,10 @@ export const AboutSection = () => {
               </Button>
               <Button
                 asChild
-                variant="primary"
-                className="w-full rounded-md px-6 py-3 mt-4 mb-6 md:mb-0 text-center md:w-auto animate-item"
+                variant="outline2"
+                className="w-full rounded-md px-6 py-3 mt-4 mb-6 md:mb-0 text-center md:w-auto animate-item !text-primary"
               >
-                <a href="/qanda">Our Mission</a>
+                <a href="/qanda">More on our Mission</a>
               </Button>
             </div>
           </div>
