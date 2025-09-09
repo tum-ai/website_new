@@ -1,3 +1,4 @@
+import Layout from "@/components/Layout";
 import ResearchCard from "@/components/research/ResearchCard";
 import Logos from "@/components/Logos";
 import { researchPartners } from "@/data/partners";
@@ -5,9 +6,7 @@ import type { Research } from "@/lib/types";
 import { useEffect, useRef, useState } from "react";
 import type React from "react";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Car } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function Research() {
   const [projects, setProjects] = useState<Research[]>([]);
@@ -22,7 +21,7 @@ export default function Research() {
     const fetchProjects = async () => {
       try {
         const res = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/getResearch`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/getResearch`
         );
         if (!res.ok) throw new Error("Failed to fetch projects");
         const data = await res.json();
@@ -53,7 +52,7 @@ export default function Research() {
       value: "projects",
       label: "Projects",
       content: (
-        <div className="">
+        <div>
           {/* Ongoing projects */}
           <div className="flex flex-wrap mx-[-0.75rem]">
 
@@ -80,7 +79,6 @@ export default function Research() {
               <div className="flex flex-wrap mx-[-0.75rem]">
                 {pastProjects.map((p) => (
                   <div className="flex-shrink-0 px-3 pb-6">
-
                     <ResearchCard
                       key={p.title}
                       title={p.title}
@@ -169,8 +167,8 @@ export default function Research() {
   };
 
   return (
-    <div className="min-h-screen ">
-      <section className="relative pt-20 pb-12 px-8 bg-gradient-to-br from-blue-900 to-purple-900">
+    <section className="min-h-screen relative pt-20 pb-12 px-8 bg-gradient-to-br from-blue-900 to-purple-900">
+      <Layout>
         {/* Hero Section */}
         <div className="flex flex-col items-center gap-4 mb-4 px-6 text-center">
           <h1 className="text-4xl font-bold md:text-5xl text-white">
@@ -252,7 +250,7 @@ export default function Research() {
             </Card>
           </div>
         )}
-      </section>
-    </div>
+      </Layout>
+    </section>
   );
 }

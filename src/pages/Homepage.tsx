@@ -5,6 +5,7 @@ import { Grid } from "@/components/home/Grid";
 import { PartnersSection } from "@/components/home/PartnersSection";
 import { ScrollSection } from "@/components/home/ScrollSection";
 import { Hero } from "../components/ui/hero";
+import Layout from "@/components/Layout";
 
 export default function Homepage() {
   return (
@@ -25,10 +26,12 @@ export default function Homepage() {
           <Hero />
         </div>
       </div>
-      <AboutSection />
-      <ScrollSection />
-      <CarouselHome />
-      <PartnersSection />
+      <Layout>
+        <AboutSection />
+        <ScrollSection />
+        <CarouselHome />
+        <PartnersSection />
+      </Layout>
       {/* <EventsSection /> */}
     </>
   );
