@@ -32,7 +32,9 @@ export const Header = () => {
 
     const handleScroll = () => {
       const isMobile = window.innerWidth < 768;
-      const threshold = isMobile ? window.innerHeight * 0.3 : window.innerHeight * 0.6;
+      const threshold = isMobile
+        ? window.innerHeight * 0.3
+        : window.innerHeight * 0.6;
 
       if (window.scrollY > threshold) {
         setShowLogo(true);

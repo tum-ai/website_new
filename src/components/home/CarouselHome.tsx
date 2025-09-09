@@ -37,6 +37,7 @@ export const CarouselHome = () => {
       link: "/e-lab",
     },
   ];
+
   // TODO: refactor!!!
   return (
     <Carousel className="w-full max-w-full group">
@@ -53,7 +54,6 @@ export const CarouselHome = () => {
                 className="aspect-[16/9] object-cover rounded-md"
                 src={item.imgSrc}
               />
-
               {/* card */}
               <div className="flex items-center">
                 <Card
