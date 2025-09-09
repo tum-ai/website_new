@@ -1,6 +1,4 @@
 import Logos from "@/components/Logos";
-import { Separator } from "@/components/ui/separator";
-// components/ContentPage.tsx
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface ContentPageProps {
@@ -30,9 +28,8 @@ export function ContentPage({
 }: ContentPageProps) {
   return (
     <section
-      className={`relative overflow-hidden p-8 text-white ${
-        gradientColors || "bg-gradient-to-br from-blue-900 to-purple-900"
-      } sm:py-16 lg:py-24`}
+      className={`relative overflow-hidden p-8 mt-16 md:mt-0 text-white ${gradientColors || "bg-gradient-to-br from-blue-900 to-purple-900"
+        } sm:py-16 lg:py-24`}
     >
       {/* Hero Section */}
       <div className="inset-0 flex items-center justify-center flex-col mb-8">
@@ -52,25 +49,22 @@ export function ContentPage({
 
       {/* Tabs Section */}
       {tabs.length > 1 ? (
-        <div className="w-full px-6 sm:px-8 lg:px-12">
-          <Tabs defaultValue={tabs[0].value} className="w-full">
-            <div className="flex justify-center mb-4">
-              <TabsList className="flex flex-wrap items-center bg-transparent gap-4 justify-center text-xl">
-                {tabs.map((tab) => (
-                  <TabsTrigger
-                    key={tab.value}
-                    value={tab.value}
-                    className="text-white"
-                  >
-                    {tab.label}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </div>
-            <Separator className="bg-gray-700 my-4" />
+        <div className="w-full ">
+          <Tabs defaultValue={tabs[0].value} className="w-full flex justify-center ">
+            <TabsList className="flex items-center bg-transparent gap-2 justify-center w-full">
+              {tabs.map((tab) => (
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  className="text-white"
+                >
+                  {tab.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
 
             {tabs.map((tab) => (
-              <TabsContent key={tab.value} value={tab.value} className="w-full">
+              <TabsContent key={tab.value} value={tab.value} className="w-full pt-4">
                 {tab.content}
               </TabsContent>
             ))}

@@ -49,9 +49,9 @@ export const scrollToSection = () => {
     });
   }
 };
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
 import { routes } from "@/data/routes";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 const SITE_NAME = "TUM.ai";
 
 export function TitleManager({}) {

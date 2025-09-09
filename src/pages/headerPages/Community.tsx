@@ -20,11 +20,11 @@ const DepartmentCard = ({ department }: { department: Department }) => {
             <Icon className="h-5 w-5 text-white" />
           </div>
         )}
-        <h3 className="text-lg font-semibold tracking-tight">
+        <h3 className="text-subtitle font-semibold tracking-tight">
           {department.name}
         </h3>
       </div>
-      <p className="text-sm leading-relaxed text-slate-300">
+      <p className="text-subtext leading-relaxed text-slate-300">
         {department.description}
       </p>
     </Card>
@@ -32,24 +32,22 @@ const DepartmentCard = ({ department }: { department: Department }) => {
 };
 
 const DepartmentsSection = () => (
-  <Section background="inverted">
-    <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div className="mb-20 text-center">
-        <h2 className="text-3xl font-semibold tracking-tight text-white">
-          Our Core Departments
-        </h2>
-        <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-300">
-          Discover the diverse teams that make TUM.ai thrive. Each department
-          plays a crucial role in our mission to shape the future of AI.
-        </p>
-      </div>
-      <div className="grid auto-rows-fr grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-        {departments.map((dept) => (
-          <DepartmentCard key={dept.name} department={dept} />
-        ))}
-      </div>
+  <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16">
+    <div className="mb-20 text-center">
+      <h2 className="text-title font-semibold tracking-tight text-white">
+        Our Core Departments
+      </h2>
+      <p className="mx-auto mt-4 max-w-2xl text-subtext text-slate-300">
+        Discover the diverse teams that make TUM.ai thrive. Each department
+        plays a crucial role in our mission to shape the future of AI.
+      </p>
     </div>
-  </Section>
+    <div className="grid auto-rows-fr grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+      {departments.map((dept) => (
+        <DepartmentCard key={dept.name} department={dept} />
+      ))}
+    </div>
+  </div>
 );
 
 export default function Community() {
@@ -64,10 +62,10 @@ export default function Community() {
           const headerOffset = 64; // Height of the fixed header (h-16 = 64px)
           const elementPosition = element.offsetTop;
           const offsetPosition = elementPosition - headerOffset;
-          
+
           window.scrollTo({
             top: offsetPosition,
-            behavior: 'smooth'
+            behavior: "smooth",
           });
         }, 100);
       }
@@ -83,10 +81,10 @@ export default function Community() {
         <div className="absolute right-48 bottom-48 h-[15vw] max-h-64 w-[15vw] max-w-64 rounded-full bg-indigo-400 opacity-10 blur-[clamp(30px,4vw,80px)]" />
       </div>
 
-      <Section background="inverted">
+      <Section background="inverted" className="pt-32">
         <JourneySection />
+        <DepartmentsSection />
       </Section>
-      <DepartmentsSection />
       <section id="memberStories">
         <MemberStories stories={stories} />
       </section>

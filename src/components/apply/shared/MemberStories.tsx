@@ -12,7 +12,7 @@ interface MemberStoriesProps {
 export default function MemberStories({ stories }: MemberStoriesProps) {
   return (
     <section className="container mx-auto max-w-5xl px-4 py-16">
-      <h3 className="text-3xl md:text-4xl font-bold mb-4">
+      <h3 className="text-title font-bold mb-4">
         Member <span className="text-purple-600">Stories</span>
       </h3>
       <div className="grid gap-8 md:grid-cols-2">
@@ -26,8 +26,10 @@ export default function MemberStories({ stories }: MemberStoriesProps) {
               alt={story.name}
               className="mb-4 h-32 w-32 rounded-full object-cover"
             />
-            <h3 className="text-xl font-bold text-purple-800">{story.name}</h3>
-            <p className="text-sm text-gray-600 mb-2">{story.role}</p>
+            <h3 className="text-subtitle font-bold text-purple-800">
+              {story.name}
+            </h3>
+            <p className="text-subtext text-gray-600 mb-2">{story.role}</p>
             <p className="text-base text-gray-800 text-center">{story.story}</p>
           </div>
         ))}
