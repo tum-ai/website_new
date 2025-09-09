@@ -169,7 +169,7 @@ export default function Research() {
   };
 
   return (
-    <section className="relative pt-20 pb-12 px-8 bg-gradient-to-br from-blue-900 to-purple-900">
+    <section className="relative pt-32 pb-16 px-8 bg-gradient-to-br from-blue-900 to-purple-900">
       <Layout>
         {/* Hero Section */}
         <div className="min-h-screen flex flex-col justify-center">
