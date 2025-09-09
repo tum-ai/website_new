@@ -11,128 +11,123 @@ import { Button } from "../ui/button";
 import "../../styles/index.css";
 // import gsap from "gsap";
 // import ScrollTrigger from "gsap/ScrollTrigger";
-
+//
 // gsap.registerPlugin(ScrollTrigger);
-
+//
 export const AboutSection = () => {
   const textRef = useRef<HTMLDivElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const revealRef = useRef<HTMLDivElement | null>(null);
   const picRef = useRef<HTMLDivElement | null>(null);
-
-  // useEffect(() => {
   //
-  //   // disable animations on small screens (mobile) and respect reduced motion
-  //   if (typeof window !== "undefined") {
+  //   useEffect(() => {
+  //
+  //     // disable animations on small screens (mobile) and respect reduced motion
+  //     if (typeof window !== "undefined") {
+  //       const mm = window.matchMedia && window.matchMedia("(max-width: 767px)");
+  //       const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
+  //       if ((mm && mm.matches) || (reduce && reduce.matches)) {
+  //         return;
+  //       }
+  //     }
+  //
+  //     if (!textRef.current || !wrapperRef.current) return;
+  //
+  //     // select the word spans inside the text container
+  //     const words = textRef.current.querySelectorAll("span.word");
+  //     if (!words || words.length === 0) return;
+  //
+  //     // make sure words are hidden before animation (start slightly below and fade in)
+  //     gsap.set(words, { opacity: 0, y: 20 });
+  //
+  //     // timeline controlled by ScrollTrigger: scrub ties the timeline progress to scroll position
+  //     // compute a scroll distance proportional to the number of words so the stagger has room to play
+  //     const estimatedScroll = Math.min(1200, 200 + words.length * 18); // pixels
+  //     // keep the section pinned a little longer after the animation completes
+  //     const extraHold = 300; // extra pixels to remain pinned after the reveal finishes
+  //     const totalScroll = estimatedScroll + extraHold;
+  //
+  //     const tl = gsap.timeline({
+  //       scrollTrigger: {
+  //         // pin the whole showcase wrapper (so the placeholder stays visible while text animates)
+  //         trigger: wrapperRef.current,
+  //         // pin the full-viewport container so nothing else is visible while the animation runs
+  //         start: "top top",
+  //         end: `+=${totalScroll}`,
+  //         scrub: 0.2, // link animation progress to scrolling; use a small smoothing value
+  //         pin: true,
+  //         pinSpacing: true,
+  //         // markers: true, // uncomment for debugging
+  //       },
+  //     });
+  //
+  //     tl.to(words, {
+  //       opacity: 1,
+  //       y: 0,
+  //       stagger: { each: 0.035, from: "start" },
+  //       duration: 0.2,
+  //       ease: "none", // keep a linear mapping between scroll position and animation progress
+  //     });
+  //
+  //     return () => {
+  //       // cleanup timeline and ScrollTrigger when component unmounts
+  //       try {
+  //         if (tl && tl.scrollTrigger) tl.scrollTrigger.kill();
+  //         tl.kill();
+  //       } catch (e) {
+  //         /* ignore cleanup errors */
+  //       }
+  //     };
+  //   }, []);
+  //
+  //   // reveal animation specifically for the picture further down the section
+  //   useEffect(() => {
+  //     if (typeof window === "undefined") return;
+  //     if (!picRef.current) return;
+  //
   //     const mm = window.matchMedia && window.matchMedia("(max-width: 767px)");
   //     const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
   //     if ((mm && mm.matches) || (reduce && reduce.matches)) {
+  //       // make sure picture is visible when animations are disabled
+  //       const el = picRef.current as HTMLElement;
+  //       el.style.opacity = "1";
+  //       el.style.transform = "none";
   //       return;
   //     }
-  //   }
   //
-  //   if (!textRef.current || !wrapperRef.current) return;
-
-  // // select the word spans inside the text container
-  // const words = textRef.current.querySelectorAll("span.word");
-  // if (!words || words.length === 0) return;
-  //
-  // // make sure words are hidden before animation (start slightly below and fade in)
-  // gsap.set(words, { opacity: 0, y: 20 });
-  //
-  // // timeline controlled by ScrollTrigger: scrub ties the timeline progress to scroll position
-  // // compute a scroll distance proportional to the number of words so the stagger has room to play
-  // const estimatedScroll = Math.min(1200, 200 + words.length * 18); // pixels
-  // // keep the section pinned a little longer after the animation completes
-  // const extraHold = 300; // extra pixels to remain pinned after the reveal finishes
-  // const totalScroll = estimatedScroll + extraHold;
-
-  // const tl = gsap.timeline({
-  //   scrollTrigger: {
-  //     // pin the whole showcase wrapper (so the placeholder stays visible while text animates)
-  //     trigger: wrapperRef.current,
-  //     // pin the full-viewport container so nothing else is visible while the animation runs
-  //     start: "top top",
-  //     end: `+=${totalScroll}`,
-  //     scrub: 0.2, // link animation progress to scrolling; use a small smoothing value
-  //     pin: true,
-  //     pinSpacing: true,
-  //     // markers: true, // uncomment for debugging
-  //   },
-  // });
-
-  //   tl.to(words, {
-  //     opacity: 1,
-  //     y: 0,
-  //     stagger: { each: 0.035, from: "start" },
-  //     duration: 0.2,
-  //     ease: "none", // keep a linear mapping between scroll position and animation progress
-  //   });
-  //
-  //   return () => {
-  //     // cleanup timeline and ScrollTrigger when component unmounts
-  //     try {
-  //       if (tl && tl.scrollTrigger) tl.scrollTrigger.kill();
-  //       tl.kill();
-  //     } catch (e) {
-  //       /* ignore cleanup errors */
-  //     }
-  //   };
-  // }, []);
-
-  // reveal animation specifically for the picture further down the section
-  // useEffect(() => {
-  //   if (typeof window === "undefined") return;
-  //   if (!picRef.current) return;
-  //
-  //   const mm = window.matchMedia && window.matchMedia("(max-width: 767px)");
-  //   const reduce =
-  //     window.matchMedia &&
-  //     window.matchMedia("(prefers-reduced-motion: reduce)");
-  //   if ((mm && mm.matches) || (reduce && reduce.matches)) {
-  //     // make sure picture is visible when animations are disabled
   //     const el = picRef.current as HTMLElement;
-  //     el.style.opacity = "1";
-  //     el.style.transform = "none";
-  //     return;
-  //   }
+  //     gsap.set(el, { opacity: 0, y: 20 });
   //
-  //   const el = picRef.current as HTMLElement;
-  //   gsap.set(el, { opacity: 0, y: 20 });
+  //     const trig = ScrollTrigger.create({
+  //       trigger: picRef.current,
+  //       start: "top 80%",
+  //       end: "bottom 20%",
+  //       onEnter: () => {
+  //         gsap.to(el, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" });
+  //       },
+  //       onEnterBack: () => {
+  //         gsap.to(el, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" });
+  //   },
+  //     });
   //
-  //   const trig = ScrollTrigger.create({
-  //     trigger: picRef.current,
-  //     start: "top 80%",
-  //     end: "bottom 20%",
-  //     onEnter: () => {
-  //       gsap.to(el, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" });
-  //     },
-  //     onEnterBack: () => {
-  //       gsap.to(el, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" });
-  //     },
-  //   });
+  //     return () => {
+  //       try {
+  //         trig.kill();
+  //       } catch (e) {
+  //         /* ignore */
+  //       }
+  //     };
+  //   }, []);
   //
-  //   return () => {
-  //     try {
-  //       trig.kill();
-  //     } catch (e) {
-  //       /* ignore */
-  //     }
-  //   };
-  // }, []);
-
-  // reveal animation for the main info block (heading, paragraph, buttons, stats)
+  //   // reveal animation for the main info block (heading, paragraph, buttons, stats)
   // useEffect(() => {
   //   if (typeof window === "undefined") return;
   //   if (!revealRef.current) return;
   //
   //   const mm = window.matchMedia && window.matchMedia("(max-width: 767px)");
-  //   const reduce =
-  //     window.matchMedia &&
-  //     window.matchMedia("(prefers-reduced-motion: reduce)");
+  //   const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
   //   if ((mm && mm.matches) || (reduce && reduce.matches)) {
-  //     const elms =
-  //       revealRef.current.querySelectorAll<HTMLElement>(".animate-item");
+  //     const elms = revealRef.current.querySelectorAll<HTMLElement>(".animate-item");
   //     elms.forEach((el) => {
   //       el.style.opacity = "1";
   //       el.style.transform = "none";
@@ -140,44 +135,43 @@ export const AboutSection = () => {
   //     return;
   //   }
   //
-  //   const elms =
-  //     revealRef.current.querySelectorAll<HTMLElement>(".animate-item");
-  //   if (!elms || elms.length === 0) return;
+  //     const elms = revealRef.current.querySelectorAll<HTMLElement>(".animate-item");
+  //     if (!elms || elms.length === 0) return;
   //
-  //   gsap.set(elms, { opacity: 0, y: 20 });
+  //     gsap.set(elms, { opacity: 0, y: 20 });
   //
-  //   const trig = ScrollTrigger.create({
-  //     trigger: revealRef.current,
-  //     start: "top 80%",
-  //     end: "bottom 20%",
-  //     onEnter: () => {
-  //       gsap.to(elms, {
-  //         opacity: 1,
-  //         y: 0,
-  //         duration: 0.6,
-  //         stagger: 0,
-  //         ease: "power2.out",
-  //       });
-  //     },
-  //     onEnterBack: () => {
-  //       gsap.to(elms, {
-  //         opacity: 1,
-  //         y: 0,
-  //         duration: 0.6,
-  //         stagger: 0,
-  //         ease: "power2.out",
-  //       });
-  //     },
-  //   });
+  //     const trig = ScrollTrigger.create({
+  //       trigger: revealRef.current,
+  //       start: "top 80%",
+  //       end: "bottom 20%",
+  //       onEnter: () => {
+  //         gsap.to(elms, {
+  //           opacity: 1,
+  //           y: 0,
+  //           duration: 0.6,
+  //           stagger: 0,
+  //           ease: "power2.out",
+  //         });
+  //       },
+  //       onEnterBack: () => {
+  //         gsap.to(elms, {
+  //           opacity: 1,
+  //           y: 0,
+  //           duration: 0.6,
+  //           stagger: 0,
+  //           ease: "power2.out",
+  //         });
+  //       },
+  //     });
   //
-  //   return () => {
-  //     try {
-  //       trig.kill();
-  //     } catch (e) {
-  //       /* ignore */
-  //     }
-  //   };
-  // }, []);
+  //     return () => {
+  //       try {
+  //         trig.kill();
+  //       } catch (e) {
+  //         /* ignore */
+  //       }
+  //     };
+  //   }, []);
 
   // keywords to highlight inside the paragraph
   const gradientKeywords: Set<string> = new Set([]);
@@ -256,7 +250,7 @@ export const AboutSection = () => {
         </div>
       </div>
       <div
-        className="hidden md:flex h-[100dvh] w-full md:flex-row md:pt-16"
+        className="hidden md:flex w-full md:flex-row md:pt-16"
         ref={wrapperRef}
       >
         <div
