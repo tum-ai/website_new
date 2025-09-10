@@ -1,12 +1,12 @@
 import Layout from "@/components/Layout";
-import ResearchCard from "@/components/research/ResearchCard";
 import Logos from "@/components/Logos";
+import ResearchCard from "@/components/research/ResearchCard";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { researchPartners } from "@/data/partners";
 import type { Research } from "@/lib/types";
 import { useEffect, useRef, useState } from "react";
 import type React from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 
 export default function Research() {
   const [projects, setProjects] = useState<Research[]>([]);
@@ -54,7 +54,7 @@ export default function Research() {
       content: (
         <div>
           {/* Ongoing projects */}
-          <div className="flex flex-wrap mx-[-0.75rem]">
+          <div className="flex flex-wrap justify-center md:justify-start mx-[-0.75rem]">
             {ongoingProjects.map((p) => (
               <div className="flex-shrink-0 px-3 pb-6">
                 <ResearchCard
@@ -75,7 +75,7 @@ export default function Research() {
               <h3 className="text-3xl font-semibold text-center mt-12 mb-4 text-white">
                 Past Projects
               </h3>
-              <div className="flex flex-wrap mx-[-0.75rem]">
+              <div className="flex flex-wrap justify-center md:justify-start mx-[-0.75rem]">
                 {pastProjects.map((p) => (
                   <div className="flex-shrink-0 px-3 pb-6">
                     <ResearchCard

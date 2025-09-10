@@ -54,7 +54,7 @@ const articleStyles = cva("flex flex-col gap-4 transition-all duration-200", {
 
 interface Props
   extends VariantProps<typeof iconContainerStyles>,
-  VariantProps<typeof gridStyles> {
+    VariantProps<typeof gridStyles> {
   benefits: Benefit[];
   showShadow?: boolean;
 }

@@ -1,5 +1,6 @@
 import Homepage from "@/pages/Homepage";
 import Apply from "@/pages/apply/Apply";
+import Disclaimer from "@/pages/footer/Disclaimer";
 import Imprint from "@/pages/footer/Imprint";
 import DataPrivacy from "@/pages/footer/Privacy";
 import Community from "@/pages/headerPages/Community";
@@ -22,4 +23,5 @@ export const routes = [
   { path: "/imprint", element: <Imprint />, title: "Imprint" },
   { path: "/data-privacy", element: <DataPrivacy />, title: "Data Privacy" },
   { path: "/apply", element: <Apply />, title: "Apply" },
+  { path: "/disclaimer", element: <Disclaimer />, title: "Apply" },
 ];

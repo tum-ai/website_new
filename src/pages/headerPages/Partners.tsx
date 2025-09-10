@@ -44,7 +44,7 @@ export default function Partners() {
 
   return (
     <>
-      <section className="relative overflow-hidden">
+      <section className="pt-16 relative overflow-hidden">
         <img
           src="/assets/partners.jpg"
           alt="Hero background image"

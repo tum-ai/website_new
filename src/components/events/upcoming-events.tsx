@@ -34,7 +34,7 @@ export default function UpcomingEvents({ events }: { events: Event[] }) {
       {Object.entries(groupedEvents).map(([month, monthEvents]) => (
         <div key={month} className="space-y-8">
           <h3 className="text-2xl font-semibold text-purple-500">{month}</h3>
-          <div className="flex flex-wrap mx-[-0.75rem]">
+          <div className="flex flex-wrap justify-center md:justify-start mx-[-0.75rem]">
             {monthEvents.map((event) => (
               <div key={event.id} className="flex-shrink-0 px-3 pb-6">
                 <UpcomingEventCard event={event} />

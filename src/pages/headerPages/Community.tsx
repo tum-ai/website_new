@@ -1,6 +1,5 @@
 import MemberStories from "@/components/apply/shared/MemberStories";
 import { JourneySection } from "@/components/community/JourneySection";
-import Section from "@/components/ui/Section";
 import { Card } from "@/components/ui/card";
 import { stories } from "@/data/apply/applyData";
 import { type Department, departments } from "@/data/community";

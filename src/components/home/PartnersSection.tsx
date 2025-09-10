@@ -1,6 +1,7 @@
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import { useEffect, useRef } from "react";
+import { NavLink } from "react-router-dom";
 import { Button } from "../ui/button";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -124,12 +125,12 @@ export const PartnersSection = () => {
             variant="outline2"
             className="w-full rounded-md px-6 py-3 text-center sm:w-auto text-primary hover:text-white hover:bg-primary/80"
           >
-            <a
-              href="/partners"
+            <NavLink
+              to="/partners"
               className="w-full bg-black border border-[#A144E9] rounded-md px-6 py-3 text-[#A144E9] text-center sm:w-auto"
             >
               View Our Partners
-            </a>
+            </NavLink>
           </Button>
         </div>
       </div>

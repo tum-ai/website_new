@@ -1,5 +1,4 @@
 import { type Step, steps } from "@/data/community";
-import { cx } from "class-variance-authority";
 import { ArrowDown } from "lucide-react";
 import { Card } from "../ui/card";
 

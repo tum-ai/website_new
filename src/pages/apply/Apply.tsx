@@ -7,8 +7,8 @@ import Outro from "@/components/apply/shared/Outro";
 import Requirements from "@/components/apply/shared/Requirements";
 import Values from "@/components/apply/shared/Values";
 import FAQ from "@/components/ui/FAQ";
-import { faq } from "@/data/apply/faq";
 import { requirements, stories, values } from "@/data/apply/applyData";
+import { faq } from "@/data/apply/faq";
 import { useMemo } from "react";
 
 export default function Apply() {

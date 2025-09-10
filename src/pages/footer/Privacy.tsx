@@ -2,40 +2,22 @@ import { cx } from "class-variance-authority";
 
 export default function DataPrivacy() {
   return (
-    <>
-      <section className="relative pt-16 overflow-hidden">
-        {/* Background Image with Enhanced Effects */}
-        <img
-          src="/assets/tu_cropped.jpg"
-          alt="Hero background image"
-          className="absolute h-full w-full object-cover transition-transform"
-        />
-
-        {/* Gradient Overlays */}
-        <div className="absolute inset-0 bg-linear-to-b from-black/80 via-black/60 to-black/80" />
-        <div className="absolute inset-0 bg-linear-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10" />
-
-        {/* Content Container */}
-        <div className="relative container mx-auto flex min-h-[30vh] max-w-4xl flex-col justify-center p-8 text-white md:p-16">
-          {/* Decorative Elements */}
-          <div className="absolute top-1/2 left-0 h-32 w-1 -translate-y-1/2 bg-linear-to-b from-blue-500 to-purple-500 opacity-50" />
-
-          {/* Main Content */}
-          <div className="space-y-6">
-            <h1
-              className={cx(
-                "text-6xl font-medium tracking-tight md:text-7xl",
-                "bg-linear-to-r from-white to-gray-300 bg-clip-text text-transparent",
-                "animate-fade-in-up"
-              )}
-            >
-              Datenschutzerklärung TUM.ai e.V.
-            </h1>
-          </div>
+    <div className="flex flex-col min-h-screen">
+      <section className="relative overflow-hidden">
+        <div className="container mx-auto flex pt-32 px-4 sm:px-16 max-w-4xl flex-col justify-center">
+          <h1
+            className={cx(
+              "text-4xl sm:text-6xl font-medium md:text-7xl",
+              "text-black",
+            )}
+          >
+            {" "}
+            Datenschutzerklärung TUM.ai e.V.
+          </h1>
         </div>
       </section>
 
-      <div className="max-w-4xl mx-auto p-6 bg-white">
+      <div className="flex-grow max-w-4xl mx-auto p-4 sm:p-16 bg-white">
         <section className="mb-8">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4">
             1. Name und Kontaktdaten des für die Verarbeitung Verantwortlichen
@@ -130,10 +112,11 @@ export default function DataPrivacy() {
               Für die Bewerbung auf eine Mitgliedschaft ist das Ausfüllen eines
               Kontaktformulars notwendig,{" "}
               <a
-                href="https://apply.tum-ai.com/"
+                href="https://www.tum-ai.com/apply"
+                // href="https://apply.tum-ai.com/"
                 className="text-blue-600 hover:text-blue-800"
               >
-                https://apply.tum-ai.com/
+                https://www.tum-ai.com/apply
               </a>
               .
             </p>
@@ -593,6 +576,6 @@ export default function DataPrivacy() {
           </p>
         </section>
       </div>
-    </>
+    </div>
   );
 }
