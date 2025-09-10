@@ -130,10 +130,11 @@ export default function DataPrivacy() {
               Für die Bewerbung auf eine Mitgliedschaft ist das Ausfüllen eines
               Kontaktformulars notwendig,{" "}
               <a
-                href="https://apply.tum-ai.com/"
+                href="https://www.tum-ai.com/apply"
+                // href="https://apply.tum-ai.com/"
                 className="text-blue-600 hover:text-blue-800"
               >
-                https://apply.tum-ai.com/
+                https://www.tum-ai.com/apply
               </a>
               .
             </p>

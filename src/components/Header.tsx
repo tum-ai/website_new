@@ -102,12 +102,12 @@ export const Header = () => {
           variant="outline2"
           className="w-full rounded-md px-6 py-3 text-center sm:w-auto"
         >
-          <a
-            href="/apply"
+          <NavLink
+            to="/apply"
             className="w-full bg-transparent border border-[#A144E9] rounded-md px-6 py-3 text-[#A144E9] text-center sm:w-auto"
           >
             Become a Member
-          </a>
+          </NavLink>
         </Button>
       </div>
 
@@ -172,14 +172,13 @@ export const Header = () => {
                           {text}
                         </NavLink>
                       ))}
-                      <a
-                        href="/apply"
-                        target="_blank"
+                      <NavLink
+                        to="/apply"
                         onClick={() => setOpen(false)}
                         className="mt-4 block rounded-md bg-[#A144E9] px-4 py-2 text-lg text-white hover:bg-[#8727c7]"
                       >
                         Join Us
-                      </a>
+                      </NavLink>
                     </nav>
                   </motion.div>
                 </Dialog.Content>

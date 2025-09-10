@@ -1,4 +1,3 @@
-// import { partners_ip4, partners_ip5 } from "./industry";
 export const longtermPartners = [
   // {
   //   href: "https://www.anthropic.com/",
@@ -12,7 +11,7 @@ export const longtermPartners = [
   }, */
   {
     href: "https://pwc.com/",
-    src: "public/assets/partners_sponsors/PwC_2025_Logo.svg.png",
+    src: "public/assets/partners_sponsors/PwC_2025_Logo.png",
     alt: "PwC",
   },
 ];
@@ -44,7 +43,6 @@ export const technicalPartners = [
     src: "/assets/partners_sponsors/openai_logo.png",
     alt: "OpenAI",
   },
-  // aws, google x, hugging face, lovable, vercel, n8n, elevenlabs, beyond presence, co-browser
 ];
 
 export const industryPartners = [

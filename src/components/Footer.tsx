@@ -8,7 +8,7 @@ export default function Footer() {
 
       <Section className="relative">
         <div className="container py-12">
-          <div className="flex md:flex-row md:items-center md:justify-between">
+          <div className="flex px-8 md:flex-row md:items-center md:justify-between">
             <div className="mb-8 md:mb-0">
               <img
                 src={"/assets/logo_new_white_standard.png"}
