@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { NavLink } from "react-router-dom";
 
 export default function Hero() {
   return (
@@ -20,7 +21,7 @@ export default function Hero() {
             </div>
             <div className="flex flex-col items-center md:items-start gap-4 mt-4">
               <Button asChild variant="primary" className="px-8 py-4 text-lg">
-                <a href="/">Applications are closed!</a>
+                <NavLink to="/">Applications are closed!</NavLink>
               </Button>
               <p className="text-sm">Application will open in fall 2025</p>
             </div>

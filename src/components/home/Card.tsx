@@ -1,3 +1,4 @@
+import { NavLink } from "react-router-dom";
 import { Button } from "../ui/button";
 
 type CardProps = {
@@ -22,7 +23,7 @@ const Card = ({ text, title, desc, buttonText, link }: CardProps) => {
           className="!p-4 md:!text-2xl w-full md:h-[4rem]"
         >
           {" "}
-          <a href={link}>{buttonText}</a>
+          <NavLink to={link}>{buttonText}</NavLink>
         </Button>
       </div>
     </div>

@@ -54,7 +54,7 @@ export default function Research() {
       content: (
         <div>
           {/* Ongoing projects */}
-          <div className="flex flex-wrap mx-[-0.75rem]">
+          <div className="flex flex-wrap justify-center md:justify-start mx-[-0.75rem]">
             {ongoingProjects.map((p) => (
               <div className="flex-shrink-0 px-3 pb-6">
                 <ResearchCard
@@ -75,7 +75,7 @@ export default function Research() {
               <h3 className="text-3xl font-semibold text-center mt-12 mb-4 text-white">
                 Past Projects
               </h3>
-              <div className="flex flex-wrap mx-[-0.75rem]">
+              <div className="flex flex-wrap justify-center md:justify-start mx-[-0.75rem]">
                 {pastProjects.map((p) => (
                   <div className="flex-shrink-0 px-3 pb-6">
                     <ResearchCard

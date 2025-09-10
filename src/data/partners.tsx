@@ -11,7 +11,7 @@ export const longtermPartners = [
   }, */
   {
     href: "https://pwc.com/",
-    src: "public/assets/partners_sponsors/PwC_2025_Logo.png",
+    src: "/assets/partners_sponsors/PwC_2025_Logo.png",
     alt: "PwC",
   },
 ];

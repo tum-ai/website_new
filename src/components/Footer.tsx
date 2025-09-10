@@ -7,8 +7,8 @@ export default function Footer() {
       <div className="bg-grid-white/[0.02] absolute inset-0 [mask-image:radial-gradient(white,transparent_85%)]" />
 
       <Section className="relative">
-        <div className="container py-12">
-          <div className="flex px-8 md:flex-row md:items-center md:justify-between">
+        <div className="container px-16 py-16">
+          <div className="flex md:flex-row md:items-center md:justify-between">
             <div className="mb-8 md:mb-0">
               <img
                 src={"/assets/logo_new_white_standard.png"}
@@ -96,6 +96,14 @@ export default function Footer() {
                       to="/data-privacy"
                     >
                       Data Privacy
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      className="text-sm text-white/80 transition-colors duration-300 hover:text-purple-300"
+                      to="/disclaimer"
+                    >
+                      Disclaimer
                     </Link>
                   </li>
                 </ul>

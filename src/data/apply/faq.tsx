@@ -19,9 +19,4 @@ export const faq = [
     answer:
       "If you have further questions, feel free to write us an email at recruitment@tum-ai.com.",
   },
-  {
-    question: "Disclaimer",
-    answer:
-      "We are not an educational program. That means you are not only joining to learn but also to contribute to the development of the organization. We don't give in-depth lectures or crash courses in AI and coding yet - you need to interact with other members to learn things. Help is always given to those who ask. We do a lot of organizational work - the AI ecosystem is not ready, and you will be part of building it up. We have a membership fee of 10€ per semester for all of our active members.",
-  },
 ];
