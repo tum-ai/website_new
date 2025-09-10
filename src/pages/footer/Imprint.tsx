@@ -4,14 +4,14 @@ export default function Imprint() {
   return (
     <div className="flex flex-col min-h-screen">
       <section className="relative overflow-hidden">
-        <div className="container mx-auto flex pt-32 px-16 max-w-4xl flex-col justify-center">
+        <div className="container mx-auto flex pt-32 px-4 sm:px-16 max-w-4xl flex-col justify-center">
           <h1 className={cx("text-6xl font-medium md:text-7xl", "text-black")}>
             Impressum
           </h1>
         </div>
       </section>
 
-      <div className="flex-grow max-w-4xl mx-auto p-16 bg-white">
+      <div className="flex-grow max-w-4xl mx-auto p-4 sm:p-16 bg-white">
         <section className="mb-8">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4">
             Organisation
