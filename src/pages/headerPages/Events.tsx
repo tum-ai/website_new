@@ -1,7 +1,7 @@
+import Layout from "@/components/Layout";
 import EventFiltersComponent from "@/components/events/events-filters";
 import PastEvents from "@/components/events/past-events";
 import UpcomingEvents from "@/components/events/upcoming-events";
-import Layout from "@/components/Layout";
 import type { Event, EventFilters } from "@/lib/types";
 import { filterEvents } from "@/lib/utils";
 import { useEffect, useMemo, useState } from "react";

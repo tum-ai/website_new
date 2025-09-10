@@ -1,3 +1,4 @@
+import Layout from "@/components/Layout";
 import { AboutSection } from "@/components/home/AboutSection";
 import { CarouselHome } from "@/components/home/CarouselHome";
 // import { EventsSection } from "@/components/home/EventsSection";
@@ -5,7 +6,6 @@ import { Grid } from "@/components/home/Grid";
 import { PartnersSection } from "@/components/home/PartnersSection";
 import { ScrollSection } from "@/components/home/ScrollSection";
 import { Hero } from "../components/ui/hero";
-import Layout from "@/components/Layout";
 
 export default function Homepage() {
   return (

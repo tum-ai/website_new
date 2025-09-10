@@ -1,7 +1,7 @@
 import "../../styles/index.css";
+import { pictures as data } from "@/data/homepage";
 import gsap from "gsap";
 import { useEffect, useRef } from "react";
-import { pictures as data } from "@/data/homepage";
 type Props = {
   speed?: number;
   aspect?: string;

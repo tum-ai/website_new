@@ -1,6 +1,6 @@
 import "../../styles/Grid.css"; // Import CSS for animations
-import { useEffect, useState } from "react";
 import { pictures as squares } from "@/data/homepage";
+import { useEffect, useState } from "react";
 export const Grid = () => {
   const [tileSize, setTileSize] = useState(164); // Default tile size
   const [tileCount, setTileCount] = useState(0);

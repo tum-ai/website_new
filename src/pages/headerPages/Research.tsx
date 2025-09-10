@@ -1,12 +1,12 @@
 import Layout from "@/components/Layout";
-import ResearchCard from "@/components/research/ResearchCard";
 import Logos from "@/components/Logos";
+import ResearchCard from "@/components/research/ResearchCard";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { researchPartners } from "@/data/partners";
 import type { Research } from "@/lib/types";
 import { useEffect, useRef, useState } from "react";
 import type React from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 
 export default function Research() {
   const [projects, setProjects] = useState<Research[]>([]);
