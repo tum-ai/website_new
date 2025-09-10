@@ -82,9 +82,9 @@ const departments = [
 
 export default function Projects() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-blue-900 to-purple-900 text-white">
+    <section className="relative pt-32 pb-16 px-8 bg-gradient-to-br from-blue-900 to-purple-900 text-white">
       <Layout>
-        <div className="relative pt-32 pb-16 px-8">
+        <div className="relative min-h-screen">
           {/* Hero Section */}
           <div className="flex flex-col items-center gap-4 mb-12 px-6 text-center">
             <h1 className="text-4xl font-bold md:text-5xl text-white">
