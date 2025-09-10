@@ -48,7 +48,7 @@ export const technicalPartners = [
 export const industryPartners = [
   {
     href: "https://www.janestreet.com",
-    src: "/assets/partners/enablers_and_supporters/120px-Jane_Street_Capital_Logo.svg.png",
+    src: "/assets/partners_sponsors/Jane_Street_Capital_Logo.png",
     alt: "janestreet",
   },
   {
@@ -91,6 +91,7 @@ export const industryPartners = [
     href: "https://www.heimkapital.de/",
     src: "/assets/industry/project_cards/heimkapital_resized.jpg",
     alt: "Heimkapital",
+    width: 1000,
   },
   {
     href: "https://www.stmd.bayern.de",
