@@ -5,7 +5,13 @@ export default function DataPrivacy() {
     <div className="flex flex-col min-h-screen">
       <section className="relative overflow-hidden">
         <div className="container mx-auto flex pt-32 px-4 sm:px-16 max-w-4xl flex-col justify-center">
-          <h1 className={cx("text-6xl font-medium md:text-7xl", "text-black")}>
+          <h1
+            className={cx(
+              "text-4xl sm:text-6xl font-medium md:text-7xl",
+              "text-black",
+            )}
+          >
+            {" "}
             Datenschutzerklärung TUM.ai e.V.
           </h1>
         </div>
