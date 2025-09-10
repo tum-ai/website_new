@@ -173,7 +173,7 @@ export const Header = () => {
                         </NavLink>
                       ))}
                       <a
-                        href="https://join.tum-ai.com/"
+                        href="/apply"
                         target="_blank"
                         onClick={() => setOpen(false)}
                         className="mt-4 block rounded-md bg-[#A144E9] px-4 py-2 text-lg text-white hover:bg-[#8727c7]"
