@@ -3,6 +3,8 @@ import Logos from "@/components/Logos";
 import ResearchCard from "@/components/research/ResearchCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import LoadingScreen from "@/components/ui/LoadingScreen";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { researchPartners } from "@/data/partners";
 import type { Research } from "@/lib/types";
 import { useEffect, useRef, useState } from "react";
@@ -44,7 +46,7 @@ export default function Research() {
     }
   }, [projects]);
 
-  if (loading) return <div>Loading research projects...</div>;
+  if (loading) return <LoadingScreen text="Loading research projects..." />;
   if (error) return <div style={{ color: "red" }}>{error}</div>;
 
   const tabs = [

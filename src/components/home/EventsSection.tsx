@@ -1,3 +1,4 @@
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import type { Event } from "@/lib/types";
 import { useEffect, useState } from "react";
 import EventCard from "./EventCard";
@@ -49,7 +50,7 @@ export const EventsSection = () => {
       },
     }));
 
-  if (loading) return <div>Loading events...</div>;
+  if (loading) return <LoadingSpinner text="Loading events..." size="sm" className="text-gray-800" />;
   if (error) return <div style={{ color: "red" }}>{error}</div>;
 
   return (
