@@ -89,7 +89,7 @@ export const PartnersSection = () => {
   return (
     <div className="flex flex-col items-center md:flex-row gap-8 px-6 md:px-10 py-10 md:py-15">
       {/* Left image - fill desktop height minus header (82px) */}
-      <div className="md:w-4/7 w-full md:h-[calc(92dvh-82px)]">
+      <div className="md:w-4/7 w-full">
         <img
           className="rounded-xl w-full h-full object-cover"
           src="/assets/partners_pic.jpg"

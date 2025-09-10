@@ -21,7 +21,7 @@ export default function Research() {
     const fetchProjects = async () => {
       try {
         const res = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/getResearch`
+          `${import.meta.env.VITE_BACKEND_URL}/api/getResearch`,
         );
         if (!res.ok) throw new Error("Failed to fetch projects");
         const data = await res.json();
@@ -55,7 +55,6 @@ export default function Research() {
         <div>
           {/* Ongoing projects */}
           <div className="flex flex-wrap mx-[-0.75rem]">
-
             {ongoingProjects.map((p) => (
               <div className="flex-shrink-0 px-3 pb-6">
                 <ResearchCard
@@ -109,8 +108,11 @@ export default function Research() {
             opportunities to conduct research abroad. Offers range from final
             theses to research internships with leading labs at institutions
             like
-            <span className="font-semibold text-white"> Harvard, MIT, Cambridge,</span> or{" "}
-            <span className="font-semibold text-white">INRIA</span>.
+            <span className="font-semibold text-white">
+              {" "}
+              Harvard, MIT, Cambridge,
+            </span>{" "}
+            or <span className="font-semibold text-white">INRIA</span>.
           </p>
 
           <p className="text-lg leading-relaxed text-gray-200">
@@ -167,7 +169,7 @@ export default function Research() {
   };
 
   return (
-    <section className="relative pt-20 pb-12 px-8 bg-gradient-to-br from-blue-900 to-purple-900">
+    <section className="relative pt-32 pb-16 px-8 bg-gradient-to-br from-blue-900 to-purple-900">
       <Layout>
         {/* Hero Section */}
         <div className="min-h-screen flex flex-col justify-center">
@@ -179,7 +181,6 @@ export default function Research() {
               Our research offerings - from projects to exchange programs
             </p>
           </div>
-
 
           {/* Tabs Section */}
           {tabs.length > 1 ? (
@@ -205,8 +206,7 @@ export default function Research() {
                       onClick={() => setActiveTab(tab.value)}
                       onKeyDown={(e) => handleKeyDown(e, idx)}
                       className={
-                        "w-full sm:w-auto text-center rounded-md text-sm transition-colors "
-                        +
+                        "w-full sm:w-auto text-center rounded-md text-sm transition-colors " +
                         (!selected
                           ? "bg-white/10 text-white shadow-inner ring-1 ring-white/20"
                           : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white")
@@ -217,8 +217,6 @@ export default function Research() {
                   );
                 })}
               </div>
-
-              <div className="h-1 w-16 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 mx-auto"></div>
 
               {tabs.map((tab) => (
                 <div
@@ -234,9 +232,10 @@ export default function Research() {
               ))}
             </div>
           ) : (
-            <div className="w-full px-6 sm:px-8 lg:px-12">{tabs[0].content}</div>
+            <div className="w-full px-6 sm:px-8 lg:px-12">
+              {tabs[0].content}
+            </div>
           )}
-
 
           {Array.isArray(researchPartners) && researchPartners.length > 0 && (
             <div className="px-6 md:px-12 mt-12">
