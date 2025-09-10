@@ -32,7 +32,7 @@ const DepartmentCard = ({ department }: { department: Department }) => {
 };
 
 const DepartmentsSection = () => (
-  <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16">
+  <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16 pb-16">
     <div className="mb-20 text-center">
       <h2 className="text-title font-semibold tracking-tight text-white">
         Our Core Departments
@@ -81,10 +81,10 @@ export default function Community() {
         <div className="absolute right-48 bottom-48 h-[15vw] max-h-64 w-[15vw] max-w-64 rounded-full bg-indigo-400 opacity-10 blur-[clamp(30px,4vw,80px)]" />
       </div>
 
-      <Section background="inverted" className="pt-32">
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-900 to-purple-900 text-white">
         <JourneySection />
         <DepartmentsSection />
-      </Section>
+      </section>
       <section id="memberStories">
         <MemberStories stories={stories} />
       </section>

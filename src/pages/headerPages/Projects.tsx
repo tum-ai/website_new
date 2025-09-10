@@ -82,7 +82,7 @@ const departments = [
 
 export default function Projects() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-blue-900 to-purple-900 p-8 text-white">
+    <section className="relative overflow-hidden bg-gradient-to-br from-blue-900 to-purple-900 text-white">
       <Layout>
         <div className="relative pt-32 pb-16 px-8">
           {/* Hero Section */}

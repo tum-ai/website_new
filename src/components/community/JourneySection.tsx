@@ -28,17 +28,13 @@ const Arrow = ({ color = "white" }: { color?: string }) => (
 export const JourneySection = () => {
   return (
     <div className="relative flex items-center justify-center">
-      <div className="relative z-10 w-full max-w-4xl space-y-8 text-center">
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="relative pt-32 pb-16 px-8 z-10 w-full max-w-4xl space-y-8 text-center">
+        <div className="flex flex-col items-center gap-4 mb-12 px-6 text-center">
           <div className="mb-12 text-center">
-            <h2
-              className={
-                "mb-6 text-title font-semibold tracking-tight text-white"
-              }
-            >
+            <h1 className="text-4xl font-bold md:text-5xl text-white">
               The TUM.ai Member Journey
-            </h2>
-            <p className="mx-auto max-w-2xl text-subtext text-white">
+            </h1>
+            <p className="mx-auto max-w-2xl text-subtitle pt-4 text-white">
               At TUM.ai, members contribute through AI projects, workshops, and
               community initiatives — turning bold ideas into real-world impact.
             </p>
