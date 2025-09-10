@@ -9,13 +9,17 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
 import "../../styles/index.css";
+import { aboutText } from "@/data/homepage";
 // import gsap from "gsap";
 // import ScrollTrigger from "gsap/ScrollTrigger";
 //
 // gsap.registerPlugin(ScrollTrigger);
 //
 export const AboutSection = () => {
+  const textRef = useRef<HTMLDivElement | null>(null);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
   const revealRef = useRef<HTMLDivElement | null>(null);
+  const picRef = useRef<HTMLDivElement | null>(null);
   //
   //   useEffect(() => {
   //
@@ -171,12 +175,28 @@ export const AboutSection = () => {
   //   }, []);
 
   // keywords to highlight inside the paragraph
+  const gradientKeywords: Set<string> = new Set([]);
+  const primaryKeywords = new Set([
+    "members",
+    "partnerships",
+    "collaboration",
+    "mentorship",
+    "opportunities",
+    "solutions",
+    "entrepreneurial",
+    "tumai",
+    "ai",
+    "research",
+    "projects",
+    "startups",
+    "workshops",
+  ]);
 
   return (
     <div className="flex flex-col gap-8 p-8 md:p-10">
-      <div className="w-full flex min-h-[350px] items-center md:max-h-2/3 h-fitlex-1">
+      <div className="w-full items-center md:max-h-2/3 flex">
         <img
-          className="object-cover min-h-[350px]  bg-gray-200 rounded-xl"
+          className="object-cover bg-gray-200 rounded-xl w-full h-auto"
           src="/assets/apply/new_section_photo_1.jpg"
           alt="TUM.ai members"
         />
@@ -202,7 +222,7 @@ export const AboutSection = () => {
               , fostering both groundbreaking research and entrepreneurial
               ventures across diverse industries.
             </p>
-            <div className="flex gap-4 md:gap-8 justify-start flex-col md:flex-row mb-4 md:mb-0">
+            <div className="flex gap-4 justify-start flex-col md:flex-row mb-4">
               <Button
                 asChild
                 variant="primary"
@@ -210,6 +230,7 @@ export const AboutSection = () => {
               >
                 <a href="/community#memberStories">Meet our Members</a>
               </Button>
+
               <Button
                 asChild
                 variant="outline2"
@@ -237,6 +258,43 @@ export const AboutSection = () => {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+      <div
+        className="hidden md:flex w-full md:flex-row pt-4 pb-4"
+        ref={wrapperRef}
+      >
+        <div
+          className="w-full md:w-1/2 lg:w-1/3 flex items-center justify-center"
+          ref={textRef}
+        >
+          <p className="text-lg md:text-2xl text-start md:text-left px-4">
+            {aboutText.split(" ").map((word, index) => {
+              const stripped = word.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+              const isGradient = gradientKeywords.has(stripped);
+              const isPrimary = primaryKeywords.has(stripped);
+              const extraClass = isGradient
+                ? "gradient-text font-bold"
+                : isPrimary
+                  ? "text-primary font-semibold"
+                  : "";
+              return (
+                <span key={index} className={`word inline-block ${extraClass}`}>
+                  {word}&nbsp;
+                </span>
+              );
+            })}
+          </p>
+        </div>
+        <div
+          ref={picRef}
+          className="w-full md:w-2/3 flex items-center justify-center"
+        >
+          <img
+            className="object-cover min-h-[200px] bg-gray-200 rounded-xl"
+            src="/assets/homepage/Onboarding25.jpg"
+            alt="TUM.ai members placeholder"
+          />
         </div>
       </div>
     </div>
