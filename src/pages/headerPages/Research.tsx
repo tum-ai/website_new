@@ -174,7 +174,7 @@ export default function Research() {
     <section className="relative pt-32 pb-16 px-8 bg-gradient-to-br from-blue-900 to-purple-900">
       <Layout>
         {/* Hero Section */}
-        <div className="min-h-screen flex flex-col justify-center">
+        <div className="min-h-screen ">
           <div className="flex flex-col items-center gap-4 mb-4 px-6 text-center">
             <h1 className="text-4xl font-bold md:text-5xl text-white">
               Research
