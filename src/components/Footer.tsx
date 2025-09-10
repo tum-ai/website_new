@@ -47,7 +47,7 @@ export default function Footer() {
                   </li>
                   <li>
                     <a
-                      href="https.join.slack.com/t/tumaipublic/shared_invite/zt-10kg0t1f9-JLRXDxY_d_vprKWgab0cVw"
+                      href="https://join.slack.com/t/tumaipublic/shared_invite/zt-10kg0t1f9-JLRXDxY_d_vprKWgab0cVw"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-sm text-white/80 transition-colors duration-300 hover:text-purple-300"
