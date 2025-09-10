@@ -5,7 +5,7 @@ import Card from "./Card";
 export const CarouselHome = () => {
   const data = [
     {
-      imgSrc: "/assets/open_ai_speaker_event.jpg",
+      imgSrc: "/assets/open_ai_speaker_event.webp",
       text: "JOIN THE COMMUNITY",
       title: "Hackathons, Talks, Workshops, ...",
       desc: "AI for Everyone - We offer a variety of events to help you learn and grow",
@@ -13,7 +13,7 @@ export const CarouselHome = () => {
       link: "/events",
     },
     {
-      imgSrc: "/assets/innovation/robotics_discussion.png",
+      imgSrc: "/assets/innovation/robotics_discussion.webp",
       text: "JOIN THE COMMUNITY",
       title: "Research",
       desc: "Research projects and the Research Exchange (REX) Program for academically inclined minds",
@@ -21,7 +21,7 @@ export const CarouselHome = () => {
       link: "/research",
     },
     {
-      imgSrc: "/assets/innovation/robotics_writing.png",
+      imgSrc: "/assets/innovation/robotics_writing.webp",
       text: "JOIN THE COMMUNITY",
       title: "Innovation Departments",
       desc: "Explore TUM.ai’s innovation departments and the exciting projects they lead",
@@ -29,7 +29,7 @@ export const CarouselHome = () => {
       link: "/projects",
     },
     {
-      imgSrc: "/assets/home_img4.jpg",
+      imgSrc: "/assets/home_img4.webp",
       text: "APPLICATIONS OPEN IN AUGUST",
       title: "AI Entrepreneurship Lab (AI E-Lab)",
       desc: "14-week equity-free AI startup incubator with full support from Munich's innovation ecosystem",

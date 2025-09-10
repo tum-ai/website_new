@@ -21,12 +21,12 @@ export default function Apply() {
       <About />
       <Milestones />
       <Values valuesWithIcons={valuesWithIcons} />
-      <img src="/assets/apply/new_section_photo_1.jpg" />
+      <img src="/assets/apply/new_section_photo_1.webp" />
       <MemberJourney />
-      <img src="/assets/apply/new_section_photo_4.jpg" />
+      <img src="/assets/apply/new_section_photo_4.webp" />
       <MemberStories stories={stories} />
       <Requirements requirementsWithIcons={requirementsWithIcons} />
-      <img src="/assets/apply/new_section_photo_3.png" />
+      <img src="/assets/apply/new_section_photo_3.webp" />
       <FAQ faq={faq} />
       <Outro />
     </div>

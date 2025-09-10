@@ -46,7 +46,7 @@ export default function Partners() {
     <>
       <section className="pt-16 relative overflow-hidden">
         <img
-          src="/assets/partners.jpg"
+          src="/assets/partners.webp"
           alt="Hero background image"
           className="absolute w-full h-full scale-110 object-cover transition-transform duration-700 hover:scale-105"
         />
