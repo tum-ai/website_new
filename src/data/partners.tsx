@@ -11,7 +11,7 @@ export const longtermPartners = [
   }, */
   {
     href: "https://pwc.com/",
-    src: "/assets/partners_sponsors/PwC_2025_Logo.png",
+    src: "/assets/partners_sponsors/pwc.jpg",
     alt: "PwC",
   },
 ];
@@ -89,7 +89,7 @@ export const industryPartners = [
   },
   {
     href: "https://www.heimkapital.de/",
-    src: "/assets/industry/project_cards/heimkapital_resized.jpg",
+    src: "/assets/industry/project_cards/heimkapital.svg",
     alt: "Heimkapital",
     width: 1000,
   },
