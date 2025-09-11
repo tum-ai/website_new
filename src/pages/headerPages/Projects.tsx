@@ -6,7 +6,7 @@ const departments = [
     name: "MED.ai",
     description:
       "MED.ai is TUM.ai’s elite taskforce dedicated to identifying current challenges at the intersection of healthcare and AI, conducting cutting-edge research, and engaging with leading industry experts.",
-    image: "/assets/innovation/med_ai.jpg",
+    image: "/assets/innovation/med_ai.webp",
     detailedDescription:
       "MED.ai is TUM.ai’s elite taskforce dedicated to identifying current challenges at the intersection of healthcare and AI, conducting cutting-edge research, and engaging with leading industry experts. Semesterly research projects in this field with institutions like Helmholtz AI leverages our members to draw new frontiers in the medical research field. With our MED Talks Speaker Series we make one of AI‘s most exciting application fields accessible to the broader audience.",
     members: 8,
@@ -25,7 +25,7 @@ const departments = [
     name: "Robotics",
     description:
       "We explore cutting-edge approaches in robotic intelligence, currently focusing on imitation learning and reinforcement learning.",
-    image: "/assets/innovation/robotics_arm.png",
+    image: "/assets/innovation/robotics_arm.webp",
     detailedDescription:
       "We explore cutting-edge approaches in robotic intelligence, currently focusing on imitation learning using the LeRobot framework. Our work is rapidly expanding toward reinforcement learning and robotics foundation models. As a team, we actively participate in robotics hackathons, organize paper reading sessions, and develop our own experimental projects—bridging research and hands-on innovation.",
     members: 4,
@@ -63,7 +63,7 @@ const departments = [
     name: "Applied Accelerated Computing",
     description:
       "Focuses on AI hardware, GPUs, and compute acceleration for cutting-edge AI projects.",
-    image: "/assets/innovation/accelerated_computing.png",
+    image: "/assets/innovation/accelerated_computing.webp",
     detailedDescription:
       "At TUM.ai's Applied Accelerated Computing task force, we go beyond theoretical AI to unravel the hardware powering it all. We equip members with in-depth knowledge of GPUs and compute accelerators, enabling them to understand their workings and optimize AI workflows at a fundamental level.",
     members: 2,
@@ -82,9 +82,9 @@ const departments = [
 
 export default function Projects() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-blue-900 to-purple-900 text-white">
+    <section className="relative pt-32 pb-16 px-8 bg-gradient-to-br from-blue-900 to-purple-900 text-white">
       <Layout>
-        <div className="relative pt-32 pb-16 px-8">
+        <div className="relative min-h-screen">
           {/* Hero Section */}
           <div className="flex flex-col items-center gap-4 mb-12 px-6 text-center">
             <h1 className="text-4xl font-bold md:text-5xl text-white">

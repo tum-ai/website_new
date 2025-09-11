@@ -2,6 +2,7 @@ import Layout from "@/components/Layout";
 import EventFiltersComponent from "@/components/events/events-filters";
 import PastEvents from "@/components/events/past-events";
 import UpcomingEvents from "@/components/events/upcoming-events";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 import type { Event, EventFilters } from "@/lib/types";
 import { filterEvents } from "@/lib/utils";
 import { useEffect, useMemo, useState } from "react";
@@ -52,7 +53,7 @@ export default function Events() {
         new Date(b.event_date).getTime() - new Date(a.event_date).getTime(),
     );
 
-  if (loading) return <div>Loading events...</div>;
+  if (loading) return <LoadingScreen text="Loading events..." />;
   if (error) return <div style={{ color: "red" }}>{error}</div>;
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-blue-900 to-purple-900 p-8 text-white sm:py-16 lg:py-24">

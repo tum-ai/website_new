@@ -198,7 +198,7 @@ export const AboutSection = () => {
       <div className="w-full items-center md:max-h-2/3 flex">
         <img
           className="object-cover bg-gray-200 rounded-xl w-full h-auto"
-          src="/assets/apply/new_section_photo_1.jpg"
+          src="/assets/apply/new_section_photo_1.webp"
           alt="TUM.ai members"
         />
       </div>
@@ -295,7 +295,7 @@ export const AboutSection = () => {
         >
           <img
             className="object-cover min-h-[200px] bg-gray-200 rounded-xl"
-            src="/assets/homepage/Onboarding25.jpg"
+            src="/assets/homepage/Onboarding25.webp"
             alt="TUM.ai members placeholder"
           />
         </div>

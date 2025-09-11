@@ -3,6 +3,8 @@ import Logos from "@/components/Logos";
 import ResearchCard from "@/components/research/ResearchCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import LoadingScreen from "@/components/ui/LoadingScreen";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { researchPartners } from "@/data/partners";
 import type { Research } from "@/lib/types";
 import { useEffect, useRef, useState } from "react";
@@ -44,7 +46,7 @@ export default function Research() {
     }
   }, [projects]);
 
-  if (loading) return <div>Loading research projects...</div>;
+  if (loading) return <LoadingScreen text="Loading research projects..." />;
   if (error) return <div style={{ color: "red" }}>{error}</div>;
 
   const tabs = [
@@ -172,7 +174,7 @@ export default function Research() {
     <section className="relative pt-32 pb-16 px-8 bg-gradient-to-br from-blue-900 to-purple-900">
       <Layout>
         {/* Hero Section */}
-        <div className="min-h-screen flex flex-col justify-center">
+        <div className="min-h-screen ">
           <div className="flex flex-col items-center gap-4 mb-4 px-6 text-center">
             <h1 className="text-4xl font-bold md:text-5xl text-white">
               Research

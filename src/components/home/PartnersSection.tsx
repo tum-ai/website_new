@@ -93,7 +93,7 @@ export const PartnersSection = () => {
       <div className="md:w-4/7 w-full">
         <img
           className="rounded-xl w-full h-full object-cover"
-          src="/assets/partners_pic.jpg"
+          src="/assets/partners_pic.webp"
           alt="Partners"
         />
       </div>

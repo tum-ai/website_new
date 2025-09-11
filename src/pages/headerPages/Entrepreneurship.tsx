@@ -7,7 +7,7 @@ export default function Entrepreneurship() {
       <section className="relative overflow-hidden">
         {/* Background Image with Enhanced Effects */}
         <img
-          src="/assets/home_img4.jpg"
+          src="/assets/home_img4.webp"
           alt="Hero background image"
           className="absolute scale-110 object-cover transition-transform duration-700 hover:scale-105"
         />
