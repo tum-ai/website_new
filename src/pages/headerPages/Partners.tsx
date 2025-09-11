@@ -71,9 +71,11 @@ export default function Partners() {
               Get access to Germany&apos;s largest student talent pool of AI
               enthusiasts
             </p>
-            <Button>
-              <a href="mailto:partners@tum-ai.com">Become a partner</a>
-            </Button>
+            <a href="mailto:partners@tum-ai.com">
+              <Button>
+                Become a partner
+              </Button>
+            </a>
           </div>
         </div>
       </section>
@@ -199,12 +201,14 @@ export default function Partners() {
                     </ul>
                   </div>
 
-                  <Button
-                    variant="primary"
-                    className="w-full border border-white/10"
-                  >
-                    <a href="mailto:partners@tum-ai.com">Become a partner</a>
-                  </Button>
+                  <a href="mailto:partners@tum-ai.com">
+                    <Button
+                      variant="primary"
+                      className="w-full border border-white/10"
+                    >
+                      Become a partner
+                    </Button>
+                  </a>
                 </div>
               </div>
 
