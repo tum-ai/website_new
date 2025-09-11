@@ -18,7 +18,7 @@ export default function Imprint() {
           </h2>
           <p className="text-gray-700 mb-4">
             TUM.ai e.V. Vereinsregisternummer: VR209059 <br />
-            Arcistrasse 21, 80333 München <br />
+            Adresse: Arcistrasse 21, 80333 München <br />
             Vertreter: Paul Schneider, Ju-Shan Chao, Fiona Mokhtarzadeh, William
             Homburg, Hamze Al-Zamkan <br />
             Mail: contact@tum-ai.com

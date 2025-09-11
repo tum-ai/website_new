@@ -60,7 +60,7 @@ export default function DataPrivacy() {
               >
                 https://www.tum-ai.com/
               </a>{" "}
-              (kurz: „TUM.ai Website") werden durch den auf Ihrem Endgerät zum
+              (kurz: "TUM.ai Website") werden durch den auf Ihrem Endgerät zum
               Einsatz kommenden Browser automatisch Informationen an den Server
               unserer Website gesendet. Diese Informationen werden temporär in
               einem sog. Logfile gespeichert. Folgende Informationen werden
