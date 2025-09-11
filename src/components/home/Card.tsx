@@ -18,13 +18,14 @@ const Card = ({ text, title, desc, buttonText, link }: CardProps) => {
           <span className="gradient-text">{title}</span>
         </h1>
         <p className="md:text-2xl">{desc}</p>
-        <Button
-          variant="primary"
-          className="!p-4 md:!text-2xl w-full md:h-[4rem]"
-        >
-          {" "}
-          <NavLink to={link}>{buttonText}</NavLink>
-        </Button>
+        <NavLink to={link}>
+          <Button
+            variant="primary"
+            className="!p-4 md:!text-2xl w-full md:h-[4rem]"
+          >
+            {buttonText}
+          </Button>
+        </NavLink>
       </div>
     </div>
   );
