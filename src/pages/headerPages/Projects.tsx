@@ -87,14 +87,14 @@ export default function Projects() {
         <div className="relative min-h-screen">
           {/* Hero Section */}
           <div className="flex flex-col items-center gap-4 mb-12 px-6 text-center">
-            <h1 className="text-4xl font-bold md:text-5xl text-white">
+            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">
               Innovation Departments and Projects
             </h1>
-            <p className="mx-auto max-w-2xl text-subtitle text-gray-200">
-              Explore TUM.ai's innovation departments and the exciting projects
-              they lead.
+            <p className="mx-auto max-w-2xl text-subtitle text-gray-200 pt-2">
+              Explore TUM.ai's innovation departments and the exciting projects they lead.
             </p>
           </div>
+
           <div className="w-full px-6 md:px-12">
             <div className="flex flex-wrap mx-[-0.75rem] justify-center">
               {departments.map((dept) => (
