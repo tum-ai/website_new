@@ -154,15 +154,20 @@ export function ScrollSection({
       {/* Right fade gradient */}
       <div className="hidden md:block absolute right-0 top-0 bottom-0 w-32 sm:w-40 md:w-48 lg:w-56 xl:w-64 bg-gradient-to-l from-white via-gray-50/70 to-transparent z-10 pointer-events-none"></div>
 
-      <div ref={trackRef} className="flex flex-nowrap items-center">
+      <div
+        ref={trackRef}
+        className="flex flex-nowrap items-center"
+        onMouseEnter={() => tweenRef.current?.pause()}
+        onMouseLeave={() => tweenRef.current?.resume()}
+      >
         {doubledData.map((imgObj, idx) => {
           const resolvedWidthClass =
             widthClass ??
             (widthMode === "viewport"
               ? "w-[80vw] lg:w-[66.666vw] flex-none"
               : widthMode === "fixed"
-                ? "w-80 sm:w-96 lg:w-[32rem] flex-none"
-                : "w-[80%] lg:w-2/3 flex-none");
+              ? "w-80 sm:w-96 lg:w-[32rem] flex-none"
+              : "w-[80%] lg:w-2/3 flex-none");
 
           return (
             <div
