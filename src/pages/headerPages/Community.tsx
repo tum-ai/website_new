@@ -1,49 +1,78 @@
+// src/pages/Community.jsx
+
 import MemberStories from "@/components/apply/shared/MemberStories";
-import { JourneySection } from "@/components/community/JourneySection";
+import { JourneySection, iconColors as departmentColors } from "@/components/community/JourneySection";
 import { Card } from "@/components/ui/card";
 import { stories } from "@/data/apply/applyData";
 import { type Department, departments } from "@/data/community";
 import * as LucideIcons from "lucide-react";
 import { useEffect } from "react";
+import { motion } from "framer-motion";
 
 type IconName = keyof typeof LucideIcons;
 
-const DepartmentCard = ({ department }: { department: Department }) => {
+const DepartmentCard = ({ department, index }: { department: Department; index: number }) => {
   const Icon = LucideIcons[department.icon as IconName] as React.ElementType;
 
   return (
-    <Card className="h-full p-8 text-white bg-purple-900 border-slate-700">
-      <div className="relative mb-5 flex items-center gap-4">
-        {Icon && (
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 transition-colors group-hover:bg-white/15">
-            <Icon className="h-5 w-5 text-white" />
-          </div>
-        )}
-        <h3 className="text-subtitle font-semibold tracking-tight">
-          {department.name}
-        </h3>
-      </div>
-      <p className="text-subtext leading-relaxed text-slate-300">
-        {department.description}
-      </p>
-    </Card>
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      viewport={{ once: true }}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      <Card
+        className="h-full p-8 text-white rounded-3xl overflow-hidden relative border border-white/10"
+        style={{
+          backgroundColor: "#18112F",
+          boxShadow: "0px 5px 15px rgba(0,0,0,0.2), 0px 2px 5px rgba(0,0,0,0.1)",
+        }}
+      >
+        <div
+          className="absolute inset-0 z-0 opacity-40"
+          style={{
+            background: `radial-gradient(circle at center, ${departmentColors[index]} 0%, transparent 70%)`,
+          }}
+        ></div>
+        <div className="relative z-10 mb-5 flex items-center gap-4">
+          {Icon && (
+            <div
+              className="flex h-10 w-10 items-center justify-center rounded-lg transition-colors"
+              style={{
+                backgroundColor: "rgba(255,255,255,0.05)",
+                color: departmentColors[index],
+              }}
+            >
+              <Icon className="h-5 w-5" />
+            </div>
+          )}
+          <h3 className="text-2xl font-semibold tracking-tight">
+            {department.name}
+          </h3>
+        </div>
+        <p className="relative z-10 leading-relaxed text-white/80">
+          {department.description}
+        </p>
+      </Card>
+    </motion.div>
   );
 };
 
 const DepartmentsSection = () => (
   <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16 pb-16">
     <div className="mb-20 text-center">
-      <h2 className="text-title font-semibold tracking-tight text-white">
+      <h2 className="text-4xl font-semibold tracking-tight text-white md:text-5xl bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">
         Our Core Departments
       </h2>
-      <p className="mx-auto mt-4 max-w-2xl text-subtext text-slate-300">
-        Discover the diverse teams that make TUM.ai thrive. Each department
-        plays a crucial role in our mission to shape the future of AI.
+      <p className="mx-auto mt-4 max-w-2xl text-base text-white/80 md:text-lg">
+        Discover the diverse teams that make TUM.ai thrive. Each department plays a crucial role in our mission to shape the future of AI.
       </p>
     </div>
     <div className="grid auto-rows-fr grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-      {departments.map((dept) => (
-        <DepartmentCard key={dept.name} department={dept} />
+      {departments.map((dept, index) => (
+        <DepartmentCard key={dept.name} department={dept} index={index} />
       ))}
     </div>
   </div>
@@ -51,14 +80,12 @@ const DepartmentsSection = () => (
 
 export default function Community() {
   useEffect(() => {
-    // Handle hash fragment scrolling
     const hash = window.location.hash;
     if (hash) {
       const element = document.getElementById(hash.substring(1));
       if (element) {
-        // Add a small delay to ensure the page is fully rendered
         setTimeout(() => {
-          const headerOffset = 64; // Height of the fixed header (h-16 = 64px)
+          const headerOffset = 64;
           const elementPosition = element.offsetTop;
           const offsetPosition = elementPosition - headerOffset;
 
@@ -80,11 +107,11 @@ export default function Community() {
         <div className="absolute right-48 bottom-48 h-[15vw] max-h-64 w-[15vw] max-w-64 rounded-full bg-indigo-400 opacity-10 blur-[clamp(30px,4vw,80px)]" />
       </div>
 
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-900 to-purple-900 text-white">
+      <section className="relative overflow-hidden bg-[#18112F] text-white">
         <JourneySection />
         <DepartmentsSection />
       </section>
-      <section id="memberStories">
+      <section id="memberStories" className="bg-[#18112F]">
         <MemberStories stories={stories} />
       </section>
     </>

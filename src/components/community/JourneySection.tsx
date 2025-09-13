@@ -1,3 +1,5 @@
+// src/components/community/JourneySection.jsx
+
 import { type Step, steps } from "@/data/community";
 import { Card } from "../ui/card";
 import { motion } from "framer-motion";
@@ -21,14 +23,24 @@ const stepIcons = [
   faGraduationCap, // Alumni
 ];
 
-// Color scheme for the ICONS
-const iconColors = [
-  "#9F7AEA", // Purple for Batch Introduction
-  "#6366F1", // Indigo for Research Track
-  "#EC4899", // Pink for Initiative Track
-  "#10B981", // Emerald for Growth Opportunities
-  "#3B82F6", // Blue for Research Exchange (REX) Program
-  "#FFD700", // Gold for Alumni
+// Corrected color scheme for the ICONS (a unique color for each of the 6 steps)
+export const iconColors = [
+  "#C084FC", // Purple for Batch Introduction
+  "#4FD1C5", // Teal for Research Track
+  "#F472B6", // Pink for Initiative Track
+  "#FDE047", // Yellow for Growth Opportunities
+  "#60A5FA", // Light Blue for Research Exchange (REX) Program
+  "#FB923C", // Orange for Alumni
+];
+
+// Corrected background colors for the radial gradient glow
+export const glowColors = [
+  "#3A1772", // Dark purple for Batch Introduction
+  "#007266", // Dark teal for Research Track
+  "#721D50", // Dark magenta for Initiative Track
+  "#7A6000", // Dark yellow for Growth Opportunities
+  "#141972", // Deep blue for Research Exchange (REX) Program
+  "#B45B31", // Orange-brown for Alumni
 ];
 
 const StepCard = ({ step, index }: { step: Step; index: number }) => (
@@ -37,14 +49,25 @@ const StepCard = ({ step, index }: { step: Step; index: number }) => (
     whileInView={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.5, delay: index * 0.1 }}
     viewport={{ once: true }}
-    whileHover={{ scale: 1.02 }}
+    whileHover={{ scale: 1.02, boxShadow: "0px 10px 20px rgba(0,0,0,0.3)" }}
     whileTap={{ scale: 0.98 }}
     className="relative cursor-pointer"
   >
     <Card
-      className="relative p-6 text-white border-none bg-[#201538] rounded-3xl shadow-lg h-full"
+      className="relative p-6 text-white border border-white/10 rounded-3xl shadow-lg h-full overflow-hidden
+      before:absolute before:inset-0 before:opacity-50 before:bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] before:from-purple-900 before:to-transparent"
+      style={{
+        backgroundColor: "#18112F",
+        boxShadow: "0px 5px 15px rgba(0,0,0,0.2), 0px 2px 5px rgba(0,0,0,0.1)",
+      }}
     >
-      <div className="flex items-start justify-between">
+      <div
+        className="absolute inset-0 z-0 opacity-50"
+        style={{
+          background: `radial-gradient(circle at center, ${glowColors[index]} 0%, transparent 70%)`,
+        }}
+      ></div>
+      <div className="relative z-10 flex items-start justify-between">
         <div className="flex flex-col">
           <div className="text-xl font-semibold tracking-widest text-white/70 mb-1">
             {step.step}
@@ -57,10 +80,10 @@ const StepCard = ({ step, index }: { step: Step; index: number }) => (
           className="h-16 w-16 flex items-center justify-center text-4xl"
           style={{ color: iconColors[index] }}
         >
-          <FontAwesomeIcon icon={stepIcons[index % stepIcons.length]} />
+          <FontAwesomeIcon icon={stepIcons[index]} />
         </div>
       </div>
-      <p className="mt-4 text-sm leading-snug text-white/80">
+      <p className="relative z-10 mt-4 text-sm leading-snug text-white/80">
         {step.description}
       </p>
     </Card>
@@ -73,49 +96,42 @@ const JourneyPathSVG = () => (
     viewBox="0 0 100 100"
     preserveAspectRatio="none"
   >
-    {/* Line 1: 01 to branching point */}
     <path
       d="M50 0 V30"
       stroke="url(#pathGradient)"
       strokeWidth="1.5"
       fill="none"
     />
-    {/* Line 2A: Branching point to 02A */}
     <path
       d="M50 30 C50 35, 25 40, 25 50"
       stroke="url(#pathGradient)"
       strokeWidth="1.5"
       fill="none"
     />
-    {/* Line 2B: Branching point to 02B */}
     <path
       d="M50 30 C50 35, 75 40, 75 50"
       stroke="url(#pathGradient)"
       strokeWidth="1.5"
       fill="none"
     />
-    {/* Line 3A: 02A to 03 (converges from left) */}
     <path
       d="M25 50 C25 60, 50 65, 50 70"
       stroke="url(#pathGradient)"
       strokeWidth="1.5"
       fill="none"
     />
-    {/* Line 3B: 02B to 03 (converges from right) */}
     <path
       d="M75 50 C75 60, 50 65, 50 70"
       stroke="url(#pathGradient)"
       strokeWidth="1.5"
       fill="none"
     />
-    {/* Line 4: 03 to 04 */}
     <path
       d="M50 70 L50 85"
       stroke="url(#pathGradient)"
       strokeWidth="1.5"
       fill="none"
     />
-    {/* Line 5: 04 to 05 */}
     <path
       d="M50 85 L50 100"
       stroke="url(#pathGradient)"
