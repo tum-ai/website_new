@@ -1,8 +1,35 @@
 import { type Step, steps } from "@/data/community";
 import { Card } from "../ui/card";
 import { motion } from "framer-motion";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faRocket,
+  faHandshake,
+  faBrain,
+  faGlobeAmericas,
+  faChartLine,
+  faGraduationCap,
+} from "@fortawesome/free-solid-svg-icons";
 
-const stepIcons = ["🎉", "🧠", "🤝", "🚀", "🌍", "🏆"];
+// Map steps to Font Awesome icons
+const stepIcons = [
+  faRocket, // Batch Introduction
+  faBrain, // Research Track
+  faHandshake, // Initiative Track
+  faChartLine, // Growth Opportunities
+  faGlobeAmericas, // Research Exchange (REX) Program
+  faGraduationCap, // Alumni
+];
+
+// Color scheme for the ICONS
+const iconColors = [
+  "#9F7AEA", // Purple for Batch Introduction
+  "#6366F1", // Indigo for Research Track
+  "#EC4899", // Pink for Initiative Track
+  "#10B981", // Emerald for Growth Opportunities
+  "#3B82F6", // Blue for Research Exchange (REX) Program
+  "#FFD700", // Gold for Alumni
+];
 
 const StepCard = ({ step, index }: { step: Step; index: number }) => (
   <motion.div
@@ -10,80 +37,163 @@ const StepCard = ({ step, index }: { step: Step; index: number }) => (
     whileInView={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.5, delay: index * 0.1 }}
     viewport={{ once: true }}
+    whileHover={{ scale: 1.02 }}
+    whileTap={{ scale: 0.98 }}
+    className="relative cursor-pointer"
   >
-    <Card className="relative h-auto p-6 text-center text-white border-none bg-gradient-to-br from-purple-600/80 to-indigo-700/80 rounded-2xl shadow-xl hover:scale-[1.03] hover:shadow-2xl transition-transform duration-300">
-      <div className="absolute top-4 left-4 text-[10px] font-semibold tracking-widest text-white/70">
-        {step.step}
-      </div>
-      <div className="flex justify-center mb-4">
-        <div className="h-12 w-12 rounded-full bg-white/10 flex items-center justify-center text-2xl">
-          {stepIcons[index % stepIcons.length]}
+    <Card
+      className="relative p-6 text-white border-none bg-[#201538] rounded-3xl shadow-lg h-full"
+    >
+      <div className="flex items-start justify-between">
+        <div className="flex flex-col">
+          <div className="text-xl font-semibold tracking-widest text-white/70 mb-1">
+            {step.step}
+          </div>
+          <h3 className="text-2xl font-bold tracking-tight text-white mt-1">
+            {step.name}
+          </h3>
+        </div>
+        <div
+          className="h-16 w-16 flex items-center justify-center text-4xl"
+          style={{ color: iconColors[index] }}
+        >
+          <FontAwesomeIcon icon={stepIcons[index % stepIcons.length]} />
         </div>
       </div>
-      <h3 className="mb-2 text-xl font-bold tracking-tight text-white">
-        {step.name}
-      </h3>
-      <p className="mx-auto max-w-[90%] text-sm leading-snug text-white/80">
+      <p className="mt-4 text-sm leading-snug text-white/80">
         {step.description}
       </p>
     </Card>
   </motion.div>
 );
 
-// Vertical arrow
-const VerticalArrow = () => (
-  <motion.div
-    initial={{ opacity: 0 }}
-    whileInView={{ opacity: 1 }}
-    transition={{ duration: 0.5 }}
-    viewport={{ once: true }}
-    className="flex items-center justify-center my-2"
+const JourneyPathSVG = () => (
+  <svg
+    className="absolute inset-0 w-full h-full z-0"
+    viewBox="0 0 100 100"
+    preserveAspectRatio="none"
   >
-    <svg className="w-4 h-8 text-white opacity-40" viewBox="0 0 10 20" fill="none">
-      <line x1="5" y1="0" x2="5" y2="15" stroke="currentColor" strokeWidth="2" />
-      <polygon points="0,15 5,20 10,15" fill="currentColor" />
-    </svg>
-  </motion.div>
+    {/* Line 1: 01 to branching point */}
+    <path
+      d="M50 0 V30"
+      stroke="url(#pathGradient)"
+      strokeWidth="1.5"
+      fill="none"
+    />
+    {/* Line 2A: Branching point to 02A */}
+    <path
+      d="M50 30 C50 35, 25 40, 25 50"
+      stroke="url(#pathGradient)"
+      strokeWidth="1.5"
+      fill="none"
+    />
+    {/* Line 2B: Branching point to 02B */}
+    <path
+      d="M50 30 C50 35, 75 40, 75 50"
+      stroke="url(#pathGradient)"
+      strokeWidth="1.5"
+      fill="none"
+    />
+    {/* Line 3A: 02A to 03 (converges from left) */}
+    <path
+      d="M25 50 C25 60, 50 65, 50 70"
+      stroke="url(#pathGradient)"
+      strokeWidth="1.5"
+      fill="none"
+    />
+    {/* Line 3B: 02B to 03 (converges from right) */}
+    <path
+      d="M75 50 C75 60, 50 65, 50 70"
+      stroke="url(#pathGradient)"
+      strokeWidth="1.5"
+      fill="none"
+    />
+    {/* Line 4: 03 to 04 */}
+    <path
+      d="M50 70 L50 85"
+      stroke="url(#pathGradient)"
+      strokeWidth="1.5"
+      fill="none"
+    />
+    {/* Line 5: 04 to 05 */}
+    <path
+      d="M50 85 L50 100"
+      stroke="url(#pathGradient)"
+      strokeWidth="1.5"
+      fill="none"
+    />
+    <defs>
+      <linearGradient id="pathGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" style={{ stopColor: "rgba(128, 90, 213, 0.4)" }} />
+        <stop offset="100%" style={{ stopColor: "rgba(182, 90, 213, 0.4)" }} />
+      </linearGradient>
+    </defs>
+  </svg>
 );
 
 export const JourneySection = () => {
+  const customSteps = [
+    {
+      step: "01",
+      name: "Batch Introduction",
+      description: "Kick off your journey at the onboarding weekend! Meet members, join social events, and deepen connections on our getaway.",
+    },
+    {
+      step: "02A",
+      name: "Research Track",
+      description: "Join a team on an Impact Project applying AI to real world challenges. Contribute to research, academe publications, or open-Source work, and engage with the TUM.ai community through...",
+    },
+    {
+      step: "02B",
+      name: "Initiative Track",
+      description: "Join one of our core departments and become a driving force behind everything that makes TUM.ai stand out. Shape the future of TUM.ai and develop your skills while engaging in trips, events, and learning opportunities.",
+    },
+    {
+      step: "03",
+      name: "Growth Opportunities",
+      description: "After your first semester, expand your impact — Join new teams, lead a task force, or take on a Team Lead role.",
+    },
+    {
+      step: "04",
+      name: "Research Exchange (REX) Program",
+      description: "After one semester, you can Join the REX Program — conduct research at top institutions like MIT, Harvard, or Cambridge. With our alumni network, we guide you in finding a topic, navigating applications, and contributing to surting-edge research.",
+    },
+    {
+      step: "05",
+      name: "Alumni Program",
+      description: "Having been with TUM.ai for two or more semesters, you can join the Alumni Program, opening up opportunities for continued networking and collaboration.",
+    },
+  ];
+
   return (
-    <div className="relative flex items-center justify-center">
-      <div className="relative pt-24 pb-16 px-8 z-10 w-full max-w-5xl space-y-10 text-center">
-        {/* Title */}
-        <div className="mb-12">
-          <h1 className="text-4xl font-bold md:text-5xl bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">
-            The TUM.ai Member Journey
-          </h1>
-          <p className="mx-auto max-w-2xl text-white/80 pt-4 text-base md:text-lg">
-            At TUM.ai, members contribute through AI projects, workshops, and community initiatives —
-            turning bold ideas into real-world impact.
-          </p>
+    <div className="relative pt-24 pb-16 px-4 md:px-8 z-10 w-full max-w-7xl mx-auto text-center overflow-hidden">
+      <div className="mb-12">
+        <h1 className="text-4xl font-bold md:text-5xl bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">
+          The TUM.ai Member Journey
+        </h1>
+        <p className="mx-auto max-w-2xl text-white/80 pt-4 text-base md:text-lg">
+          At TUM.ai, members contribute through AI projects, workshops, and community initiatives — turning bold ideas into real-world impact.
+        </p>
+      </div>
+      <div className="relative grid grid-cols-1 md:grid-cols-2 gap-y-12 gap-x-8 lg:gap-x-12 mt-16">
+        <JourneyPathSVG />
+        <div className="col-span-1 md:col-start-1 md:col-end-3 justify-self-center max-w-md w-full">
+          <StepCard step={customSteps[0]} index={0} />
         </div>
-
-        {/* Journey Steps */}
-        <div className="flex flex-col gap-4 relative">
-          {/* Batch Intro */}
-          <StepCard step={steps[0]} index={0} />
-          <VerticalArrow />
-
-          {/* Research or Initiative (branching choice) */}
-          <div className="flex flex-col lg:flex-row gap-8 justify-center relative">
-            <StepCard step={steps[1]} index={1} />
-            <StepCard step={steps[2]} index={2} />
-          </div>
-          <VerticalArrow />
-
-          {/* Growth */}
-          <StepCard step={steps[3]} index={3} />
-          <VerticalArrow />
-
-          {/* Research Exchange */}
-          <StepCard step={steps[4]} index={4} />
-          <VerticalArrow />
-
-          {/* Alumni */}
-          <StepCard step={steps[5]} index={5} />
+        <div className="col-span-1">
+          <StepCard step={customSteps[1]} index={1} />
+        </div>
+        <div className="col-span-1">
+          <StepCard step={customSteps[2]} index={2} />
+        </div>
+        <div className="col-span-1 md:col-start-1 md:col-end-3 justify-self-center max-w-md w-full">
+          <StepCard step={customSteps[3]} index={3} />
+        </div>
+        <div className="col-span-1 md:col-start-1 md:col-end-3 justify-self-center max-w-md w-full">
+          <StepCard step={customSteps[4]} index={4} />
+        </div>
+        <div className="col-span-1 md:col-start-1 md:col-end-3 justify-self-center max-w-md w-full">
+          <StepCard step={customSteps[5]} index={5} />
         </div>
       </div>
     </div>
