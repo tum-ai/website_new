@@ -114,7 +114,7 @@ export default function ELab() {
                         {/* Sparkling effects - always visible */}
 
                         <a
-                          href="https://forms.tum-ai.com/ai-e-lab-3.0-application"
+                          href="https://tally.so/r/3jVjWa"
                           target="_blank"
                           rel="noopener noreferrer"
                           className={`group relative inline-flex items-center justify-center overflow-hidden rounded-2xl px-6 py-3 text-base font-semibold text-white shadow-xl transition-[background-position,transform] duration-500 ease-out hover:scale-[1.02]

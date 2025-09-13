@@ -38,7 +38,7 @@ export const faq = [
 
   {
     question: "When is the application deadline?",
-    answer: "The application phase closes on 07.09.2025 at 23:59.",
+    answer: "The application phase closes on 21.09.2025 at 23:59.",
   },
   {
     question: "Can I apply with a team?",
