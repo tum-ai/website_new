@@ -7,6 +7,8 @@ import Section from "@/components/ui/Section";
 import { faq } from "@/data/e-lab/FAQ";
 import type { Organization, WithContext } from "schema-dts";
 import { Hero } from "./hero";
+import SEO from "@/components/SEO";
+import { getSEOConfig } from "@/config/seo";
 
 export default function ELab() {
   const jsonLd: WithContext<Organization> = {
@@ -46,6 +48,7 @@ export default function ELab() {
 
   return (
     <>
+      <SEO {...getSEOConfig("entrepreneurship")} />
       <section>
         <script
           type="application/ld+json"

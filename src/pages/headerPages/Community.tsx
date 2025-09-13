@@ -5,6 +5,8 @@ import { stories } from "@/data/apply/applyData";
 import { type Department, departments } from "@/data/community";
 import * as LucideIcons from "lucide-react";
 import { useEffect } from "react";
+import SEO from "@/components/SEO";
+import { getSEOConfig } from "@/config/seo";
 
 type IconName = keyof typeof LucideIcons;
 
@@ -73,6 +75,7 @@ export default function Community() {
 
   return (
     <>
+      <SEO {...getSEOConfig("community")} />
       <div className="pointer-events-none fixed inset-0 z-[-1] overflow-hidden">
         <div className="bg-grid-slate-100 absolute top-0 left-0 h-full w-full opacity-5 [mask-image:linear-gradient(0deg,transparent,white)]" />
         <div className="absolute top-48 right-10 h-[15vw] max-h-72 w-[15vw] max-w-72 rounded-full bg-purple-400 opacity-10 blur-[clamp(40px,5vw,100px)]" />

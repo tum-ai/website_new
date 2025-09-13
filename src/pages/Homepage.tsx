@@ -6,11 +6,13 @@ import { Grid } from "@/components/home/Grid";
 import { PartnersSection } from "@/components/home/PartnersSection";
 import { ScrollSection } from "@/components/home/ScrollSection";
 import { Hero } from "../components/ui/hero";
+import SEO from "@/components/SEO";
+import { getSEOConfig } from "@/config/seo";
 
 export default function Homepage() {
   return (
     <>
-      <title>Home - TUM.ai</title>
+      <SEO {...getSEOConfig("home")}/>
       <div className="relative bg-[#0B0213] text-white min-h-screen">
         <div className="hidden sm:block">
           <Grid />
