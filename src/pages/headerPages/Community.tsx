@@ -1,7 +1,10 @@
 // src/pages/Community.jsx
 
 import MemberStories from "@/components/apply/shared/MemberStories";
-import { JourneySection, iconColors as departmentColors } from "@/components/community/JourneySection";
+import {
+  JourneySection,
+  iconColors as departmentColors,
+} from "@/components/community/JourneySection";
 import { Card } from "@/components/ui/card";
 import { stories } from "@/data/apply/applyData";
 import { type Department, departments } from "@/data/community";
@@ -11,7 +14,13 @@ import { motion } from "framer-motion";
 
 type IconName = keyof typeof LucideIcons;
 
-const DepartmentCard = ({ department, index }: { department: Department; index: number }) => {
+const DepartmentCard = ({
+  department,
+  index,
+}: {
+  department: Department;
+  index: number;
+}) => {
   const Icon = LucideIcons[department.icon as IconName] as React.ElementType;
 
   return (
@@ -27,7 +36,8 @@ const DepartmentCard = ({ department, index }: { department: Department; index: 
         className="h-full p-8 text-white rounded-3xl overflow-hidden relative border border-white/10"
         style={{
           backgroundColor: "#18112F",
-          boxShadow: "0px 5px 15px rgba(0,0,0,0.2), 0px 2px 5px rgba(0,0,0,0.1)",
+          boxShadow:
+            "0px 5px 15px rgba(0,0,0,0.2), 0px 2px 5px rgba(0,0,0,0.1)",
         }}
       >
         <div
@@ -67,7 +77,8 @@ const DepartmentsSection = () => (
         Our Core Departments
       </h2>
       <p className="mx-auto mt-4 max-w-2xl text-base text-white/80 md:text-lg">
-        Discover the diverse teams that make TUM.ai thrive. Each department plays a crucial role in our mission to shape the future of AI.
+        Discover the diverse teams that make TUM.ai thrive. Each department
+        plays a crucial role in our mission to shape the future of AI.
       </p>
     </div>
     <div className="grid auto-rows-fr grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">

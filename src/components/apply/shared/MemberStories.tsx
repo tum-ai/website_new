@@ -12,14 +12,14 @@ interface MemberStoriesProps {
 export default function MemberStories({ stories }: MemberStoriesProps) {
   return (
     <section className="container mx-auto max-w-5xl px-4 py-16">
-      <h3 className="text-title font-bold mb-4">
+      <h3 className="text-title text-white font-bold mb-4">
         Member <span className="text-purple-600">Stories</span>
       </h3>
       <div className="grid gap-8 md:grid-cols-2">
         {stories.map((story) => (
           <div
             key={story.name}
-            className="rounded-xl bg-white/5 p-6 shadow-lg flex flex-col items-center"
+            className="rounded-xl  p-6 shadow-lg flex flex-col items-center bg-white"
           >
             <img
               src={story.image}

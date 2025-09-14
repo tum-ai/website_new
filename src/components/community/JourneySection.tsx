@@ -152,43 +152,50 @@ export const JourneySection = () => {
     {
       step: "01",
       name: "Batch Introduction",
-      description: "Kick off your journey at the onboarding weekend! Meet members, join social events, and deepen connections on our getaway.",
+      description:
+        "Kick off your journey at the onboarding weekend! Meet members, join social events, and deepen connections on our getaway.",
     },
     {
       step: "02A",
       name: "Research Track",
-      description: "Join a team on an Impact Project applying AI to real world challenges. Contribute to research, academe publications, or open-Source work, and engage with the TUM.ai community through...",
+      description:
+        "Join a team on an Impact Project applying AI to real world challenges. Contribute to research, academe publications, or open-Source work, and engage with the TUM.ai community through...",
     },
     {
       step: "02B",
       name: "Initiative Track",
-      description: "Join one of our core departments and become a driving force behind everything that makes TUM.ai stand out. Shape the future of TUM.ai and develop your skills while engaging in trips, events, and learning opportunities.",
+      description:
+        "Join one of our core departments and become a driving force behind everything that makes TUM.ai stand out. Shape the future of TUM.ai and develop your skills while engaging in trips, events, and learning opportunities.",
     },
     {
       step: "03",
       name: "Growth Opportunities",
-      description: "After your first semester, expand your impact — Join new teams, lead a task force, or take on a Team Lead role.",
+      description:
+        "After your first semester, expand your impact — Join new teams, lead a task force, or take on a Team Lead role.",
     },
     {
       step: "04",
       name: "Research Exchange (REX) Program",
-      description: "After one semester, you can Join the REX Program — conduct research at top institutions like MIT, Harvard, or Cambridge. With our alumni network, we guide you in finding a topic, navigating applications, and contributing to surting-edge research.",
+      description:
+        "After one semester, you can Join the REX Program — conduct research at top institutions like MIT, Harvard, or Cambridge. With our alumni network, we guide you in finding a topic, navigating applications, and contributing to surting-edge research.",
     },
     {
       step: "05",
       name: "Alumni Program",
-      description: "Having been with TUM.ai for two or more semesters, you can join the Alumni Program, opening up opportunities for continued networking and collaboration.",
+      description:
+        "Having been with TUM.ai for two or more semesters, you can join the Alumni Program, opening up opportunities for continued networking and collaboration.",
     },
   ];
 
   return (
-    <div className="relative pt-24 pb-16 px-4 md:px-8 z-10 w-full max-w-7xl mx-auto text-center overflow-hidden">
+    <div className="relative pt-32 pb-16 px-4 md:px-8 z-10 w-full max-w-7xl mx-auto text-center overflow-hidden">
       <div className="mb-12">
         <h1 className="text-4xl font-bold md:text-5xl bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">
           The TUM.ai Member Journey
         </h1>
         <p className="mx-auto max-w-2xl text-white/80 pt-4 text-base md:text-lg">
-          At TUM.ai, members contribute through AI projects, workshops, and community initiatives — turning bold ideas into real-world impact.
+          At TUM.ai, members contribute through AI projects, workshops, and
+          community initiatives — turning bold ideas into real-world impact.
         </p>
       </div>
       <div className="relative grid grid-cols-1 md:grid-cols-2 gap-y-12 gap-x-8 lg:gap-x-12 mt-16">
