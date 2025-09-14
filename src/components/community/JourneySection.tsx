@@ -1,8 +1,9 @@
 // src/components/community/JourneySection.jsx
 
-import { type Step, steps } from "@/data/community";
+import { useRef } from "react";
+import { useInView, motion as m } from "framer-motion";
+import { type Step } from "@/data/community";
 import { Card } from "../ui/card";
-import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faRocket,
@@ -50,11 +51,11 @@ export const glowColors = [
 ];
 
 const StepCard = ({ step, index }: { step: Step; index: number }) => (
-  <motion.div
+  <m.div
     initial={{ opacity: 0, y: 40 }}
     whileInView={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.5, delay: index * 0.1 }}
-    viewport={{ once: true }}
+    transition={{ duration: 0.5, delay: 0 }} // Removed delay for all cards
+    viewport={{ once: true, amount: 0.2 }} // Show as soon as 20% is in view
     whileHover={{ scale: 1.02, boxShadow: "0px 10px 20px rgba(0,0,0,0.3)" }}
     whileTap={{ scale: 0.98 }}
     className="relative cursor-pointer"
@@ -93,67 +94,63 @@ const StepCard = ({ step, index }: { step: Step; index: number }) => (
         {step.description}
       </p>
     </Card>
-  </motion.div>
+  </m.div>
 );
 
-const JourneyPathSVG = () => (
+const JourneyPathSVG = ({ inView }: { inView: boolean }) => (
   <svg
-    className="hidden md:block absolute inset-0 w-full h-full z-0 top-[-12rem]"
-    viewBox="0 0 100 100"
-    preserveAspectRatio="none"
+    className="hidden md:block absolute left-1/2 top-0 -translate-x-1/2 z-0 pointer-events-none"
+    width="600"
+    height="1100"
+    viewBox="0 0 600 1100"
+    fill="none"
+    style={{ minWidth: 600, minHeight: 1100 }}
   >
-    <path
-      d="M50 0 V30"
+    <m.path
+      d="
+        M300 40
+        L300 180
+        C300 220, 120 240, 120 320
+        L120 400
+        M300 180
+        C300 220, 480 240, 480 320
+        L480 400
+        M120 400
+        C120 500, 300 520, 300 600
+        M480 400
+        C480 500, 300 520, 300 600
+        L300 700
+        L300 1020
+      "
       stroke="url(#pathGradient)"
-      strokeWidth="1.5"
+      strokeWidth="8"
+      strokeLinecap="round"
       fill="none"
-    />
-    <path
-      d="M50 30 C50 35, 25 40, 25 50"
-      stroke="url(#pathGradient)"
-      strokeWidth="1.5"
-      fill="none"
-    />
-    <path
-      d="M50 30 C50 35, 75 40, 75 50"
-      stroke="url(#pathGradient)"
-      strokeWidth="1.5"
-      fill="none"
-    />
-    <path
-      d="M25 50 C25 60, 50 65, 50 70"
-      stroke="url(#pathGradient)"
-      strokeWidth="1.5"
-      fill="none"
-    />
-    <path
-      d="M75 50 C75 60, 50 65, 50 70"
-      stroke="url(#pathGradient)"
-      strokeWidth="1.5"
-      fill="none"
-    />
-    <path
-      d="M50 70 L50 85"
-      stroke="url(#pathGradient)"
-      strokeWidth="1.5"
-      fill="none"
-    />
-    <path
-      d="M50 85 L50 100"
-      stroke="url(#pathGradient)"
-      strokeWidth="1.5"
-      fill="none"
+      initial={{ pathLength: 0 }}
+      animate={inView ? { pathLength: 1 } : { pathLength: 0 }}
+      transition={{ duration: 2, ease: "easeInOut" }}
+      style={{ filter: "drop-shadow(0 0 16px #a78bfa88)" }}
     />
     <defs>
-      <linearGradient id="pathGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" style={{ stopColor: "rgba(128, 90, 213, 0.4)" }} />
-        <stop offset="100%" style={{ stopColor: "rgba(182, 90, 213, 0.4)" }} />
+      <linearGradient
+        id="pathGradient"
+        x1="0"
+        y1="0"
+        x2="0"
+        y2="1100"
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop stopColor="#C084FC" />
+        <stop offset="1" stopColor="#60A5FA" />
       </linearGradient>
     </defs>
   </svg>
 );
 
 export const JourneySection = () => {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-100px" });
+
   const customSteps = [
     {
       step: "01",
@@ -194,7 +191,10 @@ export const JourneySection = () => {
   ];
 
   return (
-    <div className="relative pt-32 pb-16 px-4 md:px-8 z-10 w-full max-w-7xl mx-auto text-center overflow-hidden">
+    <div
+      ref={ref}
+      className="relative pt-32 pb-16 px-4 md:px-8 z-10 w-full max-w-7xl mx-auto text-center overflow-hidden"
+    >
       <div className="mb-12">
         <h1 className="text-4xl font-bold md:text-5xl bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">
           The TUM.ai Member Journey
@@ -205,7 +205,7 @@ export const JourneySection = () => {
         </p>
       </div>
       <div className="relative grid grid-cols-1 md:grid-cols-2 gap-y-12 gap-x-8 lg:gap-x-12 mt-16">
-        <JourneyPathSVG />
+        <JourneyPathSVG inView={inView} />
         <div className="col-span-1 md:col-start-1 md:col-end-3 justify-self-center max-w-md w-full">
           <StepCard step={customSteps[0]} index={0} />
         </div>
