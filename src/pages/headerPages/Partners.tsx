@@ -179,16 +179,17 @@ function PartnerSection({
         {logos.map((logo) => (
           <div
             key={logo.name}
-            className="flex items-center justify-center p-2 rounded-lg bg-white shadow-sm"
+            // Set a fixed height for the card
+            className="flex h-20 w-40 items-center justify-center rounded-lg bg-white shadow-sm p-2"
           >
-            <img src={logo.src} alt={logo.name} className="h-12 object-contain" />
+            {/* Limit logo size and maintain aspect ratio */}
+            <img src={logo.src} alt={logo.name} className="max-h-full max-w-full object-contain" />
           </div>
         ))}
       </div>
     </div>
   );
 }
-
 // Opportunity card component
 function OpportunityCard({ title, items }: { title: string; items: string[] }) {
   return (
@@ -205,3 +206,4 @@ function OpportunityCard({ title, items }: { title: string; items: string[] }) {
     </div>
   );
 }
+
