@@ -73,7 +73,7 @@ const DepartmentCard = ({
 const DepartmentsSection = () => (
   <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16 pb-16">
     <div className="mb-20 text-center">
-      <h2 className="text-4xl font-semibold tracking-tight text-white md:text-5xl bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">
+      <h2 className="text-4xl font-semibold tracking-tight md:text-5xl bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">
         Our Core Departments
       </h2>
       <p className="mx-auto mt-4 max-w-2xl text-base text-white/80 md:text-lg">

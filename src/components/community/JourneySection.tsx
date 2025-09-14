@@ -31,6 +31,9 @@ export const iconColors = [
   "#FDE047", // Yellow for Growth Opportunities
   "#60A5FA", // Light Blue for Research Exchange (REX) Program
   "#FB923C", // Orange for Alumni
+  "#34D399", // Emerald green for Collaboration
+  "#A78BFA", // Lavender for Mentorship
+  "#F87171", // Red for Special Events
 ];
 
 // Corrected background colors for the radial gradient glow
@@ -41,6 +44,9 @@ export const glowColors = [
   "#7A6000", // Dark yellow for Growth Opportunities
   "#141972", // Deep blue for Research Exchange (REX) Program
   "#B45B31", // Orange-brown for Alumni
+  "#00593D", // Dark green for Collaboration
+  "#4B0082", // Indigo for Mentorship
+  "#7A1C1C", // Deep red for Special Events
 ];
 
 const StepCard = ({ step, index }: { step: Step; index: number }) => (
