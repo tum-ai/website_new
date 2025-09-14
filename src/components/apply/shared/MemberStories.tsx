@@ -12,8 +12,11 @@ interface MemberStoriesProps {
 export default function MemberStories({ stories }: MemberStoriesProps) {
   return (
     <section className="container mx-auto max-w-5xl px-4 py-16">
-      <h3 className="text-title text-white font-bold mb-4">
-        Member <span className="text-purple-600">Stories</span>
+      <h3 className="text-title text-white font-bold mb-4 ">
+        Member{" "}
+        <span className="bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">
+          Stories
+        </span>
       </h3>
       <div className="grid gap-8 md:grid-cols-2">
         {stories.map((story) => (
