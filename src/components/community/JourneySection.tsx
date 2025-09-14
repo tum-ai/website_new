@@ -98,7 +98,7 @@ const StepCard = ({ step, index }: { step: Step; index: number }) => (
 
 const JourneyPathSVG = () => (
   <svg
-    className="absolute inset-0 w-full h-full z-0"
+    className="hidden md:block absolute inset-0 w-full h-full z-0 top-[-12rem]"
     viewBox="0 0 100 100"
     preserveAspectRatio="none"
   >
