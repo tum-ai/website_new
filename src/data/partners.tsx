@@ -18,6 +18,11 @@ export const longtermPartners = [
 
 export const technicalPartners = [
   {
+    href: "https://aws.amazon.com/",
+    src: "/assets/partners_sponsors/aws_logo.svg",
+    alt: "AWS",
+  },
+  {
     href: "https://about.google/",
     src: "/assets/partners_sponsors/google_logo.png",
     alt: "Google",
@@ -42,6 +47,41 @@ export const technicalPartners = [
     href: "https://openai.com/",
     src: "/assets/partners_sponsors/openai_logo.png",
     alt: "OpenAI",
+  },
+  {
+    href: "https://huggingface.co/",
+    src: "/assets/partners_sponsors/hf-logo-with-title.png",
+    alt: "Hugging Face",
+  },
+  {
+    href: "https://vercel.com/",
+    src: "/assets/partners_sponsors/vercel-logotype-light.png",
+    alt: "Vercel",
+  },
+  {
+    href: "https://lovable.dev/",
+    src: "/assets/partners_sponsors/lovable_logo_black.svg",
+    alt: "Lovable",
+  },
+  {
+    href: "https://n8n.io/",
+    src: "/assets/partners_sponsors/n8n-logo-dark.svg",
+    alt: "n8n",
+  },
+  {
+    href: "https://elevenlabs.io/",
+    src: "/assets/partners_sponsors/elevenlabs-logo-black.svg",
+    alt: "Eleven Labs",
+  },
+  // {
+  //   href: "https://www.beyondpresence.ai/",
+  //   src: "/assets/partners_sponsors/beyond_presence_logo.svg",
+  //   alt: "Beyond Presence",
+  // },
+  {
+    href: "https://www.cobrowser.com/",
+    src: "/assets/partners_sponsors/cobrowser-logo.png",
+    alt: "CoBrowser",
   },
 ];
 
@@ -166,6 +206,11 @@ export const researchPartners = [
     href: "https://www.lmu.de/",
     src: "/assets/partners_sponsors/LMU_Muenchen_Logo.svg.png",
     alt: "LMU",
+  },
+  {
+    href: "https://hms.harvard.edu/",
+    src: "/assets/partners_sponsors/hms_logo.png",
+    alt: "Harvard Medical School",
   },
   {
     href: "https://flower.ai/",
