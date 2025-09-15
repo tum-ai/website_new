@@ -19,7 +19,7 @@ export default function Logos({ logos }: LogosProps) {
               key={logo.src}
               className="col-span-1 flex justify-center py-2 grayscale transition-all duration-300 ease-out hover:grayscale-0"
             >
-              <div className="flex h-14 items-center justify-center px-4">
+              <div className="flex h-14 items-center justify-center px-4 w-full">
                 <img
                   src={logo.src}
                   alt={logo.alt || ""}

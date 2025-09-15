@@ -73,11 +73,11 @@ export const technicalPartners = [
     src: "/assets/partners_sponsors/elevenlabs-logo-black.svg",
     alt: "Eleven Labs",
   },
-  // {
-  //   href: "https://www.beyondpresence.ai/",
-  //   src: "/assets/partners_sponsors/beyond_presence_logo.svg",
-  //   alt: "Beyond Presence",
-  // },
+  {
+    href: "https://www.beyondpresence.ai/",
+    src: "/assets/partners_sponsors/beyond_presence_logo.svg",
+    alt: "Beyond Presence",
+  },
   {
     href: "https://www.cobrowser.com/",
     src: "/assets/partners_sponsors/cobrowser-logo.png",
