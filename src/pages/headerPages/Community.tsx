@@ -29,8 +29,6 @@ const DepartmentCard = ({
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
       viewport={{ once: true }}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
     >
       <Card
         className="h-full p-8 text-white rounded-3xl overflow-hidden relative border border-white/10"
@@ -43,7 +41,7 @@ const DepartmentCard = ({
         <div
           className="absolute inset-0 z-0 opacity-40"
           style={{
-            background: `radial-gradient(circle at center, ${departmentColors[index]} 0%, transparent 70%)`,
+            background: `radial-gradient(circle at center, 0%, transparent 70%)`,
           }}
         ></div>
         <div className="relative z-10 mb-5 flex items-center gap-4">
@@ -73,7 +71,10 @@ const DepartmentCard = ({
 const DepartmentsSection = () => (
   <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16 pb-16">
     <div className="mb-20 text-center">
-      <h2 className="text-4xl font-semibold tracking-tight md:text-5xl bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">
+      <h2
+        className="text-4xl font-semibold tracking-tight md:text-5xl "
+      // bg-gradient-to-r from-[#891FDB] to-[#E0189A] bg-clip-text text-transparent"
+      >
         Our Core Departments
       </h2>
       <p className="mx-auto mt-4 max-w-2xl text-base text-white/80 md:text-lg">
@@ -121,9 +122,9 @@ export default function Community() {
       <section className="relative overflow-hidden bg-[#18112F] text-white">
         <JourneySection />
         <DepartmentsSection />
-      </section>
-      <section id="memberStories" className="bg-[#18112F]">
-        <MemberStories stories={stories} />
+        <section id="memberStories">
+          <MemberStories stories={stories} />
+        </section>
       </section>
     </>
   );

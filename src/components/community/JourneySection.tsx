@@ -54,11 +54,8 @@ const StepCard = ({ step, index }: { step: Step; index: number }) => (
   <m.div
     initial={{ opacity: 0, y: 40 }}
     whileInView={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.5, delay: 0 }} // Removed delay for all cards
     viewport={{ once: true, amount: 0.2 }} // Show as soon as 20% is in view
-    whileHover={{ scale: 1.02, boxShadow: "0px 10px 20px rgba(0,0,0,0.3)" }}
-    whileTap={{ scale: 0.98 }}
-    className="relative cursor-pointer"
+    className="relative"
   >
     <Card
       className="relative p-6 text-white border border-white/10 rounded-3xl shadow-lg h-full overflow-hidden
@@ -75,6 +72,7 @@ const StepCard = ({ step, index }: { step: Step; index: number }) => (
         }}
       ></div>
       <div className="relative z-10 flex items-start justify-between">
+        <div className="h-16 w-16 invisible"></div>
         <div className="flex flex-col">
           <div className="text-xl font-semibold tracking-widest text-white/70 mb-1">
             {step.step}
@@ -196,7 +194,7 @@ export const JourneySection = () => {
       className="relative pt-32 pb-16 px-4 md:px-8 z-10 w-full max-w-7xl mx-auto text-center overflow-hidden"
     >
       <div className="mb-12">
-        <h1 className="text-4xl font-bold md:text-5xl bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">
+        <h1 className="text-4xl font-bold md:text-5xl">
           The TUM.ai Member Journey
         </h1>
         <p className="mx-auto max-w-2xl text-white/80 pt-4 text-base md:text-lg">

@@ -8,13 +8,12 @@ interface Story {
 interface MemberStoriesProps {
   stories: Story[];
 }
-// shared for now, can be customized for each city
 export default function MemberStories({ stories }: MemberStoriesProps) {
   return (
     <section className="container mx-auto max-w-5xl px-4 py-16">
       <h3 className="text-title text-white font-bold mb-4 ">
         Member{" "}
-        <span className="bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">
+        <span className="bg-gradient-to-r from-[#891FDB] to-[#E0189A] text-transparent bg-clip-text">
           Stories
         </span>
       </h3>
