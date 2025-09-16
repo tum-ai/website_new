@@ -80,10 +80,10 @@ export default function Partners() {
 
       <section className="relative bg-white p-8 sm:py-16 lg:py-32">
         <div className="container mx-auto">
-          <h2 className="mb-8 text-title font-semibold">
+          {/* <h2 className="mb-8 text-title font-semibold">
             Long-Term Partnerships
           </h2>
-          <Logos logos={longtermPartners} />
+          <Logos logos={longtermPartners} /> */}
 
           <h2 className="mb-8 text-title font-semibold">Technical Partners</h2>
           <Logos logos={technicalPartners} />
