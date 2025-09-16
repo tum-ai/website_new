@@ -93,6 +93,22 @@ export default function Research() {
               </div>
             </>
           )}
+
+          {/* Research Partners */}
+          {Array.isArray(researchPartners) && researchPartners.length > 0 && (
+            <div className="mt-12">
+              <h3 className="mb-4 text-center text-3xl font-semibold text-white">
+                Collaborators
+              </h3>
+
+              <Card>
+                <CardContent className="px-0">
+                  <Logos logos={researchPartners} />
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
         </div>
       ),
     },
@@ -239,19 +255,6 @@ export default function Research() {
             </div>
           )}
 
-          {Array.isArray(researchPartners) && researchPartners.length > 0 && (
-            <div className="px-6 md:px-12 mt-12">
-              <h3 className="mb-4 text-center text-3xl font-semibold text-white">
-                Collaborators
-              </h3>
-
-              <Card>
-                <CardContent className="px-0">
-                  <Logos logos={researchPartners} />
-                </CardContent>
-              </Card>
-            </div>
-          )}
         </div>
       </Layout>
     </section>

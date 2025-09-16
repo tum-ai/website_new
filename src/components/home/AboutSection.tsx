@@ -271,7 +271,7 @@ export const AboutSection = () => {
           className="w-full md:w-1/2 lg:w-1/3 flex items-center justify-center"
           ref={textRef}
         >
-          <p className="text-lg md:text-2xl text-start md:text-left px-4">
+          <p className="text-lg md:text-2xl text-start md:text-left pr-0 md:pr-4">
             {aboutText.split(" ").map((word, index) => {
               const stripped = word.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
               const isGradient = gradientKeywords.has(stripped);
