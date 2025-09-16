@@ -45,7 +45,7 @@ export default function ELab() {
   };
 
   return (
-    <>
+    <div>
       <section>
         <script
           type="application/ld+json"
@@ -154,6 +154,6 @@ export default function ELab() {
       <NotableStartups />
 
       <FAQ faq={faq}></FAQ>
-    </>
+    </div>
   );
 }
