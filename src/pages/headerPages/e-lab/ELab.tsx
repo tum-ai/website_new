@@ -45,7 +45,7 @@ export default function ELab() {
   };
 
   return (
-    <>
+    <div>
       <section>
         <script
           type="application/ld+json"
@@ -60,7 +60,7 @@ export default function ELab() {
 
       <Timeline />
 
-      <Section className="relative overflow-hidden py-12 sm:py-12 lg:py-16 w-full bg-gradient-to-br from-purple-50 via-white to-blue-50">
+      <section className="relative overflow-hidden py-12 sm:py-12 lg:py-16 w-full bg-gradient-to-br from-purple-50 via-white to-blue-50">
         {/* Decorative gradient blobs for depth */}
         <div className="pointer-events-none absolute -top-24 -left-24 h-72 w-72 rounded-full bg-gradient-to-br from-purple-400/40 to-fuchsia-400/30 blur-3xl"></div>
         <div className="pointer-events-none absolute -bottom-24 -right-16 h-80 w-80 rounded-full bg-gradient-to-br from-indigo-400/30 to-sky-400/30 blur-3xl"></div>
@@ -150,10 +150,10 @@ export default function ELab() {
             </div>
           </div>
         </div>
-      </Section>
+      </section>
       <NotableStartups />
 
       <FAQ faq={faq}></FAQ>
-    </>
+    </div>
   );
 }

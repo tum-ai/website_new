@@ -1,8 +1,6 @@
-import Section from "../ui/Section";
-
 export const Testimonials = () => {
   return (
-    <Section className="flex flex-col items-center justify-center py-12 sm:py-12 lg:py-16 bg-gradient-to-br from-gray-50 to-white w-full">
+    <section className="flex flex-col items-center justify-center py-12 sm:py-12 lg:py-16 bg-gradient-to-br from-gray-50 to-white w-full">
       <h2
         className={`text-3xl md:text-4xl tracking-tight font-semibold mb-4 text-black text-center uppercase `}
       >
@@ -457,6 +455,6 @@ export const Testimonials = () => {
           </div>
         </div>
       </div>
-    </Section>
+    </section>
   );
 };
