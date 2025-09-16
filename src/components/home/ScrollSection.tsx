@@ -166,8 +166,8 @@ export function ScrollSection({
             (widthMode === "viewport"
               ? "w-[80vw] lg:w-[66.666vw] flex-none"
               : widthMode === "fixed"
-              ? "w-80 sm:w-96 lg:w-[32rem] flex-none"
-              : "w-[80%] lg:w-2/3 flex-none");
+                ? "w-80 sm:w-96 lg:w-[32rem] flex-none"
+                : "w-[80%] lg:w-2/3 flex-none");
 
           return (
             <div
