@@ -5,7 +5,7 @@ import Section from "../ui/Section";
 }
 export const NotableStartups = () => {
   return (
-    <Section className="py-12 sm:py-12 lg:py-16 bg-gray-50 w-full overflow-hidden">
+    <section className="py-12 sm:py-12 lg:py-16 bg-gray-50 w-full overflow-hidden">
       <div className="max-w-6xl mx-auto text-center px-4">
         <p className={`text-sm text-gray-500 mb-8 uppercase tracking-wider`}>
           Notable AI E-Lab Startups from previous iterations
@@ -207,6 +207,6 @@ export const NotableStartups = () => {
           </div>
         </div>
       </div>
-    </Section>
+    </section>
   );
 };
