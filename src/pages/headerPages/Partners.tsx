@@ -5,18 +5,15 @@ import {
   VCPartners,
   industryPartners,
   initiativePartners,
-  longtermPartners,
+  // longtermPartners,
   researchPartners,
   technicalPartners,
 } from "@/data/partners";
 import { cx } from "class-variance-authority";
 import { Brain, Handshake, Megaphone, Users } from "lucide-react";
+import SEO from "@/components/SEO";
+import { getSEOConfig } from "@/config/seo";
 
-export const metadata = {
-  title: "TUM.ai - Partners",
-  description:
-    "Is your company currently facing challenges with data-driven technologies or you are looking for the greatest talent in artificial intelligence? If one of the answers is yes, become a partner.",
-};
 
 export default function Partners() {
   const benefits = [
@@ -44,6 +41,7 @@ export default function Partners() {
 
   return (
     <>
+      <SEO {...getSEOConfig("partners")} />
       <section className="pt-16 relative overflow-hidden">
         <img
           src="/assets/partners.webp"
