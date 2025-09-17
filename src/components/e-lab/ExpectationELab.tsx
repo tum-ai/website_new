@@ -12,7 +12,7 @@ import { useEffect, useRef, useState } from "react";
 
 export function ExpectationELab() {
   return (
-    <Section className="relative w-full bg-white py-12 sm:py-12 lg:py-16">
+    <section className="relative w-full bg-white py-16">
       <div className="relative mx-auto max-w-4xl px-6">
         {/* Content only */}
         <div className="w-full">
@@ -79,7 +79,7 @@ export function ExpectationELab() {
           </div>
         </div>
       </div>
-    </Section>
+    </section>
   );
 }
 
@@ -89,8 +89,7 @@ function FeatureCard({
   icon,
 }: { title: string; body: string; icon: React.ReactNode }) {
   return (
-    <motion.div
-      whileHover={{ y: -4, scale: 1.02 }}
+    <div
       className="group relative overflow-hidden rounded-2xl border border-white/20 p-5 transition-all duration-300 hover:border-white/30 backdrop-blur-2xl"
       style={{
         background:
@@ -118,7 +117,7 @@ function FeatureCard({
           </p>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 

@@ -1,23 +1,18 @@
 import Benefits from "@/components/Benefit";
-import Layout from "@/components/Layout";
-import Logos from "@/components/Logos";
 import { Button } from "@/components/ui/button";
 import {
   VCPartners,
   industryPartners,
   initiativePartners,
-  longtermPartners,
+  // longtermPartners,
   researchPartners,
   technicalPartners,
 } from "@/data/partners";
 import { cx } from "class-variance-authority";
 import { Brain, Handshake, Megaphone, Users } from "lucide-react";
+import SEO from "@/components/SEO";
+import { getSEOConfig } from "@/config/seo";
 
-export const metadata = {
-  title: "TUM.ai - Partners",
-  description:
-    "Is your company currently facing challenges with data-driven technologies or you are looking for the greatest talent in artificial intelligence? If one of the answers is yes, become a partner.",
-};
 
 export default function Partners() {
   const benefits = [
@@ -45,6 +40,7 @@ export default function Partners() {
 
   return (
     <>
+      <SEO {...getSEOConfig("partners")} />
       {/* HERO SECTION */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         {/* Background image */}
@@ -71,19 +67,19 @@ export default function Partners() {
             <Button className="mt-8 px-8 py-4 text-lg">Become a Partner</Button>
           </a>
         </div>
-      </section>
+      </section >
 
       <div>
         {/* PARTNER LOGOS */}
         <section className="bg-gray-50 p-8 md:p-10 sm:py-16 lg:py-32 px-[1rem]">
-            <div className="container mx-auto space-y-16">
-              <PartnerSection title="Long-Term Partnerships" logos={longtermPartners} />
-              <PartnerSection title="Technical Partners" logos={technicalPartners} />
-              <PartnerSection title="Industry Partners" logos={industryPartners} />
-              <PartnerSection title="Research Partners" logos={researchPartners} />
-              <PartnerSection title="Venture Capital" logos={VCPartners} />
-              <PartnerSection title="Initiatives" logos={initiativePartners} />
-            </div>
+          <div className="container mx-auto space-y-16">
+            {/* <PartnerSection title="Long-Term Partnerships" logos={longtermPartners} /> */}
+            <PartnerSection title="Technical Partners" logos={technicalPartners} />
+            <PartnerSection title="Industry Partners" logos={industryPartners} />
+            <PartnerSection title="Research Partners" logos={researchPartners} />
+            <PartnerSection title="Venture Capital" logos={VCPartners} />
+            <PartnerSection title="Initiatives" logos={initiativePartners} />
+          </div>
         </section>
 
         {/* COLLABORATION OPPORTUNITIES */}

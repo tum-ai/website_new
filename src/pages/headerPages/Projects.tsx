@@ -1,5 +1,7 @@
 import Layout from "@/components/Layout";
 import { ProjectCard } from "@/components/innovation/InnovationProjectCard";
+import SEO from "@/components/SEO";
+import { getSEOConfig } from "@/config/seo";
 
 const departments = [
   {
@@ -82,33 +84,36 @@ const departments = [
 
 export default function Projects() {
   return (
-    <section className="relative pt-32 pb-16 px-8 bg-gradient-to-br from-blue-900 to-purple-900 text-white">
-      <Layout>
-        <div className="relative min-h-screen">
-          {/* Hero Section */}
-          <div className="flex flex-col items-center gap-4 mb-12 px-6 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">
-              Innovation Departments and Projects
-            </h1>
-            <p className="mx-auto max-w-2xl text-subtitle text-gray-200 pt-2">
-              Explore TUM.ai's innovation departments and the exciting projects they lead.
-            </p>
-          </div>
-
-          <div className="w-full px-6 md:px-12">
-            <div className="flex flex-wrap mx-[-0.75rem] justify-center">
-              {departments.map((dept) => (
-                <div
-                  key={dept.name}
-                  className="flex-shrink-0 px-3 pb-6 transition-transform duration-150 hover:scale-101"
-                >
-                  <ProjectCard {...dept} />
-                </div>
-              ))}
+    <>
+      <SEO {...getSEOConfig("projects")} />
+      <section className="relative pt-32 pb-16 px-8 bg-gradient-to-br from-blue-900 to-purple-900 text-white">
+        <Layout>
+          <div className="relative min-h-screen">
+            {/* Hero Section */}
+            <div className="flex flex-col items-center gap-4 mb-12 px-6 text-center">
+              <h1 className="text-4xl font-bold md:text-5xl text-white">
+                Innovation Departments and Projects
+              </h1>
+              <p className="mx-auto max-w-2xl text-subtitle text-gray-200">
+                Explore TUM.ai's innovation departments and the exciting projects
+                they lead.
+              </p>
+            </div>
+            <div className="w-full px-6 md:px-12">
+              <div className="flex flex-wrap mx-[-0.75rem] justify-center">
+                {departments.map((dept) => (
+                  <div
+                    key={dept.name}
+                    className="flex-shrink-0 px-3 pb-6 transition-transform duration-150 hover:scale-101"
+                  >
+                    <ProjectCard {...dept} />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      </Layout>
-    </section>
+        </Layout>
+      </section>
+    </>
   );
 }
