@@ -75,10 +75,10 @@ const StepCard = ({ step, index }: { step: Omit<Step, 'gradient'>; index: number
       <div className="relative z-10 flex items-start justify-between">
         <div className="h-16 w-16 invisible"></div>
         <div className="flex flex-col">
-          <div className="text-sm tracking-widest text-white/70 mb-1">
+          <div className="text-sm tracking-widest text-white/70">
             {step.step}
           </div>
-          <h3 className="text-2xl font-bold tracking-tight text-white mt-1">
+          <h3 className="text-2xl font-bold tracking-tight text-white">
             {step.name}
           </h3>
         </div>
@@ -125,10 +125,10 @@ const CombinedStepCard = ({ steps, indices }: { steps: Omit<Step, 'gradient'>[];
               <div className="flex items-start justify-between mb-4">
                 <div className="h-16 w-16 invisible"></div>
                 <div className="flex flex-col">
-                  <div className="text-sm tracking-widest text-white/70 mb-1">
+                  <div className="text-sm tracking-widest text-white/70">
                     {step.step}
                   </div>
-                  <h3 className="text-2xl font-bold tracking-tight text-white mt-1">
+                  <h3 className="text-2xl font-bold tracking-tight text-white">
                     {step.name}
                   </h3>
                 </div>
@@ -159,10 +159,10 @@ const CombinedStepCard = ({ steps, indices }: { steps: Omit<Step, 'gradient'>[];
             <div className="flex items-start justify-between mb-4">
               <div className="h-16 w-16 invisible"></div>
               <div className="flex flex-col">
-                <div className="text-sm tracking-widest text-white/70 mb-1">
+                <div className="text-sm tracking-widest text-white/70">
                   {steps[0].step}
                 </div>
-                <h3 className="text-2xl font-bold tracking-tight text-white mt-1">
+                <h3 className="text-2xl font-bold tracking-tight text-white">
                   {steps[0].name}
                 </h3>
               </div>
@@ -189,10 +189,10 @@ const CombinedStepCard = ({ steps, indices }: { steps: Omit<Step, 'gradient'>[];
             <div className="flex items-start justify-between mb-4">
               <div className="h-16 w-16 invisible"></div>
               <div className="flex flex-col">
-                <div className="text-sm tracking-widest text-white/70 mb-1">
+                <div className="text-sm tracking-widest text-white/70 ">
                   {steps[1].step}
                 </div>
-                <h3 className="text-2xl font-bold tracking-tight text-white mt-1">
+                <h3 className="text-2xl font-bold tracking-tight text-white ">
                   {steps[1].name}
                 </h3>
               </div>
