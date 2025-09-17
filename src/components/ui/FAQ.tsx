@@ -13,7 +13,7 @@ export default function FAQ({ faq }: FaqProps) {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
   return (
-    <section className="container mx-auto max-w-4xl px-2 py-16">
+    <section className="container mx-auto max-w-4xl px-10 py-16">
       <h3 className="text-3xl md:text-4xl font-bold mb-4">
         <span className="flex items-center text-purple-600">
           Frequently Asked Questions
