@@ -38,19 +38,20 @@ export const iconColors = [
 ];
 
 // Corrected background colors for the radial gradient glow
-export const glowColors = [
-  "#3A1772", // Dark purple for Batch Introduction
-  "#007266", // Dark teal for Research Track
-  "#721D50", // Dark magenta for Initiative Track
-  "#7A6000", // Dark yellow for Growth Opportunities
-  "#141972", // Deep blue for Research Exchange (REX) Program
-  "#B45B31", // Orange-brown for Alumni
-  "#00593D", // Dark green for Collaboration
-  "#4B0082", // Indigo for Mentorship
-  "#7A1C1C", // Deep red for Special Events
-];
+// export const glowColors = [
+//   "#3A1772", // Dark purple for Batch Introduction
+//   "#007266", // Dark teal for Research Track
+//   "#721D50", // Dark magenta for Initiative Track
+//   "#7A6000", // Dark yellow for Growth Opportunities
+//   "#141972", // Deep blue for Research Exchange (REX) Program
+//   "#B45B31", // Orange-brown for Alumni
+//   "#00593D", // Dark green for Collaboration
+//   "#4B0082", // Indigo for Mentorship
+//   "#7A1C1C", // Deep red for Special Events
+// ];
+const glowColor = "oklch(0.5184 0.2524 303.23)";
 
-const StepCard = ({ step, index }: { step: Step; index: number }) => (
+const StepCard = ({ step, index }: { step: Omit<Step, 'gradient'>; index: number }) => (
   <m.div
     initial={{ opacity: 0, y: 40 }}
     whileInView={{ opacity: 1, y: 0 }}
@@ -68,13 +69,13 @@ const StepCard = ({ step, index }: { step: Step; index: number }) => (
       <div
         className="absolute inset-0 z-0 opacity-50"
         style={{
-          background: `radial-gradient(circle at center, ${glowColors[index]} 0%, transparent 70%)`,
+          background: `radial-gradient(circle at center, ${glowColor} 0%, transparent 70%)`,
         }}
       ></div>
       <div className="relative z-10 flex items-start justify-between">
         <div className="h-16 w-16 invisible"></div>
         <div className="flex flex-col">
-          <div className="text-xl font-semibold tracking-widest text-white/70 mb-1">
+          <div className="text-sm tracking-widest text-white/70 mb-1">
             {step.step}
           </div>
           <h3 className="text-2xl font-bold tracking-tight text-white mt-1">
@@ -91,6 +92,123 @@ const StepCard = ({ step, index }: { step: Step; index: number }) => (
       <p className="relative z-10 mt-4 text-sm leading-snug text-white/80">
         {step.description}
       </p>
+    </Card>
+  </m.div>
+);
+
+const CombinedStepCard = ({ steps, indices }: { steps: Omit<Step, 'gradient'>[]; indices: number[] }) => (
+  <m.div
+    initial={{ opacity: 0, y: 40 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, amount: 0.2 }}
+    className="relative"
+  >
+    <Card
+      className="relative p-6 text-white border border-white/10 rounded-3xl shadow-lg h-full overflow-hidden
+      before:absolute before:inset-0 before:opacity-50 before:bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] before:from-purple-900 before:to-transparent"
+      style={{
+        backgroundColor: "#18112F",
+        boxShadow: "0px 5px 15px rgba(0,0,0,0.2), 0px 2px 5px rgba(0,0,0,0.1)",
+      }}
+    >
+      <div
+        className="absolute inset-0 z-0 opacity-50"
+        style={{
+          background: `radial-gradient(circle at center, ${glowColor} 0%, transparent 70%)`,
+        }}
+      ></div>
+      <div className="relative z-10">
+        {/* Mobile and narrow screens: vertical layout */}
+        <div className="block md:hidden">
+          {steps.map((step, idx) => (
+            <div key={step.step}>
+              <div className="flex items-start justify-between mb-4">
+                <div className="h-16 w-16 invisible"></div>
+                <div className="flex flex-col">
+                  <div className="text-sm tracking-widest text-white/70 mb-1">
+                    {step.step}
+                  </div>
+                  <h3 className="text-2xl font-bold tracking-tight text-white mt-1">
+                    {step.name}
+                  </h3>
+                </div>
+                <div
+                  className="h-16 w-16 flex items-center justify-center text-4xl"
+                  style={{ color: iconColors[indices[idx]] }}
+                >
+                  <FontAwesomeIcon icon={stepIcons[indices[idx]]} />
+                </div>
+              </div>
+              <p className="text-sm leading-snug text-white/80 mb-4">
+                {step.description}
+              </p>
+              {idx < steps.length - 1 && (
+                <div className="flex items-center justify-center my-6">
+                  <div className="flex-1 h-px bg-white/20"></div>
+                  <span className="mx-4 text-white/60 font-semibold text-sm">OR</span>
+                  <div className="flex-1 h-px bg-white/20"></div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop: horizontal layout */}
+        <div className="hidden md:flex md:gap-8 md:items-stretch">
+          <div className="flex-1">
+            <div className="flex items-start justify-between mb-4">
+              <div className="h-16 w-16 invisible"></div>
+              <div className="flex flex-col">
+                <div className="text-sm tracking-widest text-white/70 mb-1">
+                  {steps[0].step}
+                </div>
+                <h3 className="text-2xl font-bold tracking-tight text-white mt-1">
+                  {steps[0].name}
+                </h3>
+              </div>
+              <div
+                className="h-16 w-16 flex items-center justify-center text-4xl"
+                style={{ color: iconColors[indices[0]] }}
+              >
+                <FontAwesomeIcon icon={stepIcons[indices[0]]} />
+              </div>
+            </div>
+            <p className="text-sm leading-snug text-white/80">
+              {steps[0].description}
+            </p>
+          </div>
+
+          {/* OR separator for desktop - vertical line */}
+          <div className="flex flex-col items-center justify-center px-4">
+            <div className="flex-1 w-px bg-white/20 min-h-[2rem]"></div>
+            <span className="my-4 text-white/60 font-semibold text-sm whitespace-nowrap">OR</span>
+            <div className="flex-1 w-px bg-white/20 min-h-[2rem]"></div>
+          </div>
+
+          <div className="flex-1">
+            <div className="flex items-start justify-between mb-4">
+              <div className="h-16 w-16 invisible"></div>
+              <div className="flex flex-col">
+                <div className="text-sm tracking-widest text-white/70 mb-1">
+                  {steps[1].step}
+                </div>
+                <h3 className="text-2xl font-bold tracking-tight text-white mt-1">
+                  {steps[1].name}
+                </h3>
+              </div>
+              <div
+                className="h-16 w-16 flex items-center justify-center text-4xl"
+                style={{ color: iconColors[indices[1]] }}
+              >
+                <FontAwesomeIcon icon={stepIcons[indices[1]]} />
+              </div>
+            </div>
+            <p className="text-sm leading-snug text-white/80">
+              {steps[1].description}
+            </p>
+          </div>
+        </div>
+      </div>
     </Card>
   </m.div>
 );
@@ -160,7 +278,7 @@ export const JourneySection = () => {
       step: "02A",
       name: "Research Track",
       description:
-        "Join a team on an Impact Project applying AI to real world challenges. Contribute to research, academe publications, or open-Source work, and engage with the TUM.ai community through...",
+        "Join a team on an Impact Project applying AI to real world challenges. Contribute to research, academe publications, or open-Source work, and engage with the TUM.ai community through update sessions.",
     },
     {
       step: "02B",
@@ -178,7 +296,7 @@ export const JourneySection = () => {
       step: "04",
       name: "Research Exchange (REX) Program",
       description:
-        "After one semester, you can Join the REX Program — conduct research at top institutions like MIT, Harvard, or Cambridge. With our alumni network, we guide you in finding a topic, navigating applications, and contributing to surting-edge research.",
+        "After one semester, you can join the REX Program — conduct research at top institutions like MIT, Harvard, or Cambridge. With our alumni network, we guide you in finding a topic, navigating applications, and contributing to surting-edge research.",
     },
     {
       step: "05",
@@ -191,7 +309,7 @@ export const JourneySection = () => {
   return (
     <div
       ref={ref}
-      className="relative pt-32 pb-16 px-4 md:px-8 z-10 w-full max-w-7xl mx-auto text-center overflow-hidden"
+      className="relative pt-32 pb-16 px-4 md:px-8 z-10 w-full max-w-[1600px] mx-auto text-center overflow-hidden"
     >
       <div className="mb-12">
         <h1 className="text-4xl font-bold md:text-5xl">
@@ -207,11 +325,11 @@ export const JourneySection = () => {
         <div className="col-span-1 md:col-start-1 md:col-end-3 justify-self-center max-w-md w-full">
           <StepCard step={customSteps[0]} index={0} />
         </div>
-        <div className="col-span-1">
-          <StepCard step={customSteps[1]} index={1} />
-        </div>
-        <div className="col-span-1">
-          <StepCard step={customSteps[2]} index={2} />
+        <div className="col-span-1 md:col-start-1 md:col-end-3 justify-self-center max-w-md md:max-w-5xl w-full">
+          <CombinedStepCard 
+            steps={[customSteps[1], customSteps[2]]} 
+            indices={[1, 2]} 
+          />
         </div>
         <div className="col-span-1 md:col-start-1 md:col-end-3 justify-self-center max-w-md w-full">
           <StepCard step={customSteps[3]} index={3} />
