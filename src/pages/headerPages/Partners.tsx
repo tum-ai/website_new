@@ -1,5 +1,4 @@
 import Benefits from "@/components/Benefit";
-import Logos from "@/components/Logos";
 import { Button } from "@/components/ui/button";
 import {
   VCPartners,
@@ -42,205 +41,169 @@ export default function Partners() {
   return (
     <>
       <SEO {...getSEOConfig("partners")} />
-      <section className="pt-16 relative overflow-hidden">
+      {/* HERO SECTION */}
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        {/* Background image */}
         <img
           src="/assets/partners.webp"
           alt="Hero background image"
-          className="absolute w-full h-full scale-110 object-cover transition-transform duration-700 hover:scale-105"
+          className="absolute w-full h-full object-cover scale-110 transition-transform duration-700 hover:scale-105"
         />
+        {/* Dark overlay for contrast */}
+        <div className="absolute inset-0 bg-black/40" />
 
-        {/* Gradient Overlays */}
-        <div className="absolute inset-0 bg-linear-to-b from-black/80 via-black/60 to-black/80" />
-        <div className="absolute inset-0 bg-linear-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10" />
+        {/* Hero content */}
+        <div className="relative container mx-auto px-8 text-center z-10">
+          <h1
+            className="text-5xl md:text-7xl font-bold tracking-tight bg-clip-text text-transparent
+                    bg-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.7)]"
+          >
+            Partners & Sponsors
+          </h1>
+          <p className="mt-6 text-lg md:text-xl text-white/90 max-w-2xl mx-auto">
+            Get access to Germany&apos;s largest student talent pool of AI enthusiasts
+          </p>
+          <a href="mailto:partners@tum-ai.com">
+            <Button className="mt-8 px-8 py-4 text-lg">Become a Partner</Button>
+          </a>
+        </div>
+      </section >
 
-        {/* Content */}
-        <div className="relative container mx-auto flex min-h-[80vh] max-w-4xl flex-col justify-center p-8 text-white md:p-16">
-          <div className="space-y-6">
-            <h1
-              className={cx(
-                "text-title font-medium tracking-tight md:text-7xl",
-                "bg-linear-to-r from-white to-gray-300 bg-clip-text text-transparent",
-                "animate-fade-in-up",
-              )}
-            >
-              Partners & Sponsors
-            </h1>
-            <p className="animate-fade-in-up text-subtitle text-gray-300 [animation-delay:200ms]">
-              Get access to Germany&apos;s largest student talent pool of AI
-              enthusiasts
-            </p>
-            <a href="mailto:partners@tum-ai.com">
-              <Button>Become a partner</Button>
-            </a>
+      <div>
+        {/* PARTNER LOGOS */}
+        <section className="bg-gray-50 p-8 md:p-10 sm:py-16 lg:py-32 px-[1rem]">
+          <div className="container mx-auto space-y-16">
+            {/* <PartnerSection title="Long-Term Partnerships" logos={longtermPartners} /> */}
+            <PartnerSection title="Technical Partners" logos={technicalPartners} />
+            <PartnerSection title="Industry Partners" logos={industryPartners} />
+            <PartnerSection title="Research Partners" logos={researchPartners} />
+            <PartnerSection title="Venture Capital" logos={VCPartners} />
+            <PartnerSection title="Initiatives" logos={initiativePartners} />
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="relative bg-white p-8 sm:py-16 lg:py-32">
-        <div className="container mx-auto">
-          {/* <h2 className="mb-8 text-title font-semibold">
-            Long-Term Partnerships
-          </h2>
-          <Logos logos={longtermPartners} /> */}
-
-          <h2 className="mb-8 text-title font-semibold">Technical Partners</h2>
-          <Logos logos={technicalPartners} />
-
-          <h2 className="mb-8 text-title font-semibold">Industry Partners</h2>
-          <Logos logos={industryPartners} />
-
-          <h2 className="mb-8 text-title font-semibold">Research Partners</h2>
-          <Logos logos={researchPartners} />
-
-          <h2 className="mb-8 text-title font-semibold">Venture Capital</h2>
-          <Logos logos={VCPartners} />
-          <h2 className="mb-8 text-title font-semibold">Initiatives</h2>
-          <Logos logos={initiativePartners} />
-        </div>
-      </section>
-
-      <section
-        className="relative bg-linear-to-b from-blue-700 to-blue-800 p-8 text-white sm:py-16 lg:py-32"
-        id="become-partner"
-      >
-        <div className="container mx-auto">
-          <div className="mx-auto max-w-7xl">
-            <div className="relative mb-16 flex flex-col items-center text-center">
-              <h2 className="mb-6 text-title font-semibold text-white">
-                Partner with TUM.ai
-              </h2>
-              <p className="max-w-2xl text-subtitle text-white/90">
+        {/* COLLABORATION OPPORTUNITIES */}
+        <section className="relative bg-gradient-to-b from-blue-50 to-purple-50 p-8 sm:py-16 lg:py-32 text-gray-800">
+          <div className="container mx-auto flex flex-col lg:flex-row gap-12 items-start">
+            {/* Info Card */}
+            <div className="flex-1 space-y-8">
+              <h2 className="text-4xl font-semibold text-gray-900">Partner with TUM.ai</h2>
+              <p className="max-w-lg text-gray-700">
                 Access our exclusive talent pool of AI enthusiasts, experienced
                 in software development, data science, and AI strategy.
               </p>
-            </div>
 
-            <div className="relative grid gap-16 md:grid-cols-2">
-              <div className="relative">
-                <div className="relative space-y-8 rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm transition-all duration-300 hover:bg-white/10">
-                  {/* Glass-like top highlight */}
-                  <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-purple-300/50 to-transparent"></div>
-                  {/* Glass-like left highlight */}
-                  <div className="absolute inset-y-0 left-0 w-[1px] bg-gradient-to-b from-transparent via-purple-300/50 to-transparent"></div>
-
-                  <div className="space-y-6">
-                    <h3 className="text-title font-semibold text-white">
-                      Collaboration Opportunities
-                    </h3>
-                    <p className="text-white/80 text-subtitle">
-                      We&apos;re always open to new ideas and creative ways to
-                      collaborate.
-                    </p>
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <div className="rounded-lg border border-white/10 bg-white/5 p-4 backdrop-blur-sm transition-all duration-300 hover:bg-white/10">
-                        <h4 className="mb-2 font-medium text-white">
-                          Events & Community
-                        </h4>
-                        <ul className="space-y-2 text-sm text-white/80">
-                          <li className="flex items-center gap-2">
-                            <span className="h-1 w-1 rounded-full bg-purple-300" />
-                            <span>AI Summit Speaker</span>
-                          </li>
-                          <li className="flex items-center gap-2">
-                            <span className="h-1 w-1 rounded-full bg-purple-300" />
-                            <span>Makeathon Challenge</span>
-                          </li>
-                          <li className="flex items-center gap-2">
-                            <span className="h-1 w-1 rounded-full bg-purple-300" />
-                            <span>Workshop Host</span>
-                          </li>
-                          <li className="flex items-center gap-2">
-                            <span className="h-1 w-1 rounded-full bg-purple-300" />
-                            <span>Mentorship Program</span>
-                          </li>
-                        </ul>
-                      </div>
-                      <div className="rounded-lg border border-white/10 bg-white/5 p-4 backdrop-blur-sm transition-all duration-300 hover:bg-white/10">
-                        <h4 className="mb-2 font-medium text-white">
-                          Industry & Projects
-                        </h4>
-                        <ul className="space-y-2 text-sm text-white/80">
-                          <li className="flex items-center gap-2">
-                            <span className="h-1 w-1 rounded-full bg-purple-300" />
-                            <span>Industry Project Partner</span>
-                          </li>
-                          <li className="flex items-center gap-2">
-                            <span className="h-1 w-1 rounded-full bg-purple-300" />
-                            <span>AI E-lab Judge</span>
-                          </li>
-                          <li className="flex items-center gap-2">
-                            <span className="h-1 w-1 rounded-full bg-purple-300" />
-                            <span>Post Open Positions</span>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-6">
-                    <h3 className="text-title font-semibold text-white">
-                      Education & Knowledge
-                    </h3>
-                    <ul className="space-y-3 text-base text-white/80">
-                      <li className="flex items-center gap-2">
-                        <span className="h-1 w-1 rounded-full bg-purple-300" />
-                        <span>AI Academy Lecturer</span>
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <span className="h-1 w-1 rounded-full bg-purple-300" />
-                        <span>Technical Workshop Leader</span>
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <span className="h-1 w-1 rounded-full bg-purple-300" />
-                        <span>Research Collaboration</span>
-                      </li>
-                    </ul>
-                  </div>
-
-                  <a href="mailto:partners@tum-ai.com">
-                    <Button
-                      variant="primary"
-                      className="w-full border border-white/10"
-                    >
-                      Become a partner
-                    </Button>
-                  </a>
-                </div>
+              <div className="grid gap-8 md:grid-cols-2">
+                <OpportunityCard
+                  title="Events & Community"
+                  items={[
+                    "AI Summit Speaker",
+                    "Makeathon Challenge",
+                    "Workshop Host",
+                    "Mentorship Program",
+                  ]}
+                />
+                <OpportunityCard
+                  title="Industry & Projects"
+                  items={[
+                    "Industry Project Partner",
+                    "AI E-lab Judge",
+                    "Post Open Positions",
+                  ]}
+                />
               </div>
 
-              <div className="relative">
-                <div className="group relative aspect-4/3 overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm">
-                  <img
-                    src={"/assets/partners/martin_talk.jpg"}
-                    alt="Martin talk"
-                    className="h-full w-full object-cover transition-all duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
-                  <div className="absolute right-0 bottom-0 left-0 p-8">
-                    <p className="text-lg text-white font-semibold">
-                      Join our network of industry leaders and innovators
-                    </p>
-                  </div>
-                </div>
+              <OpportunityCard
+                title="Education & Knowledge"
+                items={[
+                  "AI Academy Lecturer",
+                  "Technical Workshop Leader",
+                  "Research Collaboration",
+                ]}
+              />
+
+              <a href="mailto:partners@tum-ai.com">
+                <Button variant="primary" className="mt-6 w-full border border-gray-300">
+                  Become a Partner
+                </Button>
+              </a>
+            </div>
+
+            {/* Visual Image */}
+            <div className="flex-1 relative rounded-xl overflow-hidden shadow-lg">
+              <img
+                src="/assets/partners/martin_talk.jpg"
+                alt="Martin talk"
+                className="w-full h-full object-cover rounded-xl transition-transform duration-500 hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+              <div className="absolute bottom-8 left-8 right-8 text-gray-900 font-semibold text-lg">
+                Join our network of industry leaders and innovators
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="relative bg-white p-8 sm:py-16 lg:py-32">
-        <div className="container mx-auto">
-          <h2 className="text-uppercase mb-8 w-full text-title font-semibold">
-            What we offer
-          </h2>
-          <Benefits
-            benefits={benefits}
-            showShadow={true}
-            columns={4}
-            color="purple"
-          />
-        </div>
-      </section>
+        {/* BENEFITS */}
+        <section className="bg-gray-50 p-8 sm:py-16 lg:py-32">
+          <div className="container mx-auto">
+            <h2 className="text-3xl font-semibold text-center mb-12 text-gray-900">What We Offer</h2>
+            <Benefits benefits={benefits} showShadow columns={4} color="purple" />
+          </div>
+        </section>
+      </div>
+
     </>
   );
 }
+
+// Partner logos reusable section
+function PartnerSection({
+  title,
+  logos,
+}: {
+  title: string;
+  logos: { href: string, alt: string; src: string }[];
+}) {
+  return (
+    <div>
+      <h3
+        className={cx(
+          "text-2xl font-semibold mb-6 bg-clip-text text-transparent",
+          "bg-gradient-to-r from-purple-700 via-pink-600 to-red-600"
+        )}
+      >
+        {title}
+      </h3>
+      <div className="flex flex-wrap items-start justify-start gap-2">
+        {logos.map((logo) => (
+          <div
+            key={logo.alt}
+            // Set a fixed height for the card
+            className="flex h-20 w-40 items-center justify-center rounded-lg border-1 bg-white p-4 py-6"
+          >
+            {/* Limit logo size and maintain aspect ratio */}
+            <img src={logo.src} alt={logo.alt} className="max-h-full max-w-full object-contain" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+// Opportunity card component
+function OpportunityCard({ title, items }: { title: string; items: string[] }) {
+  return (
+    <div className="rounded-2xl border border-gray-300 bg-white p-6 shadow-sm transition hover:shadow-md">
+      <h4 className="text-lg font-semibold text-gray-900 mb-4">{title}</h4>
+      <ul className="space-y-2 text-gray-700 text-sm">
+        {items.map((item) => (
+          <li key={item} className="flex items-center gap-2">
+            <span className="h-1 w-1 rounded-full bg-purple-500" />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
