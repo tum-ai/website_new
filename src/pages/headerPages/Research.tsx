@@ -8,6 +8,8 @@ import { useEffect, useRef, useState } from "react";
 import type React from "react";
 import SEO from "@/components/SEO";
 import { getSEOConfig } from "@/config/seo";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export default function Research() {
   const [projects, setProjects] = useState<Research[]>([]);
