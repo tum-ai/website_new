@@ -1,8 +1,6 @@
 import Layout from "@/components/Layout";
 import Logos from "@/components/Logos";
 import ResearchCard from "@/components/research/ResearchCard";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import { researchPartners } from "@/data/partners";
 import type { Research } from "@/lib/types";
@@ -109,7 +107,6 @@ export default function Research() {
               </Card>
             </div>
           )}
-
         </div>
       ),
     },
@@ -238,6 +235,7 @@ export default function Research() {
                     );
                   })}
                 </div>
+
                 {tabs.map((tab) => (
                   <div
                     key={tab.value}
@@ -261,5 +259,6 @@ export default function Research() {
         </Layout>
       </section>
     </>
+
   );
 }

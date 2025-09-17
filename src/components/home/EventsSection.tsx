@@ -50,7 +50,14 @@ export const EventsSection = () => {
       },
     }));
 
-  if (loading) return <LoadingSpinner text="Loading events..." size="sm" className="text-gray-800" />;
+  if (loading)
+    return (
+      <LoadingSpinner
+        text="Loading events..."
+        size="sm"
+        className="text-gray-800"
+      />
+    );
   if (error) return <div style={{ color: "red" }}>{error}</div>;
 
   return (

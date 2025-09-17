@@ -107,19 +107,6 @@ export const Hero = () => {
           </div>
         </div>
       </div>
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
-        <button
-          onClick={() => window.scrollBy({ top: 500, behavior: "smooth" })}
-          className="!bg-transparent !border-0 flex flex-col items-center space-y-2 text-white/60 hover:text-white transition-colors duration-300 group bg-transparent border-none appearance-none"
-          title="Scroll down"
-        >
-          <FontAwesomeIcon
-            icon={faChevronDown}
-            className="animate-bounce text-lg group-hover:text-purple-400 transition-colors"
-          />
-        </button>
-      </div>
     </section>
   );
 };

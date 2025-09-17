@@ -70,9 +70,7 @@ export default function Partners() {
               enthusiasts
             </p>
             <a href="mailto:partners@tum-ai.com">
-              <Button>
-                Become a partner
-              </Button>
+              <Button>Become a partner</Button>
             </a>
           </div>
         </div>
