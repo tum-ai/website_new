@@ -29,7 +29,7 @@ const DepartmentCard = ({
     <motion.div
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
+      transition={{ duration: 0.2, delay: index * 0.02 }}
       viewport={{ once: true }}
     >
       <Card
