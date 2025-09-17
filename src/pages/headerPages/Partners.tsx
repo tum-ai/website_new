@@ -5,7 +5,7 @@ import {
   VCPartners,
   industryPartners,
   initiativePartners,
-  longtermPartners,
+  // longtermPartners,
   researchPartners,
   technicalPartners,
 } from "@/data/partners";
