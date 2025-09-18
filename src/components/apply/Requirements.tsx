@@ -16,11 +16,10 @@ export default function Requirements({
 }: RequirementsProps) {
   return (
     <section className="container mx-auto max-w-5xl px-4 py-16">
-      <h3 className="text-3xl md:text-4xl font-bold mb-4">
-        Is TUM.ai the right choice for{" "}
-        <span className="text-purple-600">me?</span>
+      <h3 className="text-title md:text-4xl font-bold mb-4">
+        Is TUM.ai the right choice for me?
       </h3>
-      <p className="text-sm text-gray-600 mb-2">
+      <p className="text-subtitle text-gray-600 mb-2">
         There is no secret to TUM.ai's fast-paced growth. Every semester, we
         have recruited amazing members who drive the initiative forward. If you
         can identify with the following qualities, you are the one that we are

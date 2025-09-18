@@ -242,7 +242,6 @@ button:focus-visible {
   }
 }
 
-/* globals.css (or wherever you import Tailwind) */
 @layer utilities {
   @keyframes marquee-left {
     from {

@@ -5,7 +5,7 @@ import {
   Globe,
   Handshake,
   MessageCircle,
-  Star,
+  Rocket,
   Zap,
 } from "lucide-react";
 
@@ -34,7 +34,7 @@ export const requirements = [
 
 export const values = [
   {
-    icon: Star,
+    icon: Rocket,
     title: "Action, Ambition & Leadership",
     text: "We prioritize setting goals and advancing in all our activities, constantly aiming for excellence. Our commitment to outcomes drives us to take responsibility, even in collaborative settings. We proactively build partnerships with key organizations like 180DC, CDTM, and TUM Blockchain Club, extending our network across TUM, UnternehmerTUM, AppliedAI, ETH Zürich, and beyond.",
   },

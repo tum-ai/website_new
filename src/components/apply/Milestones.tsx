@@ -1,9 +1,9 @@
 export default function Milestones() {
   return (
-    <section className="container mx-auto max-w-4xl px-2 py-16">
+    <section className="container mx-auto max-w-4xl">
       <div>
         <h3 className="text-3xl md:text-4xl font-bold mb-4">
-          Our <span className="text-purple-600">Milestones</span>
+          Our <span className="gradient-text"> Milestones </span>
         </h3>
 
         {/* Roadmap */}

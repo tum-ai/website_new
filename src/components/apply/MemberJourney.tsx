@@ -1,24 +1,24 @@
 import { Briefcase, GraduationCap, Users } from "lucide-react";
+import { NavLink } from "react-router-dom";
 
 export default function MemberJourney() {
   return (
     <section className="container mx-auto max-w-4xl px-2 py-16">
-      <h3 className="text-3xl md:text-4xl font-bold mb-4">
-        How our <span className="text-purple-600">Community</span> Works
+      <h3 className="text-title md:text-4xl font-bold mb-4">
+        How our <span className="gradient-text">Community</span> Works
       </h3>
       <div className="mb-8">
-        <span className="text-lg text-gray-700">
-          The member journey at{" "}
-          <span className="text-purple-600 font-semibold">TUM.ai</span> spans
-          across semesters, each lasting 6 whole months. When you join the{" "}
-          <span className="text-purple-600 font-semibold">TUM.ai</span>{" "}
-          community, here's what you can expect:
+        <span className="text-subtitle text-gray-700">
+          The{" "}
+          <span className="text-purple-600 font-semibold">member journey</span>{" "}
+          at TUM.ai spans across semesters, each lasting 6 whole months. When
+          you join the TUM.ai community, here's what you can expect:
         </span>
       </div>
-      <div className="space-y-8 mb-12">
+      <div className="text-base space-y-8">
         {/* Steps */}
         <div>
-          <p className="font-semibold text-lg text-purple-700 mb-2">
+          <p className="font-semibold text-subtitle text-purple-700 mb-2">
             1. Initial Onboarding:
           </p>
           <p className="text-gray-700 mb-4">
@@ -29,7 +29,7 @@ export default function MemberJourney() {
           </p>
         </div>
         <div>
-          <p className="font-semibold text-lg text-purple-700 mb-2">
+          <p className="font-semibold text-subtitle text-purple-700 mb-2">
             2. Research or Initiative Track: Choose Your Path at TUM.ai
           </p>
           <p className="text-gray-700 mb-2">
@@ -69,43 +69,35 @@ export default function MemberJourney() {
               <span className="font-semibold text-purple-700">
                 core departments
               </span>{" "}
-              and become a driving force behind everything that makes{" "}
-              <span className="font-semibold text-purple-700">TUM.ai</span>{" "}
+              and become a driving force behind everything that makes TUM.ai
               stand out. In this track, you'll dive into exciting projects,
               collaborate with motivated peers, and help shape the future of our
               community. Whether it's launching new ideas, strengthening our
               network, or making the day-to-day magic happen - you'll be at the
-              heart of it all, growing your skills while making{" "}
-              <span className="font-semibold text-purple-700">TUM.ai</span>{" "}
-              better for everyone.
+              heart of it all, growing your skills while making TUM.ai better
+              for everyone.
             </li>
           </ul>
           <p className="text-gray-700 mb-2">
             Regardless of your track, your first semester is not just about
             completing tasks. You'll have the chance to engage deeply with our
             vibrant community, develop new skills, and participate in learning
-            opportunities, trips, and special events. Find out more about the
-            Tracks and your journey at{" "}
-            <a
-              href="https://www.tum-ai.com/members"
-              className="text-purple-700 underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              TUM.ai
-            </a>
-            .
+            opportunities, trips, and special events.
+            <br />
+            <NavLink to="/community" className="text-purple-700 underline">
+              Find out more
+            </NavLink>{" "}
+            about the Tracks and your journey at TUM.ai.
           </p>
         </div>
         <div>
-          <p className="font-semibold text-lg text-purple-700 mb-2">
+          <p className="font-semibold text-subtitle text-purple-700 mb-2">
             3. Growth Opportunities:
           </p>
           <p className="text-gray-700 mb-4">
-            After your first semester, your journey at{" "}
-            <span className="font-semibold text-purple-700">TUM.ai</span>{" "}
-            doesn't end with your initial project. You'll have the opportunity
-            to further shape the initiative by{" "}
+            After your first semester, your journey at TUM.ai doesn't end with
+            your initial project. You'll have the opportunity to further shape
+            the initiative by{" "}
             <span className="font-semibold text-purple-700">
               founding a strategic task force, joining a department or task
               force that's new to you
@@ -120,21 +112,23 @@ export default function MemberJourney() {
           </p>
         </div>
         <div>
-          <p className="font-semibold text-lg text-purple-700 mb-2">
+          <p className="font-semibold text-subtitle text-purple-700 mb-2">
             4. Research Exchange:
           </p>
           <p className="text-gray-700 mb-4">
-            Now, we can send you off into research at prestigious institutions
-            such as{" "}
+            After one semester, we can send you off to conduct research at
+            prestigious institutions such as{" "}
             <span className="font-semibold text-purple-700">
-              MIT, Harvard, or Berkeley
+              MIT, Harvard,{" "}
             </span>
-            . Through our network of alumni, we will not only help you find the
-            right topic but also support you with the bureaucracy.
+            or <span className="font-semibold text-purple-700">Berkeley</span>{" "}
+            as part of the Research Exchange (REX) Program. Through our network
+            of alumni, we will not only help you find the right topic but also
+            support you with the bureaucracy.
           </p>
         </div>
         <div>
-          <p className="font-semibold text-lg text-purple-700 mb-2">
+          <p className="font-semibold text-subtitle text-purple-700 mb-2">
             5. Alumni Program:
           </p>
           <p className="text-gray-700 mb-4">
@@ -151,7 +145,7 @@ export default function MemberJourney() {
       {/* Track Cards */}
       <div className="flex flex-col gap-8 mt-12">
         {/* Project work */}
-        <div className="flex items-start gap-6 rounded-xl bg-white/5 border border-white/10 p-6 shadow-lg hover:scale-[1.03] transition-transform">
+        <div className="flex items-start gap-6 rounded-xl bg-white/5 border border-white/10 p-6 shadow-lg">
           <div className="h-14 w-14 flex-shrink-0 flex items-center justify-center bg-purple-100 rounded-full">
             <Briefcase className="text-purple-700" size={32} />
           </div>
@@ -171,7 +165,7 @@ export default function MemberJourney() {
           </div>
         </div>
         {/* Organizational work */}
-        <div className="flex items-start gap-6 rounded-xl bg-white/5 border border-white/10 p-6 shadow-lg hover:scale-[1.03] transition-transform">
+        <div className="flex items-start gap-6 rounded-xl bg-white/5 border border-white/10 p-6 shadow-lg">
           <div className="h-14 w-14 flex-shrink-0 flex items-center justify-center bg-purple-100 rounded-full">
             <Users className="text-purple-700" size={32} />
           </div>
@@ -192,7 +186,7 @@ export default function MemberJourney() {
           </div>
         </div>
         {/* Education offerings */}
-        <div className="flex items-start gap-6 rounded-xl bg-white/5 border border-white/10 p-6 shadow-lg hover:scale-[1.03] transition-transform">
+        <div className="flex items-start gap-6 rounded-xl bg-white/5 border border-white/10 p-6 shadow-lg">
           <div className="h-14 w-14 flex-shrink-0 flex items-center justify-center bg-purple-100 rounded-full">
             <GraduationCap className="text-purple-700" size={32} />
           </div>

@@ -15,7 +15,7 @@ export default function Values({ valuesWithIcons }: ValuesProps) {
   return (
     <section className="container mx-auto max-w-5xl px-4 py-16">
       <h3 className="text-3xl md:text-4xl font-bold mb-4">
-        Our <span className="text-purple-600">Values</span>
+        Our <span className="gradient-text">Values</span>
       </h3>
       <Benefits
         benefits={valuesWithIcons}

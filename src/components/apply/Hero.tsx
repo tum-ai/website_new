@@ -8,15 +8,12 @@ export default function Hero() {
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <div className="flex flex-col gap-6 text-center md:text-left">
             <h1 className="text-5xl md:text-7xl font-bold">
-              Join{" "}
-              <span className="bg-gradient-to-r from-[#891FDB] to-[#E0189A] bg-clip-text text-transparent">
-                Us
-              </span>
+              Join <span className="gradient-text">Us</span>
             </h1>
-            <p className="text-lg md:text-xl">
+            <p className="text-subtitle md:text-xl">
               Are you a young innovator passionate about making a difference?
             </p>
-            <div className="font-semibold text-lg md:text-xl">
+            <div className="font-semibold text-subtitle md:text-xl">
               We're here to bridge the gap by connecting you with key
               stakeholders in your field. Together, we can harness the power of
               AI for transformative, interdisciplinary projects that drive

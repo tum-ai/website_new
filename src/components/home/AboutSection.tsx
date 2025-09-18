@@ -296,7 +296,7 @@ export const AboutSection = () => {
           <img
             className="object-cover min-h-[200px] bg-gray-200 rounded-xl"
             src="/assets/homepage/Onboarding25.webp"
-            alt="TUM.ai members placeholder"
+            alt="TUM.ai onboarding"
           />
         </div>
       </div>
