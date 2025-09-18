@@ -12,6 +12,7 @@ import { cx } from "class-variance-authority";
 import { Brain, Handshake, Megaphone, Users } from "lucide-react";
 import SEO from "@/components/SEO";
 import { getSEOConfig } from "@/config/seo";
+import Layout from "@/components/Layout";
 
 
 export default function Partners() {
@@ -41,7 +42,6 @@ export default function Partners() {
   return (
     <>
       <SEO {...getSEOConfig("partners")} />
-      {/* HERO SECTION */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         {/* Background image */}
         <img
@@ -71,8 +71,9 @@ export default function Partners() {
 
       <div>
         {/* PARTNER LOGOS */}
-        <section className="bg-gray-50 p-8 md:p-10 sm:py-16 lg:py-32 px-[1rem]">
-          <div className="container mx-auto space-y-16">
+        <Layout>
+        <section className="p-8 md:p-10 sm:py-16 lg:py-16 text-center md:text-start px-[1rem]">
+          <div className="container mx-auto space-y-16 justify-center md:justify-start items-center md:items-start">
             {/* <PartnerSection title="Long-Term Partnerships" logos={longtermPartners} /> */}
             <PartnerSection title="Technical Partners" logos={technicalPartners} />
             <PartnerSection title="Industry Partners" logos={industryPartners} />
@@ -81,9 +82,12 @@ export default function Partners() {
             <PartnerSection title="Initiatives" logos={initiativePartners} />
           </div>
         </section>
+        </Layout>
+
 
         {/* COLLABORATION OPPORTUNITIES */}
         <section className="relative bg-gradient-to-b from-blue-50 to-purple-50 p-8 sm:py-16 lg:py-32 text-gray-800">
+          <Layout>
           <div className="container mx-auto flex flex-col lg:flex-row gap-12 items-start">
             {/* Info Card */}
             <div className="flex-1 space-y-8">
@@ -137,15 +141,17 @@ export default function Partners() {
                 className="w-full h-full object-cover rounded-xl transition-transform duration-500 hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-              <div className="absolute bottom-8 left-8 right-8 text-gray-900 font-semibold text-lg">
+              <div className="absolute bottom-8 left-8 right-8 text-white font-semibold text-lg">
                 Join our network of industry leaders and innovators
               </div>
             </div>
           </div>
+          </Layout>
+
         </section>
 
         {/* BENEFITS */}
-        <section className="bg-gray-50 p-8 sm:py-16 lg:py-32">
+        <section className="p-8 sm:py-16 lg:py-32">
           <div className="container mx-auto">
             <h2 className="text-3xl font-semibold text-center mb-12 text-gray-900">What We Offer</h2>
             <Benefits benefits={benefits} showShadow columns={4} color="purple" />
@@ -175,7 +181,7 @@ function PartnerSection({
       >
         {title}
       </h3>
-      <div className="flex flex-wrap items-start justify-start gap-2">
+      <div className="flex flex-wrap items-center justify-center md:items-start md:justify-start gap-2">
         {logos.map((logo) => (
           <div
             key={logo.alt}
