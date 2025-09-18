@@ -1,11 +1,11 @@
 import Hero from "@/components/apply/Hero";
-import About from "@/components/apply/shared/About";
-import MemberJourney from "@/components/apply/shared/MemberJourney";
-import MemberStories from "@/components/apply/shared/MemberStories";
-import Milestones from "@/components/apply/shared/Milestones";
-import Outro from "@/components/apply/shared/Outro";
-import Requirements from "@/components/apply/shared/Requirements";
-import Values from "@/components/apply/shared/Values";
+import About from "@/components/apply/About";
+import MemberJourney from "@/components/apply/MemberJourney";
+import MemberStories from "@/components/apply/MemberStories";
+import Milestones from "@/components/apply/Milestones";
+import Outro from "@/components/apply/Outro";
+import Requirements from "@/components/apply/Requirements";
+import Values from "@/components/apply/Values";
 import FAQ from "@/components/ui/FAQ";
 import { requirements, stories, values } from "@/data/apply/applyData";
 import { faq } from "@/data/apply/faq";

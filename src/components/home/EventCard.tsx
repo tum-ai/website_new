@@ -12,7 +12,6 @@ type EventCardProps = {
 const EventCard = ({ img, title, date }: EventCardProps) => {
   return (
     <div className="relative w-[25rem] h-[25rem] max-w-md flex-1/3 rounded-2xl overflow-hidden shadow-lg">
-      {/* Background image */}
       {img ? (
         <img src={img} alt={title} className="w-full h-full object-cover" />
       ) : (
@@ -33,7 +32,6 @@ const EventCard = ({ img, title, date }: EventCardProps) => {
 
       {/* Text content */}
       <div className="absolute inset-0 flex flex-col justify-between p-6 text-white">
-        {/* Title */}
         <div>
           <h2 className="text-2xl font-bold">{title}</h2>
         </div>

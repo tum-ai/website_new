@@ -1,6 +1,4 @@
-// src/pages/Community.jsx
-
-import MemberStories from "@/components/apply/shared/MemberStories";
+import MemberStories from "@/components/apply/MemberStories";
 import {
   JourneySection,
   iconColors as departmentColors,

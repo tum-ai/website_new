@@ -38,7 +38,6 @@ export const CarouselHome = () => {
     },
   ];
 
-  // TODO: refactor!!!
   return (
     <Carousel className="w-full max-w-full group">
       {/* slider wrapper */}

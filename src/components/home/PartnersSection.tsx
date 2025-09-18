@@ -58,24 +58,6 @@ export const PartnersSection = () => {
           ease: "power2.out",
         });
       },
-      // onLeave: () => {
-      //   gsap.to(elems, {
-      //     opacity: 0,
-      //     y: 20,
-      //     duration: 0.45,
-      //     stagger: 0.02,
-      //     ease: "power2.in",
-      //   });
-      // },
-      // onLeaveBack: () => {
-      //   gsap.to(elems, {
-      //     opacity: 0,
-      //     y: 20,
-      //     duration: 0.45,
-      //     stagger: 0.02,
-      //     ease: "power2.in",
-      //   });
-      // },
     });
 
     return () => {

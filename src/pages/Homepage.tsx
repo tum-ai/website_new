@@ -1,7 +1,6 @@
 import Layout from "@/components/Layout";
 import { AboutSection } from "@/components/home/AboutSection";
 import { CarouselHome } from "@/components/home/CarouselHome";
-// import { EventsSection } from "@/components/home/EventsSection";
 import { Grid } from "@/components/home/Grid";
 import { PartnersSection } from "@/components/home/PartnersSection";
 import { ScrollSection } from "@/components/home/ScrollSection";
@@ -12,7 +11,7 @@ import { getSEOConfig } from "@/config/seo";
 export default function Homepage() {
   return (
     <>
-      <SEO {...getSEOConfig("home")}/>
+      <SEO {...getSEOConfig("home")} />
       <div className="relative bg-[#0B0213] text-white min-h-screen">
         <div className="hidden sm:block">
           <Grid />
@@ -34,7 +33,6 @@ export default function Homepage() {
         <CarouselHome />
         <PartnersSection />
       </Layout>
-      {/* <EventsSection /> */}
     </>
   );
 }
