@@ -59,7 +59,7 @@ const StepCard = ({ step, index }: { step: Omit<Step, 'gradient'>; index: number
     className="relative"
   >
     <Card
-      className="relative p-6 text-white border border-white/10 rounded-3xl shadow-lg h-full overflow-hidden
+      className="relative p-6 text-white border border-[#3c1664] rounded-3xl shadow-lg h-full overflow-hidden
       before:absolute before:inset-0 before:opacity-50 before:bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] before:from-purple-900 before:to-transparent"
       style={{
         backgroundColor: "#18112F",
@@ -104,7 +104,7 @@ const CombinedStepCard = ({ steps, indices }: { steps: Omit<Step, 'gradient'>[];
     className="relative"
   >
     <Card
-      className="relative p-6 text-white border border-white/10 rounded-3xl shadow-lg h-full overflow-hidden
+      className="relative p-6 text-white border border-[#3c1664]  rounded-3xl shadow-lg h-full overflow-hidden
       before:absolute before:inset-0 before:opacity-50 before:bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] before:from-purple-900 before:to-transparent"
       style={{
         backgroundColor: "#18112F",

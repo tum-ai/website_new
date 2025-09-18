@@ -19,7 +19,7 @@ export default function MemberStories({ stories }: MemberStoriesProps) {
           {stories.map((story) => (
             <div
               key={story.name}
-              className="rounded-xl p-6 shadow-lg flex flex-col items-center bg-white"
+              className="rounded-xl p-6 shadow-lg border-1 flex flex-col items-center bg-white"
             >
               <img
                 src={story.image}
