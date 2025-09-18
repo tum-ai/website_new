@@ -49,7 +49,7 @@ export const CarouselHome = () => {
             className="w-full md:w-full flex flex-shrink-0"
           >
             {" "}
-            <div className="relative flex flex-col md:flex-row md:gap-8 px-4 md:px-10 py-14 md:py-12 justify-center w-dvw max-w-full">
+            <div className="relative flex flex-col md:flex-row pb-12 px-4 md:px-10 justify-center w-dvw max-w-full">
               <img
                 className="aspect-[16/9] object-cover rounded-md"
                 src={item.imgSrc}
