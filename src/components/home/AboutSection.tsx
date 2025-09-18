@@ -194,7 +194,7 @@ export const AboutSection = () => {
   ]);
 
   return (
-    <div className="flex flex-col gap-8 p-8 md:p-10">
+    <div className="flex flex-col gap-8 p-8 md:p-16">
       <div className="w-full items-center md:max-h-2/3 flex">
         <img
           className="object-cover bg-gray-200 rounded-xl w-full h-auto"
@@ -264,7 +264,7 @@ export const AboutSection = () => {
         </div>
       </div>
       <div
-        className="hidden md:flex w-full md:flex-row pt-4 pb-4"
+        className="flex flex-col-reverse gap-8 md:flex-row w-full "
         ref={wrapperRef}
       >
         <div
@@ -334,7 +334,7 @@ function Stat({
       className="flex flex-col justify-start items-center md:items-start"
     >
       <motion.div className={`text-4xl font-bold`}>
-        <span className="inline-flex items-start justify-start py-2 gradient-text">
+        <span className="inline-flex items-start justify-start gradient-text">
           <AnimatedText value={rounded} suffix={suffix} />
         </span>
       </motion.div>
