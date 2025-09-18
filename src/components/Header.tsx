@@ -70,9 +70,8 @@ export const Header = () => {
       )}
       <a
         href="/"
-        className={`transition-opacity duration-300 ${
-          showLogo ? "opacity-100" : "opacity-0"
-        }`}
+        className={`transition-opacity duration-300 ${showLogo ? "opacity-100" : "opacity-0"
+          }`}
       >
         <img
           src="/assets/logo_new_white_standard.png"
@@ -87,10 +86,9 @@ export const Header = () => {
             key={href}
             to={href}
             className={({ isActive }) =>
-              `${
-                isActive
-                  ? "text-[#A144E9] font-semibold"
-                  : "text-gray-300 hover:text-[#A144E9]"
+              `${isActive
+                ? "text-[#A144E9] font-semibold"
+                : "text-gray-300 hover:text-[#A144E9]"
               } text-[16px] font-bold cursor-pointer`
             }
           >
@@ -162,23 +160,27 @@ export const Header = () => {
                           to={href}
                           onClick={() => setOpen(false)}
                           className={({ isActive }) =>
-                            `block rounded-md px-4 py-2 text-lg ${
-                              isActive
-                                ? "text-[#A144E9] font-semibold"
-                                : "text-gray-300 hover:bg-purple-800/50 hover:text-white"
+                            `block rounded-md px-4 py-2 text-lg ${isActive
+                              ? "text-[#A144E9] font-semibold"
+                              : "text-gray-300 hover:bg-purple-800/50 hover:text-white"
                             }`
                           }
                         >
                           {text}
                         </NavLink>
                       ))}
-                      <NavLink
-                        to="/apply"
-                        onClick={() => setOpen(false)}
-                        className="mt-4 block rounded-md bg-[#A144E9] px-4 py-2 text-lg text-white hover:bg-[#8727c7]"
+                      <Button
+                        asChild
+                        variant="outline2"
+                        className="w-full rounded-md px-6 py-3 text-center sm:w-auto"
                       >
-                        Join Us
-                      </NavLink>
+                        <NavLink
+                          to="/apply"
+                          className="w-full bg-transparent border border-[#A144E9] rounded-md px-6 py-3 text-[#A144E9] text-center sm:w-auto"
+                        >
+                          Become a Member
+                        </NavLink>
+                      </Button>
                     </nav>
                   </motion.div>
                 </Dialog.Content>
