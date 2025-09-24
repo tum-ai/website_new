@@ -1,16 +1,16 @@
+import SEO from "@/components/SEO";
 import MemberStories from "@/components/apply/MemberStories";
 import {
   JourneySection,
   iconColors as departmentColors,
 } from "@/components/community/JourneySection";
 import { Card } from "@/components/ui/card";
+import { getSEOConfig } from "@/config/seo";
 import { stories } from "@/data/apply/applyData";
 import { type Department, departments } from "@/data/community";
+import { motion } from "framer-motion";
 import * as LucideIcons from "lucide-react";
 import { useEffect } from "react";
-import { motion } from "framer-motion";
-import SEO from "@/components/SEO";
-import { getSEOConfig } from "@/config/seo";
 
 type IconName = keyof typeof LucideIcons;
 
@@ -73,7 +73,7 @@ const DepartmentsSection = () => (
     <div className="mb-20 text-center">
       <h2
         className="text-4xl font-semibold tracking-tight md:text-5xl "
-      // bg-gradient-to-r from-[#891FDB] to-[#E0189A] bg-clip-text text-transparent"
+        // bg-gradient-to-r from-[#891FDB] to-[#E0189A] bg-clip-text text-transparent"
       >
         Our Core Departments
       </h2>

@@ -1,6 +1,6 @@
 import Layout from "@/components/Layout";
-import { ProjectCard } from "@/components/innovation/InnovationProjectCard";
 import SEO from "@/components/SEO";
+import { ProjectCard } from "@/components/innovation/InnovationProjectCard";
 import { getSEOConfig } from "@/config/seo";
 
 const departments = [
@@ -95,8 +95,8 @@ export default function Projects() {
                 Innovation Departments and Projects
               </h1>
               <p className="mx-auto max-w-2xl text-subtitle text-gray-200">
-                Explore TUM.ai's innovation departments and the exciting projects
-                they lead.
+                Explore TUM.ai's innovation departments and the exciting
+                projects they lead.
               </p>
             </div>
             <div className="w-full px-6 md:px-12">

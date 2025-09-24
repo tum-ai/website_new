@@ -1,7 +1,7 @@
-import FAQ from "@/components/ui/FAQ";
-import { faqs } from "@/data/qanda";
 import SEO from "@/components/SEO";
+import FAQ from "@/components/ui/FAQ";
 import { getSEOConfig } from "@/config/seo";
+import { faqs } from "@/data/qanda";
 
 export default function QandA() {
   return (

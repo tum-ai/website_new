@@ -21,9 +21,8 @@ export default function Hero() {
             </div>
             <div className="flex flex-col items-center md:items-start gap-4 mt-4">
               <Button asChild variant="primary" className="px-8 py-4 text-lg">
-                <NavLink to="">Applications are closed!</NavLink>
+                <NavLink to="https://tally.so/r/3yLqY6">Apply Now!</NavLink>
               </Button>
-              <p className="text-sm">Application will open in fall 2025</p>
             </div>
           </div>
 
