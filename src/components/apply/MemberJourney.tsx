@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 
 export default function MemberJourney() {
   return (
-    <section className="container mx-auto max-w-4xl px-2 py-16">
+    <section className="container mx-auto max-w-4xl py-16">
       <h3 className="text-title md:text-4xl font-bold mb-4">
         How our <span className="gradient-text">Community</span> Works
       </h3>
