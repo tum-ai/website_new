@@ -1,12 +1,12 @@
 import Layout from "@/components/Layout";
+import SEO from "@/components/SEO";
 import { AboutSection } from "@/components/home/AboutSection";
 import { CarouselHome } from "@/components/home/CarouselHome";
 import { Grid } from "@/components/home/Grid";
 import { PartnersSection } from "@/components/home/PartnersSection";
 import { ScrollSection } from "@/components/home/ScrollSection";
-import { Hero } from "../components/ui/hero";
-import SEO from "@/components/SEO";
 import { getSEOConfig } from "@/config/seo";
+import { Hero } from "../components/ui/hero";
 
 export default function Homepage() {
   return (

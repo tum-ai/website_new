@@ -1,14 +1,14 @@
+import SEO from "@/components/SEO";
 import { ExpectationELab } from "@/components/e-lab/ExpectationELab";
 import { NotableStartups } from "@/components/e-lab/NotableStartups";
 import { Testimonials } from "@/components/e-lab/Testimonials";
 import { Timeline } from "@/components/e-lab/TimeLine";
 import FAQ from "@/components/ui/FAQ";
 import Section from "@/components/ui/Section";
+import { getSEOConfig } from "@/config/seo";
 import { faq } from "@/data/e-lab/FAQ";
 import type { Organization, WithContext } from "schema-dts";
 import { Hero } from "./hero";
-import SEO from "@/components/SEO";
-import { getSEOConfig } from "@/config/seo";
 
 export default function ELab() {
   const jsonLd: WithContext<Organization> = {

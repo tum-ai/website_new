@@ -19,7 +19,8 @@ export default function Imprint() {
           <p className="text-gray-700 mb-4">
             TUM.ai e.V. Vereinsregisternummer: VR209059 <br />
             Adresse: Arcistrasse 21, 80333 München <br />
-            Vertreter: Sami Haddouti, Julian Sikora, William Homburg, Luca Fink <br />
+            Vertreter: Sami Haddouti, Julian Sikora, William Homburg, Luca Fink{" "}
+            <br />
             Mail: contact@tum-ai.com
           </p>
         </section>

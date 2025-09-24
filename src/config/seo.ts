@@ -5,7 +5,8 @@ export const baseOrganizationJsonLd = {
   name: "TUM.ai",
   legalName: "TUM.ai e.V.",
   alternateName: ["TUM.ai Student Initiative"],
-  description: "TUM.ai is Germany's leading student initiative focused on AI. We empower the next generation of AI innovators by creating a community of students who innovate, research, and build at the forefront of AI, fostering both groundbreaking research and entrepreneurial ventures across diverse industries.",
+  description:
+    "TUM.ai is Germany's leading student initiative focused on AI. We empower the next generation of AI innovators by creating a community of students who innovate, research, and build at the forefront of AI, fostering both groundbreaking research and entrepreneurial ventures across diverse industries.",
   url: "https://www.tum-ai.com",
   logo: "https://upload.wikimedia.org/wikipedia/commons/a/a2/TUM.ai_Logo_Blue_%26_Violet.svg",
   sameAs: [
@@ -59,14 +60,16 @@ export const baseOrganizationJsonLd = {
 // Default SEO configuration
 export const defaultSEO = {
   title: "TUM.ai - Germany's Leading AI Student Initiative",
-  description: "TUM.ai is Germany's leading student initiative focused on AI. We empower the next generation of AI innovators by creating a community of students who innovate, research, and build at the forefront of AI, fostering both groundbreaking research and entrepreneurial ventures across diverse industries.",
+  description:
+    "TUM.ai is Germany's leading student initiative focused on AI. We empower the next generation of AI innovators by creating a community of students who innovate, research, and build at the forefront of AI, fostering both groundbreaking research and entrepreneurial ventures across diverse industries.",
 };
 
 // Page-specific SEO configurations
 export const pageSEOConfig = {
   home: {
     title: "TUM.ai - AI Student Initiative at Technical University of Munich",
-    description: "Join TUM.ai, Munich's leading AI student initiative. We organize hackathons, research projects, workshops, and run an AI startup incubator. Connect with AI enthusiasts and drive positive societal impact.",
+    description:
+      "Join TUM.ai, Munich's leading AI student initiative. We organize hackathons, research projects, workshops, and run an AI startup incubator. Connect with AI enthusiasts and drive positive societal impact.",
     canonical: "https://www.tum-ai.com",
     jsonLd: [
       baseOrganizationJsonLd,
@@ -75,13 +78,14 @@ export const pageSEOConfig = {
         "@type": "WebSite",
         name: "TUM.ai",
         url: "https://www.tum-ai.com",
-      }
-    ]
+      },
+    ],
   },
 
   events: {
     title: "Events",
-    description: "Explore TUM.ai's upcoming events including workshops, hackathons, and meetups. Join us to learn, network, and innovate in the field of artificial intelligence.",
+    description:
+      "Explore TUM.ai's upcoming events including workshops, hackathons, and meetups. Join us to learn, network, and innovate in the field of artificial intelligence.",
     canonical: "https://www.tum-ai.com/events",
     jsonLd: [
       baseOrganizationJsonLd,
@@ -91,14 +95,15 @@ export const pageSEOConfig = {
         name: "TUM.ai Events",
         description: "Events, Workshops, and Hackathons by TUM.ai",
         url: "https://www.tum-ai.com/events",
-        publisher: baseOrganizationJsonLd
-      }
-    ]
+        publisher: baseOrganizationJsonLd,
+      },
+    ],
   },
 
   research: {
     title: "Research",
-    description: "Explore cutting-edge AI research projects conducted by TUM.ai students. From machine learning to computer vision, discover innovative research initiatives.",
+    description:
+      "Explore cutting-edge AI research projects conducted by TUM.ai students. From machine learning to computer vision, discover innovative research initiatives.",
     canonical: "https://www.tum-ai.com/research",
     jsonLd: [
       baseOrganizationJsonLd,
@@ -108,14 +113,15 @@ export const pageSEOConfig = {
         name: "TUM.ai Research Projects",
         description: "AI Research Projects and Publications by TUM.ai",
         url: "https://www.tum-ai.com/research",
-        publisher: baseOrganizationJsonLd
-      }
-    ]
+        publisher: baseOrganizationJsonLd,
+      },
+    ],
   },
 
   projects: {
     title: "Innovation Projects",
-    description: "Discover TUM.ai's innovation departments and the exciting projects they are working on.",
+    description:
+      "Discover TUM.ai's innovation departments and the exciting projects they are working on.",
     canonical: "https://www.tum-ai.com/projects",
     jsonLd: [
       baseOrganizationJsonLd,
@@ -124,14 +130,15 @@ export const pageSEOConfig = {
         "@type": "WebPage",
         name: "TUM.ai Innovation Projects",
         description: "Innovation Departments and Projects by TUM.ai",
-        url: "https://www.tum-ai.com/projects"
-      }
-    ]
+        url: "https://www.tum-ai.com/projects",
+      },
+    ],
   },
 
   entrepreneurship: {
     title: "Entrepreneurship",
-    description: "Explore TUM.ai's startup incubator. Learn how we support AI-driven startups and foster innovation.",
+    description:
+      "Explore TUM.ai's startup incubator. Learn how we support AI-driven startups and foster innovation.",
     canonical: "https://www.tum-ai.com/e-lab",
     jsonLd: [
       baseOrganizationJsonLd,
@@ -141,14 +148,15 @@ export const pageSEOConfig = {
         name: "TUM.ai Entrepreneurship",
         description: "Startup Incubator by TUM.ai",
         url: "https://www.tum-ai.com/e-lab",
-        publisher: baseOrganizationJsonLd
-      }
-    ]
+        publisher: baseOrganizationJsonLd,
+      },
+    ],
   },
 
   community: {
     title: "Community",
-    description: "Wanna join us? See our organizational structure, member journey, and member testimonials.",
+    description:
+      "Wanna join us? See our organizational structure, member journey, and member testimonials.",
     canonical: "https://www.tum-ai.com/community",
     jsonLd: [
       baseOrganizationJsonLd,
@@ -158,14 +166,15 @@ export const pageSEOConfig = {
         name: "TUM.ai Community",
         description: "TUM.ai Community",
         url: "https://www.tum-ai.com/community",
-        publisher: baseOrganizationJsonLd
-      }
-    ]
+        publisher: baseOrganizationJsonLd,
+      },
+    ],
   },
 
   partners: {
     title: "Partners",
-    description: "Is your company currently facing challenges with data-driven technologies or you are looking for the greatest talent in artificial intelligence? If one of the answers is yes, become a partner.",
+    description:
+      "Is your company currently facing challenges with data-driven technologies or you are looking for the greatest talent in artificial intelligence? If one of the answers is yes, become a partner.",
     canonical: "https://www.tum-ai.com/partners",
     jsonLd: [
       baseOrganizationJsonLd,
@@ -175,14 +184,15 @@ export const pageSEOConfig = {
         name: "TUM.ai Partners",
         description: "Partners and Sponsors of TUM.ai",
         url: "https://www.tum-ai.com/partners",
-        publisher: baseOrganizationJsonLd
-      }
-    ]
+        publisher: baseOrganizationJsonLd,
+      },
+    ],
   },
 
   apply: {
     title: "Become a Member",
-    description: "Apply to join TUM.ai and become part of Munich's leading AI student initiative.",
+    description:
+      "Apply to join TUM.ai and become part of Munich's leading AI student initiative.",
     canonical: "https://www.tum-ai.com/apply",
     jsonLd: [
       baseOrganizationJsonLd,
@@ -192,14 +202,15 @@ export const pageSEOConfig = {
         name: "Apply to TUM.ai",
         description: "Join TUM.ai - Application",
         url: "https://www.tum-ai.com/apply",
-        publisher: baseOrganizationJsonLd
-      }
-    ]
+        publisher: baseOrganizationJsonLd,
+      },
+    ],
   },
 
   qanda: {
     title: "FAQ - Frequently Asked Questions",
-    description: "Find answers to frequently asked questions about TUM.ai, our programs, application process, and AI initiatives at Technical University of Munich.",
+    description:
+      "Find answers to frequently asked questions about TUM.ai, our programs, application process, and AI initiatives at Technical University of Munich.",
     canonical: "https://www.tum-ai.com/qanda",
     jsonLd: [
       baseOrganizationJsonLd,
@@ -209,15 +220,16 @@ export const pageSEOConfig = {
         name: "TUM.ai FAQ",
         description: "Frequently Asked Questions about TUM.ai",
         url: "https://www.tum-ai.com/qanda",
-        publisher: baseOrganizationJsonLd
-      }
-    ]
+        publisher: baseOrganizationJsonLd,
+      },
+    ],
   },
 
   // Footer pages
   imprint: {
     title: "Imprint - Legal Information",
-    description: "Legal information and imprint for TUM.ai e.V., Germany's leading AI student initiative.",
+    description:
+      "Legal information and imprint for TUM.ai e.V., Germany's leading AI student initiative.",
     canonical: "https://www.tum-ai.com/imprint",
     jsonLd: [
       baseOrganizationJsonLd,
@@ -227,14 +239,15 @@ export const pageSEOConfig = {
         name: "TUM.ai Imprint",
         description: "Legal Information and Imprint",
         url: "https://www.tum-ai.com/imprint",
-        publisher: baseOrganizationJsonLd
-      }
-    ]
+        publisher: baseOrganizationJsonLd,
+      },
+    ],
   },
 
   "data-privacy": {
     title: "Data Privacy Policy",
-    description: "Learn about TUM.ai's data privacy policy and how we protect your personal information in compliance with GDPR regulations.",
+    description:
+      "Learn about TUM.ai's data privacy policy and how we protect your personal information in compliance with GDPR regulations.",
     canonical: "https://www.tum-ai.com/data-privacy",
     jsonLd: [
       baseOrganizationJsonLd,
@@ -244,17 +257,16 @@ export const pageSEOConfig = {
         name: "TUM.ai Privacy Policy",
         description: "Data Privacy and Protection Policy",
         url: "https://www.tum-ai.com/data-privacy",
-        publisher: baseOrganizationJsonLd
-      }
-    ]
+        publisher: baseOrganizationJsonLd,
+      },
+    ],
   },
-
 };
 
 // Helper function to get SEO config for a page
 export const getSEOConfig = (pageKey: keyof typeof pageSEOConfig) => {
   return {
     ...defaultSEO,
-    ...pageSEOConfig[pageKey]
+    ...pageSEOConfig[pageKey],
   };
 };

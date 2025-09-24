@@ -1,13 +1,13 @@
 import Layout from "@/components/Layout";
+import SEO from "@/components/SEO";
 import EventFiltersComponent from "@/components/events/events-filters";
 import PastEvents from "@/components/events/past-events";
 import UpcomingEvents from "@/components/events/upcoming-events";
 import LoadingScreen from "@/components/ui/LoadingScreen";
+import { getSEOConfig } from "@/config/seo";
 import type { Event, EventFilters } from "@/lib/types";
 import { filterEvents } from "@/lib/utils";
 import { useEffect, useMemo, useState } from "react";
-import SEO from "@/components/SEO";
-import { getSEOConfig } from "@/config/seo";
 
 export default function Events() {
   const [events, setEvents] = useState<Event[]>([]);

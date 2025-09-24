@@ -1,5 +1,5 @@
-import { faq } from "@/data/apply/faq";
 import FAQ from "@/components/ui/FAQ";
+import { faq } from "@/data/apply/faq";
 export default function Outro() {
   return (
     <section className="container mx-auto max-w-5xl px-4 py-16 text-center">

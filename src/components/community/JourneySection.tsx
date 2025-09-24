@@ -1,18 +1,18 @@
 // src/components/community/JourneySection.jsx
 
-import { useRef } from "react";
-import { useInView, motion as m } from "framer-motion";
 import { type Step } from "@/data/community";
-import { Card } from "../ui/card";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faRocket,
-  faHandshake,
   faBrain,
-  faGlobeAmericas,
   faChartLine,
+  faGlobeAmericas,
   faGraduationCap,
+  faHandshake,
+  faRocket,
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { motion as m, useInView } from "framer-motion";
+import { useRef } from "react";
+import { Card } from "../ui/card";
 
 // Map steps to Font Awesome icons
 const stepIcons = [
@@ -51,7 +51,10 @@ export const iconColors = [
 // ];
 const glowColor = "oklch(0.5184 0.2524 303.23)";
 
-const StepCard = ({ step, index }: { step: Omit<Step, 'gradient'>; index: number }) => (
+const StepCard = ({
+  step,
+  index,
+}: { step: Omit<Step, "gradient">; index: number }) => (
   <m.div
     initial={{ opacity: 0, y: 40 }}
     whileInView={{ opacity: 1, y: 0 }}
@@ -96,7 +99,10 @@ const StepCard = ({ step, index }: { step: Omit<Step, 'gradient'>; index: number
   </m.div>
 );
 
-const CombinedStepCard = ({ steps, indices }: { steps: Omit<Step, 'gradient'>[]; indices: number[] }) => (
+const CombinedStepCard = ({
+  steps,
+  indices,
+}: { steps: Omit<Step, "gradient">[]; indices: number[] }) => (
   <m.div
     initial={{ opacity: 0, y: 40 }}
     whileInView={{ opacity: 1, y: 0 }}
@@ -145,7 +151,9 @@ const CombinedStepCard = ({ steps, indices }: { steps: Omit<Step, 'gradient'>[];
               {idx < steps.length - 1 && (
                 <div className="flex items-center justify-center my-6">
                   <div className="flex-1 h-px bg-white/20"></div>
-                  <span className="mx-4 text-white/60 font-semibold text-sm">OR</span>
+                  <span className="mx-4 text-white/60 font-semibold text-sm">
+                    OR
+                  </span>
                   <div className="flex-1 h-px bg-white/20"></div>
                 </div>
               )}
@@ -181,7 +189,9 @@ const CombinedStepCard = ({ steps, indices }: { steps: Omit<Step, 'gradient'>[];
           {/* OR separator for desktop - vertical line */}
           <div className="flex flex-col items-center justify-center px-4">
             <div className="flex-1 w-px bg-white/20 min-h-[2rem]"></div>
-            <span className="my-4 text-white/60 font-semibold text-sm whitespace-nowrap">OR</span>
+            <span className="my-4 text-white/60 font-semibold text-sm whitespace-nowrap">
+              OR
+            </span>
             <div className="flex-1 w-px bg-white/20 min-h-[2rem]"></div>
           </div>
 
@@ -326,9 +336,9 @@ export const JourneySection = () => {
           <StepCard step={customSteps[0]} index={0} />
         </div>
         <div className="col-span-1 md:col-start-1 md:col-end-3 justify-self-center max-w-md md:max-w-5xl w-full">
-          <CombinedStepCard 
-            steps={[customSteps[1], customSteps[2]]} 
-            indices={[1, 2]} 
+          <CombinedStepCard
+            steps={[customSteps[1], customSteps[2]]}
+            indices={[1, 2]}
           />
         </div>
         <div className="col-span-1 md:col-start-1 md:col-end-3 justify-self-center max-w-md w-full">
