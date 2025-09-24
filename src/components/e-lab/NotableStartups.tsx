@@ -1,8 +1,3 @@
-import Section from "../ui/Section";
-
-{
-  /* Notable Startups Section */
-}
 export const NotableStartups = () => {
   return (
     <section className="py-12 sm:py-12 lg:py-16 bg-gray-50 w-full overflow-hidden">

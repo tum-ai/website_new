@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import Section from "../ui/Section";
 
 export const Timeline = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -106,11 +105,10 @@ export const Timeline = () => {
                     </div>
                     <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
                       <div
-                        className={`w-8 h-8 rounded-full border-4 transition-all duration-300 ${
-                          isActive
+                        className={`w-8 h-8 rounded-full border-4 transition-all duration-300 ${isActive
                             ? "bg-purple-600 border-purple-300 shadow-lg shadow-purple-300/50 scale-110"
                             : "bg-white border-gray-400 scale-100"
-                        }`}
+                          }`}
                       >
                         {isActive && (
                           <div className="absolute inset-0 rounded-full bg-purple-600 animate-ping opacity-30" />
@@ -124,11 +122,10 @@ export const Timeline = () => {
                     <div className="w-1/2"></div>
                     <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
                       <div
-                        className={`w-8 h-8 rounded-full border-4 transition-all duration-300 ${
-                          isActive
+                        className={`w-8 h-8 rounded-full border-4 transition-all duration-300 ${isActive
                             ? "bg-purple-600 border-purple-300 shadow-lg shadow-purple-300/50 scale-110"
                             : "bg-white border-gray-400 scale-100"
-                        }`}
+                          }`}
                       >
                         {isActive && (
                           <div className="absolute inset-0 rounded-full bg-purple-600 animate-ping opacity-30" />

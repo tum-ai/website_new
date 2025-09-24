@@ -1,4 +1,3 @@
-import Section from "@/components/ui/Section";
 import { MotionValue } from "framer-motion";
 import {
   motion,
