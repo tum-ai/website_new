@@ -2,7 +2,7 @@ import FAQ from "@/components/ui/FAQ";
 import { faq } from "@/data/apply/faq";
 export default function Outro() {
   return (
-    <div className="flex flex-col gap-8 px-16 p-8">
+    <div className="flex flex-col gap-4 px-8 md:px-16 p-8">
       <h2 className="text-title sm:text-2xl md:text-[2rem] font-semibold animate-item">
         Apply now and join <span className="gradient-text">TUM.ai</span>
       </h2>
