@@ -70,9 +70,8 @@ export const Header = () => {
       )}
       <a
         href="/"
-        className={`transition-opacity duration-300 ${
-          showLogo ? "opacity-100" : "opacity-0"
-        }`}
+        className={`transition-opacity duration-300 ${showLogo ? "opacity-100" : "opacity-0"
+          }`}
       >
         <img
           src="/assets/logo_new_white_standard.png"
@@ -87,10 +86,9 @@ export const Header = () => {
             key={href}
             to={href}
             className={({ isActive }) =>
-              `${
-                isActive
-                  ? "text-[#A144E9] font-semibold"
-                  : "text-gray-300 hover:text-[#A144E9]"
+              `${isActive
+                ? "text-[#A144E9] font-semibold"
+                : "text-gray-300 hover:text-[#A144E9]"
               } text-[16px] font-bold cursor-pointer`
             }
           >
@@ -162,10 +160,9 @@ export const Header = () => {
                           to={href}
                           onClick={() => setOpen(false)}
                           className={({ isActive }) =>
-                            `block rounded-md px-4 py-2 text-lg ${
-                              isActive
-                                ? "text-[#A144E9] font-semibold"
-                                : "text-gray-300 hover:bg-purple-800/50 hover:text-white"
+                            `block rounded-md px-4 py-2 text-lg ${isActive
+                              ? "text-[#A144E9] font-semibold"
+                              : "text-gray-300 hover:bg-purple-800/50 hover:text-white"
                             }`
                           }
                         >
@@ -179,6 +176,7 @@ export const Header = () => {
                       >
                         <NavLink
                           to="/apply"
+                          onClick={() => setOpen(false)}
                           className="w-full bg-transparent border border-[#A144E9] rounded-md px-6 py-3 text-[#A144E9] text-center sm:w-auto"
                         >
                           Become a Member
