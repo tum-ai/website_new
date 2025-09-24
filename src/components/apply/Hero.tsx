@@ -23,6 +23,9 @@ export default function Hero() {
               <Button asChild variant="primary" className="px-8 py-4 text-lg">
                 <NavLink to="https://tally.so/r/3yLqY6">Apply Now!</NavLink>
               </Button>
+              <p className="text-sm font-thin mt-1">
+                Application deadline: 27th October 2025
+              </p>
             </div>
           </div>
 
