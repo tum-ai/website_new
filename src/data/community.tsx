@@ -72,20 +72,20 @@ export const departments: Department[] = [
       "The venture team runs the E-Lab, our AI startup incubator, providing founders with mentorship, resources, and guidance to turn innovative ideas into high-impact startups. Participants gain strong exposure and direct contact with VC companies, building valuable networks to support their growth.",
     gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
   },
-  {
-    name: "Innovation",
-    icon: "Lightbulb",
-    description:
-      "Exploring AI applications such as in quantitative finance, robotics, medicine, and accelerating GPUs.",
-    gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
-  },
-  {
-    name: "Education",
-    icon: "GraduationCap",
-    description:
-      "Creating and delivering AI educational content and events for all skill levels - from beginner to expert.",
-    gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
-  },
+  // {
+  //   name: "Innovation",
+  //   icon: "Lightbulb",
+  //   description:
+  //     "Exploring AI applications such as in quantitative finance, robotics, medicine, and accelerating GPUs.",
+  //   gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
+  // },
+  // {
+  //   name: "Education",
+  //   icon: "GraduationCap",
+  //   description:
+  //     "Creating and delivering AI educational content and events for all skill levels - from beginner to expert.",
+  //   gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
+  // },
   {
     name: "Software Development",
     icon: "Code",
