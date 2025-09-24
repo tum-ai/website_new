@@ -37,7 +37,9 @@ export default function Apply() {
               alt="lecture hall"
             />
           </div>
-          <MemberStories stories={stories} />
+        </div>
+        <MemberStories stories={stories} />
+        <div className="px-8">
           <Requirements requirementsWithIcons={requirementsWithIcons} />
           <div className="w-full items-center md:max-h-2/3 flex">
             <img

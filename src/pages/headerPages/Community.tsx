@@ -69,11 +69,11 @@ const DepartmentCard = ({
 };
 
 const DepartmentsSection = () => (
-  <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16 pb-16">
+  <div className="relative mx-auto max-w-7xl px-8 sm:px-6 lg:px-8 pt-16 pb-16">
     <div className="mb-20 text-center">
       <h2
         className="text-4xl font-semibold tracking-tight md:text-5xl "
-        // bg-gradient-to-r from-[#891FDB] to-[#E0189A] bg-clip-text text-transparent"
+      // bg-gradient-to-r from-[#891FDB] to-[#E0189A] bg-clip-text text-transparent"
       >
         Our Core Departments
       </h2>
@@ -123,9 +123,7 @@ export default function Community() {
       <section className="relative overflow-hidden bg-[#18112F] text-white">
         <JourneySection />
         <DepartmentsSection />
-        <section id="memberStories">
-          <MemberStories stories={stories} />
-        </section>
+        <MemberStories stories={stories} />
       </section>
     </>
   );
