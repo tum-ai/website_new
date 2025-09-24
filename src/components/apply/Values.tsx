@@ -13,16 +13,18 @@ interface ValuesProps {
 
 export default function Values({ valuesWithIcons }: ValuesProps) {
   return (
-    <section className="container mx-auto max-w-4xl py-16">
-      <h3 className="text-title md:text-4xl font-bold mb-4">
-        Our <span className="gradient-text">Values</span>
-      </h3>
-      <Benefits
-        benefits={valuesWithIcons}
-        columns={2}
-        showShadow
-        color="purple"
-      />
-    </section>
+    <div className="flex flex-col gap-8 p-8 md:p-16">
+      <div className="flex flex-col gap-4">
+        <h2 className="text-title sm:text-2xl md:text-[2rem] font-semibold animate-item">
+          Our <span className="gradient-text">Values</span>
+        </h2>
+        <Benefits
+          benefits={valuesWithIcons}
+          columns={2}
+          showShadow
+          color="purple"
+        />
+      </div>
+    </div>
   );
 }
