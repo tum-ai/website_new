@@ -2,12 +2,11 @@ import Layout from "@/components/Layout";
 import About from "@/components/apply/About";
 import Hero from "@/components/apply/Hero";
 import MemberJourney from "@/components/apply/MemberJourney";
-import MemberStories from "@/components/apply/MemberStories";
 import Milestones from "@/components/apply/Milestones";
 import Outro from "@/components/apply/Outro";
 import Requirements from "@/components/apply/Requirements";
 import Values from "@/components/apply/Values";
-import { requirements, stories, values } from "@/data/apply/applyData";
+import { requirements, values } from "@/data/apply/applyData";
 import { useMemo } from "react";
 
 export default function Apply() {

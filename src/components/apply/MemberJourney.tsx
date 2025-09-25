@@ -1,5 +1,4 @@
 import { Briefcase, GraduationCap, Users } from "lucide-react";
-import { NavLink } from "react-router-dom";
 import { Button } from "../ui/button";
 
 export default function MemberJourney() {
