@@ -12,7 +12,7 @@ export default function MemberStories({ stories }: MemberStoriesProps) {
   return (
     <div
       id="memberStories"
-      className="flex bg-white flex-col gap-8 p-8 md:p-16"
+      className="flex bg-white flex-col gap-8 p-8 pb-16 md:p-16"
     >
       <section className="container mx-auto px-8 md:px-0 max-w-4xl">
         <h3 className="text-title font-bold mb-4 text-purple-600">
