@@ -13,7 +13,7 @@ export default function FAQ({ faq }: FaqProps) {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
   return (
-    <section className="container mx-auto pb-16">
+    <section className="container mx-auto p-8 pb-16">
       <div className="space-y-6">
         {faq.map((faq, index) => (
           <div key={index} className="border-b-2 border-gray-300 pb-4">
