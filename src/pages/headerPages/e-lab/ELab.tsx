@@ -97,7 +97,7 @@ export default function ELab() {
                       className={`mb-5 text-3xl md:text-4xl font-bold text-black`}
                     >
                       <style></style>
-                      Applications for AI E-Lab are now open
+                      Applications for AI E-Lab are closed
                     </h2>
 
                     <p
@@ -116,32 +116,40 @@ export default function ELab() {
                         {/* Sparkling effects - always visible */}
 
                         <a
-                          href="https://tally.so/r/3jVjWa"
+                          // href="https://tally.so/r/3jVjWa"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className={`group relative inline-flex items-center justify-center overflow-hidden rounded-2xl px-6 py-3 text-base font-semibold text-white shadow-xl transition-[background-position,transform] duration-500 ease-out hover:scale-[1.02]
-                          bg-[linear-gradient(135deg,#7C3AED_0%,#A855F7_33%,#EC4899_66%,#6366F1_100%)] bg-[length:200%_200%] bg-[position:0%_50%] hover:bg-[position:100%_50%]`}
+                          className={
+                            `group relative inline-flex items-center justify-center overflow-hidden rounded-2xl px-6 py-3 text-base font-semibold text-white shadow-xl 
+                          bg-[linear-gradient(135deg,#7C3AED_0%,#A855F7_33%,#EC4899_66%,#6366F1_100%)] bg-[length:200%_200%] bg-[position:0%_50%] 
+                          `
+                            // hover:bg-[position:100%_50%]
+                            // transition-[background-position,transform] duration-500 ease-out hover:scale-[1.02]
+                          }
                         >
                           {/* Soft glow behind button */}
                           <div className="pointer-events-none absolute -inset-x-8 -bottom-6 h-16 rounded-full bg-gradient-to-r from-purple-500/40 via-fuchsia-500/40 to-indigo-500/40 blur-2xl"></div>
                           {/* Border and shine */}
                           <div className="absolute inset-0 rounded-2xl ring-1 ring-white/30"></div>
-                          <div className="absolute inset-0 rounded-2xl bg-[radial-gradient(ellipse_at_top_left,_rgba(255,255,255,0.35),_transparent_60%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+                          <div
+                            className="absolute inset-0 rounded-2xl bg-[radial-gradient(ellipse_at_top_left,_rgba(255,255,255,0.35),_transparent_60%)] opacity-0"
+                          // transition-opacity duration-300 group-hover:opacity-100"
+                          ></div>
                           <span className="relative z-10 flex items-center gap-2">
-                            <span>Apply Now</span>
-                            <svg
-                              className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M14 5l7 7m0 0l-7 7m7-7H3"
-                              />
-                            </svg>
+                            <span>Applications Closed</span>
+                            {/* <svg */}
+                            {/*   className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" */}
+                            {/*   fill="none" */}
+                            {/*   viewBox="0 0 24 24" */}
+                            {/*   stroke="currentColor" */}
+                            {/* > */}
+                            {/*   <path */}
+                            {/*     strokeLinecap="round" */}
+                            {/*     strokeLinejoin="round" */}
+                            {/*     strokeWidth={2} */}
+                            {/*     d="M14 5l7 7m0 0l-7 7m7-7H3" */}
+                            {/*   /> */}
+                            {/* </svg> */}
                           </span>
                         </a>
                       </div>
