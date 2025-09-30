@@ -11,7 +11,7 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: var(--color-purple-950);
   width: 100%;
   overflow-x: hidden;
 
@@ -51,6 +51,11 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+}
+
+::selection {
+  background-color: rgba(137, 31, 219, 0.5);
+  color: white;
 }
 
 main a {
