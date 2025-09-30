@@ -60,14 +60,14 @@ export const stories = [
     name: "Jasmin El-Wafi",
     role: "Mathematics in Data Science, TUM",
     story:
-      "TUM.ai has enabled me to grow from ML research with MIT to leading the SDE team. I rebuilt this website for minimal maintenance and developed tools to automate and optimize internal processes. Being part of such an ambitious and intelligent community inspires learning, aiming high, and building lasting friendships.",
+      "TUM.ai has enabled me to grow from ML research with MIT to leading the dev team. I rebuilt this website for minimal maintenance and developed tools to automate and optimize internal processes. Being part of such an ambitious and intelligent community inspires learning, aiming high, and building lasting friendships.",
     image: "/assets/apply/jasmin_el-wafi.webp",
   },
   {
     name: "Zexin Gong",
     role: "Information Systems, TUM",
     story:
-      "Becoming co-team-lead of the SDE team shortly after joining TUM.ai enabled me to take initiative, collaborate with talented and passionate individuals, and develop impactful tools used by hundreds of people. Being part of this community not only enhanced my technical, leadership, and project management skills, but also helped me forge incredible friendships.",
+      "Becoming co-team-lead of the dev team shortly after joining TUM.ai enabled me to take initiative, collaborate with talented and passionate individuals, and develop impactful tools used by hundreds of people. Being part of this community not only enhanced my technical, leadership, and project management skills, but also helped me forge incredible friendships.",
     image: "/assets/apply/zexin_gong.webp",
   },
   {
