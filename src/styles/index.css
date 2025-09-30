@@ -53,6 +53,11 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
+::selection {
+  background-color: rgba(137, 31, 219, 0.5);
+  color: white;
+}
+
 main a {
   font-weight: 500;
   color: #646cff;
