@@ -1,1 +1,17 @@
-{ "routes": [{ "src": "/[^.]+", "dest": "/", "status": 200 }] }
+{
+  "routes": [{ "src": "/[^.]+", "dest": "/", "status": 200 }],
+
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "join.tum-ai.com"
+        }
+      ],
+      "destination": "https://tum-ai.com/apply",
+      "permanent": true
+    }
+  ]
+}
