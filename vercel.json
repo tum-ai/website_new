@@ -1,6 +1,4 @@
 {
-  "routes": [{ "src": "/[^.]+", "dest": "/", "status": 200 }],
-
   "redirects": [
     {
       "source": "/:path*",
@@ -13,5 +11,6 @@
       "destination": "https://tum-ai.com/apply",
       "permanent": true
     }
-  ]
+  ],
+  "rewrites": [{ "source": "/[^.]+", "destination": "/" }]
 }
