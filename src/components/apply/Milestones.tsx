@@ -53,6 +53,10 @@ export default function Milestones() {
             content: [
               "First Smaller-sized Hackathon with Aleph Alpha",
               "Launch of TUM.ai Expansion Berlin",
+              "First ever event together with OpenAI after their office launch in Munich (1200+ signups)",
+              "ICML main track paper, ICLR publication",
+              "Biggest Makeathon yet with 500+ registrations",
+              "TUM.ai Hackathon Summer with AWS, Lovable, ElevenLabs, Google, Anthropic, etc.",
             ],
           },
         ].map((step, index, arr) => (

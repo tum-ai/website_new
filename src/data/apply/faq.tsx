@@ -7,7 +7,7 @@ export const faq = [
   {
     question: "How does the application timeline look like?",
     answer:
-      "Application March 31st - April 27th: Fill out our application form. Interview May 5th - May 11th: If you passed the screening phase, we will invite you to an interview round to get to know you better. Onboarding (Mandatory) May 16th - May 18th: Congratulations! You are invited to our Onboarding program to get to know TUM.ai!",
+      "Application September 24th - October 27th: Fill out our application form. Interview November 2nd - November 8th: If you passed the screening phase, we will invite you to an interview round to get to know you better. Onboarding (Mandatory) November 14th - November 16th: Congratulations! You are invited to our Onboarding program to get to know TUM.ai!",
   },
   {
     question: "How should I prepare myself for the interview?",
