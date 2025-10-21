@@ -8,6 +8,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import type { Event } from "@/lib/types";
 import { groupEventsByMonth } from "@/lib/utils";
 import { format } from "date-fns";
@@ -104,7 +112,98 @@ function UpcomingEventCard({ event }: { event: Event }) {
           </p>
         </CardContent>
         <CardFooter className="px-0 pt-4">
-          {event.sign_up && (
+          {event.description.length > 300 && event.sign_up && (
+            <div className="flex flex-col gap-2 w-full">
+              <Button
+                size={"xl"}
+                variant="primary"
+                className="text-white w-full"
+                disabled={applicationsClosed}
+                onClick={() => {
+                  if (!applicationsClosed) {
+                    window.open(event.sign_up, "_blank");
+                  }
+                }}
+              >
+                {applicationsClosed ? "Applications Closed" : "Apply Now!"}
+              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button
+                    size={"xl"}
+                    variant="secondary"
+                    className="w-full text-white"
+                  >
+                    Read More
+                  </Button>
+                </DialogTrigger>
+
+                <DialogContent
+                  className="max-w-[calc(100vw-4rem)] max-h-[calc(100vh-4rem)] overflow-y-auto"
+                  showCloseButton={false}
+                >
+                  <DialogHeader>
+                    <DialogTitle className="text-purple-800 text-lg">
+                      {format(eventDate, "PPP")}
+                    </DialogTitle>
+                    <DialogTitle className="text-xl">{event.title}</DialogTitle>
+                    <DialogDescription className="text-sm text-muted-foreground">
+                      {event.location ? `${event.location}` : ""}
+                      {event.city ? `, ${event.city}` : ""}
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <div className="space-y-6">
+                    {/* Detailed Description */}
+                    <div>
+                      <p className="text-muted-foreground leading-relaxed">
+                        {event.description}
+                      </p>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+          )}
+          {event.description.length > 300 && !event.sign_up && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  size={"xl"}
+                  variant="primary"
+                  className="text-white w-full"
+                >
+                  Read More
+                </Button>
+              </DialogTrigger>
+
+              <DialogContent
+                className="max-w-[calc(100vw-4rem)] max-h-[calc(100vh-4rem)] overflow-y-auto"
+                showCloseButton={false}
+              >
+                <DialogHeader>
+                  <DialogTitle className="text-purple-800 text-lg">
+                    {format(eventDate, "PPP")}
+                  </DialogTitle>
+                  <DialogTitle className="text-xl">{event.title}</DialogTitle>
+                  <DialogDescription className="text-sm text-muted-foreground">
+                    {event.location ? `${event.location}` : ""}
+                    {event.city ? `, ${event.city}` : ""}
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="space-y-6">
+                  {/* Detailed Description */}
+                  <div>
+                    <p className="text-muted-foreground leading-relaxed">
+                      {event.description}
+                    </p>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
+          {event.description.length <= 300 && event.sign_up && (
             <Button
               size={"xl"}
               variant="primary"

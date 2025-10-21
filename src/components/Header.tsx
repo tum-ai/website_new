@@ -70,17 +70,17 @@ export const Header = () => {
       )}
       <a
         href="/"
-        className={`transition-opacity duration-300 ${showLogo ? "opacity-100" : "opacity-0"
+        className={`transition-opacity duration-300 flex-shrink-0 ${showLogo ? "opacity-100" : "opacity-0"
           }`}
       >
         <img
           src="/assets/logo_new_white_standard.png"
           alt="Logo"
-          className="h-10"
+          className="h-10 w-auto flex-shrink-0"
         />
       </a>
       {/* Desktop nav */}
-      <div className="hidden lg:flex items-center gap-8 ml-auto">
+      <div className="hidden xl:flex items-center gap-6 ml-auto">
         {links.map(({ href, text }) => (
           <NavLink
             key={href}
@@ -89,7 +89,7 @@ export const Header = () => {
               `${isActive
                 ? "text-[#A144E9] font-semibold"
                 : "text-gray-300 hover:text-[#A144E9]"
-              } text-[16px] font-bold cursor-pointer`
+              } text-[16px] font-bold cursor-pointer whitespace-nowrap`
             }
           >
             {text}
@@ -98,11 +98,11 @@ export const Header = () => {
         <Button
           asChild
           variant="outline2"
-          className="w-full rounded-md px-6 py-3 text-center sm:w-auto"
+          className="rounded-md px-6 py-3 text-center flex-shrink-0"
         >
           <NavLink
             to="/apply"
-            className="w-full bg-transparent border border-[#A144E9] rounded-md px-6 py-3 text-[#A144E9] text-center sm:w-auto"
+            className="bg-transparent border border-[#A144E9] rounded-md px-6 py-3 text-[#A144E9] text-center"
           >
             Become a Member
           </NavLink>
@@ -110,7 +110,7 @@ export const Header = () => {
       </div>
 
       {/* Mobile nav button */}
-      <div className="ml-auto flex lg:hidden ">
+      <div className="ml-auto flex xl:hidden ">
         <Dialog.Root open={open} onOpenChange={setOpen}>
           <Dialog.Trigger asChild>
             <Button className="flex h-9 w-9 items-center justify-center rounded-md text-white/90 hover:bg-purple-800/50">
