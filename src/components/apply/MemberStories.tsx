@@ -32,7 +32,7 @@ export default function MemberStories({ stories }: MemberStoriesProps) {
               <h3 className="text-subtitle font-bold text-purple-800">
                 {story.name}
               </h3>
-              <p className="text-subtext text-gray-600 mb-2">{story.role}</p>
+              <p className="text-subtext text-center text-gray-600 mb-2">{story.role}</p>
               <p className="text-base text-gray-800 text-center">
                 {story.story}
               </p>
