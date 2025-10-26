@@ -67,6 +67,18 @@ function PastEventCard({ event }: { event: Event }) {
                   </div>
                 </CarouselItem>
               ))
+            ) : (event.poster ? (
+              <CarouselItem className="h-full">
+                <div className="h-full">
+                  <div className="aspect-square w-full relative overflow-hidden rounded-lg">
+                    <img
+                      src={event.poster}
+                      alt={`${event.title} Poster`}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                </div>
+              </CarouselItem>
             ) : (
               <CarouselItem className="h-full">
                 <div className="h-full">
@@ -84,7 +96,7 @@ function PastEventCard({ event }: { event: Event }) {
                   </div>
                 </div>
               </CarouselItem>
-            )}
+            ))}
           </CarouselContent>
           <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out" />
           <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out" />
