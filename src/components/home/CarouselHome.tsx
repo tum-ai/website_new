@@ -4,14 +4,14 @@ import Card from "./Card";
 
 export const CarouselHome = () => {
   const data = [
-    {
-      imgSrc: "assets/homepage/IBM_visit.webp",
-      text: "APPLICATIONS OPEN NOW",
-      title: "Become a Member",
-      desc: "Join TUM.ai, Germany’s leading student initiative focused on Artificial Intelligence.",
-      buttonText: "Apply Here",
-      link: "/apply",
-    },
+    // {
+    //   imgSrc: "assets/homepage/IBM_visit.webp",
+    //   text: "APPLICATIONS OPEN NOW",
+    //   title: "Become a Member",
+    //   desc: "Join TUM.ai, Germany’s leading student initiative focused on Artificial Intelligence.",
+    //   buttonText: "Apply Here",
+    //   link: "/apply",
+    // },
     {
       imgSrc: "/assets/open_ai_speaker_event.webp",
       text: "JOIN THE COMMUNITY",
