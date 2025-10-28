@@ -83,11 +83,11 @@ export const Hero = () => {
               >
                 <div
                   className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-600 to-purple-500 shadow-lg shadow-purple-500/25 transition-all duration-300 "
-                // group-hover:shadow-purple-500/40 group-hover:scale-105"
+                  // group-hover:shadow-purple-500/40 group-hover:scale-105"
                 ></div>
                 <div
                   className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 to-purple-400 opacity-0 transition-opacity duration-300 "
-                // group-hover:opacity-100"
+                  // group-hover:opacity-100"
                 ></div>
                 <span className="relative flex items-center space-x-2">
                   <span>AI E-Lab 4.0 - Applications Closed</span>

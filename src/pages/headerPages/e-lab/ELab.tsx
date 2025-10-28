@@ -116,7 +116,6 @@ export default function ELab() {
                         {/* Sparkling effects - always visible */}
 
                         <a
-                          // href="https://tally.so/r/3jVjWa"
                           target="_blank"
                           rel="noopener noreferrer"
                           className={
@@ -133,7 +132,7 @@ export default function ELab() {
                           <div className="absolute inset-0 rounded-2xl ring-1 ring-white/30"></div>
                           <div
                             className="absolute inset-0 rounded-2xl bg-[radial-gradient(ellipse_at_top_left,_rgba(255,255,255,0.35),_transparent_60%)] opacity-0"
-                          // transition-opacity duration-300 group-hover:opacity-100"
+                            // transition-opacity duration-300 group-hover:opacity-100"
                           ></div>
                           <span className="relative z-10 flex items-center gap-2">
                             <span>Applications Closed</span>

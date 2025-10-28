@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { NavLink } from "react-router-dom";
 
 export default function Hero() {
   return (
@@ -20,12 +19,9 @@ export default function Hero() {
               tangible social change.
             </div>
             <div className="flex flex-col items-center md:items-start gap-4 mt-4">
-              <Button asChild variant="primary" className="px-8 py-4 text-lg">
-                <NavLink to="https://tally.so/r/3yLqY6">Apply Now!</NavLink>
+              <Button asChild variant="disabled" className="px-8 py-4 text-lg">
+                <span>Applications are closed</span>
               </Button>
-              <p className="text-sm font-thin mt-1">
-                Application deadline: 27th October 2025
-              </p>
             </div>
           </div>
 
