@@ -8,6 +8,7 @@ import { getSEOConfig } from "@/config/seo";
 import { faq } from "@/data/e-lab/FAQ";
 import type { Organization, WithContext } from "schema-dts";
 import { Hero } from "./hero";
+import "@/styles/elab-font.css";
 
 export default function ELab() {
   const jsonLd: WithContext<Organization> = {
@@ -46,7 +47,7 @@ export default function ELab() {
   };
 
   return (
-    <>
+    <div className="elab-font">
       <SEO {...getSEOConfig("entrepreneurship")} />
       <section>
         <script
@@ -163,6 +164,6 @@ export default function ELab() {
       <NotableStartups />
 
       <FAQ faq={faq}></FAQ>
-    </>
+    </div>
   );
 }
