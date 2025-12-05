@@ -19,10 +19,10 @@ export const Hero = () => {
       return;
     }
 
-    // Dynamically import GSAP
+    // Dynamically import GSAP - element starts hidden via CSS
     import("gsap").then((gsapModule) => {
       const gsap = gsapModule.default;
-      gsap.set(el, { opacity: 0, y: 20 });
+      // No need for gsap.set() - CSS already has opacity:0 and translateY
       const tween = gsap.to(el, {
         opacity: 1,
         y: 0,
@@ -50,6 +50,7 @@ export const Hero = () => {
   return (
     <div
       ref={heroRef}
+      style={{ opacity: 0, transform: "translateY(20px)" }}
       className="flex flex-col items-start justify-center sm:justify-end px-4 py-6 sm:px-8 sm:py-12"
     >
       {/* Logo */}
