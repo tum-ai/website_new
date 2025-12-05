@@ -1,0 +1,25 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import About from "@/components/apply/About";
+import Hero from "@/components/apply/Hero";
+import MemberJourney from "@/components/apply/MemberJourney";
+import Milestones from "@/components/apply/Milestones";
+import Outro from "@/components/apply/Outro";
+import Requirements from "@/components/apply/Requirements";
+import Values from "@/components/apply/Values";
+import { requirements, values } from "@/data/apply/applyData";
+---
+
+<MainLayout title="Apply" description="Join TUM.ai - Germany's largest student AI initiative. Become part of our community of AI enthusiasts.">
+  <div class="flex flex-col">
+    <Hero client:load />
+    <div class="container mx-auto">
+      <About />
+      <Milestones />
+      <Values valuesWithIcons={values} client:visible />
+      <MemberJourney client:visible />
+      <Requirements requirementsWithIcons={requirements} client:visible />
+      <Outro />
+    </div>
+  </div>
+</MainLayout>

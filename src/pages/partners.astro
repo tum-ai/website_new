@@ -1,0 +1,184 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import Benefits from "@/components/Benefit";
+import { Button } from "@/components/ui/button";
+import {
+  VCPartners,
+  industryPartners,
+  initiativePartners,
+  researchPartners,
+  technicalPartners,
+} from "@/data/partners";
+import { Brain, Handshake, Megaphone, Users } from "lucide-react";
+
+const benefits = [
+  {
+    title: "AI Talent Pool",
+    text: "Connect with motivated AI students for internships or working roles.",
+    icon: Brain,
+  },
+  {
+    title: "Marketing & Awareness",
+    text: "Boost your brand through our website and campaigns (14k+ followers).",
+    icon: Megaphone,
+  },
+  {
+    title: "Project Collaborations",
+    text: "Join Hackathons, research, or industry projects with our members.",
+    icon: Handshake,
+  },
+  {
+    title: "Network & Ecosystem",
+    text: "Tap into AI startups, R&D insights, and Germany's leading AI student community.",
+    icon: Users,
+  },
+];
+
+interface PartnerLogo {
+  href: string;
+  alt: string;
+  src: string;
+}
+
+const partnerSections: { title: string; logos: PartnerLogo[] }[] = [
+  { title: "Technical Partners", logos: technicalPartners },
+  { title: "Industry Partners", logos: industryPartners },
+  { title: "Research Partners", logos: researchPartners },
+  { title: "Venture Capital", logos: VCPartners },
+  { title: "Initiatives", logos: initiativePartners },
+];
+
+const opportunities = [
+  {
+    title: "Events & Community",
+    items: ["AI Summit Speaker", "Makeathon Challenge", "Workshop Host", "Mentorship Program"],
+  },
+  {
+    title: "Industry & Projects",
+    items: ["Industry Project Partner", "AI E-lab Judge", "Post Open Positions"],
+  },
+  {
+    title: "Education & Knowledge",
+    items: ["AI Academy Lecturer", "Technical Workshop Leader", "Research Collaboration"],
+    fullWidth: true,
+  },
+];
+---
+
+<MainLayout title="Partners & Sponsors" description="Get access to Germany's largest student talent pool of AI enthusiasts.">
+  <!-- Hero Section -->
+  <section class="relative h-screen flex items-center justify-center overflow-hidden">
+    <img
+      src="/assets/partners.webp"
+      alt="Hero background image"
+      class="absolute w-full h-full object-cover scale-110 transition-transform duration-700 hover:scale-105"
+    />
+    <div class="absolute inset-0 bg-black/40"></div>
+
+    <div class="relative container mx-auto px-8 text-center z-10">
+      <h1 class="text-5xl md:text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.7)]">
+        Partners & Sponsors
+      </h1>
+      <p class="mt-6 text-lg md:text-xl text-white/90 max-w-2xl mx-auto">
+        Get access to Germany's largest student talent pool of AI enthusiasts
+      </p>
+      <a href="mailto:partners@tum-ai.com">
+        <Button className="mt-8 px-8 py-4 text-lg">Become a Partner</Button>
+      </a>
+    </div>
+  </section>
+
+  <!-- Partner Logos -->
+  <section class="p-8 md:p-10 sm:py-16 lg:py-16 text-center md:text-start px-[1rem]">
+    <div class="container mx-auto space-y-16 justify-center md:justify-start items-center md:items-start">
+      {partnerSections.map((section) => (
+        <div>
+          <h3 class="text-2xl font-semibold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-700 via-pink-600 to-red-600">
+            {section.title}
+          </h3>
+          <div class="flex flex-wrap items-center justify-center md:items-start md:justify-start gap-2">
+            {section.logos.map((logo) => (
+              <div class="flex h-20 w-40 items-center justify-center rounded-lg border bg-white p-4 py-6">
+                <img
+                  src={logo.src}
+                  alt={logo.alt}
+                  class="max-h-full max-w-full object-contain"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Collaboration Opportunities -->
+  <section class="relative bg-gradient-to-b from-blue-50 to-purple-50 p-8 sm:py-16 lg:py-32 text-gray-800">
+    <div class="container mx-auto flex flex-col lg:flex-row gap-12 items-start">
+      <div class="flex-1 space-y-8">
+        <h2 class="text-4xl font-semibold text-gray-900">Partner with TUM.ai</h2>
+        <p class="max-w-lg text-gray-700">
+          Access our exclusive talent pool of AI enthusiasts, experienced in software development, data science, and AI strategy.
+        </p>
+
+        <div class="grid gap-8 md:grid-cols-2">
+          {opportunities.filter(o => !o.fullWidth).map((opp) => (
+            <div class="rounded-2xl border border-gray-300 bg-white p-6 shadow-sm transition hover:shadow-md">
+              <h4 class="text-lg font-semibold text-gray-900 mb-4">{opp.title}</h4>
+              <ul class="space-y-2 text-gray-700 text-sm">
+                {opp.items.map((item) => (
+                  <li class="flex items-center gap-2">
+                    <span class="h-1 w-1 rounded-full bg-purple-500"></span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        {opportunities.filter(o => o.fullWidth).map((opp) => (
+          <div class="rounded-2xl border border-gray-300 bg-white p-6 shadow-sm transition hover:shadow-md">
+            <h4 class="text-lg font-semibold text-gray-900 mb-4">{opp.title}</h4>
+            <ul class="space-y-2 text-gray-700 text-sm">
+              {opp.items.map((item) => (
+                <li class="flex items-center gap-2">
+                  <span class="h-1 w-1 rounded-full bg-purple-500"></span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+
+        <a href="mailto:partners@tum-ai.com">
+          <Button variant="primary" className="mt-6 w-full border border-gray-300">
+            Become a Partner
+          </Button>
+        </a>
+      </div>
+
+      <div class="flex-1 relative rounded-xl overflow-hidden shadow-lg">
+        <img
+          src="/assets/partners/martin_talk.jpg"
+          alt="Martin talk"
+          class="w-full h-full object-cover rounded-xl transition-transform duration-500 hover:scale-105"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+        <div class="absolute bottom-8 left-8 right-8 text-white font-semibold text-lg">
+          Join our network of industry leaders and innovators
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Benefits -->
+  <section class="p-8 sm:py-16 lg:py-32">
+    <div class="container mx-auto">
+      <h2 class="text-3xl font-semibold text-center mb-12 text-gray-900">
+        What We Offer
+      </h2>
+      <Benefits benefits={benefits} showShadow columns={4} color="purple" />
+    </div>
+  </section>
+</MainLayout>

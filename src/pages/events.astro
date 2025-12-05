@@ -1,0 +1,13 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import EventsPage from "@/components/events/EventsPage";
+import eventsData from "@/data/generated/events.json";
+---
+
+<MainLayout title="Events" description="Explore TUM.ai events - workshops, talks, hackathons and more.">
+  <section class="relative overflow-hidden bg-gradient-to-br from-blue-900 to-purple-900 p-8 text-white sm:py-16 lg:py-24">
+    <div class="container mx-auto">
+      <EventsPage events={eventsData} client:load />
+    </div>
+  </section>
+</MainLayout>

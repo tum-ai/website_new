@@ -1,0 +1,14 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import ResearchPage from "../components/research/ResearchPage";
+import { getSEOConfig } from "../config/seo";
+
+// Import pre-fetched data from build-time
+import researchData from "../data/generated/research.json";
+
+const seoConfig = getSEOConfig("research");
+---
+
+<MainLayout title={seoConfig.title} description={seoConfig.description}>
+  <ResearchPage client:load initialProjects={researchData} />
+</MainLayout>
