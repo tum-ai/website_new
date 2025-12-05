@@ -1,0 +1,99 @@
+---
+/**
+ * MainLayout.astro
+ * Main layout for all pages - includes Header, Footer, and global styles
+ */
+import Header from "@/components/Header";
+import Footer from "@/components/Footer.astro";
+
+import "@/styles/index.css";
+import "@fontsource/archivo/400.css";
+import "@fontsource/archivo/500.css";
+import "@fontsource/archivo/600.css";
+import "@fontsource/archivo/700.css";
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/600.css";
+import "@fontsource/inter/700.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonical?: string;
+  jsonLd?: object | object[];
+  robots?: string;
+}
+
+const {
+  title = "TUM.ai - Germany's Leading AI Student Initiative",
+  description = "TUM.ai is Germany's leading student initiative focused on AI. We empower the next generation of AI innovators.",
+  canonical,
+  jsonLd,
+  robots = "index, follow",
+} = Astro.props;
+
+const fullTitle = title.includes("TUM.ai") ? title : `${title} | TUM.ai`;
+const siteUrl = "https://www.tum-ai.com";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/assets/favicon.ico" />
+
+    <!-- Primary Meta Tags -->
+    <title>{fullTitle}</title>
+    <meta name="title" content={fullTitle} />
+    <meta name="description" content={description} />
+    <meta name="robots" content={robots} />
+
+    <!-- Canonical -->
+    {canonical && <link rel="canonical" href={canonical} />}
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical || siteUrl} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={`${siteUrl}/assets/og-image.png`} />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonical || siteUrl} />
+    <meta property="twitter:title" content={fullTitle} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={`${siteUrl}/assets/og-image.png`} />
+
+    <!-- Google Fonts (fallback) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- JSON-LD Structured Data -->
+    {
+      jsonLd && (
+        <script
+          type="application/ld+json"
+          set:html={JSON.stringify(Array.isArray(jsonLd) ? jsonLd : [jsonLd])}
+        />
+      )
+    }
+  </head>
+  <body>
+    <!-- Header as React Island for mobile menu interactivity -->
+    <Header client:load />
+
+    <!-- Main Content -->
+    <main>
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <Footer />
+  </body>
+</html>

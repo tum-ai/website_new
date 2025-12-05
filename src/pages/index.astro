@@ -1,0 +1,57 @@
+---
+/**
+ * Homepage (index.astro)
+ * Main landing page with hero, about section, scroll carousel, and partners
+ */
+import MainLayout from "@/layouts/MainLayout.astro";
+import { Grid } from "@/components/home/Grid";
+import { Hero } from "@/components/ui/hero";
+import { AboutSection } from "@/components/home/AboutSection";
+import { ScrollSection } from "@/components/home/ScrollSection";
+import { CarouselHome } from "@/components/home/CarouselHome";
+import { PartnersSection } from "@/components/home/PartnersSection";
+import { getSEOConfig } from "@/config/seo";
+
+const seoConfig = getSEOConfig("home");
+---
+
+<MainLayout
+  title={seoConfig.title}
+  description={seoConfig.description}
+  canonical={seoConfig.canonical}
+  jsonLd={seoConfig.jsonLd}
+>
+  <!-- Hero Section with Grid Background -->
+  <div class="relative bg-[#0B0213] text-white min-h-screen">
+    <!-- Grid is interactive (animations), needs client hydration -->
+    <div class="hidden sm:block">
+      <Grid client:load />
+      <div
+        class="absolute inset-0 pointer-events-none"
+        style="background: linear-gradient(to top right, #0D0214 20%, transparent);"
+      >
+      </div>
+    </div>
+    <div
+      class="relative z-10 flex items-center justify-center min-h-screen sm:items-end sm:justify-start sm:pl-8 sm:pb-8"
+    >
+      <!-- Hero has GSAP animation, needs hydration -->
+      <Hero client:load />
+    </div>
+  </div>
+
+  <!-- Main Content Sections -->
+  <div class="container mx-auto">
+    <!-- AboutSection has Framer Motion animations -->
+    <AboutSection client:visible />
+
+    <!-- ScrollSection has GSAP marquee animation -->
+    <ScrollSection client:visible />
+
+    <!-- CarouselHome uses Embla Carousel -->
+    <CarouselHome client:visible />
+
+    <!-- PartnersSection may have logo carousel -->
+    <PartnersSection client:visible />
+  </div>
+</MainLayout>

@@ -2,15 +2,23 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
 
-export const Header = () => {
+// For Astro: we get the current path from the window location
+// instead of react-router-dom
+
+interface HeaderProps {
+  currentPath?: string;
+}
+
+export const Header = ({ currentPath }: HeaderProps) => {
   const [open, setOpen] = useState(false);
   const [showLogo, setShowLogo] = useState(false);
   const [headerOpacity, setHeaderOpacity] = useState(0);
   const [headerBlur, setHeaderBlur] = useState(0);
-  const location = useLocation();
+  
+  // Get pathname from props or window
+  const pathname = currentPath ?? (typeof window !== "undefined" ? window.location.pathname : "/");
 
   const links = [
     { href: "/events", text: "Events" },
@@ -22,8 +30,13 @@ export const Header = () => {
     { href: "/qanda", text: "Q&A" },
   ];
 
+  // Check if a link is active
+  const isActive = (href: string) => {
+    return pathname === href || pathname === `${href}/`;
+  };
+
   useEffect(() => {
-    if (location.pathname !== "/") {
+    if (pathname !== "/") {
       setShowLogo(true);
       setHeaderOpacity(0.8);
       setHeaderBlur(10);
@@ -49,7 +62,7 @@ export const Header = () => {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [location.pathname]);
+  }, [pathname]);
 
   return (
     <div
@@ -59,7 +72,7 @@ export const Header = () => {
         backdropFilter: `blur(${headerBlur}px)`,
       }}
     >
-      {!showLogo && location.pathname === "/" && (
+      {!showLogo && pathname === "/" && (
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -83,31 +96,29 @@ export const Header = () => {
       {/* Desktop nav */}
       <div className="hidden xl:flex items-center gap-6 ml-auto">
         {links.map(({ href, text }) => (
-          <NavLink
+          <a
             key={href}
-            to={href}
-            className={({ isActive }) =>
-              `${
-                isActive
-                  ? "text-[#A144E9] font-semibold"
-                  : "text-gray-300 hover:text-[#A144E9]"
-              } text-[16px] font-bold cursor-pointer whitespace-nowrap`
-            }
+            href={href}
+            className={`${
+              isActive(href)
+                ? "text-[#A144E9] font-semibold"
+                : "text-gray-300 hover:text-[#A144E9]"
+            } text-[16px] font-bold cursor-pointer whitespace-nowrap`}
           >
             {text}
-          </NavLink>
+          </a>
         ))}
         <Button
           asChild
           variant="outline2"
           className="rounded-md px-6 py-3 text-center flex-shrink-0"
         >
-          <NavLink
-            to="/apply"
+          <a
+            href="/apply"
             className="bg-transparent border border-[#A144E9] rounded-md px-6 py-3 text-[#A144E9] text-center"
           >
             Become a Member
-          </NavLink>
+          </a>
         </Button>
       </div>
 
@@ -157,33 +168,31 @@ export const Header = () => {
 
                     <nav className="mt-6 space-y-4">
                       {links.map(({ href, text }) => (
-                        <NavLink
+                        <a
                           key={href}
-                          to={href}
+                          href={href}
                           onClick={() => setOpen(false)}
-                          className={({ isActive }) =>
-                            `block rounded-md px-4 py-2 text-lg ${
-                              isActive
-                                ? "text-[#A144E9] font-semibold"
-                                : "text-gray-300 hover:bg-purple-800/50 hover:text-white"
-                            }`
-                          }
+                          className={`block rounded-md px-4 py-2 text-lg ${
+                            isActive(href)
+                              ? "text-[#A144E9] font-semibold"
+                              : "text-gray-300 hover:bg-purple-800/50 hover:text-white"
+                          }`}
                         >
                           {text}
-                        </NavLink>
+                        </a>
                       ))}
                       <Button
                         asChild
                         variant="outline2"
                         className="w-full rounded-md px-6 py-3 text-center sm:w-auto"
                       >
-                        <NavLink
-                          to="/apply"
+                        <a
+                          href="/apply"
                           onClick={() => setOpen(false)}
                           className="w-full bg-transparent border border-[#A144E9] rounded-md px-6 py-3 text-[#A144E9] text-center sm:w-auto"
                         >
                           Become a Member
-                        </NavLink>
+                        </a>
                       </Button>
                     </nav>
                   </motion.div>
@@ -196,3 +205,5 @@ export const Header = () => {
     </div>
   );
 };
+
+export default Header;

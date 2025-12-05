@@ -1,4 +1,3 @@
-import gsap from "gsap";
 import { useEffect, useRef } from "react";
 import { Button } from "./button";
 
@@ -20,20 +19,31 @@ export const Hero = () => {
       return;
     }
 
-    gsap.set(el, { opacity: 0, y: 20 });
-    const tween = gsap.to(el, {
-      opacity: 1,
-      y: 0,
-      duration: 0.6,
-      ease: "power2.out",
-      delay: 1,
+    // Dynamically import GSAP
+    import("gsap").then((gsapModule) => {
+      const gsap = gsapModule.default;
+      gsap.set(el, { opacity: 0, y: 20 });
+      const tween = gsap.to(el, {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        ease: "power2.out",
+        delay: 1,
+      });
+
+      // Store cleanup ref
+      (heroRef as any).current._gsapCleanup = () => {
+        try {
+          tween.kill();
+        } catch (e) {
+          /* ignore */
+        }
+      };
     });
 
     return () => {
-      try {
-        tween.kill();
-      } catch (e) {
-        /* ignore */
+      if ((heroRef as any).current?._gsapCleanup) {
+        (heroRef as any).current._gsapCleanup();
       }
     };
   }, []);

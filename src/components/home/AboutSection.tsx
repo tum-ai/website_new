@@ -7,7 +7,6 @@ import {
   useTransform,
 } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { NavLink } from "react-router-dom";
 import { Button } from "../ui/button";
 import "../../styles/index.css";
 import { aboutText } from "@/data/homepage";
@@ -229,9 +228,9 @@ export const AboutSection = () => {
                 variant="primary"
                 className="w-full rounded-md px-6 py-3 text-center md:w-auto animate-item"
               >
-                <NavLink to="/community#memberStories">
+                <a href="/community#memberStories">
                   Meet our Members
-                </NavLink>
+                </a>
               </Button>
 
               <Button
@@ -239,7 +238,7 @@ export const AboutSection = () => {
                 variant="outline2"
                 className="w-full rounded-md px-6 py-3 text-center md:w-auto animate-item !text-primary"
               >
-                <NavLink to="/qanda">More on our Mission</NavLink>
+                <a href="/qanda">More on our Mission</a>
               </Button>
             </div>
           </div>

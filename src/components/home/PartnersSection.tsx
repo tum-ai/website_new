@@ -1,10 +1,5 @@
-import gsap from "gsap";
-import ScrollTrigger from "gsap/ScrollTrigger";
 import { useEffect, useRef } from "react";
-import { NavLink } from "react-router-dom";
 import { Button } from "../ui/button";
-
-gsap.registerPlugin(ScrollTrigger);
 
 export const PartnersSection = () => {
   const textRef = useRef<HTMLDivElement | null>(null);
@@ -13,58 +8,74 @@ export const PartnersSection = () => {
     if (typeof window === "undefined") return;
     if (!textRef.current) return;
 
-    // Respect reduced motion and disable on small screens
-    const mm = window.matchMedia && window.matchMedia("(max-width: 767px)");
-    const reduce =
-      window.matchMedia &&
-      window.matchMedia("(prefers-reduced-motion: reduce)");
-    if ((mm && mm.matches) || (reduce && reduce.matches)) {
-      // ensure elements are visible if animations are disabled
+    // Dynamically import GSAP to avoid SSR issues
+    import("gsap").then(async (gsapModule) => {
+      const gsap = gsapModule.default;
+      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+      gsap.registerPlugin(ScrollTrigger);
+
+      if (!textRef.current) return;
+
+      // Respect reduced motion and disable on small screens
+      const mm = window.matchMedia && window.matchMedia("(max-width: 767px)");
+      const reduce =
+        window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)");
+      if ((mm && mm.matches) || (reduce && reduce.matches)) {
+        // ensure elements are visible if animations are disabled
+        const elems =
+          textRef.current.querySelectorAll<HTMLElement>(".animate-item");
+        elems.forEach((el) => {
+          el.style.opacity = "1";
+          el.style.transform = "none";
+        });
+        return;
+      }
+
       const elems =
         textRef.current.querySelectorAll<HTMLElement>(".animate-item");
-      elems.forEach((el) => {
-        el.style.opacity = "1";
-        el.style.transform = "none";
+      if (!elems || elems.length === 0) return;
+
+      // make sure items are hidden initially
+      gsap.set(elems, { opacity: 0, y: 20 });
+
+      const trigger = ScrollTrigger.create({
+        trigger: textRef.current,
+        start: "top 80%",
+        end: "bottom 20%",
+        onEnter: () => {
+          gsap.to(elems, {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            stagger: 0.08,
+            ease: "power2.out",
+          });
+        },
+        onEnterBack: () => {
+          gsap.to(elems, {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            stagger: 0.08,
+            ease: "power2.out",
+          });
+        },
       });
-      return;
-    }
 
-    const elems =
-      textRef.current.querySelectorAll<HTMLElement>(".animate-item");
-    if (!elems || elems.length === 0) return;
-
-    // make sure items are hidden initially
-    gsap.set(elems, { opacity: 0, y: 20 });
-
-    const trigger = ScrollTrigger.create({
-      trigger: textRef.current,
-      start: "top 80%",
-      end: "bottom 20%",
-      onEnter: () => {
-        gsap.to(elems, {
-          opacity: 1,
-          y: 0,
-          duration: 0.6,
-          stagger: 0.08,
-          ease: "power2.out",
-        });
-      },
-      onEnterBack: () => {
-        gsap.to(elems, {
-          opacity: 1,
-          y: 0,
-          duration: 0.6,
-          stagger: 0.08,
-          ease: "power2.out",
-        });
-      },
+      // Store cleanup ref
+      (textRef as any).current._gsapCleanup = () => {
+        try {
+          trigger.kill();
+        } catch (e) {
+          /* ignore */
+        }
+      };
     });
 
     return () => {
-      try {
-        trigger.kill();
-      } catch (e) {
-        /* ignore */
+      if ((textRef as any).current?._gsapCleanup) {
+        (textRef as any).current._gsapCleanup();
       }
     };
   }, []);
@@ -107,12 +118,12 @@ export const PartnersSection = () => {
             variant="outline2"
             className="w-full rounded-md px-6 py-3 text-center sm:w-auto text-primary hover:text-white hover:bg-primary/80"
           >
-            <NavLink
-              to="/partners"
+            <a
+              href="/partners"
               className="w-full bg-black border border-[#A144E9] rounded-md px-6 py-3 text-[#A144E9] text-center sm:w-auto"
             >
               View Our Partners
-            </NavLink>
+            </a>
           </Button>
         </div>
       </div>

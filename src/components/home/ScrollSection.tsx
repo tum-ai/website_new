@@ -1,6 +1,5 @@
 import "../../styles/index.css";
 import { pictures as data } from "@/data/homepage";
-import gsap from "gsap";
 import { useEffect, useRef } from "react";
 type Props = {
   speed?: number;
@@ -79,7 +78,6 @@ export function ScrollSection({
 
   const trackRef = useRef<HTMLDivElement | null>(null);
   const tweenRef = useRef<any>(null);
-  const imagesLoadedRef = useRef(0);
 
   const parseAspect = (): [number, number] => {
     if (aspect) {
@@ -104,48 +102,56 @@ export function ScrollSection({
   const [aspectWResolved, aspectHResolved] = parseAspect();
   const paddingTopPercent = (aspectHResolved / aspectWResolved) * 100;
 
-  const initialize = () => {
-    const el = trackRef.current;
-    if (!el) return;
-
-    // Reset and kill any existing animation
-    tweenRef.current?.kill?.();
-    gsap.set(el, { x: 0 });
-
-    const half = el.scrollWidth / 2;
-    if (!isFinite(half) || half === 0) return;
-
-    // animate the whole track by exactly half its width
-    tweenRef.current = gsap.to(el, {
-      x: -half,
-      duration: Math.max(0.1, speed),
-      ease: "none",
-      repeat: -1,
-    });
-  };
-
   useEffect(() => {
-    // Try to initialize shortly after mount (images might load fast)
-    const id = setTimeout(initialize, 120);
+    let gsap: any;
+    let tweenInstance: any;
+    
+    const initialize = () => {
+      const el = trackRef.current;
+      if (!el || !gsap) return;
+
+      // Reset and kill any existing animation
+      tweenInstance?.kill?.();
+      gsap.set(el, { x: 0 });
+
+      const half = el.scrollWidth / 2;
+      if (!isFinite(half) || half === 0) return;
+
+      // animate the whole track by exactly half its width
+      tweenInstance = gsap.to(el, {
+        x: -half,
+        duration: Math.max(0.1, speed),
+        ease: "none",
+        repeat: -1,
+      });
+      tweenRef.current = tweenInstance;
+    };
+
+    // Dynamically import GSAP
+    import("gsap").then((gsapModule) => {
+      gsap = gsapModule.default;
+      
+      // Try to initialize shortly after mount (images might load fast)
+      const id = setTimeout(initialize, 120);
+      
+      // Store timeout for cleanup
+      (trackRef as any).current._timeoutId = id;
+    });
 
     // Reinitialize on resize/flow changes
-    const ro = new ResizeObserver(() => initialize());
+    const ro = new ResizeObserver(() => {
+      if (gsap) initialize();
+    });
     if (trackRef.current) ro.observe(trackRef.current);
 
     return () => {
-      clearTimeout(id);
+      if ((trackRef as any).current?._timeoutId) {
+        clearTimeout((trackRef as any).current._timeoutId);
+      }
       ro.disconnect();
       tweenRef.current?.kill?.();
     };
   }, [speed]);
-
-  const handleImgLoad = () => {
-    imagesLoadedRef.current += 1;
-    // when the original set has loaded, initialize
-    if (imagesLoadedRef.current >= data.length) {
-      initialize();
-    }
-  };
 
   return (
     <div className="relative overflow-hidden w-full pb-4 md:pb-16">
@@ -181,7 +187,6 @@ export function ScrollSection({
                 <img
                   src={imgObj.src}
                   alt=""
-                  onLoad={handleImgLoad}
                   className="absolute inset-0 w-full h-full object-cover"
                 />
               </div>
