@@ -26,3 +26,10 @@ dist-ssr
 server/
 .env
 bun.lockb
+
+# Notion CMS images (fetched at build time)
+public/cms/
+
+# Generated Notion data (rebuilt on each deploy)
+src/data/generated/*.json
+!src/data/generated/types.ts

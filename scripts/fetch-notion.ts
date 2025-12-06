@@ -9,11 +9,15 @@
  * Run with: npm run fetch-notion
  */
 
+import { config } from "dotenv";
 import { Client } from "@notionhq/client";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
+
+// Load .env file
+config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT_DIR = path.resolve(__dirname, "..");

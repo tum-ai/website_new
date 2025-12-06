@@ -111,10 +111,7 @@ export const Hero = () => {
           variant="outline2"
           className="w-full rounded-md px-6 py-3 text-center sm:w-auto"
         >
-          <a
-            href="/apply"
-            className="w-full bg-transparent border border-[#A144E9] rounded-md px-6 py-3 text-[#A144E9] text-center sm:w-auto"
-          >
+          <a href="/apply">
             Become a Member
           </a>
         </Button>

@@ -82,9 +82,6 @@ export default function ResearchCard({
       </CardHeader>
       <CardContent className="p-4 pt-0">
         <div>
-          {keywords && (
-            <p className="text-sm text-purple-500 mb-2">{keywords}</p>
-          )}
           <p className="text-sm">{description}</p>
         </div>
       </CardContent>

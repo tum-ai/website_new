@@ -1,1 +1,65 @@
-[]
+[
+  {
+    "id": "2287306b-fd62-803d-b74c-ef4330787255",
+    "title": "IBM Research: Regression-like Loss on Number Tokens",
+    "description": "Number Token Loss (NTL): token-level regression for improved numerical reasoning in language models with zero runtime overhead.",
+    "image": "/cms/research/055e4528238b.jpg",
+    "publication": "https://tum-ai.github.io/number-token-loss/",
+    "status": "completed",
+    "keywords": "Numerical Reasoning, Language Models, Token-Level Regression"
+  },
+  {
+    "id": "2287306b-fd62-8043-99b5-ce8cb5ee56c1",
+    "title": "MIT: Reaction Graph Networks for Synthesis\nCondition Prediction",
+    "description": "Reaction Graph Network (RGN) for predicting solid-state synthesis conditions, accelerating materials discovery.",
+    "image": "/cms/research/b8bee66a2094.png",
+    "publication": "https://openreview.net/pdf?id=VGsXQOTs1E",
+    "status": "completed",
+    "keywords": "Graph Neural Networks, Synthesis Prediction, Materials Science"
+  },
+  {
+    "id": "2287306b-fd62-8090-8f5b-c3d5329b9f52",
+    "title": "Helmholtz Zentrum: Cell Embeddings & Dendrite Segmentation",
+    "description": "DINOv3-based cell embeddings with unsupervised subclusters; PSPA-based neuron and dendrite segmentation in brightfield confocal microscopy.",
+    "image": "/cms/research/9d867431d0ab.jpg",
+    "publication": "",
+    "status": "ongoing",
+    "keywords": "Self-Supervised Learning, Cellular Representation, Neuronal Segmentation, Fate Prediction"
+  },
+  {
+    "id": "2287306b-fd62-80bc-ab22-f25119c7f4c7",
+    "title": "LMU Klinikum, TUM, CAMP: 4D Gaussians & Scene Graphs for Surgical Spatial Intelligence",
+    "description": "4D surgical video reconstruction with Gaussian Splatting and foundation model embeddings; enables spatial reasoning for autonomous surgery.",
+    "image": "/cms/research/48098f9f505e.jpg",
+    "publication": "",
+    "status": "ongoing",
+    "keywords": "4D Reconstruction, Surgical Scene Understanding, Scene Graphs, Representation Learning"
+  },
+  {
+    "id": "25c7306b-fd62-8001-9509-d4d443c3a4da",
+    "title": "MIT: Ranking-Based Approach for Inorganic Materials Synthesis Planning",
+    "description": "Retro-Rank-In: ranking framework for inorganic retrosynthesis with state-of-the-art generalization.",
+    "image": "/cms/research/16163fd7ddbe.jpg",
+    "publication": "https://arxiv.org/abs/2502.04289",
+    "status": "completed",
+    "keywords": "Retrosynthesis, Inorganic Chemistry, Reaction Ranking"
+  },
+  {
+    "id": "28d7306b-fd62-8008-b67c-c549cc75ed24",
+    "title": " MIT Neural Prediction of Synthesizability from Phase-Diagram Graphs ",
+    "description": "RetroSynth: graph-of-phases synthesizability prediction that models phase competition with context-aware message passing for higher PR-AUC and better-calibrated lab-ready candidates.",
+    "image": "/cms/research/e94808cd021e.png",
+    "publication": "",
+    "status": "ongoing",
+    "keywords": "Graph Neural Networks, Synthesis Prediction, Materials Science"
+  },
+  {
+    "id": "29b7306b-fd62-805d-8e47-fbe49a5443d4",
+    "title": "Untitled",
+    "description": "",
+    "image": "",
+    "publication": "",
+    "status": "Unknown",
+    "keywords": ""
+  }
+]

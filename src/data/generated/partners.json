@@ -1,1 +1,158 @@
-[]
+[
+  {
+    "id": "2137306b-fd62-8027-b06f-cb5c85dc5697",
+    "name": "Unite",
+    "link": "https://unite.eu/de-de",
+    "image": "/cms/partners/cbe5b5cc2512.png"
+  },
+  {
+    "id": "21a7306b-fd62-8017-b5f0-fd828204e3f1",
+    "name": "Microsoft",
+    "link": "https://www.microsoft.com/de-de/about",
+    "image": "/cms/partners/ae4374bbd8d5.png"
+  },
+  {
+    "id": "21a7306b-fd62-809c-ab89-ddee8392f696",
+    "name": "IBM",
+    "link": "https://www.ibm.com/de-de",
+    "image": "/cms/partners/24218fb6f3f8.png"
+  },
+  {
+    "id": "2597306b-fd62-800d-a01d-f416249e8c12",
+    "name": "NetApp",
+    "link": "https://www.netapp.com/de/",
+    "image": "/cms/partners/5a73dd6cf47d.png"
+  },
+  {
+    "id": "2597306b-fd62-8011-a1d0-fbcd69c706a4",
+    "name": "Klinikum_rechts_der_Isar",
+    "link": "https://www.mri.tum.de/",
+    "image": "/cms/partners/1e36ce242543.svg"
+  },
+  {
+    "id": "2597306b-fd62-8021-8649-c7619c2658be",
+    "name": "Wandb",
+    "link": "https://wandb.ai/site",
+    "image": "/cms/partners/c5a80322a6ec.png"
+  },
+  {
+    "id": "2597306b-fd62-802c-b980-c136f5431abb",
+    "name": "RyverAi",
+    "link": "https://ryver.ai/",
+    "image": "/cms/partners/4d10691dc97b.png"
+  },
+  {
+    "id": "2597306b-fd62-802d-896c-d9fd3a75977a",
+    "name": "Rolandberger",
+    "link": "https://www.rolandberger.com/de/",
+    "image": "/cms/partners/14c5474035af.png"
+  },
+  {
+    "id": "2597306b-fd62-8032-a5d1-c488b12a6755",
+    "name": "EYetventure",
+    "link": "https://www.etventure.de/ey/",
+    "image": "/cms/partners/d13851e2cf8a.png"
+  },
+  {
+    "id": "2597306b-fd62-803a-a718-d1674b618302",
+    "name": "Bcg",
+    "link": "https://www.bcg.com/beyond-consulting/bcg-gamma/overview",
+    "image": "/cms/partners/8dd82890e359.png"
+  },
+  {
+    "id": "2597306b-fd62-8041-a6bd-d5ebf44c648f",
+    "name": "10xFounders",
+    "link": "https://www.10xfounders.com/",
+    "image": "/cms/partners/4c4256b2d3cb.png"
+  },
+  {
+    "id": "2597306b-fd62-8053-8365-d84ab65a9128",
+    "name": "Jina",
+    "link": "https://jina.ai/",
+    "image": "/cms/partners/665e768a5670.png"
+  },
+  {
+    "id": "2597306b-fd62-806b-ac02-e8bff5022b93",
+    "name": "Avi_Medical",
+    "link": "https://www.avimedical.com/",
+    "image": "/cms/partners/4d2d5f4f7ec5.png"
+  },
+  {
+    "id": "2597306b-fd62-8070-8093-ce70ae06c047",
+    "name": "Deloitte",
+    "link": "https://www2.deloitte.com/de/de/pages/risk/solutions/aistudio.html",
+    "image": "/cms/partners/0d2903319e97.png"
+  },
+  {
+    "id": "2597306b-fd62-807c-b958-e4c0221c2964",
+    "name": "Infineon",
+    "link": "https://www.infineon.com/",
+    "image": "/cms/partners/ef279e7588ea.png"
+  },
+  {
+    "id": "2597306b-fd62-8084-b5be-d71d4e253de9",
+    "name": "Speed_Invest",
+    "link": "https://www.speedinvest.com/",
+    "image": "/cms/partners/bd473017ff4c.png"
+  },
+  {
+    "id": "2597306b-fd62-8087-a1f4-e014669f7768",
+    "name": "Unternehmer_Tum",
+    "link": "https://www.unternehmertum.de/",
+    "image": "/cms/partners/9c08dbf51eba.webp"
+  },
+  {
+    "id": "2597306b-fd62-8099-bc8b-c01c9650a6f5",
+    "name": "Tng_Tech",
+    "link": "https://www.tngtech.com/index.html",
+    "image": "/cms/partners/aaa2426b4abc.png"
+  },
+  {
+    "id": "2597306b-fd62-80a1-bbf1-c51ade2282fb",
+    "name": "Google",
+    "link": "https://about.google/",
+    "image": "/cms/partners/ec8ccc6d9398.png"
+  },
+  {
+    "id": "2597306b-fd62-80a2-924e-c243409cd0be",
+    "name": "Earlybird",
+    "link": "https://earlybird.com/",
+    "image": "/cms/partners/18d390d75247.png"
+  },
+  {
+    "id": "2597306b-fd62-80a4-acc8-dac483039842",
+    "name": "Quantco",
+    "link": "https://quantco.com/",
+    "image": "/cms/partners/7170a01ea6e5.png"
+  },
+  {
+    "id": "2597306b-fd62-80c6-93af-d6ed0e6acdea",
+    "name": "Simens",
+    "link": "https://www.siemens.com/de/de.html",
+    "image": "/cms/partners/1223bbe7fea9.svg"
+  },
+  {
+    "id": "2597306b-fd62-80da-beb1-f63882e0a728",
+    "name": "CherryVC",
+    "link": "https://www.cherry.vc/",
+    "image": "/cms/partners/8e160945511f.png"
+  },
+  {
+    "id": "2597306b-fd62-80dc-9d37-d853b842d5aa",
+    "name": "OpenAi",
+    "link": "https://openai.com/",
+    "image": "/cms/partners/4461a7edfc69.png"
+  },
+  {
+    "id": "2597306b-fd62-80ee-a6a6-e81ffefcf108",
+    "name": "Aleph_Alpha",
+    "link": "https://www.aleph-alpha.com/",
+    "image": "/cms/partners/aa9e665f4f8e.png"
+  },
+  {
+    "id": "2597306b-fd62-80ff-8f8f-eddb7f3af2e8",
+    "name": "Applied_Ai",
+    "link": "https://www.appliedai.de/de/",
+    "image": "/cms/partners/af56061b61ea.png"
+  }
+]
