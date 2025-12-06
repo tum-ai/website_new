@@ -27,6 +27,11 @@ server/
 .env
 bun.lockb
 
+# Build outputs
+.vercel/
+dist/
+.astro/
+
 # Notion CMS images (fetched at build time)
 public/cms/
 
