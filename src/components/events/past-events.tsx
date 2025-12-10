@@ -35,12 +35,15 @@ export default function PastEvents({ events }: { events: Event[] }) {
   }
 
   return (
-    <div className="flex flex-wrap justify-center md:justify-start mx-[-0.75rem]">
-      {events.map((event) => (
-        <div key={event.id} className="flex-shrink-0 px-3 pb-6">
-          <PastEventCard key={event.id} event={event} />
-        </div>
-      ))}
+    <div className="space-y-8">
+      <h2 className="text-3xl font-bold">Past Events</h2>
+      <div className="flex flex-wrap justify-center md:justify-start mx-[-0.75rem]">
+        {events.map((event) => (
+          <div key={event.id} className="flex-shrink-0 px-3 pb-6">
+            <PastEventCard event={event} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

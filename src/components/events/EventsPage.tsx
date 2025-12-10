@@ -56,10 +56,10 @@ export default function EventsPage({ events }: EventsPageProps) {
 
         {/* Events Lists */}
         {filteredEvents.length > 0 && (
-          <>
+          <div className="space-y-16">
             <UpcomingEvents events={upcomingEvents} />
             <PastEvents events={pastEvents} />
-          </>
+          </div>
         )}
       </div>
     </div>
