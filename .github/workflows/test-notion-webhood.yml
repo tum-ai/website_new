@@ -1,0 +1,19 @@
+name: Test Notion Webhook
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print success message
+        run: |
+          echo "🎉 Webhook triggered successfully from Notion!"
+          echo "Current time: $(date)"
+          echo "Triggered by: ${{ github.actor }}"
+          
+      - name: Sleep for visibility
+        run: sleep 5
+        
+      - name: Done
+        run: echo "✅ Test complete!"
