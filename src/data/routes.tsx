@@ -1,15 +1,15 @@
+import Community from "@/pages/Community";
+import Events from "@/pages/Events";
 import Homepage from "@/pages/Homepage";
+import Partners from "@/pages/Partners";
+import Projects from "@/pages/Projects";
+import QandA from "@/pages/QandA";
+import Research from "@/pages/Research";
 import Apply from "@/pages/apply/Apply";
+import ELab from "@/pages/e-lab/ELab";
 import Disclaimer from "@/pages/footer/Disclaimer";
 import Imprint from "@/pages/footer/Imprint";
 import DataPrivacy from "@/pages/footer/Privacy";
-import Community from "@/pages/headerPages/Community";
-import Events from "@/pages/headerPages/Events";
-import Partners from "@/pages/headerPages/Partners";
-import Projects from "@/pages/headerPages/Projects";
-import QandA from "@/pages/headerPages/QandA";
-import Research from "@/pages/headerPages/Research";
-import ELab from "@/pages/headerPages/e-lab/ELab";
 
 export const routes = [
   { path: "/", element: <Homepage />, title: "Home" },

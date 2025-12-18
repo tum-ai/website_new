@@ -1,3 +1,17 @@
+export interface Step {
+  step: string;
+  name: string;
+  gradient: string;
+  description: string;
+}
+
+export interface Department {
+  name: string;
+  icon: string;
+  description: string;
+  gradient: string;
+}
+
 export interface Event {
   id: string;
   title: string;
@@ -59,7 +73,6 @@ export interface NotionPage {
     };
   };
   Keywords?: {
-    // <-- string property
     rich_text?: [{ plain_text?: string }];
   };
 }

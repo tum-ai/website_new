@@ -1,6 +1,6 @@
 // src/components/community/JourneySection.jsx
 
-import { type Step } from "@/data/community";
+import { type Step } from "@/lib/types";
 import {
   faBrain,
   faChartLine,
