@@ -22,10 +22,17 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import type { Event } from "@/lib/types";
+import { groupEventsByMonth } from "@/lib/utils";
 import { format } from "date-fns";
 import { Button } from "../ui/button";
 
 export default function PastEvents({ events }: { events: Event[] }) {
+  events.sort(
+    (a, b) =>
+      new Date(b.event_date).getTime() - new Date(a.event_date).getTime(),
+  );
+  const groupedEvents = groupEventsByMonth(events);
+
   if (events.length === 0) {
     return (
       <div className="py-12 text-center">
@@ -35,9 +42,16 @@ export default function PastEvents({ events }: { events: Event[] }) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {events.map((event) => (
-        <PastEventCard key={event.id} event={event} />
+    <div className="space-y-16 max-w-full">
+      {Object.entries(groupedEvents).map(([month, monthEvents]) => (
+        <div key={month} className="space-y-8">
+          <h3 className="text-2xl font-semibold text-purple-500">{month}</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {monthEvents.map((event) => (
+              <PastEventCard key={event.id} event={event} />
+            ))}
+          </div>
+        </div>
       ))}
     </div>
   );
