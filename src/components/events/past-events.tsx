@@ -35,11 +35,9 @@ export default function PastEvents({ events }: { events: Event[] }) {
   }
 
   return (
-    <div className="flex flex-wrap justify-center md:justify-start mx-[-0.75rem]">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {events.map((event) => (
-        <div key={event.id} className="flex-shrink-0 px-3 pb-6">
-          <PastEventCard key={event.id} event={event} />
-        </div>
+        <PastEventCard key={event.id} event={event} />
       ))}
     </div>
   );
@@ -49,7 +47,7 @@ function PastEventCard({ event }: { event: Event }) {
   const eventDate = new Date(event.event_date);
 
   return (
-    <Card className="flex flex-col overflow-hidden w-[320px] md:w-[360px]">
+    <Card className="flex flex-col overflow-hidden w-full">
       <div className="relative w-full aspect-square group p-4 flex-shrink-0">
         <Carousel className="w-full h-full">
           <CarouselContent className="h-full">

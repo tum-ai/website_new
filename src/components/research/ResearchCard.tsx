@@ -59,35 +59,37 @@ export default function ResearchCard({
     //   )}
     // </Card>
 
-    <Card className="hover:shadow-lg transition-shadow justify-start w-[320px] md:w-[360px]">
-      <div className="p-4 pb-0">
-        <AspectRatio ratio={4 / 3}>
-          {image ? (
-            <img
-              src={image}
-              alt={title}
-              className="h-full w-full rounded-md object-cover shadow-xl"
-            />
-          ) : (
-            <div className="h-full w-full rounded-lg bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center p-4">
-              <h3 className="text-lg font-semibold text-purple-800 text-center leading-tight">
-                {title}
-              </h3>
-            </div>
-          )}
-        </AspectRatio>
-      </div>
-      <CardHeader className="pb-0 p-4">
-        <CardTitle className="text-xl">{title}</CardTitle>
-      </CardHeader>
-      <CardContent className="p-4 pt-0">
-        <div>
-          {keywords && (
-            <p className="text-sm text-purple-500 mb-2">{keywords}</p>
-          )}
-          <p className="text-sm">{description}</p>
+    <Card className="hover:shadow-lg transition-shadow justify-between w-full">
+      <div>
+        <div className="p-4 pb-0">
+          <AspectRatio ratio={4 / 3}>
+            {image ? (
+              <img
+                src={image}
+                alt={title}
+                className="h-full w-full rounded-md object-cover shadow-xl"
+              />
+            ) : (
+              <div className="h-full w-full rounded-lg bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center p-4">
+                <h3 className="text-lg font-semibold text-purple-800 text-center leading-tight">
+                  {title}
+                </h3>
+              </div>
+            )}
+          </AspectRatio>
         </div>
-      </CardContent>
+        <CardHeader className="pb-0 p-4">
+          <CardTitle className="text-xl">{title}</CardTitle>
+        </CardHeader>
+        <CardContent className="p-4 pt-0">
+          <div>
+            {keywords && (
+              <p className="text-sm text-purple-500 mb-2">{keywords}</p>
+            )}
+            <p className="text-sm">{description}</p>
+          </div>
+        </CardContent>
+      </div>
       {publication && (
         <CardFooter className="p-4">
           {publication && (
