@@ -66,7 +66,7 @@ function UpcomingEventCard({ event }: { event: Event }) {
   })();
 
   return (
-    <Card className="hover:shadow-lg transition-shadow justify-between w-full">
+    <Card className="transition-transform duration-150 hover:scale-101 justify-between w-full">
       <div className="p-4">
         <AspectRatio ratio={1 / 1}>
           {event.poster ? (

@@ -59,7 +59,7 @@ export default function ResearchCard({
     //   )}
     // </Card>
 
-    <Card className="hover:shadow-lg transition-shadow justify-between w-full">
+    <Card className="transition-transform duration-150 hover:scale-101 justify-between w-full">
       <div>
         <div className="p-4 pb-0">
           <AspectRatio ratio={4 / 3}>

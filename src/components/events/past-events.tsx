@@ -61,7 +61,7 @@ function PastEventCard({ event }: { event: Event }) {
   const eventDate = new Date(event.event_date);
 
   return (
-    <Card className="flex flex-col overflow-hidden w-full">
+    <Card className="flex flex-col overflow-hidden w-full transition-transform duration-150 hover:scale-101">
       <div className="relative w-full aspect-square group p-4 flex-shrink-0">
         <Carousel className="w-full h-full">
           <CarouselContent className="h-full">
