@@ -1,22 +1,9 @@
-export const longtermPartners = [
-  // {
-  //   href: "https://www.anthropic.com/",
-  //   src: "/assets/partners_sponsors/anthropic_logo.svg.png",
-  //   alt: "Anthropic",
-  // },
-  /* {
-    href: "https://quantco.com/",
-    src: "/assets/partners_sponsors/quantco_logo.png",
-    alt: "QuantCo",
-  }, */
-  {
-    href: "https://pwc.com/",
-    src: "/assets/partners_sponsors/pwc.jpg",
-    alt: "PwC",
-  },
-];
-
 export const technicalPartners = [
+  {
+    href: "https://www.anthropic.com/",
+    src: "/assets/partners_sponsors/anthropic_logo.svg.png",
+    alt: "Anthropic",
+  },
   {
     href: "https://aws.amazon.com/",
     src: "/assets/partners_sponsors/aws_logo.svg",
@@ -139,9 +126,9 @@ export const industryPartners = [
     alt: "ministry_for_digital_affairs",
   },
   {
-    href: "https://www.recogni.com",
-    src: "/assets/industry/partners/IP5/Recogni_Logo.jpg.webp",
-    alt: "Recogni",
+    href: "https://www.tensordyne.ai",
+    src: "/assets/partners_sponsors/tensordyne.png",
+    alt: "Tensordyne",
   },
   {
     href: "https://www.cdtm.de/",
