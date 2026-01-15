@@ -27,10 +27,6 @@ import { format } from "date-fns";
 import { Button } from "../ui/button";
 
 export default function PastEvents({ events }: { events: Event[] }) {
-  events.sort(
-    (a, b) =>
-      new Date(b.event_date).getTime() - new Date(a.event_date).getTime(),
-  );
   const groupedEvents = groupEventsByMonth(events);
 
   if (events.length === 0) {
