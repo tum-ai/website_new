@@ -73,7 +73,7 @@ export function ExpectationELab() {
                 suffix="M+"
                 isMoney
               />
-              <Stat title={"AI E-Lab Iterations"} from={0} to={3} suffix="" />
+              <Stat title={"AI E-Lab Iterations"} from={0} to={4} suffix="" />
             </div>
           </div>
         </div>

@@ -62,8 +62,8 @@ export default function Events() {
       <SEO {...getSEOConfig("events")} />
       <section className="relative overflow-hidden bg-gradient-to-br from-blue-900 to-purple-900 p-8 text-white sm:py-16 lg:py-24">
         <Layout>
-          <div className="min-h-screen flex flex-col md:flex-row justify-center">
-            <div className="px-6 py-12 md:px-12">
+          <div className={`min-h-screen flex flex-col ${filteredEvents.length === 0 ? '' : 'md:flex-row justify-center'}`}>
+            <div className={`px-6 py-12 md:px-12 ${filteredEvents.length === 0 ? 'w-full' : ''}`}>
               {/* Filters */}
               <EventFiltersComponent
                 filters={filters}
@@ -73,14 +73,16 @@ export default function Events() {
 
               {/* No Results Message */}
               {filteredEvents.length === 0 && (
-                <div className="text-center py-12">
-                  <p className="text-muted-foreground text-lg">
-                    No events found matching your filters.
-                  </p>
-                  <p className="text-muted-foreground text-sm mt-2">
-                    Try adjusting your search criteria.
-                  </p>
-                </div>
+                <section className="mb-24">
+                  <div className="text-center py-12">
+                    <p className="text-muted-foreground text-lg">
+                      No events found matching your filters.
+                    </p>
+                    <p className="text-muted-foreground text-sm mt-2">
+                      Try adjusting your search criteria.
+                    </p>
+                  </div>
+                </section>
               )}
 
               {/* Upcoming Events Section */}

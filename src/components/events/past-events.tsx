@@ -22,10 +22,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import type { Event } from "@/lib/types";
+import { groupEventsByMonth } from "@/lib/utils";
 import { format } from "date-fns";
 import { Button } from "../ui/button";
 
 export default function PastEvents({ events }: { events: Event[] }) {
+  const groupedEvents = groupEventsByMonth(events);
+
   if (events.length === 0) {
     return (
       <div className="py-12 text-center">
@@ -35,10 +38,15 @@ export default function PastEvents({ events }: { events: Event[] }) {
   }
 
   return (
-    <div className="flex flex-wrap justify-center md:justify-start mx-[-0.75rem]">
-      {events.map((event) => (
-        <div key={event.id} className="flex-shrink-0 px-3 pb-6">
-          <PastEventCard key={event.id} event={event} />
+    <div className="space-y-16 max-w-full">
+      {Object.entries(groupedEvents).map(([month, monthEvents]) => (
+        <div key={month} className="space-y-8">
+          <h3 className="text-2xl font-semibold text-purple-500">{month}</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {monthEvents.map((event) => (
+              <PastEventCard key={event.id} event={event} />
+            ))}
+          </div>
         </div>
       ))}
     </div>
@@ -49,7 +57,7 @@ function PastEventCard({ event }: { event: Event }) {
   const eventDate = new Date(event.event_date);
 
   return (
-    <Card className="flex flex-col overflow-hidden w-[320px] md:w-[360px]">
+    <Card className="flex flex-col overflow-hidden w-full transition-transform duration-150 hover:scale-101">
       <div className="relative w-full aspect-square group p-4 flex-shrink-0">
         <Carousel className="w-full h-full">
           <CarouselContent className="h-full">

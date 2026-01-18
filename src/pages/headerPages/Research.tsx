@@ -57,18 +57,16 @@ export default function Research() {
       content: (
         <div>
           {/* Ongoing projects */}
-          <div className="flex flex-wrap justify-center md:justify-start mx-[-0.75rem]">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {ongoingProjects.map((p) => (
-              <div className="flex-shrink-0 px-3 pb-6">
-                <ResearchCard
-                  key={p.title}
-                  title={p.title}
-                  description={p.description}
-                  image={p.image}
-                  publication={p.publication}
-                  keywords={p.keywords} // Keywords under title
-                />
-              </div>
+              <ResearchCard
+                key={p.title}
+                title={p.title}
+                description={p.description}
+                image={p.image}
+                publication={p.publication}
+                keywords={p.keywords} // Keywords under title
+              />
             ))}
           </div>
 
@@ -78,18 +76,16 @@ export default function Research() {
               <h3 className="text-3xl font-semibold text-center mt-12 mb-4 text-white">
                 Past Projects
               </h3>
-              <div className="flex flex-wrap justify-center md:justify-start mx-[-0.75rem]">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {pastProjects.map((p) => (
-                  <div className="flex-shrink-0 px-3 pb-6">
-                    <ResearchCard
-                      key={p.title}
-                      title={p.title}
-                      description={p.description}
-                      image={p.image}
-                      publication={p.publication}
-                      keywords={p.keywords} // Keywords under title
-                    />
-                  </div>
+                  <ResearchCard
+                    key={p.title}
+                    title={p.title}
+                    description={p.description}
+                    image={p.image}
+                    publication={p.publication}
+                    keywords={p.keywords} // Keywords under title
+                  />
                 ))}
               </div>
             </>

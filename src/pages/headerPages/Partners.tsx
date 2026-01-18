@@ -205,7 +205,7 @@ function PartnerSection({
           <div
             key={logo.alt}
             // Set a fixed height for the card
-            className="flex h-20 w-40 items-center justify-center rounded-lg border-1 bg-white p-4 py-6"
+            className="transition-transform duration-150 hover:scale-105 hover:shadow-lg flex h-20 w-40 items-center justify-center rounded-lg border-1 bg-white p-4 py-6"
           >
             {/* Limit logo size and maintain aspect ratio */}
             <img

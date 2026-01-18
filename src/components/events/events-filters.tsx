@@ -12,13 +12,11 @@ interface EventFiltersProps {
 
 const eventCategories = [
   "All Categories",
-  "Workshop",
   "Hackathon",
   "Speaker",
-  "E-Lab",
 ];
 
-const eventCities = ["All Cities", "Munich", "Berlin", "Online"];
+const eventCities = ["All Cities", "Munich", "Online"];
 
 export default function EventFiltersComponent({
   filters,
@@ -76,8 +74,12 @@ export default function EventFiltersComponent({
         </div>
       </div>
 
-      {isExpanded && (
-        <div className="mt-4 space-y-4">
+      <div
+        className={`overflow-hidden transition-all duration-300 ease-in-out ${
+          isExpanded ? "max-h-96 mt-4" : "max-h-0"
+        }`}
+      >
+        <div className="space-y-4">
           {/* Category Filter */}
           <div className="flex flex-col sm:flex-row gap-4">
             <Label className="text-xs font-medium text-muted-foreground min-w-[60px]">
@@ -120,7 +122,7 @@ export default function EventFiltersComponent({
             </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
