@@ -1,84 +1,57 @@
 import Layout from "@/components/Layout";
 import SEO from "@/components/SEO";
-import { ProjectCard } from "@/components/innovation/InnovationProjectCard";
+import { InnovationProjectCard } from "@/components/innovation/InnovationProjectCard";
 import { getSEOConfig } from "@/config/seo";
 
+// Data Definition
 const departments = [
   {
+    id: "medai",
     name: "MED.ai",
-    description:
-      "MED.ai is TUM.ai’s elite taskforce dedicated to identifying current challenges at the intersection of healthcare and AI, conducting cutting-edge research, and engaging with leading industry experts.",
+    description: "Identifying challenges at the intersection of healthcare and AI.",
     image: "/assets/innovation/med_ai.webp",
-    detailedDescription:
-      "MED.ai is TUM.ai’s elite taskforce dedicated to identifying current challenges at the intersection of healthcare and AI, conducting cutting-edge research, and engaging with leading industry experts. Semesterly research projects in this field with institutions like Helmholtz AI leverages our members to draw new frontiers in the medical research field. With our MED Talks Speaker Series we make one of AI‘s most exciting application fields accessible to the broader audience.",
+    detailedDescription: "MED.ai is TUM.ai’s elite taskforce dedicated to identifying current challenges at the intersection of healthcare and AI, conducting cutting-edge research, and engaging with leading industry experts. Semesterly research projects in this field with institutions like Helmholtz AI leverages our members to draw new frontiers in the medical research field. With our MED Talks Speaker Series we make one of AI‘s most exciting application fields accessible to the broader audience.",
     members: 8,
     established: "2022",
     location: "Hybrid",
-    projects: [
-      "Neural Architecture Search",
-      "Federated Learning",
-      "Explainable AI",
-      "Quantum ML",
-    ],
-    contact: "medai@tum.ai",
-    website: "https://medai.tum.ai",
+    projects: ["Neural Architecture Search", "Federated Learning", "Medical Imaging"],
+    className: "md:col-span-2 md:row-span-1 min-h-[350px]",
   },
   {
+    id: "robotics",
     name: "Robotics",
-    description:
-      "We explore cutting-edge approaches in robotic intelligence, currently focusing on imitation learning and reinforcement learning.",
+    description: "Cutting-edge robotic intelligence and imitation learning.",
     image: "/assets/innovation/robotics_arm.webp",
-    detailedDescription:
-      "We explore cutting-edge approaches in robotic intelligence, currently focusing on imitation learning using the LeRobot framework. Our work is rapidly expanding toward reinforcement learning and robotics foundation models. As a team, we actively participate in robotics hackathons, organize paper reading sessions, and develop our own experimental projects—bridging research and hands-on innovation.",
+    detailedDescription: "We explore cutting-edge approaches in robotic intelligence, currently focusing on imitation learning using the LeRobot framework. Our work is rapidly expanding toward reinforcement learning and robotics foundation models. As a team, we actively participate in robotics hackathons, organize paper reading sessions, and develop our own experimental projects—bridging research and hands-on innovation.",
     members: 4,
     established: "2023",
     location: "Munich",
-    projects: [
-      "AI Bootcamp",
-      "Online Courses",
-      "School Outreach",
-      "Certification Programs",
-    ],
-    contact: "robotics@tum.ai",
-    website: "https://robotics.tum.ai",
+    projects: ["AI Bootcamp", "LeRobot Framework", "Sim2Real"],
+    className: "md:col-span-1 md:row-span-2 min-h-[350px] md:min-h-full", 
   },
   {
+    id: "quant",
     name: "Quant Finance",
-    description:
-      "The QuantFinance Task Force focuses on quantitative finance, hackathons, and fintech research.",
+    description: "Quantitative finance, hackathons, and fintech research.",
     image: "",
-    detailedDescription:
-      "The QuantFinance Task Force is made up of TUM.ai members interested in Quantitative Finance or FinTech, who either want to participate in related hackathons or pursue a career in these fields. Our members take part individually or as a team in hackathons, estimathons, and other events.",
+    detailedDescription: "The QuantFinance Task Force is made up of TUM.ai members interested in Quantitative Finance or FinTech, who either want to participate in related hackathons or pursue a career in these fields. Our members take part individually or as a team in hackathons, estimathons, and other events.",
     members: 8,
     established: "2024",
     location: "Hybrid",
-    projects: [
-      "Smart Manufacturing",
-      "Predictive Maintenance",
-      "Supply Chain Optimization",
-      "Digital Twins",
-    ],
-    contact: "quantfinance@tum.ai",
-    website: "https://quantfinance.tum.ai",
+    projects: ["Predictive Maintenance", "Digital Twins", "Algo Trading"],
+    className: "md:col-span-1 md:row-span-1 min-h-[300px]",
   },
   {
-    name: "Applied Accelerated Computing",
-    description:
-      "Focuses on AI hardware, GPUs, and compute acceleration for cutting-edge AI projects.",
+    id: "compute",
+    name: "Accelerated Computing",
+    description: "AI hardware, GPUs, and compute acceleration.",
     image: "/assets/innovation/accelerated_computing.webp",
-    detailedDescription:
-      "At TUM.ai's Applied Accelerated Computing task force, we go beyond theoretical AI to unravel the hardware powering it all. We equip members with in-depth knowledge of GPUs and compute accelerators, enabling them to understand their workings and optimize AI workflows at a fundamental level.",
+    detailedDescription: "At TUM.ai's Applied Accelerated Computing task force, we go beyond theoretical AI to unravel the hardware powering it all. We equip members with in-depth knowledge of GPUs and compute accelerators, enabling them to understand their workings and optimize AI workflows at a fundamental level.",
     members: 2,
     established: "2024",
     location: "Munich",
-    projects: [
-      "AI Governance Framework",
-      "Bias Detection Tools",
-      "Privacy-Preserving AI",
-      "Algorithmic Auditing",
-    ],
-    contact: "accelerated@tum.ai",
-    website: "https://accelerated.tum.ai",
+    projects: ["AI Governance", "Bias Detection", "Kernel Optimization"],
+    className: "md:col-span-1 md:row-span-1 min-h-[300px]",
   },
 ];
 
@@ -86,31 +59,41 @@ export default function Projects() {
   return (
     <>
       <SEO {...getSEOConfig("projects")} />
-      <section className="relative pt-32 pb-16 px-8 bg-gradient-to-br from-blue-900 to-purple-900 text-white">
+      
+      <section className="relative min-h-screen bg-[#020617] text-white pt-32 pb-24 px-4 sm:px-8">
+        {/* Subtle Grid Background */}
+        <div className="absolute inset-0 pointer-events-none opacity-20" 
+             style={{ 
+               backgroundImage: 'linear-gradient(to right, #334155 1px, transparent 1px), linear-gradient(to bottom, #334155 1px, transparent 1px)', 
+               backgroundSize: '40px 40px' 
+             }} 
+        />
+        
+        {/* Glow Effect */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-[500px] bg-blue-900/20 blur-[120px] rounded-full pointer-events-none" />
+
         <Layout>
-          <div className="relative min-h-screen">
-            {/* Hero Section */}
-            <div className="flex flex-col items-center gap-4 mb-12 px-6 text-center">
-              <h1 className="text-4xl font-bold md:text-5xl text-white">
-                Innovation Departments and Projects
+          <div className="relative z-10 max-w-7xl mx-auto">
+            {/* Header */}
+            <div className="mb-16 border-b border-white/10 pb-8">
+              <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white mb-6">
+                Innovation <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+                  Departments and Projects
+                </span>
               </h1>
-              <p className="mx-auto text-subtitle text-gray-200">
-                Explore TUM.ai's innovation departments and the exciting
-                projects they lead.
+              <p className="text-lg text-gray-400 leading-relaxed max-w-2xl">
+                Explore TUM.ai's innovation departments and the exciting projects they lead.
               </p>
             </div>
-            <div className="w-full px-6 md:px-12">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {departments.map((dept) => (
-                  <div
-                    key={dept.name}
-                    className="transition-transform duration-150 hover:scale-101"
-                  >
-                    <ProjectCard {...dept} />
-                  </div>
-                ))}
-              </div>
+
+            {/* Grid Container */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[minmax(300px,auto)]">
+              {departments.map((dept) => (
+                <InnovationProjectCard key={dept.id} {...dept} />
+              ))}
             </div>
+
           </div>
         </Layout>
       </section>

@@ -1,13 +1,3 @@
-"use client";
-
-// import { Badge } from "@/components/ui/badge"
-// import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardTitle,
-} from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -15,7 +5,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-// import { Calendar, ExternalLink, MapPin, Users, X } from "lucide-react";
+import { ArrowUpRight, Cpu, Globe, Users, Calendar } from "lucide-react";
 import { useState } from "react";
 
 interface ProjectCardProps {
@@ -27,158 +17,106 @@ interface ProjectCardProps {
   established: string;
   location: string;
   projects: string[];
-  contact: string;
-  website?: string;
+  className?: string;
 }
 
-export function ProjectCard({
+export function InnovationProjectCard({
   name,
   description,
   image,
   detailedDescription,
-  // members,
-  // established,
-  // location,
-  // projects,
-  // contact,
-  // website,
+  members,
+  established,
+  location,
+  className = "",
 }: ProjectCardProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [imgError, setImgError] = useState(false);
+
+  // Determine if we should attempt to show the image
+  const showImage = image && image.length > 0 && !imgError;
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Card className="group cursor-pointer overflow-hidden relative h-full w-full aspect-square flex flex-col justify-end p-0 border-none shadow-lg transition-all">
-          {/* Background Image or Placeholder */}
-          <div className="absolute inset-0">
-            {image ? (
+        <div
+          className={`group relative overflow-hidden rounded-3xl border border-white/10 bg-slate-900 shadow-xl transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_0_50px_-12px_rgba(100,100,255,0.25)] cursor-pointer ${className}`}
+        >
+          {/* --- Background Layer --- */}
+          <div className="absolute inset-0 z-0 h-full w-full bg-slate-900">
+            {showImage ? (
               <img
                 src={image}
-                alt={`${name} Project`}
-                className="h-full w-full object-cover"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = "none";
-                  const placeholder = target.nextElementSibling as HTMLElement;
-                  if (placeholder) {
-                    placeholder.style.display = "flex";
-                  }
-                }}
+                alt={name}
+                className="h-full w-full object-cover opacity-80 transition-transform duration-700 ease-out group-hover:scale-105"
+                onError={() => setImgError(true)} // Falls back to pattern on error
               />
             ) : (
-              <div
-                className={`h-full w-full bg-accent-foreground ${image ? "hidden" : "flex"} items-center justify-center`}
-                style={{ display: image ? "none" : "flex" }}
-              >
-                <img
-                  src="/assets/logo_new_white_standard.png"
-                  alt="Placeholder"
-                  className="h-3/4 w-3/4 object-contain opacity-50"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src =
-                      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='3' rx='2' ry='2'/%3E%3Ccircle cx='9' cy='9' r='2'/%3E%3Cpath d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'/%3E%3C/svg%3E";
-                  }}
+              /* Fallback Pattern (Shows if image missing or error) */
+              <div className="absolute inset-0 flex h-full w-full items-center justify-center overflow-hidden bg-slate-900">
+                {/* Abstract Glow */}
+                <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-blue-600/20 blur-[80px]" />
+                {/* Dot Grid */}
+                <div 
+                  className="absolute bottom-0 left-0 h-full w-full opacity-30" 
+                  style={{ backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px)', backgroundSize: '16px 16px' }}
                 />
+                {/* Central Icon */}
+                <div className="relative z-10 text-slate-800 opacity-50">
+                   <Cpu size={120} strokeWidth={0.5} />
+                </div>
               </div>
             )}
           </div>
 
-          {/* Overlay for better text readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent" />
+          {/* --- Gradient Overlay (Ensures text readability) --- */}
+          <div className="absolute inset-0 z-10 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
 
-          {/* Content */}
-          <CardContent className="relative z-10 p-6 text-white">
-            <CardTitle className="text-2xl font-bold mb-2 leading-tight drop-shadow-lg">
-              {name}
-            </CardTitle>
-            <CardDescription className="text-sm opacity-95 leading-relaxed line-clamp-3 text-gray-200 drop-shadow-md">
-              {description}
-            </CardDescription>
-          </CardContent>
-        </Card>
+          {/* --- Content Layout --- */}
+          <div className="relative z-20 flex h-full flex-col justify-between p-6 sm:p-8">
+            
+            {/* Top Bar: Metadata Tags */}
+            <div className="flex items-start justify-between">
+              <div className="flex gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-black/20 px-3 py-1 text-xs font-mono text-blue-200 backdrop-blur-md shadow-sm">
+                   <Users size={10} /> {members}
+                </span>
+                <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-black/20 px-3 py-1 text-xs font-mono text-purple-200 backdrop-blur-md shadow-sm">
+                   {established}
+                </span>
+              </div>
+              
+              {/* Arrow Icon */}
+              <div className="rounded-full bg-white/10 p-2 text-white backdrop-blur-md transition-all duration-300 group-hover:bg-white group-hover:text-black">
+                <ArrowUpRight size={18} />
+              </div>
+            </div>
+
+            {/* Bottom Bar: Title & Description */}
+            <div className="space-y-2 mt-auto">
+              <h3 className="text-3xl font-bold tracking-tight text-white drop-shadow-md sm:text-4xl">
+                {name}
+              </h3>
+              <p className="max-w-md text-sm leading-relaxed text-gray-200/90 line-clamp-2 drop-shadow-sm group-hover:text-white transition-colors">
+                {description}
+              </p>
+            </div>
+          </div>
+        </div>
       </DialogTrigger>
 
-      <DialogContent
-        className="max-w-2xl max-h-[80vh] overflow-y-auto w-[calc(100vw-4rem)]"
-        showCloseButton={false}
-      >
+      {/* --- Detailed Modal Content --- */}
+      <DialogContent className="max-w-2xl border-white/10 bg-slate-950 text-white sm:max-w-3xl">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-foreground flex items-center gap-3">
-            {name}
-          </DialogTitle>
-        </DialogHeader>
-
-        <div className="space-y-6">
-          {/* Detailed Description */}
-          <div>
-            <h4 className="text-lg font-semibold mb-2">About</h4>
-            <p className="text-muted-foreground leading-relaxed">
-              {detailedDescription}
-            </p>
+          <DialogTitle className="text-3xl font-bold text-white">{name}</DialogTitle>
+          <div className="flex flex-wrap gap-4 pt-4 text-sm font-mono text-gray-400">
+             <div className="flex items-center gap-2"><Globe size={14}/> {location}</div>
+             <div className="flex items-center gap-2"><Calendar size={14}/> {established}</div>
+             <div className="flex items-center gap-2"><Users size={14}/> {members} Members</div>
           </div>
-
-          {/* Department Stats */}
-          {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-              <Users className="w-5 h-5 text-primary" />
-              <div>
-                <p className="text-sm text-muted-foreground">Members</p>
-                <p className="font-semibold">{members}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-              <Calendar className="w-5 h-5 text-primary" />
-              <div>
-                <p className="text-sm text-muted-foreground">Established</p>
-                <p className="font-semibold">{established}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-              <MapPin className="w-5 h-5 text-primary" />
-              <div>
-                <p className="text-sm text-muted-foreground">Location</p>
-                <p className="font-semibold">{location}</p>
-              </div>
-            </div>
-          </div> */}
-
-          {/* Current Projects */}
-          {/* <div>
-            <h4 className="text-lg font-semibold mb-3">Current Projects</h4>
-            <div className="flex flex-wrap gap-2">
-              {projects.map((project, index) => (
-                <Badge key={index} variant="secondary">
-                  {project}
-                </Badge>
-              ))}
-            </div>
-          </div> */}
-
-          {/* Contact Information */}
-          {/* <div className="border-t pt-4">
-            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-              <div>
-                <h4 className="font-semibold mb-1">Contact</h4>
-                <p className="text-muted-foreground">{contact}</p>
-              </div>
-
-              {website && (
-                <Button
-                  variant="outline"
-                  className="flex items-center gap-2 bg-transparent"
-                  asChild
-                >
-                  <a href={website} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="w-4 h-4" />
-                    Visit Website
-                  </a>
-                </Button>
-              )}
-            </div>
-          </div> */}
+        </DialogHeader>
+        <div className="mt-4 space-y-6">
+          <p className="text-lg leading-relaxed text-gray-300">{detailedDescription}</p>
         </div>
       </DialogContent>
     </Dialog>
