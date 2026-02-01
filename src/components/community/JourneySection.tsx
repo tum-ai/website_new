@@ -288,7 +288,7 @@ export const JourneySection = () => {
       step: "02A",
       name: "Research Track",
       description:
-        "Join a team on an Impact Project applying AI to real world challenges. Contribute to research, academe publications, or open-Source work, and engage with the TUM.ai community through update sessions.",
+        "Join a team on an Impact Project applying AI to real world challenges. Contribute to research, academic publications, or open-source work, and engage with the TUM.ai community through update sessions.",
     },
     {
       step: "02B",
@@ -306,7 +306,7 @@ export const JourneySection = () => {
       step: "04",
       name: "Research Exchange (REX) Program",
       description:
-        "After one semester, you can join the REX Program — conduct research at top institutions like MIT, Harvard, or Cambridge. With our alumni network, we guide you in finding a topic, navigating applications, and contributing to surting-edge research.",
+        "After one semester, you can join the REX Program — conduct research at top institutions like MIT, Harvard, or Cambridge. With our alumni network, we guide you in finding a topic, navigating applications, and contributing to cutting-edge research.",
     },
     {
       step: "05",
