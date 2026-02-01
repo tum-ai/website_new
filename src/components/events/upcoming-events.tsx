@@ -46,12 +46,32 @@ export default function UpcomingEvents({ events }: { events: Event[] }) {
             {monthEvents.map((event) => (
               <UpcomingEventCard key={event.id} event={event} />
             ))}
+            <LinkedInCard />
           </div>
         </div>
       ))}
     </div>
   );
 }
+
+function LinkedInCard() {
+  return (
+    <Card className="transition-transform duration-150 hover:scale-101 justify-between w-full h-fit">
+      <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7419050583283728384?collapsed=1" 
+        className="h-[620px] w-[99%]" >
+
+      </iframe>
+      <div className="flex flex-col justify-normal flex-1 min-w-0 p-4 pt-0">
+        <CardHeader className="pb-0 px-0">
+          <CardTitle className="text-purple-800 text-lg">
+            Title
+          </CardTitle>
+        </CardHeader>
+      </div>
+    </Card>
+  );
+}
+
 
 function UpcomingEventCard({ event }: { event: Event }) {
   const eventDate = new Date(event.event_date);
