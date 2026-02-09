@@ -61,19 +61,19 @@ export function ExpectationELab() {
           <div className="mt-16">
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
               <Stat
-                title={"AI E-Lab Startups since 2022"}
+                title={"E-Lab Startups since 2022"}
                 from={0}
                 to={38}
                 suffix=""
               />
               <Stat
-                title={"raised by AI E-lab lab ventures"}
+                title={"raised by E-Lab lab ventures"}
                 from={0}
                 to={5}
                 suffix="M+"
                 isMoney
               />
-              <Stat title={"AI E-Lab Iterations"} from={0} to={4} suffix="" />
+              <Stat title={"E-Lab Iterations"} from={0} to={4} suffix="" />
             </div>
           </div>
         </div>

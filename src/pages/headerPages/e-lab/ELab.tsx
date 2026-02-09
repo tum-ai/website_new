@@ -17,8 +17,8 @@ export default function ELab() {
     name: "Venture Department",
     alternateName: [
       "AI Entrepreneurship Lab",
-      "AI E-Lab",
-      "AI E-Lab by TUM.ai",
+      "E-Lab",
+      "E-Lab by TUM.ai",
       "AI Entrepreneurship Lab by TUM.ai",
     ],
     description:
@@ -98,7 +98,7 @@ export default function ELab() {
                       className={`mb-5 text-3xl md:text-4xl font-bold text-black`}
                     >
                       <style></style>
-                      Applications for AI E-Lab are closed
+                      Application for E-Lab 5.0 is open!
                     </h2>
 
                     <p
@@ -117,6 +117,7 @@ export default function ELab() {
                         {/* Sparkling effects - always visible */}
 
                         <a
+                          href="https://tally.so/r/44KJYb"
                           target="_blank"
                           rel="noopener noreferrer"
                           className={
@@ -136,7 +137,7 @@ export default function ELab() {
                             // transition-opacity duration-300 group-hover:opacity-100"
                           ></div>
                           <span className="relative z-10 flex items-center gap-2">
-                            <span>Applications Closed</span>
+                            <span>Apply Now!</span>
                             {/* <svg */}
                             {/*   className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" */}
                             {/*   fill="none" */}

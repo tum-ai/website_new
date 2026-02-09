@@ -3,7 +3,7 @@ export const NotableStartups = () => {
     <section className="py-12 sm:py-12 lg:py-16 bg-gray-50 w-full overflow-hidden">
       <div className="max-w-6xl mx-auto text-center px-4">
         <p className={`text-sm text-gray-500 mb-8 uppercase tracking-wider`}>
-          Notable AI E-Lab Startups from previous iterations
+          Notable E-Lab Startups from previous iterations
         </p>
 
         <div className="relative w-full overflow-hidden">

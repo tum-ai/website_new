@@ -39,7 +39,7 @@ export const Hero = () => {
                   <div className="h-28 md:h-40 flex items-center">
                     <img
                       src="assets/e-lab/ai-e-lab-logo.png"
-                      alt="AI E-LAB 4.0"
+                      alt="E-LAB 5.0"
                       width={400}
                       height={160}
                       className="h-28 md:h-40 w-auto object-contain"
@@ -76,7 +76,7 @@ export const Hero = () => {
             {/* CTA Button */}
             <div className="pt-1">
               <a
-                // href="https://tally.so/r/3jVjWa"
+                href="https://tally.so/r/44KJYb"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group relative inline-flex items-center justify-center px-7 py-2 text-base font-normal text-white transition-all duration-300 ease-out"
@@ -90,7 +90,7 @@ export const Hero = () => {
                   // group-hover:opacity-100"
                 ></div>
                 <span className="relative flex items-center space-x-2">
-                  <span>AI E-Lab 4.0 - Applications Closed</span>
+                  <span>E-Lab 5.0 - Apply Now!</span>
                   {/* <svg */}
                   {/*   className="w-4 h-4 transform transition-transform group-hover:translate-x-1" */}
                   {/*   fill="none" */}

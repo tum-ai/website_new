@@ -39,9 +39,9 @@ export const CarouselHome = () => {
     {
       imgSrc: "/assets/home_img4.webp",
       text: "APPLICATIONS OPEN IN AUGUST",
-      title: "AI Entrepreneurship Lab (AI E-Lab)",
+      title: "AI Entrepreneurship Lab (E-Lab)",
       desc: "14-week equity-free AI startup incubator with full support from Munich's innovation ecosystem",
-      buttonText: "Learn more about AI E-Lab",
+      buttonText: "Learn more about E-Lab",
       link: "/e-lab",
     },
   ];
