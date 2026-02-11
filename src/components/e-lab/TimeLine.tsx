@@ -31,7 +31,7 @@ export const Timeline = () => {
   }, []);
 
   const timelineItems = [
-    { title: "Start", description: "October", side: "right" },
+    { title: "Start", description: "April", side: "right" },
     {
       title: "Onboarding Weekend",
       description: "3 days intensive",
@@ -46,11 +46,11 @@ export const Timeline = () => {
     },
     { title: "Build & Iterate II", description: "6 weeks", side: "left" },
     {
-      title: "Pre-Demo Day Pitch",
+      title: "Selection Day",
       description: "The Final Test",
       side: "right",
     },
-    { title: "Demo Day", description: "January", side: "left" },
+    { title: "Final Pitch", description: "July", side: "left" },
   ];
   return (
     <section className="flex flex-col items-center justify-center py-12 sm:py-12 lg:py-16 bg-white w-full">

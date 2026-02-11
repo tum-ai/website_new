@@ -122,7 +122,7 @@ export default function Partners() {
                     title="Industry & Projects"
                     items={[
                       "Industry Project Partner",
-                      "AI E-lab Judge",
+                      "E-Lab Judge",
                       "Post Open Positions",
                     ]}
                   />

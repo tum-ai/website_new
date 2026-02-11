@@ -37,14 +37,14 @@ export const Testimonials = () => {
                   Co-Founder @ Spherecast
                 </p>
                 <p className={`text-xs text-purple-600 font-medium`}>
-                  AI E-Lab 1.0
+                  E-Lab 1.0
                 </p>
               </div>
             </div>
             <p
               className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}
             >
-              "The AI E-Lab gave us the foundation to build Spherecast from idea
+              "The E-Lab gave us the foundation to build Spherecast from idea
               to YC. The community and mentorship were game-changing."
             </p>
             <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
@@ -78,17 +78,17 @@ export const Testimonials = () => {
                   Benedikt Wieser
                 </h3>
                 <p className={`text-sm text-gray-600 truncate`}>
-                  Winner AI E-Lab 2.0
+                  Winner E-Lab 2.0
                 </p>
                 <p className={`text-xs text-purple-600 font-medium`}>
-                  AI E-Lab 2.0
+                  E-Lab 2.0
                 </p>
               </div>
             </div>
             <p
               className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}
             >
-              "The AI E-Lab is probably the best program for creating top-end
+              "The E-Lab is probably the best program for creating top-end
               entrepreneurs out there. It's simply incredible."
             </p>
             <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
@@ -125,7 +125,7 @@ export const Testimonials = () => {
                   Founder @ Stealth Startup
                 </p>
                 <p className={`text-xs text-purple-600 font-medium`}>
-                  AI E-Lab 3.0
+                  E-Lab 3.0
                 </p>
               </div>
             </div>
@@ -176,7 +176,7 @@ export const Testimonials = () => {
             <p
               className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}
             >
-              "The quality of founders coming out of AI E-Lab is exceptional.
+              "The quality of founders coming out of E-Lab is exceptional.
               We're proud to be part of this community."
             </p>
             <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
@@ -213,14 +213,14 @@ export const Testimonials = () => {
                   Founder of Tenmin
                 </p>
                 <p className={`text-xs text-purple-600 font-medium`}>
-                  AI E-Lab 3.0
+                  E-Lab 3.0
                 </p>
               </div>
             </div>
             <p
               className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}
             >
-              "We went from zero to being a funded startup - the AI E-Lab
+              "We went from zero to being a funded startup - the E-Lab
               accelerated our journey far beyond what we thought was possible."
             </p>
             <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
@@ -257,14 +257,14 @@ export const Testimonials = () => {
                   Co-Founder @ Spherecast
                 </p>
                 <p className={`text-xs text-purple-600 font-medium`}>
-                  AI E-Lab 1.0
+                  E-Lab 1.0
                 </p>
               </div>
             </div>
             <p
               className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}
             >
-              "The AI E-Lab gave us the foundation to build Spherecast from idea
+              "The E-Lab gave us the foundation to build Spherecast from idea
               to YC. The community and mentorship were game-changing."
             </p>
             <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
@@ -297,17 +297,17 @@ export const Testimonials = () => {
                   Benedikt Wieser
                 </h3>
                 <p className={`text-sm text-gray-600 truncate`}>
-                  Winner AI E-Lab 2.0
+                  Winner E-Lab 2.0
                 </p>
                 <p className={`text-xs text-purple-600 font-medium`}>
-                  AI E-Lab 2.0
+                  E-Lab 2.0
                 </p>
               </div>
             </div>
             <p
               className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}
             >
-              "The AI E-Lab is probably the best program for creating top-end
+              "The E-Lab is probably the best program for creating top-end
               entrepreneurs out there. It's simply incredible."
             </p>
             <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
@@ -343,14 +343,14 @@ export const Testimonials = () => {
                   Founder @ Stealth Startup
                 </p>
                 <p className={`text-xs text-purple-600 font-medium`}>
-                  AI E-Lab 3.0
+                  E-Lab 3.0
                 </p>
               </div>
             </div>
             <p
               className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}
             >
-              "We went from zero to being a funded startup - the AI E-Lab
+              "We went from zero to being a funded startup - the E-Lab
               accelerated our journey far beyond what we thought was possible."
             </p>
             <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
@@ -393,7 +393,7 @@ export const Testimonials = () => {
             <p
               className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}
             >
-              "The quality of founders coming out of AI E-Lab is exceptional.
+              "The quality of founders coming out of E-Lab is exceptional.
               We're proud to be part of this community."
             </p>
             <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
@@ -430,14 +430,14 @@ export const Testimonials = () => {
                   Founder of Tenmin
                 </p>
                 <p className={`text-xs text-purple-600 font-medium`}>
-                  AI E-Lab 3.0
+                  E-Lab 3.0
                 </p>
               </div>
             </div>
             <p
               className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}
             >
-              "We went from zero to being a funded startup - the AI E-Lab
+              "We went from zero to being a funded startup - the E-Lab
               accelerated our journey far beyond what we thought was possible."
             </p>
             <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">

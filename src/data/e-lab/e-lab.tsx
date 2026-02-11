@@ -59,7 +59,7 @@ export const testimonials = [
   {
     imgSrc: "/assets/e-lab/testimonials/florian_scherl.jpg",
     name: "Florian Scherl",
-    text: "I really loved the abundance of pitch events. It not only immensely improved my pitching but I also received priceless feedback for my idea and even found my NLP team lead at the final pitch. I definitely recommend applying to the AI E-Lab and using the provided knowledge and resources to the fullest. They offer great advice and guidance. Lastly, I greatly appreciated the peer-to-peer exchange. They absolutely brought the brightest minds together to start new thriving ventures.",
+    text: "I really loved the abundance of pitch events. It not only immensely improved my pitching but I also received priceless feedback for my idea and even found my NLP team lead at the final pitch. I definitely recommend applying to the E-Lab and using the provided knowledge and resources to the fullest. They offer great advice and guidance. Lastly, I greatly appreciated the peer-to-peer exchange. They absolutely brought the brightest minds together to start new thriving ventures.",
     logoSrc: "/assets/e-lab/testimonials/fast_ai_movies.png",
     logoAlt: "FAST AI Movies",
     link: "https://www.linkedin.com/in/florian-scherl/",
@@ -77,7 +77,7 @@ export const testimonials = [
   {
     imgSrc: "/assets/e-lab/testimonials/marc_alexander_kuehn.jpg",
     name: "Marc Alexander Kühn (Jury)",
-    text: "Participating in AI E-Lab's final pitch event as a jury member was an enriching experience. It was great to see so many young people driving change in Artificial Intelligence. Also, it was thrilling to see some of the teams making significant progress after the incubation program. Above all, I believe what TUM.ai E-Lab is doing for the Munich ecosystem is of significant value. They're cultivating a vibrant environment for young, talented students and graduates to kick-start their entrepreneurial journey. Their dedication to unleashing the future of AI innovation in Munich is remarkable and I'm excited to see where their efforts will lead.",
+    text: "Participating in E-Lab's final pitch event as a jury member was an enriching experience. It was great to see so many young people driving change in Artificial Intelligence. Also, it was thrilling to see some of the teams making significant progress after the incubation program. Above all, I believe what TUM.ai E-Lab is doing for the Munich ecosystem is of significant value. They're cultivating a vibrant environment for young, talented students and graduates to kick-start their entrepreneurial journey. Their dedication to unleashing the future of AI innovation in Munich is remarkable and I'm excited to see where their efforts will lead.",
     logoSrc: "/assets/e-lab/partners/uvc_w.svg",
     logoAlt: "UVC Partners",
     link: "https://www.linkedin.com/in/marc-alexander-kuehn/",
@@ -96,7 +96,7 @@ export const testimonials = [
   // {
   //   imgSrc: "/assets/e-lab/testimonials/leon_hergert.jpeg",
   //   name: "Leon Hergert",
-  //   text: "As the co-founder of Spherecast, a software solution for e-commerce brands addressing stock imbalances with advanced machine learning, our  journey began with the AI E-Lab program. Beyond just the network, the AI E-Lab's mentorship was instrumental. Our mentor, a seasoned e-commerce entrepreneur, continues to provide invaluable guidance and challenge us. If AI and startups excite you, whether you have an idea or seek co-founders, the AI E-Lab is the ideal platform.",
+  //   text: "As the co-founder of Spherecast, a software solution for e-commerce brands addressing stock imbalances with advanced machine learning, our  journey began with the E-Lab program. Beyond just the network, the E-Lab's mentorship was instrumental. Our mentor, a seasoned e-commerce entrepreneur, continues to provide invaluable guidance and challenge us. If AI and startups excite you, whether you have an idea or seek co-founders, the E-Lab is the ideal platform.",
   //   logoSrc: "/assets/e-lab/testimonials/spherecast_ls.png",
   //   logoAlt: "spherecast",
   // },
@@ -130,7 +130,7 @@ export const team: Person[] = [
     lastName: "Sommerlad",
     role: "Head of Venture",
     description:
-      "Hey, I am Laurenz and lead the amazing team behind the AI E-LAB. My journey began at a young age, building my first software projects at 12 and founding a student-led startup at 15. These early experiences paved the way for my burning passion in AI, Robotics and Entrepreneurship.\n\n" +
+      "Hey, I am Laurenz and lead the amazing team behind the E-LAB. My journey began at a young age, building my first software projects at 12 and founding a student-led startup at 15. These early experiences paved the way for my burning passion in AI, Robotics and Entrepreneurship.\n\n" +
       "Here is a quick overview of my academic achievements and work:\n\n" +
       "- Ranked in the Top 2% at TUM Department of Computer Science and achieved an Abitur GPA of 1.0\n" +
       "- Conducting research at LMU Hospital to predict rare child diseases using federated learning-based Graph ML techniques on patient phenotypes, genes, and proteins\n" +
@@ -176,7 +176,7 @@ export const team: Person[] = [
     lastName: "Wieser",
     role: "Strategy & Events",
     description:
-      "Having a background in Business Administration from the University of St. Gallen and studies at Berkeley, I’ve worked on multiple startup projects, in venture capital, at a scale-up, and participated in the AI E-Lab 2.0 startup incubator.\n\nAdditional to my professional experience, I learnt to lead teams in high-stress situations as an officer cadet in the Austrian Armed Forces, instilling in me strong personal drive and get-things-done thinking.\n\nBesides being passionate about entrepreneurship I love outdoor adventures like whitewater rafting and hiking, and always strive to explore and feel the intensity of life. I am absolutely looking forward to accompanying you on your individual, entrepreneurial journey. Let’s build something amazing together!",
+      "Having a background in Business Administration from the University of St. Gallen and studies at Berkeley, I’ve worked on multiple startup projects, in venture capital, at a scale-up, and participated in the E-Lab 2.0 startup incubator.\n\nAdditional to my professional experience, I learnt to lead teams in high-stress situations as an officer cadet in the Austrian Armed Forces, instilling in me strong personal drive and get-things-done thinking.\n\nBesides being passionate about entrepreneurship I love outdoor adventures like whitewater rafting and hiking, and always strive to explore and feel the intensity of life. I am absolutely looking forward to accompanying you on your individual, entrepreneurial journey. Let’s build something amazing together!",
     imgSrc: "/assets/e-lab/team/benedikt_wieser.jpg",
     imgAlt: "Benedikt Wieser",
     socialMedia: {
@@ -285,7 +285,7 @@ export const alumni: Person[] = [
     lastName: "Faruk",
     role: "Advisor",
     description:
-      "Abdul serves as an Advisor at TUM.ai, where he brings his experience and expertise in leadership, entrepreneurship, and venture development. He previously led the AI E-Lab as the Head of Venture alongside Daniil Morozov, where they envisioned and re-established the AI E-Lab as a straight-shooting startup sandbox and a genuine community designed to engineer serendipity among founders. Throughout the program, Abdul has been and will continue to be a humble sparring partner for our founders.",
+      "Abdul serves as an Advisor at TUM.ai, where he brings his experience and expertise in leadership, entrepreneurship, and venture development. He previously led the E-Lab as the Head of Venture alongside Daniil Morozov, where they envisioned and re-established the E-Lab as a straight-shooting startup sandbox and a genuine community designed to engineer serendipity among founders. Throughout the program, Abdul has been and will continue to be a humble sparring partner for our founders.",
     imgSrc: "/assets/e-lab/team/abdul_faruk.jpg",
     imgAlt: "Abdulqadir Faruk",
     socialMedia: {

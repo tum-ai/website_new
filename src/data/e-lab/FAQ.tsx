@@ -7,22 +7,22 @@ export const faq = [
   {
     question: "Do I need an idea to apply?",
     answer:
-      "No, you don't need a fully formed idea to apply. The AI E-Lab is designed to help you develop and validate ideas during the program. We provide ideation workshops and guidance to help you discover the right opportunity to pursue.",
+      "No, you don't need a fully formed idea to apply. The E-Lab is designed to help you develop and validate ideas during the program. We provide ideation workshops and guidance to help you discover the right opportunity to pursue.",
   },
   {
-    question: "Does the AI E Lab require me to work from Munich?",
+    question: "Does the E-Lab require me to work from Munich?",
     answer:
-      "Yes, the AI E-Lab is an in-person program based in Munich. You'll be working from our headquarters at TUM.ai, collaborating with other founders and having access to our physical workspace, mentors, and the local startup ecosystem.",
+      "Yes, the E-Lab is an in-person program based in Munich. You'll be working from our headquarters at TUM.ai, collaborating with other founders and having access to our physical workspace, mentors, and the local startup ecosystem.",
   },
   {
     question: "What is the time commitment for the program?",
     answer:
-      "The AI E-Lab is a 14-week intensive program that requires significant time commitment. We expect participants to dedicate substantial time each week to building their startups, attending workshops, and participating in program activities.",
+      "The E-Lab is a 14-week intensive program that requires significant time commitment. We expect participants to dedicate substantial time each week to building their startups, attending workshops, and participating in program activities.",
   },
   {
     question: "Do you take equity in my startup?",
     answer:
-      "No, the AI E-Lab is completely equity-free! We don't take any equity stake in your venture. Our mission is to make AI entrepreneurship accessible to everyone, which is why we provide all support and resources without any financial investment or equity requirements.",
+      "No, the E-Lab is completely equity-free! We don't take any equity stake in your venture. Our mission is to make AI entrepreneurship accessible to everyone, which is why we provide all support and resources without any financial investment or equity requirements.",
   },
 
   {
@@ -47,7 +47,7 @@ export const faq = [
   },
   {
     question:
-      "What if I don’t find a team during the first week of the AI E-Lab?",
+      "What if I don’t find a team during the first week of the E-Lab?",
     answer:
       "No worries, if you don’t find a team, you’ll still be able to continue your journey in the E-Lab.",
   },
