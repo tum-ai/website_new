@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2498 555">
+  <defs>
+    <style>
+      .cls-1 {
+        font-size: 463px;
+      }
+
+      .cls-1, .cls-2 {
+        fill: #fff;
+        font-family: ArchivoSemiExpanded-Bold, 'Archivo SemiExpanded';
+        font-weight: 700;
+      }
+
+      .cls-2 {
+        font-size: 102px;
+      }
+    </style>
+  </defs>
+  <text class="cls-1" transform="translate(129 437)"><tspan x="0" y="0">AI E-LAB</tspan></text>
+  <text class="cls-2" transform="translate(2322.05 118)"><tspan x="0" y="0">5.0</tspan></text>
+</svg>
