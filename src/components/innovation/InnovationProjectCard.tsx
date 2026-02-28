@@ -106,19 +106,19 @@ export function InnovationProjectCard({
       </DialogTrigger>
 
       {/* --- Detailed Modal Content --- */}
-      <DialogContent className="max-w-2xl border-white/10 bg-slate-950 text-white sm:max-w-3xl">
+      <DialogContent className="max-w-2xl border-gray-200 bg-white text-slate-900 sm:max-w-3xl" showCloseButton={false}>
         <DialogHeader>
-          <DialogTitle className="text-3xl font-bold text-white">{name}</DialogTitle>
-          <div className="flex flex-wrap gap-4 pt-4 text-sm font-mono text-gray-400">
+          <DialogTitle className="text-3xl font-bold text-slate-900">{name}</DialogTitle>
+          <div className="flex flex-wrap gap-4 pt-4 text-sm font-mono text-gray-600">
              <div className="flex items-center gap-2"><Globe size={14}/> {location}</div>
              <div className="flex items-center gap-2"><Calendar size={14}/> {established}</div>
              <div className="flex items-center gap-2"><Users size={14}/> {members} Members</div>
           </div>
         </DialogHeader>
         <div className="mt-4 space-y-6">
-          <p className="text-lg leading-relaxed text-gray-300">{detailedDescription}</p>
+          <p className="text-lg leading-relaxed text-gray-700">{detailedDescription}</p>
         </div>
-      </DialogContent>
+</DialogContent>
     </Dialog>
   );
 }

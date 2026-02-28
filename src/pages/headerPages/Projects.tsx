@@ -60,14 +60,7 @@ export default function Projects() {
     <>
       <SEO {...getSEOConfig("projects")} />
       
-      <section className="relative min-h-screen bg-[#020617] text-white pt-32 pb-24 px-4 sm:px-8">
-        {/* Subtle Grid Background */}
-        <div className="absolute inset-0 pointer-events-none opacity-20" 
-             style={{ 
-               backgroundImage: 'linear-gradient(to right, #334155 1px, transparent 1px), linear-gradient(to bottom, #334155 1px, transparent 1px)', 
-               backgroundSize: '40px 40px' 
-             }} 
-        />
+      <section className="relative pt-32 pb-16 px-8 bg-gradient-to-br from-blue-900 to-purple-900">
         
         {/* Glow Effect */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-[500px] bg-blue-900/20 blur-[120px] rounded-full pointer-events-none" />
@@ -78,7 +71,7 @@ export default function Projects() {
             <div className="mb-16 border-b border-white/10 pb-8">
               <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white mb-6">
                 Innovation <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+                <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-purple-400">
                   Departments and Projects
                 </span>
               </h1>
