@@ -7,51 +7,63 @@ import { getSEOConfig } from "@/config/seo";
 const departments = [
   {
     id: "medai",
-    name: "MED.ai",
-    description: "Identifying challenges at the intersection of healthcare and AI.",
-    image: "/assets/innovation/med_ai.webp",
-    detailedDescription: "MED.ai is TUM.ai’s elite taskforce dedicated to identifying current challenges at the intersection of healthcare and AI, conducting cutting-edge research, and engaging with leading industry experts. Semesterly research projects in this field with institutions like Helmholtz AI leverages our members to draw new frontiers in the medical research field. With our MED Talks Speaker Series we make one of AI‘s most exciting application fields accessible to the broader audience.",
-    members: 8,
-    established: "2022",
-    location: "Hybrid",
-    projects: ["Neural Architecture Search", "Federated Learning", "Medical Imaging"],
+    name: "med.AI",
+    description: "Advancing the frontier of artificial intelligence in the medical domain.",
+    image: "",
+    detailedDescription: "MedAI is a multidisciplinary team dedicated to advancing the frontier of artificial intelligence in the medical domain. Our vision is to build a strong biomedical AI community in Munich, conduct impactful research, and enjoy the journey together. Currently we have 3 research projects going on with Helmholtz Center Munich: Pan-cancer histopathology atlas, Retinal OCT segmentation for biomarker discovery in gene therapy, and Prediction of switching events in PDR5-GFP gene expression.",
+    members: 14,
+    established: "2024",
+    location: "Munich",
+    projects: ["Histopathology Atlas", "Retinal OCT", "PDR5-GFP Prediction"],
     className: "md:col-span-2 md:row-span-1 min-h-[350px]",
   },
   {
-    id: "robotics",
-    name: "Robotics",
-    description: "Cutting-edge robotic intelligence and imitation learning.",
-    image: "/assets/innovation/robotics_arm.webp",
-    detailedDescription: "We explore cutting-edge approaches in robotic intelligence, currently focusing on imitation learning using the LeRobot framework. Our work is rapidly expanding toward reinforcement learning and robotics foundation models. As a team, we actively participate in robotics hackathons, organize paper reading sessions, and develop our own experimental projects—bridging research and hands-on innovation.",
-    members: 4,
-    established: "2023",
-    location: "Munich",
-    projects: ["AI Bootcamp", "LeRobot Framework", "Sim2Real"],
-    className: "md:col-span-1 md:row-span-2 min-h-[350px] md:min-h-full", 
-  },
-  {
-    id: "quant",
-    name: "Quant Finance",
-    description: "Quantitative finance, hackathons, and fintech research.",
+    id: "quantum-ai",
+    name: "quanTUM.ai",
+    description: "Applying machine learning across the quantum stack.",
     image: "",
-    detailedDescription: "The QuantFinance Task Force is made up of TUM.ai members interested in Quantitative Finance or FinTech, who either want to participate in related hackathons or pursue a career in these fields. Our members take part individually or as a team in hackathons, estimathons, and other events.",
-    members: 8,
+    detailedDescription: "The TF 'quanTUM.ai – ML for Quantum Science' focuses on applying ML across the quantum stack, including quantum algorithms, simulation, high-performance computing, and experimental workflows. Through research projects, educational sessions, community events, and hackathons, quanTUM.ai aims to bridge AI and quantum technologies in a practical and interdisciplinary way.",
+    members: 6,
     established: "2024",
-    location: "Hybrid",
-    projects: ["Predictive Maintenance", "Digital Twins", "Algo Trading"],
+    location: "Munich",
+    projects: ["Quantum Algorithms", "Quantum Simulation", "Hackathons"],
+    className: "md:col-span-1 md:row-span-2 min-h-[350px] md:min-h-full",
+  },
+  {
+    id: "women-at-tum",
+    name: "Women@tum.ai",
+    description: "Empowering female students in AI, business, and Tech.",
+    image: "",
+    detailedDescription: "What if every woman in TUM.ai felt truly empowered to lead, create, and inspire? This task force builds a space where female students in AI, business, and Tech can connect, grow, and take initiative. Focus on female empowerment, leadership, mentorship, workshops, networking, and industry collaboration within AI/Tech.",
+    members: 1,
+    established: "2024",
+    location: "Munich",
+    projects: ["Mentorship", "Leadership", "Workshops"],
     className: "md:col-span-1 md:row-span-1 min-h-[300px]",
   },
   {
-    id: "compute",
-    name: "Accelerated Computing",
-    description: "AI hardware, GPUs, and compute acceleration.",
-    image: "/assets/innovation/accelerated_computing.webp",
-    detailedDescription: "At TUM.ai's Applied Accelerated Computing task force, we go beyond theoretical AI to unravel the hardware powering it all. We equip members with in-depth knowledge of GPUs and compute accelerators, enabling them to understand their workings and optimize AI workflows at a fundamental level.",
-    members: 2,
+    id: "generative-modelling",
+    name: "Generative Modelling",
+    description: "Deep dives into math and PyTorch code for generative models.",
+    image: "",
+    detailedDescription: "We are creating educational sessions on generative modeling for the tum.ai community where we dive into the mathematics / PyTorch code that makes models like ChatGPT and Stable Diffusion work.",
+    members: 5,
     established: "2024",
     location: "Munich",
-    projects: ["AI Governance", "Bias Detection", "Kernel Optimization"],
+    projects: ["Math of GenAI", "PyTorch", "Stable Diffusion"],
     className: "md:col-span-1 md:row-span-1 min-h-[300px]",
+  },
+  {
+    id: "global-affairs",
+    name: "Global Affairs",
+    description: "Driving TUM.ai's international presence and strategic outreach.",
+    image: "",
+    detailedDescription: "Global Affairs drives TUM.ai's international presence by organizing expeditions to leading AI and venture hubs worldwide. We attend major conferences, connect with startups and research labs, and build partnerships that position TUM.ai on the global stage. Through grant acquisition and strategic outreach, we open doors to new ecosystems, giving our members firsthand exposure to international innovation while strengthening our network across borders.",
+    members: 6,
+    established: "2024",
+    location: "Global",
+    projects: ["Expeditions", "Conferences", "Partnerships"],
+    className: "md:col-span-3 md:row-span-1 min-h-[300px]",
   },
 ];
 
@@ -63,9 +75,9 @@ export default function Projects() {
       <section className="relative pt-32 pb-16 px-8 bg-gradient-to-br from-blue-900 to-purple-900">
         
         {/* Glow Effect */}
+        <Layout>
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-[500px] bg-blue-900/20 blur-[120px] rounded-full pointer-events-none" />
 
-        <Layout>
           <div className="relative z-10 max-w-7xl mx-auto">
             {/* Header */}
             <div className="mb-16 border-b border-white/10 pb-8">
