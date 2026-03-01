@@ -67,7 +67,7 @@ export const Hero = () => {
                 <span className="text-purple-400 font-semibold">
                   AI startups
                 </span>{" "}
-                in 14 weeks
+                in 12 weeks
               </p>
               <p className="text-base text-gray-400">
                 Equity-free • Munich-based • Founder-focused
