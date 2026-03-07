@@ -38,7 +38,7 @@ export const Hero = () => {
                 <div className="flex justify-center">
                   <div className="h-28 md:h-40 flex items-center">
                     <img
-                      src="assets/e-lab/E-Lab5Logo.svg"
+                      src="/assets/e-lab/E-Lab5Logo.svg"
                       alt="E-LAB 5.0"
                       width={400}
                       height={160}
