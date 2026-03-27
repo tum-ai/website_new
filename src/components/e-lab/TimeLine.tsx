@@ -55,15 +55,15 @@ export const Timeline = () => {
   return (
     <section className="flex flex-col items-center justify-center py-12 sm:py-12 lg:py-16 bg-white w-full">
       <h2
-        className={`text-3xl md:text-4xl tracking-tight font-normal mb-8 text-black text-center uppercase `}
+        className={`text-title sm:text-2xl md:text-[2rem] tracking-tight font-semibold mb-8 text-black text-center`}
       >
         Program
       </h2>
       <div ref={timelineRef} className="relative max-w-4xl mx-auto w-full">
         {/* Vertical line with gradient animation */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gray-300 rounded-full">
+        <div className="absolute left-1/2 transform -translate-x-1/2 w-1 top-8 bottom-8 bg-gray-300 rounded-full">
           <div
-            className="absolute top-0 left-0 w-full bg-gradient-to-b from-purple-600 to-purple-400 rounded-full transition-all duration-300 ease-out"
+            className="absolute top-0 left-0 w-full bg-gradient-to-b from-primary to-purple-300 rounded-full transition-all duration-300 ease-out"
             style={{
               height: `${scrollProgress * 100}%`,
               boxShadow:
@@ -92,12 +92,12 @@ export const Timeline = () => {
                         className={`transition-all duration-500 ${isActive ? "translate-x-0 opacity-100" : "translate-x-8 opacity-60"}`}
                       >
                         <h3
-                          className={`font-semibold text-xl mb-2 transition-colors duration-300 ${isActive ? "text-purple-700" : "text-gray-800"}`}
+                          className={`font-semibold text-xl mb-2 transition-colors duration-300 ${isActive ? "text-dark-purple" : "text-gray-800"}`}
                         >
                           {item.title}
                         </h3>
                         <p
-                          className={`text-sm transition-colors duration-300 ${isActive ? "text-purple-600" : "text-gray-600"}`}
+                          className={`text-sm transition-colors duration-300 ${isActive ? "text-primary" : "text-text-gray"}`}
                         >
                           {item.description}
                         </p>
@@ -107,12 +107,12 @@ export const Timeline = () => {
                       <div
                         className={`w-8 h-8 rounded-full border-4 transition-all duration-300 ${
                           isActive
-                            ? "bg-purple-600 border-purple-300 shadow-lg shadow-purple-300/50 scale-110"
+                            ? "bg-primary border-purple-300 shadow-lg shadow-purple-300/50 scale-110"
                             : "bg-white border-gray-400 scale-100"
                         }`}
                       >
                         {isActive && (
-                          <div className="absolute inset-0 rounded-full bg-purple-600 animate-ping opacity-30" />
+                          <div className="absolute inset-0 rounded-full bg-dark-purple animate-ping opacity-30" />
                         )}
                       </div>
                     </div>
@@ -125,7 +125,7 @@ export const Timeline = () => {
                       <div
                         className={`w-8 h-8 rounded-full border-4 transition-all duration-300 ${
                           isActive
-                            ? "bg-purple-600 border-purple-300 shadow-lg shadow-purple-300/50 scale-110"
+                            ? "bg-primary border-purple-300 shadow-lg shadow-purple-300/50 scale-110"
                             : "bg-white border-gray-400 scale-100"
                         }`}
                       >
@@ -139,12 +139,12 @@ export const Timeline = () => {
                         className={`transition-all duration-500 ${isActive ? "translate-x-0 opacity-100" : "-translate-x-8 opacity-60"}`}
                       >
                         <h3
-                          className={`font-semibold text-xl mb-2 transition-colors duration-300 ${isActive ? "text-purple-700" : "text-gray-800"}`}
+                          className={`font-semibold text-xl mb-2 transition-colors duration-300 ${isActive ? "text-dark-purple" : "text-gray-800"}`}
                         >
                           {item.title}
                         </h3>
                         <p
-                          className={`text-sm transition-colors duration-300 ${isActive ? "text-purple-600" : "text-gray-600"}`}
+                          className={`text-sm transition-colors duration-300 ${isActive ? "text-primary" : "text-gray-600"}`}
                         >
                           {item.description}
                         </p>
@@ -159,7 +159,7 @@ export const Timeline = () => {
       </div>
       {/* Subtitle */}
       <div className="text-center mt-12">
-        <p className={`text-base text-gray-700 font-medium`}>
+        <p className={`text-base text-text-gray font-medium`}>
           Your journey continues...
         </p>
       </div>
