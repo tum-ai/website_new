@@ -2,16 +2,23 @@
 @import "tw-animate-css";
 /* TODO: fix unknown rules */
 
+@font-face {
+  font-family: 'Manrope';
+  src: url('/assets/Manrope.ttf') format('truetype');
+  font-weight: 100 900; /* var font, scales from 100 to 900 all thicknesses */
+  font-style: normal;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Manrope', system-ui, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: var(--color-purple-950);
+  color: var(--color-dark-indigo); /* Dark Indigo as standart text in light mode */
+  background-color: var(--color-white); /* minimal-grey as standard background */
   width: 100%;
   overflow-x: hidden;
 
@@ -20,52 +27,67 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.5184 0.2524 303.23);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.5184 0.2524 303.23);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  
+  /* --- LIGHT MODE THEME --- */
+  --background: var(--color-white);
+  --foreground: var(--color-dark-indigo); /* normal text */
+  
+  --card: var(--color-white);
+  --card-foreground: var(--color-black);
+  
+  --popover: var(--color-white);
+  --popover-foreground: var(--color-black);
+  
+  --primary: var(--color-tumai-violet); 
+  --primary-foreground: var(--color-white); 
+  
+  --secondary: var(--color-lavender-tint); 
+  --secondary-foreground: var(--color-dark-violet); 
+  
+  --muted: var(--color-minimal-gray); 
+  --muted-foreground: var(--color-dark-indigo);
+  
+  --accent: var(--color-tumai-violet);
+  --accent-foreground: var(--color-white);
+  
+  --destructive: oklch(0.577 0.245 27.325); /* red for errors (stays standard) */
+  --destructive-foreground: var(--color-white);
+  
+  --border: var(--color-minimal-gray); /* Rahmen für Inputs/Karten */
+  --input: var(--color-minimal-gray);
+  --ring: var(--color-tumai-violet); /* Fokus-Ring (z.B. bei Textfeldern) */
+  
+  /* Charts (angepasst an CI) */
+  --chart-1: var(--color-tumai-violet);
+  --chart-2: var(--color-electric-end); 
+  --chart-3: var(--color-dark-indigo);
+  --chart-4: var(--color-lavender-tint);
+  --chart-5: var(--color-minimal-gray);
+
+  --sidebar: var(--color-white);
+  --sidebar-foreground: var(--color-black);
+  --sidebar-primary: var(--color-tumai-violet);
+  --sidebar-primary-foreground: var(--color-white);
+  --sidebar-accent: var(--color-minimal-gray);
+  --sidebar-accent-foreground: var(--color-tumai-violet);
+  --sidebar-border: var(--color-minimal-gray);
+  --sidebar-ring: var(--color-tumai-violet);
 }
 
 ::selection {
-  background-color: rgba(137, 31, 219, 0.5);
-  color: white;
+  background-color: oklch(0.65 0.16 285.0 / 0.3);
+  color: var(--color-black);
 }
 
 main a {
   font-weight: 500;
-  color: #646cff;
+  color: var(--color-tumai-violet);
   text-decoration: inherit;
+  transition: color 0.2s ease-in-out;
 }
 
 main a:hover {
-  color: #535bf2;
+  color: var(--color-electric-end);
 }
 
 body {
@@ -76,59 +98,77 @@ body {
   min-height: 100vh;
   width: 100%;
   overflow-x: hidden;
-  font-family: "IBM Plex Sans", sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 button {
   border-radius: 8px;
-  border: 1px solid transparent;
+  border: 0px solid transparent;
   padding: 1.2rem;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: oklch(0.52 0.25 302.91);
+  background-color: var(--primary);
+  color: var(--primary-foreground);
   cursor: pointer;
-  transition: border-color background-color 0.5s;
+  transition: all 0.2s ease-in-out;
+  background-image: none; /* Wichtig: Standardmäßig kein Verlauf */
 }
 
 button:hover {
-  border-color: #ffffff;
-  background-color: #6517a1;
+  /* electric fade ad hover effect */
+  background-image: linear-gradient(to right, var(--color-electric-start), var(--color-electric-end));
+  color: var(--color-white);
+  border-color: transparent;
 }
 
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: 4px auto var(--ring);
 }
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    color: var(--color-black);
+    background-color: var(--color-white);
   }
 
   a:hover {
-    color: #747bff;
+    color: var(--color-electric-end);
   }
 }
 
 @theme {
-  --color-yellow-500: #f5af28;
+  /* --- TUM.AI CORE BRAND COLORS (from CI-Document) --- */
+  
+  /* Neutrals */
+  --color-white: oklch(1 0 0);          /* #FFFFFF */
+  --color-minimal-gray: oklch(0.9521 0 0); /* #EFEFEF */
+  --color-text-gray: var(--color-gray-700); /* use for text so it is all uniform */
+  
+  /* The Violet Scale */
+  --color-lavender-tint: oklch(0.9614 0.0221 302.94); /* #F5EFFF (Lavender Tint, Backgrounds/Highlights) */
+  --color-tumai-violet: oklch(0.6131 0.1751 302.89); /* #9A64D9 (Electric Lavendar, Primary Brand Color) */
+  --color-dark-purple: oklch(0.3932 0.1047 303.55); /* #523573 (Dark Purple) */
+  --color-dark-indigo: oklch(0.2085 0.1188 288.93);  /* #1b0049 (Dark Indigo, Deeper UI Elements) */
+  --color-black: oklch(0.1275 0.0481 312.72);        /* #0D0214 (The deepest violet/black) */
+  
+  /* Der Electric Fade Verlauf (Start- und Endpunkt) */
+  --color-electric-start: var(--color-tumai-violet); /* #9A64D9 */
+  --color-electric-end: var(--color-dark-purple);      /* #523573 */
+  
+  
+  /* --- EXTENDED SCALES (Für Tailwind-Kompatibilität, basierend auf CI) --- */
+  --color-gray-50: var(--color-white);
+  --color-gray-100: var(--color-minimal-gray);
+  --color-gray-900: var(--color-black);
+  
+  --color-purple-50: var(--color-lavender-tint);
+  --color-purple-500: var(--color-tumai-violet);
+  --color-purple-900: var(--color-dark-indigo);
+  --color-purple-950: var(--color-black);
 
-  --color-red-500: #e83777;
-
-  --color-blue-50: #e2e7f4;
-  --color-blue-100: #c8d3ea;
-  --color-blue-200: #91a6d4;
-  --color-blue-300: #5677be;
-  --color-blue-400: #375390;
-  --color-blue-500: #223358;
-  --color-blue-600: #1b2946;
-  --color-blue-700: #151e35;
-  --color-blue-800: #0e1525;
-  --color-blue-900: #070b12;
-  --color-blue-950: #030407;
-
+  /*
   --color-purple-50: #f6edfc;
   --color-purple-100: #eddbfa;
   --color-purple-200: #dab8f5;
@@ -140,6 +180,10 @@ button:focus-visible {
   --color-purple-800: #430f6b;
   --color-purple-900: #220836;
   --color-purple-950: #11041b;
+  older purples if needed
+
+  */
+
 
   --text-title: 1.4em;
   --text-subtitle: 1.25em;
@@ -151,7 +195,6 @@ button:focus-visible {
     0% {
       opacity: 0;
     }
-
     100% {
       opacity: 1;
     }
@@ -197,37 +240,47 @@ button:focus-visible {
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* --- DARK MODE THEME --- */
+  --background: var(--color-black); /* Der extrem dunkle Hintergrund */
+  --foreground: var(--color-white); /* Normaler Text */
+  
+  --card: var(--color-dark-indigo); 
+  --card-foreground: var(--color-white);
+  
+  --popover: var(--color-dark-indigo);
+  --popover-foreground: var(--color-white);
+  
+  --primary: var(--color-tumai-violet); 
+  --primary-foreground: var(--color-white);
+  
+  --secondary: var(--color-dark-indigo); /* Subtile Elemente im Dark Mode */
+  --secondary-foreground: var(--color-lavender-tint);
+  
+  --muted: var(--color-dark-indigo); 
+  --muted-foreground: var(--color-minimal-gray);
+  
+  --accent: var(--color-tumai-violet);
+  --accent-foreground: var(--color-white);
+  
+  --destructive: oklch(0.704 0.191 22.216); /* slightly lighter red for better contrast */
+  --border: var(--color-dark-indigo); 
+  --input: var(--color-dark-indigo);
+  --ring: var(--color-tumai-violet);
+  
+  --chart-1: var(--color-tumai-violet);
+  --chart-2: var(--color-electric-end);
+  --chart-3: var(--color-light-violet);
+  --chart-4: var(--color-minimal-gray);
+  --chart-5: var(--color-dark-indigo);
+  
+  --sidebar: var(--color-black);
+  --sidebar-foreground: var(--color-white);
+  --sidebar-primary: var(--color-tumai-violet);
+  --sidebar-primary-foreground: var(--color-white);
+  --sidebar-accent: var(--color-dark-indigo);
+  --sidebar-accent-foreground: var(--color-white);
+  --sidebar-border: var(--color-dark-indigo);
+  --sidebar-ring: var(--color-tumai-violet);
 }
 
 @layer base {
@@ -252,21 +305,16 @@ button:focus-visible {
     from {
       transform: translateX(0);
     }
-
     to {
       transform: translateX(-50%);
     }
-
-    /* move by exactly one set */
   }
 
   .animate-scroll-left {
-    /* default duration can be overridden with inline style --marquee-duration */
     animation: marquee-left var(--marquee-duration, 28s) linear infinite;
     will-change: transform;
   }
 
-  /* Respect reduced motion */
   @media (prefers-reduced-motion: reduce) {
     .animate-scroll-left {
       animation: none;
@@ -274,10 +322,11 @@ button:focus-visible {
   }
 }
 
-/* Adding reusable gradient text style without @apply */
+/* Gradient Text Klasse (Nutzt jetzt die korrekten Electric Fade Endpunkte) */
 .gradient-text {
-  background: linear-gradient(to right, #891fdb, #e0189a);
+  background: linear-gradient(to right, var(--color-electric-start), var(--color-electric-end));
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+

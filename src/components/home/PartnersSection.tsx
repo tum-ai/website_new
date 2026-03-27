@@ -105,7 +105,7 @@ export const PartnersSection = () => {
           <Button
             asChild
             variant="outline2"
-            className="w-full rounded-md px-6 py-3 text-center sm:w-auto text-primary hover:text-white hover:bg-primary/80"
+            className="w-full rounded-md px-6 py-3 text-center sm:w-auto !text-primary"
           >
             <NavLink
               to="/partners"

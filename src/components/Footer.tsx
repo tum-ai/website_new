@@ -2,16 +2,16 @@ import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
-    <footer className="relative overflow-hidden border-t border-white/10 bg-gradient-to-br from-purple-950 to-purple-900">
+    <footer className="relative overflow-hidden border-t border-white/1 bg-gradient-to-br from-black to-[#523573]">
       <div className="bg-grid-white/[0.02] absolute inset-0 [mask-image:radial-gradient(white,transparent_85%)]" />
 
       <section className="relative">
-        <div className="container mx-auto px-8 py-8 md:px-16">
+        <div className="container mx-auto px-8 py-8 md:px-10">
           <div className="flex flex-col gap-12 sm:flex-row sm:justify-between">
             <div>
               <img
-                src="/assets/logo_new_white_standard.png"
-                className="flex text-2xl transition-all duration-300 hover:opacity-90"
+                src="/assets/tum_ai_logo_new.svg"
+                className="flex text-2xl transition-all duration-300 hover:opacity-90 ml-1"
                 alt="Logo"
                 width="128"
                 height="32"

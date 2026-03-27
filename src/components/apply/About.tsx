@@ -20,12 +20,12 @@ export default function About() {
           Our long-term vision and mission are the key components that drive us
           forward without losing our direction.
         </p>
-        <p className="text-subtitle text-gray-700">
-          <span className="font-semibold text-purple-600">Vision:</span> Foster
+        <p className="text-subtitle mt-1 text-text-gray">
+          <span className="font-semibold text-primary">Vision:</span> Foster
           the next generation of AI talent.
         </p>
-        <p className="text-subtitle text-gray-700">
-          <span className="font-semibold text-purple-600">Mission:</span> TUM.ai
+        <p className="text-subtitle text-text-gray">
+          <span className="font-semibold text-primary">Mission:</span> TUM.ai
           connects students and all relevant stakeholders to facilitate the
           application of AI across domains and drive positive social impact
           through interdisciplinary projects.

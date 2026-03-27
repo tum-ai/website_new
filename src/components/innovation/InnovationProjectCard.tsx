@@ -104,7 +104,7 @@ export function ProjectCard({
         showCloseButton={false}
       >
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-foreground flex items-center gap-3">
+          <DialogTitle className="text-2xl font-bold gradient-text text-foreground flex items-center gap-3">
             {name}
           </DialogTitle>
         </DialogHeader>
@@ -113,7 +113,7 @@ export function ProjectCard({
           {/* Detailed Description */}
           <div>
             <h4 className="text-lg font-semibold mb-2">About</h4>
-            <p className="text-muted-foreground leading-relaxed">
+            <p className="text-text-gray leading-relaxed">
               {detailedDescription}
             </p>
           </div>

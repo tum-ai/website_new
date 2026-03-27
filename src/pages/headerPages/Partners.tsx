@@ -49,7 +49,7 @@ export default function Partners() {
           className="absolute w-full h-full object-cover scale-110 transition-transform duration-700 hover:scale-105"
         />
         {/* Dark overlay for contrast */}
-        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 bg-black/50" />
 
         {/* Hero content */}
         <div className="relative container mx-auto px-8 text-center z-10">
@@ -59,13 +59,17 @@ export default function Partners() {
           >
             Partners & Sponsors
           </h1>
-          <p className="mt-6 text-lg md:text-xl text-white/90 max-w-2xl mx-auto">
+          <p className="mt-6 text-lg md:text-2xl text-white/90 max-w-3xl mx-auto">
             Get access to Germany&apos;s largest student talent pool of AI
             enthusiasts
           </p>
-          <a href="mailto:partners@tum-ai.com">
-            <Button className="mt-8 px-8 py-4 text-lg">Become a Partner</Button>
-          </a>
+            <Button
+              asChild
+              variant="primary"
+              className="w-full rounded-md mt-10 shadow-xl shadow-black/30 px-6 py-3 text-center sm:w-auto"
+            >
+              <a href="mailto:partners@tum-ai.com">Become a Partner</a>
+            </Button>
         </div>
       </section>
 
@@ -94,14 +98,20 @@ export default function Partners() {
         </Layout>
 
         {/* COLLABORATION OPPORTUNITIES */}
-        <section className="relative bg-gradient-to-b from-blue-50 to-purple-50 p-8 sm:py-16 lg:py-32 text-gray-800">
+        <section className="relative overflow-hidden border-t border-b border-purple-100 py-12 sm:py-12 lg:py-16 w-full bg-gradient-to-br from-purple-100 via-white to-blue-100">
+
+        {/* Decorative gradient blobs for depth */}
+        <div className="pointer-events-none absolute -bottom-4 -left-14 h-72 w-72 rounded-full bg-gradient-to-br from-purple-400/20 to-fuchsia-400/30 blur-3xl"></div>
+        <div className="pointer-events-none absolute -bottom-24 -right-16 h-80 w-80 rounded-full bg-gradient-to-br from-indigo-400/20 to-sky-400/10 blur-3xl"></div>
+        <div className="pointer-events-none absolute top-1/3 -right-24 h-64 w-64 rounded-full bg-gradient-to-br from-pink-400/20 to-purple-400/20 blur-3xl"></div> 
+
           <Layout>
-            <div className="container mx-auto flex flex-col lg:flex-row gap-12 items-start">
+            <div className="container relative z-10 mx-auto flex flex-col lg:flex-row gap-12 items-start">
               {/* Info Card */}
               <div className="flex-1 space-y-8">
-                <h2 className="text-4xl font-semibold text-gray-900">
+                <h1 className="text-title sm:text-2xl md:text-[2rem] font-semibold animate-item">
                   Partner with TUM.ai
-                </h2>
+                </h1>
                 <p className="max-w-lg text-gray-700">
                   Access our exclusive talent pool of AI enthusiasts,
                   experienced in software development, data science, and AI
@@ -148,7 +158,7 @@ export default function Partners() {
               </div>
 
               {/* Visual Image */}
-              <div className="flex-1 relative rounded-xl overflow-hidden shadow-lg">
+              <div className="flex-1 relative mt-38 rounded-xl h-[405px] overflow-hidden shadow-lg">
                 <img
                   src="/assets/partners/martin_talk.jpg"
                   alt="Martin talk"
@@ -161,14 +171,15 @@ export default function Partners() {
               </div>
             </div>
           </Layout>
+        
         </section>
 
         {/* BENEFITS */}
         <section className="p-8 sm:py-16 lg:py-32">
           <div className="container mx-auto">
-            <h2 className="text-3xl font-semibold text-center mb-12 text-gray-900">
+            <h1 className="text-title sm:text-2xl text-center mb-12 md:text-[2rem] font-semibold animate-item">
               What We Offer
-            </h2>
+            </h1>
             <Benefits
               benefits={benefits}
               showShadow
@@ -177,6 +188,7 @@ export default function Partners() {
             />
           </div>
         </section>
+
       </div>
     </>
   );
@@ -195,7 +207,7 @@ function PartnerSection({
       <h3
         className={cx(
           "text-2xl font-semibold mb-6 bg-clip-text text-transparent",
-          "bg-gradient-to-r from-purple-700 via-pink-600 to-red-600",
+          "gradient-text",
         )}
       >
         {title}

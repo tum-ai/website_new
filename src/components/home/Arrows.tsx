@@ -13,7 +13,7 @@ const Arrows = () => {
         className={
           `w-[3.5rem] h-[3.5rem] flex items-center !justify-center !rounded-full ` +
           (canScrollPrev
-            ? "!bg-white !shadow-md transition"
+            ? "!bg-white !shadow-md transition hover:!bg-none hover:!bg-primary"
             : "!bg-white/60 !opacity-60 pointer-events-none transition")
         }
       >
@@ -32,7 +32,7 @@ const Arrows = () => {
         className={
           `w-[3.5rem] h-[3.5rem] flex items-center !justify-center !rounded-full ` +
           (canScrollNext
-            ? "!bg-white !shadow-md transition"
+            ? "!bg-white !shadow-md transition hover:!bg-none hover:!bg-primary"
             : "!bg-white/60 !opacity-60 pointer-events-none transition")
         }
       >
