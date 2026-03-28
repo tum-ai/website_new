@@ -87,7 +87,7 @@ export default function Projects() {
     <>
       <SEO {...getSEOConfig("projects")} />
       {/* 
-        from-black via-black to-[#291a39] is for seemlingless transition between the colors of the footer and the page! 
+        from-black via-black to-[#291a39] is for seamless transition between the colors of the footer and the page! 
       */}
       <section className="relative pt-32 pb-16 px-8 bg-gradient-to-br from-black via-black to-[#291a39] text-white">
         <Layout>

@@ -158,7 +158,7 @@ export default function Partners() {
               </div>
 
               {/* Visual Image */}
-              <div className="flex-1 relative mt-38 rounded-xl h-[405px] overflow-hidden shadow-lg">
+              <div className="flex-1 relative mt-[9.5rem] rounded-xl h-[405px] overflow-hidden shadow-lg">
                 <img
                   src="/assets/partners/martin_talk.jpg"
                   alt="Martin talk"

@@ -59,7 +59,7 @@ export default function ResearchCard({
     //   )}
     // </Card>
 
-    <Card className="transition-transform duration-150 hover:scale-101 justify-between w-full">
+    <Card className="transition-transform bg-minimal-gray duration-150 hover:scale-101 justify-between w-full">
       <div>
         <div className="p-4 pb-0">
           <AspectRatio ratio={4 / 3}>
@@ -70,7 +70,7 @@ export default function ResearchCard({
                 className="h-full w-full rounded-md object-cover shadow-xl"
               />
             ) : (
-              <div className="h-full w-full rounded-lg bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center p-4">
+              <div className="h-full w-full rounded-lg bg-minimal-gray flex items-center justify-center p-4">
                 <h3 className="text-lg font-semibold text-purple-800 text-center leading-tight">
                   {title}
                 </h3>
@@ -86,7 +86,7 @@ export default function ResearchCard({
             {keywords && (
               <p className="text-sm text-purple-500 mb-2">{keywords}</p>
             )}
-            <p className="text-sm">{description}</p>
+            <p className="text-sm text-text-gray">{description}</p>
           </div>
         </CardContent>
       </div>

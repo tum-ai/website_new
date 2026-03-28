@@ -34,7 +34,7 @@ export const Hero = () => {
         tween.kill();
       } catch (e) {
         /* ignore */
-      }     
+      }
     };
   }, []);
   return (
@@ -43,7 +43,7 @@ export const Hero = () => {
       className="flex flex-col items-start justify-center sm:justify-end px-4 py-6 sm:px-8 sm:py-12"
     >
       {/* Logo */}
-      <img src="/assets/tum_ai_logo_new.svg" alt="TUM.ai Neues Logo" className="h-10 w-auto mb-4 ml-1" />
+      <img src="/assets/tum_ai_logo_new.svg" alt="TUM.ai New Logo" className="h-10 w-auto mb-4 ml-1" />
 
       <p className="mt-2 font-thin text-title sm:text-4xl leading-snug w-full sm:max-w-8/12 mb-2">
         Germany’s leading student initiative focused on
