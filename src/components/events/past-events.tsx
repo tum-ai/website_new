@@ -41,7 +41,7 @@ export default function PastEvents({ events }: { events: Event[] }) {
     <div className="space-y-16 max-w-full">
       {Object.entries(groupedEvents).map(([month, monthEvents]) => (
         <div key={month} className="space-y-8">
-          <h3 className="text-2xl font-semibold text-purple-500">{month}</h3>
+          <h3 className="text-2xl font-semibold text-primary">{month}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {monthEvents.map((event) => (
               <PastEventCard key={event.id} event={event} />
@@ -57,7 +57,7 @@ function PastEventCard({ event }: { event: Event }) {
   const eventDate = new Date(event.event_date);
 
   return (
-    <Card className="flex flex-col overflow-hidden w-full transition-transform duration-150 hover:scale-101">
+    <Card className="flex flex-col bg-minimal-gray overflow-hidden w-full transition-transform duration-150 hover:scale-101">
       <div className="relative w-full aspect-square group p-4 flex-shrink-0">
         <Carousel className="w-full h-full">
           <CarouselContent className="h-full">
@@ -92,7 +92,7 @@ function PastEventCard({ event }: { event: Event }) {
                 <div className="h-full">
                   <div className="aspect-square w-full relative overflow-hidden rounded-lg bg-accent-foreground flex items-center justify-center">
                     <img
-                      src="/assets/logo_new_white_standard.png"
+                      src="/assets/tum_ai_logo_new.svg"
                       alt="Placeholder"
                       className="h-3/4 w-3/4 object-contain opacity-50"
                       onError={(e) => {
@@ -113,11 +113,11 @@ function PastEventCard({ event }: { event: Event }) {
 
       <div className="flex flex-col justify-normal flex-1 min-w-0 p-4 pt-0">
         <CardHeader className="pb-0 px-0">
-          <CardTitle className="text-purple-800 text-lg">
+          <CardTitle className="text-primary text-lg">
             {format(eventDate, "PPP")}
           </CardTitle>
           <CardTitle className="text-xl">{event.title}</CardTitle>
-          <CardDescription className="text-sm text-muted-foreground pb-2">
+          <CardDescription className="text-sm text-text-gray mt-1 pb-2">
             {event.location ? `${event.location}` : ""}
             {event.city ? `, ${event.city}` : ""}
           </CardDescription>
@@ -151,7 +151,7 @@ function PastEventCard({ event }: { event: Event }) {
                     {format(eventDate, "PPP")}
                   </DialogTitle>
                   <DialogTitle className="text-xl">{event.title}</DialogTitle>
-                  <DialogDescription className="text-sm text-muted-foreground">
+                  <DialogDescription className="text-sm text-text-gray">
                     {event.location ? `${event.location}` : ""}
                     {event.city ? `, ${event.city}` : ""}
                   </DialogDescription>

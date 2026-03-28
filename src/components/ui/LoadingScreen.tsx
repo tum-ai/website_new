@@ -9,12 +9,12 @@ export default function LoadingScreen({
 }: LoadingScreenProps) {
   return (
     <div
-      className={`min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-900 to-purple-900 text-white ${className}`}
+      className={`min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-black via-black to-[#291a39] text-white ${className}`}
     >
       {/* TUM-AI Logo */}
       <div className="mb-8">
         <img
-          src="/assets/logo_new_white_standard.png"
+          src="/assets/tum_ai_logo_new.svg"
           alt="TUM-AI Logo"
           className="h-16 w-auto opacity-90"
         />

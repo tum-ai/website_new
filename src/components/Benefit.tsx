@@ -13,7 +13,7 @@ const iconContainerStyles = cva(
   {
     variants: {
       color: {
-        purple: "bg-purple-500/10 text-purple-500 ring-1 ring-purple-500/20",
+        purple: "bg-primary/10 text-primary ring-1 ring-dark-purple/20",
         yellow: "bg-yellow-500/10 text-yellow-500 ring-1 ring-yellow-500/20",
       },
     },
@@ -23,7 +23,7 @@ const iconContainerStyles = cva(
 const headingStyles = cva("text-base font-medium text-foreground", {
   variants: {
     color: {
-      purple: "text-purple-600",
+      purple: "text-primary",
       yellow: "text-yellow-600",
     },
   },

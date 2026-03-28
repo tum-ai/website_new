@@ -86,7 +86,10 @@ export default function Projects() {
   return (
     <>
       <SEO {...getSEOConfig("projects")} />
-      <section className="relative pt-32 pb-16 px-8 bg-gradient-to-br from-blue-900 to-purple-900 text-white">
+      {/* 
+        from-black via-black to-[#291a39] is for seamless transition between the colors of the footer and the page! 
+      */}
+      <section className="relative pt-32 pb-16 px-8 bg-gradient-to-br from-black via-black to-[#291a39] text-white">
         <Layout>
           <div className="relative min-h-screen">
             {/* Hero Section */}

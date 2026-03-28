@@ -75,7 +75,7 @@ export const Header = () => {
         }`}
       >
         <img
-          src="/assets/logo_new_white_standard.png"
+          src="/assets/tum_ai_logo_new.svg"
           alt="Logo"
           className="h-10 w-auto flex-shrink-0"
         />
@@ -89,8 +89,8 @@ export const Header = () => {
             className={({ isActive }) =>
               `${
                 isActive
-                  ? "text-[#A144E9] font-semibold"
-                  : "text-gray-300 hover:text-[#A144E9]"
+                  ? "text-primary drop-shadow-[0_0_15px_theme(colors.white/20%)] font-semibold"
+                  : "text-minimal-gray hover:text-primary hover:drop-shadow-[0_0_15px_theme(colors.white/20%)]"
               } text-[16px] font-bold cursor-pointer whitespace-nowrap`
             }
           >
@@ -104,7 +104,6 @@ export const Header = () => {
         >
           <NavLink
             to="/apply"
-            className="bg-transparent border border-[#A144E9] rounded-md px-6 py-3 text-[#A144E9] text-center"
           >
             Become a Member
           </NavLink>
@@ -115,9 +114,11 @@ export const Header = () => {
       <div className="ml-auto flex xl:hidden ">
         <Dialog.Root open={open} onOpenChange={setOpen}>
           <Dialog.Trigger asChild>
-            <Button className="flex h-9 w-9 items-center justify-center rounded-md text-white/90 hover:bg-purple-800/50">
-              <Menu size={20} />
-              <span className="sr-only">Open menu</span>
+            <Button variant="primary" className="h-9 w-9 p-0" asChild>
+              <div role="button" className="flex items-center justify-center cursor-pointer">
+                <Menu size={20} />
+                <span className="sr-only">Open menu</span>
+              </div>
             </Button>
           </Dialog.Trigger>
 
@@ -140,17 +141,19 @@ export const Header = () => {
                     animate={{ x: 0 }}
                     exit={{ x: "100%" }}
                     transition={{ duration: 0.25 }}
-                    className="fixed inset-y-0 right-0 z-50 w-full max-w-sm bg-[#0B0213] p-6 shadow-xl"
+                    className="fixed inset-y-0 right-0 z-50 w-full max-w-sm bg-black/95 p-6 shadow-xl outline-none"
                   >
                     <div className="flex justify-end">
                       <Dialog.Close asChild>
-                        <Button
-                          type="button"
-                          className="flex h-9 w-9 items-center justify-center rounded-md text-white/90 hover:bg-purple-800/50"
-                          onClick={() => setOpen(false)}
-                        >
+                        <Button variant="primary" className="h-9 w-9 p-0" asChild>
+                          <div 
+                            role="button" 
+                            className="flex items-center justify-center cursor-pointer"
+                            onClick={() => setOpen(false)}
+                          >
                           <X size={20} />
-                          <span className="sr-only">Close menu</span>
+                            <span className="sr-only">Close menu</span>
+                          </div>
                         </Button>
                       </Dialog.Close>
                     </div>
@@ -164,8 +167,8 @@ export const Header = () => {
                           className={({ isActive }) =>
                             `block rounded-md px-4 py-2 text-lg ${
                               isActive
-                                ? "text-[#A144E9] font-semibold"
-                                : "text-gray-300 hover:bg-purple-800/50 hover:text-white"
+                                ? "text-primary font-semibold"
+                                : "text-minimal-gray hover:bg-dark-purple/50 hover:text-white"
                             }`
                           }
                         >

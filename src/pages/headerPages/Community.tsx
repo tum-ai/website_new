@@ -31,12 +31,7 @@ const DepartmentCard = ({
       viewport={{ once: true }}
     >
       <Card
-        className="h-full p-8 text-white rounded-3xl overflow-hidden relative border border-white/10"
-        style={{
-          backgroundColor: "#18112F",
-          boxShadow:
-            "0px 5px 15px rgba(0,0,0,0.2), 0px 2px 5px rgba(0,0,0,0.1)",
-        }}
+        className="h-full p-8 text-white rounded-3xl overflow-hidden relative bg-[#18112F] shadow-black shadow-2xl border border-white/10"
       >
         <div
           className="absolute inset-0 z-0 opacity-40"
@@ -117,7 +112,7 @@ export default function Community() {
         <div className="absolute right-48 bottom-48 h-[15vw] max-h-64 w-[15vw] max-w-64 rounded-full bg-indigo-400 opacity-10 blur-[clamp(30px,4vw,80px)]" />
       </div>
 
-      <section className="relative overflow-hidden bg-[#18112F] text-white">
+      <section className="relative overflow-hidden bg-gradient-to-br from-0% from-[color-mix(in_srgb,theme(colors.dark-purple),black_70%)] via-60% via-[color-mix(in_srgb,theme(colors.dark-indigo),black_50%)] to-dark-purple text-white">
         <JourneySection />
         <DepartmentsSection />
         <MemberStories stories={stories} />

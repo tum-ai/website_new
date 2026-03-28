@@ -49,7 +49,7 @@ export const iconColors = [
 //   "#4B0082", // Indigo for Mentorship
 //   "#7A1C1C", // Deep red for Special Events
 // ];
-const glowColor = "oklch(0.5184 0.2524 303.23)";
+const glowColor = "#9A64D9";
 
 const StepCard = ({
   step,
@@ -62,17 +62,13 @@ const StepCard = ({
     className="relative"
   >
     <Card
-      className="relative p-6 text-white border border-[#3c1664] rounded-3xl shadow-lg h-full overflow-hidden
+      className="relative p-6 text-white border border-primary/30 bg-[#18112F] rounded-3xl shadow-lg h-full overflow-hidden
       before:absolute before:inset-0 before:opacity-50 before:bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] before:from-purple-900 before:to-transparent"
-      style={{
-        backgroundColor: "#18112F",
-        boxShadow: "0px 5px 15px rgba(0,0,0,0.2), 0px 2px 5px rgba(0,0,0,0.1)",
-      }}
     >
       <div
         className="absolute inset-0 z-0 opacity-50"
         style={{
-          background: `radial-gradient(circle at center, ${glowColor} 0%, transparent 70%)`,
+          background: `radial-gradient(circle at center, ${glowColor} -30%, transparent 80%)`,
         }}
       ></div>
       <div className="relative z-10 flex items-start justify-between">
@@ -110,17 +106,13 @@ const CombinedStepCard = ({
     className="relative"
   >
     <Card
-      className="relative p-6 text-white border border-[#3c1664]  rounded-3xl shadow-lg h-full overflow-hidden
+      className="relative p-6 text-white border border-primary/30 bg-[#18112F] rounded-3xl shadow-lg h-full overflow-hidden
       before:absolute before:inset-0 before:opacity-50 before:bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] before:from-purple-900 before:to-transparent"
-      style={{
-        backgroundColor: "#18112F",
-        boxShadow: "0px 5px 15px rgba(0,0,0,0.2), 0px 2px 5px rgba(0,0,0,0.1)",
-      }}
     >
       <div
         className="absolute inset-0 z-0 opacity-50"
         style={{
-          background: `radial-gradient(circle at center, ${glowColor} 0%, transparent 70%)`,
+          background: `radial-gradient(circle at center, ${glowColor} -30%, transparent 80%)`,
         }}
       ></div>
       <div className="relative z-10">
@@ -255,7 +247,7 @@ const JourneyPathSVG = ({ inView }: { inView: boolean }) => (
       initial={{ pathLength: 0 }}
       animate={inView ? { pathLength: 1 } : { pathLength: 0 }}
       transition={{ duration: 2, ease: "easeInOut" }}
-      style={{ filter: "drop-shadow(0 0 16px #a78bfa88)" }}
+      style={{ filter: "drop-shadow(0 0 16px var(--color-tumai-violet))" }}
     />
     <defs>
       <linearGradient
@@ -266,8 +258,8 @@ const JourneyPathSVG = ({ inView }: { inView: boolean }) => (
         y2="1100"
         gradientUnits="userSpaceOnUse"
       >
-        <stop stopColor="#C084FC" />
-        <stop offset="1" stopColor="#60A5FA" />
+        <stop stopColor="#9A64D9" />
+        <stop offset="1" stopColor="#F5EFFF" />
       </linearGradient>
     </defs>
   </svg>
@@ -323,11 +315,15 @@ export const JourneySection = () => {
     >
       <div className="mb-12">
         <h1 className="text-4xl font-bold md:text-5xl">
-          The TUM.ai Member Journey
+          The TUM.ai
+          <b className="bg-gradient-to-r font-semibold from-[#9A64D9] to-[#F5EFFF] bg-clip-text text-transparent">
+            {" "}
+            Member Journey
+          </b>
         </h1>
         <p className="mx-auto max-w-2xl text-white/80 pt-4 text-base md:text-lg">
           At TUM.ai, members contribute through AI projects, workshops, and
-          community initiatives — turning bold ideas into real-world impact.
+          community initiatives - turning bold ideas into real-world impact.
         </p>
       </div>
       <div className="relative grid grid-cols-1 md:grid-cols-2 gap-y-12 gap-x-8 lg:gap-x-12 mt-16">

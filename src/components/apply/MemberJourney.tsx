@@ -17,17 +17,17 @@ export default function MemberJourney() {
         </h2>
         <p className="text-xl md:text-2xl animate-item mb-2">
           The{" "}
-          <span className="text-purple-600 font-semibold">member journey</span>{" "}
+          <span className="text-primary font-semibold">member journey</span>{" "}
           at TUM.ai spans across semesters, each lasting 6 whole months. When
           you join the TUM.ai community, here's what you can expect:
         </p>
         <div className="text-base space-y-8">
           {/* Steps */}
           <div>
-            <p className="font-semibold text-subtitle text-purple-600 mb-2">
+            <p className="font-semibold text-subtitle text-primary mb-2">
               1. Initial Onboarding:
             </p>
-            <p className="text-gray-600 mb-4">
+            <p className="text-text-gray mb-4">
               Dive right into an onboarding weekend where you'll get acquainted
               with your batch, familiarize yourself with the internal TUM.ai
               frameworks, hone your ideation skills, and discover various
@@ -35,44 +35,44 @@ export default function MemberJourney() {
             </p>
           </div>
           <div>
-            <p className="font-semibold text-subtitle text-purple-600 mb-2">
+            <p className="font-semibold text-subtitle text-primary mb-2">
               2. Research or Initiative Track: Choose Your Path at TUM.ai
             </p>
-            <p className="text-gray-600 mb-2">
+            <p className="text-text-gray mb-2">
               In your first semester, you can choose{" "}
-              <span className="font-semibold text-purple-600">
+              <span className="font-bold text-dark-purple">
                 either the Research Track
               </span>{" "}
               or{" "}
-              <span className="font-semibold text-purple-600">
+              <span className="font-bold text-dark-purple">
                 the Initiative Track
               </span>{" "}
               - two distinct ways to leave your mark at{" "}
-              <span className="font-semibold text-purple-600">TUM.ai</span>.
+              <span className="font-bold text-dark-purple">TUM.ai</span>.
             </p>
-            <ul className="list-disc pl-6 text-gray-600 mb-2">
+            <ul className="list-disc pl-6 text-text-gray mb-2">
               <li>
-                <span className="font-semibold text-purple-600">
+                <span className="font-bold text-dark-purple">
                   Research Track:
                 </span>{" "}
                 You'll join a dedicated team working on an{" "}
-                <span className="font-semibold text-purple-600">
+                <span className="font-bold text-dark-purple">
                   Impact Project
                 </span>
                 , aligned with your skill set. These projects are designed to
                 contribute to the broader research community, with the goal of
                 achieving tangible outcomes such as{" "}
-                <span className="font-semibold text-purple-600">
+                <span className="font-bold text-dark-purple">
                   publications
                 </span>
                 .
               </li>
               <li>
-                <span className="font-semibold text-purple-600">
+                <span className="font-bold text-dark-purple">
                   Initiative Track:
                 </span>{" "}
                 Join one of our{" "}
-                <span className="font-semibold text-purple-600">
+                <span className="font-bold text-dark-purple">
                   core departments
                 </span>{" "}
                 and become a driving force behind everything that makes TUM.ai
@@ -84,7 +84,7 @@ export default function MemberJourney() {
                 better for everyone.
               </li>
             </ul>
-            <p className="text-gray-600 mb-2">
+            <p className="text-text-gray mb-2">
               Regardless of your track, your first semester is not just about
               completing tasks. You'll have the chance to engage deeply with our
               vibrant community, develop new skills, and participate in learning
@@ -101,50 +101,50 @@ export default function MemberJourney() {
             </p>
           </div>
           <div>
-            <p className="font-semibold text-subtitle text-purple-600 mb-2">
+            <p className="font-semibold text-subtitle text-primary mb-2">
               3. Growth Opportunities:
             </p>
-            <p className="text-gray-600 mb-4">
+            <p className="text-text-gray mb-4">
               After your first semester, your journey at TUM.ai doesn't end with
               your initial project. You'll have the opportunity to further shape
               the initiative by{" "}
-              <span className="font-semibold text-purple-600">
+              <span className="font-bold text-dark-purple">
                 founding a strategic task force, joining a department or task
                 force that's new to you
               </span>{" "}
               or{" "}
-              <span className="font-semibold text-purple-600">
+              <span className="font-bold text-dark-purple">
                 continuing in your current department
               </span>
               , potentially taking on a{" "}
-              <span className="font-semibold text-purple-600">Team Lead</span>{" "}
+              <span className="font-bold text-dark-purple">Team Lead</span>{" "}
               role.
             </p>
           </div>
           <div>
-            <p className="font-semibold text-subtitle text-purple-600 mb-2">
+            <p className="font-semibold text-subtitle text-primary mb-2">
               4. Research Exchange:
             </p>
-            <p className="text-gray-600 mb-4">
+            <p className="text-text-gray mb-4">
               After one semester, we can send you off to conduct research at
               prestigious institutions such as{" "}
-              <span className="font-semibold text-purple-600">
+              <span className="font-bold text-dark-purple">
                 MIT, Harvard,{" "}
               </span>
-              or <span className="font-semibold text-purple-600">Berkeley</span>{" "}
+              or <span className="font-bold text-dark-purple">Berkeley</span>{" "}
               as part of the Research Exchange (REX) Program. Through our
               network of alumni, we will not only help you find the right topic
               but also support you with the bureaucracy.
             </p>
           </div>
           <div>
-            <p className="font-semibold text-subtitle text-purple-600 mb-2">
+            <p className="font-semibold text-subtitle text-primary mb-2">
               5. Alumni Program:
             </p>
             <p className="text-gray-600 mb-4">
               Once you've been with us for two semesters, you're eligible to
               join the{" "}
-              <span className="font-semibold text-purple-600">
+              <span className="font-bold text-dark-purple">
                 TUM.ai Alumni Program
               </span>
               , marking an important milestone in your journey and opening up
@@ -158,14 +158,14 @@ export default function MemberJourney() {
         <div className="flex flex-col gap-8">
           {/* Project work */}
           <div className="flex items-start gap-6 rounded-xl bg-white/5 border-1 p-6 shadow-lg">
-            <div className="h-14 w-14 flex-shrink-0 flex items-center justify-center bg-purple-100 rounded-full">
-              <Briefcase className="text-purple-600" size={32} />
+            <div className="h-14 w-14 flex-shrink-0 flex items-center justify-center bg-lavender-tint border border-primary/10 rounded-full">
+              <Briefcase className="text-primary" size={32} />
             </div>
             <div>
-              <h4 className="text-xl font-bold mb-2 text-purple-600">
+              <h4 className="text-xl font-bold mb-2 text-primary">
                 Project work
               </h4>
-              <p className="text-gray-600">
+              <p className="text-text-gray">
                 Depending on your expertise and capabilities, we aim for you to
                 gain the proficiency needed to oversee a machine learning
                 project from its inception to completion, whether in a research
@@ -178,14 +178,14 @@ export default function MemberJourney() {
           </div>
           {/* Organizational work */}
           <div className="flex items-start gap-6 rounded-xl bg-white/5 border-1 p-6 shadow-lg">
-            <div className="h-14 w-14 flex-shrink-0 flex items-center justify-center bg-purple-100 rounded-full">
-              <Users className="text-purple-600" size={32} />
+            <div className="h-14 w-14 flex-shrink-0 flex items-center justify-center bg-lavender-tint border border-primary/10 rounded-full">
+              <Users className="text-primary" size={32} />
             </div>
             <div>
-              <h4 className="text-xl font-bold mb-2 text-purple-600">
+              <h4 className="text-xl font-bold mb-2 text-primary">
                 Organizational work
               </h4>
-              <p className="text-gray-600">
+              <p className="text-text-gray">
                 In just 4.5 years, TUM.ai has experienced exponential growth,
                 primarily fuelled by our dedicated members' brilliant ideas and
                 ventures. We envision TUM.ai as a playground for your innovative
@@ -199,14 +199,14 @@ export default function MemberJourney() {
           </div>
           {/* Education offerings */}
           <div className="flex items-start gap-6 rounded-xl bg-white/5 border-1 p-6 shadow-lg">
-            <div className="h-14 w-14 flex-shrink-0 flex items-center justify-center bg-purple-100 rounded-full">
-              <GraduationCap className="text-purple-600" size={32} />
+            <div className="h-14 w-14 flex-shrink-0 flex items-center justify-center bg-lavender-tint border border-primary/10 rounded-full">
+              <GraduationCap className="text-primary" size={32} />
             </div>
             <div>
-              <h4 className="text-xl font-bold mb-2 text-purple-600">
+              <h4 className="text-xl font-bold mb-2 text-primary">
                 Education offerings
               </h4>
-              <p className="text-gray-600">
+              <p className="text-text-gray">
                 There's so much happening at TUM.ai that sometimes it's hard to
                 keep up! Our aim is to help you grow, both personally and in
                 your knowledge. Here's just a glimpse of what we offer:

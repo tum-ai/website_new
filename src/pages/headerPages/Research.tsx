@@ -73,9 +73,9 @@ export default function Research() {
           {/* Past projects */}
           {pastProjects.length > 0 && (
             <>
-              <h3 className="text-3xl font-semibold text-center mt-12 mb-4 text-white">
+              <h1 className="text-title sm:text-2xl mt-10 mb-4 text-white text-center md:text-[2rem] font-semibold animate-item">
                 Past Projects
-              </h3>
+              </h1>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {pastProjects.map((p) => (
                   <ResearchCard
@@ -94,12 +94,12 @@ export default function Research() {
           {/* Research Partners */}
           {Array.isArray(researchPartners) && researchPartners.length > 0 && (
             <div className="mt-12">
-              <h3 className="mb-4 text-center text-3xl font-semibold text-white">
+              <h1 className="text-title sm:text-2xl mt-10 mb-4 text-white text-center md:text-[2rem] font-semibold animate-item">
                 Collaborators
-              </h3>
+              </h1>
 
               <Card>
-                <CardContent className="px-0">
+                <CardContent className="px-0 bg-minimal-gray">
                   <Logos logos={researchPartners} />
                 </CardContent>
               </Card>
@@ -185,7 +185,7 @@ export default function Research() {
   return (
     <>
       <SEO {...getSEOConfig("research")} />
-      <section className="relative pt-32 pb-16 px-8 bg-gradient-to-br from-blue-900 to-purple-900">
+      <section className="relative pt-32 pb-16 px-8 bg-gradient-to-br from-black via-black to-[#291a39]">
         <Layout>
           {/* Hero Section */}
           <div className="min-h-screen ">
@@ -233,7 +233,9 @@ export default function Research() {
                     );
                   })}
                 </div>
-
+                  <h1 className="text-title sm:text-2xl mt-10 text-white text-center md:text-[2rem] font-semibold animate-item">
+                    Ongoing Projects
+                  </h1>
                 {tabs.map((tab) => (
                   <div
                     key={tab.value}

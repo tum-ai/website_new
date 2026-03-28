@@ -18,7 +18,7 @@ export default function Requirements({
     <div className="flex flex-col gap-8 px-8 md:px-16 pt-8 md:pt-16">
       <div className="flex flex-col gap-4">
         <h2 className="text-title sm:text-2xl md:text-[2rem] font-semibold animate-item">
-          Is TUM.ai the right choice for me?
+          Is TUM.ai the <span className="gradient-text">right choice</span> for me?
         </h2>
         <p className="text-xl md:text-2xl animate-item">
           There is no secret to TUM.ai's fast-paced growth. Every semester, we
