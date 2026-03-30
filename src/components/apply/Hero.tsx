@@ -26,7 +26,7 @@ export default function Hero() {
               <Button 
                 asChild 
                 variant="disabled" className="px-8 py-4 text-lg">
-                <span>Applications are closed</span>
+                <a href="https://tally.so/r/OD0Vgg" target="blank">Apply now</a>
               </Button>
             </div>
           </div>
