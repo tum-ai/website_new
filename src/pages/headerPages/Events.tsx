@@ -60,7 +60,7 @@ export default function Events() {
   return (
     <>
       <SEO {...getSEOConfig("events")} />
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-900 to-purple-900 p-8 text-white sm:py-16 lg:py-24">
+      <section className="relative overflow-hidden bg-gradient-to-br from-black via-black to-[#291a39] p-8 text-white sm:py-16 lg:py-24">
         <Layout>
           <div className={`min-h-screen flex flex-col ${filteredEvents.length === 0 ? '' : 'md:flex-row justify-center'}`}>
             <div className={`px-6 py-12 md:px-12 ${filteredEvents.length === 0 ? 'w-full' : ''}`}>
@@ -88,9 +88,9 @@ export default function Events() {
               {/* Upcoming Events Section */}
               {upcomingEvents.length > 0 && (
                 <section className="mb-24">
-                  <h2 className="mb-8 text-3xl font-bold tracking-tight">
+                  <h1 className="text-title sm:text-2xl md:text-[2rem] mb-8 font-bold animate-item">
                     Upcoming Events ({upcomingEvents.length})
-                  </h2>
+                  </h1>
                   <UpcomingEvents events={upcomingEvents} />
                 </section>
               )}
@@ -98,9 +98,9 @@ export default function Events() {
               {/* Past Events Section */}
               {pastEvents.length > 0 && (
                 <section>
-                  <h2 className="mb-8 text-3xl font-bold tracking-tight">
+                  <h1 className="text-title sm:text-2xl md:text-[2rem] mb-8 font-bold animate-item">
                     Past Events ({pastEvents.length})
-                  </h2>
+                  </h1>
                   <PastEvents events={pastEvents} />
                 </section>
               )}

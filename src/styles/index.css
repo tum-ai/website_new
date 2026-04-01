@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 /* TODO: fix unknown rules */
+/* TODO: This is not ideal: ⁠ div role="button" ⁠ is used to avoid current global
+⁠ button ⁠ CSS. Convert back to a native button after moving button visuals out of ⁠ index.css ⁠. */
 
 @font-face {
   font-family: 'Manrope';
@@ -17,7 +19,7 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: var(--color-dark-indigo); /* Dark Indigo as standart text in light mode */
+  color: var(--color-dark-indigo); /* Dark Indigo as standard text in light mode */
   background-color: var(--color-white); /* minimal-grey as standard background */
   width: 100%;
   overflow-x: hidden;
@@ -45,19 +47,19 @@
   --secondary-foreground: var(--color-dark-violet); 
   
   --muted: var(--color-minimal-gray); 
-  --muted-foreground: var(--color-dark-indigo);
+  --muted-foreground: var(--color-gray-500);
   
   --accent: var(--color-tumai-violet);
-  --accent-foreground: var(--color-white);
+  --accent-foreground: var(--color-black);
   
   --destructive: oklch(0.577 0.245 27.325); /* red for errors (stays standard) */
   --destructive-foreground: var(--color-white);
   
-  --border: var(--color-minimal-gray); /* Rahmen für Inputs/Karten */
+  --border: var(--color-minimal-gray); /* Frame fo Inputs/Cards */
   --input: var(--color-minimal-gray);
-  --ring: var(--color-tumai-violet); /* Fokus-Ring (z.B. bei Textfeldern) */
+  --ring: var(--color-tumai-violet); /* Fokus-Ring */
   
-  /* Charts (angepasst an CI) */
+  /* Charts (adopted to CI) */
   --chart-1: var(--color-tumai-violet);
   --chart-2: var(--color-electric-end); 
   --chart-3: var(--color-dark-indigo);
@@ -112,7 +114,7 @@ button {
   color: var(--primary-foreground);
   cursor: pointer;
   transition: all 0.2s ease-in-out;
-  background-image: none; /* Wichtig: Standardmäßig kein Verlauf */
+  background-image: none; 
 }
 
 button:hover {
@@ -144,21 +146,21 @@ button:focus-visible {
   /* Neutrals */
   --color-white: oklch(1 0 0);          /* #FFFFFF */
   --color-minimal-gray: oklch(0.9521 0 0); /* #EFEFEF */
-  --color-text-gray: var(--color-gray-700); /* use for text so it is all uniform */
+  --color-text-gray: oklch(0.4 0 0); /* use for text so it is all uniform */
   
   /* The Violet Scale */
   --color-lavender-tint: oklch(0.9614 0.0221 302.94); /* #F5EFFF (Lavender Tint, Backgrounds/Highlights) */
-  --color-tumai-violet: oklch(0.6131 0.1751 302.89); /* #9A64D9 (Electric Lavendar, Primary Brand Color) */
+  --color-tumai-violet: oklch(0.6131 0.1751 302.89); /* #9A64D9 (Electric Lavender, Primary Brand Color) */
   --color-dark-purple: oklch(0.3932 0.1047 303.55); /* #523573 (Dark Purple) */
   --color-dark-indigo: oklch(0.2085 0.1188 288.93);  /* #1b0049 (Dark Indigo, Deeper UI Elements) */
   --color-black: oklch(0.1275 0.0481 312.72);        /* #0D0214 (The deepest violet/black) */
   
-  /* Der Electric Fade Verlauf (Start- und Endpunkt) */
+  /* ELectric fade gradient, start- and endpoint */
   --color-electric-start: var(--color-tumai-violet); /* #9A64D9 */
   --color-electric-end: var(--color-dark-purple);      /* #523573 */
   
   
-  /* --- EXTENDED SCALES (Für Tailwind-Kompatibilität, basierend auf CI) --- */
+  /* --- EXTENDED SCALES (for Tailwind-compatibility, based on CI) --- */
   --color-gray-50: var(--color-white);
   --color-gray-100: var(--color-minimal-gray);
   --color-gray-900: var(--color-black);
@@ -241,8 +243,8 @@ button:focus-visible {
 
 .dark {
   /* --- DARK MODE THEME --- */
-  --background: var(--color-black); /* Der extrem dunkle Hintergrund */
-  --foreground: var(--color-white); /* Normaler Text */
+  --background: var(--color-black); /* dark background */
+  --foreground: var(--color-white); /* normal text */
   
   --card: var(--color-dark-indigo); 
   --card-foreground: var(--color-white);
@@ -269,7 +271,7 @@ button:focus-visible {
   
   --chart-1: var(--color-tumai-violet);
   --chart-2: var(--color-electric-end);
-  --chart-3: var(--color-light-violet);
+  --chart-3: var(--color-lavender-tint);
   --chart-4: var(--color-minimal-gray);
   --chart-5: var(--color-dark-indigo);
   
@@ -322,7 +324,6 @@ button:focus-visible {
   }
 }
 
-/* Gradient Text Klasse (Nutzt jetzt die korrekten Electric Fade Endpunkte) */
 .gradient-text {
   background: linear-gradient(to right, var(--color-electric-start), var(--color-electric-end));
   background-clip: text;
