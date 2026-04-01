@@ -8,7 +8,7 @@ import { getSEOConfig } from "@/config/seo";
 import { faq } from "@/data/e-lab/FAQ";
 import type { Organization, WithContext } from "schema-dts";
 import { Hero } from "./hero";
-import "@/styles/elab-font.css";
+// import "@/styles/elab-font.css";
 
 export default function ELab() {
   const jsonLd: WithContext<Organization> = {
@@ -63,7 +63,7 @@ export default function ELab() {
 
       <Timeline />
 
-      <section className="relative overflow-hidden py-12 sm:py-12 lg:py-16 w-full bg-gradient-to-br from-purple-50 via-white to-blue-50">
+      <section className="relative overflow-hidden border-t border-b border-purple-100 py-12 sm:py-12 lg:py-16 w-full bg-gradient-to-br from-purple-50 via-white to-blue-50">
         {/* Decorative gradient blobs for depth */}
         <div className="pointer-events-none absolute -top-24 -left-24 h-72 w-72 rounded-full bg-gradient-to-br from-purple-400/40 to-fuchsia-400/30 blur-3xl"></div>
         <div className="pointer-events-none absolute -bottom-24 -right-16 h-80 w-80 rounded-full bg-gradient-to-br from-indigo-400/30 to-sky-400/30 blur-3xl"></div>
@@ -102,7 +102,7 @@ export default function ELab() {
                     </h2>
 
                     <p
-                      className={`mx-auto mb-10 max-w-2xl text-base leading-relaxed text-slate-700`}
+                      className={`mx-auto mb-10 max-w-2xl text-base leading-relaxed text-text-gray`}
                     >
                       Secure your spot in one of Europe’s leading AI incubators
                       and join a network of top founders, mentors, and
@@ -112,7 +112,7 @@ export default function ELab() {
                     <div className="flex justify-center">
                       <div className="relative">
                         {/* Radiating glow effect - always visible */}
-                        <div className="absolute -inset-2 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg opacity-50 blur-xl"></div>
+                        <div className="absolute -inset-2 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg opacity-45 blur-xl"></div>
 
                         {/* Sparkling effects - always visible */}
 
@@ -121,15 +121,15 @@ export default function ELab() {
                           target="_blank"
                           rel="noopener noreferrer"
                           className={
-                            `group relative inline-flex items-center justify-center overflow-hidden rounded-2xl px-6 py-3 text-base font-semibold text-white shadow-xl 
-                          bg-[linear-gradient(135deg,#7C3AED_0%,#A855F7_33%,#EC4899_66%,#6366F1_100%)] bg-[length:200%_200%] bg-[position:0%_50%] 
+                            `group relative inline-flex items-center justify-center overflow-hidden rounded-2xl px-6 py-3 text-base font-semibold text-white shadow-l 
+                          bg-gradient-to-r from-primary to-dark-purple
                           `
                             // hover:bg-[position:100%_50%]
                             // transition-[background-position,transform] duration-500 ease-out hover:scale-[1.02]
                           }
                         >
                           {/* Soft glow behind button */}
-                          <div className="pointer-events-none absolute -inset-x-8 -bottom-6 h-16 rounded-full bg-gradient-to-r from-purple-500/40 via-fuchsia-500/40 to-indigo-500/40 blur-2xl"></div>
+                          <div className="pointer-events-none absolute -inset-x-8 -bottom-6 h-16 rounded-full bg-primary blur-2xl"></div>
                           {/* Border and shine */}
                           <div className="absolute inset-0 rounded-2xl ring-1 ring-white/30"></div>
                           <div

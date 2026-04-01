@@ -136,7 +136,7 @@ button:focus-visible {
   }
 
   a:hover {
-    color: var(--color-electric-end);
+    color: var(--color-primary);
   }
 }
 
@@ -170,6 +170,7 @@ button:focus-visible {
   --color-purple-900: var(--color-dark-indigo);
   --color-purple-950: var(--color-black);
 
+  /*
   /*
   --color-purple-50: #f6edfc;
   --color-purple-100: #eddbfa;
