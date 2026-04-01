@@ -21,7 +21,11 @@ export default function Hero() {
             </div>
             <div className="flex flex-col items-center md:items-start gap-4 mt-4">
               <Button asChild variant="primary" className="px-8 py-4 text-lg">
-                <a href="https://tally.so/r/OD0Vgg" target="blank">
+                <a
+                  href="https://tally.so/r/OD0Vgg"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   Apply now
                 </a>
               </Button>

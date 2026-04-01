@@ -10,7 +10,7 @@ interface FaqProps {
   className?: string;
 }
 
-export default function FAQ({ faq, className = "px-8 pb-16" }: FaqProps) {
+export default function FAQ({ faq, className = "p-8 pb-16" }: FaqProps) {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
   return (

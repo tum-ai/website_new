@@ -109,7 +109,7 @@ Current handlers:
 
 - [src/api/getNotes.ts](../src/api/getNotes.ts) -> events
 - [src/api/getPartners.ts](../src/api/getPartners.ts) -> partners
-- [src/api/getResearches.ts](../src/api/getResearches.ts) -> research projects
+- [src/api/getResearch.ts](../src/api/getResearch.ts) -> research projects
 
 Characteristics:
 

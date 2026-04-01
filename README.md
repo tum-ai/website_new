@@ -92,7 +92,7 @@ Current Notion-backed areas:
 
 - events via [src/api/getNotes.ts](src/api/getNotes.ts)
 - partners via [src/api/getPartners.ts](src/api/getPartners.ts)
-- research via [src/api/getResearches.ts](src/api/getResearches.ts)
+- research via [src/api/getResearch.ts](src/api/getResearch.ts)
 
 ## Styling And Brand
 
