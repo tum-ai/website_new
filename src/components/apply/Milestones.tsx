@@ -83,7 +83,7 @@ export default function Milestones() {
                   <path
                     d="M20 8v24M20 32l-8-8M20 32l8-8"
                     strokeWidth="3"
-                    stroke="#9A64D9"
+                    stroke="var(--color-tumai-violet)"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />

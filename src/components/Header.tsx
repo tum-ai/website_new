@@ -1,7 +1,7 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { type CSSProperties, useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
 
@@ -51,22 +51,18 @@ export const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [location.pathname]);
 
+  const headerStyle = {
+    "--brand-header-opacity": headerOpacity,
+    "--brand-header-blur": `${headerBlur}px`,
+  } as CSSProperties;
+
   return (
     <div
-      className="fixed top-0 left-0 w-full z-50 h-16 flex items-center px-6 py-10"
-      style={{
-        backgroundColor: `rgba(11, 2, 19, ${headerOpacity})`,
-        backdropFilter: `blur(${headerBlur}px)`,
-      }}
+      className="brand-header-shell fixed top-0 left-0 z-50 flex h-16 w-full items-center px-6 py-10"
+      style={headerStyle}
     >
       {!showLogo && location.pathname === "/" && (
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: "linear-gradient(to bottom, #0D0214 30%, transparent)",
-            zIndex: -1,
-          }}
-        ></div>
+        <div className="brand-header-overlay absolute inset-0 pointer-events-none" />
       )}
       <a
         href="/"
@@ -102,11 +98,7 @@ export const Header = () => {
           variant="outline2"
           className="rounded-md px-6 py-3 text-center flex-shrink-0"
         >
-          <NavLink
-            to="/apply"
-          >
-            Become a Member
-          </NavLink>
+          <NavLink to="/apply">Become a Member</NavLink>
         </Button>
       </div>
 
@@ -114,11 +106,9 @@ export const Header = () => {
       <div className="ml-auto flex xl:hidden ">
         <Dialog.Root open={open} onOpenChange={setOpen}>
           <Dialog.Trigger asChild>
-            <Button variant="primary" className="h-9 w-9 p-0" asChild>
-              <div role="button" className="flex items-center justify-center cursor-pointer">
-                <Menu size={20} />
-                <span className="sr-only">Open menu</span>
-              </div>
+            <Button variant="primary" className="h-9 w-9 p-0">
+              <Menu size={20} />
+              <span className="sr-only">Open menu</span>
             </Button>
           </Dialog.Trigger>
 
@@ -145,15 +135,9 @@ export const Header = () => {
                   >
                     <div className="flex justify-end">
                       <Dialog.Close asChild>
-                        <Button variant="primary" className="h-9 w-9 p-0" asChild>
-                          <div 
-                            role="button" 
-                            className="flex items-center justify-center cursor-pointer"
-                            onClick={() => setOpen(false)}
-                          >
+                        <Button variant="primary" className="h-9 w-9 p-0">
                           <X size={20} />
-                            <span className="sr-only">Close menu</span>
-                          </div>
+                          <span className="sr-only">Close menu</span>
                         </Button>
                       </Dialog.Close>
                     </div>
@@ -183,7 +167,7 @@ export const Header = () => {
                         <NavLink
                           to="/apply"
                           onClick={() => setOpen(false)}
-                          className="w-full bg-transparent border border-[#A144E9] rounded-md px-6 py-3 text-[#A144E9] text-center sm:w-auto"
+                          className="w-full"
                         >
                           Become a Member
                         </NavLink>

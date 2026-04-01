@@ -48,7 +48,8 @@ export default function Research() {
   }, [projects]);
 
   if (loading) return <LoadingScreen text="Loading research projects..." />;
-  if (error) return <div style={{ color: "red" }}>{error}</div>;
+  if (error)
+    return <div className="p-8 text-center text-destructive">{error}</div>;
 
   const tabs = [
     {
@@ -185,7 +186,7 @@ export default function Research() {
   return (
     <>
       <SEO {...getSEOConfig("research")} />
-      <section className="relative pt-32 pb-16 px-8 bg-gradient-to-br from-black via-black to-[#291a39]">
+      <section className="brand-page-shell relative px-8 pt-32 pb-16">
         <Layout>
           {/* Hero Section */}
           <div className="min-h-screen ">
@@ -233,9 +234,9 @@ export default function Research() {
                     );
                   })}
                 </div>
-                  <h1 className="text-title sm:text-2xl mt-10 text-white text-center md:text-[2rem] font-semibold animate-item">
-                    Ongoing Projects
-                  </h1>
+                <h1 className="text-title sm:text-2xl mt-10 text-white text-center md:text-[2rem] font-semibold animate-item">
+                  Ongoing Projects
+                </h1>
                 {tabs.map((tab) => (
                   <div
                     key={tab.value}

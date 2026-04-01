@@ -24,32 +24,19 @@ const stepIcons = [
   faGraduationCap, // Alumni
 ];
 
-// Corrected color scheme for the ICONS (a unique color for each of the 6 steps)
 export const iconColors = [
-  "#C084FC", // Purple for Batch Introduction
-  "#4FD1C5", // Teal for Research Track
-  "#F472B6", // Pink for Initiative Track
-  "#FDE047", // Yellow for Growth Opportunities
-  "#60A5FA", // Light Blue for Research Exchange (REX) Program
-  "#FB923C", // Orange for Alumni
-  "#34D399", // Emerald green for Collaboration
-  "#A78BFA", // Lavender for Mentorship
-  "#F87171", // Red for Special Events
+  "#C084FC",
+  "#4FD1C5",
+  "#F472B6",
+  "#FDE047",
+  "#60A5FA",
+  "#FB923C",
+  "#34D399",
+  "#A78BFA",
+  "#F87171",
 ];
 
-// Corrected background colors for the radial gradient glow
-// export const glowColors = [
-//   "#3A1772", // Dark purple for Batch Introduction
-//   "#007266", // Dark teal for Research Track
-//   "#721D50", // Dark magenta for Initiative Track
-//   "#7A6000", // Dark yellow for Growth Opportunities
-//   "#141972", // Deep blue for Research Exchange (REX) Program
-//   "#B45B31", // Orange-brown for Alumni
-//   "#00593D", // Dark green for Collaboration
-//   "#4B0082", // Indigo for Mentorship
-//   "#7A1C1C", // Deep red for Special Events
-// ];
-const glowColor = "#9A64D9";
+const getIconColor = (index: number) => iconColors[index % iconColors.length];
 
 const StepCard = ({
   step,
@@ -61,16 +48,8 @@ const StepCard = ({
     viewport={{ once: true, amount: 0.2 }} // Show as soon as 20% is in view
     className="relative"
   >
-    <Card
-      className="relative p-6 text-white border border-primary/30 bg-[#18112F] rounded-3xl shadow-lg h-full overflow-hidden
-      before:absolute before:inset-0 before:opacity-50 before:bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] before:from-purple-900 before:to-transparent"
-    >
-      <div
-        className="absolute inset-0 z-0 opacity-50"
-        style={{
-          background: `radial-gradient(circle at center, ${glowColor} -30%, transparent 80%)`,
-        }}
-      ></div>
+    <Card className="brand-panel relative h-full overflow-hidden rounded-3xl border border-primary/30 p-6 text-white shadow-lg">
+      <div className="brand-panel-glow absolute inset-0 z-0 opacity-50"></div>
       <div className="relative z-10 flex items-start justify-between">
         <div className="h-16 w-16 invisible"></div>
         <div className="flex flex-col">
@@ -83,7 +62,7 @@ const StepCard = ({
         </div>
         <div
           className="h-16 w-16 flex items-center justify-center text-4xl"
-          style={{ color: iconColors[index] }}
+          style={{ color: getIconColor(index) }}
         >
           <FontAwesomeIcon icon={stepIcons[index]} />
         </div>
@@ -105,16 +84,8 @@ const CombinedStepCard = ({
     viewport={{ once: true, amount: 0.2 }}
     className="relative"
   >
-    <Card
-      className="relative p-6 text-white border border-primary/30 bg-[#18112F] rounded-3xl shadow-lg h-full overflow-hidden
-      before:absolute before:inset-0 before:opacity-50 before:bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] before:from-purple-900 before:to-transparent"
-    >
-      <div
-        className="absolute inset-0 z-0 opacity-50"
-        style={{
-          background: `radial-gradient(circle at center, ${glowColor} -30%, transparent 80%)`,
-        }}
-      ></div>
+    <Card className="brand-panel relative h-full overflow-hidden rounded-3xl border border-primary/30 p-6 text-white shadow-lg">
+      <div className="brand-panel-glow absolute inset-0 z-0 opacity-50"></div>
       <div className="relative z-10">
         {/* Mobile and narrow screens: vertical layout */}
         <div className="block md:hidden">
@@ -132,7 +103,7 @@ const CombinedStepCard = ({
                 </div>
                 <div
                   className="h-16 w-16 flex items-center justify-center text-4xl"
-                  style={{ color: iconColors[indices[idx]] }}
+                  style={{ color: getIconColor(indices[idx]) }}
                 >
                   <FontAwesomeIcon icon={stepIcons[indices[idx]]} />
                 </div>
@@ -168,7 +139,7 @@ const CombinedStepCard = ({
               </div>
               <div
                 className="h-16 w-16 flex items-center justify-center text-4xl"
-                style={{ color: iconColors[indices[0]] }}
+                style={{ color: getIconColor(indices[0]) }}
               >
                 <FontAwesomeIcon icon={stepIcons[indices[0]]} />
               </div>
@@ -200,7 +171,7 @@ const CombinedStepCard = ({
               </div>
               <div
                 className="h-16 w-16 flex items-center justify-center text-4xl"
-                style={{ color: iconColors[indices[1]] }}
+                style={{ color: getIconColor(indices[1]) }}
               >
                 <FontAwesomeIcon icon={stepIcons[indices[1]]} />
               </div>
@@ -258,8 +229,8 @@ const JourneyPathSVG = ({ inView }: { inView: boolean }) => (
         y2="1100"
         gradientUnits="userSpaceOnUse"
       >
-        <stop stopColor="#9A64D9" />
-        <stop offset="1" stopColor="#F5EFFF" />
+        <stop stopColor="var(--color-tumai-violet)" />
+        <stop offset="1" stopColor="var(--color-lavender-tint)" />
       </linearGradient>
     </defs>
   </svg>
@@ -316,10 +287,7 @@ export const JourneySection = () => {
       <div className="mb-12">
         <h1 className="text-4xl font-bold md:text-5xl">
           The TUM.ai
-          <b className="bg-gradient-to-r font-semibold from-[#9A64D9] to-[#F5EFFF] bg-clip-text text-transparent">
-            {" "}
-            Member Journey
-          </b>
+          <b className="brand-highlight-text font-semibold"> Member Journey</b>
         </h1>
         <p className="mx-auto max-w-2xl text-white/80 pt-4 text-base md:text-lg">
           At TUM.ai, members contribute through AI projects, workshops, and

@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
-    <footer className="relative overflow-hidden border-t border-white/1 bg-gradient-to-br from-black to-[#523573]">
+    <footer className="brand-accent-shell relative overflow-hidden border-t border-white/1">
       <div className="bg-grid-white/[0.02] absolute inset-0 [mask-image:radial-gradient(white,transparent_85%)]" />
 
       <section className="relative">
@@ -28,7 +28,7 @@ export default function Footer() {
                       href="https://de.linkedin.com/company/tum-ai"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-white/80 transition-colors duration-300 hover:text-purple-300"
+                      className="text-sm text-white/80 transition-colors duration-300 hover:text-primary"
                       aria-label="LinkedIn"
                     >
                       LinkedIn
@@ -39,7 +39,7 @@ export default function Footer() {
                       href="https://www.instagram.com/tum.ai_official/"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-white/80 transition-colors duration-300 hover:text-purple-300"
+                      className="text-sm text-white/80 transition-colors duration-300 hover:text-primary"
                       aria-label="Instagram"
                     >
                       Instagram
@@ -50,7 +50,7 @@ export default function Footer() {
                       href="https://join.slack.com/t/tumaipublic/shared_invite/zt-10kg0t1f9-JLRXDxY_d_vprKWgab0cVw"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-white/80 transition-colors duration-300 hover:text-purple-300"
+                      className="text-sm text-white/80 transition-colors duration-300 hover:text-primary"
                       aria-label="Slack"
                     >
                       Slack
@@ -61,7 +61,7 @@ export default function Footer() {
                       href="mailto:contact@tum-ai.com"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-white/80 transition-colors duration-300 hover:text-purple-300"
+                      className="text-sm text-white/80 transition-colors duration-300 hover:text-primary"
                       aria-label="Email"
                     >
                       Email
@@ -76,7 +76,7 @@ export default function Footer() {
                 <ul className="space-y-2">
                   <li>
                     <Link
-                      className="text-sm text-white/80 transition-colors duration-300 hover:text-purple-300"
+                      className="text-sm text-white/80 transition-colors duration-300 hover:text-primary"
                       to="/imprint"
                     >
                       Imprint
@@ -84,7 +84,7 @@ export default function Footer() {
                   </li>
                   <li>
                     <Link
-                      className="text-sm text-white/80 transition-colors duration-300 hover:text-purple-300"
+                      className="text-sm text-white/80 transition-colors duration-300 hover:text-primary"
                       to="/data-privacy"
                     >
                       Data Privacy
@@ -92,7 +92,7 @@ export default function Footer() {
                   </li>
                   <li>
                     <Link
-                      className="text-sm text-white/80 transition-colors duration-300 hover:text-purple-300"
+                      className="text-sm text-white/80 transition-colors duration-300 hover:text-primary"
                       to="/disclaimer"
                     >
                       Disclaimer
@@ -107,7 +107,7 @@ export default function Footer() {
                 <ul className="space-y-2">
                   <li>
                     <a
-                      className="text-sm text-white/80 transition-colors duration-300 hover:text-purple-300"
+                      className="text-sm text-white/80 transition-colors duration-300 hover:text-primary"
                       href="https://github.com/tum-ai/"
                       target="_blank"
                       rel="noopener noreferrer"
