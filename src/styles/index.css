@@ -136,7 +136,7 @@ button:focus-visible {
   }
 
   a:hover {
-    color: var(--color-electric-end);
+    color: var(--color-primary);
   }
 }
 

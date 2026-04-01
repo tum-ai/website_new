@@ -99,7 +99,7 @@ export default function Research() {
               </h1>
 
               <Card>
-                <CardContent className="px-0 bg-minimal-gray">
+                <CardContent className="px-0 rounded-xl bg-minimal-gray">
                   <Logos logos={researchPartners} />
                 </CardContent>
               </Card>
