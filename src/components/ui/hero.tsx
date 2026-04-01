@@ -43,11 +43,15 @@ export const Hero = () => {
       className="flex flex-col items-start justify-center sm:justify-end px-4 py-6 sm:px-8 sm:py-12"
     >
       {/* Logo */}
-      <img src="/assets/tum_ai_logo_new.svg" alt="TUM.ai New Logo" className="h-10 w-auto mb-4 ml-1" />
+      <img
+        src="/assets/tum_ai_logo_new.svg"
+        alt="TUM.ai New Logo"
+        className="h-10 w-auto mb-4 ml-1"
+      />
 
       <p className="mt-2 font-thin text-title sm:text-4xl leading-snug w-full sm:max-w-8/12 mb-2">
         Germany’s leading student initiative focused on
-        <b className="bg-gradient-to-r font-medium from-[#9A64D9] to-[#F5EFFF] bg-clip-text text-transparent">
+        <b className="brand-highlight-text font-medium">
           {" "}
           Artificial Intelligence.
         </b>
@@ -67,12 +71,7 @@ export const Hero = () => {
           variant="outline2"
           className="w-full rounded-md px-6 py-3 text-center sm:w-auto"
         >
-          <a
-            href="/apply"
-            className="w-full bg-transparent border border-[#A144E9] rounded-md px-6 py-3 text-[#A144E9] text-center sm:w-auto"
-          >
-            Become a Member
-          </a>
+          <a href="/apply">Become a Member</a>
         </Button>
       </div>
     </div>

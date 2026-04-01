@@ -56,14 +56,19 @@ export default function Events() {
     );
 
   if (loading) return <LoadingScreen text="Loading events..." />;
-  if (error) return <div style={{ color: "red" }}>{error}</div>;
+  if (error)
+    return <div className="p-8 text-center text-destructive">{error}</div>;
   return (
     <>
       <SEO {...getSEOConfig("events")} />
-      <section className="relative overflow-hidden bg-gradient-to-br from-black via-black to-[#291a39] p-8 text-white sm:py-16 lg:py-24">
+      <section className="brand-page-shell relative overflow-hidden p-8 text-white sm:py-16 lg:py-24">
         <Layout>
-          <div className={`min-h-screen flex flex-col ${filteredEvents.length === 0 ? '' : 'md:flex-row justify-center'}`}>
-            <div className={`px-6 py-12 md:px-12 ${filteredEvents.length === 0 ? 'w-full' : ''}`}>
+          <div
+            className={`min-h-screen flex flex-col ${filteredEvents.length === 0 ? "" : "md:flex-row justify-center"}`}
+          >
+            <div
+              className={`px-6 py-12 md:px-12 ${filteredEvents.length === 0 ? "w-full" : ""}`}
+            >
               {/* Filters */}
               <EventFiltersComponent
                 filters={filters}

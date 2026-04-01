@@ -30,22 +30,14 @@ const DepartmentCard = ({
       transition={{ duration: 0.2, delay: index * 0.02 }}
       viewport={{ once: true }}
     >
-      <Card
-        className="h-full p-8 text-white rounded-3xl overflow-hidden relative bg-[#18112F] shadow-black shadow-2xl border border-white/10"
-      >
-        <div
-          className="absolute inset-0 z-0 opacity-40"
-          style={{
-            background: `radial-gradient(circle at center, 0%, transparent 70%)`,
-          }}
-        ></div>
+      <Card className="brand-panel relative h-full overflow-hidden rounded-3xl border border-white/10 p-8 text-white shadow-2xl shadow-black">
+        <div className="brand-panel-glow absolute inset-0 z-0 opacity-40"></div>
         <div className="relative z-10 mb-5 flex items-center gap-4">
           {Icon && (
             <div
-              className="flex h-10 w-10 items-center justify-center rounded-lg transition-colors"
+              className="brand-icon-badge flex h-10 w-10 items-center justify-center rounded-lg transition-colors"
               style={{
-                backgroundColor: "rgba(255,255,255,0.05)",
-                color: departmentColors[index],
+                color: departmentColors[index % departmentColors.length],
               }}
             >
               <Icon className="h-5 w-5" />
@@ -107,12 +99,12 @@ export default function Community() {
       <SEO {...getSEOConfig("community")} />
       <div className="pointer-events-none fixed inset-0 z-[-1] overflow-hidden">
         <div className="bg-grid-slate-100 absolute top-0 left-0 h-full w-full opacity-5 [mask-image:linear-gradient(0deg,transparent,white)]" />
-        <div className="absolute top-48 right-10 h-[15vw] max-h-72 w-[15vw] max-w-72 rounded-full bg-purple-400 opacity-10 blur-[clamp(40px,5vw,100px)]" />
-        <div className="absolute top-96 left-10 h-[20vw] max-h-96 w-[20vw] max-w-96 rounded-full bg-blue-300 opacity-10 blur-[clamp(50px,6vw,120px)]" />
-        <div className="absolute right-48 bottom-48 h-[15vw] max-h-64 w-[15vw] max-w-64 rounded-full bg-indigo-400 opacity-10 blur-[clamp(30px,4vw,80px)]" />
+        <div className="absolute top-48 right-10 h-[15vw] max-h-72 w-[15vw] max-w-72 rounded-full bg-primary opacity-10 blur-[clamp(40px,5vw,100px)]" />
+        <div className="absolute top-96 left-10 h-[20vw] max-h-96 w-[20vw] max-w-96 rounded-full bg-dark-purple opacity-12 blur-[clamp(50px,6vw,120px)]" />
+        <div className="absolute right-48 bottom-48 h-[15vw] max-h-64 w-[15vw] max-w-64 rounded-full bg-lavender-tint opacity-8 blur-[clamp(30px,4vw,80px)]" />
       </div>
 
-      <section className="relative overflow-hidden bg-gradient-to-br from-0% from-[color-mix(in_srgb,theme(colors.dark-purple),black_70%)] via-60% via-[color-mix(in_srgb,theme(colors.dark-indigo),black_50%)] to-dark-purple text-white">
+      <section className="brand-page-shell relative overflow-hidden text-white">
         <JourneySection />
         <DepartmentsSection />
         <MemberStories stories={stories} />

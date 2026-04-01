@@ -105,14 +105,9 @@ export const PartnersSection = () => {
           <Button
             asChild
             variant="outline2"
-            className="w-full rounded-md px-6 py-3 text-center sm:w-auto !text-primary"
+            className="w-full rounded-md px-6 py-3 text-center sm:w-auto"
           >
-            <NavLink
-              to="/partners"
-              className="w-full bg-black border border-[#A144E9] rounded-md px-6 py-3 text-[#A144E9] text-center sm:w-auto"
-            >
-              View Our Partners
-            </NavLink>
+            <NavLink to="/partners">View Our Partners</NavLink>
           </Button>
         </div>
       </div>

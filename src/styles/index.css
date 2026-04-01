@@ -1,12 +1,10 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 /* TODO: fix unknown rules */
-/* TODO: This is not ideal: ⁠ div role="button" ⁠ is used to avoid current global
-⁠ button ⁠ CSS. Convert back to a native button after moving button visuals out of ⁠ index.css ⁠. */
 
 @font-face {
-  font-family: 'Manrope';
-  src: url('/assets/Manrope.ttf') format('truetype');
+  font-family: "Manrope";
+  src: url("/assets/Manrope.ttf") format("truetype");
   font-weight: 100 900; /* var font, scales from 100 to 900 all thicknesses */
   font-style: normal;
 }
@@ -14,7 +12,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  font-family: 'Manrope', system-ui, sans-serif;
+  font-family: "Manrope", system-ui, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -29,39 +27,88 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   --radius: 0.625rem;
-  
+  --color-white-rgb: 255 255 255;
+  --color-black-rgb: 13 2 20;
+  --color-tumai-violet-rgb: 154 100 217;
+  --color-brand-page-end: color-mix(
+    in srgb,
+    var(--color-dark-purple) 72%,
+    var(--color-black)
+  );
+  --color-brand-panel: color-mix(
+    in srgb,
+    var(--color-dark-indigo) 60%,
+    var(--color-black)
+  );
+  --color-brand-grid-tile: color-mix(
+    in srgb,
+    var(--color-dark-purple) 88%,
+    var(--color-black)
+  );
+  --gradient-brand-page: linear-gradient(
+    135deg,
+    var(--color-black) 0%,
+    var(--color-black) 58%,
+    var(--color-brand-page-end) 100%
+  );
+  --gradient-brand-accent: linear-gradient(
+    135deg,
+    var(--color-black) 0%,
+    var(--color-dark-purple) 100%
+  );
+  --gradient-brand-highlight: linear-gradient(
+    90deg,
+    var(--color-tumai-violet) 0%,
+    var(--color-lavender-tint) 100%
+  );
+  --gradient-brand-home-overlay: linear-gradient(
+    to top right,
+    var(--color-black) 20%,
+    transparent
+  );
+  --gradient-brand-header-overlay: linear-gradient(
+    to bottom,
+    var(--color-black) 30%,
+    transparent
+  );
+  --gradient-brand-panel-glow: radial-gradient(
+    circle at center,
+    rgb(var(--color-tumai-violet-rgb) / 0.52) -30%,
+    transparent 80%
+  );
+
   /* --- LIGHT MODE THEME --- */
   --background: var(--color-white);
   --foreground: var(--color-dark-indigo); /* normal text */
-  
+
   --card: var(--color-white);
   --card-foreground: var(--color-black);
-  
+
   --popover: var(--color-white);
   --popover-foreground: var(--color-black);
-  
-  --primary: var(--color-tumai-violet); 
-  --primary-foreground: var(--color-white); 
-  
-  --secondary: var(--color-lavender-tint); 
-  --secondary-foreground: var(--color-dark-violet); 
-  
-  --muted: var(--color-minimal-gray); 
+
+  --primary: var(--color-tumai-violet);
+  --primary-foreground: var(--color-white);
+
+  --secondary: var(--color-lavender-tint);
+  --secondary-foreground: var(--color-dark-violet);
+
+  --muted: var(--color-minimal-gray);
   --muted-foreground: var(--color-gray-500);
-  
+
   --accent: var(--color-tumai-violet);
   --accent-foreground: var(--color-black);
-  
+
   --destructive: oklch(0.577 0.245 27.325); /* red for errors (stays standard) */
   --destructive-foreground: var(--color-white);
-  
+
   --border: var(--color-minimal-gray); /* Frame fo Inputs/Cards */
   --input: var(--color-minimal-gray);
   --ring: var(--color-tumai-violet); /* Fokus-Ring */
-  
+
   /* Charts (adopted to CI) */
   --chart-1: var(--color-tumai-violet);
-  --chart-2: var(--color-electric-end); 
+  --chart-2: var(--color-electric-end);
   --chart-3: var(--color-dark-indigo);
   --chart-4: var(--color-lavender-tint);
   --chart-5: var(--color-minimal-gray);
@@ -100,33 +147,11 @@ body {
   min-height: 100vh;
   width: 100%;
   overflow-x: hidden;
-  font-family: 'Manrope', sans-serif;
+  font-family: "Manrope", sans-serif;
 }
 
 button {
-  border-radius: 8px;
-  border: 0px solid transparent;
-  padding: 1.2rem;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: var(--primary);
-  color: var(--primary-foreground);
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  background-image: none; 
-}
-
-button:hover {
-  /* electric fade ad hover effect */
-  background-image: linear-gradient(to right, var(--color-electric-start), var(--color-electric-end));
-  color: var(--color-white);
-  border-color: transparent;
-}
-
-button:focus,
-button:focus-visible {
-  outline: 4px auto var(--ring);
+  font: inherit;
 }
 
 @media (prefers-color-scheme: light) {
@@ -140,31 +165,83 @@ button:focus-visible {
   }
 }
 
+.brand-highlight-text {
+  background-image: var(--gradient-brand-highlight);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.brand-page-shell {
+  background-color: var(--color-black);
+  background-image: var(--gradient-brand-page);
+}
+
+.brand-accent-shell {
+  background-color: var(--color-black);
+  background-image: var(--gradient-brand-accent);
+}
+
+.brand-home-hero {
+  background-color: var(--color-black);
+}
+
+.brand-home-hero-overlay {
+  background-image: var(--gradient-brand-home-overlay);
+}
+
+.brand-header-shell {
+  background-color: rgb(var(--color-black-rgb) / var(--brand-header-opacity, 0));
+  backdrop-filter: blur(var(--brand-header-blur, 0px));
+  -webkit-backdrop-filter: blur(var(--brand-header-blur, 0px));
+}
+
+.brand-header-overlay {
+  background-image: var(--gradient-brand-header-overlay);
+  z-index: -1;
+}
+
+.brand-panel {
+  background-color: var(--color-brand-panel);
+}
+
+.brand-panel-glow {
+  background-image: var(--gradient-brand-panel-glow);
+}
+
+.brand-grid-tile {
+  background-color: var(--color-brand-grid-tile);
+}
+
+.brand-icon-badge {
+  background-color: rgb(var(--color-white-rgb) / 0.05);
+}
+
 @theme {
   /* --- TUM.AI CORE BRAND COLORS (from CI-Document) --- */
-  
+
   /* Neutrals */
-  --color-white: oklch(1 0 0);          /* #FFFFFF */
+  --color-white: oklch(1 0 0); /* #FFFFFF */
   --color-minimal-gray: oklch(0.9521 0 0); /* #EFEFEF */
   --color-text-gray: oklch(0.4 0 0); /* use for text so it is all uniform */
-  
+
   /* The Violet Scale */
   --color-lavender-tint: oklch(0.9614 0.0221 302.94); /* #F5EFFF (Lavender Tint, Backgrounds/Highlights) */
   --color-tumai-violet: oklch(0.6131 0.1751 302.89); /* #9A64D9 (Electric Lavender, Primary Brand Color) */
   --color-dark-purple: oklch(0.3932 0.1047 303.55); /* #523573 (Dark Purple) */
-  --color-dark-indigo: oklch(0.2085 0.1188 288.93);  /* #1b0049 (Dark Indigo, Deeper UI Elements) */
-  --color-black: oklch(0.1275 0.0481 312.72);        /* #0D0214 (The deepest violet/black) */
-  
+  --color-dark-indigo: oklch(0.2085 0.1188 288.93); /* #1b0049 (Dark Indigo, Deeper UI Elements) */
+  --color-black: oklch(0.1275 0.0481 312.72); /* #0D0214 (The deepest violet/black) */
+
   /* ELectric fade gradient, start- and endpoint */
   --color-electric-start: var(--color-tumai-violet); /* #9A64D9 */
-  --color-electric-end: var(--color-dark-purple);      /* #523573 */
-  
-  
+  --color-electric-end: var(--color-dark-purple); /* #523573 */
+
   /* --- EXTENDED SCALES (for Tailwind-compatibility, based on CI) --- */
   --color-gray-50: var(--color-white);
   --color-gray-100: var(--color-minimal-gray);
   --color-gray-900: var(--color-black);
-  
+
   --color-purple-50: var(--color-lavender-tint);
   --color-purple-500: var(--color-tumai-violet);
   --color-purple-900: var(--color-dark-indigo);
@@ -185,7 +262,6 @@ button:focus-visible {
   older purples if needed
 
   */
-
 
   --text-title: 1.4em;
   --text-subtitle: 1.25em;
@@ -245,36 +321,36 @@ button:focus-visible {
   /* --- DARK MODE THEME --- */
   --background: var(--color-black); /* dark background */
   --foreground: var(--color-white); /* normal text */
-  
-  --card: var(--color-dark-indigo); 
+
+  --card: var(--color-dark-indigo);
   --card-foreground: var(--color-white);
-  
+
   --popover: var(--color-dark-indigo);
   --popover-foreground: var(--color-white);
-  
-  --primary: var(--color-tumai-violet); 
+
+  --primary: var(--color-tumai-violet);
   --primary-foreground: var(--color-white);
-  
+
   --secondary: var(--color-dark-indigo); /* Subtile Elemente im Dark Mode */
   --secondary-foreground: var(--color-lavender-tint);
-  
-  --muted: var(--color-dark-indigo); 
+
+  --muted: var(--color-dark-indigo);
   --muted-foreground: var(--color-minimal-gray);
-  
+
   --accent: var(--color-tumai-violet);
   --accent-foreground: var(--color-white);
-  
+
   --destructive: oklch(0.704 0.191 22.216); /* slightly lighter red for better contrast */
-  --border: var(--color-dark-indigo); 
+  --border: var(--color-dark-indigo);
   --input: var(--color-dark-indigo);
   --ring: var(--color-tumai-violet);
-  
+
   --chart-1: var(--color-tumai-violet);
   --chart-2: var(--color-electric-end);
   --chart-3: var(--color-lavender-tint);
   --chart-4: var(--color-minimal-gray);
   --chart-5: var(--color-dark-indigo);
-  
+
   --sidebar: var(--color-black);
   --sidebar-foreground: var(--color-white);
   --sidebar-primary: var(--color-tumai-violet);
@@ -325,9 +401,12 @@ button:focus-visible {
 }
 
 .gradient-text {
-  background: linear-gradient(to right, var(--color-electric-start), var(--color-electric-end));
+  background: linear-gradient(
+    to right,
+    var(--color-electric-start),
+    var(--color-electric-end)
+  );
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-
