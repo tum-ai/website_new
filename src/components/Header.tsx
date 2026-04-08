@@ -1,8 +1,11 @@
+"use client";
+
 import * as Dialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { type CSSProperties, useEffect, useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Button } from "./ui/button";
 
 export const Header = () => {
@@ -10,7 +13,7 @@ export const Header = () => {
   const [showLogo, setShowLogo] = useState(false);
   const [headerOpacity, setHeaderOpacity] = useState(0);
   const [headerBlur, setHeaderBlur] = useState(0);
-  const location = useLocation();
+  const pathname = usePathname();
 
   const links = [
     { href: "/events", text: "Events" },
@@ -23,7 +26,7 @@ export const Header = () => {
   ];
 
   useEffect(() => {
-    if (location.pathname !== "/") {
+    if (pathname !== "/") {
       setShowLogo(true);
       setHeaderOpacity(0.8);
       setHeaderBlur(10);
@@ -49,7 +52,7 @@ export const Header = () => {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [location.pathname]);
+  }, [pathname]);
 
   const headerStyle = {
     "--brand-header-opacity": headerOpacity,
@@ -61,10 +64,10 @@ export const Header = () => {
       className="brand-header-shell fixed top-0 left-0 z-50 flex h-16 w-full items-center px-6 py-10"
       style={headerStyle}
     >
-      {!showLogo && location.pathname === "/" && (
+      {!showLogo && pathname === "/" && (
         <div className="brand-header-overlay absolute inset-0 pointer-events-none" />
       )}
-      <a
+      <Link
         href="/"
         className={`transition-opacity duration-300 flex-shrink-0 ${
           showLogo ? "opacity-100" : "opacity-0"
@@ -75,30 +78,28 @@ export const Header = () => {
           alt="Logo"
           className="h-10 w-auto flex-shrink-0"
         />
-      </a>
+      </Link>
       {/* Desktop nav */}
       <div className="hidden xl:flex items-center gap-6 ml-auto">
         {links.map(({ href, text }) => (
-          <NavLink
+          <Link
             key={href}
-            to={href}
-            className={({ isActive }) =>
-              `${
-                isActive
-                  ? "text-primary drop-shadow-[0_0_15px_theme(colors.white/20%)] font-semibold"
-                  : "text-minimal-gray hover:text-primary hover:drop-shadow-[0_0_15px_theme(colors.white/20%)]"
-              } text-[16px] font-bold cursor-pointer whitespace-nowrap`
-            }
+            href={href}
+            className={`${
+              pathname === href
+                ? "text-primary drop-shadow-[0_0_15px_theme(colors.white/20%)] font-semibold"
+                : "text-minimal-gray hover:text-primary hover:drop-shadow-[0_0_15px_theme(colors.white/20%)]"
+            } text-[16px] font-bold cursor-pointer whitespace-nowrap`}
           >
             {text}
-          </NavLink>
+          </Link>
         ))}
         <Button
           asChild
           variant="outline2"
           className="rounded-md px-6 py-3 text-center flex-shrink-0"
         >
-          <NavLink to="/apply">Become a Member</NavLink>
+          <Link href="/apply">Become a Member</Link>
         </Button>
       </div>
 
@@ -144,33 +145,31 @@ export const Header = () => {
 
                     <nav className="mt-6 space-y-4">
                       {links.map(({ href, text }) => (
-                        <NavLink
+                        <Link
                           key={href}
-                          to={href}
+                          href={href}
                           onClick={() => setOpen(false)}
-                          className={({ isActive }) =>
-                            `block rounded-md px-4 py-2 text-lg ${
-                              isActive
-                                ? "text-primary font-semibold"
-                                : "text-minimal-gray hover:bg-dark-purple/50 hover:text-white"
-                            }`
-                          }
+                          className={`block rounded-md px-4 py-2 text-lg ${
+                            pathname === href
+                              ? "text-primary font-semibold"
+                              : "text-minimal-gray hover:bg-dark-purple/50 hover:text-white"
+                          }`}
                         >
                           {text}
-                        </NavLink>
+                        </Link>
                       ))}
                       <Button
                         asChild
                         variant="outline2"
                         className="w-full rounded-md px-6 py-3 text-center sm:w-auto"
                       >
-                        <NavLink
-                          to="/apply"
+                        <Link
+                          href="/apply"
                           onClick={() => setOpen(false)}
                           className="w-full"
                         >
                           Become a Member
-                        </NavLink>
+                        </Link>
                       </Button>
                     </nav>
                   </motion.div>

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 export default function Footer() {
   return (
@@ -77,7 +77,7 @@ export default function Footer() {
                   <li>
                     <Link
                       className="text-sm text-white/80 transition-colors duration-300 hover:text-primary"
-                      to="/imprint"
+                      href="/imprint"
                     >
                       Imprint
                     </Link>
@@ -85,7 +85,7 @@ export default function Footer() {
                   <li>
                     <Link
                       className="text-sm text-white/80 transition-colors duration-300 hover:text-primary"
-                      to="/data-privacy"
+                      href="/data-privacy"
                     >
                       Data Privacy
                     </Link>
@@ -93,7 +93,7 @@ export default function Footer() {
                   <li>
                     <Link
                       className="text-sm text-white/80 transition-colors duration-300 hover:text-primary"
-                      to="/disclaimer"
+                      href="/disclaimer"
                     >
                       Disclaimer
                     </Link>
