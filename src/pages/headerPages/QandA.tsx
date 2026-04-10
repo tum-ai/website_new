@@ -9,14 +9,11 @@ export default function QandA() {
       <SEO {...getSEOConfig("qanda")} />
       <main>
         <div className="flex flex-col min-h-screen">
-          <div className="relative bg-gradient-to-br from-black to-[#523573] py-32 text-white">
+          <div className="brand-accent-shell relative py-32 text-white">
             <div className="container mx-auto max-w-4xl px-4 text-center">
               <h1 className="text-4xl font-bold mt-8 md:text-5xl">
-                  Frequently Asked
-                <b className="bg-gradient-to-r font-semibold from-[#9A64D9] to-[#F5EFFF] bg-clip-text text-transparent">
-                {" "}
-                  Questions
-                </b>
+                Frequently Asked
+                <b className="brand-highlight-text font-semibold"> Questions</b>
               </h1>
               <p className="mt-4 text-lg text-lavender-tint">
                 Find answers to common questions about TUM.ai.

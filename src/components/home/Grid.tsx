@@ -53,7 +53,7 @@ export const Grid = () => {
         return (
           <div
             key={index}
-            className="relative aspect-square rounded-xl overflow-hidden bg-[#523573] transform transition duration-300 animate-opacity"
+            className="brand-grid-tile relative aspect-square overflow-hidden rounded-xl transition duration-300 animate-opacity"
             style={{ opacity: randomOpacity, animationDelay: randomDelay }}
           >
             {square.src && (
