@@ -1,165 +1,239 @@
 # Repo Structure
 
-This document explains how the TUM.ai website repo is organized and where to make changes.
+This document explains how the repository is organized today and which layer owns what.
 
-## Top Level
+## Top-Level Map
 
 ```text
 .
-├── docs/               brand source material and internal repo docs
-├── packages/           workspace packages such as shared Notion data access
-├── public/             static assets served as-is
-├── scripts/            small repo utilities and build helpers
-├── src/                Next.js website app source
-├── test/               node-based regression tests
-├── package.json        workspace root scripts and dependencies
-├── next.config.ts      Next.js config and distDir handling
-└── vercel.json         Vercel framework override
+├── docs/
+│   ├── brand/source/         original brand references
+│   └── *.md                  contributor-facing docs
+├── packages/
+│   └── notion-data/          shared Notion fetchers and row mappers
+├── public/
+│   └── assets/               static images, logos, video, fonts
+├── scripts/                  small Node helpers for repo workflows
+├── src/                      Next.js application source
+├── test/                     Node regression tests
+├── package.json              root scripts and app dependencies
+├── next.config.ts            Next.js config
+├── pnpm-workspace.yaml       workspace definition
+└── vercel.json               deployment framework config
 ```
 
-## `src/` Overview
+## Workspace Model
+
+This repo is a small pnpm workspace, not an `apps/web` monorepo:
+
+- `@tumai/web` lives at the repository root
+- `@tumai/notion-data` lives in `packages/notion-data`
+
+The root app consumes `@tumai/notion-data` through `workspace:*`, and `next.config.ts` transpiles that package for the app build.
+
+## Application Layers
 
 ```text
 src/
-├── app/         App Router routes, layouts, and route handlers
-├── components/  reusable UI and page-specific sections
-├── config/      SEO and site configuration
-├── data/        static content and route definitions
-├── lib/         types and small utilities
-├── views/       non-route page implementations used by App Router pages
-├── proxy.ts     host redirects and request guards
-└── styles/      global CSS and supporting stylesheet modules
+├── app/         route entrypoints, API handlers, root layout
+├── components/  shared UI and page sections
+├── config/      SEO and metadata configuration
+├── data/        static copy, FAQs, partner/logo datasets
+├── lib/         helpers, types, security, redirects, Notion cache wrapper
+├── styles/      global Tailwind/CSS token layer
+├── views/       page composition outside App Router files
+└── proxy.ts     host-based redirect logic
 ```
 
-## Runtime Composition
+### `src/app/`
 
-The app boots through App Router:
+`src/app/` owns runtime routing. Most `page.tsx` files are intentionally thin:
 
-- [src/app/layout.tsx](../src/app/layout.tsx) loads global CSS, fonts, header, and footer
-- `src/app/*/page.tsx` files own route registration
-- shared page implementations live in `src/views/`
-- [src/proxy.ts](../src/proxy.ts) handles host redirects before route execution
+1. set `metadata` via `src/config/seo.ts`
+2. render JSON-LD with `src/components/JsonLd.tsx`
+3. hand off to a page view in `src/views/`
 
-## Page Layer
+Current routes:
 
-`src/app/` contains the route entry points. These files stay thin and compose sections from `src/views/` and `src/components/`.
+- `/` -> `src/app/page.tsx` -> `src/views/Homepage.tsx`
+- `/apply` -> `src/app/apply/page.tsx` -> `src/views/apply/Apply.tsx`
+- `/community` -> `src/app/community/page.tsx` -> `src/views/headerPages/Community.tsx`
+- `/events` -> `src/app/events/page.tsx` -> `src/views/headerPages/Events.tsx`
+- `/e-lab` -> `src/app/e-lab/page.tsx` -> `src/views/headerPages/e-lab/ELab.tsx`
+- `/partners` -> `src/app/partners/page.tsx` -> `src/views/headerPages/Partners.tsx`
+- `/projects` -> `src/app/projects/page.tsx` -> `src/views/headerPages/Projects.tsx`
+- `/qanda` -> `src/app/qanda/page.tsx` -> `src/views/headerPages/QandA.tsx`
+- `/research` -> `src/app/research/page.tsx` -> `src/views/headerPages/Research.tsx`
+- legal pages live under `src/app/imprint`, `src/app/data-privacy`, and `src/app/disclaimer`
 
-Current pages:
+API handlers also live here:
 
-- `/` -> [src/app/page.tsx](../src/app/page.tsx) -> [src/views/Homepage.tsx](../src/views/Homepage.tsx)
-- `/apply` -> [src/app/apply/page.tsx](../src/app/apply/page.tsx) -> [src/views/apply/Apply.tsx](../src/views/apply/Apply.tsx)
-- `/events` -> [src/app/events/page.tsx](../src/app/events/page.tsx) -> [src/views/headerPages/Events.tsx](../src/views/headerPages/Events.tsx)
-- `/research` -> [src/app/research/page.tsx](../src/app/research/page.tsx) -> [src/views/headerPages/Research.tsx](../src/views/headerPages/Research.tsx)
-- `/projects` -> [src/app/projects/page.tsx](../src/app/projects/page.tsx) -> [src/views/headerPages/Projects.tsx](../src/views/headerPages/Projects.tsx)
-- `/e-lab` -> [src/app/e-lab/page.tsx](../src/app/e-lab/page.tsx) -> [src/views/headerPages/e-lab/ELab.tsx](../src/views/headerPages/e-lab/ELab.tsx)
-- `/community` -> [src/app/community/page.tsx](../src/app/community/page.tsx) -> [src/views/headerPages/Community.tsx](../src/views/headerPages/Community.tsx)
-- `/partners` -> [src/app/partners/page.tsx](../src/app/partners/page.tsx) -> [src/views/headerPages/Partners.tsx](../src/views/headerPages/Partners.tsx)
-- `/qanda` -> [src/app/qanda/page.tsx](../src/app/qanda/page.tsx) -> [src/views/headerPages/QandA.tsx](../src/views/headerPages/QandA.tsx)
-- legal routes under `src/app/`
+- `src/app/api/getNotes/route.ts`
+- `src/app/api/getPartners/route.ts`
+- `src/app/api/getResearch/route.ts`
 
-## Component Layer
+`src/app/layout.tsx` is the global shell. It loads the Manrope font, imports global CSS, and wraps every page with the shared header and footer.
 
-`src/components/` is split by domain:
+### `src/views/`
 
-- `apply/` -> sections for the application page
-- `community/` -> community-specific sections
-- `e-lab/` -> E-Lab sections and supporting visuals
-- `events/` -> event cards, lists, filters
-- `home/` -> homepage sections
-- `innovation/` -> project cards
-- `research/` -> research cards
-- `ui/` -> shared UI primitives such as buttons, cards, FAQ, dialog, carousel
+`src/views/` is the page composition layer. Use it when the App Router file should stay small and declarative.
 
-Root-level shared layout components:
+Subfolders:
 
-- [src/components/Header.tsx](../src/components/Header.tsx)
-- [src/components/Footer.tsx](../src/components/Footer.tsx)
-- [src/components/Layout.tsx](../src/components/Layout.tsx)
-- [src/components/JsonLd.tsx](../src/components/JsonLd.tsx)
+- `src/views/apply/` for the apply flow
+- `src/views/footer/` for legal/footer pages
+- `src/views/headerPages/` for main navigation pages
 
-## Data Layer
+Rule of thumb: if a page is made of several sections and needs orchestration, that orchestration belongs in `src/views/`, not directly in `src/app/`.
 
-`src/data/` contains static content and route config.
+### `src/components/`
+
+`src/components/` is organized mostly by page domain:
+
+- `apply/`
+- `community/`
+- `e-lab/`
+- `events/`
+- `home/`
+- `innovation/`
+- `research/`
+- `ui/`
+
+Cross-page building blocks live at the top level:
+
+- `Header.tsx`
+- `Footer.tsx`
+- `Layout.tsx`
+- `JsonLd.tsx`
+- `Logos.tsx`
+
+`src/components/ui/` contains the closest thing to a shared design-system layer. Some pieces are shadcn/Radix-style primitives, but the site still relies heavily on custom brand classes defined in CSS.
+
+### `src/data/`
+
+`src/data/` is the source of truth for content that is versioned in Git instead of coming from Notion.
 
 Examples:
 
-- [src/data/routes.tsx](../src/data/routes.tsx) -> route registry
-- `src/data/apply/` -> apply page copy and FAQ content
-- `src/data/e-lab/` -> E-Lab content, FAQ, startup data
-- [src/data/community.tsx](../src/data/community.tsx) -> community steps and department copy
-- [src/data/homepage.tsx](../src/data/homepage.tsx) -> homepage visuals/content
-- [src/data/partners.tsx](../src/data/partners.tsx) -> partner logo groups
-- [src/data/qanda.tsx](../src/data/qanda.tsx) -> Q&A page content
+- `src/data/homepage.tsx` for homepage copy and image arrays
+- `src/data/apply/` for apply content and FAQs
+- `src/data/e-lab/` for E-Lab content and startup lists
+- `src/data/community.tsx` for community copy
+- `src/data/partners.tsx` for partner/logo groupings
+- `src/data/qanda.tsx` for FAQ content
 
-Rule of thumb:
+Use `src/data/` when content is:
 
-- If content is edited directly in git and ships with the frontend, put it in `src/data/`.
-- If content should be editable in Notion, expose it through `packages/notion-data`, `src/lib/notion.ts`, and `src/app/api/`.
+- static
+- reviewed in code
+- deployed with the app
+- not expected to be edited from Notion
 
-## API Layer
+### `src/lib/`
 
-`src/app/api/` contains Next.js route handlers used by the frontend.
+`src/lib/` contains shared runtime helpers:
 
-Current handlers:
+- `notion.ts` wraps Notion fetchers in `unstable_cache`
+- `types.ts` re-exports shared data types and local UI types
+- `utils.ts` contains event filtering/grouping helpers and class merging
+- `security.ts` sanitizes URLs and JSON-LD output
+- `redirects.ts` contains join-host redirect logic
 
-- [src/app/api/getNotes/route.ts](../src/app/api/getNotes/route.ts) -> events
-- [src/app/api/getPartners/route.ts](../src/app/api/getPartners/route.ts) -> partners
-- [src/app/api/getResearch/route.ts](../src/app/api/getResearch/route.ts) -> research projects
+### `src/styles/`
 
-Characteristics:
+The main style entrypoint is `src/styles/index.css`.
 
-- all handlers call shared fetchers from `packages/notion-data`
-- server reads are wrapped in `src/lib/notion.ts`
-- route handlers provide JSON compatibility for client-side consumers
+Important details:
 
-Frontend consumers call the Next route handlers directly.
+- `src/app/globals.css` only re-imports `src/styles/index.css`
+- Tailwind v4 is configured CSS-first in `src/styles/index.css`
+- brand tokens, gradients, and utility classes live there
+- page-specific support styles live in files like `src/styles/Grid.css` and `src/styles/elab-font.css`
 
-## Styling
+If a contributor only edits `src/app/globals.css`, they will miss most of the actual styling system.
 
-Global styling lives in [src/styles/index.css](../src/styles/index.css).
+### `src/proxy.ts`
 
-Important styling conventions:
+`src/proxy.ts` handles host-level redirects before route execution. Right now it exists mainly to redirect `join.tum-ai.com/*` to `/apply`, except when the request is already for `/apply`.
 
-- global brand tokens live in `:root`
-- shared brand utility classes also live in `src/styles/index.css`
-- reusable UI treatments belong in `src/components/ui/`
-- page-specific visuals should reuse the token layer instead of hard-coding colors inline
+## Live Data Flow
 
-Other style files:
+Notion-backed data currently follows this path:
 
-- [src/styles/Grid.css](../src/styles/Grid.css) -> homepage grid animation
-- [src/styles/elab-font.css](../src/styles/elab-font.css) -> E-Lab typography overrides
+1. `packages/notion-data/src/index.ts` talks to the Notion API and maps raw database rows into `Event`, `Partner`, and `Research`.
+2. `src/lib/notion.ts` wraps those fetchers in `unstable_cache`, with the current database IDs included in the cache key.
+3. server routes consume those helpers directly:
+   - `/events` uses `getEvents()`
+   - `/research` uses `getResearchProjects()`
+4. API handlers return the same cached data as JSON for compatibility:
+   - `/api/getNotes`
+   - `/api/getPartners`
+   - `/api/getResearch`
 
-## SEO
+Important contributor note:
 
-SEO metadata is centralized in [src/config/seo.ts](../src/config/seo.ts).
+- the page routes fetch from `src/lib/notion.ts` directly
+- changing an API handler alone will not change page behavior unless the page actually consumes that handler
+- `packages/notion-data` reads `process.env` only; it does not load dotenv files itself
 
-If you add a route:
+## Tests
 
-1. add the App Router page file under `src/app/`
-2. add or reuse the matching `src/views/` implementation
-3. add SEO config in `src/config/seo.ts`
+The test suite is intentionally small and regression-focused:
 
-## Assets And Brand Material
+- `test/next-migration.test.ts` verifies host redirects
+- `test/notion-data.test.ts` verifies Notion row normalization
+- `test/security.test.ts` verifies URL and JSON-LD safety helpers
+- `test/tailwind-build.test.ts` verifies a build emits expected CSS utilities
+- `test/workspace-scripts.test.ts` verifies script and dist-dir invariants
 
-- `public/assets/` contains logos, photos, and other shipped assets
-- `docs/brand/source/` contains the original brand guideline source material
+Tests run with Node's built-in test runner and `tsx`.
 
-When changing visual UI, use the repo-local assets and token system first.
+## Scripts And Build Behavior
+
+Root scripts are in `package.json`.
+
+Notable behavior:
+
+- `pnpm dev` runs Next with `NEXT_DIST_DIR=.next-dev`
+- `pnpm build` uses `scripts/run-next-command.mjs` to build into `.next-prod`
+- `pnpm typecheck` uses a separate `.next-typecheck`
+- on Vercel, the helper leaves `NEXT_DIST_DIR` unset so the platform can use its default behavior
+
+This repo intentionally isolates local Next output directories so different workflows do not collide.
+
+## CI
+
+GitHub Actions currently runs a single workflow on pull requests to `main`:
+
+- install with pnpm 10.18.2 and Node 20
+- run `pnpm verify`
+
+There is no separate CI job for `pnpm typecheck:all`, so it is worth running locally when you change types or cross-package contracts.
 
 ## Deployment
 
-[vercel.json](../vercel.json) currently does two important things:
+Deployment is configured for Vercel:
 
-- overrides the project framework to `nextjs`
-- keeps deployment behavior versioned in-repo
+- `vercel.json` pins the framework to `nextjs`
+- the app is structured as a single Next.js deployment at the repo root
 
-## Practical Edit Guide
+## Known Legacy Or Confusing Areas
 
-If you need to:
+- `src/data/routes.tsx` is a leftover React Router-style route table. It is not the runtime source of truth anymore.
+- `/api/getNotes` is legacy naming. It returns events, not notes.
+- some components use `next/image`, many still use plain `<img>` tags
+- route metadata lives in `src/config/seo.ts`; adding a page usually means updating both `src/app/` and `src/config/seo.ts`
 
-- change nav/footer/global shell: start in `src/app/layout.tsx`, `src/components/Header.tsx`, `src/components/Footer.tsx`
-- add or remove routes: update `src/app/`
-- edit copy for a static page section: check `src/data/` first, then the matching page/component
-- adjust shared look and feel: update `src/styles/index.css` and `src/components/ui/`
-- change Notion-backed fields: update `packages/notion-data`, `src/lib/notion.ts`, and the consumer page/component together
+## Practical Ownership Guide
+
+If you need to change:
+
+- routing: `src/app/`
+- page composition: `src/views/`
+- reusable sections: `src/components/`
+- static copy: `src/data/`
+- live Notion fields or mapping: `packages/notion-data/` plus `src/lib/notion.ts`
+- SEO: `src/config/seo.ts`
+- global shell: `src/app/layout.tsx`, `src/components/Header.tsx`, `src/components/Footer.tsx`
+- global styles/tokens: `src/styles/index.css`
+- static media: `public/assets/`
