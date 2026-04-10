@@ -39,7 +39,7 @@ For the full automated verification pass:
 pnpm verify
 ```
 
-`pnpm build` writes to `.next-prod`, and `pnpm typecheck` writes to `.next-typecheck`, so the three workflows stay isolated.
+Local `pnpm build` writes to `.next-prod`, and `pnpm typecheck` writes to `.next-typecheck`, so the workflows stay isolated without colliding with Vercel's default `.next` output.
 
 ## Environment
 
@@ -68,8 +68,8 @@ The data path is now direct:
 1. `packages/notion-data` talks to the Notion API with `@notionhq/client`.
 2. That package normalizes raw Notion rows into the app shapes for events, partners, and research.
 3. `src/lib/notion.ts` wraps those reads in `unstable_cache` so repeated requests do not hit Notion every time.
-4. App Router pages such as `/events`, `/research`, and `/partners` call those server helpers directly during render.
-5. `src/app/api/getNotes`, `src/app/api/getPartners`, and `src/app/api/getResearch` expose the same cached data as JSON for client-side consumers.
+4. App Router pages such as `/events` and `/research` call those server helpers directly during render.
+5. `src/app/api/getNotes`, `src/app/api/getPartners`, and `src/app/api/getResearch` expose the same cached data as JSON for compatibility and client-side consumers.
 
 ## Notion Endpoints
 

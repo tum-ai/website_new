@@ -4,6 +4,7 @@ import { getEvents } from "@/lib/notion";
 import Events from "@/views/headerPages/Events";
 
 export const metadata = buildMetadata("events");
+export const dynamic = "force-dynamic";
 
 export default async function Page() {
   const events = await getEvents();

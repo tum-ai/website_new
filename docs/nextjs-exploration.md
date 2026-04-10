@@ -23,7 +23,7 @@ The website uses:
 
 - Route ownership lives in `src/app`.
 - Non-route implementation details stay outside `src/app` unless colocation is useful.
-- Host redirect logic is handled in `src/middleware.ts` so it is versioned and testable.
+- Host redirect logic is handled in `src/proxy.ts` so it is versioned and testable.
 
 ### Data fetching
 
@@ -49,8 +49,7 @@ The current runtime path is:
 3. Server-rendered pages
    `/events` calls `getEvents()`.
    `/research` calls `getResearchProjects()`.
-   `/partners` calls `getPartners()`.
-   These pages render from server data directly, without a separate backend hop.
+   These pages are configured as dynamic so builds do not depend on live Notion access, while requests still reuse the server cache.
 
 4. Route handlers in `src/app/api/*`
    `/api/getNotes`, `/api/getPartners`, and `/api/getResearch` return the same cached server data as JSON.

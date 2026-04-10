@@ -31,6 +31,15 @@ test("join host redirects to the apply page", () => {
   assert.equal(redirectUrl?.toString(), "https://join.tum-ai.com/apply");
 });
 
+test("join host does not redirect the apply page to itself", () => {
+  const redirectUrl = getJoinHostRedirectDestination(
+    "join.tum-ai.com",
+    "https://join.tum-ai.com/apply",
+  );
+
+  assert.equal(redirectUrl, null);
+});
+
 test("other hosts are not redirected", () => {
   const redirectUrl = getJoinHostRedirectDestination(
     "tum-ai.com",

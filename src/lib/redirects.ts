@@ -6,5 +6,11 @@ export function getJoinHostRedirectDestination(
     return null;
   }
 
-  return new URL("/apply", requestUrl);
+  const url = new URL(requestUrl);
+
+  if (url.pathname === "/apply") {
+    return null;
+  }
+
+  return new URL("/apply", url);
 }

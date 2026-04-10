@@ -193,7 +193,7 @@ export default function Research({
                       onKeyDown={(event) => handleKeyDown(event, index)}
                       className={
                         "w-full rounded-md text-center text-sm transition-colors sm:w-auto " +
-                        (!selected
+                        (selected
                           ? "bg-white/10 text-white shadow-inner ring-1 ring-white/20"
                           : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white")
                       }
@@ -203,9 +203,11 @@ export default function Research({
                   );
                 })}
               </div>
-              <h1 className="text-title sm:text-2xl mt-10 text-white text-center md:text-[2rem] font-semibold animate-item">
-                Ongoing Projects
-              </h1>
+              {activeTab === "projects" && (
+                <h1 className="text-title sm:text-2xl mt-10 text-white text-center md:text-[2rem] font-semibold animate-item">
+                  Ongoing Projects
+                </h1>
+              )}
               {tabs.map((tab) => (
                 <div
                   key={tab.value}

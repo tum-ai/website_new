@@ -7,59 +7,55 @@ This document explains how the TUM.ai website repo is organized and where to mak
 ```text
 .
 ├── docs/               brand source material and internal repo docs
+├── packages/           workspace packages such as shared Notion data access
 ├── public/             static assets served as-is
-├── src/                application code
-├── index.html          Vite entry HTML
-├── package.json        scripts and dependencies
-├── tailwind.config.js  legacy Tailwind config still present in repo
-├── vite.config.ts      Vite config and `@` path alias
-└── vercel.json         SPA rewrites and host redirects
+├── scripts/            small repo utilities and build helpers
+├── src/                Next.js website app source
+├── test/               node-based regression tests
+├── package.json        workspace root scripts and dependencies
+├── next.config.ts      Next.js config and distDir handling
+└── vercel.json         Vercel framework override
 ```
 
 ## `src/` Overview
 
 ```text
 src/
-├── api/         Vercel serverless functions
+├── app/         App Router routes, layouts, and route handlers
 ├── components/  reusable UI and page-specific sections
 ├── config/      SEO and site configuration
 ├── data/        static content and route definitions
 ├── lib/         types and small utilities
-├── pages/       route-level page entry points
+├── views/       non-route page implementations used by App Router pages
+├── proxy.ts     host redirects and request guards
 └── styles/      global CSS and supporting stylesheet modules
 ```
 
 ## Runtime Composition
 
-The app boots in [src/main.tsx](../src/main.tsx):
+The app boots through App Router:
 
-- wraps everything in `BrowserRouter`
-- mounts `TitleManager`
-- renders the global header
-- renders the route tree
-- renders the global footer
-
-The route tree itself is intentionally centralized:
-
-- [src/App.tsx](../src/App.tsx) maps over [src/data/routes.tsx](../src/data/routes.tsx)
-- `src/data/routes.tsx` is the single source of truth for public routes
+- [src/app/layout.tsx](../src/app/layout.tsx) loads global CSS, fonts, header, and footer
+- `src/app/*/page.tsx` files own route registration
+- shared page implementations live in `src/views/`
+- [src/proxy.ts](../src/proxy.ts) handles host redirects before route execution
 
 ## Page Layer
 
-`src/pages/` contains route entry points only. These files should stay relatively thin and compose section components from `src/components/`.
+`src/app/` contains the route entry points. These files stay thin and compose sections from `src/views/` and `src/components/`.
 
 Current pages:
 
-- `/` -> [src/pages/Homepage.tsx](../src/pages/Homepage.tsx)
-- `/apply` -> [src/pages/apply/Apply.tsx](../src/pages/apply/Apply.tsx)
-- `/events` -> [src/pages/headerPages/Events.tsx](../src/pages/headerPages/Events.tsx)
-- `/research` -> [src/pages/headerPages/Research.tsx](../src/pages/headerPages/Research.tsx)
-- `/projects` -> [src/pages/headerPages/Projects.tsx](../src/pages/headerPages/Projects.tsx)
-- `/e-lab` -> [src/pages/headerPages/e-lab/ELab.tsx](../src/pages/headerPages/e-lab/ELab.tsx)
-- `/community` -> [src/pages/headerPages/Community.tsx](../src/pages/headerPages/Community.tsx)
-- `/partners` -> [src/pages/headerPages/Partners.tsx](../src/pages/headerPages/Partners.tsx)
-- `/qanda` -> [src/pages/headerPages/QandA.tsx](../src/pages/headerPages/QandA.tsx)
-- footer/legal routes under `src/pages/footer/`
+- `/` -> [src/app/page.tsx](../src/app/page.tsx) -> [src/views/Homepage.tsx](../src/views/Homepage.tsx)
+- `/apply` -> [src/app/apply/page.tsx](../src/app/apply/page.tsx) -> [src/views/apply/Apply.tsx](../src/views/apply/Apply.tsx)
+- `/events` -> [src/app/events/page.tsx](../src/app/events/page.tsx) -> [src/views/headerPages/Events.tsx](../src/views/headerPages/Events.tsx)
+- `/research` -> [src/app/research/page.tsx](../src/app/research/page.tsx) -> [src/views/headerPages/Research.tsx](../src/views/headerPages/Research.tsx)
+- `/projects` -> [src/app/projects/page.tsx](../src/app/projects/page.tsx) -> [src/views/headerPages/Projects.tsx](../src/views/headerPages/Projects.tsx)
+- `/e-lab` -> [src/app/e-lab/page.tsx](../src/app/e-lab/page.tsx) -> [src/views/headerPages/e-lab/ELab.tsx](../src/views/headerPages/e-lab/ELab.tsx)
+- `/community` -> [src/app/community/page.tsx](../src/app/community/page.tsx) -> [src/views/headerPages/Community.tsx](../src/views/headerPages/Community.tsx)
+- `/partners` -> [src/app/partners/page.tsx](../src/app/partners/page.tsx) -> [src/views/headerPages/Partners.tsx](../src/views/headerPages/Partners.tsx)
+- `/qanda` -> [src/app/qanda/page.tsx](../src/app/qanda/page.tsx) -> [src/views/headerPages/QandA.tsx](../src/views/headerPages/QandA.tsx)
+- legal routes under `src/app/`
 
 ## Component Layer
 
@@ -79,8 +75,7 @@ Root-level shared layout components:
 - [src/components/Header.tsx](../src/components/Header.tsx)
 - [src/components/Footer.tsx](../src/components/Footer.tsx)
 - [src/components/Layout.tsx](../src/components/Layout.tsx)
-- [src/components/SEO.tsx](../src/components/SEO.tsx)
-- [src/components/ScrollToTop.tsx](../src/components/ScrollToTop.tsx)
+- [src/components/JsonLd.tsx](../src/components/JsonLd.tsx)
 
 ## Data Layer
 
@@ -99,25 +94,25 @@ Examples:
 Rule of thumb:
 
 - If content is edited directly in git and ships with the frontend, put it in `src/data/`.
-- If content should be editable in Notion, expose it through `src/api/`.
+- If content should be editable in Notion, expose it through `packages/notion-data`, `src/lib/notion.ts`, and `src/app/api/`.
 
 ## API Layer
 
-`src/api/` contains Vercel serverless functions used by the frontend.
+`src/app/api/` contains Next.js route handlers used by the frontend.
 
 Current handlers:
 
-- [src/api/getNotes.ts](../src/api/getNotes.ts) -> events
-- [src/api/getPartners.ts](../src/api/getPartners.ts) -> partners
-- [src/api/getResearch.ts](../src/api/getResearch.ts) -> research projects
+- [src/app/api/getNotes/route.ts](../src/app/api/getNotes/route.ts) -> events
+- [src/app/api/getPartners/route.ts](../src/app/api/getPartners/route.ts) -> partners
+- [src/app/api/getResearch/route.ts](../src/app/api/getResearch/route.ts) -> research projects
 
 Characteristics:
 
-- all handlers query Notion
-- all handlers cache responses in memory for 5 minutes
-- each handler maps Notion properties into the frontend shape expected by the consuming page
+- all handlers call shared fetchers from `packages/notion-data`
+- server reads are wrapped in `src/lib/notion.ts`
+- route handlers provide JSON compatibility for client-side consumers
 
-Frontend consumers currently use `import.meta.env.VITE_BACKEND_URL` to call these endpoints.
+Frontend consumers call the Next route handlers directly.
 
 ## Styling
 
@@ -141,8 +136,8 @@ SEO metadata is centralized in [src/config/seo.ts](../src/config/seo.ts).
 
 If you add a route:
 
-1. add the page component
-2. add the route in `src/data/routes.tsx`
+1. add the App Router page file under `src/app/`
+2. add or reuse the matching `src/views/` implementation
 3. add SEO config in `src/config/seo.ts`
 
 ## Assets And Brand Material
@@ -156,15 +151,15 @@ When changing visual UI, use the repo-local assets and token system first.
 
 [vercel.json](../vercel.json) currently does two important things:
 
-- rewrites all non-file routes to `/` so client-side routing works
-- redirects `join.tum-ai.com` to `https://tum-ai.com/apply`
+- overrides the project framework to `nextjs`
+- keeps deployment behavior versioned in-repo
 
 ## Practical Edit Guide
 
 If you need to:
 
-- change nav/footer/global shell: start in `src/main.tsx`, `src/components/Header.tsx`, `src/components/Footer.tsx`
-- add or remove routes: update `src/data/routes.tsx`
+- change nav/footer/global shell: start in `src/app/layout.tsx`, `src/components/Header.tsx`, `src/components/Footer.tsx`
+- add or remove routes: update `src/app/`
 - edit copy for a static page section: check `src/data/` first, then the matching page/component
 - adjust shared look and feel: update `src/styles/index.css` and `src/components/ui/`
-- change Notion-backed fields: update the handler in `src/api/` and the consumer page/component together
+- change Notion-backed fields: update `packages/notion-data`, `src/lib/notion.ts`, and the consumer page/component together

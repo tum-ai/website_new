@@ -7,9 +7,9 @@
   "scripts": {
     "dev": "NEXT_DIST_DIR=.next-dev next dev",
     "dev:web": "NEXT_DIST_DIR=.next-dev next dev",
-    "build": "NEXT_DIST_DIR=.next-prod next build",
-    "start": "NEXT_DIST_DIR=.next-prod next start",
-    "test": "node --test test/**/*.test.ts",
+    "build": "node scripts/run-next-command.mjs build .next-prod",
+    "start": "node scripts/run-next-command.mjs start .next-prod",
+    "test": "node --test test/*.test.ts",
     "lint": "pnpm run lint:web && pnpm --dir packages/notion-data lint",
     "lint:web": "biome check .",
     "lint:apply": "biome check . --write",
