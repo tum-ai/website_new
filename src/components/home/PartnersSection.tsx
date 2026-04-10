@@ -1,99 +1,31 @@
-import gsap from "gsap";
-import ScrollTrigger from "gsap/ScrollTrigger";
-import { useEffect, useRef } from "react";
-import { NavLink } from "react-router-dom";
+import Image from "next/image";
+import Link from "next/link";
 import { Button } from "../ui/button";
 
-gsap.registerPlugin(ScrollTrigger);
-
 export const PartnersSection = () => {
-  const textRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (!textRef.current) return;
-
-    // Respect reduced motion and disable on small screens
-    const mm = window.matchMedia && window.matchMedia("(max-width: 767px)");
-    const reduce =
-      window.matchMedia &&
-      window.matchMedia("(prefers-reduced-motion: reduce)");
-    if ((mm && mm.matches) || (reduce && reduce.matches)) {
-      // ensure elements are visible if animations are disabled
-      const elems =
-        textRef.current.querySelectorAll<HTMLElement>(".animate-item");
-      elems.forEach((el) => {
-        el.style.opacity = "1";
-        el.style.transform = "none";
-      });
-      return;
-    }
-
-    const elems =
-      textRef.current.querySelectorAll<HTMLElement>(".animate-item");
-    if (!elems || elems.length === 0) return;
-
-    // make sure items are hidden initially
-    gsap.set(elems, { opacity: 0, y: 20 });
-
-    const trigger = ScrollTrigger.create({
-      trigger: textRef.current,
-      start: "top 80%",
-      end: "bottom 20%",
-      onEnter: () => {
-        gsap.to(elems, {
-          opacity: 1,
-          y: 0,
-          duration: 0.6,
-          stagger: 0.08,
-          ease: "power2.out",
-        });
-      },
-      onEnterBack: () => {
-        gsap.to(elems, {
-          opacity: 1,
-          y: 0,
-          duration: 0.6,
-          stagger: 0.08,
-          ease: "power2.out",
-        });
-      },
-    });
-
-    return () => {
-      try {
-        trigger.kill();
-      } catch (e) {
-        /* ignore */
-      }
-    };
-  }, []);
-
   return (
-    <div className="flex flex-col items-center md:flex-row gap-8 px-6 md:px-10 py-10 md:py-15">
-      {/* Left image - fill desktop height minus header (82px) */}
-      <div className="md:w-4/7 w-full">
-        <img
-          className="rounded-xl w-full h-full object-cover"
+    <div className="flex flex-col items-center gap-8 px-6 py-10 md:flex-row md:px-10 md:py-15">
+      <div className="w-full md:w-4/7">
+        <Image
+          className="h-auto w-full rounded-xl object-cover"
           src="/assets/partners_pic.webp"
           alt="Partners"
+          width={1600}
+          height={1067}
+          sizes="(min-width: 768px) 57vw, 100vw"
         />
       </div>
 
-      {/* Right content */}
-      <div
-        ref={textRef}
-        className="flex flex-col gap-4 md:w-3/7 w-full justify-end text-center md:text-left"
-      >
-        <h1 className="text-title sm:text-2xl md:text-[2rem] font-semibold animate-item">
+      <div className="flex w-full flex-col justify-end gap-4 text-center motion-safe:animate-fade-in md:w-3/7 md:text-left">
+        <h1 className="text-title font-semibold sm:text-2xl md:text-[2rem]">
           Join <span className="gradient-text">TUM.ai</span> as a sponsor or
           cooperation partner.
         </h1>
-        <p className="text-base sm:text-lg md:text-[1.5rem] animate-item">
+        <p className="text-base sm:text-lg md:text-[1.5rem]">
           Get access to our exclusive pre-selected talent pool of qualified
           Software/Data Engineers and AI Strategists.
         </p>
-        <div className="mt-4 flex flex-col gap-3 w-full justify-center sm:flex-row sm:gap-4 md:justify-start animate-item">
+        <div className="mt-4 flex w-full flex-col justify-center gap-3 sm:flex-row sm:gap-4 md:justify-start">
           <Button
             asChild
             variant="primary"
@@ -107,7 +39,9 @@ export const PartnersSection = () => {
             variant="outline2"
             className="w-full rounded-md px-6 py-3 text-center sm:w-auto"
           >
-            <NavLink to="/partners">View Our Partners</NavLink>
+            <Link href="/partners" className="w-full">
+              View Our Partners
+            </Link>
           </Button>
         </div>
       </div>

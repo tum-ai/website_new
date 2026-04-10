@@ -21,8 +21,8 @@ export default function About() {
           forward without losing our direction.
         </p>
         <p className="text-subtitle mt-1 text-text-gray">
-          <span className="font-semibold text-primary">Vision:</span> Foster
-          the next generation of AI talent.
+          <span className="font-semibold text-primary">Vision:</span> Foster the
+          next generation of AI talent.
         </p>
         <p className="text-subtitle text-text-gray">
           <span className="font-semibold text-primary">Mission:</span> TUM.ai

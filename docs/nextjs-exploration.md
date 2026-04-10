@@ -1,186 +1,101 @@
-# Next.js Exploration for `website_new`
+# Next.js / Vercel Architecture Notes
 
-## Current State Snapshot (what we have today)
+## Current State
 
-The project is currently a Vite + React SPA with client-side routing (`react-router-dom`) and shared header/footer around route content. Data for events/research/partners is fetched in the browser after initial render via Vercel serverless endpoints backed by Notion. This means first paint can happen before content is available, but SEO and first contentful data are limited by client fetch timing.
+This repo is now a Next.js App Router application with a pnpm workspace around it.
 
-## Why Next.js is a strong fit for this repo
+Active workspace units:
 
-Your intuition about SSR/CSR separation is correct. The codebase has a clear split between:
+- `@tumai/web` at the repo root
+- `@tumai/notion-data` in `packages/notion-data`
 
-- **SEO/public content pages** (home, events, research, partners, legal pages), and
-- **interactive islands** (filters, tab states, carousels, animations).
+The website uses:
 
-Next.js App Router (React Server Components) gives this split natively:
+- App Router pages in `src/app`
+- shared view/components in `src/views` and `src/components`
+- server-only Notion access through `src/lib/notion.ts`
+- route handlers in `src/app/api/*`
+- a tested Tailwind v4 setup from `src/styles/index.css`
 
-- **Server Components** for data-heavy/SEO content.
-- **Client Components** (`"use client"`) for interaction-heavy widgets.
+## Best-Practice Decisions Applied
 
----
+### Routing
 
-## Next.js features and concrete use in this website
+- Route ownership lives in `src/app`.
+- Non-route implementation details stay outside `src/app` unless colocation is useful.
+- Host redirect logic is handled in `src/middleware.ts` so it is versioned and testable.
 
-## 1) React Server Components (RSC)
+### Data fetching
 
-Use for page shells and data sections that do not need browser APIs.
+- Notion reads are centralized in `packages/notion-data`.
+- The Next app consumes shared data functions through `src/lib/notion.ts`.
+- Route handlers only wrap shared server data and return JSON.
+- ISR-style caching is currently done with `unstable_cache`.
 
-**How to apply here:**
-- Convert route-level pages to server components by default.
-- Keep filters, carousels, tabs, and motion-heavy blocks as client components.
+### Notion data flow
 
-**Benefit:** smaller JS shipped to browser, faster load on content pages.
+The current runtime path is:
 
-## 2) Rendering modes per route: SSR / SSG / ISR / CSR
+1. `packages/notion-data/src/index.ts`
+   Reads env from `process.env`, `.env.local`, and `.env` when needed.
+   Talks to Notion with `@notionhq/client`.
+   Maps raw database rows into the app-level `Event`, `Partner`, and `Research` types.
 
-### Recommended per-page strategy
+2. `src/lib/notion.ts`
+   Imports the shared fetchers.
+   Wraps them in `unstable_cache`.
+   Uses the active database ids as part of the cache key so cache entries stay aligned with the current Notion source.
 
-- **`/` Home:** ISR (`revalidate` every 5–30 min), because event cards/logos may change but not every second.
-- **`/events`:** SSR or short ISR (1–5 min), especially if "upcoming" logic should stay fresh.
-- **`/research`:** ISR (15–60 min), usually less volatile.
-- **`/partners`:** SSG or long ISR (daily/weekly).
-- **`/community`, `/projects`, `/qanda`, legal pages:** SSG (static).
-- **`/apply`:** ISR if content updates occasionally.
+3. Server-rendered pages
+   `/events` calls `getEvents()`.
+   `/research` calls `getResearchProjects()`.
+   `/partners` calls `getPartners()`.
+   These pages render from server data directly, without a separate backend hop.
 
-**Benefit:** each page gets an intentional freshness/performance tradeoff instead of one SPA behavior.
+4. Route handlers in `src/app/api/*`
+   `/api/getNotes`, `/api/getPartners`, and `/api/getResearch` return the same cached server data as JSON.
+   These exist for client-side consumers and compatibility inside the app, not as a separate service boundary.
 
-## 3) Built-in Data Fetching + Caching (`fetch` cache, `revalidate`, tags)
+5. Client-side consumers
+   Components that still fetch in the browser, such as the homepage events section, call the Next route handlers rather than calling Notion or an external backend directly.
 
-Next.js can replace custom in-memory cache logic currently duplicated in API handlers.
+### Workspace layout
 
-**How to apply here:**
-- Move Notion reads into server-side data utilities (or route handlers).
-- Use `fetch(..., { next: { revalidate: 300, tags: ['events'] } })` style policies.
-- Trigger updates with `revalidateTag('events')` when content changes (if webhook/publish flow exists).
+- Shared code is published only inside the workspace via `workspace:*`.
+- Root `pnpm lint` covers the repo instead of only the Next app package.
+- `transpilePackages` is enabled for `@tumai/notion-data`.
+- pnpm is the package manager of record.
 
-**Benefit:** cache behavior centralized and composable per resource.
+### Environment handling
 
-## 4) Route Handlers (`app/api/.../route.ts`)
+- Secrets stay server-side.
+- The Next app reads env vars directly.
+- The required Notion envs are pulled from Vercel into `.env.local` for local development.
+- No external Notion proxy is part of the runtime anymore.
+- No browser-exposed Notion env variables remain.
 
-You can keep API endpoints for browser consumers if needed.
+### Styling
 
-**How to apply here:**
-- Migrate `/api/getNotes`, `/api/getPartners`, `/api/getResearch` to route handlers.
-- Prefer server component direct data access when only pages need the data.
+- Tailwind v4 uses CSS-first configuration in `src/styles/index.css`.
+- `components.json` is aligned with Tailwind v4 / shadcn expectations.
+- Fonts load through `next/font`.
 
-**Benefit:** less client roundtrips when API is only internal to page rendering.
+## Current Gaps
 
-## 5) Streaming + Suspense
+### Cache model
 
-Render stable sections instantly while slower Notion-backed sections stream in.
+`unstable_cache` works, but the next cleanup pass should evaluate:
 
-**How to apply here:**
-- Events page: render hero/filter frame immediately; stream event list.
-- Research page: stream cards while static tab copy renders.
+- `revalidateTag` for explicit invalidation
+- webhook-driven cache busting
+- whether Vercel Runtime Cache or newer Next cache APIs are worth adopting later
 
-**Benefit:** lower perceived latency without blocking whole page.
+### Repo structure
 
-## 6) Metadata API (SEO)
+The repo is a workspace, but not yet a full `apps/web` style layout. That is fine for now because it avoids high-churn path moves during migration.
 
-Replace runtime SEO component calls with static/async `generateMetadata`.
+## Recommended Next Steps
 
-**How to apply here:**
-- Convert `src/config/seo.ts` mapping into route-level metadata generators.
-- Add OpenGraph/Twitter images and canonical URLs per route.
-
-**Benefit:** reliable server-rendered metadata for crawlers/social previews.
-
-## 7) `next/image` and `next/font`
-
-The repo has many heavy assets and local fonts.
-
-**How to apply here:**
-- Replace `<img>` with `<Image>` for responsive optimization and lazy loading.
-- Move font loading from static asset/css approach to `next/font` for better CLS and caching.
-
-**Benefit:** bandwidth savings and better Core Web Vitals.
-
-## 8) Layouts and Nested Routing
-
-Current global header/footer wrapping in `main.tsx` maps naturally to `app/layout.tsx`.
-
-**How to apply here:**
-- Base layout for header/footer.
-- Optional nested layout for sections like `/events` or `/e-lab` if they need shared structure.
-
-**Benefit:** clearer route composition and less repetitive scaffolding.
-
-## 9) Middleware
-
-Useful for host/domain redirects currently defined in `vercel.json`.
-
-**How to apply here:**
-- Move `join.tum-ai.com -> /apply` redirect to `middleware.ts` for code-managed logic.
-
-**Benefit:** versioned redirect logic with tests and conditionals.
-
-## 10) Partial Prerendering (PPR, where available)
-
-For marketing pages with dynamic islands.
-
-**How to apply here:**
-- Pre-render static page shell and stream only dynamic parts (events counters/list segments).
-
-**Benefit:** static-like TTFB + dynamic freshness.
-
-## 11) Server Actions (optional)
-
-No strong immediate need unless adding forms/CMS workflows.
-
-**Potential use:**
-- Contact/partner forms, internal admin publish actions, webhook-triggered cache invalidation.
-
-## 12) Better deployment alignment with Vercel
-
-You already target Vercel functions. Next.js gives first-class integration for edge/node runtimes and caching semantics.
-
----
-
-## Proposed SSR/CSR separation blueprint for this repo
-
-## Server-first (default)
-
-- Route pages and non-interactive sections.
-- Notion-backed data transformations.
-- SEO metadata generation.
-- Date splitting logic for "upcoming vs past" (consistent server output).
-
-## Client-only islands
-
-- Event filtering controls.
-- Tabs with keyboard interaction.
-- Carousels and animation-heavy components (Framer Motion/GSAP).
-- Any feature requiring `window`, `useEffect`, or imperative animation.
-
----
-
-## Migration strategy (low-risk)
-
-1. **Bootstrap Next.js app in parallel branch** (App Router + TS + Tailwind).
-2. **Migrate design system/ui primitives** (`src/components/ui`) first.
-3. **Port static routes** (`/imprint`, `/data-privacy`, `/disclaimer`, `/community`, `/projects`, `/qanda`).
-4. **Migrate events/research with server data layer + client filter islands.**
-5. **Move SEO to Metadata API + replace image/font loading.**
-6. **Cut over domain once parity + Lighthouse/SEO checks pass.**
-
----
-
-## Risks and mitigations
-
-- **Notion latency/rate limits:** use ISR + tag-based revalidation + defensive fallbacks.
-- **Animation libraries in RSC world:** isolate into client components early.
-- **Hydration mismatches (date logic/timezones):** do date comparisons on server with explicit timezone assumptions.
-- **Migration complexity:** keep route-by-route parity checklist to avoid regressions.
-
----
-
-## Suggested first PoC
-
-Build `/events` in Next.js first because it exercises the full stack:
-
-- server data fetch from Notion,
-- upcoming/past split,
-- client-side filters,
-- metadata/SEO,
-- cache revalidation.
-
-If that route performs and indexes better, scale the pattern to `/research` and `/`.
+1. Evaluate `revalidateTag` plus webhook-driven invalidation for Notion-backed data.
+2. Move the remaining browser fetches for homepage sections to server-rendered data where it reduces client work.
+3. Consider a later root-to-`apps/web` move only if workspace ergonomics actually suffer.

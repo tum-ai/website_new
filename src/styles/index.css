@@ -1,18 +1,11 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@source "../**/*.{js,ts,jsx,tsx,mdx}";
 /* TODO: fix unknown rules */
-
-@font-face {
-  font-family: "Manrope";
-  src: url("/assets/Manrope.ttf") format("truetype");
-  font-weight: 100 900; /* var font, scales from 100 to 900 all thicknesses */
-  font-style: normal;
-}
-
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  font-family: "Manrope", system-ui, sans-serif;
+  font-family: var(--font-manrope), system-ui, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -76,7 +69,6 @@
     rgb(var(--color-tumai-violet-rgb) / 0.52) -30%,
     transparent 80%
   );
-
   /* --- LIGHT MODE THEME --- */
   --background: var(--color-white);
   --foreground: var(--color-dark-indigo); /* normal text */
@@ -141,17 +133,44 @@ main a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
+  display: block;
   min-width: 320px;
   min-height: 100vh;
   width: 100%;
   overflow-x: hidden;
-  font-family: "Manrope", sans-serif;
+  font-family: var(--font-manrope), sans-serif;
+  background-color: var(--color-white);
+  color: var(--color-black);
 }
 
 button {
-  font: inherit;
+  border-radius: 8px;
+  border: 0px solid transparent;
+  padding: 1.2rem;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  background-image: none;
+}
+
+button:hover {
+  /* electric fade ad hover effect */
+  background-image: linear-gradient(
+    to right,
+    var(--color-electric-start),
+    var(--color-electric-end)
+  );
+  color: var(--color-white);
+  border-color: transparent;
+}
+
+button:focus,
+button:focus-visible {
+  outline: 4px auto var(--ring);
 }
 
 @media (prefers-color-scheme: light) {
@@ -277,6 +296,15 @@ button {
       opacity: 1;
     }
   }
+
+  @keyframes marquee-scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
 }
 
 @theme inline {
@@ -393,7 +421,65 @@ button {
     will-change: transform;
   }
 
+  @keyframes journey-card-enter {
+    0% {
+      opacity: 0;
+      transform: translateY(2rem) scale(0.985);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes journey-path-draw {
+    0% {
+      opacity: 0.15;
+      stroke-dashoffset: 1;
+    }
+    100% {
+      opacity: 1;
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .journey-card {
+    opacity: 0;
+    transform: translateY(2rem) scale(0.985);
+    will-change: transform, opacity;
+  }
+
+  .journey-path-segment {
+    opacity: 0;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    will-change: stroke-dashoffset, opacity;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .journey-card[data-active="true"] {
+      animation: journey-card-enter 720ms cubic-bezier(0.22, 1, 0.36, 1)
+        forwards;
+      animation-delay: var(--journey-delay, 0ms);
+    }
+
+    .journey-path-segment[data-active="true"] {
+      animation: journey-path-draw 500ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      animation-delay: var(--journey-delay, 0ms);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
+    .journey-card {
+      opacity: 1;
+      transform: none;
+    }
+
+    .journey-path-segment {
+      opacity: 1;
+      stroke-dashoffset: 0;
+    }
+
     .animate-scroll-left {
       animation: none;
     }

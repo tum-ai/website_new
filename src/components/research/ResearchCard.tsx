@@ -1,5 +1,6 @@
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
+import { getSafeExternalUrl } from "@/lib/security";
 import {
   Card,
   CardContent,
@@ -23,6 +24,8 @@ export default function ResearchCard({
   publication,
   keywords,
 }: ResearchCardProps) {
+  const publicationUrl = getSafeExternalUrl(publication);
+
   return (
     // <Card className="bg-purple-900 text-white rounded-lg shadow-md overflow-hidden py-3
     //  hover:shadow-lg transition-shadow duration-300 flex flex-col h-full">
@@ -90,14 +93,21 @@ export default function ResearchCard({
           </div>
         </CardContent>
       </div>
-      {publication && (
+      {publicationUrl && (
         <CardFooter className="p-4">
-          {publication && (
+          {publicationUrl && (
             <Button
               size={"lg"}
               variant="primary"
               onClick={() => {
-                window.open(publication, "_blank");
+                const popup = window.open(
+                  publicationUrl,
+                  "_blank",
+                  "noopener,noreferrer",
+                );
+                if (popup) {
+                  popup.opener = null;
+                }
               }}
               className="text-white w-full shadow-xl"
             >

@@ -1,5 +1,17 @@
-import Research from "@/pages/headerPages/Research";
+import JsonLd from "@/components/JsonLd";
+import { buildMetadata, getJsonLd } from "@/config/seo";
+import { getResearchProjects } from "@/lib/notion";
+import Research from "@/views/headerPages/Research";
 
-export default function Page() {
-  return <Research />;
+export const metadata = buildMetadata("research");
+
+export default async function Page() {
+  const projects = await getResearchProjects();
+
+  return (
+    <>
+      <JsonLd data={getJsonLd("research")} />
+      <Research initialProjects={projects} />
+    </>
+  );
 }

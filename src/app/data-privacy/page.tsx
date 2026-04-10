@@ -1,5 +1,14 @@
-import DataPrivacy from "@/pages/footer/Privacy";
+import JsonLd from "@/components/JsonLd";
+import { buildMetadata, getJsonLd } from "@/config/seo";
+import DataPrivacy from "@/views/footer/Privacy";
+
+export const metadata = buildMetadata("data-privacy");
 
 export default function Page() {
-  return <DataPrivacy />;
+  return (
+    <>
+      <JsonLd data={getJsonLd("data-privacy")} />
+      <DataPrivacy />
+    </>
+  );
 }

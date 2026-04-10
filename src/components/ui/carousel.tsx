@@ -1,3 +1,5 @@
+"use client";
+
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from "embla-carousel-react";
@@ -63,6 +65,7 @@ const Carousel = React.forwardRef<
       },
       plugins,
     );
+    const [isHydrated, setIsHydrated] = React.useState(false);
     const [canScrollPrev, setCanScrollPrev] = React.useState(false);
     const [canScrollNext, setCanScrollNext] = React.useState(false);
 
@@ -97,6 +100,10 @@ const Carousel = React.forwardRef<
     );
 
     React.useEffect(() => {
+      setIsHydrated(true);
+    }, []);
+
+    React.useEffect(() => {
       if (!api || !setApi) {
         return;
       }
@@ -128,8 +135,8 @@ const Carousel = React.forwardRef<
             orientation || (opts?.axis === "y" ? "vertical" : "horizontal"),
           scrollPrev,
           scrollNext,
-          canScrollPrev,
-          canScrollNext,
+          canScrollPrev: isHydrated && canScrollPrev,
+          canScrollNext: isHydrated && canScrollNext,
         }}
       >
         <div

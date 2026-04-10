@@ -1,5 +1,14 @@
-import Homepage from "@/pages/Homepage";
+import JsonLd from "@/components/JsonLd";
+import { buildMetadata, getJsonLd } from "@/config/seo";
+import Homepage from "@/views/Homepage";
+
+export const metadata = buildMetadata("home");
 
 export default function Page() {
-  return <Homepage />;
+  return (
+    <>
+      <JsonLd data={getJsonLd("home")} />
+      <Homepage />
+    </>
+  );
 }

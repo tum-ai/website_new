@@ -10,11 +10,7 @@ interface EventFiltersProps {
   eventCount: number;
 }
 
-const eventCategories = [
-  "All Categories",
-  "Hackathon",
-  "Speaker",
-];
+const eventCategories = ["All Categories", "Hackathon", "Speaker"];
 
 const eventCities = ["All Cities", "Munich", "Online"];
 

@@ -46,8 +46,7 @@ export const faq = [
       "Yes, you can, we will consider your application then as a team application.",
   },
   {
-    question:
-      "What if I don’t find a team during the first week of the E-Lab?",
+    question: "What if I don’t find a team during the first week of the E-Lab?",
     answer:
       "No worries, if you don’t find a team, you’ll still be able to continue your journey in the E-Lab.",
   },

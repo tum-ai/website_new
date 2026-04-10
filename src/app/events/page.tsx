@@ -1,5 +1,17 @@
-import Events from "@/pages/headerPages/Events";
+import JsonLd from "@/components/JsonLd";
+import { buildMetadata, getJsonLd } from "@/config/seo";
+import { getEvents } from "@/lib/notion";
+import Events from "@/views/headerPages/Events";
 
-export default function Page() {
-  return <Events />;
+export const metadata = buildMetadata("events");
+
+export default async function Page() {
+  const events = await getEvents();
+
+  return (
+    <>
+      <JsonLd data={getJsonLd("events")} />
+      <Events initialEvents={events} />
+    </>
+  );
 }

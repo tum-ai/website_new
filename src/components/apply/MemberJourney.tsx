@@ -16,8 +16,7 @@ export default function MemberJourney() {
           How our <span className="gradient-text">Community</span> Works
         </h2>
         <p className="text-xl md:text-2xl animate-item mb-2">
-          The{" "}
-          <span className="text-primary font-semibold">member journey</span>{" "}
+          The <span className="text-primary font-semibold">member journey</span>{" "}
           at TUM.ai spans across semesters, each lasting 6 whole months. When
           you join the TUM.ai community, here's what you can expect:
         </p>
@@ -62,9 +61,7 @@ export default function MemberJourney() {
                 , aligned with your skill set. These projects are designed to
                 contribute to the broader research community, with the goal of
                 achieving tangible outcomes such as{" "}
-                <span className="font-bold text-dark-purple">
-                  publications
-                </span>
+                <span className="font-bold text-dark-purple">publications</span>
                 .
               </li>
               <li>
@@ -89,8 +86,8 @@ export default function MemberJourney() {
               completing tasks. You'll have the chance to engage deeply with our
               vibrant community, develop new skills, and participate in learning
               opportunities, trips, and special events.
-              <br />
-              <div className="mt-4" />
+            </p>
+            <div className="mt-4">
               <Button
                 asChild
                 variant="primary"
@@ -98,7 +95,7 @@ export default function MemberJourney() {
               >
                 <a href="/community">Learn more</a>
               </Button>
-            </p>
+            </div>
           </div>
           <div>
             <p className="font-semibold text-subtitle text-primary mb-2">
@@ -128,13 +125,11 @@ export default function MemberJourney() {
             <p className="text-text-gray mb-4">
               After one semester, we can send you off to conduct research at
               prestigious institutions such as{" "}
-              <span className="font-bold text-dark-purple">
-                MIT, Harvard,{" "}
-              </span>
-              or <span className="font-bold text-dark-purple">Berkeley</span>{" "}
-              as part of the Research Exchange (REX) Program. Through our
-              network of alumni, we will not only help you find the right topic
-              but also support you with the bureaucracy.
+              <span className="font-bold text-dark-purple">MIT, Harvard, </span>
+              or <span className="font-bold text-dark-purple">Berkeley</span> as
+              part of the Research Exchange (REX) Program. Through our network
+              of alumni, we will not only help you find the right topic but also
+              support you with the bureaucracy.
             </p>
           </div>
           <div>
@@ -210,21 +205,27 @@ export default function MemberJourney() {
                 There's so much happening at TUM.ai that sometimes it's hard to
                 keep up! Our aim is to help you grow, both personally and in
                 your knowledge. Here's just a glimpse of what we offer:
-                <br />
-                ML Discussion Groups: Deep-tech sessions around Machine
-                Learning, where we focus on specific papers, discuss
-                implementations, mathematical background, and much more!
-                <br />
-                AI Academy: Contribute to our AI Academy or partake in its
-                offerings.
-                <br />
-                Exclusive Workshops: From soft skills development to visits to
-                industry giants like Google, Nvidia, and QuantCo, we offer a
-                diverse range of workshops tailored to your interests.
-                <br />
-                If you ever feel like something's missing, together with the
-                TUM.ai family, you can make it happen.
               </p>
+              <div className="mt-4 space-y-2 text-text-gray">
+                <p>
+                  ML Discussion Groups: Deep-tech sessions around Machine
+                  Learning, where we focus on specific papers, discuss
+                  implementations, mathematical background, and much more.
+                </p>
+                <p>
+                  AI Academy: Contribute to our AI Academy or partake in its
+                  offerings.
+                </p>
+                <p>
+                  Exclusive Workshops: From soft skills development to visits to
+                  industry giants like Google, Nvidia, and QuantCo, we offer a
+                  diverse range of workshops tailored to your interests.
+                </p>
+                <p>
+                  If you ever feel like something&apos;s missing, together with
+                  the TUM.ai family, you can make it happen.
+                </p>
+              </div>
             </div>
           </div>
         </div>
