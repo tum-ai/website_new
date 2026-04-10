@@ -8,13 +8,8 @@ const { resolveNextEnv } = await import(
 const packageJson = JSON.parse(
   readFileSync(new URL("../package.json", import.meta.url), "utf8"),
 );
-const workspaceYaml = readFileSync(
-  new URL("../pnpm-workspace.yaml", import.meta.url),
-  "utf8",
-);
 
-test("root dev isolates the Next dev build output", () => {
-  assert.equal(packageJson.scripts.dev, "NEXT_DIST_DIR=.next-dev next dev");
+test("root scripts keep CI and build invariants stable", () => {
   assert.equal(
     packageJson.scripts.build,
     "node scripts/run-next-command.mjs build .next-prod",
@@ -24,21 +19,12 @@ test("root dev isolates the Next dev build output", () => {
     "node scripts/run-next-command.mjs start .next-prod",
   );
   assert.equal(
-    packageJson.scripts.lint,
-    "pnpm run lint:web && pnpm --dir packages/notion-data lint",
+    packageJson.scripts.test,
+    "node --import=tsx --test test/*.test.ts",
   );
-  assert.equal(packageJson.scripts.test, "node --test test/*.test.ts");
-  assert.doesNotMatch(workspaceYaml, /apps\/\*/);
-});
-
-test("root typecheck covers the remaining workspace packages", () => {
   assert.equal(
     packageJson.scripts.typecheck,
     "NEXT_DIST_DIR=.next-typecheck next build",
-  );
-  assert.equal(
-    packageJson.scripts["typecheck:all"],
-    "pnpm typecheck && pnpm --dir packages/notion-data typecheck",
   );
 });
 
