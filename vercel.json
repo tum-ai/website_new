@@ -1,16 +1,4 @@
 {
-  "redirects": [
-    {
-      "source": "/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "join.tum-ai.com"
-        }
-      ],
-      "destination": "https://tum-ai.com/apply",
-      "permanent": true
-    }
-  ],
-  "rewrites": [{ "source": "/((?!.*\\.).*)", "destination": "/" }]
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs"
 }

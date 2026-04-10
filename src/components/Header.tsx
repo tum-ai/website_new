@@ -1,8 +1,9 @@
-import * as Dialog from "@radix-ui/react-dialog";
-import { AnimatePresence, motion } from "framer-motion";
+"use client";
+
 import { Menu, X } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { type CSSProperties, useEffect, useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
 
 export const Header = () => {
@@ -10,7 +11,8 @@ export const Header = () => {
   const [showLogo, setShowLogo] = useState(false);
   const [headerOpacity, setHeaderOpacity] = useState(0);
   const [headerBlur, setHeaderBlur] = useState(0);
-  const location = useLocation();
+  const pathname = usePathname();
+  const isHome = pathname === "/";
 
   const links = [
     { href: "/events", text: "Events" },
@@ -23,7 +25,7 @@ export const Header = () => {
   ];
 
   useEffect(() => {
-    if (location.pathname !== "/") {
+    if (!isHome) {
       setShowLogo(true);
       setHeaderOpacity(0.8);
       setHeaderBlur(10);
@@ -49,7 +51,29 @@ export const Header = () => {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [location.pathname]);
+  }, [isHome]);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [open]);
 
   const headerStyle = {
     "--brand-header-opacity": headerOpacity,
@@ -61,10 +85,10 @@ export const Header = () => {
       className="brand-header-shell fixed top-0 left-0 z-50 flex h-16 w-full items-center px-6 py-10"
       style={headerStyle}
     >
-      {!showLogo && location.pathname === "/" && (
+      {!showLogo && isHome && (
         <div className="brand-header-overlay absolute inset-0 pointer-events-none" />
       )}
-      <a
+      <Link
         href="/"
         className={`transition-opacity duration-300 flex-shrink-0 ${
           showLogo ? "opacity-100" : "opacity-0"
@@ -75,110 +99,108 @@ export const Header = () => {
           alt="Logo"
           className="h-10 w-auto flex-shrink-0"
         />
-      </a>
+      </Link>
       {/* Desktop nav */}
       <div className="hidden xl:flex items-center gap-6 ml-auto">
         {links.map(({ href, text }) => (
-          <NavLink
+          <Link
             key={href}
-            to={href}
-            className={({ isActive }) =>
-              `${
-                isActive
-                  ? "text-primary drop-shadow-[0_0_15px_theme(colors.white/20%)] font-semibold"
-                  : "text-minimal-gray hover:text-primary hover:drop-shadow-[0_0_15px_theme(colors.white/20%)]"
-              } text-[16px] font-bold cursor-pointer whitespace-nowrap`
-            }
+            href={href}
+            className={`${
+              pathname === href
+                ? "text-primary drop-shadow-[0_0_15px_theme(colors.white/20%)] font-semibold"
+                : "text-minimal-gray hover:text-primary hover:drop-shadow-[0_0_15px_theme(colors.white/20%)]"
+            } text-[16px] font-bold cursor-pointer whitespace-nowrap`}
           >
             {text}
-          </NavLink>
+          </Link>
         ))}
         <Button
           asChild
           variant="outline2"
           className="rounded-md px-6 py-3 text-center flex-shrink-0"
         >
-          <NavLink to="/apply">Become a Member</NavLink>
+          <Link href="/apply">Become a Member</Link>
         </Button>
       </div>
 
       {/* Mobile nav button */}
       <div className="ml-auto flex xl:hidden ">
-        <Dialog.Root open={open} onOpenChange={setOpen}>
-          <Dialog.Trigger asChild>
-            <Button variant="primary" className="h-9 w-9 p-0">
-              <Menu size={20} />
-              <span className="sr-only">Open menu</span>
-            </Button>
-          </Dialog.Trigger>
+        <Button
+          variant="primary"
+          className="h-9 w-9 p-0"
+          type="button"
+          aria-expanded={open}
+          aria-controls="mobile-nav"
+          aria-label={open ? "Close menu" : "Open menu"}
+          onClick={() => setOpen((value) => !value)}
+        >
+          {open ? <X size={20} /> : <Menu size={20} />}
+          <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
+        </Button>
+      </div>
 
-          <AnimatePresence>
-            {open && (
-              <Dialog.Portal forceMount>
-                <Dialog.Overlay asChild>
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
-                  />
-                </Dialog.Overlay>
+      <div
+        className={`fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity duration-200 xl:hidden ${
+          open
+            ? "pointer-events-auto opacity-100"
+            : "pointer-events-none opacity-0"
+        }`}
+        aria-hidden={!open}
+        onClick={() => setOpen(false)}
+      />
 
-                <Dialog.Content asChild>
-                  <motion.div
-                    initial={{ x: "100%" }}
-                    animate={{ x: 0 }}
-                    exit={{ x: "100%" }}
-                    transition={{ duration: 0.25 }}
-                    className="fixed inset-y-0 right-0 z-50 w-full max-w-sm bg-black/95 p-6 shadow-xl outline-none"
-                  >
-                    <div className="flex justify-end">
-                      <Dialog.Close asChild>
-                        <Button variant="primary" className="h-9 w-9 p-0">
-                          <X size={20} />
-                          <span className="sr-only">Close menu</span>
-                        </Button>
-                      </Dialog.Close>
-                    </div>
+      <div
+        id="mobile-nav"
+        className={`fixed inset-y-0 right-0 z-50 w-full max-w-sm bg-black/95 p-6 shadow-xl outline-none transition-transform duration-200 xl:hidden ${
+          open ? "translate-x-0" : "translate-x-full"
+        }`}
+        role="dialog"
+        aria-modal="true"
+        aria-hidden={!open}
+      >
+        <div className="flex justify-end">
+          <Button
+            variant="primary"
+            className="h-9 w-9 p-0"
+            type="button"
+            aria-label="Close menu"
+            onClick={() => setOpen(false)}
+          >
+            <X size={20} />
+            <span className="sr-only">Close menu</span>
+          </Button>
+        </div>
 
-                    <nav className="mt-6 space-y-4">
-                      {links.map(({ href, text }) => (
-                        <NavLink
-                          key={href}
-                          to={href}
-                          onClick={() => setOpen(false)}
-                          className={({ isActive }) =>
-                            `block rounded-md px-4 py-2 text-lg ${
-                              isActive
-                                ? "text-primary font-semibold"
-                                : "text-minimal-gray hover:bg-dark-purple/50 hover:text-white"
-                            }`
-                          }
-                        >
-                          {text}
-                        </NavLink>
-                      ))}
-                      <Button
-                        asChild
-                        variant="outline2"
-                        className="w-full rounded-md px-6 py-3 text-center sm:w-auto"
-                      >
-                        <NavLink
-                          to="/apply"
-                          onClick={() => setOpen(false)}
-                          className="w-full"
-                        >
-                          Become a Member
-                        </NavLink>
-                      </Button>
-                    </nav>
-                  </motion.div>
-                </Dialog.Content>
-              </Dialog.Portal>
-            )}
-          </AnimatePresence>
-        </Dialog.Root>
+        <nav className="mt-6 space-y-4">
+          {links.map(({ href, text }) => (
+            <Link
+              key={href}
+              href={href}
+              onClick={() => setOpen(false)}
+              className={`block rounded-md px-4 py-2 text-lg ${
+                pathname === href
+                  ? "text-primary font-semibold"
+                  : "text-minimal-gray hover:bg-dark-purple/50 hover:text-white"
+              }`}
+            >
+              {text}
+            </Link>
+          ))}
+          <Button
+            asChild
+            variant="outline2"
+            className="w-full rounded-md px-6 py-3 text-center sm:w-auto"
+          >
+            <Link
+              href="/apply"
+              onClick={() => setOpen(false)}
+              className="w-full"
+            >
+              Become a Member
+            </Link>
+          </Button>
+        </nav>
       </div>
     </div>
   );

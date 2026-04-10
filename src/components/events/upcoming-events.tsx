@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { getSafeExternalUrl } from "@/lib/security";
 import type { Event } from "@/lib/types";
 import { groupEventsByMonth } from "@/lib/utils";
 import { format } from "date-fns";
@@ -55,15 +56,8 @@ export default function UpcomingEvents({ events }: { events: Event[] }) {
 
 function UpcomingEventCard({ event }: { event: Event }) {
   const eventDate = new Date(event.event_date);
-  // Local flag: some events may include a runtime-only `disabled` property not present in the global Event type
-  const applicationsClosed = !(() => {
-    try {
-      new URL(event.sign_up!);
-      return true;
-    } catch {
-      return false;
-    }
-  })();
+  const signUpUrl = getSafeExternalUrl(event.sign_up);
+  const applicationsClosed = !signUpUrl;
 
   return (
     <Card className="transition-transform bg-minimal-gray duration-150 hover:scale-101 justify-between w-full">
@@ -118,8 +112,15 @@ function UpcomingEventCard({ event }: { event: Event }) {
                 className="text-white w-full"
                 disabled={applicationsClosed}
                 onClick={() => {
-                  if (!applicationsClosed) {
-                    window.open(event.sign_up, "_blank");
+                  if (signUpUrl) {
+                    const popup = window.open(
+                      signUpUrl,
+                      "_blank",
+                      "noopener,noreferrer",
+                    );
+                    if (popup) {
+                      popup.opener = null;
+                    }
                   }
                 }}
               >
@@ -208,8 +209,15 @@ function UpcomingEventCard({ event }: { event: Event }) {
               className="text-white w-full"
               disabled={applicationsClosed}
               onClick={() => {
-                if (!applicationsClosed) {
-                  window.open(event.sign_up, "_blank");
+                if (signUpUrl) {
+                  const popup = window.open(
+                    signUpUrl,
+                    "_blank",
+                    "noopener,noreferrer",
+                  );
+                  if (popup) {
+                    popup.opener = null;
+                  }
                 }
               }}
             >

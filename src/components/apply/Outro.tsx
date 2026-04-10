@@ -13,6 +13,9 @@ export default function Outro() {
         </p>
       </div>
 
+      {/* BREAKOUT: 
+          so that minimal-gray has no white borders left and right
+      */}
       <div className="bg-minimal-gray w-[100vw] ml-[calc(-50vw+50%)]">
         <FAQ faq={faq} className="px-8 py-16 md:px-16" />
       </div>

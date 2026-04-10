@@ -1,131 +1,124 @@
 # TUM.ai Website
 
-Public website for TUM.ai, built with React, TypeScript, and Vite.
+Next.js App Router website for TUM.ai, plus a small workspace package for typed Notion data access.
 
-This repo contains:
+## What Is In This Repo
 
-- the client-side website
-- shared page content and route configuration
-- Vercel serverless endpoints that proxy selected Notion databases
-- brand assets and brand reference material
+```text
+.
+├── src/                   website app
+├── packages/notion-data/  shared Notion client + row mappers
+├── public/assets/         shipped logos, photos, and media
+├── docs/                  contributor docs + brand source files
+├── scripts/               small build helpers
+└── test/                  Node-based regression tests
+```
 
-For the detailed folder map, see [docs/repo-structure.md](docs/repo-structure.md).
+This is a pnpm workspace with two packages:
+
+- `@tumai/web` at the repo root
+- `@tumai/notion-data` in `packages/notion-data`
 
 ## Stack
 
+- Next.js 16 App Router
 - React 19
-- TypeScript
-- Vite
 - Tailwind CSS v4
-- Radix UI primitives
-- Framer Motion + GSAP
-- Vercel serverless functions
-- Notion as a content source for selected dynamic sections
+- Biome for linting/formatting
+- pnpm workspaces
+- Vercel for deployment
+- Notion as the source for events, partners, and research data
 
-## Getting Started
+## Quick Start
 
 Install dependencies:
 
 ```bash
-npm install
+pnpm install
 ```
 
-Start the dev server:
+Pull local env vars from Vercel:
 
 ```bash
-npm run dev
+pnpm exec vercel link --yes --project website --scope tum-ai
+pnpm exec vercel env pull .env.local --yes --environment=development
 ```
 
-Build the app:
+Run the app:
 
 ```bash
-npm run build
+pnpm dev
 ```
 
-Other useful commands:
+Local dev uses `.next-dev`. Local builds use isolated dist dirs too, so `dev`, `build`, and `typecheck` do not fight over `.next`.
+
+## Commands
 
 ```bash
-npm run typecheck
-npm run lint
-npm run preview
+pnpm dev            # start local dev server
+pnpm build          # production build into .next-prod
+pnpm start          # serve the .next-prod build
+pnpm lint           # biome + workspace lint
+pnpm test           # Node test runner via tsx
+pnpm verify         # lint + test + build
+pnpm typecheck      # Next build-based typecheck into .next-typecheck
+pnpm typecheck:all  # root typecheck + packages/notion-data typecheck
 ```
+
+CI currently runs `pnpm verify` on pull requests to `main`.
 
 ## Environment
 
-The frontend expects a backend base URL:
+The app reads these server-side environment variables:
 
-```bash
-VITE_BACKEND_URL=http://localhost:3000
-```
+- `NOTION_TOKEN`
+- `NOTION_DB_ID`
+- `NOTION_TOKEN_PARTNERS`
+- `NOTION_DB_PARTNERS_ID`
+- `NOTION_TOKEN_RESEARCH`
+- `NOTION_DB_RESEARCH_ID`
 
-The serverless Notion endpoints use these environment variables:
+`packages/notion-data` reads `process.env` directly. It does not load `.env` files on its own, so local development should use `.env.local` or Vercel env pull. If the values are missing, the Notion fetchers return empty arrays instead of crashing.
 
-```bash
-NOTION_TOKEN=
-NOTION_DB_ID=
+## How The App Is Structured
 
-NOTION_TOKEN_PARTNERS=
-NOTION_DB_PARTNERS_ID=
+- `src/app/` owns routing, route handlers, metadata wiring, and the root layout.
+- `src/views/` holds page-level composition.
+- `src/components/` holds reusable sections and shared UI primitives.
+- `src/data/` holds static copy and curated data arrays.
+- `src/lib/` holds utilities, redirects, security helpers, shared types, and cached Notion access.
+- `packages/notion-data/` is the only place that talks directly to Notion.
 
-NOTION_TOKEN_RESEARCH=
-NOTION_DB_RESEARCH_ID=
-```
+Two pages currently fetch live Notion data on the server:
 
-## How The App Is Wired
+- `/events`
+- `/research`
 
-- [src/main.tsx](src/main.tsx) mounts the app, router, title manager, header, and footer.
-- [src/App.tsx](src/App.tsx) renders routes.
-- [src/data/routes.tsx](src/data/routes.tsx) is the single route registry.
-- `src/pages/` contains route-level page entry points.
-- `src/components/` contains reusable and page-specific UI building blocks.
-- `src/data/` holds static content and route metadata.
-- `src/api/` contains Vercel serverless handlers for dynamic Notion-backed data.
+Three API routes mirror the same cached data as JSON:
 
-## Content Model
+- `/api/getNotes` (legacy name, returns events)
+- `/api/getPartners`
+- `/api/getResearch`
 
-This repo uses two content patterns:
+## Editing Guide
 
-- Static content lives in `src/data/` and is imported directly into pages/components.
-- Dynamic content is fetched from Notion through the handlers in `src/api/`.
+If you need to:
 
-Current Notion-backed areas:
+- add or change a route: start in `src/app/`, then connect it to a view in `src/views/`
+- update static page copy: check `src/data/` first, then the matching component
+- change events or research rendering: update both the page view and the Notion-backed types/data path
+- change global nav, footer, or font setup: edit `src/app/layout.tsx`, `src/components/Header.tsx`, `src/components/Footer.tsx`
+- change shared styling or tokens: edit `src/styles/index.css`
+- change SEO or JSON-LD: edit `src/config/seo.ts`
+- change Notion field mapping: edit `packages/notion-data/src/index.ts`, then verify `src/lib/notion.ts` consumers still match
 
-- events via [src/api/getNotes.ts](src/api/getNotes.ts)
-- partners via [src/api/getPartners.ts](src/api/getPartners.ts)
-- research via [src/api/getResearch.ts](src/api/getResearch.ts)
+One important legacy file remains:
 
-## Styling And Brand
+- `src/data/routes.tsx` is not runtime routing anymore. App Router files in `src/app/` are the source of truth.
 
-- Global styles and design tokens live in [src/styles/index.css](src/styles/index.css).
-- Shared UI primitives live in `src/components/ui/`.
-- Brand source material lives in `docs/brand/source/`.
-- The canonical button treatment lives in [src/components/ui/button.tsx](src/components/ui/button.tsx).
+## Contributor Docs
 
-When changing visual UI, keep the implementation aligned with the TUM.ai brand tokens and source assets already in the repo.
+- [docs/repo-structure.md](docs/repo-structure.md): architecture and directory map
+- [docs/contributor-guide.md](docs/contributor-guide.md): practical recipes for common changes
 
-## Common Changes
-
-Add a new page:
-
-1. Create the page entry file in `src/pages/`.
-2. Add supporting components under the matching `src/components/` area if needed.
-3. Register the route in [src/data/routes.tsx](src/data/routes.tsx).
-4. Add SEO metadata in [src/config/seo.ts](src/config/seo.ts).
-
-Add a static content section:
-
-1. Add or extend a data module in `src/data/`.
-2. Keep the page component thin and let it compose the content.
-
-Add a new Notion-backed endpoint:
-
-1. Add a handler in `src/api/`.
-2. Define the required environment variables.
-3. Fetch it from the relevant page/component using `VITE_BACKEND_URL`.
-4. Document the new endpoint in this README and in [docs/repo-structure.md](docs/repo-structure.md).
-
-## Deployment Notes
-
-- Vercel rewrites all non-asset routes to `/` for SPA routing in [vercel.json](vercel.json).
-- `join.tum-ai.com` is redirected to `/apply`.
-- The frontend uses the `@` alias for `src/`, configured in [vite.config.ts](vite.config.ts).
+Brand source material is kept under `docs/brand/source/`.

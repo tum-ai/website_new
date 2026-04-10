@@ -23,7 +23,7 @@ export default function Hero() {
               <Button asChild variant="primary" className="px-8 py-4 text-lg">
                 <a
                   href="https://tally.so/r/OD0Vgg"
-                  target="_blank"
+                  target="blank"
                   rel="noopener noreferrer"
                 >
                   Apply now

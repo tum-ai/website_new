@@ -1,3 +1,5 @@
+"use client";
+
 import "../../styles/Grid.css"; // Import CSS for animations
 import { pictures as squares } from "@/data/homepage";
 import { useEffect, useState } from "react";

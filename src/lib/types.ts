@@ -1,30 +1,8 @@
-export interface Event {
-  id: string;
-  title: string;
-  description: string;
-  event_date: string;
-  location?: string;
-  city?: string;
-  category?: string;
-  poster?: string;
-  images?: [string];
-  sign_up?: string;
-  detail?: string;
-}
+export type { Event, Partner, Research } from "@tumai/notion-data";
 
 export interface EventFilters {
   category: string;
   city: string;
-}
-
-export interface Research {
-  id: string;
-  title: string;
-  description: string;
-  image?: string;
-  publication?: string;
-  status?: string;
-  keywords?: string;
 }
 
 export interface NotionPage {

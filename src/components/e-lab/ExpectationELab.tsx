@@ -1,3 +1,5 @@
+"use client";
+
 import { MotionValue } from "framer-motion";
 import {
   motion,
