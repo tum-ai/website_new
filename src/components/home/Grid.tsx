@@ -41,6 +41,10 @@ function getTileDelay(index: number) {
   return `${((index * 7) % 20) / 4}s`;
 }
 
+function getTileQuality(tileSize: number) {
+  return tileSize <= 140 ? 40 : 75;
+}
+
 export const Grid = () => {
   const [isDesktop, setIsDesktop] = useState(false);
   const [metrics, setMetrics] = useState(() => ({
@@ -86,6 +90,8 @@ export const Grid = () => {
     return null;
   }
 
+  const tileQuality = getTileQuality(metrics.tileSize);
+
   return (
     <div
       className="pointer-events-none absolute inset-0 z-0 grid"
@@ -116,7 +122,7 @@ export const Grid = () => {
               aria-hidden
               fill
               sizes={`${metrics.tileSize}px`}
-              quality={40}
+              quality={tileQuality}
               className="object-cover mix-blend-overlay"
               loading="lazy"
               fetchPriority="low"

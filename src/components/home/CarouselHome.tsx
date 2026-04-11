@@ -3,11 +3,14 @@ import { Carousel, CarouselContent, CarouselItem } from "../ui/carousel";
 import Arrows from "./Arrows";
 import Card from "./Card";
 
+const standardWidth = 1920;
+const standardHeight = 1280;
+
 const CAROUSEL_ITEMS = [
   {
     imgSrc: "/assets/open_ai_speaker_event.webp",
-    width: 1920,
-    height: 1280,
+    width: standardWidth,
+    height: standardHeight,
     text: "JOIN THE COMMUNITY",
     title: "Hackathons, Talks, Workshops, ...",
     desc: "AI for Everyone - We offer a variety of events to help you learn and grow",
@@ -16,8 +19,8 @@ const CAROUSEL_ITEMS = [
   },
   {
     imgSrc: "/assets/innovation/robotics_discussion.webp",
-    width: 1920,
-    height: 1440,
+    width: standardWidth,
+    height: standardHeight,
     text: "JOIN THE COMMUNITY",
     title: "Research",
     desc: "Research projects and the Research Exchange (REX) Program for academically inclined minds",
@@ -26,8 +29,8 @@ const CAROUSEL_ITEMS = [
   },
   {
     imgSrc: "/assets/innovation/robotics_writing.webp",
-    width: 1231,
-    height: 922,
+    width: standardWidth,
+    height: standardHeight,
     text: "JOIN THE COMMUNITY",
     title: "Innovation Departments",
     desc: "Explore TUM.ai’s innovation departments and the exciting projects they lead",
@@ -36,8 +39,8 @@ const CAROUSEL_ITEMS = [
   },
   {
     imgSrc: "/assets/home_img4.webp",
-    width: 1920,
-    height: 1080,
+    width: standardWidth,
+    height: standardHeight,
     text: "APPLICATIONS OPEN IN AUGUST",
     title: "AI Entrepreneurship Lab (E-Lab)",
     desc: "14-week equity-free AI startup incubator with full support from Munich's innovation ecosystem",

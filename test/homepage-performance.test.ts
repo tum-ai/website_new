@@ -40,9 +40,16 @@ function stripScripts(html: string) {
 }
 
 function getImagePreloads(html: string) {
-  return [
-    ...html.matchAll(/<link rel="preload" href="([^"]+)" as="image"/g),
-  ].map((match) => match[1]);
+  return [...html.matchAll(/<link\b[^>]*>/g)]
+    .map((match) => match[0])
+    .filter(
+      (tag) =>
+        /rel="preload"/.test(tag) &&
+        /as="image"/.test(tag) &&
+        /href="[^"]+"/.test(tag),
+    )
+    .map((tag) => tag.match(/href="([^"]+)"/)?.[1])
+    .filter((href): href is string => href !== undefined);
 }
 
 const homepageHtml = buildHomepageHtml();
