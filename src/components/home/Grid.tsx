@@ -1,73 +1,23 @@
-"use client";
+const GRID_LINE_COLOR = "rgb(255 255 255 / 0.08)";
 
-import "../../styles/Grid.css"; // Import CSS for animations
-import { pictures as squares } from "@/data/homepage";
-import { useEffect, useState } from "react";
 export const Grid = () => {
-  const [tileSize, setTileSize] = useState(164); // Default tile size
-  const [tileCount, setTileCount] = useState(0);
-  const [gap, setGap] = useState(0);
-
-  useEffect(() => {
-    const calculateGrid = () => {
-      const minTileSize = 116; // Minimum tile size
-      const maxTileSize = 214; // Maximum tile size
-      const gap = 12; // Gap between tiles
-
-      const cols = Math.floor((window.innerWidth + gap) / (maxTileSize + gap));
-      const rows = Math.floor((window.innerHeight + gap) / (maxTileSize + gap));
-
-      const optimalTileSize = Math.min(
-        Math.max(
-          Math.floor((window.innerWidth - gap * (cols - 1)) / cols),
-          minTileSize,
-        ),
-        maxTileSize,
-      );
-
-      setTileSize(optimalTileSize);
-      setTileCount(cols * rows);
-      setGap(gap);
-    };
-
-    calculateGrid();
-    window.addEventListener("resize", calculateGrid);
-    return () => window.removeEventListener("resize", calculateGrid);
-  }, []);
-
   return (
-    <div
-      className="absolute inset-0 z-0 grid"
-      style={{
-        display: "grid",
-        justifyContent: "center",
-        alignContent: "center",
-        gridTemplateColumns: `repeat(auto-fill, ${tileSize}px)`,
-        gridTemplateRows: `repeat(auto-fill, ${tileSize}px)`,
-        gap: `${gap}px`,
-        overflow: "hidden",
-      }}
-    >
-      {Array.from({ length: tileCount }).map((_, index) => {
-        const square = squares[index % squares.length];
-        const randomOpacity = Math.random() * 0.2; // Random initial opacity between 0 and 0.2
-        const randomDelay = `${Math.random() * 5}s`; // Random animation delay up to 5 seconds
-        return (
-          <div
-            key={index}
-            className="brand-grid-tile relative aspect-square overflow-hidden rounded-xl transition duration-300 animate-opacity"
-            style={{ opacity: randomOpacity, animationDelay: randomDelay }}
-          >
-            {square.src && (
-              <img
-                src={square.src}
-                alt=""
-                className="w-full h-full object-cover mix-blend-overlay"
-              />
-            )}
-          </div>
-        );
-      })}
+    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+      <div
+        className="absolute inset-0 opacity-80"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, ${GRID_LINE_COLOR} 1px, transparent 1px),
+            linear-gradient(to bottom, ${GRID_LINE_COLOR} 1px, transparent 1px)
+          `,
+          backgroundPosition: "center center",
+          backgroundSize: "clamp(7rem, 12vw, 13rem) clamp(7rem, 12vw, 13rem)",
+        }}
+      />
+      <div className="absolute top-[12%] left-[8%] h-56 w-56 rounded-[2rem] border border-white/10 bg-white/6 blur-sm" />
+      <div className="absolute top-[22%] right-[12%] h-44 w-44 rounded-[1.75rem] border border-white/8 bg-primary/10 blur-sm" />
+      <div className="absolute bottom-[16%] left-[18%] h-40 w-40 rounded-[1.5rem] border border-white/8 bg-white/5" />
+      <div className="absolute right-[14%] bottom-[10%] h-64 w-64 rounded-[2.25rem] bg-[radial-gradient(circle_at_center,rgb(154_100_217_/_0.28),transparent_72%)]" />
     </div>
   );
 };

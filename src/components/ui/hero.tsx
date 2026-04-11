@@ -4,7 +4,7 @@ import { Button } from "./button";
 
 export const Hero = () => {
   return (
-    <div className="flex flex-col items-start justify-center px-4 py-6 sm:justify-end sm:px-8 sm:py-12 motion-safe:animate-fade-in">
+    <div className="flex flex-col items-start justify-center px-4 py-6 sm:justify-end sm:px-8 sm:py-12">
       <Image
         src="/assets/tum_ai_logo_new.svg"
         alt="TUM.ai New Logo"

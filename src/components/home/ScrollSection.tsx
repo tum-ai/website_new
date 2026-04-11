@@ -1,4 +1,5 @@
 import { pictures as data } from "@/data/homepage";
+import Image from "next/image";
 import type { CSSProperties } from "react";
 
 type Props = {
@@ -38,6 +39,18 @@ function resolveAspect(
   return [16, 9];
 }
 
+function getImageSizes(widthMode: Props["widthMode"]) {
+  if (widthMode === "viewport") {
+    return "(min-width: 1024px) 66vw, 80vw";
+  }
+
+  if (widthMode === "parent") {
+    return "(min-width: 1024px) 66vw, 80vw";
+  }
+
+  return "(min-width: 1024px) 32rem, (min-width: 640px) 24rem, 20rem";
+}
+
 export function ScrollSection({
   speed = 60,
   aspect = "16:10",
@@ -53,6 +66,7 @@ export function ScrollSection({
     aspectH,
   );
   const paddingTopPercent = (resolvedAspectH / resolvedAspectW) * 100;
+  const imageSizes = getImageSizes(widthMode);
   const resolvedWidthClass =
     widthClass ??
     (widthMode === "viewport"
@@ -84,11 +98,15 @@ export function ScrollSection({
                 className="relative overflow-hidden rounded-lg"
                 style={{ paddingTop: `${paddingTopPercent}%` }}
               >
-                <img
+                <Image
                   src={image.src}
                   alt=""
+                  fill
+                  aria-hidden="true"
                   className="absolute inset-0 h-full w-full object-cover"
-                  loading={index < data.length ? "eager" : "lazy"}
+                  loading="lazy"
+                  fetchPriority="low"
+                  sizes={imageSizes}
                 />
               </div>
             </div>
