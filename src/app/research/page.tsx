@@ -4,7 +4,7 @@ import { getResearchProjects } from "@/lib/notion";
 import Research from "@/views/headerPages/Research";
 
 export const metadata = buildMetadata("research");
-export const dynamic = "force-dynamic";
+export const revalidate = 900;
 
 export default async function Page() {
   const projects = await getResearchProjects();
