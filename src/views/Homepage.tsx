@@ -1,9 +1,8 @@
 import Layout from "@/components/Layout";
 import { AboutSection } from "@/components/home/AboutSection";
-import { CarouselHome } from "@/components/home/CarouselHome";
+import { DeferredHomeSections } from "@/components/home/DeferredHomeSections";
 import { Grid } from "@/components/home/Grid";
 import { PartnersSection } from "@/components/home/PartnersSection";
-import { ScrollSection } from "@/components/home/ScrollSection";
 import { Hero } from "../components/ui/hero";
 
 export default function Homepage() {
@@ -20,8 +19,7 @@ export default function Homepage() {
       </div>
       <Layout>
         <AboutSection />
-        <ScrollSection />
-        <CarouselHome />
+        <DeferredHomeSections />
         <PartnersSection />
       </Layout>
     </>

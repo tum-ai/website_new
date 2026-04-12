@@ -1,13 +1,20 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { join } from "node:path";
 import test from "node:test";
 
 test("next build emits Tailwind utility classes for app routes", () => {
   const distDir = ".next-test";
   const nextEnvPath = new URL("../next-env.d.ts", import.meta.url);
-  const originalNextEnv = readFileSync(nextEnvPath, "utf8");
+  const hadNextEnv = existsSync(nextEnvPath);
+  const originalNextEnv = hadNextEnv ? readFileSync(nextEnvPath, "utf8") : null;
 
   rmSync(".next", { recursive: true, force: true });
   rmSync(distDir, { recursive: true, force: true });
@@ -23,7 +30,9 @@ test("next build emits Tailwind utility classes for app routes", () => {
       stdio: "pipe",
     });
   } finally {
-    writeFileSync(nextEnvPath, originalNextEnv);
+    if (originalNextEnv !== null) {
+      writeFileSync(nextEnvPath, originalNextEnv);
+    }
   }
 
   const cssDir = join(distDir, "static", "css");
