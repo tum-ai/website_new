@@ -120,5 +120,6 @@ One important legacy file remains:
 
 - [docs/repo-structure.md](docs/repo-structure.md): architecture and directory map
 - [docs/contributor-guide.md](docs/contributor-guide.md): practical recipes for common changes
+- [docs/github-actions.md](docs/github-actions.md): CI, Dependabot, and code-scanning workflow reference
 
 Brand source material is kept under `docs/brand/source/`.
