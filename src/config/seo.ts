@@ -1,3 +1,4 @@
+import { registeredOfficePostalAddress } from "@/config/contact";
 import type { Metadata } from "next";
 
 const siteUrl = "https://www.tum-ai.com";
@@ -43,10 +44,7 @@ export const baseOrganizationJsonLd = {
     },
     {
       "@type": "PostalAddress",
-      streetAddress: "Arcisstraße 21",
-      postalCode: "80333",
-      addressLocality: "Munich",
-      addressCountry: "Germany",
+      ...registeredOfficePostalAddress,
       contactType: "Registered office",
     },
   ],

@@ -1,3 +1,4 @@
+import { registeredOfficeAddressLine } from "@/config/contact";
 import { cx } from "class-variance-authority";
 
 export default function Imprint() {
@@ -18,7 +19,7 @@ export default function Imprint() {
           </h2>
           <p className="text-gray-700 mb-4">
             TUM.ai e.V. Vereinsregisternummer: VR209059 <br />
-            Adresse: Arcisstr. 21, 80333 München <br />
+            Adresse: {registeredOfficeAddressLine} <br />
             Vertreter: Sami Haddouti, Julian Sikora, William Homburg, Luca Fink{" "}
             <br />
             Mail: contact@tum-ai.com
