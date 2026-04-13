@@ -203,12 +203,12 @@ This repo intentionally isolates local Next output directories so different work
 
 ## CI
 
-GitHub Actions currently runs a single workflow on pull requests to `main`:
+GitHub Actions runs several repository workflows. The main PR gate is:
 
 - install with pnpm 10.18.2 and Node 20
 - run `pnpm verify`
 
-There is no separate CI job for `pnpm typecheck:all`, so it is worth running locally when you change types or cross-package contracts.
+Additional workflow notes live in [docs/github-actions.md](github-actions.md).
 
 ## Deployment
 
