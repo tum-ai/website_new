@@ -1,0 +1,83 @@
+name: Dependabot Maintenance
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+    - cron: "43 4 * * 1-5"
+  workflow_dispatch:
+
+concurrency:
+  group: dependabot-maintenance
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '43 4 * * 1-5'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Rebase open Dependabot PRs onto main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          prs="$(gh pr list --state open --search 'author:app/dependabot' --json number --jq '.[].number')"
+          if [ -z "$prs" ]; then
+            exit 0
+          fi
+
+          for pr in $prs; do
+            gh pr update-branch "$pr" --rebase || true
+          done
+
+  merge:
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '17 * * * *'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Merge Dependabot PRs that are green and labeled for auto-merge
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          prs_json="$(gh pr list --state open --search 'author:app/dependabot label:automerge' --json number,url,isDraft,mergeable,statusCheckRollup)"
+          export PRS_JSON="$prs_json"
+          node <<'EOF'
+          const { execSync } = require("node:child_process");
+
+          const prs = JSON.parse(process.env.PRS_JSON);
+          const allowedConclusions = new Set(["SUCCESS", "NEUTRAL", "SKIPPED"]);
+
+          const isSuccessfulCheck = (check) => {
+            if (check.__typename === "StatusContext") {
+              return check.state === "SUCCESS";
+            }
+
+            if (check.__typename === "CheckRun") {
+              return (
+                check.status === "COMPLETED" &&
+                allowedConclusions.has(check.conclusion)
+              );
+            }
+
+            return false;
+          };
+
+          const mergeablePrs = prs.filter((pr) => {
+            return (
+              !pr.isDraft &&
+              pr.mergeable === "MERGEABLE" &&
+              pr.statusCheckRollup.length > 0 &&
+              pr.statusCheckRollup.every(isSuccessfulCheck)
+            );
+          });
+
+          for (const pr of mergeablePrs) {
+            console.log(`Merging ${pr.url}`);
+            execSync(`gh pr merge --squash --delete-branch "${pr.url}"`, {
+              stdio: "inherit",
+            });
+          }
+          EOF
