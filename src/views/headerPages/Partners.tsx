@@ -214,18 +214,20 @@ function PartnerSection({
       </h3>
       <div className="flex flex-wrap items-center justify-center md:items-start md:justify-start gap-2">
         {logos.map((logo) => (
-          <div
+          <a
             key={logo.alt}
-            // Set a fixed height for the card
+            href={logo.href}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={`Visit ${logo.alt}`}
             className="transition-transform duration-150 hover:scale-105 hover:shadow-lg flex h-20 w-40 items-center justify-center rounded-lg border-1 bg-white p-4 py-6"
           >
-            {/* Limit logo size and maintain aspect ratio */}
             <img
               src={logo.src}
               alt={logo.alt}
               className="max-h-full max-w-full object-contain"
             />
-          </div>
+          </a>
         ))}
       </div>
     </div>
