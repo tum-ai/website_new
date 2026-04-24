@@ -1,7 +1,5 @@
 "use client";
 
-// import { Badge } from "@/components/ui/badge"
-// import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -11,11 +9,11 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-// import { Calendar, ExternalLink, MapPin, Users, X } from "lucide-react";
 import { useState } from "react";
 
 interface ProjectCardProps {
@@ -23,12 +21,6 @@ interface ProjectCardProps {
   description: string;
   image: string;
   detailedDescription: string;
-  members: number;
-  established: string;
-  location: string;
-  projects: string[];
-  contact: string;
-  website?: string;
 }
 
 export function ProjectCard({
@@ -36,12 +28,6 @@ export function ProjectCard({
   description,
   image,
   detailedDescription,
-  // members,
-  // established,
-  // location,
-  // projects,
-  // contact,
-  // website,
 }: ProjectCardProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -54,8 +40,10 @@ export function ProjectCard({
             {image ? (
               <img
                 src={image}
-                alt={`${name} Project`}
+                alt={`${name} task force`}
                 className="h-full w-full object-cover"
+                loading="lazy"
+                decoding="async"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.style.display = "none";
@@ -107,78 +95,18 @@ export function ProjectCard({
           <DialogTitle className="text-2xl font-bold gradient-text text-foreground flex items-center gap-3">
             {name}
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            {description}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Detailed Description */}
           <div>
             <h4 className="text-lg font-semibold mb-2">About</h4>
             <p className="text-text-gray leading-relaxed">
               {detailedDescription}
             </p>
           </div>
-
-          {/* Department Stats */}
-          {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-              <Users className="w-5 h-5 text-primary" />
-              <div>
-                <p className="text-sm text-muted-foreground">Members</p>
-                <p className="font-semibold">{members}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-              <Calendar className="w-5 h-5 text-primary" />
-              <div>
-                <p className="text-sm text-muted-foreground">Established</p>
-                <p className="font-semibold">{established}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-              <MapPin className="w-5 h-5 text-primary" />
-              <div>
-                <p className="text-sm text-muted-foreground">Location</p>
-                <p className="font-semibold">{location}</p>
-              </div>
-            </div>
-          </div> */}
-
-          {/* Current Projects */}
-          {/* <div>
-            <h4 className="text-lg font-semibold mb-3">Current Projects</h4>
-            <div className="flex flex-wrap gap-2">
-              {projects.map((project, index) => (
-                <Badge key={index} variant="secondary">
-                  {project}
-                </Badge>
-              ))}
-            </div>
-          </div> */}
-
-          {/* Contact Information */}
-          {/* <div className="border-t pt-4">
-            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-              <div>
-                <h4 className="font-semibold mb-1">Contact</h4>
-                <p className="text-muted-foreground">{contact}</p>
-              </div>
-
-              {website && (
-                <Button
-                  variant="outline"
-                  className="flex items-center gap-2 bg-transparent"
-                  asChild
-                >
-                  <a href={website} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="w-4 h-4" />
-                    Visit Website
-                  </a>
-                </Button>
-              )}
-            </div>
-          </div> */}
         </div>
       </DialogContent>
     </Dialog>

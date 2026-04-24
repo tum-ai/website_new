@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import test from "node:test";
+import { clearNextArtifacts } from "../scripts/next-artifacts.mjs";
 
 const DIST_DIR = ".next-homepage-perf";
 
@@ -12,8 +13,7 @@ function buildHomepageHtml() {
   const originalNextEnv = hadNextEnv ? readFileSync(nextEnvPath, "utf8") : null;
   const originalTsconfig = readFileSync(tsconfigPath, "utf8");
 
-  rmSync(".next", { recursive: true, force: true });
-  rmSync(DIST_DIR, { recursive: true, force: true });
+  clearNextArtifacts({ preserve: [DIST_DIR] });
 
   try {
     execFileSync("pnpm", ["exec", "next", "build", "--webpack"], {
