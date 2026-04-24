@@ -8,9 +8,10 @@ export const Hero = () => {
       <Image
         src="/assets/tum_ai_logo_new.svg"
         alt="TUM.ai New Logo"
-        className="mb-4 ml-1"
+        className="mb-4 ml-1 h-auto w-[220px]"
         width={220}
         height={40}
+        sizes="220px"
         priority
       />
 

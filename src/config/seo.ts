@@ -122,17 +122,18 @@ export const pageSEOConfig = {
   },
 
   projects: {
-    title: "Innovation Projects",
+    title: "Task Forces and Projects",
     description:
-      "Discover TUM.ai's innovation departments and the exciting projects they are working on.",
+      "Discover TUM.ai's current task forces and the research, education, and community initiatives they are driving.",
     canonical: "https://www.tum-ai.com/projects",
     jsonLd: [
       baseOrganizationJsonLd,
       {
         "@context": "https://schema.org",
         "@type": "WebPage",
-        name: "TUM.ai Innovation Projects",
-        description: "Innovation Departments and Projects by TUM.ai",
+        name: "TUM.ai Task Forces and Projects",
+        description:
+          "Current task forces and projects across research, education, and community at TUM.ai.",
         url: "https://www.tum-ai.com/projects",
       },
     ],

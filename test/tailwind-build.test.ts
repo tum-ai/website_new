@@ -1,14 +1,9 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import {
-  existsSync,
-  readFileSync,
-  readdirSync,
-  rmSync,
-  writeFileSync,
-} from "node:fs";
+import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import test from "node:test";
+import { clearNextArtifacts } from "../scripts/next-artifacts.mjs";
 
 test("next build emits Tailwind utility classes for app routes", () => {
   const distDir = ".next-test";
@@ -16,8 +11,7 @@ test("next build emits Tailwind utility classes for app routes", () => {
   const hadNextEnv = existsSync(nextEnvPath);
   const originalNextEnv = hadNextEnv ? readFileSync(nextEnvPath, "utf8") : null;
 
-  rmSync(".next", { recursive: true, force: true });
-  rmSync(distDir, { recursive: true, force: true });
+  clearNextArtifacts({ preserve: [distDir] });
 
   try {
     execFileSync("pnpm", ["exec", "next", "build", "--webpack"], {

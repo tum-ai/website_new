@@ -2,7 +2,6 @@
 
 import "../../styles/Grid.css";
 import { pictures as squares } from "@/data/homepage";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const MIN_TILE_SIZE = 116;
@@ -39,10 +38,6 @@ function getTileOpacity(index: number) {
 
 function getTileDelay(index: number) {
   return `${((index * 7) % 20) / 4}s`;
-}
-
-function getTileQuality(tileSize: number) {
-  return tileSize <= 140 ? 40 : 75;
 }
 
 export const Grid = () => {
@@ -90,8 +85,6 @@ export const Grid = () => {
     return null;
   }
 
-  const tileQuality = getTileQuality(metrics.tileSize);
-
   return (
     <div
       className="pointer-events-none absolute inset-0 z-0 grid"
@@ -116,16 +109,15 @@ export const Grid = () => {
               animationDelay: getTileDelay(index),
             }}
           >
-            <Image
+            <img
               src={square.src}
               alt=""
               aria-hidden
-              fill
-              sizes={`${metrics.tileSize}px`}
-              quality={tileQuality}
-              className="object-cover mix-blend-overlay"
+              className="h-full w-full object-cover mix-blend-overlay"
               loading="lazy"
-              fetchPriority="low"
+              decoding="async"
+              width={metrics.tileSize}
+              height={metrics.tileSize}
             />
           </div>
         );

@@ -1,5 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { pathToFileURL } from "node:url";
+import { clearNextArtifacts } from "./next-artifacts.mjs";
 
 export function resolveNextEnv(env, localDistDir) {
   const nextEnv = { ...env };
@@ -21,6 +22,13 @@ function main() {
   }
 
   const env = resolveNextEnv(process.env, localDistDir);
+
+  if (command === "build") {
+    clearNextArtifacts({
+      preserve: env.NEXT_DIST_DIR ? [env.NEXT_DIST_DIR] : [],
+    });
+  }
+
   const bin = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
   const result = spawnSync(bin, ["exec", "next", command, ...extraArgs], {
     env,
