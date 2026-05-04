@@ -1,64 +1,124 @@
-# 🚀 React + TypeScript + Vite Starter
+# TUM.ai Website
 
-A modern development stack using **React**, **TypeScript**, and **Vite** — optimized for speed and developer experience.
+Next.js App Router website for TUM.ai, plus a small workspace package for typed Notion data access.
 
----
+## What Is In This Repo
 
-## Setup
-
-### 1. Install dependencies
-
-```bash
-npm install
+```text
+.
+├── src/                   website app
+├── packages/notion-data/  shared Notion client + row mappers
+├── public/assets/         shipped logos, photos, and media
+├── docs/                  contributor docs + brand source files
+├── scripts/               small build helpers
+└── test/                  Node-based regression tests
 ```
 
-## 2. Start the development server
+This is a pnpm workspace with two packages:
+
+- `@tumai/web` at the repo root
+- `@tumai/notion-data` in `packages/notion-data`
+
+## Stack
+
+- Next.js 16 App Router
+- React 19
+- Tailwind CSS v4
+- Biome for linting/formatting
+- pnpm workspaces
+- Vercel for deployment
+- Notion as the source for events, partners, and research data
+
+## Quick Start
+
+Install dependencies:
+
 ```bash
-npm run dev
+pnpm install
 ```
-The app will be available locally at http://localhost:5173 (or the port specified by Vite).
 
-## Connecting to Notion (Local Development Setup)
-To fetch and display data from Notion in the application, follow these steps to set up the local development environment:
+Pull local env vars from Vercel:
 
-1. Prepare Environment
-Create a .env file in your server directory. (normally there is already an exsting one in the server folder that contains the already in use variables)
-This file should contain:
-Your Notion integration token.
-The database ID of the Notion table you're accessing.
+```bash
+pnpm exec vercel link --yes --project website --scope tum-ai
+pnpm exec vercel env pull .env.local --yes --environment=development
+```
 
-2. Set Up the Server
-The server folder contains an Express application that handles API requests to Notion.
+Run the app:
 
-3. Run Locally
-Start the Express server:
-Then, start the frontend application as usual.
-The server will be available at:
-http://localhost:3000
+```bash
+pnpm dev
+```
 
-4. Available API Endpoints
-Fetch notes:
-http://localhost:3000/api/getNotes
-Fetch partners:
-http://localhost:3000/getPartners
+Local dev uses `.next-dev`. Local builds use isolated dist dirs too, so `dev`, `build`, and `typecheck` do not fight over `.next`.
 
-5. Modifying Notion Data or Adding Tables
-Any modifications or additions to the Notion database must be approved and set up by an admin.
-Once granted access, follow these steps:
+## Commands
 
-6. Adding a New Notion Page/Table
-Get the integration token for the new page from the Notion integrations page.
-Get the database ID from the page URL.
-For example, in the URL:
-https://www.notion.so/tum-ai/2137306bfd6280118d75ff4ee064f0e9?v=2137306bfd6280b9912b000c0dce9e60
-The ID is:
-2137306bfd6280118d75ff4ee064f0e9
-(The string after /tum-ai/ and ending before the ?)
-Add the token and database ID to the .env file.
+```bash
+pnpm dev            # start local dev server
+pnpm build          # production build into .next-prod
+pnpm start          # serve the .next-prod build
+pnpm lint           # biome + workspace lint
+pnpm test           # Node test runner via tsx
+pnpm verify         # lint + test + build
+pnpm typecheck      # Next build-based typecheck into .next-typecheck
+pnpm typecheck:all  # root typecheck + packages/notion-data typecheck
+```
 
-7. Add Fetching Logic
-You can copy and adapt the existing fetching logic (e.g., from getPartners or getEvents) for the new table.
+CI currently runs `pnpm verify` on pull requests to `main`.
 
-8. Deployment (e.g., Vercel)
-When deploying, make sure the updated .env variables are added to Vercel.
-Vercel will handle the serverless backend and environment variables in production.
+## Environment
+
+The app reads these server-side environment variables:
+
+- `NOTION_TOKEN`
+- `NOTION_DB_ID`
+- `NOTION_TOKEN_PARTNERS`
+- `NOTION_DB_PARTNERS_ID`
+- `NOTION_TOKEN_RESEARCH`
+- `NOTION_DB_RESEARCH_ID`
+
+`packages/notion-data` reads `process.env` directly. It does not load `.env` files on its own, so local development should use `.env.local` or Vercel env pull. If the values are missing, the Notion fetchers return empty arrays instead of crashing.
+
+## How The App Is Structured
+
+- `src/app/` owns routing, route handlers, metadata wiring, and the root layout.
+- `src/views/` holds page-level composition.
+- `src/components/` holds reusable sections and shared UI primitives.
+- `src/data/` holds static copy and curated data arrays.
+- `src/lib/` holds utilities, redirects, security helpers, shared types, and cached Notion access.
+- `packages/notion-data/` is the only place that talks directly to Notion.
+
+Two pages currently fetch live Notion data on the server:
+
+- `/events`
+- `/research`
+
+Three API routes mirror the same cached data as JSON:
+
+- `/api/getNotes` (legacy name, returns events)
+- `/api/getPartners`
+- `/api/getResearch`
+
+## Editing Guide
+
+If you need to:
+
+- add or change a route: start in `src/app/`, then connect it to a view in `src/views/`
+- update static page copy: check `src/data/` first, then the matching component
+- change events or research rendering: update both the page view and the Notion-backed types/data path
+- change global nav, footer, or font setup: edit `src/app/layout.tsx`, `src/components/Header.tsx`, `src/components/Footer.tsx`
+- change shared styling or tokens: edit `src/styles/index.css`
+- change SEO or JSON-LD: edit `src/config/seo.ts`
+- change Notion field mapping: edit `packages/notion-data/src/index.ts`, then verify `src/lib/notion.ts` consumers still match
+
+One important legacy file remains:
+
+- `src/data/routes.tsx` is not runtime routing anymore. App Router files in `src/app/` are the source of truth.
+
+## Contributor Docs
+
+- [docs/repo-structure.md](docs/repo-structure.md): architecture and directory map
+- [docs/contributor-guide.md](docs/contributor-guide.md): practical recipes for common changes
+
+Brand source material is kept under `docs/brand/source/`.

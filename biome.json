@@ -3,11 +3,11 @@
   "vcs": {
     "enabled": false,
     "clientKind": "git",
-    "useIgnoreFile": false
+    "useIgnoreFile": true
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": ["**/tsconfig*.json"]
+    "ignore": ["**/tsconfig*.json", ".next*", "dist"]
   },
   "formatter": {
     "enabled": true,
@@ -22,7 +22,7 @@
     "rules": {
       "recommended": false
     },
-    "ignore": ["dist"]
+    "ignore": [".next*", "dist"]
   },
   "javascript": {
     "formatter": {
@@ -62,6 +62,7 @@
             "noUnusedImports": "warn",
             "noUnusedPrivateClassMembers": "error",
             "noUnusedVariables": "error",
+            "useJsxKeyInIterable": "error",
             "useIsNan": "error",
             "useValidForDirection": "error",
             "useYield": "error"

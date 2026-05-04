@@ -79,6 +79,11 @@ export const industryPartners = [
     alt: "janestreet",
   },
   {
+    href: "https://www.hudsonrivertrading.com/",
+    src: "/assets/partners_sponsors/hudson-river-trading.png",
+    alt: "Hudson River Trading",
+  },
+  {
     href: "https://www.bmw.com",
     src: "/assets/partners/project_partners/bmw-7.svg",
     alt: "BMW",

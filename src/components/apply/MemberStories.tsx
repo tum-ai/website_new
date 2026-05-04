@@ -16,8 +16,8 @@ export default function MemberStories({ stories }: MemberStoriesProps) {
     >
       <section className="container mx-auto px-8 md:px-0 max-w-4xl">
         <h1 className="text-title sm:text-2xl md:text-[2rem] text-primary mb-4 font-semibold animate-item">
-              Member Stories
-            </h1>
+          Member Stories
+        </h1>
         <div className="grid gap-8 md:grid-cols-2">
           {stories.map((story) => (
             <div
@@ -35,9 +35,7 @@ export default function MemberStories({ stories }: MemberStoriesProps) {
               <p className="text-subtext text-center text-text-gray mb-2">
                 {story.role}
               </p>
-              <p className="text-base text-black text-center">
-                {story.story}
-              </p>
+              <p className="text-base text-black text-center">{story.story}</p>
             </div>
           ))}
         </div>

@@ -44,8 +44,8 @@ export const Testimonials = () => {
             <p
               className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}
             >
-              "The E-Lab gave us the foundation to build Spherecast from idea
-              to YC. The community and mentorship were game-changing."
+              "The E-Lab gave us the foundation to build Spherecast from idea to
+              YC. The community and mentorship were game-changing."
             </p>
             <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
               <div className="w-8 h-8 flex items-center justify-center">
@@ -176,8 +176,8 @@ export const Testimonials = () => {
             <p
               className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}
             >
-              "The quality of founders coming out of E-Lab is exceptional.
-              We're proud to be part of this community."
+              "The quality of founders coming out of E-Lab is exceptional. We're
+              proud to be part of this community."
             </p>
             <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
               <div className="w-8 h-8 flex items-center justify-center">
@@ -264,8 +264,8 @@ export const Testimonials = () => {
             <p
               className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}
             >
-              "The E-Lab gave us the foundation to build Spherecast from idea
-              to YC. The community and mentorship were game-changing."
+              "The E-Lab gave us the foundation to build Spherecast from idea to
+              YC. The community and mentorship were game-changing."
             </p>
             <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
               <div className="w-8 h-8 flex items-center justify-center">
@@ -393,8 +393,8 @@ export const Testimonials = () => {
             <p
               className={`text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden`}
             >
-              "The quality of founders coming out of E-Lab is exceptional.
-              We're proud to be part of this community."
+              "The quality of founders coming out of E-Lab is exceptional. We're
+              proud to be part of this community."
             </p>
             <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
               <div className="w-8 h-8 flex items-center justify-center">

@@ -1,0 +1,101 @@
+import MemberStories from "@/components/apply/MemberStories";
+import {
+  JourneySection,
+  iconColors as departmentColors,
+} from "@/components/community/JourneySection";
+import { Card } from "@/components/ui/card";
+import { stories } from "@/data/apply/applyData";
+import { type Department, departments } from "@/data/community";
+import {
+  Building2,
+  Code,
+  Handshake,
+  Megaphone,
+  Rocket,
+  Scale,
+  Users,
+} from "lucide-react";
+
+const departmentIcons = {
+  Building2,
+  Code,
+  Handshake,
+  Megaphone,
+  Rocket,
+  Scale,
+  Users,
+} as const;
+
+const DepartmentCard = ({
+  department,
+  index,
+}: {
+  department: Department;
+  index: number;
+}) => {
+  const Icon = departmentIcons[department.icon as keyof typeof departmentIcons];
+
+  return (
+    <div className="motion-safe:animate-fade-in">
+      <Card className="brand-panel relative h-full overflow-hidden rounded-3xl border border-white/10 p-8 text-white shadow-2xl shadow-black">
+        <div className="brand-panel-glow absolute inset-0 z-0 opacity-40"></div>
+        <div className="relative z-10 mb-5 flex items-center gap-4">
+          {Icon && (
+            <div
+              className="brand-icon-badge flex h-10 w-10 items-center justify-center rounded-lg transition-colors"
+              style={{
+                color: departmentColors[index % departmentColors.length],
+              }}
+            >
+              <Icon className="h-5 w-5" />
+            </div>
+          )}
+          <h3 className="text-2xl font-semibold tracking-tight">
+            {department.name}
+          </h3>
+        </div>
+        <p className="relative z-10 leading-relaxed text-white/80">
+          {department.description}
+        </p>
+      </Card>
+    </div>
+  );
+};
+
+const DepartmentsSection = () => (
+  <div className="relative mx-auto max-w-7xl px-16 sm:px-6 py-16">
+    <div className="mb-20 text-center">
+      <h2 className="text-4xl font-semibold tracking-tight md:text-5xl">
+        Our Core Departments
+      </h2>
+      <p className="mx-auto mt-4 max-w-2xl text-base text-white/80 md:text-lg">
+        Discover the diverse teams that make TUM.ai thrive. Each department
+        plays a crucial role in our mission to shape the future of AI.
+      </p>
+    </div>
+    <div className="grid auto-rows-fr grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+      {departments.map((dept, index) => (
+        <DepartmentCard key={dept.name} department={dept} index={index} />
+      ))}
+    </div>
+  </div>
+);
+
+export default function Community() {
+  return (
+    <>
+      <div className="pointer-events-none fixed inset-0 z-[-1] overflow-hidden">
+        <div className="bg-grid-slate-100 absolute top-0 left-0 h-full w-full opacity-5 [mask-image:linear-gradient(0deg,transparent,white)]" />
+        <div className="absolute top-48 right-10 h-[15vw] max-h-72 w-[15vw] max-w-72 rounded-full bg-primary opacity-10 blur-[clamp(40px,5vw,100px)]" />
+        <div className="absolute top-96 left-10 h-[20vw] max-h-96 w-[20vw] max-w-96 rounded-full bg-dark-purple opacity-12 blur-[clamp(50px,6vw,120px)]" />
+        <div className="absolute right-48 bottom-48 h-[15vw] max-h-64 w-[15vw] max-w-64 rounded-full bg-lavender-tint opacity-8 blur-[clamp(30px,4vw,80px)]" />
+      </div>
+
+      <section className="brand-page-shell relative overflow-hidden text-white">
+        <JourneySection />
+        <DepartmentsSection />
+        <MemberStories stories={stories} />
+      </section>
+    </>
+  );
+}

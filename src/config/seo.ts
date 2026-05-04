@@ -1,3 +1,9 @@
+import { registeredOfficePostalAddress } from "@/config/contact";
+import type { Metadata } from "next";
+
+const siteUrl = "https://www.tum-ai.com";
+const socialImagePath = "/assets/logo_new_white_standard.png";
+
 // Base organization JSON-LD (used across all pages)
 export const baseOrganizationJsonLd = {
   "@context": "https://schema.org",
@@ -38,10 +44,7 @@ export const baseOrganizationJsonLd = {
     },
     {
       "@type": "PostalAddress",
-      streetAddress: "Arcisstraße 21",
-      postalCode: "80333",
-      addressLocality: "Munich",
-      addressCountry: "Germany",
+      ...registeredOfficePostalAddress,
       contactType: "Registered office",
     },
   ],
@@ -119,17 +122,18 @@ export const pageSEOConfig = {
   },
 
   projects: {
-    title: "Innovation Projects",
+    title: "Task Forces and Projects",
     description:
-      "Discover TUM.ai's innovation departments and the exciting projects they are working on.",
+      "Discover TUM.ai's current task forces and the research, education, and community initiatives they are driving.",
     canonical: "https://www.tum-ai.com/projects",
     jsonLd: [
       baseOrganizationJsonLd,
       {
         "@context": "https://schema.org",
         "@type": "WebPage",
-        name: "TUM.ai Innovation Projects",
-        description: "Innovation Departments and Projects by TUM.ai",
+        name: "TUM.ai Task Forces and Projects",
+        description:
+          "Current task forces and projects across research, education, and community at TUM.ai.",
         url: "https://www.tum-ai.com/projects",
       },
     ],
@@ -261,6 +265,24 @@ export const pageSEOConfig = {
       },
     ],
   },
+
+  disclaimer: {
+    title: "Disclaimer",
+    description:
+      "Read the legal disclaimer for TUM.ai and the information published on this website.",
+    canonical: "https://www.tum-ai.com/disclaimer",
+    jsonLd: [
+      baseOrganizationJsonLd,
+      {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        name: "TUM.ai Disclaimer",
+        description: "Legal disclaimer for TUM.ai",
+        url: "https://www.tum-ai.com/disclaimer",
+        publisher: baseOrganizationJsonLd,
+      },
+    ],
+  },
 };
 
 // Helper function to get SEO config for a page
@@ -270,3 +292,47 @@ export const getSEOConfig = (pageKey: keyof typeof pageSEOConfig) => {
     ...pageSEOConfig[pageKey],
   };
 };
+
+export type SEOPageKey = keyof typeof pageSEOConfig;
+
+export function buildMetadata(pageKey: SEOPageKey): Metadata {
+  const seo = getSEOConfig(pageKey);
+
+  return {
+    title: seo.title,
+    description: seo.description,
+    robots: {
+      index: true,
+      follow: true,
+    },
+    alternates: seo.canonical
+      ? {
+          canonical: seo.canonical,
+        }
+      : undefined,
+    openGraph: {
+      title: seo.title,
+      description: seo.description,
+      url: seo.canonical ?? siteUrl,
+      siteName: "TUM.ai",
+      locale: "en_US",
+      type: "website",
+      images: [
+        {
+          url: socialImagePath,
+          alt: "TUM.ai logo",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: seo.title,
+      description: seo.description,
+      images: [socialImagePath],
+    },
+  };
+}
+
+export function getJsonLd(pageKey: SEOPageKey) {
+  return getSEOConfig(pageKey).jsonLd ?? [];
+}

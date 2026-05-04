@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import Link from "next/link";
 import { Button } from "../ui/button";
 
 type CardProps = {
@@ -18,14 +18,14 @@ const Card = ({ text, title, desc, buttonText, link }: CardProps) => {
           <span className="gradient-text">{title}</span>
         </h1>
         <p className="md:text-2xl">{desc}</p>
-        <NavLink to={link}>
+        <Link href={link}>
           <Button
             variant="primary"
             className="!p-4 md:!text-2xl w-full md:h-[4rem]"
           >
             {buttonText}
           </Button>
-        </NavLink>
+        </Link>
       </div>
     </div>
   );
