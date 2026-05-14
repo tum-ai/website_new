@@ -1,9 +1,11 @@
 import JsonLd from "@/components/JsonLd";
+import { ELabApplicationCta } from "@/components/e-lab/ApplicationCta";
 import { ExpectationELab } from "@/components/e-lab/ExpectationELab";
 import { NotableStartups } from "@/components/e-lab/NotableStartups";
 import { Testimonials } from "@/components/e-lab/Testimonials";
 import { Timeline } from "@/components/e-lab/TimeLine";
 import FAQ from "@/components/ui/FAQ";
+import { eLabApplicationCopy, eLabConfig } from "@/config/e-lab";
 import { faq } from "@/data/e-lab/FAQ";
 import type { Organization, WithContext } from "schema-dts";
 import { Hero } from "./hero";
@@ -93,61 +95,28 @@ export default function ELab() {
                       className={`mb-5 text-3xl md:text-4xl font-bold text-black`}
                     >
                       <style></style>
-                      Application for E-Lab 5.0 is open!
+                      {eLabApplicationCopy.cardHeading}
                     </h2>
 
                     <p
                       className={`mx-auto mb-10 max-w-2xl text-base leading-relaxed text-slate-700`}
                     >
-                      Secure your spot in one of Europe’s leading AI incubators
-                      and join a network of top founders, mentors, and
-                      investors.
+                      {eLabApplicationCopy.cardDescription}
                     </p>
 
                     <div className="flex justify-center">
                       <div className="relative">
-                        {/* Radiating glow effect - always visible */}
-                        <div className="absolute -inset-2 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg opacity-50 blur-xl"></div>
+                        {eLabConfig.applicationsOpen ? (
+                          <div className="absolute -inset-2 rounded-lg bg-gradient-to-r from-[#9A64D9] to-[#523573] opacity-45 blur-xl" />
+                        ) : null}
 
-                        {/* Sparkling effects - always visible */}
-
-                        <a
-                          href="https://tally.so/r/44KJYb"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={
-                            `group relative inline-flex items-center justify-center overflow-hidden rounded-2xl px-6 py-3 text-base font-semibold text-white shadow-xl 
-                          bg-[linear-gradient(135deg,#7C3AED_0%,#A855F7_33%,#EC4899_66%,#6366F1_100%)] bg-[length:200%_200%] bg-[position:0%_50%] 
-                          `
-                            // hover:bg-[position:100%_50%]
-                            // transition-[background-position,transform] duration-500 ease-out hover:scale-[1.02]
-                          }
+                        <ELabApplicationCta
+                          className="inline-flex items-center justify-center rounded-2xl px-6 py-3 text-base font-semibold transition-colors duration-200 ease-out"
+                          openClassName="bg-[#9A64D9] text-white shadow-xl shadow-[#9A64D9]/25 hover:bg-[#523573]"
+                          closedClassName="bg-[#523573] text-[#F5EFFF] ring-1 ring-[#9A64D9]/25 shadow-lg shadow-[#1B0049]/15"
                         >
-                          {/* Soft glow behind button */}
-                          <div className="pointer-events-none absolute -inset-x-8 -bottom-6 h-16 rounded-full bg-gradient-to-r from-purple-500/40 via-fuchsia-500/40 to-indigo-500/40 blur-2xl"></div>
-                          {/* Border and shine */}
-                          <div className="absolute inset-0 rounded-2xl ring-1 ring-white/30"></div>
-                          <div
-                            className="absolute inset-0 rounded-2xl bg-[radial-gradient(ellipse_at_top_left,_rgba(255,255,255,0.35),_transparent_60%)] opacity-0"
-                            // transition-opacity duration-300 group-hover:opacity-100"
-                          ></div>
-                          <span className="relative z-10 flex items-center gap-2">
-                            <span>Apply Now!</span>
-                            {/* <svg */}
-                            {/*   className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" */}
-                            {/*   fill="none" */}
-                            {/*   viewBox="0 0 24 24" */}
-                            {/*   stroke="currentColor" */}
-                            {/* > */}
-                            {/*   <path */}
-                            {/*     strokeLinecap="round" */}
-                            {/*     strokeLinejoin="round" */}
-                            {/*     strokeWidth={2} */}
-                            {/*     d="M14 5l7 7m0 0l-7 7m7-7H3" */}
-                            {/*   /> */}
-                            {/* </svg> */}
-                          </span>
-                        </a>
+                          {eLabApplicationCopy.cardCtaLabel}
+                        </ELabApplicationCta>
                       </div>
                     </div>
                   </div>
