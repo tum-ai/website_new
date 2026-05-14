@@ -91,7 +91,7 @@ export default function Research({
       value: "exchange",
       label: "Research Exchange Program",
       content: (
-        <div className="mx-auto max-w-4xl space-y-6 rounded-lg bg-black/25 p-6 text-center md:p-10">
+        <div className="mx-auto max-w-4xl space-y-6 rounded-lg bg-black/25 p-6 md:p-10">
           <h2 className="text-3xl font-bold tracking-[-0.03em] text-white">
             Research Exchange (REX) Program
           </h2>
@@ -199,7 +199,7 @@ export default function Research({
                       className={
                         "w-full rounded-full !px-5 !py-2.5 text-center text-sm font-semibold transition-[background-color,color,box-shadow] focus:!outline-none focus-visible:ring-2 focus-visible:ring-primary/60 sm:w-auto " +
                         (selected
-                          ? "!bg-white !text-dark-indigo shadow-sm hover:!bg-lavender-tint"
+                          ? "!bg-primary text-white shadow-sm hover:!bg-dark-purple"
                           : "!bg-transparent text-white/62 hover:!bg-white/8 hover:text-white")
                       }
                     >
