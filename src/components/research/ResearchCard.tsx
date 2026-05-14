@@ -22,6 +22,36 @@ type ResearchCardProps = {
   keywords?: string;
 };
 
+function getCollaboratorName(title: string) {
+  const lead = title.trim().split(":")[0]?.trim() || title.trim();
+
+  if (/^IBM\b/i.test(lead)) {
+    return "IBM";
+  }
+
+  if (/^MIT\b/i.test(lead)) {
+    return "MIT";
+  }
+
+  if (/^TUM\b/i.test(lead)) {
+    return "TUM";
+  }
+
+  if (/^LMU\b/i.test(lead)) {
+    return "LMU";
+  }
+
+  if (/Helmholtz/i.test(lead)) {
+    return "Helmholtz";
+  }
+
+  if (/University of Cambridge/i.test(lead)) {
+    return "University of Cambridge";
+  }
+
+  return lead.split(",")[0]?.trim() || lead;
+}
+
 export default function ResearchCard({
   title,
   description,
@@ -33,6 +63,7 @@ export default function ResearchCard({
   const [isOpen, setIsOpen] = useState(false);
   const [imageUnavailable, setImageUnavailable] = useState(!image);
   const hasImage = !imageUnavailable;
+  const collaboratorName = getCollaboratorName(title);
   const titleColorClass = hasImage
     ? "text-black drop-shadow-[0_1px_14px_rgb(255_255_255/0.35)]"
     : "text-white";
@@ -76,7 +107,7 @@ export default function ResearchCard({
             <h3
               className={`max-w-[16rem] text-3xl font-bold leading-none tracking-[-0.04em] md:text-4xl ${titleColorClass}`}
             >
-              {title}
+              {collaboratorName}
             </h3>
           </div>
 
