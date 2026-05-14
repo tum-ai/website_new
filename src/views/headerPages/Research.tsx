@@ -91,7 +91,7 @@ export default function Research({
       value: "exchange",
       label: "Research Exchange Program",
       content: (
-        <div className="max-w-4xl space-y-6 rounded-lg bg-black/25 p-6 md:p-8">
+        <div className="mx-auto max-w-4xl space-y-6 rounded-lg bg-black/25 p-6 text-center md:p-10">
           <h2 className="text-3xl font-bold tracking-[-0.03em] text-white">
             Research Exchange (REX) Program
           </h2>
@@ -179,7 +179,7 @@ export default function Research({
               <div
                 role="tablist"
                 aria-label="Research tabs"
-                className="mb-16 flex flex-col gap-2 sm:flex-row"
+                className="mb-16 inline-flex w-full rounded-full border border-white/10 bg-white/[0.04] p-1.5 shadow-2xl shadow-black/20 backdrop-blur-sm sm:w-auto"
               >
                 {tabs.map((tab, index) => {
                   const selected = activeTab === tab.value;
@@ -197,10 +197,10 @@ export default function Research({
                       onClick={() => setActiveTab(tab.value)}
                       onKeyDown={(event) => handleKeyDown(event, index)}
                       className={
-                        "w-full rounded-full !px-5 !py-2 text-center text-sm transition-colors focus:!outline-none focus-visible:ring-2 focus-visible:ring-primary/60 sm:w-auto " +
+                        "w-full rounded-full !px-5 !py-2.5 text-center text-sm font-semibold transition-[background-color,color,box-shadow] focus:!outline-none focus-visible:ring-2 focus-visible:ring-primary/60 sm:w-auto " +
                         (selected
-                          ? "!bg-primary text-white hover:!bg-dark-purple"
-                          : "!bg-white/5 text-white/70 hover:!bg-white/10 hover:text-white")
+                          ? "!bg-white !text-dark-indigo shadow-sm hover:!bg-lavender-tint"
+                          : "!bg-transparent text-white/62 hover:!bg-white/8 hover:text-white")
                       }
                     >
                       {tab.label}
