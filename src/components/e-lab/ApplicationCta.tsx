@@ -6,14 +6,20 @@ import { cn } from "@/lib/utils";
 type ELabApplicationCtaProps = {
   children: ReactNode;
   className: string;
-  disabledClassName?: string;
+  openClassName: string;
+  closedClassName: string;
 };
 
 export function ELabApplicationCta({
   children,
   className,
-  disabledClassName = "cursor-not-allowed opacity-90",
+  openClassName,
+  closedClassName,
 }: ELabApplicationCtaProps) {
+  const stateClassName = eLabConfig.applicationsOpen
+    ? openClassName
+    : closedClassName;
+
   if (eLabConfig.applicationsOpen) {
     return (
       <a
@@ -21,7 +27,7 @@ export function ELabApplicationCta({
         target="_blank"
         rel="noopener noreferrer"
         aria-label={eLabApplicationCopy.ariaLabel}
-        className={className}
+        className={cn(className, stateClassName)}
       >
         {children}
       </a>
@@ -29,13 +35,13 @@ export function ELabApplicationCta({
   }
 
   return (
-    <button
-      type="button"
-      disabled
+    <span
+      role="status"
+      aria-disabled="true"
       aria-label={eLabApplicationCopy.ariaLabel}
-      className={cn(className, disabledClassName)}
+      className={cn(className, "select-none", stateClassName)}
     >
       {children}
-    </button>
+    </span>
   );
 }

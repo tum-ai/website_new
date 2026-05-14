@@ -78,31 +78,12 @@ export const Hero = () => {
 
             {/* CTA Button */}
             <div className="pt-1">
-              <ELabApplicationCta className="group relative inline-flex items-center justify-center px-7 py-2 text-base font-normal text-white transition-all duration-300 ease-out">
-                <div
-                  className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-600 to-purple-500 shadow-lg shadow-purple-500/25 transition-all duration-300 "
-                  // group-hover:shadow-purple-500/40 group-hover:scale-105"
-                ></div>
-                <div
-                  className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 to-purple-400 opacity-0 transition-opacity duration-300 "
-                  // group-hover:opacity-100"
-                ></div>
-                <span className="relative flex items-center space-x-2">
-                  <span>{eLabApplicationCopy.heroCtaLabel}</span>
-                  {/* <svg */}
-                  {/*   className="w-4 h-4 transform transition-transform group-hover:translate-x-1" */}
-                  {/*   fill="none" */}
-                  {/*   stroke="currentColor" */}
-                  {/*   viewBox="0 0 24 24" */}
-                  {/* > */}
-                  {/*   <path */}
-                  {/*     strokeLinecap="round" */}
-                  {/*     strokeLinejoin="round" */}
-                  {/*     strokeWidth={2} */}
-                  {/*     d="M17 8l4 4m0 0l-4 4m4-4H3" */}
-                  {/*   /> */}
-                  {/* </svg> */}
-                </span>
+              <ELabApplicationCta
+                className="inline-flex items-center justify-center rounded-full px-7 py-2 text-base font-medium transition-colors duration-200 ease-out"
+                openClassName="bg-[#9A64D9] text-white shadow-lg shadow-[#9A64D9]/25 hover:bg-[#523573]"
+                closedClassName="bg-[#523573]/75 text-[#F5EFFF] ring-1 ring-[#9A64D9]/35 shadow-lg shadow-[#1B0049]/30"
+              >
+                {eLabApplicationCopy.heroCtaLabel}
               </ELabApplicationCta>
             </div>
           </div>
