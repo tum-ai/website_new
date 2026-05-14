@@ -179,7 +179,7 @@ export default function Research({
               <div
                 role="tablist"
                 aria-label="Research tabs"
-                className="mb-16 inline-flex w-full rounded-full border border-white/10 bg-white/[0.04] p-1.5 shadow-2xl shadow-black/20 backdrop-blur-sm sm:w-auto"
+                className="mb-16 inline-flex w-full rounded-full border border-white/10 bg-white/[0.04] p-1 shadow-2xl shadow-black/20 backdrop-blur-sm sm:w-auto"
               >
                 {tabs.map((tab, index) => {
                   const selected = activeTab === tab.value;
@@ -197,7 +197,7 @@ export default function Research({
                       onClick={() => setActiveTab(tab.value)}
                       onKeyDown={(event) => handleKeyDown(event, index)}
                       className={
-                        "w-full rounded-full !px-5 !py-2.5 text-center text-sm font-semibold transition-[background-color,color,box-shadow] focus:!outline-none focus-visible:ring-2 focus-visible:ring-primary/60 sm:w-auto " +
+                        "h-9 w-full !rounded-full !px-5 !py-0 text-center text-sm font-semibold transition-[background-color,color,box-shadow] focus:!outline-none focus-visible:ring-2 focus-visible:ring-primary/60 sm:w-auto " +
                         (selected
                           ? "!bg-primary text-white shadow-sm hover:!bg-dark-purple"
                           : "!bg-transparent text-white/62 hover:!bg-white/8 hover:text-white")
