@@ -5,7 +5,7 @@ import { NotableStartups } from "@/components/e-lab/NotableStartups";
 import { Testimonials } from "@/components/e-lab/Testimonials";
 import { Timeline } from "@/components/e-lab/TimeLine";
 import FAQ from "@/components/ui/FAQ";
-import { eLabApplicationCopy } from "@/config/e-lab";
+import { eLabApplicationCopy, eLabConfig } from "@/config/e-lab";
 import { faq } from "@/data/e-lab/FAQ";
 import type { Organization, WithContext } from "schema-dts";
 import { Hero } from "./hero";
@@ -106,10 +106,9 @@ export default function ELab() {
 
                     <div className="flex justify-center">
                       <div className="relative">
-                        {/* Radiating glow effect - always visible */}
-                        <div className="absolute -inset-2 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg opacity-50 blur-xl"></div>
-
-                        {/* Sparkling effects - always visible */}
+                        {eLabConfig.applicationsOpen ? (
+                          <div className="absolute -inset-2 rounded-lg bg-gradient-to-r from-[#9A64D9] to-[#523573] opacity-45 blur-xl" />
+                        ) : null}
 
                         <ELabApplicationCta
                           className="inline-flex items-center justify-center rounded-2xl px-6 py-3 text-base font-semibold transition-colors duration-200 ease-out"
