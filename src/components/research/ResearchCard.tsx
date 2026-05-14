@@ -32,6 +32,13 @@ export default function ResearchCard({
   const publicationUrl = getSafeExternalUrl(publication);
   const [isOpen, setIsOpen] = useState(false);
   const [imageUnavailable, setImageUnavailable] = useState(!image);
+  const hasImage = !imageUnavailable;
+  const titleColorClass = hasImage
+    ? "text-black drop-shadow-[0_1px_14px_rgb(255_255_255/0.35)]"
+    : "text-white";
+  const titleOverlayClass = hasImage
+    ? "bg-gradient-to-b from-white/70 via-white/20 to-transparent"
+    : "bg-gradient-to-b from-black/55 via-black/10 to-black/10";
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -63,10 +70,12 @@ export default function ResearchCard({
             </div>
           )}
 
-          <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/10 to-black/10" />
+          <div className={`absolute inset-0 ${titleOverlayClass}`} />
 
           <div className="absolute inset-x-0 top-0 p-6 md:p-7">
-            <h3 className="max-w-[16rem] text-3xl font-bold leading-none tracking-[-0.04em] text-white md:text-4xl">
+            <h3
+              className={`max-w-[16rem] text-3xl font-bold leading-none tracking-[-0.04em] md:text-4xl ${titleColorClass}`}
+            >
               {title}
             </h3>
           </div>
