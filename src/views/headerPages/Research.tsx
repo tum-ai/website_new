@@ -162,7 +162,7 @@ export default function Research({
   };
 
   return (
-    <section className="brand-page-shell relative overflow-hidden px-5 pt-32 pb-24 text-white sm:px-8">
+    <section className="brand-page-shell relative min-h-screen overflow-hidden px-5 pt-32 pb-24 text-white sm:px-8">
       <Layout>
         <div className="mx-auto max-w-7xl">
           <div className="mb-10 max-w-3xl">
