@@ -1,9 +1,11 @@
 import JsonLd from "@/components/JsonLd";
+import { ELabApplicationCta } from "@/components/e-lab/ApplicationCta";
 import { ExpectationELab } from "@/components/e-lab/ExpectationELab";
 import { NotableStartups } from "@/components/e-lab/NotableStartups";
 import { Testimonials } from "@/components/e-lab/Testimonials";
 import { Timeline } from "@/components/e-lab/TimeLine";
 import FAQ from "@/components/ui/FAQ";
+import { eLabApplicationCopy } from "@/config/e-lab";
 import { faq } from "@/data/e-lab/FAQ";
 import type { Organization, WithContext } from "schema-dts";
 import { Hero } from "./hero";
@@ -93,15 +95,13 @@ export default function ELab() {
                       className={`mb-5 text-3xl md:text-4xl font-bold text-black`}
                     >
                       <style></style>
-                      Application for E-Lab 5.0 is open!
+                      {eLabApplicationCopy.cardHeading}
                     </h2>
 
                     <p
                       className={`mx-auto mb-10 max-w-2xl text-base leading-relaxed text-slate-700`}
                     >
-                      Secure your spot in one of Europe’s leading AI incubators
-                      and join a network of top founders, mentors, and
-                      investors.
+                      {eLabApplicationCopy.cardDescription}
                     </p>
 
                     <div className="flex justify-center">
@@ -111,17 +111,10 @@ export default function ELab() {
 
                         {/* Sparkling effects - always visible */}
 
-                        <a
-                          href="https://tally.so/r/44KJYb"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={
-                            `group relative inline-flex items-center justify-center overflow-hidden rounded-2xl px-6 py-3 text-base font-semibold text-white shadow-xl 
+                        <ELabApplicationCta
+                          className={`group relative inline-flex items-center justify-center overflow-hidden rounded-2xl px-6 py-3 text-base font-semibold text-white shadow-xl 
                           bg-[linear-gradient(135deg,#7C3AED_0%,#A855F7_33%,#EC4899_66%,#6366F1_100%)] bg-[length:200%_200%] bg-[position:0%_50%] 
-                          `
-                            // hover:bg-[position:100%_50%]
-                            // transition-[background-position,transform] duration-500 ease-out hover:scale-[1.02]
-                          }
+                          `}
                         >
                           {/* Soft glow behind button */}
                           <div className="pointer-events-none absolute -inset-x-8 -bottom-6 h-16 rounded-full bg-gradient-to-r from-purple-500/40 via-fuchsia-500/40 to-indigo-500/40 blur-2xl"></div>
@@ -132,7 +125,7 @@ export default function ELab() {
                             // transition-opacity duration-300 group-hover:opacity-100"
                           ></div>
                           <span className="relative z-10 flex items-center gap-2">
-                            <span>Apply Now!</span>
+                            <span>{eLabApplicationCopy.cardCtaLabel}</span>
                             {/* <svg */}
                             {/*   className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" */}
                             {/*   fill="none" */}
@@ -147,7 +140,7 @@ export default function ELab() {
                             {/*   /> */}
                             {/* </svg> */}
                           </span>
-                        </a>
+                        </ELabApplicationCta>
                       </div>
                     </div>
                   </div>
