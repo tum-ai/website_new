@@ -32,26 +32,31 @@ export default function Research({
       value: "projects",
       label: "Projects",
       content: (
-        <div>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {ongoingProjects.map((project) => (
-              <ResearchCard
-                key={project.title}
-                title={project.title}
-                description={project.description}
-                image={project.image}
-                publication={project.publication}
-                keywords={project.keywords}
-              />
-            ))}
+        <div className="space-y-14">
+          <div>
+            <h2 className="mb-6 text-2xl font-bold tracking-[-0.03em] text-white md:text-3xl">
+              Ongoing Projects
+            </h2>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:gap-6">
+              {ongoingProjects.map((project) => (
+                <ResearchCard
+                  key={project.title}
+                  title={project.title}
+                  description={project.description}
+                  image={project.image}
+                  publication={project.publication}
+                  keywords={project.keywords}
+                />
+              ))}
+            </div>
           </div>
 
           {pastProjects.length > 0 && (
-            <>
-              <h1 className="text-title sm:text-2xl mt-10 mb-4 text-white text-center md:text-[2rem] font-semibold animate-item">
+            <div>
+              <h2 className="mb-6 text-2xl font-bold tracking-[-0.03em] text-white md:text-3xl">
                 Past Projects
-              </h1>
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              </h2>
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:gap-6">
                 {pastProjects.map((project) => (
                   <ResearchCard
                     key={project.title}
@@ -63,17 +68,17 @@ export default function Research({
                   />
                 ))}
               </div>
-            </>
+            </div>
           )}
 
           {Array.isArray(researchPartners) && researchPartners.length > 0 && (
-            <div className="mt-12">
-              <h1 className="text-title sm:text-2xl mt-10 mb-4 text-white text-center md:text-[2rem] font-semibold animate-item">
+            <div>
+              <h2 className="mb-6 text-2xl font-bold tracking-[-0.03em] text-white md:text-3xl">
                 Collaborators
-              </h1>
+              </h2>
 
-              <Card>
-                <CardContent className="px-0 bg-minimal-gray">
+              <Card className="overflow-hidden border-white/10 bg-white/5">
+                <CardContent className="bg-minimal-gray px-0">
                   <Logos logos={researchPartners} />
                 </CardContent>
               </Card>
@@ -86,12 +91,12 @@ export default function Research({
       value: "exchange",
       label: "Research Exchange Program",
       content: (
-        <div className="space-y-6">
-          <h2 className="text-3xl font-bold tracking-tight text-center text-white">
+        <div className="mx-auto max-w-4xl space-y-6 rounded-lg bg-black/25 p-6 md:p-10">
+          <h2 className="text-3xl font-bold tracking-[-0.03em] text-white">
             Research Exchange (REX) Program
           </h2>
 
-          <p className="text-lg leading-relaxed text-gray-200">
+          <p className="text-lg leading-relaxed text-white/70">
             Our Research Exchange (REX) Program provides TUM.ai members with
             opportunities to conduct research abroad. Offers range from final
             theses to research internships with leading labs at institutions
@@ -103,7 +108,7 @@ export default function Research({
             or <span className="font-semibold text-white">INRIA</span>.
           </p>
 
-          <p className="text-lg leading-relaxed text-gray-200">
+          <p className="text-lg leading-relaxed text-white/70">
             We collect project proposals from our partners, inform members about
             the requirements and usual processes, preselect applicants based on
             prior relevant (research) experience, recommend them to our partner
@@ -111,7 +116,7 @@ export default function Research({
             experience in visa processes, housing, etc.
           </p>
 
-          <p className="text-lg leading-relaxed text-gray-200">
+          <p className="text-lg leading-relaxed text-white/70">
             REX was launched based on the observation that members were already
             conducting research abroad and recommending others to follow in
             their footsteps. It is therefore a testament to our tight-knit
@@ -157,24 +162,24 @@ export default function Research({
   };
 
   return (
-    <section className="relative pt-32 pb-16 px-8 bg-gradient-to-br from-black via-black to-[#291a39]">
+    <section className="brand-page-shell relative min-h-screen overflow-hidden px-5 pt-32 pb-24 text-white sm:px-8">
       <Layout>
-        <div className="min-h-screen">
-          <div className="mb-4 flex flex-col items-center gap-4 px-6 text-center">
-            <h1 className="text-4xl font-bold text-white md:text-5xl">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-10 max-w-3xl">
+            <h1 className="text-4xl font-bold tracking-[-0.04em] text-white md:text-6xl">
               Research
             </h1>
-            <p className="mx-auto max-w-2xl text-lg text-gray-200">
+            <p className="mt-5 max-w-2xl text-base leading-7 text-white/68 md:text-lg">
               Our research offerings - from projects to exchange programs
             </p>
           </div>
 
           {tabs.length > 1 ? (
-            <div className="w-full px-6 md:px-12">
+            <>
               <div
                 role="tablist"
                 aria-label="Research tabs"
-                className="mb-4 flex flex-col items-center justify-center gap-2 sm:flex-row"
+                className="mb-16 inline-flex w-full rounded-full border border-white/10 bg-white/[0.04] p-1 shadow-2xl shadow-black/20 backdrop-blur-sm sm:w-auto"
               >
                 {tabs.map((tab, index) => {
                   const selected = activeTab === tab.value;
@@ -192,10 +197,10 @@ export default function Research({
                       onClick={() => setActiveTab(tab.value)}
                       onKeyDown={(event) => handleKeyDown(event, index)}
                       className={
-                        "w-full rounded-md text-center text-sm transition-colors sm:w-auto " +
+                        "h-9 w-full !rounded-full !px-5 !py-0 text-center text-sm font-semibold transition-[background-color,color,box-shadow] focus:!outline-none focus-visible:ring-2 focus-visible:ring-primary/60 sm:w-auto " +
                         (selected
-                          ? "bg-white/10 text-white shadow-inner ring-1 ring-white/20"
-                          : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white")
+                          ? "!bg-primary text-white shadow-sm hover:!bg-dark-purple"
+                          : "!bg-transparent text-white/62 hover:!bg-white/8 hover:text-white")
                       }
                     >
                       {tab.label}
@@ -203,11 +208,7 @@ export default function Research({
                   );
                 })}
               </div>
-              {activeTab === "projects" && (
-                <h1 className="text-title sm:text-2xl mt-10 text-white text-center md:text-[2rem] font-semibold animate-item">
-                  Ongoing Projects
-                </h1>
-              )}
+
               {tabs.map((tab) => (
                 <div
                   key={tab.value}
@@ -215,12 +216,11 @@ export default function Research({
                   id={`panel-${tab.value}`}
                   aria-labelledby={`tab-${tab.value}`}
                   hidden={activeTab !== tab.value}
-                  className="mt-6"
                 >
                   {tab.content}
                 </div>
               ))}
-            </div>
+            </>
           ) : null}
         </div>
       </Layout>
