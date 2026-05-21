@@ -115,37 +115,10 @@ export default function ELab() {
                           href="https://tally.so/r/44KJYb"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className={
-                            `group relative inline-flex items-center justify-center overflow-hidden rounded-2xl px-6 py-3 text-base font-semibold text-white shadow-l 
-                          bg-gradient-to-r from-primary to-dark-purple
-                          `
-                            // hover:bg-[position:100%_50%]
-                            // transition-[background-position,transform] duration-500 ease-out hover:scale-[1.02]
-                          }
+                          className="group relative inline-flex items-center justify-center overflow-hidden rounded-2xl px-6 py-3 text-base font-semibold text-minimal-gray/80 bg-dark-purple/40 border border-dark-purple/50 cursor-not-allowed pointer-events-none"
                         >
-                          {/* Soft glow behind button */}
-                          <div className="pointer-events-none absolute -inset-x-8 -bottom-6 h-16 rounded-full bg-primary blur-2xl"></div>
-                          {/* Border and shine */}
-                          <div className="absolute inset-0 rounded-2xl ring-1 ring-white/30"></div>
-                          <div
-                            className="absolute inset-0 rounded-2xl bg-[radial-gradient(ellipse_at_top_left,_rgba(255,255,255,0.35),_transparent_60%)] opacity-0"
-                            // transition-opacity duration-300 group-hover:opacity-100"
-                          ></div>
                           <span className="relative z-10 flex items-center gap-2">
-                            <span>Apply Now!</span>
-                            {/* <svg */}
-                            {/*   className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" */}
-                            {/*   fill="none" */}
-                            {/*   viewBox="0 0 24 24" */}
-                            {/*   stroke="currentColor" */}
-                            {/* > */}
-                            {/*   <path */}
-                            {/*     strokeLinecap="round" */}
-                            {/*     strokeLinejoin="round" */}
-                            {/*     strokeWidth={2} */}
-                            {/*     d="M14 5l7 7m0 0l-7 7m7-7H3" */}
-                            {/*   /> */}
-                            {/* </svg> */}
+                            <span>Applications Closed</span>
                           </span>
                         </a>
                       </div>
