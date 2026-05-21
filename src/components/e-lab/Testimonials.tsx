@@ -36,9 +36,7 @@ export const Testimonials = () => {
                 <p className={`text-sm text-text-gray truncate`}>
                   Co-Founder @ Spherecast
                 </p>
-                <p className={`text-xs text-primary font-medium`}>
-                  E-Lab 1.0
-                </p>
+                <p className={`text-xs text-primary font-medium`}>E-Lab 1.0</p>
               </div>
             </div>
             <p
@@ -80,9 +78,7 @@ export const Testimonials = () => {
                 <p className={`text-sm text-text-gray truncate`}>
                   Winner E-Lab 2.0
                 </p>
-                <p className={`text-xs text-primary font-medium`}>
-                  E-Lab 2.0
-                </p>
+                <p className={`text-xs text-primary font-medium`}>E-Lab 2.0</p>
               </div>
             </div>
             <p
@@ -124,9 +120,7 @@ export const Testimonials = () => {
                 <p className={`text-sm text-text-gray truncate`}>
                   Founder @ Stealth Startup
                 </p>
-                <p className={`text-xs text-primary font-medium`}>
-                  E-Lab 3.0
-                </p>
+                <p className={`text-xs text-primary font-medium`}>E-Lab 3.0</p>
               </div>
             </div>
             <p
@@ -212,9 +206,7 @@ export const Testimonials = () => {
                 <p className={`text-sm text-text-gray truncate`}>
                   Founder of Tenmin
                 </p>
-                <p className={`text-xs text-primary font-medium`}>
-                  E-Lab 3.0
-                </p>
+                <p className={`text-xs text-primary font-medium`}>E-Lab 3.0</p>
               </div>
             </div>
             <p
@@ -256,9 +248,7 @@ export const Testimonials = () => {
                 <p className={`text-sm text-text-gray truncate`}>
                   Co-Founder @ Spherecast
                 </p>
-                <p className={`text-xs text-primary font-medium`}>
-                  E-Lab 1.0
-                </p>
+                <p className={`text-xs text-primary font-medium`}>E-Lab 1.0</p>
               </div>
             </div>
             <p
@@ -299,9 +289,7 @@ export const Testimonials = () => {
                 <p className={`text-sm text-text-gray truncate`}>
                   Winner E-Lab 2.0
                 </p>
-                <p className={`text-xs text-primary font-medium`}>
-                  E-Lab 2.0
-                </p>
+                <p className={`text-xs text-primary font-medium`}>E-Lab 2.0</p>
               </div>
             </div>
             <p
@@ -342,9 +330,7 @@ export const Testimonials = () => {
                 <p className={`text-sm text-text-gray truncate`}>
                   Founder @ Stealth Startup
                 </p>
-                <p className={`text-xs text-primary font-medium`}>
-                  E-Lab 3.0
-                </p>
+                <p className={`text-xs text-primary font-medium`}>E-Lab 3.0</p>
               </div>
             </div>
             <p
@@ -429,9 +415,7 @@ export const Testimonials = () => {
                 <p className={`text-sm text-text-gray truncate`}>
                   Founder of Tenmin
                 </p>
-                <p className={`text-xs text-primary font-medium`}>
-                  E-Lab 3.0
-                </p>
+                <p className={`text-xs text-primary font-medium`}>E-Lab 3.0</p>
               </div>
             </div>
             <p
@@ -455,7 +439,7 @@ export const Testimonials = () => {
           </div>
         </div>
         <div className="mb-4">
-        { /* Placeholder so shadow does not get cut of */ }
+          {/* Placeholder so shadow does not get cut of */}
         </div>
       </div>
     </section>

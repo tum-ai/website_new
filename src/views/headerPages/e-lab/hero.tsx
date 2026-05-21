@@ -63,9 +63,7 @@ export const Hero = () => {
             <div className="max-w-2xl mx-auto space-y-2">
               <p className="text-lg md:text-xl text-minimal-gray leading-relaxed">
                 Build the next generation of{" "}
-                <span className="text-primary font-semibold">
-                  AI startups
-                </span>{" "}
+                <span className="text-primary font-semibold">AI startups</span>{" "}
                 in 12 weeks
               </p>
               <p className="text-base text-white/60">
