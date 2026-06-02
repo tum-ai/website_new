@@ -1,8 +1,11 @@
-import { getEvents } from "@/lib/notion";
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
+import { getSanityEvents } from '../../../lib/sanity';
 
 export async function GET() {
-  const events = await getEvents();
-
-  return NextResponse.json(events);
+  try {
+    const data = await getSanityEvents();
+    return NextResponse.json(data);
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to fetch events' }, { status: 500 });
+  }
 }

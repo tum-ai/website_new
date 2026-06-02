@@ -1,6 +1,6 @@
 import { researchType } from './research'
-// import { eventType } from './event' // You can create this one next
+import { eventType } from './event'
 
 export const schema = {
-  types: [researchType],
+  types: [researchType, eventType],
 }
