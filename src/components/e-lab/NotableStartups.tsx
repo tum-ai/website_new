@@ -1,8 +1,8 @@
 export const NotableStartups = () => {
   return (
-    <section className="py-12 sm:py-12 lg:py-16 bg-gray-50 w-full overflow-hidden">
+    <section className="py-12 sm:py-12 lg:py-16 bg-minimal-gray w-full overflow-hidden">
       <div className="max-w-6xl mx-auto text-center px-4">
-        <p className={`text-sm text-gray-500 mb-8 uppercase tracking-wider`}>
+        <p className={`text-sm text-text-gray mb-10 tracking-wider`}>
           Notable E-Lab Startups from previous iterations
         </p>
 

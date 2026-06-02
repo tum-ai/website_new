@@ -1,15 +1,13 @@
 import JsonLd from "@/components/JsonLd";
-import { ELabApplicationCta } from "@/components/e-lab/ApplicationCta";
 import { ExpectationELab } from "@/components/e-lab/ExpectationELab";
 import { NotableStartups } from "@/components/e-lab/NotableStartups";
 import { Testimonials } from "@/components/e-lab/Testimonials";
 import { Timeline } from "@/components/e-lab/TimeLine";
 import FAQ from "@/components/ui/FAQ";
-import { eLabApplicationCopy, eLabConfig } from "@/config/e-lab";
 import { faq } from "@/data/e-lab/FAQ";
 import type { Organization, WithContext } from "schema-dts";
 import { Hero } from "./hero";
-import "@/styles/elab-font.css";
+// import "@/styles/elab-font.css";
 
 export default function ELab() {
   const jsonLd: WithContext<Organization> = {
@@ -60,7 +58,7 @@ export default function ELab() {
 
       <Timeline />
 
-      <section className="relative overflow-hidden py-12 sm:py-12 lg:py-16 w-full bg-gradient-to-br from-purple-50 via-white to-blue-50">
+      <section className="relative overflow-hidden border-t border-b border-purple-100 py-12 sm:py-12 lg:py-16 w-full bg-gradient-to-br from-purple-50 via-white to-blue-50">
         {/* Decorative gradient blobs for depth */}
         <div className="pointer-events-none absolute -top-24 -left-24 h-72 w-72 rounded-full bg-gradient-to-br from-purple-400/40 to-fuchsia-400/30 blur-3xl"></div>
         <div className="pointer-events-none absolute -bottom-24 -right-16 h-80 w-80 rounded-full bg-gradient-to-br from-indigo-400/30 to-sky-400/30 blur-3xl"></div>
@@ -95,28 +93,34 @@ export default function ELab() {
                       className={`mb-5 text-3xl md:text-4xl font-bold text-black`}
                     >
                       <style></style>
-                      {eLabApplicationCopy.cardHeading}
+                      Application for E-Lab 5.0 is open!
                     </h2>
 
                     <p
-                      className={`mx-auto mb-10 max-w-2xl text-base leading-relaxed text-slate-700`}
+                      className={`mx-auto mb-10 max-w-2xl text-base leading-relaxed text-text-gray`}
                     >
-                      {eLabApplicationCopy.cardDescription}
+                      Secure your spot in one of Europe’s leading AI incubators
+                      and join a network of top founders, mentors, and
+                      investors.
                     </p>
 
                     <div className="flex justify-center">
                       <div className="relative">
-                        {eLabConfig.applicationsOpen ? (
-                          <div className="absolute -inset-2 rounded-lg bg-gradient-to-r from-[#9A64D9] to-[#523573] opacity-45 blur-xl" />
-                        ) : null}
+                        {/* Radiating glow effect - always visible */}
+                        <div className="absolute -inset-2 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg opacity-45 blur-xl"></div>
 
-                        <ELabApplicationCta
-                          className="inline-flex items-center justify-center rounded-2xl px-6 py-3 text-base font-semibold transition-colors duration-200 ease-out"
-                          openClassName="bg-[#9A64D9] text-white shadow-xl shadow-[#9A64D9]/25 hover:bg-[#523573]"
-                          closedClassName="bg-[#523573] text-[#F5EFFF] ring-1 ring-[#9A64D9]/25 shadow-lg shadow-[#1B0049]/15"
+                        {/* Sparkling effects - always visible */}
+
+                        <a
+                          href="https://tally.so/r/44KJYb"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group relative inline-flex items-center justify-center overflow-hidden rounded-2xl px-6 py-3 text-base font-semibold text-minimal-gray/80 bg-dark-purple/40 border border-dark-purple/50 cursor-not-allowed pointer-events-none"
                         >
-                          {eLabApplicationCopy.cardCtaLabel}
-                        </ELabApplicationCta>
+                          <span className="relative z-10 flex items-center gap-2">
+                            <span>Applications Closed</span>
+                          </span>
+                        </a>
                       </div>
                     </div>
                   </div>
