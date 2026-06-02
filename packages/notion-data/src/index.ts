@@ -19,6 +19,7 @@ export interface Partner {
   name: string;
   link?: string;
   image?: string;
+  category?: string;
 }
 
 export interface Research {

@@ -1,6 +1,6 @@
 import { createClient } from 'next-sanity';
 import { unstable_cache } from 'next/cache';
-import type { Event, Research } from './types';
+import type { Event, Research, Partner } from './types';
 
 export const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
@@ -46,5 +46,21 @@ export async function getSanityEvents(): Promise<Event[]> {
     async () => client.fetch(query),
     ["sanity-events"],
     { revalidate: 300, tags: ["events"] }
+  )();
+}
+
+export async function getSanityPartners(): Promise<Partner[]> {
+  const query = `*[_type == "partner"]{
+    "id": _id,
+    name,
+    link,
+    "image": image.asset->url,
+    category
+  }`;
+
+  return unstable_cache(
+    async () => client.fetch(query),
+    ["sanity-partners"],
+    { revalidate: 900, tags: ["partners"] }
   )();
 }
