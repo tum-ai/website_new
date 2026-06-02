@@ -9,8 +9,6 @@ This document explains how the repository is organized today and which layer own
 ├── docs/
 │   ├── brand/source/         original brand references
 │   └── *.md                  contributor-facing docs
-├── packages/
-│   └── notion-data/          shared Notion fetchers and row mappers
 ├── public/
 │   └── assets/               static images, logos, video, fonts
 ├── scripts/                  small Node helpers for repo workflows
@@ -18,28 +16,19 @@ This document explains how the repository is organized today and which layer own
 ├── test/                     Node regression tests
 ├── package.json              root scripts and app dependencies
 ├── next.config.ts            Next.js config
-├── pnpm-workspace.yaml       workspace definition
 └── vercel.json               deployment framework config
 ```
-
-## Workspace Model
-
-This repo is a small pnpm workspace, not an `apps/web` monorepo:
-
-- `@tumai/web` lives at the repository root
-- `@tumai/notion-data` lives in `packages/notion-data`
-
-The root app consumes `@tumai/notion-data` through `workspace:*`, and `next.config.ts` transpiles that package for the app build.
 
 ## Application Layers
 
 ```text
 src/
-├── app/         route entrypoints, API handlers, root layout
+├── app/         route entrypoints, API handlers, root layout, and embedded CMS (/studio)
 ├── components/  shared UI and page sections
 ├── config/      SEO and metadata configuration
-├── data/        static copy, FAQs, partner/logo datasets
-├── lib/         helpers, types, security, redirects, Notion cache wrapper
+├── data/        static copy and FAQs
+├── lib/         helpers, types, security, redirects, Sanity cache wrapper
+├── sanity/      CMS configuration and schemas
 ├── styles/      global Tailwind/CSS token layer
 ├── views/       page composition outside App Router files
 └── proxy.ts     host-based redirect logic
@@ -64,6 +53,7 @@ Current routes:
 - `/projects` -> `src/app/projects/page.tsx` -> `src/views/headerPages/Projects.tsx`
 - `/qanda` -> `src/app/qanda/page.tsx` -> `src/views/headerPages/QandA.tsx`
 - `/research` -> `src/app/research/page.tsx` -> `src/views/headerPages/Research.tsx`
+- `/studio` -> `src/app/studio/[[...tool]]/page.tsx` -> Embedded Sanity CMS
 - legal pages live under `src/app/imprint`, `src/app/data-privacy`, and `src/app/disclaimer`
 
 API handlers also live here:
@@ -111,7 +101,7 @@ Cross-page building blocks live at the top level:
 
 ### `src/data/`
 
-`src/data/` is the source of truth for content that is versioned in Git instead of coming from Notion.
+`src/data/` is the source of truth for content that is versioned in Git instead of coming from the CMS.
 
 Examples:
 
@@ -119,21 +109,20 @@ Examples:
 - `src/data/apply/` for apply content and FAQs
 - `src/data/e-lab/` for E-Lab content and startup lists
 - `src/data/community.tsx` for community copy
-- `src/data/partners.tsx` for partner/logo groupings
 - `src/data/qanda.tsx` for FAQ content
 
-Use `src/data/` when content is:
+### `src/sanity/`
 
-- static
-- reviewed in code
-- deployed with the app
-- not expected to be edited from Notion
+`src/sanity/` is the source of truth for dynamic content structure.
+
+- `sanity.config.ts`: Main Studio configuration file.
+- `schemas/`: Contains the TypeScript definitions for database models (e.g., `event.ts`, `partner.ts`, `research.ts`).
 
 ### `src/lib/`
 
 `src/lib/` contains shared runtime helpers:
 
-- `notion.ts` wraps Notion fetchers in `unstable_cache`
+- `sanity.ts` contains the Sanity client and GROQ queries wrapped in `unstable_cache`
 - `types.ts` re-exports shared data types and local UI types
 - `utils.ts` contains event filtering/grouping helpers and class merging
 - `security.ts` sanitizes URLs and JSON-LD output
@@ -158,13 +147,14 @@ If a contributor only edits `src/app/globals.css`, they will miss most of the ac
 
 ## Live Data Flow
 
-Notion-backed data currently follows this path:
+Sanity-backed data currently follows this path:
 
-1. `packages/notion-data/src/index.ts` talks to the Notion API and maps raw database rows into `Event`, `Partner`, and `Research`.
-2. `src/lib/notion.ts` wraps those fetchers in `unstable_cache`, with the current database IDs included in the cache key.
+1. `src/lib/sanity.ts` defines GROQ queries to fetch data from the Sanity API.
+2. The fetchers in `src/lib/sanity.ts` wrap the client calls in Next.js `unstable_cache`.
 3. server routes consume those helpers directly:
-   - `/events` uses `getEvents()`
-   - `/research` uses `getResearchProjects()`
+   - `/events` uses `getSanityEvents()`
+   - `/research` uses `getSanityResearchProjects()`
+   - `/partners` uses `getSanityPartners()`
 4. API handlers return the same cached data as JSON for compatibility:
    - `/api/getNotes`
    - `/api/getPartners`
@@ -172,16 +162,14 @@ Notion-backed data currently follows this path:
 
 Important contributor note:
 
-- the page routes fetch from `src/lib/notion.ts` directly
+- the page routes fetch from `src/lib/sanity.ts` directly
 - changing an API handler alone will not change page behavior unless the page actually consumes that handler
-- `packages/notion-data` reads `process.env` only; it does not load dotenv files itself
 
 ## Tests
 
 The test suite is intentionally small and regression-focused:
 
 - `test/next-migration.test.ts` verifies host redirects
-- `test/notion-data.test.ts` verifies Notion row normalization
 - `test/security.test.ts` verifies URL and JSON-LD safety helpers
 - `test/tailwind-build.test.ts` verifies a build emits expected CSS utilities
 - `test/workspace-scripts.test.ts` verifies script and dist-dir invariants
@@ -200,15 +188,6 @@ Notable behavior:
 - on Vercel, the helper leaves `NEXT_DIST_DIR` unset so the platform can use its default behavior
 
 This repo intentionally isolates local Next output directories so different workflows do not collide.
-
-## CI
-
-GitHub Actions currently runs a single workflow on pull requests to `main`:
-
-- install with pnpm 10.18.2 and Node 20
-- run `pnpm verify`
-
-There is no separate CI job for `pnpm typecheck:all`, so it is worth running locally when you change types or cross-package contracts.
 
 ## Deployment
 
@@ -232,7 +211,8 @@ If you need to change:
 - page composition: `src/views/`
 - reusable sections: `src/components/`
 - static copy: `src/data/`
-- live Notion fields or mapping: `packages/notion-data/` plus `src/lib/notion.ts`
+- CMS schemas: `src/sanity/schemas/`
+- live data fetching: `src/lib/sanity.ts`
 - SEO: `src/config/seo.ts`
 - global shell: `src/app/layout.tsx`, `src/components/Header.tsx`, `src/components/Footer.tsx`
 - global styles/tokens: `src/styles/index.css`

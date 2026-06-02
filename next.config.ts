@@ -4,7 +4,9 @@ const distDir = process.env.NEXT_DIST_DIR;
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  transpilePackages: ["@tumai/notion-data"],
+  turbopack:{
+    root: process.cwd()
+  },
   images: {
     qualities: [40, 75],
   },

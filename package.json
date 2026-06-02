@@ -10,13 +10,12 @@
     "build": "node scripts/run-next-command.mjs build .next-prod",
     "start": "node scripts/run-next-command.mjs start .next-prod",
     "test": "node --import=tsx --test test/*.test.ts",
-    "lint": "pnpm run lint:web && pnpm --dir packages/notion-data lint",
+    "lint": "pnpm run lint:web",
     "lint:web": "biome check .",
     "lint:apply": "biome check . --write",
     "format": "biome format .",
     "verify": "pnpm lint && pnpm test && pnpm build",
-    "typecheck": "NEXT_DIST_DIR=.next-typecheck next build",
-    "typecheck:all": "pnpm typecheck && pnpm --dir packages/notion-data typecheck"
+    "typecheck": "NEXT_DIST_DIR=.next-typecheck next build"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.11",
@@ -27,7 +26,6 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tabs": "^1.1.12",
     "@tailwindcss/typography": "^0.5.16",
-    "@tumai/notion-data": "workspace:*",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",

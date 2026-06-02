@@ -1,43 +1,36 @@
-export type { Event, Partner, Research } from "@tumai/notion-data";
+export interface Event {
+  id: string;
+  title: string;
+  description: string;
+  event_date: string;
+  location?: string;
+  city?: string;
+  category?: string;
+  poster?: string;
+  images?: string[];
+  sign_up?: string;
+  detail?: string;
+}
+
+export interface Partner {
+  id: string;
+  name: string;
+  link?: string;
+  image?: string;
+  category?: string;
+}
+
+export interface Research {
+  id: string;
+  title: string;
+  description: string;
+  image?: string;
+  publication?: string;
+  status?: string;
+  keywords?: string;
+}
 
 export interface EventFilters {
   category: string;
   city: string;
-}
-
-export interface NotionPage {
-  id: string;
-  properties: {
-    Title?: {
-      title?: [{ plain_text?: string }];
-    };
-    Description?: {
-      rich_text?: [{ plain_text?: string }];
-    };
-    Date?: {
-      date?: { start?: string };
-    };
-    Poster?: {
-      files?: [{ file?: { url?: string }; external?: { url?: string } }];
-    };
-    Images?: {
-      files?: [{ file?: { url?: string }; external?: { url?: string } }];
-    };
-    Location?: {
-      rich_text?: [{ plain_text?: string }];
-    };
-    City?: {
-      select?: { name?: string };
-    };
-    Category?: {
-      select?: { name?: string };
-    };
-    URL?: {
-      url?: string;
-    };
-  };
-  Keywords?: {
-    // <-- string property
-    rich_text?: [{ plain_text?: string }];
-  };
 }

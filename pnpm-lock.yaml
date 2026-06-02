@@ -32,9 +32,6 @@ importers:
       '@tailwindcss/typography':
         specifier: ^0.5.16
         version: 0.5.16(tailwindcss@4.1.17)
-      '@tumai/notion-data':
-        specifier: workspace:*
-        version: link:packages/notion-data
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
