@@ -1,11 +1,11 @@
-import { createClient } from 'next-sanity';
-import { unstable_cache } from 'next/cache';
-import type { Event, Research, Partner } from './types';
+import { createClient } from "next-sanity";
+import { unstable_cache } from "next/cache";
+import type { Event, Partner, Research } from "./types";
 
 export const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
-  apiVersion: '2024-03-01',
+  apiVersion: "2024-03-01",
   useCdn: false,
 });
 
@@ -22,7 +22,7 @@ export async function getSanityResearchProjects(): Promise<Research[]> {
   return unstable_cache(
     async () => client.fetch(query),
     ["sanity-research-projects"],
-    { revalidate: 900, tags: ["research-projects"] }
+    { revalidate: 900, tags: ["research-projects"] },
   )();
 }
 
@@ -42,11 +42,10 @@ export async function getSanityEvents(): Promise<Event[]> {
     detail
   }`;
 
-  return unstable_cache(
-    async () => client.fetch(query),
-    ["sanity-events"],
-    { revalidate: 300, tags: ["events"] }
-  )();
+  return unstable_cache(async () => client.fetch(query), ["sanity-events"], {
+    revalidate: 300,
+    tags: ["events"],
+  })();
 }
 
 export async function getSanityPartners(): Promise<Partner[]> {
@@ -58,9 +57,8 @@ export async function getSanityPartners(): Promise<Partner[]> {
     category
   }`;
 
-  return unstable_cache(
-    async () => client.fetch(query),
-    ["sanity-partners"],
-    { revalidate: 900, tags: ["partners"] }
-  )();
+  return unstable_cache(async () => client.fetch(query), ["sanity-partners"], {
+    revalidate: 900,
+    tags: ["partners"],
+  })();
 }

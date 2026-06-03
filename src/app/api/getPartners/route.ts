@@ -6,6 +6,9 @@ export async function GET() {
     const partners = await getSanityPartners();
     return NextResponse.json(partners);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch partners' }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch partners" },
+      { status: 500 },
+    );
   }
 }

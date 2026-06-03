@@ -9,16 +9,21 @@ import { Brain, Handshake, Megaphone, Users } from "lucide-react";
 import Image from "next/image";
 import { useMemo } from "react";
 
-export default function Partners({ initialPartners = [] }: { initialPartners?: Partner[] }) {
+export default function Partners({
+  initialPartners = [],
+}: { initialPartners?: Partner[] }) {
   const groupedPartners = useMemo(() => {
-    return initialPartners.reduce((acc, partner) => {
-      const category = partner.category || 'Other';
-      if (!acc[category]) {
-        acc[category] = [];
-      }
-      acc[category].push(partner);
-      return acc;
-    }, {} as Record<string, Partner[]>);
+    return initialPartners.reduce(
+      (acc, partner) => {
+        const category = partner.category || "Other";
+        if (!acc[category]) {
+          acc[category] = [];
+        }
+        acc[category].push(partner);
+        return acc;
+      },
+      {} as Record<string, Partner[]>,
+    );
   }, [initialPartners]);
 
   const benefits = [
