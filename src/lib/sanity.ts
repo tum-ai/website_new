@@ -38,7 +38,7 @@ export async function getSanityEvents(): Promise<Event[]> {
     city,
     category,
     "poster": poster.asset->url,
-    "img": img.asset->url,
+    "images": select(defined(img.asset) => [img.asset->url], []),
     sign_up,
     detail
   }`;
