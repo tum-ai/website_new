@@ -12,10 +12,24 @@ import { useMemo } from "react";
 export default function Partners({
   initialPartners = [],
 }: { initialPartners?: Partner[] }) {
+  // Define the display order for partner categories (pre-Sanity order)
+  const categoryOrder = [
+    "Technical Partners",
+    "Industry Partners",
+    "Research Partners",
+    "Venture Capital",
+    "Initiatives",
+  ];
+
   const groupedPartners = useMemo(() => {
-    return initialPartners.reduce(
+    // Filter out partners with no category
+    const partnersWithCategory = initialPartners.filter(
+      (partner) => partner.category,
+    );
+
+    return partnersWithCategory.reduce(
       (acc, partner) => {
-        const category = partner.category || "Other";
+        const category = partner.category!;
         if (!acc[category]) {
           acc[category] = [];
         }
@@ -25,6 +39,25 @@ export default function Partners({
       {} as Record<string, Partner[]>,
     );
   }, [initialPartners]);
+
+  // Sort categories by the defined order
+  const sortedCategories = useMemo(() => {
+    return Object.entries(groupedPartners).sort(([a], [b]) => {
+      const indexA = categoryOrder.indexOf(a);
+      const indexB = categoryOrder.indexOf(b);
+
+      // If both are in the order list, sort by index
+      if (indexA !== -1 && indexB !== -1) {
+        return indexA - indexB;
+      }
+      // If only a is in the list, it comes first
+      if (indexA !== -1) return -1;
+      // If only b is in the list, it comes first
+      if (indexB !== -1) return 1;
+      // If neither is in the list, sort alphabetically
+      return a.localeCompare(b);
+    });
+  }, [groupedPartners]);
 
   const benefits = [
     {
