@@ -81,11 +81,13 @@ export default function Research({
               <Card className="overflow-hidden border-white/10 bg-white/5">
                 <CardContent className="bg-minimal-gray px-0">
                   <Logos
-                    logos={researchPartners.map((partner) => ({
-                      href: partner.link || "",
-                      src: partner.image || "",
-                      alt: partner.name || "",
-                    }))}
+                    logos={researchPartners
+                      .filter((p) => p.link && p.image)
+                      .map((partner) => ({
+                        href: partner.link!,
+                        src: partner.image!,
+                        alt: partner.name,
+                      }))}
                   />
                 </CardContent>
               </Card>
