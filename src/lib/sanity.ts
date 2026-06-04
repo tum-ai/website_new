@@ -20,7 +20,8 @@ export async function getSanityResearchProjects(): Promise<Research[]> {
   }`;
 
   return unstable_cache(
-    async () => client.fetch(query),
+    async () =>
+      process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ? client.fetch(query) : [],
     ["sanity-research-projects"],
     { revalidate: 900, tags: ["research-projects"] },
   )();
@@ -42,10 +43,15 @@ export async function getSanityEvents(): Promise<Event[]> {
     detail
   }`;
 
-  return unstable_cache(async () => client.fetch(query), ["sanity-events"], {
-    revalidate: 300,
-    tags: ["events"],
-  })();
+  return unstable_cache(
+    async () =>
+      process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ? client.fetch(query) : [],
+    ["sanity-events"],
+    {
+      revalidate: 300,
+      tags: ["events"],
+    },
+  )();
 }
 
 export async function getSanityPartners(): Promise<Partner[]> {
@@ -57,8 +63,13 @@ export async function getSanityPartners(): Promise<Partner[]> {
     category
   }`;
 
-  return unstable_cache(async () => client.fetch(query), ["sanity-partners"], {
-    revalidate: 900,
-    tags: ["partners"],
-  })();
+  return unstable_cache(
+    async () =>
+      process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ? client.fetch(query) : [],
+    ["sanity-partners"],
+    {
+      revalidate: 900,
+      tags: ["partners"],
+    },
+  )();
 }
