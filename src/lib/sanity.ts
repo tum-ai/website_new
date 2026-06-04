@@ -1,3 +1,5 @@
+import "server-only";
+
 import { createClient } from "next-sanity";
 import { unstable_cache } from "next/cache";
 import type { Event, Partner, Research } from "./types";
