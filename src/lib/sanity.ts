@@ -3,8 +3,8 @@ import { unstable_cache } from "next/cache";
 import type { Event, Partner, Research } from "./types";
 
 export const client = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "test-project-id",
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
   apiVersion: "2024-03-01",
   useCdn: false,
 });
