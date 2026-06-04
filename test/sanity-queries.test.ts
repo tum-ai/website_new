@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { createClient } from "next-sanity";
 
-test("Sanity event query returns images as array", async () => {
+test("Sanity event query returns images as array and description with fallback", async () => {
   const mockClient = createClient({
     projectId: "test-project-id",
     dataset: "production",
@@ -13,27 +13,32 @@ test("Sanity event query returns images as array", async () => {
   const query = `*[_type == "event"]{
     "id": _id,
     title,
-    "description": desc,
+    "description": coalesce(desc, ""),
     event_date,
     location,
     city,
     category,
     "poster": poster.asset->url,
-    "images": select(defined(img.asset) => [img.asset->url], []),
+    "images": array::compact([poster.asset->url, img.asset->url]),
     sign_up,
     detail
   }`;
 
-  // Verify the query structure includes "images" as an array field
-  // The select() function ensures it returns either [url] or []
+  // Verify the query uses coalesce for description to prevent null/undefined
   assert.ok(
-    query.includes(
-      '"images": select(defined(img.asset) => [img.asset->url], [])',
-    ),
-    "Query should map img to images array using select()",
+    query.includes('"description": coalesce(desc, "")'),
+    "Query should use coalesce to ensure description is always a string",
   );
 
-  // Verify we're not using the old "img" field that returns a string
+  // Verify the query uses array::compact to include both poster and img
+  assert.ok(
+    query.includes(
+      '"images": array::compact([poster.asset->url, img.asset->url])',
+    ),
+    "Query should use array::compact to include both poster and img URLs",
+  );
+
+  // Verify we're not using the old "img" field that returns a single string
   assert.ok(
     !query.includes('"img": img.asset->url,'),
     'Query should not use "img": img.asset->url which returns a string',
@@ -74,7 +79,7 @@ test("Event type expects images as optional string array", () => {
   );
 });
 
-test("Sanity research query joins keywords array into string", async () => {
+test("Sanity research query includes id, coalesced description, and joined keywords", async () => {
   const mockClient = createClient({
     projectId: "test-project-id",
     dataset: "production",
@@ -83,24 +88,31 @@ test("Sanity research query joins keywords array into string", async () => {
   });
 
   const query = `*[_type == "research"]{
+    "id": _id,
     title,
-    "description": desc,
+    "description": coalesce(desc, ""),
     status,
     publication,
     "keywords": array::join(keywords, ", "),
     "image": img.asset->url
   }`;
 
+  // Verify the query includes id field
+  assert.ok(
+    query.includes('"id": _id'),
+    "Query should include id field mapped from _id",
+  );
+
+  // Verify the query uses coalesce for description to prevent null/undefined
+  assert.ok(
+    query.includes('"description": coalesce(desc, "")'),
+    "Query should use coalesce to ensure description is always a string",
+  );
+
   // Verify the query uses array::join to convert keywords array to string
   assert.ok(
     query.includes('"keywords": array::join(keywords, ", ")'),
     'Query should join keywords array with ", " separator',
-  );
-
-  // Verify we're not using raw keywords field that would return an array
-  assert.ok(
-    !query.includes("keywords,") || query.includes("array::join(keywords"),
-    "Query should not use raw keywords field without joining",
   );
 });
 

@@ -13,8 +13,9 @@ export const client = createClient({
 
 export async function getSanityResearchProjects(): Promise<Research[]> {
   const query = `*[_type == "research"]{
+    "id": _id,
     title,
-    "description": desc,
+    "description": coalesce(desc, ""),
     status,
     publication,
     "keywords": array::join(keywords, ", "),
@@ -34,13 +35,13 @@ export async function getSanityEvents(): Promise<Event[]> {
   const query = `*[_type == "event"]{
     "id": _id,
     title,
-    "description": desc,
+    "description": coalesce(desc, ""),
     event_date,
     location,
     city,
     category,
     "poster": poster.asset->url,
-    "images": select(defined(img.asset) => [img.asset->url], []),
+    "images": array::compact([poster.asset->url, img.asset->url]),
     sign_up,
     detail
   }`;
