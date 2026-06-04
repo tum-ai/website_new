@@ -224,8 +224,7 @@ function PartnerSection({
           <a
             key={logo.id}
             href={logo.link}
-            target="_blank"
-            rel="noreferrer"
+            {...(logo.link && { target: "_blank", rel: "noopener noreferrer" })}
             aria-label={`Visit ${logo.name}`}
             className="transition-transform duration-150 hover:scale-105 hover:shadow-lg flex h-20 w-40 items-center justify-center rounded-lg border-1 bg-white p-4 py-6"
           >
