@@ -3,7 +3,7 @@ import { AboutSection } from "@/components/home/AboutSection";
 import { DeferredHomeSections } from "@/components/home/DeferredHomeSections";
 import { Grid } from "@/components/home/Grid";
 import { PartnersSection } from "@/components/home/PartnersSection";
-import { Hero } from "../components/ui/hero";
+import { Hero } from "@/components/ui/hero";
 
 export default function Homepage() {
   return (

@@ -1,5 +1,5 @@
+import { getSanityEvents } from "@/lib/sanity";
 import { NextResponse } from "next/server";
-import { getSanityEvents } from "../../../lib/sanity";
 
 export async function GET() {
   try {

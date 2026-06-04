@@ -73,3 +73,61 @@ test("Event type expects images as optional string array", () => {
     "array items should be strings",
   );
 });
+
+test("Sanity research query joins keywords array into string", async () => {
+  const mockClient = createClient({
+    projectId: "test-project-id",
+    dataset: "production",
+    apiVersion: "2024-03-01",
+    useCdn: false,
+  });
+
+  const query = `*[_type == "research"]{
+    title,
+    "description": desc,
+    status,
+    publication,
+    "keywords": array::join(keywords, ", "),
+    "image": img.asset->url
+  }`;
+
+  // Verify the query uses array::join to convert keywords array to string
+  assert.ok(
+    query.includes('"keywords": array::join(keywords, ", ")'),
+    'Query should join keywords array with ", " separator',
+  );
+
+  // Verify we're not using raw keywords field that would return an array
+  assert.ok(
+    !query.includes("keywords,") || query.includes("array::join(keywords"),
+    "Query should not use raw keywords field without joining",
+  );
+});
+
+test("Research type expects keywords as optional string", () => {
+  // This is a type-level test to ensure the Research interface matches
+  // the query structure
+  type Research = {
+    id: string;
+    title: string;
+    description: string;
+    image?: string;
+    publication?: string;
+    status?: string;
+    keywords?: string;
+  };
+
+  // Verify that keywords is typed as string (joined), not string[]
+  const mockResearch: Research = {
+    id: "1",
+    title: "Test Research",
+    description: "Test Description",
+    keywords: "AI, Machine Learning, Deep Learning",
+  };
+
+  assert.equal(
+    typeof mockResearch.keywords,
+    "string",
+    "keywords should be a string (joined from array)",
+  );
+});

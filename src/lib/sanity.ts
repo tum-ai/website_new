@@ -15,7 +15,7 @@ export async function getSanityResearchProjects(): Promise<Research[]> {
     "description": desc,
     status,
     publication,
-    keywords,
+    "keywords": array::join(keywords, ", "),
     "image": img.asset->url
   }`;
 

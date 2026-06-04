@@ -1,5 +1,5 @@
+import { getSanityResearchProjects } from "@/lib/sanity";
 import { NextResponse } from "next/server";
-import { getSanityResearchProjects } from "../../../lib/sanity";
 
 export async function GET() {
   try {
