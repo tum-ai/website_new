@@ -5,15 +5,16 @@ import Logos from "@/components/Logos";
 import ResearchCard from "@/components/research/ResearchCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { researchPartners } from "@/data/partners";
-import type { Research } from "@/lib/types";
+import type { Partner, Research } from "@/lib/types";
 import type React from "react";
 import { useMemo, useRef, useState } from "react";
 
 export default function Research({
   initialProjects = [],
+  researchPartners = [],
 }: {
   initialProjects?: Research[];
+  researchPartners?: Partner[];
 }) {
   const [activeTab, setActiveTab] = useState<string>("projects");
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
@@ -79,7 +80,15 @@ export default function Research({
 
               <Card className="overflow-hidden border-white/10 bg-white/5">
                 <CardContent className="bg-minimal-gray px-0">
-                  <Logos logos={researchPartners} />
+                  <Logos
+                    logos={researchPartners
+                      .filter((p) => p.link && p.image)
+                      .map((partner) => ({
+                        href: partner.link!,
+                        src: partner.image!,
+                        alt: partner.name,
+                      }))}
+                  />
                 </CardContent>
               </Card>
             </div>

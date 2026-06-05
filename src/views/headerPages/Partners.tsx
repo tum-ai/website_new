@@ -1,19 +1,64 @@
+"use client";
+
 import Benefits from "@/components/Benefit";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
-import {
-  VCPartners,
-  industryPartners,
-  initiativePartners,
-  // longtermPartners,
-  researchPartners,
-  technicalPartners,
-} from "@/data/partners";
+import type { Partner } from "@/lib/types";
 import { cx } from "class-variance-authority";
 import { Brain, Handshake, Megaphone, Users } from "lucide-react";
 import Image from "next/image";
+import { useMemo } from "react";
 
-export default function Partners() {
+export default function Partners({
+  initialPartners = [],
+}: { initialPartners?: Partner[] }) {
+  // Define the display order for partner categories (pre-Sanity order)
+  const categoryOrder = [
+    "Technical Partners",
+    "Industry Partners",
+    "Research Partners",
+    "Venture Capital",
+    "Initiatives",
+  ];
+
+  const groupedPartners = useMemo(() => {
+    // Filter out partners with no category
+    const partnersWithCategory = initialPartners.filter(
+      (partner) => partner.category,
+    );
+
+    return partnersWithCategory.reduce(
+      (acc, partner) => {
+        const category = partner.category!;
+        if (!acc[category]) {
+          acc[category] = [];
+        }
+        acc[category].push(partner);
+        return acc;
+      },
+      {} as Record<string, Partner[]>,
+    );
+  }, [initialPartners]);
+
+  // Sort categories by the defined order
+  const sortedCategories = useMemo(() => {
+    return Object.entries(groupedPartners).sort(([a], [b]) => {
+      const indexA = categoryOrder.indexOf(a);
+      const indexB = categoryOrder.indexOf(b);
+
+      // If both are in the order list, sort by index
+      if (indexA !== -1 && indexB !== -1) {
+        return indexA - indexB;
+      }
+      // If only a is in the list, it comes first
+      if (indexA !== -1) return -1;
+      // If only b is in the list, it comes first
+      if (indexB !== -1) return 1;
+      // If neither is in the list, sort alphabetically
+      return a.localeCompare(b);
+    });
+  }, [groupedPartners]);
+
   const benefits = [
     {
       title: "AI Talent Pool",
@@ -79,21 +124,14 @@ export default function Partners() {
         <Layout>
           <section className="p-8 md:p-10 sm:py-16 lg:py-16 text-center md:text-start px-[1rem]">
             <div className="container mx-auto space-y-16 justify-center md:justify-start items-center md:items-start">
-              {/* <PartnerSection title="Long-Term Partnerships" logos={longtermPartners} /> */}
-              <PartnerSection
-                title="Technical Partners"
-                logos={technicalPartners}
-              />
-              <PartnerSection
-                title="Industry Partners"
-                logos={industryPartners}
-              />
-              <PartnerSection
-                title="Research Partners"
-                logos={researchPartners}
-              />
-              <PartnerSection title="Venture Capital" logos={VCPartners} />
-              <PartnerSection title="Initiatives" logos={initiativePartners} />
+              {/* Dynamically render sections based on the Sanity data */}
+              {Object.entries(groupedPartners).map(([category, partners]) => (
+                <PartnerSection
+                  key={category}
+                  title={category}
+                  logos={partners}
+                />
+              ))}
             </div>
           </section>
         </Layout>
@@ -200,8 +238,10 @@ function PartnerSection({
   logos,
 }: {
   title: string;
-  logos: { href: string; alt: string; src: string }[];
+  logos: Partner[];
 }) {
+  if (!logos || logos.length === 0) return null;
+
   return (
     <div>
       <h3
@@ -215,18 +255,19 @@ function PartnerSection({
       <div className="flex flex-wrap items-center justify-center md:items-start md:justify-start gap-2">
         {logos.map((logo) => (
           <a
-            key={logo.alt}
-            href={logo.href}
-            target="_blank"
-            rel="noreferrer"
-            aria-label={`Visit ${logo.alt}`}
+            key={logo.id}
+            href={logo.link}
+            {...(logo.link && { target: "_blank", rel: "noopener noreferrer" })}
+            aria-label={`Visit ${logo.name}`}
             className="transition-transform duration-150 hover:scale-105 hover:shadow-lg flex h-20 w-40 items-center justify-center rounded-lg border-1 bg-white p-4 py-6"
           >
-            <img
-              src={logo.src}
-              alt={logo.alt}
-              className="max-h-full max-w-full object-contain"
-            />
+            {logo.image && (
+              <img
+                src={logo.image}
+                alt={logo.name}
+                className="max-h-full max-w-full object-contain"
+              />
+            )}
           </a>
         ))}
       </div>

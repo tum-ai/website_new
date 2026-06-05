@@ -1,23 +1,17 @@
 # TUM.ai Website
 
-Next.js App Router website for TUM.ai, plus a small workspace package for typed Notion data access.
+Next.js App Router website for TUM.ai, powered by an embedded Sanity CMS.
 
 ## What Is In This Repo
 
 ```text
 .
-├── src/                   website app
-├── packages/notion-data/  shared Notion client + row mappers
-├── public/assets/         shipped logos, photos, and media
-├── docs/                  contributor docs + brand source files
-├── scripts/               small build helpers
-└── test/                  Node-based regression tests
+├── src/                 website app and embedded Sanity Studio
+├── public/assets/       shipped logos, photos, and media
+├── docs/                contributor docs + brand source files
+├── scripts/             small build helpers
+└── test/                Node-based regression tests
 ```
-
-This is a pnpm workspace with two packages:
-
-- `@tumai/web` at the repo root
-- `@tumai/notion-data` in `packages/notion-data`
 
 ## Stack
 
@@ -27,7 +21,7 @@ This is a pnpm workspace with two packages:
 - Biome for linting/formatting
 - pnpm workspaces
 - Vercel for deployment
-- Notion as the source for events, partners, and research data
+- Sanity as the headless CMS for events, partners, and research data
 
 ## Quick Start
 
@@ -58,41 +52,37 @@ Local dev uses `.next-dev`. Local builds use isolated dist dirs too, so `dev`, `
 pnpm dev            # start local dev server
 pnpm build          # production build into .next-prod
 pnpm start          # serve the .next-prod build
-pnpm lint           # biome + workspace lint
+pnpm lint           # biome lint
 pnpm test           # Node test runner via tsx
 pnpm verify         # lint + test + build
 pnpm typecheck      # Next build-based typecheck into .next-typecheck
-pnpm typecheck:all  # root typecheck + packages/notion-data typecheck
 ```
 
 CI currently runs `pnpm verify` on pull requests to `main`.
 
 ## Environment
 
-The app reads these server-side environment variables:
+The app reads these environment variables to connect to the CMS:
 
-- `NOTION_TOKEN`
-- `NOTION_DB_ID`
-- `NOTION_TOKEN_PARTNERS`
-- `NOTION_DB_PARTNERS_ID`
-- `NOTION_TOKEN_RESEARCH`
-- `NOTION_DB_RESEARCH_ID`
+- `NEXT_PUBLIC_SANITY_PROJECT_ID`
+- `NEXT_PUBLIC_SANITY_DATASET`
 
-`packages/notion-data` reads `process.env` directly. It does not load `.env` files on its own, so local development should use `.env.local` or Vercel env pull. If the values are missing, the Notion fetchers return empty arrays instead of crashing.
+If the values are missing, the Sanity fetchers may fail to return data.
 
 ## How The App Is Structured
 
-- `src/app/` owns routing, route handlers, metadata wiring, and the root layout.
+- `src/app/` owns routing, route handlers, metadata wiring, and the root layout. It also contains `src/app/studio/` for the embedded CMS.
 - `src/views/` holds page-level composition.
 - `src/components/` holds reusable sections and shared UI primitives.
 - `src/data/` holds static copy and curated data arrays.
-- `src/lib/` holds utilities, redirects, security helpers, shared types, and cached Notion access.
-- `packages/notion-data/` is the only place that talks directly to Notion.
+- `src/sanity/` holds the CMS configuration and TypeScript schema definitions.
+- `src/lib/` holds utilities, redirects, security helpers, shared types, and cached Sanity GROQ fetchers.
 
-Two pages currently fetch live Notion data on the server:
+Three pages currently fetch live Sanity data on the server:
 
 - `/events`
 - `/research`
+- `/partners`
 
 Three API routes mirror the same cached data as JSON:
 
@@ -106,11 +96,11 @@ If you need to:
 
 - add or change a route: start in `src/app/`, then connect it to a view in `src/views/`
 - update static page copy: check `src/data/` first, then the matching component
-- change events or research rendering: update both the page view and the Notion-backed types/data path
+- change events, partners, or research data: visit `/studio` locally or in production
 - change global nav, footer, or font setup: edit `src/app/layout.tsx`, `src/components/Header.tsx`, `src/components/Footer.tsx`
 - change shared styling or tokens: edit `src/styles/index.css`
 - change SEO or JSON-LD: edit `src/config/seo.ts`
-- change Notion field mapping: edit `packages/notion-data/src/index.ts`, then verify `src/lib/notion.ts` consumers still match
+- change CMS field mapping or add tables: edit schemas in `src/sanity/schemas/`, then update the GROQ queries in `src/lib/sanity.ts`
 
 One important legacy file remains:
 
