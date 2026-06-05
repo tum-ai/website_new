@@ -1,145 +1,62 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { createClient } from "next-sanity";
+import { evaluate, parse } from "groq-js";
+import { EVENTS_QUERY, RESEARCH_QUERY } from "../src/lib/sanity-queries";
 
-test("Sanity event query returns images as array and description with fallback", async () => {
-  const mockClient = createClient({
-    projectId: "test-project-id",
-    dataset: "production",
-    apiVersion: "2024-03-01",
-    useCdn: false,
-  });
+async function run(query: string, dataset: unknown[]) {
+  const value = await evaluate(parse(query), { dataset });
+  return value.get();
+}
 
-  const query = `*[_type == "event"]{
-    "id": _id,
-    title,
-    "description": coalesce(desc, ""),
-    event_date,
-    location,
-    city,
-    category,
-    "poster": poster.asset->url,
-    "images": array::compact([poster.asset->url, img.asset->url]),
-    sign_up,
-    detail
-  }`;
+test("event query: images compacts poster+img, drops missing, description falls back", async () => {
+  const dataset = [
+    { _id: "asset-poster", url: "https://cdn/poster.png" },
+    { _id: "asset-img", url: "https://cdn/img.png" },
+    {
+      _id: "evt-both",
+      _type: "event",
+      title: "Hackathon",
+      desc: "A hackathon",
+      event_date: "2026-01-01",
+      poster: { asset: { _type: "reference", _ref: "asset-poster" } },
+      img: { asset: { _type: "reference", _ref: "asset-img" } },
+    },
+    {
+      _id: "evt-poster-only",
+      _type: "event",
+      title: "Talk",
+      event_date: "2026-02-01",
+      poster: { asset: { _type: "reference", _ref: "asset-poster" } },
+    },
+  ];
 
-  // Verify the query uses coalesce for description to prevent null/undefined
-  assert.ok(
-    query.includes('"description": coalesce(desc, "")'),
-    "Query should use coalesce to ensure description is always a string",
-  );
+  const result = await run(EVENTS_QUERY, dataset);
+  const byId = Object.fromEntries(result.map((e: any) => [e.id, e]));
 
-  // Verify the query uses array::compact to include both poster and img
-  assert.ok(
-    query.includes(
-      '"images": array::compact([poster.asset->url, img.asset->url])',
-    ),
-    "Query should use array::compact to include both poster and img URLs",
-  );
-
-  // Verify we're not using the old "img" field that returns a single string
-  assert.ok(
-    !query.includes('"img": img.asset->url,'),
-    'Query should not use "img": img.asset->url which returns a string',
-  );
+  assert.deepEqual(byId["evt-both"].images, [
+    "https://cdn/poster.png",
+    "https://cdn/img.png",
+  ]);
+  assert.deepEqual(byId["evt-poster-only"].images, ["https://cdn/poster.png"]);
+  assert.ok(Array.isArray(byId["evt-poster-only"].images));
+  assert.equal(byId["evt-poster-only"].description, "");
+  assert.equal(byId["evt-both"].id, "evt-both");
 });
 
-test("Event type expects images as optional string array", () => {
-  // This is a type-level test to ensure the Event interface matches
-  // the query structure
-  type Event = {
-    id: string;
-    title: string;
-    description: string;
-    event_date: string;
-    location?: string;
-    city?: string;
-    category?: string;
-    poster?: string;
-    images?: string[];
-    sign_up?: string;
-    detail?: string;
-  };
+test("research query: keywords joined to a string, description falls back", async () => {
+  const dataset = [
+    {
+      _id: "res-1",
+      _type: "research",
+      title: "Study",
+      keywords: ["AI", "Machine Learning", "Robotics"],
+    },
+  ];
 
-  // Verify that images is typed as string[] not string
-  const mockEvent: Event = {
-    id: "1",
-    title: "Test Event",
-    description: "Test Description",
-    event_date: "2024-01-01",
-    images: ["url1", "url2"],
-  };
+  const [project] = await run(RESEARCH_QUERY, dataset);
 
-  assert.ok(Array.isArray(mockEvent.images), "images should be an array");
-  assert.equal(
-    typeof mockEvent.images[0],
-    "string",
-    "array items should be strings",
-  );
-});
-
-test("Sanity research query includes id, coalesced description, and joined keywords", async () => {
-  const mockClient = createClient({
-    projectId: "test-project-id",
-    dataset: "production",
-    apiVersion: "2024-03-01",
-    useCdn: false,
-  });
-
-  const query = `*[_type == "research"]{
-    "id": _id,
-    title,
-    "description": coalesce(desc, ""),
-    status,
-    publication,
-    "keywords": array::join(keywords, ", "),
-    "image": img.asset->url
-  }`;
-
-  // Verify the query includes id field
-  assert.ok(
-    query.includes('"id": _id'),
-    "Query should include id field mapped from _id",
-  );
-
-  // Verify the query uses coalesce for description to prevent null/undefined
-  assert.ok(
-    query.includes('"description": coalesce(desc, "")'),
-    "Query should use coalesce to ensure description is always a string",
-  );
-
-  // Verify the query uses array::join to convert keywords array to string
-  assert.ok(
-    query.includes('"keywords": array::join(keywords, ", ")'),
-    'Query should join keywords array with ", " separator',
-  );
-});
-
-test("Research type expects keywords as optional string", () => {
-  // This is a type-level test to ensure the Research interface matches
-  // the query structure
-  type Research = {
-    id: string;
-    title: string;
-    description: string;
-    image?: string;
-    publication?: string;
-    status?: string;
-    keywords?: string;
-  };
-
-  // Verify that keywords is typed as string (joined), not string[]
-  const mockResearch: Research = {
-    id: "1",
-    title: "Test Research",
-    description: "Test Description",
-    keywords: "AI, Machine Learning, Deep Learning",
-  };
-
-  assert.equal(
-    typeof mockResearch.keywords,
-    "string",
-    "keywords should be a string (joined from array)",
-  );
+  assert.equal(typeof project.keywords, "string");
+  assert.equal(project.keywords, "AI, Machine Learning, Robotics");
+  assert.equal(project.description, "");
+  assert.equal(project.id, "res-1");
 });

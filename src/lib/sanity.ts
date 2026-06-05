@@ -2,6 +2,7 @@ import "server-only";
 
 import { createClient } from "next-sanity";
 import { unstable_cache } from "next/cache";
+import { EVENTS_QUERY, PARTNERS_QUERY, RESEARCH_QUERY } from "./sanity-queries";
 import type { Event, Partner, Research } from "./types";
 
 export const client = createClient({
@@ -12,43 +13,22 @@ export const client = createClient({
 });
 
 export async function getSanityResearchProjects(): Promise<Research[]> {
-  const query = `*[_type == "research"]{
-    "id": _id,
-    title,
-    "description": coalesce(desc, ""),
-    status,
-    publication,
-    "keywords": array::join(keywords, ", "),
-    "image": img.asset->url
-  }`;
-
   return unstable_cache(
     async () =>
-      process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ? client.fetch(query) : [],
+      process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
+        ? client.fetch(RESEARCH_QUERY)
+        : [],
     ["sanity-research-projects"],
     { revalidate: 900, tags: ["research-projects"] },
   )();
 }
 
 export async function getSanityEvents(): Promise<Event[]> {
-  // Added "id" and "description" aliases so the payload matches the frontend types
-  const query = `*[_type == "event"]{
-    "id": _id,
-    title,
-    "description": coalesce(desc, ""),
-    event_date,
-    location,
-    city,
-    category,
-    "poster": poster.asset->url,
-    "images": array::compact([poster.asset->url, img.asset->url]),
-    sign_up,
-    detail
-  }`;
-
   return unstable_cache(
     async () =>
-      process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ? client.fetch(query) : [],
+      process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
+        ? client.fetch(EVENTS_QUERY)
+        : [],
     ["sanity-events"],
     {
       revalidate: 300,
@@ -58,17 +38,11 @@ export async function getSanityEvents(): Promise<Event[]> {
 }
 
 export async function getSanityPartners(): Promise<Partner[]> {
-  const query = `*[_type == "partner"]{
-    "id": _id,
-    name,
-    link,
-    "image": image.asset->url,
-    category
-  }`;
-
   return unstable_cache(
     async () =>
-      process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ? client.fetch(query) : [],
+      process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
+        ? client.fetch(PARTNERS_QUERY)
+        : [],
     ["sanity-partners"],
     {
       revalidate: 900,
