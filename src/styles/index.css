@@ -94,7 +94,7 @@
   --destructive: oklch(0.577 0.245 27.325); /* red for errors (stays standard) */
   --destructive-foreground: var(--color-white);
 
-  --border: var(--color-minimal-gray); /* Frame fo Inputs/Cards */
+  --border: var(--color-minimal-gray); /* Frame for Inputs/Cards */
   --input: var(--color-minimal-gray);
   --ring: var(--color-tumai-violet); /* Fokus-Ring */
 

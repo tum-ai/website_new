@@ -1,0 +1,31 @@
+# Spell-check config for `typos` (crate-ci/typos).
+# This site has bilingual (English + German) legal pages, so the German
+# Impressum/Datenschutz prose is excluded wholesale. A small allowlist covers
+# other intentional non-English words/names. Prefer fixing real typos over
+# adding words here.
+
+[files]
+extend-exclude = [
+  "pnpm-lock.yaml",
+  "*.svg",
+  # German legal prose (Impressum / Datenschutz).
+  "src/views/footer/Imprint.tsx",
+  "src/views/footer/Privacy.tsx",
+]
+
+[default]
+extend-ignore-re = [
+  # Known copy bug (stray German "oder" merging two draft sentences) flagged
+  # separately for content review, not silenced as a legitimate word.
+  "to the broader community\\. oder The Marketing Department",
+]
+
+[default.extend-words]
+# LinkedIn-verified alumnus name (github.com/richardgaus), not "Gauss".
+Gaus = "Gaus"
+# "Dies Academicus" is the official name of the TUM ceremony, not a typo.
+Academicus = "Academicus"
+# German CSS comments (Subtile Elemente = "subtle elements", Fokus-Ring = "focus ring").
+Subtile = "Subtile"
+Elemente = "Elemente"
+Fokus = "Fokus"

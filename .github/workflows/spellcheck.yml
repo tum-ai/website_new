@@ -1,0 +1,19 @@
+name: Spell Check
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  spellcheck:
+    name: Spell Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Check spelling
+        uses: crate-ci/typos@v1.48.0
