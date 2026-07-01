@@ -66,8 +66,24 @@ The app reads these environment variables to connect to the CMS:
 
 - `NEXT_PUBLIC_SANITY_PROJECT_ID`
 - `NEXT_PUBLIC_SANITY_DATASET`
+- `SANITY_API_READ_TOKEN` for draft preview and live draft updates
 
 If the values are missing, the Sanity fetchers may fail to return data.
+
+## CMS Staging And Draft Preview
+
+Use a Vercel Preview deployment as the staging environment for CMS changes.
+Configure `SANITY_API_READ_TOKEN` in Vercel Preview/development environments so
+Sanity Presentation can enable Draft Mode without exposing drafts on the public
+published site.
+
+Preview flow:
+
+1. Open `/studio` on the staging deployment.
+2. Use the Presentation tool.
+3. The tool calls `/api/draft-mode/enable`, loads the current deployment in the
+   iframe, and the website reads Sanity's draft perspective.
+4. Draft changes refresh in real time through Sanity Live before publishing.
 
 ## How The App Is Structured
 
@@ -76,7 +92,7 @@ If the values are missing, the Sanity fetchers may fail to return data.
 - `src/components/` holds reusable sections and shared UI primitives.
 - `src/data/` holds static copy and curated data arrays.
 - `src/sanity/` holds the CMS configuration and TypeScript schema definitions.
-- `src/lib/` holds utilities, redirects, security helpers, shared types, and cached Sanity GROQ fetchers.
+- `src/lib/` holds utilities, redirects, security helpers, shared types, and Sanity Live fetchers.
 
 Three pages currently fetch live Sanity data on the server:
 
@@ -96,11 +112,11 @@ If you need to:
 
 - add or change a route: start in `src/app/`, then connect it to a view in `src/views/`
 - update static page copy: check `src/data/` first, then the matching component
-- change events, partners, or research data: visit `/studio` locally or in production
+- change events, partners, or research data: visit `/studio` locally or on the staging deployment
 - change global nav, footer, or font setup: edit `src/app/layout.tsx`, `src/components/Header.tsx`, `src/components/Footer.tsx`
 - change shared styling or tokens: edit `src/styles/index.css`
 - change SEO or JSON-LD: edit `src/config/seo.ts`
-- change CMS field mapping or add tables: edit schemas in `src/sanity/schemas/`, then update the GROQ queries in `src/lib/sanity.ts`
+- change CMS field mapping or add tables: edit schemas in `src/sanity/schemas/`, then update the GROQ queries in `src/lib/sanity-queries.ts`
 
 One important legacy file remains:
 

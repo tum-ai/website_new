@@ -77,6 +77,7 @@ Important:
 
 - `/events`, `/research`, and `/partners` render from server-side calls to `src/lib/sanity.ts`
 - the API routes mirror that data, but they are not the primary rendering path
+- draft preview uses `/studio` -> Presentation -> `/api/draft-mode/enable`; keep `SANITY_API_READ_TOKEN` configured in staging/preview environments when testing drafts
 
 ### Add or change a JSON endpoint
 

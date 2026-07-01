@@ -115,14 +115,14 @@ Examples:
 
 `src/sanity/` is the source of truth for dynamic content structure.
 
-- `sanity.config.ts`: Main Studio configuration file.
+- `sanity.config.ts`: Main Studio configuration file, including the Presentation preview setup.
 - `schemas/`: Contains the TypeScript definitions for database models (e.g., `event.ts`, `partner.ts`, `research.ts`).
 
 ### `src/lib/`
 
 `src/lib/` contains shared runtime helpers:
 
-- `sanity.ts` contains the Sanity client and GROQ queries wrapped in `unstable_cache`
+- `sanity.ts` contains the Sanity client, Sanity Live wiring, and draft-aware fetch helpers
 - `types.ts` re-exports shared data types and local UI types
 - `utils.ts` contains event filtering/grouping helpers and class merging
 - `security.ts` sanitizes URLs and JSON-LD output
@@ -149,8 +149,8 @@ If a contributor only edits `src/app/globals.css`, they will miss most of the ac
 
 Sanity-backed data currently follows this path:
 
-1. `src/lib/sanity.ts` defines GROQ queries to fetch data from the Sanity API.
-2. The fetchers in `src/lib/sanity.ts` wrap the client calls in Next.js `unstable_cache`.
+1. `src/lib/sanity-queries.ts` defines GROQ queries to fetch data from the Sanity API.
+2. The fetchers in `src/lib/sanity.ts` call Sanity Live's `sanityFetch`.
 3. server routes consume those helpers directly:
    - `/events` uses `getSanityEvents()`
    - `/research` uses `getSanityResearchProjects()`
@@ -164,6 +164,13 @@ Important contributor note:
 
 - the page routes fetch from `src/lib/sanity.ts` directly
 - changing an API handler alone will not change page behavior unless the page actually consumes that handler
+
+Draft preview flow:
+
+1. `/studio` loads the Sanity Presentation tool.
+2. Presentation calls `/api/draft-mode/enable` with a Sanity preview secret.
+3. Draft Mode switches the website to Sanity's draft perspective.
+4. `<SanityLive />` refreshes the rendered page when the CMS changes.
 
 ## Tests
 
