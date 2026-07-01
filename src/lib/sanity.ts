@@ -1,12 +1,12 @@
 import "server-only";
 
+import { cookies, draftMode } from "next/headers";
 import { createClient } from "next-sanity";
 import {
-  type LivePerspective,
   defineLive,
+  type LivePerspective,
   resolvePerspectiveFromCookies,
 } from "next-sanity/live";
-import { cookies, draftMode } from "next/headers";
 import { EVENTS_QUERY, PARTNERS_QUERY, RESEARCH_QUERY } from "./sanity-queries";
 import type { Event, Partner, Research } from "./types";
 

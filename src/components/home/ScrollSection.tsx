@@ -1,6 +1,6 @@
-import { pictures as data } from "@/data/homepage";
 import Image from "next/image";
 import type { CSSProperties } from "react";
+import { pictures as data } from "@/data/homepage";
 
 type Props = {
   speed?: number;

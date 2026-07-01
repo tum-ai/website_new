@@ -1,6 +1,6 @@
+import { useEffect, useState } from "react";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import type { Event } from "@/lib/types";
-import { useEffect, useState } from "react";
 import EventCard from "./EventCard";
 
 export const EventsSection = () => {
@@ -63,8 +63,8 @@ export const EventsSection = () => {
       <h1 className="text-3xl md:text-4xl font-bold">Our Events</h1>
       <div className="flex flex-col lg:flex-row gap-8">
         {pastEvents.map((item, idx) => (
-          <div className="flex gap-2 flex-col">
-            <EventCard key={idx} {...item} />
+          <div key={idx} className="flex gap-2 flex-col">
+            <EventCard {...item} />
             <h1 className="!text-xl font-bold">Past Event</h1>{" "}
           </div>
         ))}

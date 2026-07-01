@@ -1,11 +1,11 @@
-import JsonLd from "@/components/JsonLd";
+import type { Organization, WithContext } from "schema-dts";
 import { ExpectationELab } from "@/components/e-lab/ExpectationELab";
 import { NotableStartups } from "@/components/e-lab/NotableStartups";
 import { Testimonials } from "@/components/e-lab/Testimonials";
 import { Timeline } from "@/components/e-lab/TimeLine";
+import JsonLd from "@/components/JsonLd";
 import FAQ from "@/components/ui/FAQ";
 import { faq } from "@/data/e-lab/FAQ";
-import type { Organization, WithContext } from "schema-dts";
 import { Hero } from "./hero";
 // import "@/styles/elab-font.css";
 

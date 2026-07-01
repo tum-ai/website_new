@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import {
   Card,
   CardContent,
@@ -23,7 +24,6 @@ import {
 } from "@/components/ui/dialog";
 import type { Event } from "@/lib/types";
 import { groupEventsByMonth } from "@/lib/utils";
-import { format } from "date-fns";
 import { Button } from "../ui/button";
 
 export default function PastEvents({ events }: { events: Event[] }) {

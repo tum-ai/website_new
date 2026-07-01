@@ -1,5 +1,5 @@
-import { registeredOfficeAddressLine } from "@/config/contact";
 import { cx } from "class-variance-authority";
+import { registeredOfficeAddressLine } from "@/config/contact";
 
 export default function Imprint() {
   return (

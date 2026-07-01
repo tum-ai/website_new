@@ -1,26 +1,28 @@
 "use client";
 
-import Benefits from "@/components/Benefit";
-import Layout from "@/components/Layout";
-import { Button } from "@/components/ui/button";
-import type { Partner } from "@/lib/types";
 import { cx } from "class-variance-authority";
 import { Brain, Handshake, Megaphone, Users } from "lucide-react";
 import Image from "next/image";
 import { useMemo } from "react";
+import Benefits from "@/components/Benefit";
+import Layout from "@/components/Layout";
+import { Button } from "@/components/ui/button";
+import type { Partner } from "@/lib/types";
+
+// Display order for partner categories (pre-Sanity order).
+const CATEGORY_ORDER = [
+  "Technical Partners",
+  "Industry Partners",
+  "Research Partners",
+  "Venture Capital",
+  "Initiatives",
+];
 
 export default function Partners({
   initialPartners = [],
-}: { initialPartners?: Partner[] }) {
-  // Define the display order for partner categories (pre-Sanity order)
-  const categoryOrder = [
-    "Technical Partners",
-    "Industry Partners",
-    "Research Partners",
-    "Venture Capital",
-    "Initiatives",
-  ];
-
+}: {
+  initialPartners?: Partner[];
+}) {
   const groupedPartners = useMemo(() => {
     // Filter out partners with no category
     const partnersWithCategory = initialPartners.filter(
@@ -43,8 +45,8 @@ export default function Partners({
   // Sort categories by the defined order
   const sortedCategories = useMemo(() => {
     return Object.entries(groupedPartners).sort(([a], [b]) => {
-      const indexA = categoryOrder.indexOf(a);
-      const indexB = categoryOrder.indexOf(b);
+      const indexA = CATEGORY_ORDER.indexOf(a);
+      const indexB = CATEGORY_ORDER.indexOf(b);
 
       // If both are in the order list, sort by index
       if (indexA !== -1 && indexB !== -1) {
@@ -125,7 +127,7 @@ export default function Partners({
           <section className="p-8 md:p-10 sm:py-16 lg:py-16 text-center md:text-start px-[1rem]">
             <div className="container mx-auto space-y-16 justify-center md:justify-start items-center md:items-start">
               {/* Dynamically render sections based on the Sanity data */}
-              {Object.entries(groupedPartners).map(([category, partners]) => (
+              {sortedCategories.map(([category, partners]) => (
                 <PartnerSection
                   key={category}
                   title={category}
@@ -233,13 +235,7 @@ export default function Partners({
 }
 
 // Partner logos reusable section
-function PartnerSection({
-  title,
-  logos,
-}: {
-  title: string;
-  logos: Partner[];
-}) {
+function PartnerSection({ title, logos }: { title: string; logos: Partner[] }) {
   if (!logos || logos.length === 0) return null;
 
   return (

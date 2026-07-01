@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,7 +20,6 @@ import {
 import { getSafeExternalUrl } from "@/lib/security";
 import type { Event } from "@/lib/types";
 import { groupEventsByMonth } from "@/lib/utils";
-import { format } from "date-fns";
 
 export default function UpcomingEvents({ events }: { events: Event[] }) {
   events.sort(

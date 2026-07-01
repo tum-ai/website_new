@@ -1,5 +1,5 @@
-import { registeredOfficePostalAddress } from "@/config/contact";
 import type { Metadata } from "next";
+import { registeredOfficePostalAddress } from "@/config/contact";
 
 const siteUrl = "https://www.tum-ai.com";
 const socialImagePath = "/assets/logo_new_white_standard.png";

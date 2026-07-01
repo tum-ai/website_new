@@ -1,13 +1,13 @@
 "use client";
 
+import type React from "react";
+import { useMemo, useRef, useState } from "react";
 import Layout from "@/components/Layout";
 import Logos from "@/components/Logos";
 import ResearchCard from "@/components/research/ResearchCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Partner, Research } from "@/lib/types";
-import type React from "react";
-import { useMemo, useRef, useState } from "react";
 
 export default function Research({
   initialProjects = [],

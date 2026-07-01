@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.2/schema.json",
   "vcs": {
     "enabled": false,
     "clientKind": "git",
@@ -7,22 +7,25 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": ["**/tsconfig*.json", ".next*", "dist"]
+    "includes": ["**", "!**/tsconfig*.json", "!**/.next*", "!**/dist"]
   },
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
     "indentWidth": 2
   },
-  "organizeImports": {
-    "enabled": true
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
   },
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": false
+      "preset": "none"
     },
-    "ignore": [".next*", "dist"]
+    "includes": ["**", "!**/.next*", "!**/dist"]
   },
   "javascript": {
     "formatter": {
@@ -31,14 +34,13 @@
   },
   "overrides": [
     {
-      "include": ["**/*.{ts,tsx}"],
+      "includes": ["**/*.{ts,tsx}"],
       "linter": {
         "rules": {
           "complexity": {
             "noExtraBooleanCast": "error",
-            "noMultipleSpacesInRegularExpressionLiterals": "error",
             "noUselessCatch": "error",
-            "noWith": "error"
+            "noAdjacentSpacesInRegex": "error"
           },
           "correctness": {
             "noConstAssign": "error",
@@ -65,7 +67,8 @@
             "useJsxKeyInIterable": "error",
             "useIsNan": "error",
             "useValidForDirection": "error",
-            "useYield": "error"
+            "useYield": "error",
+            "useValidTypeof": "error"
           },
           "suspicious": {
             "noAsyncPromiseExecutor": "error",
@@ -90,38 +93,35 @@
             "noSparseArray": "error",
             "noUnsafeNegation": "error",
             "useGetterReturn": "error",
-            "useValidTypeof": "error"
+            "noWith": "error"
           }
         }
       }
     },
     {
-      "include": ["**/*.{ts,tsx}"],
+      "includes": ["**/*.{ts,tsx}"],
       "javascript": {
         "globals": []
       }
     },
     {
-      "include": ["**/*.{ts,tsx}"],
+      "includes": ["**/*.{ts,tsx}"],
       "linter": {
         "rules": {
           "complexity": {
-            "noWith": "off"
+            "noArguments": "error"
           },
           "correctness": {
             "noConstAssign": "off",
             "noGlobalObjectCalls": "off",
             "noInvalidBuiltinInstantiation": "off",
             "noInvalidConstructorSuper": "off",
-            "noNewSymbol": "off",
             "noSetterReturn": "off",
             "noUndeclaredVariables": "off",
             "noUnreachable": "off",
             "noUnreachableSuper": "off"
           },
           "style": {
-            "noArguments": "error",
-            "noVar": "error",
             "useConst": "error"
           },
           "suspicious": {
@@ -133,25 +133,27 @@
             "noImportAssign": "off",
             "noRedeclare": "off",
             "noUnsafeNegation": "off",
-            "useGetterReturn": "off"
+            "useGetterReturn": "off",
+            "noWith": "off",
+            "noVar": "error"
           }
         }
       }
     },
     {
-      "include": ["**/*.{ts,tsx}"],
+      "includes": ["**/*.{ts,tsx}"],
       "linter": {
         "rules": {
           "complexity": {
             "noUselessTypeConstraint": "error"
           },
           "correctness": {
-            "noUnusedVariables": "error",
-            "useArrayLiterals": "off"
+            "noUnusedVariables": "error"
           },
           "style": {
             "noNamespace": "error",
-            "useAsConstAssertion": "error"
+            "useAsConstAssertion": "error",
+            "useArrayLiterals": "off"
           },
           "suspicious": {
             "noExplicitAny": "error",
@@ -164,7 +166,7 @@
       }
     },
     {
-      "include": ["**/*.{ts,tsx}"],
+      "includes": ["**/*.{ts,tsx}"],
       "javascript": {
         "globals": [
           "onscrollend",

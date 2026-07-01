@@ -1,8 +1,8 @@
 "use client";
 
 import "../../styles/Grid.css";
-import { pictures as squares } from "@/data/homepage";
 import { useEffect, useState } from "react";
+import { pictures as squares } from "@/data/homepage";
 
 const MIN_TILE_SIZE = 116;
 const MAX_TILE_SIZE = 214;
