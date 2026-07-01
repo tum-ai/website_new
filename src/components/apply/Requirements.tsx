@@ -1,5 +1,5 @@
-import Benefits from "@/components/Benefit";
 import type { LucideIcon } from "lucide-react";
+import Benefits from "@/components/Benefit";
 
 interface Requirement {
   icon: LucideIcon;

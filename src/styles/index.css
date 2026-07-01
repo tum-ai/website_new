@@ -10,8 +10,12 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: var(--color-dark-indigo); /* Dark Indigo as standard text in light mode */
-  background-color: var(--color-white); /* minimal-grey as standard background */
+  color: var(
+    --color-dark-indigo
+  ); /* Dark Indigo as standard text in light mode */
+  background-color: var(
+    --color-white
+  ); /* minimal-grey as standard background */
   width: 100%;
   overflow-x: hidden;
 
@@ -91,7 +95,9 @@
   --accent: var(--color-tumai-violet);
   --accent-foreground: var(--color-black);
 
-  --destructive: oklch(0.577 0.245 27.325); /* red for errors (stays standard) */
+  --destructive: oklch(
+    0.577 0.245 27.325
+  ); /* red for errors (stays standard) */
   --destructive-foreground: var(--color-white);
 
   --border: var(--color-minimal-gray); /* Frame for Inputs/Cards */
@@ -116,7 +122,7 @@
 }
 
 ::selection {
-  background-color: oklch(0.65 0.16 285.0 / 0.3);
+  background-color: oklch(0.65 0.16 285 / 0.3);
   color: var(--color-black);
 }
 
@@ -211,7 +217,10 @@ button:focus-visible {
 }
 
 .brand-header-shell {
-  background-color: rgb(var(--color-black-rgb) / var(--brand-header-opacity, 0));
+  background-color: rgb(
+    var(--color-black-rgb) /
+    var(--brand-header-opacity, 0)
+  );
   backdrop-filter: blur(var(--brand-header-blur, 0px));
   -webkit-backdrop-filter: blur(var(--brand-header-blur, 0px));
 }
@@ -246,11 +255,19 @@ button:focus-visible {
   --color-text-gray: oklch(0.4 0 0); /* use for text so it is all uniform */
 
   /* The Violet Scale */
-  --color-lavender-tint: oklch(0.9614 0.0221 302.94); /* #F5EFFF (Lavender Tint, Backgrounds/Highlights) */
-  --color-tumai-violet: oklch(0.6131 0.1751 302.89); /* #9A64D9 (Electric Lavender, Primary Brand Color) */
+  --color-lavender-tint: oklch(
+    0.9614 0.0221 302.94
+  ); /* #F5EFFF (Lavender Tint, Backgrounds/Highlights) */
+  --color-tumai-violet: oklch(
+    0.6131 0.1751 302.89
+  ); /* #9A64D9 (Electric Lavender, Primary Brand Color) */
   --color-dark-purple: oklch(0.3932 0.1047 303.55); /* #523573 (Dark Purple) */
-  --color-dark-indigo: oklch(0.2085 0.1188 288.93); /* #1b0049 (Dark Indigo, Deeper UI Elements) */
-  --color-black: oklch(0.1275 0.0481 312.72); /* #0D0214 (The deepest violet/black) */
+  --color-dark-indigo: oklch(
+    0.2085 0.1188 288.93
+  ); /* #1b0049 (Dark Indigo, Deeper UI Elements) */
+  --color-black: oklch(
+    0.1275 0.0481 312.72
+  ); /* #0D0214 (The deepest violet/black) */
 
   /* ELectric fade gradient, start- and endpoint */
   --color-electric-start: var(--color-tumai-violet); /* #9A64D9 */
@@ -369,7 +386,9 @@ button:focus-visible {
   --accent: var(--color-tumai-violet);
   --accent-foreground: var(--color-white);
 
-  --destructive: oklch(0.704 0.191 22.216); /* slightly lighter red for better contrast */
+  --destructive: oklch(
+    0.704 0.191 22.216
+  ); /* slightly lighter red for better contrast */
   --border: var(--color-dark-indigo);
   --input: var(--color-dark-indigo);
   --ring: var(--color-tumai-violet);

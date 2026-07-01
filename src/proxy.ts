@@ -1,6 +1,6 @@
-import { getJoinHostRedirectDestination } from "@/lib/redirects";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { getJoinHostRedirectDestination } from "@/lib/redirects";
 
 export function proxy(request: NextRequest) {
   const redirectDestination = getJoinHostRedirectDestination(

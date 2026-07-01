@@ -8,6 +8,12 @@ async function run(query: string, dataset: unknown[]) {
   return value.get();
 }
 
+type TestEvent = {
+  id: string;
+  images?: string[];
+  description?: string;
+};
+
 test("event query: images compacts poster+img, drops missing, description falls back", async () => {
   const dataset = [
     { _id: "asset-poster", url: "https://cdn/poster.png" },
@@ -30,8 +36,8 @@ test("event query: images compacts poster+img, drops missing, description falls 
     },
   ];
 
-  const result = await run(EVENTS_QUERY, dataset);
-  const byId = Object.fromEntries(result.map((e: any) => [e.id, e]));
+  const result = (await run(EVENTS_QUERY, dataset)) as TestEvent[];
+  const byId = Object.fromEntries(result.map((e) => [e.id, e]));
 
   assert.deepEqual(byId["evt-both"].images, [
     "https://cdn/poster.png",

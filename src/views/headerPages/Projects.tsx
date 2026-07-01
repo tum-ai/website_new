@@ -1,5 +1,5 @@
-import Layout from "@/components/Layout";
 import { ProjectCard } from "@/components/innovation/InnovationProjectCard";
+import Layout from "@/components/Layout";
 import { innovationProjects } from "@/data/projects";
 
 export default function Projects() {

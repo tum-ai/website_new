@@ -1,8 +1,8 @@
+import { X } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import type { EventFilters } from "@/lib/types.ts";
-import { X } from "lucide-react";
-import { useState } from "react";
 
 interface EventFiltersProps {
   filters: EventFilters;

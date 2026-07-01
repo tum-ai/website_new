@@ -1,10 +1,10 @@
-import Footer from "@/components/Footer";
-import { Header } from "@/components/Header";
-import { SanityLive, isSanityConfigured } from "@/lib/sanity";
 import type { Metadata } from "next";
-import { VisualEditing } from "next-sanity/visual-editing";
 import localFont from "next/font/local";
 import { draftMode } from "next/headers";
+import { VisualEditing } from "next-sanity/visual-editing";
+import Footer from "@/components/Footer";
+import { Header } from "@/components/Header";
+import { isSanityConfigured, SanityLive } from "@/lib/sanity";
 import "../styles/index.css";
 
 const manrope = localFont({

@@ -1,7 +1,7 @@
 "use client";
 
-import { MotionValue } from "framer-motion";
 import {
+  MotionValue,
   motion,
   useInView,
   useMotionValue,
@@ -88,7 +88,11 @@ function FeatureCard({
   title,
   body,
   icon,
-}: { title: string; body: string; icon: React.ReactNode }) {
+}: {
+  title: string;
+  body: string;
+  icon: React.ReactNode;
+}) {
   return (
     <div
       className="group relative overflow-hidden rounded-2xl border border-white/20 p-5 transition-all duration-300 hover:border-white/30 backdrop-blur-2xl"

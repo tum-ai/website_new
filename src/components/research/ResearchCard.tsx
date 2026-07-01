@@ -1,5 +1,7 @@
 "use client";
 
+import { ExternalLink, X } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,8 +13,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { getSafeExternalUrl } from "@/lib/security";
-import { ExternalLink, X } from "lucide-react";
-import { useState } from "react";
 
 type ResearchCardProps = {
   title: string;

@@ -1,5 +1,7 @@
 "use client";
 
+import { X } from "lucide-react";
+import { useState } from "react";
 import {
   Dialog,
   DialogClose,
@@ -9,8 +11,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { X } from "lucide-react";
-import { useState } from "react";
 
 interface ProjectCardProps {
   name: string;

@@ -1,11 +1,3 @@
-import MemberStories from "@/components/apply/MemberStories";
-import {
-  JourneySection,
-  iconColors as departmentColors,
-} from "@/components/community/JourneySection";
-import { Card } from "@/components/ui/card";
-import { stories } from "@/data/apply/applyData";
-import { type Department, departments } from "@/data/community";
 import {
   Building2,
   Code,
@@ -15,6 +7,14 @@ import {
   Scale,
   Users,
 } from "lucide-react";
+import MemberStories from "@/components/apply/MemberStories";
+import {
+  iconColors as departmentColors,
+  JourneySection,
+} from "@/components/community/JourneySection";
+import { Card } from "@/components/ui/card";
+import { stories } from "@/data/apply/applyData";
+import { type Department, departments } from "@/data/community";
 
 const departmentIcons = {
   Building2,

@@ -1,10 +1,10 @@
 "use client";
 
-import { getMobileHeaderVisibility } from "@/lib/header-visibility";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type CSSProperties, useEffect, useRef, useState } from "react";
+import { getMobileHeaderVisibility } from "@/lib/header-visibility";
 import { Button } from "./ui/button";
 
 export const Header = () => {
@@ -114,6 +114,7 @@ export const Header = () => {
     previousScrollY.current = window.scrollY;
   }, [open]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: pathname isn't read in the body, but is the intended re-run trigger on route change
   useEffect(() => {
     isMobileHeaderVisibleRef.current = true;
     setIsMobileHeaderVisible(true);

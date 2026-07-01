@@ -1,12 +1,12 @@
 "use client";
 
-import Layout from "@/components/Layout";
+import { useMemo, useState } from "react";
 import EventFiltersComponent from "@/components/events/events-filters";
 import PastEvents from "@/components/events/past-events";
 import UpcomingEvents from "@/components/events/upcoming-events";
+import Layout from "@/components/Layout";
 import type { Event, EventFilters } from "@/lib/types";
 import { filterEvents } from "@/lib/utils";
-import { useMemo, useState } from "react";
 
 export default function Events({
   initialEvents = [],

@@ -1,6 +1,6 @@
-import { aboutText } from "@/data/homepage";
 import Image from "next/image";
 import Link from "next/link";
+import { aboutText } from "@/data/homepage";
 import { Button } from "../ui/button";
 
 const PRIMARY_KEYWORDS = new Set([
