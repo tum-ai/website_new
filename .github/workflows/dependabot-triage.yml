@@ -18,6 +18,11 @@ jobs:
     if: github.event.pull_request.user.login == 'dependabot[bot]'
     runs-on: ubuntu-latest
 
+    # No checkout step in this job, so `gh` can't infer the repo from a git
+    # remote; GH_REPO tells it explicitly.
+    env:
+      GH_REPO: ${{ github.repository }}
+
     steps:
       - name: Ensure automation labels exist
         env:

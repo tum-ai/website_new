@@ -19,6 +19,11 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || github.event.schedule == '43 4 * * 1-5'
     runs-on: ubuntu-latest
 
+    # No checkout step in this job, so `gh` can't infer the repo from a git
+    # remote; GH_REPO tells it explicitly.
+    env:
+      GH_REPO: ${{ github.repository }}
+
     steps:
       # `author:app/dependabot` is the search-API qualifier for the same actor
       # dependabot-triage.yml matches via `user.login == 'dependabot[bot]'` on
@@ -39,6 +44,11 @@ jobs:
   merge:
     if: github.event_name == 'workflow_dispatch' || github.event.schedule == '17 * * * *'
     runs-on: ubuntu-latest
+
+    # No checkout step in this job, so `gh` can't infer the repo from a git
+    # remote; GH_REPO tells it explicitly.
+    env:
+      GH_REPO: ${{ github.repository }}
 
     steps:
       - name: Merge Dependabot PRs that are green and labeled for auto-merge
