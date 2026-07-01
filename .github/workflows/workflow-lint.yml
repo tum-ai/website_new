@@ -21,4 +21,7 @@ jobs:
         uses: raven-actions/actionlint@v2
       - name: Audit workflows with zizmor (advisory)
         # Advisory for now; promote to a hard gate once findings are triaged.
-        run: pipx run zizmor --no-progress .github/workflows || true
+        # continue-on-error (not `|| true`) keeps tool-crash failures visible
+        # in the step UI instead of silently swallowing them.
+        continue-on-error: true
+        run: pipx run zizmor --no-progress .github/workflows
