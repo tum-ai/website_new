@@ -1,0 +1,86 @@
+name: Dependabot Triage
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  triage:
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ensure automation labels exist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create automerge --color 1f883d --description "Dependabot PRs approved for automatic merge" --force
+
+      - name: Fetch Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2
+
+      - name: Mark safe updates for auto-merge
+        if: |
+          !github.event.pull_request.draft &&
+          steps.metadata.outputs.maintainer-changes != 'true' &&
+          (
+            steps.metadata.outputs.package-ecosystem == 'github-actions' ||
+            steps.metadata.outputs.dependency-type == 'direct:development'
+          ) &&
+          (
+            steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
+            steps.metadata.outputs.update-type == 'version-update:semver-minor'
+          )
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          gh pr edit "$PR_URL" --add-label automerge
+
+      - name: Remove auto-merge label from unsafe updates
+        if: |
+          github.event.pull_request.draft ||
+          steps.metadata.outputs.maintainer-changes == 'true' ||
+          (
+            steps.metadata.outputs.package-ecosystem != 'github-actions' &&
+            steps.metadata.outputs.dependency-type != 'direct:development'
+          ) ||
+          (
+            steps.metadata.outputs.update-type != 'version-update:semver-patch' &&
+            steps.metadata.outputs.update-type != 'version-update:semver-minor'
+          )
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          gh pr edit "$PR_URL" --remove-label automerge || true
+
+      - name: Approve safe Dependabot PRs
+        if: |
+          !github.event.pull_request.draft &&
+          steps.metadata.outputs.maintainer-changes != 'true' &&
+          (
+            steps.metadata.outputs.package-ecosystem == 'github-actions' ||
+            steps.metadata.outputs.dependency-type == 'direct:development'
+          ) &&
+          (
+            steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
+            steps.metadata.outputs.update-type == 'version-update:semver-minor'
+          )
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          if [ "$(gh pr view "$PR_URL" --json reviewDecision -q .reviewDecision)" != "APPROVED" ]; then
+            gh pr review --approve "$PR_URL"
+          fi
