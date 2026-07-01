@@ -193,7 +193,7 @@ This repo intentionally isolates local Next output directories so different work
 
 GitHub Actions runs several repository workflows. The main PR gate is:
 
-- install with pnpm 10.18.2 and Node 20
+- install with pnpm 10.18.2 and Node 24
 - run `pnpm verify`
 
 Additional workflow notes live in [docs/github-actions.md](github-actions.md).

@@ -20,6 +20,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # `author:app/dependabot` is the search-API qualifier for the same actor
+      # dependabot-triage.yml matches via `user.login == 'dependabot[bot]'` on
+      # the webhook payload; the two APIs just use different identifier forms.
       - name: Rebase open Dependabot PRs onto main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
