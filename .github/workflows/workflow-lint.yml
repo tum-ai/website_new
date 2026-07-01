@@ -1,0 +1,27 @@
+name: Workflow Lint
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/**"
+
+permissions:
+  contents: read
+
+jobs:
+  workflow-lint:
+    name: Workflow Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Lint GitHub Actions workflows
+        uses: raven-actions/actionlint@v2
+      - name: Audit workflows with zizmor (advisory)
+        # Advisory for now; promote to a hard gate once findings are triaged.
+        # continue-on-error (not `|| true`) keeps tool-crash failures visible
+        # in the step UI instead of silently swallowing them.
+        continue-on-error: true
+        run: pipx run zizmor --no-progress .github/workflows

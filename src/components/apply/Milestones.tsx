@@ -3,7 +3,7 @@ export default function Milestones() {
     {
       year: "2020",
       content: [
-        "Official Accrediation as a Student Initiative at TUM",
+        "Official Accreditation as a Student Initiative at TUM",
         "Development of a first concept for the initiative at the BusinessPlan-Seminar at UnternehmerTUM",
         "First Application Phase",
       ],
