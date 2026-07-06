@@ -53,10 +53,10 @@
     "globals": "^17.7.0",
     "groq-js": "^1.30.3",
     "react-markdown": "^10.1.0",
-    "tsx": "4.22.5",
+    "tsx": "4.23.0",
     "tw-animate-css": "^1.3.4",
     "typescript": "~5.8.3",
-    "vercel": "^54.20.0"
+    "vercel": "^54.20.1"
   },
   "pnpm": {
     "overrides": {
