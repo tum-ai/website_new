@@ -44,17 +44,17 @@ src/
 
 Current routes:
 
-- `/` -> `src/app/page.tsx` -> `src/views/Homepage.tsx`
-- `/apply` -> `src/app/apply/page.tsx` -> `src/views/apply/Apply.tsx`
-- `/community` -> `src/app/community/page.tsx` -> `src/views/headerPages/Community.tsx`
-- `/events` -> `src/app/events/page.tsx` -> `src/views/headerPages/Events.tsx`
-- `/e-lab` -> `src/app/e-lab/page.tsx` -> `src/views/headerPages/e-lab/ELab.tsx`
-- `/partners` -> `src/app/partners/page.tsx` -> `src/views/headerPages/Partners.tsx`
-- `/projects` -> `src/app/projects/page.tsx` -> `src/views/headerPages/Projects.tsx`
-- `/qanda` -> `src/app/qanda/page.tsx` -> `src/views/headerPages/QandA.tsx`
-- `/research` -> `src/app/research/page.tsx` -> `src/views/headerPages/Research.tsx`
+- `/` -> `src/app/(site)/page.tsx` -> `src/views/Homepage.tsx`
+- `/apply` -> `src/app/(site)/apply/page.tsx` -> `src/views/apply/Apply.tsx`
+- `/community` -> `src/app/(site)/community/page.tsx` -> `src/views/headerPages/Community.tsx`
+- `/events` -> `src/app/(site)/events/page.tsx` -> `src/views/headerPages/Events.tsx`
+- `/e-lab` -> `src/app/(site)/e-lab/page.tsx` -> `src/views/headerPages/e-lab/ELab.tsx`
+- `/partners` -> `src/app/(site)/partners/page.tsx` -> `src/views/headerPages/Partners.tsx`
+- `/projects` -> `src/app/(site)/projects/page.tsx` -> `src/views/headerPages/Projects.tsx`
+- `/qanda` -> `src/app/(site)/qanda/page.tsx` -> `src/views/headerPages/QandA.tsx`
+- `/research` -> `src/app/(site)/research/page.tsx` -> `src/views/headerPages/Research.tsx`
 - `/studio` -> `src/app/studio/[[...tool]]/page.tsx` -> Embedded Sanity CMS
-- legal pages live under `src/app/imprint`, `src/app/data-privacy`, and `src/app/disclaimer`
+- legal pages live under `src/app/(site)/imprint`, `src/app/(site)/data-privacy`, and `src/app/(site)/disclaimer`
 
 API handlers also live here:
 
@@ -62,7 +62,7 @@ API handlers also live here:
 - `src/app/api/getPartners/route.ts`
 - `src/app/api/getResearch/route.ts`
 
-`src/app/layout.tsx` is the global shell. It loads the Manrope font, imports global CSS, and wraps every page with the shared header and footer.
+`src/app/layout.tsx` is the minimal document shell. It loads the Manrope font and global CSS for every route. `src/app/(site)/layout.tsx` wraps only the public website pages with the shared header, footer, Sanity live preview, and visual editing tools so `/studio` remains isolated.
 
 ### `src/views/`
 
@@ -223,13 +223,14 @@ Deployment is configured for Vercel:
 
 If you need to change:
 
-- routing: `src/app/`
+- routing: `src/app/`, with public pages under `src/app/(site)/`
 - page composition: `src/views/`
 - reusable sections: `src/components/`
 - static copy: `src/data/`
 - CMS schemas: `src/sanity/schemas/`
 - live data fetching: `src/lib/sanity.ts`
 - SEO: `src/config/seo.ts`
-- global shell: `src/app/layout.tsx`, `src/components/Header.tsx`, `src/components/Footer.tsx`
+- public website shell: `src/app/(site)/layout.tsx`, `src/components/Header.tsx`, `src/components/Footer.tsx`
+- document shell: `src/app/layout.tsx`
 - global styles/tokens: `src/styles/index.css`
 - static media: `public/assets/`

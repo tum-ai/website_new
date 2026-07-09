@@ -32,7 +32,15 @@ function buildHomepageHtml() {
     writeFileSync(tsconfigPath, originalTsconfig);
   }
 
-  return readFileSync(`${DIST_DIR}/server/app/index.html`, "utf8");
+  const htmlPaths = [
+    `${DIST_DIR}/server/app/(site)/index.html`,
+    `${DIST_DIR}/server/app/index.html`,
+  ];
+  const htmlPath = htmlPaths.find((path) => existsSync(path));
+
+  assert.ok(htmlPath, "homepage HTML was not emitted by next build");
+
+  return readFileSync(htmlPath, "utf8");
 }
 
 function stripScripts(html: string) {
