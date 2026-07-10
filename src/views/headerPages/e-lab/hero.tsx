@@ -1,3 +1,6 @@
+import { ELabApplicationCta } from "@/components/e-lab/ApplicationCta";
+import { eLabApplicationCopy, eLabConfig } from "@/config/e-lab";
+
 export const Hero = () => {
   return (
     <section className="relative h-screen bg-gradient-to-br from-dark-purple via-[#220836] to-black overflow-hidden">
@@ -38,8 +41,8 @@ export const Hero = () => {
                 <div className="flex justify-center">
                   <div className="h-28 md:h-40 flex items-center">
                     <img
-                      src="/assets/e-lab/E-Lab5Logo.svg"
-                      alt="E-LAB 5.0"
+                      src={eLabConfig.heroLogo.src}
+                      alt={eLabConfig.heroLogo.alt}
                       width={400}
                       height={160}
                       className="h-28 md:h-40 w-auto object-contain"
@@ -73,16 +76,15 @@ export const Hero = () => {
 
             {/* CTA Button */}
             <div className="pt-1">
-              <a
-                href="https://tally.so/r/44KJYb"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative inline-flex items-center justify-center px-7 py-2 text-base font-normal text-minimal-gray/80 bg-dark-purple/40 border border-dark-purple/50 rounded-full cursor-not-allowed pointer-events-none"
+              <ELabApplicationCta
+                className="group relative inline-flex items-center justify-center rounded-full border px-7 py-2 text-base font-normal transition-colors duration-200"
+                openClassName="border-primary bg-primary text-white hover:border-dark-purple hover:bg-dark-purple"
+                closedClassName="cursor-not-allowed border-dark-purple/50 bg-dark-purple/40 text-minimal-gray/80 pointer-events-none"
               >
                 <span className="relative flex items-center space-x-2">
-                  <span>Applications Closed</span>
+                  <span>{eLabApplicationCopy.heroCtaLabel}</span>
                 </span>
-              </a>
+              </ELabApplicationCta>
             </div>
           </div>
         </div>

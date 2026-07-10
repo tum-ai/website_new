@@ -13,13 +13,13 @@ export const eLabConfig: ELabConfig = {
    * Update this when the next E-Lab cohort launches, e.g. "6.0".
    * If the cohort logo changes, update heroLogo at the same time.
    */
-  currentIteration: "5.0",
+  currentIteration: "6.0",
   /** Toggle this when applications open or close. */
-  applicationsOpen: false,
-  applicationUrl: "https://tally.so/r/44KJYb",
+  applicationsOpen: true,
+  applicationUrl: "https://tally.so/r/xXBkW9",
   heroLogo: {
     src: "/assets/e-lab/E-Lab5Logo.svg",
-    alt: "E-LAB 5.0",
+    alt: "E-LAB 6.0",
   },
 };
 
