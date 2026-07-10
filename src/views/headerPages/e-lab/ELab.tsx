@@ -1,10 +1,12 @@
 import type { Organization, WithContext } from "schema-dts";
+import { ELabApplicationCta } from "@/components/e-lab/ApplicationCta";
 import { ExpectationELab } from "@/components/e-lab/ExpectationELab";
 import { NotableStartups } from "@/components/e-lab/NotableStartups";
 import { Testimonials } from "@/components/e-lab/Testimonials";
 import { Timeline } from "@/components/e-lab/TimeLine";
 import JsonLd from "@/components/JsonLd";
 import FAQ from "@/components/ui/FAQ";
+import { eLabApplicationCopy } from "@/config/e-lab";
 import { faq } from "@/data/e-lab/FAQ";
 import { Hero } from "./hero";
 // import "@/styles/elab-font.css";
@@ -93,15 +95,13 @@ export default function ELab() {
                       className={`mb-5 text-3xl md:text-4xl font-bold text-black`}
                     >
                       <style></style>
-                      Application for E-Lab 5.0 is open!
+                      {eLabApplicationCopy.cardHeading}
                     </h2>
 
                     <p
                       className={`mx-auto mb-10 max-w-2xl text-base leading-relaxed text-text-gray`}
                     >
-                      Secure your spot in one of Europe’s leading AI incubators
-                      and join a network of top founders, mentors, and
-                      investors.
+                      {eLabApplicationCopy.cardDescription}
                     </p>
 
                     <div className="flex justify-center">
@@ -111,16 +111,15 @@ export default function ELab() {
 
                         {/* Sparkling effects - always visible */}
 
-                        <a
-                          href="https://tally.so/r/44KJYb"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="group relative inline-flex items-center justify-center overflow-hidden rounded-2xl px-6 py-3 text-base font-semibold text-minimal-gray/80 bg-dark-purple/40 border border-dark-purple/50 cursor-not-allowed pointer-events-none"
+                        <ELabApplicationCta
+                          className="group relative inline-flex items-center justify-center overflow-hidden rounded-2xl border px-6 py-3 text-base font-semibold transition-colors duration-200"
+                          openClassName="border-primary bg-primary text-white hover:border-dark-purple hover:bg-dark-purple"
+                          closedClassName="cursor-not-allowed border-dark-purple/50 bg-dark-purple/40 text-minimal-gray/80 pointer-events-none"
                         >
                           <span className="relative z-10 flex items-center gap-2">
-                            <span>Applications Closed</span>
+                            <span>{eLabApplicationCopy.cardCtaLabel}</span>
                           </span>
-                        </a>
+                        </ELabApplicationCta>
                       </div>
                     </div>
                   </div>
