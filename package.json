@@ -49,7 +49,7 @@
     "@types/node": "^26.1.1",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.1.2",
-    "autoprefixer": "^10.5.2",
+    "autoprefixer": "^10.5.3",
     "globals": "^17.7.0",
     "groq-js": "^1.30.3",
     "react-markdown": "^10.1.0",
