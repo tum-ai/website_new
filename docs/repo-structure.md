@@ -214,7 +214,6 @@ Deployment is configured for Vercel:
 
 ## Known Legacy Or Confusing Areas
 
-- `src/data/routes.tsx` is a leftover React Router-style route table. It is not the runtime source of truth anymore.
 - `/api/getNotes` is legacy naming. It returns events, not notes.
 - some components use `next/image`, many still use plain `<img>` tags
 - route metadata lives in `src/config/seo.ts`; adding a page usually means updating both `src/app/` and `src/config/seo.ts`

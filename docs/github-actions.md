@@ -26,7 +26,7 @@ Major updates and non-safe dependency updates still require manual review.
 
 `.github/dependabot.yml` currently:
 
-- checks the root app, `packages/notion-data`, and GitHub Actions daily
+- checks the root app and GitHub Actions daily
 - groups minor/patch updates to reduce PR noise
 - groups security updates separately
 
