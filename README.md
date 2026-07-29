@@ -118,10 +118,6 @@ If you need to:
 - change SEO or JSON-LD: edit `src/config/seo.ts`
 - change CMS field mapping or add tables: edit schemas in `src/sanity/schemas/`, then update the GROQ queries in `src/lib/sanity-queries.ts`
 
-One important legacy file remains:
-
-- `src/data/routes.tsx` is not runtime routing anymore. App Router files in `src/app/` are the source of truth.
-
 ## Contributor Docs
 
 - [docs/repo-structure.md](docs/repo-structure.md): architecture and directory map
