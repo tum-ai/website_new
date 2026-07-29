@@ -14,6 +14,14 @@ const appLayout = readFileSync(
   new URL("../src/app/layout.tsx", import.meta.url),
   "utf8",
 );
+const siteLayout = readFileSync(
+  new URL("../src/app/(site)/layout.tsx", import.meta.url),
+  "utf8",
+);
+const studioLayout = readFileSync(
+  new URL("../src/app/studio/[[...tool]]/layout.tsx", import.meta.url),
+  "utf8",
+);
 
 test("Sanity Studio presentation can enable website draft mode", () => {
   assert.match(sanityConfig, /presentationTool/);
@@ -22,8 +30,13 @@ test("Sanity Studio presentation can enable website draft mode", () => {
   assert.match(draftModeRoute, /SANITY_API_READ_TOKEN/);
 });
 
-test("root layout wires Sanity live preview for draft sessions", () => {
-  assert.match(appLayout, /SanityLive/);
-  assert.match(appLayout, /includeDrafts={isDraftMode}/);
-  assert.match(appLayout, /VisualEditing/);
+test("public site layout wires Sanity live preview for draft sessions", () => {
+  assert.match(siteLayout, /SanityLive/);
+  assert.match(siteLayout, /includeDrafts={isDraftMode}/);
+  assert.match(siteLayout, /VisualEditing/);
+});
+
+test("Sanity Studio is isolated from the public website shell", () => {
+  assert.doesNotMatch(appLayout, /Header|Footer|SanityLive|VisualEditing/);
+  assert.doesNotMatch(studioLayout, /Header|Footer|SanityLive|VisualEditing/);
 });

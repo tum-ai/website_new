@@ -1,10 +1,5 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { draftMode } from "next/headers";
-import { VisualEditing } from "next-sanity/visual-editing";
-import Footer from "@/components/Footer";
-import { Header } from "@/components/Header";
-import { isSanityConfigured, SanityLive } from "@/lib/sanity";
 import "../styles/index.css";
 
 const manrope = localFont({
@@ -28,22 +23,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { isEnabled: isDraftMode } = await draftMode();
-
   return (
     <html lang="en">
-      <body className={manrope.variable}>
-        <Header />
-        {children}
-        <Footer />
-        {isSanityConfigured ? <SanityLive includeDrafts={isDraftMode} /> : null}
-        {isDraftMode ? <VisualEditing /> : null}
-      </body>
+      <body className={manrope.variable}>{children}</body>
     </html>
   );
 }
