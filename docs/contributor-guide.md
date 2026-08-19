@@ -38,7 +38,7 @@ Use `pnpm verify` before handoff for the normal repo gate. Use `pnpm typecheck` 
 
 Pattern to copy:
 
-- thin route file in `src/app/`
+- thin route file in `src/app/(site)/`
 - actual page assembly in `src/views/`
 
 ### Change global navigation or footer
@@ -47,7 +47,8 @@ Edit:
 
 - `src/components/Header.tsx`
 - `src/components/Footer.tsx`
-- `src/app/layout.tsx` if the global shell itself changes
+- `src/app/(site)/layout.tsx` if the public website shell itself changes
+- `src/app/layout.tsx` only for document-wide font or metadata defaults
 
 ### Change static copy or curated content
 

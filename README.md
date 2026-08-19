@@ -87,7 +87,7 @@ Preview flow:
 
 ## How The App Is Structured
 
-- `src/app/` owns routing, route handlers, metadata wiring, and the root layout. It also contains `src/app/studio/` for the embedded CMS.
+- `src/app/` owns routing, route handlers, metadata wiring, and layouts. Public website pages live under `src/app/(site)/`; `src/app/studio/` is the isolated embedded CMS.
 - `src/views/` holds page-level composition.
 - `src/components/` holds reusable sections and shared UI primitives.
 - `src/data/` holds static copy and curated data arrays.
@@ -110,10 +110,11 @@ Three API routes mirror the same cached data as JSON:
 
 If you need to:
 
-- add or change a route: start in `src/app/`, then connect it to a view in `src/views/`
+- add or change a public route: start in `src/app/(site)/`, then connect it to a view in `src/views/`
 - update static page copy: check `src/data/` first, then the matching component
 - change events, partners, or research data: visit `/studio` locally or on the staging deployment
-- change global nav, footer, or font setup: edit `src/app/layout.tsx`, `src/components/Header.tsx`, `src/components/Footer.tsx`
+- change global nav or footer: edit `src/app/(site)/layout.tsx`, `src/components/Header.tsx`, `src/components/Footer.tsx`
+- change font setup or metadata defaults: edit `src/app/layout.tsx`
 - change shared styling or tokens: edit `src/styles/index.css`
 - change SEO or JSON-LD: edit `src/config/seo.ts`
 - change CMS field mapping or add tables: edit schemas in `src/sanity/schemas/`, then update the GROQ queries in `src/lib/sanity-queries.ts`
