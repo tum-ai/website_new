@@ -124,7 +124,6 @@ For a new page, update both:
 
 ## Known Footguns
 
-- `src/data/routes.tsx` is legacy and not used for runtime routing
 - `/api/getNotes` returns events despite the name
 - `src/app/globals.css` only re-imports `src/styles/index.css`
 - changing only an API route will not affect a page that fetches directly from `src/lib/sanity.ts`
