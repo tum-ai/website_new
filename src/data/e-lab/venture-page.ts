@@ -45,7 +45,7 @@ export const eLabMetrics = [
     label: "applications per batch",
     from: 0,
     to: 500,
-    prefix: "around ",
+    prefix: "~",
   },
   {
     id: "funding",

@@ -37,7 +37,7 @@ test("E-Lab metrics match the approved proof points", () => {
       label,
     ]),
     [
-      ["around 500", "applications per batch"],
+      ["~500", "applications per batch"],
       ["€7M+", "raised by E-Lab ventures"],
       ["5", "E-Lab Iterations"],
     ],
