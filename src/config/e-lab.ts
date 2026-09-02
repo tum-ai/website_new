@@ -1,7 +1,9 @@
-type ELabConfig = {
+/** Cohort-specific settings shared by the E-Lab page and application CTAs. */
+export type ELabConfig = {
   currentIteration: string;
   applicationsOpen: boolean;
   applicationUrl: string;
+  applicationDeadline: string;
   heroLogo: {
     src: string;
     alt: string;
@@ -17,6 +19,7 @@ export const eLabConfig: ELabConfig = {
   /** Toggle this when applications open or close. */
   applicationsOpen: true,
   applicationUrl: "https://tally.so/r/xXBkW9",
+  applicationDeadline: "26.09.2026 at 23:59",
   heroLogo: {
     src: "/assets/e-lab/E-Lab5Logo.svg",
     alt: "E-LAB 6.0",
@@ -27,6 +30,7 @@ const cohortName = `E-Lab ${eLabConfig.currentIteration}`;
 
 export const eLabApplicationCopy = {
   cohortName,
+  deadline: eLabConfig.applicationDeadline,
   heroCtaLabel: eLabConfig.applicationsOpen
     ? `${cohortName} - Apply Now!`
     : `${cohortName} - Applications Closed`,

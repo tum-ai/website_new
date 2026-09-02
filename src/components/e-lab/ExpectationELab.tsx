@@ -11,6 +11,8 @@ import {
 import { Handshake, Monitor, Rocket, Users } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
+import { eLabMetrics, type Metric } from "@/data/e-lab/venture-page";
+
 export function ExpectationELab() {
   return (
     <section className="relative w-full bg-white py-16">
@@ -62,20 +64,9 @@ export function ExpectationELab() {
           {/* Simple stats */}
           <div className="mt-16">
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
-              <Stat
-                title={"E-Lab Startups since 2022"}
-                from={0}
-                to={38}
-                suffix=""
-              />
-              <Stat
-                title={"raised by E-Lab lab ventures"}
-                from={0}
-                to={5}
-                suffix="M+"
-                isMoney
-              />
-              <Stat title={"E-Lab Iterations"} from={0} to={4} suffix="" />
+              {eLabMetrics.map((metric) => (
+                <Stat key={metric.id} metric={metric} />
+              ))}
             </div>
           </div>
         </div>
@@ -126,19 +117,8 @@ function FeatureCard({
   );
 }
 
-function Stat({
-  title,
-  from = 0,
-  to,
-  suffix = "",
-  isMoney = false,
-}: {
-  title: string;
-  from?: number;
-  to: number;
-  suffix?: string;
-  isMoney?: boolean;
-}) {
+function Stat({ metric }: { metric: Metric }) {
+  const { label, from, to, prefix = "", suffix = "" } = metric;
   const ref = useRef<HTMLDivElement | null>(null);
   const inView = useInView(ref, { once: true, margin: "-50px" });
   const mv = useMotionValue(from);
@@ -155,10 +135,11 @@ function Stat({
     <div ref={ref} className="text-center">
       <motion.div
         style={{ fontVariantNumeric: "tabular-nums" }}
-        className={`text-6xl font-bold`}
+        className="text-4xl font-bold sm:text-5xl"
       >
         <span
-          className="inline-flex items-center justify-center rounded-xl px-3 py-2 text-white shadow-lg backdrop-blur-2xl border border-white/30"
+          aria-label={prefix + to + suffix}
+          className="inline-flex items-center justify-center whitespace-nowrap rounded-xl px-3 py-2 text-white shadow-lg backdrop-blur-2xl border border-white/30"
           style={{
             background:
               "linear-gradient(135deg, rgba(124, 58, 237, 0.5) 0%, rgba(168, 85, 247, 0.45) 33%, rgba(236, 72, 153, 0.45) 66%, rgba(99, 102, 241, 0.5) 100%)",
@@ -167,19 +148,10 @@ function Stat({
               "0 8px 32px rgba(124, 58, 237, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 rgba(255, 255, 255, 0.1)",
           }}
         >
-          {isMoney ? (
-            <AnimatedText
-              value={rounded}
-              prefix="€"
-              suffix={suffix}
-              decimals={0}
-            />
-          ) : (
-            <AnimatedText value={rounded} suffix={suffix} />
-          )}
+          <AnimatedText value={rounded} prefix={prefix} suffix={suffix} />
         </span>
       </motion.div>
-      <div className={`mt-2 text-sm text-text-gray`}>{title}</div>
+      <div className="mt-2 text-sm text-text-gray">{label}</div>
     </div>
   );
 }

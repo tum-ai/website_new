@@ -2,72 +2,39 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { programSteps } from "@/data/e-lab/venture-page";
+
 export const Timeline = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
   const timelineRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (timelineRef.current) {
-        const rect = timelineRef.current.getBoundingClientRect();
-        const timelineTop = rect.top;
-        const timelineHeight = rect.height;
-        const windowHeight = window.innerHeight;
+      if (!timelineRef.current) return;
 
-        // Calculate progress based on how much of the timeline is visible
-        const visibleTop = Math.max(0, windowHeight - timelineTop);
-        const visibleHeight = Math.min(visibleTop, timelineHeight);
-        const progress = Math.min(
-          1,
-          Math.max(0, visibleHeight / timelineHeight),
-        );
-
-        setScrollProgress(progress);
-      }
+      const rect = timelineRef.current.getBoundingClientRect();
+      const visibleTop = Math.max(0, window.innerHeight - rect.top);
+      const visibleHeight = Math.min(visibleTop, rect.height);
+      setScrollProgress(Math.min(1, Math.max(0, visibleHeight / rect.height)));
     };
 
-    window.addEventListener("scroll", handleScroll);
-    handleScroll(); // Initial calculation
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const timelineItems = [
-    { title: "Start", description: "April", side: "right" },
-    {
-      title: "Onboarding Weekend",
-      description: "3 days intensive",
-      side: "left",
-    },
-    { title: "Education Sessions", description: "Learning", side: "right" },
-    { title: "Build & Iterate I", description: "4 weeks", side: "left" },
-    {
-      title: "Midterm-Pitch",
-      description: "Initial Feedback",
-      side: "right",
-    },
-    { title: "Build & Iterate II", description: "6 weeks", side: "left" },
-    {
-      title: "Selection Day",
-      description: "The Final Test",
-      side: "right",
-    },
-    { title: "Final Pitch", description: "July", side: "left" },
-  ];
   return (
-    <section className="flex flex-col items-center justify-center py-12 sm:py-12 lg:py-16 bg-white w-full">
-      <h2
-        className={`text-title sm:text-2xl md:text-[2rem] tracking-tight font-semibold mb-8 text-black text-center`}
-      >
+    <section className="flex w-full flex-col items-center justify-center bg-white px-4 py-12 lg:py-16">
+      <h2 className="mb-8 text-center text-title font-semibold tracking-tight text-black sm:text-2xl md:text-[2rem]">
         Program
       </h2>
-      <div ref={timelineRef} className="relative max-w-4xl mx-auto w-full">
-        {/* Vertical line with gradient animation */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 w-1 top-8 bottom-8 bg-gray-300 rounded-full">
+      <div ref={timelineRef} className="relative mx-auto w-full max-w-5xl">
+        <div className="absolute top-8 bottom-8 left-6 w-1 -translate-x-1/2 rounded-full bg-gray-300 md:left-1/2">
           <div
-            className="absolute top-0 left-0 w-full bg-gradient-to-b from-primary to-purple-300 rounded-full transition-all duration-300 ease-out"
+            className="absolute top-0 left-0 w-full rounded-full bg-gradient-to-b from-primary to-purple-300 transition-all duration-300 ease-out"
             style={{
-              height: `${scrollProgress * 100}%`,
+              height: scrollProgress * 100 + "%",
               boxShadow:
                 scrollProgress > 0
                   ? "0 0 20px rgba(168, 85, 247, 0.5)"
@@ -76,95 +43,77 @@ export const Timeline = () => {
           />
         </div>
 
-        {/* Timeline items */}
-        <div className="relative space-y-16">
-          {timelineItems.map((item, index) => {
-            const itemProgress = Math.max(
-              0,
-              Math.min(1, scrollProgress * timelineItems.length - index),
-            );
-            const isActive = itemProgress > 0;
+        <ol className="relative space-y-14 md:space-y-16">
+          {programSteps.map((item, index) => {
+            const isActive =
+              Math.max(
+                0,
+                Math.min(1, scrollProgress * programSteps.length - index),
+              ) > 0;
+            const isLeft = index % 2 === 0;
+            const contentPosition = isLeft
+              ? "md:mr-auto md:pr-12 md:text-right"
+              : "md:ml-auto md:pr-0 md:pl-12";
+            const inactiveOffset = isLeft
+              ? "md:translate-x-8"
+              : "md:-translate-x-8";
 
             return (
-              <div key={index} className="flex items-center relative">
-                {item.side === "left" ? (
-                  <>
-                    <div className="w-1/2 pr-12 text-right">
-                      <div
-                        className={`transition-all duration-500 ${isActive ? "translate-x-0 opacity-100" : "translate-x-8 opacity-60"}`}
-                      >
-                        <h3
-                          className={`font-semibold text-xl mb-2 transition-colors duration-300 ${isActive ? "text-dark-purple" : "text-gray-800"}`}
-                        >
-                          {item.title}
-                        </h3>
-                        <p
-                          className={`text-sm transition-colors duration-300 ${isActive ? "text-primary" : "text-text-gray"}`}
-                        >
-                          {item.description}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
-                      <div
-                        className={`w-8 h-8 rounded-full border-4 transition-all duration-300 ${
-                          isActive
-                            ? "bg-primary border-purple-300 shadow-lg shadow-purple-300/50 scale-110"
-                            : "bg-white border-gray-400 scale-100"
-                        }`}
-                      >
-                        {isActive && (
-                          <div className="absolute inset-0 rounded-full bg-dark-purple animate-ping opacity-30" />
-                        )}
-                      </div>
-                    </div>
-                    <div className="w-1/2"></div>
-                  </>
-                ) : (
-                  <>
-                    <div className="w-1/2"></div>
-                    <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
-                      <div
-                        className={`w-8 h-8 rounded-full border-4 transition-all duration-300 ${
-                          isActive
-                            ? "bg-primary border-purple-300 shadow-lg shadow-purple-300/50 scale-110"
-                            : "bg-white border-gray-400 scale-100"
-                        }`}
-                      >
-                        {isActive && (
-                          <div className="absolute inset-0 rounded-full bg-purple-600 animate-ping opacity-30" />
-                        )}
-                      </div>
-                    </div>
-                    <div className="w-1/2 pl-12">
-                      <div
-                        className={`transition-all duration-500 ${isActive ? "translate-x-0 opacity-100" : "-translate-x-8 opacity-60"}`}
-                      >
-                        <h3
-                          className={`font-semibold text-xl mb-2 transition-colors duration-300 ${isActive ? "text-dark-purple" : "text-gray-800"}`}
-                        >
-                          {item.title}
-                        </h3>
-                        <p
-                          className={`text-sm transition-colors duration-300 ${isActive ? "text-primary" : "text-gray-600"}`}
-                        >
-                          {item.description}
-                        </p>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
+              <li key={item.id} className="relative min-h-24">
+                <div className="absolute top-1 left-6 z-10 -translate-x-1/2 md:left-1/2">
+                  <div
+                    className={
+                      "relative h-8 w-8 rounded-full border-4 transition-all duration-300 " +
+                      (isActive
+                        ? "scale-110 border-purple-300 bg-primary shadow-lg shadow-purple-300/50"
+                        : "scale-100 border-gray-400 bg-white")
+                    }
+                  >
+                    {isActive ? (
+                      <div className="absolute inset-0 animate-ping rounded-full bg-dark-purple opacity-30 motion-reduce:animate-none" />
+                    ) : null}
+                  </div>
+                </div>
+
+                <div
+                  className={
+                    "w-full pl-16 text-left md:w-1/2 md:pl-0 " + contentPosition
+                  }
+                >
+                  <div
+                    className={
+                      "transition-all duration-500 motion-reduce:transform-none " +
+                      (isActive
+                        ? "translate-x-0 opacity-100"
+                        : inactiveOffset + " opacity-60")
+                    }
+                  >
+                    <h3
+                      className={
+                        "mb-2 text-xl font-semibold leading-snug transition-colors duration-300 " +
+                        (isActive ? "text-dark-purple" : "text-gray-800")
+                      }
+                    >
+                      {item.title}
+                    </h3>
+                    <p
+                      className={
+                        "text-sm leading-relaxed transition-colors duration-300 " +
+                        (isActive ? "text-primary" : "text-text-gray")
+                      }
+                    >
+                      {item.description}
+                    </p>
+                  </div>
+                </div>
+              </li>
             );
           })}
-        </div>
+        </ol>
       </div>
-      {/* Subtitle */}
-      <div className="text-center mt-12">
-        <p className={`text-base text-text-gray font-medium`}>
-          Your journey continues...
-        </p>
-      </div>
+      <p className="mt-12 text-center text-base font-medium text-text-gray">
+        Your journey continues...
+      </p>
     </section>
   );
 };
