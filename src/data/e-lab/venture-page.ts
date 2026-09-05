@@ -51,9 +51,9 @@ export const eLabMetrics = [
     id: "funding",
     label: "raised by E-Lab ventures",
     from: 0,
-    to: 7,
+    to: 8,
     prefix: "€",
-    suffix: "M+",
+    suffix: "M",
   },
   {
     id: "iterations",
