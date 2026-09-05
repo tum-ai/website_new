@@ -441,6 +441,11 @@ button:focus-visible {
     will-change: transform;
   }
 
+  .animate-scroll-left:hover,
+  .animate-scroll-left:focus-within {
+    animation-play-state: paused;
+  }
+
   @keyframes journey-card-enter {
     0% {
       opacity: 0;
@@ -502,6 +507,15 @@ button:focus-visible {
 
     .animate-scroll-left {
       animation: none;
+      transform: none;
+    }
+
+    .marquee-viewport {
+      overflow-x: auto;
+    }
+
+    .marquee-copy {
+      display: none;
     }
   }
 }

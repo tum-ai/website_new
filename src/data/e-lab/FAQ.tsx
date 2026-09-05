@@ -1,3 +1,5 @@
+import { eLabApplicationCopy } from "@/config/e-lab";
+
 export const faq = [
   {
     question: "Can I apply as a solo founder?",
@@ -38,7 +40,7 @@ export const faq = [
 
   {
     question: "When is the application deadline?",
-    answer: "The application phase closes on 21.09.2025 at 23:59.",
+    answer: `The application phase closes on ${eLabApplicationCopy.deadline}.`,
   },
   {
     question: "Can I apply with a team?",
@@ -63,6 +65,6 @@ export const faq = [
   {
     question: "Can I apply if I’m still a student or working full-time?",
     answer:
-      "Yes. Many of our participants balance studies or jobs alongside the program. The main requirement is that you can commit enough time to make consistent progress, attend key workshops, and engage with mentors.",
+      "Yes. Many of our participants balance studies or jobs alongside the program. The main requirement is that you can commit enough time to make consistent progress, attend the workshops, and engage with mentors.",
   },
 ];
