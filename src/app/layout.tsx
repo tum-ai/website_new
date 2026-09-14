@@ -22,9 +22,24 @@ export const metadata: Metadata = {
   description:
     "TUM.ai is Germany's leading AI student initiative, connecting students, research, and industry.",
   icons: {
-    icon: "/icon.svg",
-    shortcut: "/icon.svg",
-    apple: "/icon.svg",
+    icon: [
+      {
+        url: "/assets/favicon-96.png",
+        type: "image/png",
+        sizes: "96x96",
+      },
+      { url: "/icon.svg", type: "image/svg+xml", sizes: "any" },
+    ],
+    shortcut: {
+      url: "/assets/favicon-96.png",
+      type: "image/png",
+      sizes: "96x96",
+    },
+    apple: {
+      url: "/assets/apple-touch-icon.png",
+      type: "image/png",
+      sizes: "180x180",
+    },
   },
 };
 
