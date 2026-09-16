@@ -10,6 +10,7 @@ const KNOWN_NEXT_OUTPUT_DIRS = [
   ".next-webpack",
 ];
 
+/** @param {{ preserve?: string[] }} [options] */
 export function clearNextArtifacts({ preserve = [] } = {}) {
   const preserved = new Set(preserve);
 

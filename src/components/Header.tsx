@@ -15,6 +15,7 @@ export const Header = () => {
   const [isMobileHeaderVisible, setIsMobileHeaderVisible] = useState(true);
   const pathname = usePathname();
   const isHome = pathname === "/";
+  const isPartners = pathname === "/partners";
   const previousScrollY = useRef(0);
   const showLogoRef = useRef(false);
   const headerOpacityRef = useRef(0);
@@ -65,6 +66,7 @@ export const Header = () => {
           previousScrollY: previousScrollY.current,
           isMenuOpen: open,
           isCurrentlyVisible: isMobileHeaderVisibleRef.current,
+          keepVisible: isPartners,
         });
 
         if (isMobileHeaderVisibleRef.current !== nextMobileHeaderVisible) {
@@ -103,7 +105,7 @@ export const Header = () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleScroll);
     };
-  }, [isHome, open]);
+  }, [isHome, isPartners, open]);
 
   useEffect(() => {
     if (open) {
@@ -144,7 +146,7 @@ export const Header = () => {
   }, [open]);
 
   const headerStyle = {
-    "--brand-header-opacity": headerOpacity,
+    "--brand-header-opacity": isPartners ? 0.96 : headerOpacity,
     "--brand-header-blur": `${headerBlur}px`,
   } as CSSProperties;
   const minimalIconButtonStyle = {
@@ -159,7 +161,7 @@ export const Header = () => {
   return (
     <>
       <div
-        className={`brand-header-shell fixed top-0 left-0 z-40 flex h-16 w-full items-center px-6 py-10 transition-transform duration-300 ${
+        className={`brand-header-shell fixed top-0 left-0 z-40 flex h-16 w-full items-center ${isPartners ? "px-4 md:px-6" : "px-6"} py-10 transition-transform duration-300 ${
           isMobileHeaderVisible
             ? "translate-y-0"
             : "-translate-y-full md:translate-y-0"
@@ -172,13 +174,17 @@ export const Header = () => {
         <Link
           href="/"
           className={`transition-opacity duration-300 flex-shrink-0 ${
-            showLogo ? "opacity-100" : "opacity-0"
+            showLogo || isPartners ? "opacity-100" : "opacity-0"
           }`}
         >
           <img
             src="/assets/tum_ai_logo_new.svg"
             alt="Logo"
-            className="h-10 w-auto flex-shrink-0"
+            className={
+              isPartners
+                ? "h-6 min-[360px]:h-7 w-auto flex-shrink-0 xl:h-10"
+                : "h-10 w-auto flex-shrink-0"
+            }
           />
         </Link>
         {/* Desktop nav */}
@@ -201,12 +207,21 @@ export const Header = () => {
             variant="outline2"
             className="rounded-md px-6 py-3 text-center flex-shrink-0"
           >
-            <Link href="/apply">Become a Member</Link>
+            {isPartners ? (
+              <a href="#partner-contact">Become a partner</a>
+            ) : (
+              <Link href="/apply">Become a Member</Link>
+            )}
           </Button>
         </div>
 
         {/* Mobile nav button */}
-        <div className="ml-auto flex xl:hidden ">
+        <div className="ml-auto flex items-center gap-3 xl:hidden">
+          {isPartners ? (
+            <Button asChild variant="primary" className="h-10 px-3 text-xs">
+              <a href="#partner-contact">Become a partner</a>
+            </Button>
+          ) : null}
           <button
             className="flex h-9 w-9 items-center justify-center rounded-sm bg-transparent p-0 text-white transition-opacity duration-200 hover:opacity-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
             type="button"
@@ -274,13 +289,23 @@ export const Header = () => {
             variant="outline2"
             className="w-full rounded-md px-6 py-3 text-center sm:w-auto"
           >
-            <Link
-              href="/apply"
-              onClick={() => setOpen(false)}
-              className="w-full"
-            >
-              Become a Member
-            </Link>
+            {isPartners ? (
+              <a
+                href="#partner-contact"
+                onClick={() => setOpen(false)}
+                className="w-full"
+              >
+                Become a partner
+              </a>
+            ) : (
+              <Link
+                href="/apply"
+                onClick={() => setOpen(false)}
+                className="w-full"
+              >
+                Become a Member
+              </Link>
+            )}
           </Button>
         </nav>
       </div>

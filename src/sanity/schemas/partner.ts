@@ -26,7 +26,8 @@ export const partnerType = defineType({
       name: "category",
       title: "Category",
       type: "string",
-      description: "Used to group partners into sections on the frontend.",
+      description:
+        "Legacy partner category, retained for existing integrations.",
       options: {
         list: [
           { title: "Technical Partner", value: "Technical Partners" },
@@ -36,6 +37,27 @@ export const partnerType = defineType({
           { title: "Initiative", value: "Initiatives" },
         ],
       },
+    }),
+    defineField({
+      name: "tier",
+      title: "Partner tier",
+      type: "string",
+      description:
+        "Controls logo prominence. Tier names are not displayed on the website. Leave empty to use the partner-page launch defaults.",
+      options: {
+        list: [
+          { title: "Gold", value: "gold" },
+          { title: "Silver", value: "silver" },
+          { title: "Bronze", value: "bronze" },
+          { title: "Supporter", value: "supporter" },
+        ],
+      },
+    }),
+    defineField({
+      name: "featured",
+      title: "Featured within tier",
+      type: "boolean",
+      initialValue: false,
     }),
   ],
 });

@@ -6,6 +6,7 @@ interface MobileHeaderVisibilityInput {
   previousScrollY: number;
   isMenuOpen: boolean;
   isCurrentlyVisible: boolean;
+  keepVisible?: boolean;
 }
 
 export function getMobileHeaderVisibility({
@@ -13,8 +14,9 @@ export function getMobileHeaderVisibility({
   previousScrollY,
   isMenuOpen,
   isCurrentlyVisible,
+  keepVisible = false,
 }: MobileHeaderVisibilityInput) {
-  if (isMenuOpen || scrollY <= MOBILE_HEADER_TOP_OFFSET) {
+  if (keepVisible || isMenuOpen || scrollY <= MOBILE_HEADER_TOP_OFFSET) {
     return true;
   }
 
