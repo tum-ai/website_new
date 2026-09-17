@@ -35,6 +35,7 @@ import type { Partner } from "@/lib/types";
 import "@/styles/partners.css";
 
 const reasonIcons = [Users, BriefcaseBusiness, Network];
+const partnerTierLabels = { gold: "Gold", silver: "Silver", bronze: "Bronze" };
 
 function PartnerTile({
   partner,
@@ -47,7 +48,7 @@ function PartnerTile({
   const logo = <PartnerLogo name={partner.name} image={partner.image} />;
   const tierLabel =
     !compact && partner.tier && partner.tier !== "supporter"
-      ? { gold: "Gold", silver: "Silver", bronze: "Bronze" }[partner.tier]
+      ? partnerTierLabels[partner.tier]
       : null;
   const content =
     partner.image === "/assets/partners/logos/mutagent.svg" ? (
@@ -58,7 +59,7 @@ function PartnerTile({
     ) : (
       logo
     );
-  const className = `partner-logo-tile${compact ? " partner-logo-tile-compact" : ` partner-logo-tier-${partner.tier}`}`;
+  const className = `partner-logo-tile${compact ? " partner-logo-tile-compact" : ""}`;
   return href ? (
     <a
       href={href}
@@ -330,17 +331,25 @@ export default function Partners({
                   (partner) => partner.tier === tier,
                 );
                 return group.length ? (
-                  <div
-                    className={`partner-logo-row partner-logo-row-${index + 1}`}
+                  <section
+                    className="partner-tier-group"
+                    aria-labelledby={`partner-tier-${tier}`}
                     key={tier}
                   >
-                    {group.map((partner) => (
-                      <PartnerTile
-                        key={getPartnerKey(partner.name)}
-                        partner={partner}
-                      />
-                    ))}
-                  </div>
+                    <h3 id={`partner-tier-${tier}`}>
+                      {partnerTierLabels[tier]} partners
+                    </h3>
+                    <div
+                      className={`partner-logo-row partner-logo-row-${index + 1}`}
+                    >
+                      {group.map((partner) => (
+                        <PartnerTile
+                          key={getPartnerKey(partner.name)}
+                          partner={partner}
+                        />
+                      ))}
+                    </div>
+                  </section>
                 ) : null;
               })}
             </div>

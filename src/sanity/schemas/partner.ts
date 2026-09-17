@@ -43,7 +43,7 @@ export const partnerType = defineType({
       title: "Partner tier",
       type: "string",
       description:
-        "Controls logo prominence and the Gold, Silver, or Bronze card outline. These partners also appear in the hero marquee. Leave empty to use the partner-page launch defaults.",
+        "Groups partners under the Gold, Silver, or Bronze heading and controls logo prominence. These partners also appear in the hero marquee. Leave empty to use the partner-page launch defaults.",
       options: {
         list: [
           { title: "Gold", value: "gold" },
