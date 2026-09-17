@@ -26,3 +26,11 @@ Copyright © 2026 JetBrains s.r.o. JetBrains and the JetBrains logo are trademar
 
 - `logos/google.webp`: https://www.google.com/images/branding/google_wordmark/v1/1x/googlelogo_color_white_background_272x92dp.png
 - `logos/openai-wordmark.webp`: https://bookface-static.ycombinator.com/assets/ycdc/logos/openai-logo-transparent-c650fb6bfd7073c21245510b8860f3d3d72fcf7a1ca3deed267af5a97f24616e.png (YC official company directory artwork)
+
+## Hero marquee variants (2026-09-17)
+
+- `marquee/google.png`: https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png (official transparent color wordmark).
+- `marquee/jetbrains.svg`: https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.zip (`jetbrains-mono-white.svg`, official white variant, unchanged).
+- `marquee/reply.svg`: https://www.reply.com/ (official footer SVG, original green and white artwork).
+
+The marquee reuses transparent HRT, Unite, and Mutagent artwork above. OpenAI, Anthropic, Spherecast, Dryft, and any new CMS partner use readable text until verified dark-background artwork is supplied. The white-card partner wall retains its existing full-color logos.

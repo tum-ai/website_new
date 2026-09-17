@@ -7,6 +7,10 @@ import {
 } from "../data/partners";
 
 export const PARTNER_EMAIL = "partners@tum-ai.com";
+export const PARTNER_EMAIL_CC = [
+  "silas.zamzow@tum-ai.com",
+  "kim.schlemmer@tum-ai.com",
+] as const;
 export const PARTNER_BOOKING_URL =
   "https://cal.eu/silaszamzow/tumai-quick-chat";
 
@@ -89,7 +93,7 @@ export function getPartnershipEmailUrl(selection: PartnershipSelection) {
   const subject = intent
     ? `Partnership request — ${intent.shortLabel}`
     : "Partnership request — TUM.ai";
-  return `mailto:${PARTNER_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Hi TUM.ai team,\n\n${getPartnershipContext(selection)}\n\n`)}`;
+  return `mailto:${PARTNER_EMAIL}?cc=${encodeURIComponent(PARTNER_EMAIL_CC.join(","))}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Hi TUM.ai team,\n\n${getPartnershipContext(selection)}\n\n`)}`;
 }
 
 export function getPartnershipBookingUrl(selection: PartnershipSelection) {

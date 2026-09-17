@@ -9,15 +9,15 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import {
-  BookingLink,
   ContactActions,
   HeroContact,
 } from "@/components/partners/ContactActions";
 import PartnerLogo from "@/components/partners/PartnerLogo";
+import PartnerMarquee from "@/components/partners/PartnerMarquee";
 import { PartnershipProvider } from "@/components/partners/PartnershipContext";
 import PartnershipFinder from "@/components/partners/PartnershipFinder";
 import { Button } from "@/components/ui/button";
-import { alumniDestinations, featuredPartners } from "@/data/partner-logos";
+import { alumniDestinations } from "@/data/partner-logos";
 import {
   partnerCaseStudies,
   partnerPillars,
@@ -25,7 +25,11 @@ import {
   partnerReasons,
   partnerStats,
 } from "@/data/partners";
-import { getPartnerDirectory, getPartnerKey } from "@/lib/partner-directory";
+import {
+  getHighlightedPartners,
+  getPartnerDirectory,
+  getPartnerKey,
+} from "@/lib/partner-directory";
 import { getSafeExternalUrl } from "@/lib/security";
 import type { Partner } from "@/lib/types";
 import "@/styles/partners.css";
@@ -41,6 +45,10 @@ function PartnerTile({
 }) {
   const href = getSafeExternalUrl(partner.link);
   const logo = <PartnerLogo name={partner.name} image={partner.image} />;
+  const tierLabel =
+    !compact && partner.tier && partner.tier !== "supporter"
+      ? { gold: "Gold", silver: "Silver", bronze: "Bronze" }[partner.tier]
+      : null;
   const content =
     partner.image === "/assets/partners/logos/mutagent.svg" ? (
       <span className="partner-logo-lockup">
@@ -50,14 +58,14 @@ function PartnerTile({
     ) : (
       logo
     );
-  const className = `partner-logo-tile${compact ? " partner-logo-tile-compact" : ""}`;
+  const className = `partner-logo-tile${compact ? " partner-logo-tile-compact" : ` partner-logo-tier-${partner.tier}`}`;
   return href ? (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
       className={className}
-      aria-label={`Visit ${partner.name}`}
+      aria-label={`Visit ${partner.name}${tierLabel ? `, ${tierLabel} partner` : ""}`}
     >
       {content}
       <ArrowUpRight
@@ -67,7 +75,14 @@ function PartnerTile({
       />
     </a>
   ) : (
-    <div className={className}>{content}</div>
+    <div
+      className={className}
+      aria-label={
+        tierLabel ? `${partner.name}, ${tierLabel} partner` : partner.name
+      }
+    >
+      {content}
+    </div>
   );
 }
 
@@ -112,12 +127,6 @@ export default function Partners({
                   </a>
                 </Button>
               </div>
-              <div className="partner-hero-links">
-                <BookingLink />
-                <a href="#our-partners" className="partner-text-link">
-                  See our partners <ArrowDown size={15} />
-                </a>
-              </div>
             </div>
             <figure className="partner-hero-photo">
               <Image
@@ -137,24 +146,7 @@ export default function Partners({
               </figcaption>
             </figure>
           </div>
-          <div className="partner-container partner-trust-strip">
-            <p>In good company.</p>
-            <div>
-              {featuredPartners.slice(0, 3).map((partner) => (
-                <span key={partner.id}>
-                  <PartnerLogo
-                    name={partner.name}
-                    image={partner.image}
-                    eager
-                  />
-                </span>
-              ))}
-            </div>
-            <a href="#our-partners">
-              Meet our partners
-              <ArrowDown size={16} />
-            </a>
-          </div>
+          <PartnerMarquee partners={getHighlightedPartners(partners)} />
         </section>
         <PartnershipFinder />
         <section

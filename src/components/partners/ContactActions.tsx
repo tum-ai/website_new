@@ -57,12 +57,3 @@ export function HeroContact() {
     </Button>
   );
 }
-
-export function BookingLink() {
-  const { openBooking } = usePartnership();
-  return (
-    <button type="button" onClick={openBooking} className="partner-text-link">
-      Book a call <ArrowUpRight size={15} />
-    </button>
-  );
-}

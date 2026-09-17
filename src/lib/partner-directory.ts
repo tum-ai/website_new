@@ -2,6 +2,15 @@ import { featuredPartners } from "../data/partner-logos";
 import { getSafeExternalUrl } from "./security";
 import type { Partner, PartnerTier } from "./types";
 
+export function getHighlightedPartners(partners: Partner[]) {
+  return partners.filter(
+    (partner) =>
+      partner.tier === "gold" ||
+      partner.tier === "silver" ||
+      partner.tier === "bronze",
+  );
+}
+
 const tierOrder: PartnerTier[] = ["gold", "silver", "bronze", "supporter"];
 
 export function getPartnerKey(name: string) {

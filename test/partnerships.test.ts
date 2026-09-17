@@ -5,13 +5,17 @@ import {
   alumniDestinations,
   featuredPartners,
 } from "../src/data/partner-logos";
+import { marqueeLogos } from "../src/data/partner-marquee-logos";
 import {
   partnerCaseStudies,
   partnerPillars,
   partnerProfiles,
 } from "../src/data/partners";
 import { getMobileHeaderVisibility } from "../src/lib/header-visibility";
-import { getPartnerDirectory } from "../src/lib/partner-directory";
+import {
+  getHighlightedPartners,
+  getPartnerDirectory,
+} from "../src/lib/partner-directory";
 import {
   getPartnershipBookingUrl,
   getPartnershipEmailUrl,
@@ -149,6 +153,7 @@ test("launch defaults include the ten named partners in the specified order", ()
 
 test("every curated logo, portrait, and case-study image ships with the page", () => {
   for (const item of [
+    ...Object.values(marqueeLogos).map((image) => ({ image })),
     ...featuredPartners,
     ...alumniDestinations,
     ...partnerProfiles,
@@ -212,4 +217,48 @@ test("partner navigation remains visible while ordinary mobile navigation can hi
     true,
   );
   assert.equal(getMobileHeaderVisibility(input), false);
+});
+
+test("email CCs reach both partnership contacts with and without finder context", () => {
+  for (const selection of [
+    initialFunnelState,
+    { intent: "hackathon", duration: "ongoing" } as const,
+  ]) {
+    const email = new URL(getPartnershipEmailUrl(selection));
+    assert.equal(email.pathname, "partners@tum-ai.com");
+    assert.equal(
+      email.searchParams.get("cc"),
+      "silas.zamzow@tum-ai.com,kim.schlemmer@tum-ai.com",
+    );
+    assert.equal(email.searchParams.getAll("cc").length, 1);
+    assert.match(
+      email.searchParams.get("subject") ?? "",
+      /^Partnership request/,
+    );
+    assert.match(email.searchParams.get("body") ?? "", /^Hi TUM.ai team,/);
+  }
+});
+
+test("marquee includes every highlighted tier and follows CMS overrides and aliases", () => {
+  assert.equal(getHighlightedPartners(getPartnerDirectory([])).length, 10);
+  const directory = getPartnerDirectory([
+    { id: "openai-cms", name: "OpenAI", tier: "supporter" },
+    { id: "hrt-cms", name: "HRT", tier: "silver" },
+    { id: "hrt-alias", name: "Hudson River Trading" },
+    { id: "new-partner", name: "New partner", tier: "bronze" },
+    { id: "legacy", name: "Legacy supporter", featured: true },
+  ]);
+  const highlighted = getHighlightedPartners(directory);
+  assert.equal(highlighted.length, 10);
+  assert.equal(
+    highlighted.filter((partner) => partner.name === "Hudson River Trading")
+      .length,
+    1,
+  );
+  assert.ok(highlighted.some((partner) => partner.name === "New partner"));
+  assert.ok(!highlighted.some((partner) => partner.name === "OpenAI"));
+  assert.ok(
+    !highlighted.some((partner) => partner.name === "Legacy supporter"),
+  );
+  assert.deepEqual(getHighlightedPartners([]), []);
 });
