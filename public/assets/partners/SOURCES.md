@@ -30,7 +30,12 @@ Copyright © 2026 JetBrains s.r.o. JetBrains and the JetBrains logo are trademar
 ## Hero marquee variants (2026-09-17)
 
 - `marquee/google.png`: https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png (official transparent color wordmark).
-- `marquee/jetbrains.svg`: https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.zip (`jetbrains-mono-white.svg`, official white variant, unchanged).
+- `marquee/jetbrains.svg`: https://www.jetbrains.com/ (official header SVG with the original color-gradient symbol and white wordmark; artwork unchanged).
 - `marquee/reply.svg`: https://www.reply.com/ (official footer SVG, original green and white artwork).
 
-The marquee reuses transparent HRT, Unite, and Mutagent artwork above. OpenAI, Anthropic, Spherecast, Dryft, and any new CMS partner use readable text until verified dark-background artwork is supplied. The white-card partner wall retains its existing full-color logos.
+- `marquee/openai.svg`: https://cdn.openai.com/brand/openai-logos.zip (`OpenAI-logos/SVGs/OAI_OpenAI_Wordmark_White.svg`, official white wordmark linked from https://openai.com/brand/; empty artboard margins reduced, artwork and proportions unchanged).
+- `marquee/anthropic.svg`: https://www.anthropic.com/news (official inline wordmark SVG; original paths preserved, inherited `currentColor` explicitly resolved to white for standalone use on the dark hero).
+- `marquee/spherecast.svg`: https://cdn.prod.website-files.com/68d1019362216d12f87a9446/68d1019362216d12f87a9597_Spherecast%20Logo.svg (official white wordmark and blue sphere from https://spherecast.ai/, unchanged).
+- `marquee/dryft.png`: https://framerusercontent.com/images/eC07qoVQXlEGhgr5GzEj2PjxMWM.png (official transparent blue symbol from https://dryft.ai/, unchanged; displayed beside a readable partner-name label).
+
+The marquee reuses transparent HRT, Unite, and Mutagent artwork above. All ten curated partners have local marquee artwork. New CMS partners without a verified dark-background asset retain a readable name fallback. The white-card partner wall retains its existing full-color logos.

@@ -42,7 +42,7 @@ Image provenance is recorded in [the asset manifest](../../public/assets/partner
 - Gold, Silver, and Bronze each have one muted lavender heading above their group. Cards retain their size hierarchy without colored outlines or per-card badges. Tier names also remain in accessible link labels.
 - The hero keeps two actions: Get in touch and Find your fit. Booking remains available in the page and finder results.
 - A transparent marquee replaces the white three-logo panel. Every highlighted partner appears once in the DOM, moves at an equal rate, and wraps outside the clipped viewport. There is no play/pause button. Hover and focus within the strip pause motion; reduced-motion preferences show a static wrapping list.
-- The marquee follows the merged CMS directory, including tier overrides, new highlighted partners, and alias deduplication. Approved dark-background artwork is listed in the asset manifest; names are used where suitable artwork is unavailable.
+- The marquee follows the merged CMS directory, including tier overrides, new highlighted partners, and alias deduplication. All ten curated partners have local, transparent marquee artwork, including OpenAI, Anthropic, Spherecast, and the Dryft symbol with its name. Sources are listed in the asset manifest; new CMS partners without approved artwork retain a readable name fallback.
 - All partnership mailto links CC Silas and Kim while retaining the recipient, subject, and finder context.
 
 Validation: `pnpm verify` passed lint, all 39 tests, and production build. Following the outline and single-instance marquee revision, lint, all nine partnership tests, and production build passed again. Local checks ran on Node 26; hosted CI uses its configured runtime. Browser evidence below is refreshed for this update.
@@ -61,3 +61,9 @@ Browser verification of the final revision:
 ### Final tier treatment (2026-09-17)
 
 Replaced tier outlines with one muted lavender heading per group, matching the approved mockup. Cards retain their existing sizes. Link arrows are hidden at rest and appear on hover or keyboard focus. Verified the three headings, 6/3/1 card grouping, responsive layout, and absence of overflow at 1440, 768, 390, and 320 pixels. Lint, nine partnership tests, and the production build passed after the grouped-heading change; lint and build were repeated after the arrow refinement.
+
+### Marquee artwork fix (2026-09-17)
+
+Added missing local artwork for OpenAI, Anthropic, Spherecast, and Dryft. JetBrains uses its official color-gradient symbol with white lettering. All ten curated partners now render images in the marquee; the regression test requires both a mapping and a shipped asset for each partner. New CMS partners can still use a readable name fallback.
+
+`pnpm verify` passed lint, all 40 tests, and production build. The first attempt hit a local disk-space error; retry passed after clearing this worktree's generated build output. Browser checks confirmed ten decoded images, no fallback labels, and no overflow at 1440, 1024, 768, 390, and 320 pixels. Dark-background artwork and reduced-motion rendering were visually inspected; affected screenshots refreshed.

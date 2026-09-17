@@ -36,7 +36,7 @@ export default function PartnerMarquee({ partners }: { partners: Partner[] }) {
                 className="partner-marquee-item"
                 style={{ "--marquee-index": index } as CSSProperties}
               >
-                {key === "mutagent" && image ? (
+                {(key === "mutagent" || key === "dryft") && image ? (
                   <span className="partner-logo-lockup">
                     <PartnerLogo name="" image={image} eager />
                     <span>{partner.name}</span>

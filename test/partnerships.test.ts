@@ -15,6 +15,7 @@ import { getMobileHeaderVisibility } from "../src/lib/header-visibility";
 import {
   getHighlightedPartners,
   getPartnerDirectory,
+  getPartnerKey,
 } from "../src/lib/partner-directory";
 import {
   getPartnershipBookingUrl,
@@ -149,6 +150,17 @@ test("launch defaults include the ten named partners in the specified order", ()
       "bronze",
     ],
   );
+});
+
+test("every highlighted launch partner has a shipped marquee logo", () => {
+  for (const partner of getHighlightedPartners(getPartnerDirectory([]))) {
+    const image = marqueeLogos[getPartnerKey(partner.name)];
+    assert.ok(image, `Missing marquee logo mapping for ${partner.name}`);
+    assert.ok(
+      existsSync(new URL(`../public${image}`, import.meta.url)),
+      `Missing marquee asset for ${partner.name}: ${image}`,
+    );
+  }
 });
 
 test("every curated logo, portrait, and case-study image ships with the page", () => {
