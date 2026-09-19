@@ -61,3 +61,7 @@ Additional company artwork:
 - `marquee/mckinsey.svg`: existing official `logos/mckinsey.svg` artwork in monochrome white for the dark hero, preserving paths and proportions.
 
 NVIDIA, McKinsey, and AWS card artwork reuse the existing sourced assets above. BMW and IBM retain their original color artwork in the marquee.
+
+### Portrait sharpness correction (2026-09-19)
+
+`people/leonie-portrait.webp`, `people/mohamed-portrait.webp`, and `people/jasmin-portrait.webp` are 708 × 864 portrait crops made directly from the supplied PNGs and encoded losslessly. Horizontal crop anchors match the reviewed compositions (56%, 52%, 55%). New filenames invalidate cached versions. These three photographs bypass Next.js resizing/recompression: the landscape input plus `object-fit: cover` previously caused insufficient vertical resolution, particularly on Retina screens. No enlargement, sharpening, or synthetic detail is applied.

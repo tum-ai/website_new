@@ -219,6 +219,7 @@ export default function Partners({
                     <Image
                       src={profile.image}
                       alt={profile.name}
+                      unoptimized
                       fill
                       sizes="(min-width: 1024px) 25vw, (min-width: 600px) 50vw, 100vw"
                       style={{ objectPosition: profile.position }}
