@@ -178,7 +178,7 @@ export const pageSEOConfig = {
   partners: {
     title: "Partners",
     description:
-      "Is your company currently facing challenges with data-driven technologies or you are looking for the greatest talent in artificial intelligence? If one of the answers is yes, become a partner.",
+      "Meet the cracked & the curious. Partner with TUM.ai for exceptional AI talent, research, hackathons, and a place in Europe's next generation of AI companies.",
     canonical: "https://www.tum-ai.com/partners",
     jsonLd: [
       baseOrganizationJsonLd,
@@ -186,7 +186,8 @@ export const pageSEOConfig = {
         "@context": "https://schema.org",
         "@type": "WebPage",
         name: "TUM.ai Partners",
-        description: "Partners and Sponsors of TUM.ai",
+        description:
+          "Find your partnership with TUM.ai: talent, decision makers, network and exposure.",
         url: "https://www.tum-ai.com/partners",
         publisher: baseOrganizationJsonLd,
       },

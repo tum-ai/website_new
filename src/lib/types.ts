@@ -12,12 +12,16 @@ export interface Event {
   detail?: string;
 }
 
+export type PartnerTier = "gold" | "silver" | "bronze" | "supporter";
+
 export interface Partner {
   id: string;
   name: string;
   link?: string;
   image?: string;
   category?: string;
+  tier?: PartnerTier;
+  featured?: boolean;
 }
 
 export interface Research {

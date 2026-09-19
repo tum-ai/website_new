@@ -27,5 +27,7 @@ export const PARTNERS_QUERY = `*[_type == "partner"]{
   name,
   link,
   "image": image.asset->url,
-  category
+  category,
+  tier,
+  featured
 }`;
