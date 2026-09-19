@@ -83,7 +83,7 @@ export const featuredPartners: Partner[] = [
     id: "entire",
     name: "Entire.io",
     tier: "gold",
-    image: "/assets/partners/logos/entire.svg",
+    image: "/assets/partners/logos/entire-lockup.webp",
     link: "https://entire.io/",
   },
   {

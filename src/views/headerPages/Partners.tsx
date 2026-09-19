@@ -14,10 +14,10 @@ import {
 } from "@/components/partners/ContactActions";
 import PartnerLogo from "@/components/partners/PartnerLogo";
 import PartnerMarquee from "@/components/partners/PartnerMarquee";
+import PartnerSupporters from "@/components/partners/PartnerSupporters";
 import { PartnershipProvider } from "@/components/partners/PartnershipContext";
 import PartnershipFinder from "@/components/partners/PartnershipFinder";
 import PartnerTier from "@/components/partners/PartnerTier";
-import PartnerTile from "@/components/partners/PartnerTile";
 import { Button } from "@/components/ui/button";
 import { alumniDestinations } from "@/data/partner-logos";
 import {
@@ -291,20 +291,12 @@ export default function Partners({
                 );
               })}
             </div>
-            {supporters.length ? (
-              <div className="partner-supporters">
-                <h3>Supporters of the vision</h3>
-                <div className="partner-supporter-grid">
-                  {supporters.map((partner) => (
-                    <PartnerTile
-                      key={getPartnerKey(partner.name)}
-                      partner={partner}
-                      compact
-                    />
-                  ))}
-                </div>
-              </div>
-            ) : null}
+            <PartnerSupporters
+              key={supporters
+                .map((partner) => getPartnerKey(partner.name))
+                .join(",")}
+              partners={supporters}
+            />
           </div>
         </section>
         <section

@@ -1516,30 +1516,6 @@
   min-height: 30px;
   margin-bottom: 14px;
 }
-.partner-tier-controls {
-  position: absolute;
-  right: 0;
-  display: flex;
-  gap: 4px;
-}
-.partner-tier-controls button {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  color: #d2b8f0;
-  background: transparent;
-  cursor: pointer;
-}
-.partner-tier-controls button:hover {
-  background: #523573;
-  color: #fff;
-}
-.partner-tier-controls button:focus-visible {
-  outline: 2px solid #9a64d9;
-  outline-offset: 3px;
-}
 .partner-logo-row.partner-rotating-row {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -1579,12 +1555,14 @@
 .partner-rotation-enter .partner-logo-image,
 .partner-rotation-enter .partner-logo-fallback,
 .partner-rotation-enter .partner-logo-lockup {
-  animation: partner-logo-enter 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: partner-logo-enter 600ms cubic-bezier(0.22, 1, 0.36, 1)
+    var(--partner-logo-delay, 0ms) both;
 }
 .partner-rotation-outgoing .partner-logo-image,
 .partner-rotation-outgoing .partner-logo-fallback,
 .partner-rotation-outgoing .partner-logo-lockup {
-  animation: partner-logo-exit 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: partner-logo-exit 600ms cubic-bezier(0.22, 1, 0.36, 1)
+    var(--partner-logo-delay, 0ms) both;
 }
 .partner-rotation-enter .partner-logo-lockup .partner-logo-image,
 .partner-rotation-outgoing .partner-logo-lockup .partner-logo-image {
@@ -1618,5 +1596,22 @@
   .partner-logo-row.partner-rotating-row {
     grid-template-columns: minmax(0, 1fr);
     width: 100%;
+  }
+}
+
+/* Keep server-rendered supporters at three rows before responsive hydration. */
+@media (max-width: 1100px) {
+  .partner-supporter-grid[data-rotating="true"] > :nth-child(n + 16) {
+    display: none;
+  }
+}
+@media (max-width: 850px) {
+  .partner-supporter-grid[data-rotating="true"] > :nth-child(n + 13) {
+    display: none;
+  }
+}
+@media (max-width: 600px) {
+  .partner-supporter-grid[data-rotating="true"] > :nth-child(n + 10) {
+    display: none;
   }
 }

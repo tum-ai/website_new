@@ -65,3 +65,7 @@ NVIDIA, McKinsey, and AWS card artwork reuse the existing sourced assets above. 
 ### Portrait sharpness correction (2026-09-19)
 
 `people/leonie-portrait.webp`, `people/mohamed-portrait.webp`, and `people/jasmin-portrait.webp` are 708 × 864 portrait crops made directly from the supplied PNGs and encoded losslessly. Horizontal crop anchors match the reviewed compositions (56%, 52%, 55%). New filenames invalidate cached versions. These three photographs bypass Next.js resizing/recompression: the landscape input plus `object-fit: cover` previously caused insufficient vertical resolution, particularly on Retina screens. No enlargement, sharpening, or synthetic detail is applied.
+
+### Entire image resilience (2026-09-19)
+
+`logos/entire-lockup.webp` and `marquee/entire-lockup.webp` are lossless 960px-wide renderings of the original sourced black and white SVG lockups. Artwork and proportions are unchanged. New URLs avoid previous cached failures and remove SVG decoding as a runtime dependency for this logo.

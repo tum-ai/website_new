@@ -108,3 +108,15 @@ Wall screenshots are cropped from full-page captures with the header at the top 
 Replaced the landscape portrait sources with lossless 708 × 864 crops from the supplied PNGs and disabled Next.js recompression for these three images. The original width-based responsive selection was undersampling the vertical resolution needed by `object-fit: cover`, especially at Retina density. New asset filenames avoid stale optimized-image caches.
 
 Verified pixel-for-pixel equality between each lossless WebP and its original PNG crop. Production browser verification at 1440px with device scale factor 2 confirms all three direct asset URLs serve 708 × 864 pixels, exceeding the 604 × 736 pixels needed by each 302 × 368 CSS-pixel card. Also visually checked at 390px. The profiles screenshot above now records this Retina verification. Scoped lint, all ten partnership tests, the production build, and `git diff --check` passed.
+
+### Continuous rotation and supporter board (2026-09-19)
+
+The follow-up request supersedes the playback controls and hover/focus pauses described above. Gold and Silver now rotate continuously while visible, without buttons. Offscreen and hidden-document suspension remains. Reduced-motion users see the complete static roster, with no animation or inaccessible hidden partners.
+
+Supporters use the same stationary-card dissolve in exactly three rows: 18 cards on desktop, 15 or 12 on tablets, and nine on phones. Every 2.5 seconds, a batch of six, five, four, or three logos changes with 90ms staggering. The batch scheduler reserves every outgoing company until the batch finishes, avoids duplicate slots, and balances company appearances. Resizing remounts the scheduler for the new capacity.
+
+Entire.io now uses lossless WebP renders of the official artwork. Logo errors retry once with a fresh URL before showing a name fallback; changing the source resets the retry state. A browser test deliberately failed the initial Entire.io request and confirmed recovery to its decoded 960px image.
+
+Validation: lint, all 14 focused partnership/rotation tests, and the production build passed. Batch simulations cover four capacities and multiple roster sizes, including pools too small for a full batch. Production browser checks confirmed three rows at 1440, 1024, 768, 390, and 320px, unique companies throughout overlapping transitions, multiple simultaneous replacements, and no horizontal overflow. Hover and keyboard focus do not stop rotation. Reduced motion displays all 44 supporters without transition layers. Existing local Sanity Live CORS and speculative preload diagnostics remain, alongside the deliberately failed image request used for recovery testing.
+
+Refreshed tier screenshots above remove the obsolete controls. Supporter evidence: [desktop](refresh-supporters-1440.png), [tablet](refresh-supporters-768.png), [390px](refresh-supporters-390.png), [320px](refresh-supporters-320.png). Captures were taken with rows offscreen to keep the static evidence stable.

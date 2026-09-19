@@ -2,7 +2,7 @@
 // artwork falls back to the partner name, never a white tile or a CSS recolor.
 export const marqueeLogos: Readonly<Record<string, string | undefined>> = {
   nvidia: "/assets/partners/marquee/nvidia.webp",
-  entireio: "/assets/partners/marquee/entire.svg",
+  entireio: "/assets/partners/marquee/entire-lockup.webp",
   mckinseycompany: "/assets/partners/marquee/mckinsey.svg",
   janestreet: "/assets/partners/marquee/jane-street.svg",
   bmw: "/assets/partners/logos/bmw.svg",
