@@ -16,6 +16,8 @@ import PartnerLogo from "@/components/partners/PartnerLogo";
 import PartnerMarquee from "@/components/partners/PartnerMarquee";
 import { PartnershipProvider } from "@/components/partners/PartnershipContext";
 import PartnershipFinder from "@/components/partners/PartnershipFinder";
+import PartnerTier from "@/components/partners/PartnerTier";
+import PartnerTile from "@/components/partners/PartnerTile";
 import { Button } from "@/components/ui/button";
 import { alumniDestinations } from "@/data/partner-logos";
 import {
@@ -30,62 +32,10 @@ import {
   getPartnerDirectory,
   getPartnerKey,
 } from "@/lib/partner-directory";
-import { getSafeExternalUrl } from "@/lib/security";
 import type { Partner } from "@/lib/types";
 import "@/styles/partners.css";
 
 const reasonIcons = [Users, BriefcaseBusiness, Network];
-const partnerTierLabels = { gold: "Gold", silver: "Silver", bronze: "Bronze" };
-
-function PartnerTile({
-  partner,
-  compact = false,
-}: {
-  partner: Partner;
-  compact?: boolean;
-}) {
-  const href = getSafeExternalUrl(partner.link);
-  const logo = <PartnerLogo name={partner.name} image={partner.image} />;
-  const tierLabel =
-    !compact && partner.tier && partner.tier !== "supporter"
-      ? partnerTierLabels[partner.tier]
-      : null;
-  const content =
-    partner.image === "/assets/partners/logos/mutagent.svg" ? (
-      <span className="partner-logo-lockup">
-        {logo}
-        <span>{partner.name}</span>
-      </span>
-    ) : (
-      logo
-    );
-  const className = `partner-logo-tile${compact ? " partner-logo-tile-compact" : ""}`;
-  return href ? (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={className}
-      aria-label={`Visit ${partner.name}${tierLabel ? `, ${tierLabel} partner` : ""}`}
-    >
-      {content}
-      <ArrowUpRight
-        size={14}
-        className="partner-logo-link-icon"
-        aria-hidden="true"
-      />
-    </a>
-  ) : (
-    <div
-      className={className}
-      aria-label={
-        tierLabel ? `${partner.name}, ${tierLabel} partner` : partner.name
-      }
-    >
-      {content}
-    </div>
-  );
-}
 
 export default function Partners({
   initialPartners = [],
@@ -131,8 +81,8 @@ export default function Partners({
             </div>
             <figure className="partner-hero-photo">
               <Image
-                src="/assets/partners_pic.webp"
-                alt="A TUM.ai member presenting to partners and the community"
+                src="/assets/partners/hero.webp"
+                alt="A speaker presenting to a packed auditorium at a TUM.ai event"
                 fill
                 priority
                 sizes="(min-width: 1024px) 45vw, (min-width: 768px) 40vw, 100vw"
@@ -330,27 +280,14 @@ export default function Partners({
                 const group = partners.filter(
                   (partner) => partner.tier === tier,
                 );
-                return group.length ? (
-                  <section
-                    className="partner-tier-group"
-                    aria-labelledby={`partner-tier-${tier}`}
-                    key={tier}
-                  >
-                    <h3 id={`partner-tier-${tier}`}>
-                      {partnerTierLabels[tier]} partners
-                    </h3>
-                    <div
-                      className={`partner-logo-row partner-logo-row-${index + 1}`}
-                    >
-                      {group.map((partner) => (
-                        <PartnerTile
-                          key={getPartnerKey(partner.name)}
-                          partner={partner}
-                        />
-                      ))}
-                    </div>
-                  </section>
-                ) : null;
+                return (
+                  <PartnerTier
+                    key={`${tier}:${group.map((partner) => getPartnerKey(partner.name)).join(",")}`}
+                    tier={tier}
+                    partners={group}
+                    index={index}
+                  />
+                );
               })}
             </div>
             {supporters.length ? (
@@ -388,10 +325,7 @@ export default function Partners({
             </div>
             <div className="partner-case-grid">
               {partnerCaseStudies.map((study) => (
-                <article
-                  className={`partner-case-card${study.name === "Osapiens" ? " partner-case-brand" : ""}`}
-                  key={study.name}
-                >
+                <article className="partner-case-card" key={study.name}>
                   <div className="partner-case-image">
                     <Image
                       src={study.image}

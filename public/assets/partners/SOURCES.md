@@ -39,3 +39,25 @@ Copyright © 2026 JetBrains s.r.o. JetBrains and the JetBrains logo are trademar
 - `marquee/dryft.png`: https://framerusercontent.com/images/eC07qoVQXlEGhgr5GzEj2PjxMWM.png (official transparent blue symbol from https://dryft.ai/, unchanged; displayed beside a readable partner-name label).
 
 The marquee reuses transparent HRT, Unite, and Mutagent artwork above. All ten curated partners have local marquee artwork. New CMS partners without a verified dark-background asset retain a readable name fallback. The white-card partner wall retains its existing full-color logos.
+
+## Partner refresh (2026-09-19)
+
+User-supplied photographs, encoded as WebP quality 85 at original dimensions (no upscaling):
+
+- `hero.webp`: `EHL Pitch Deck.png` (1304 × 864).
+- `people/jasmin.webp`, `people/mohamed.webp`, `people/leonie.webp`: corresponding supplied PNG portraits.
+- `cases/osapiens.webp`: `atmo1.png`; `cases/bmw.webp`: `atmo 2.png`; `cases/quantco.webp`: `atmo 3.png`. These atmosphere photos replace the previous project artwork using the user-confirmed mapping; descriptive alt text does not claim an unverified event identity.
+
+Additional company artwork:
+
+- `logos/entire.svg`, `marquee/entire.svg`: original black and white lockups embedded on https://entire.io/brand (paths and proportions unchanged).
+- `logos/bmw.svg`: https://cdn.sanity.io/images/o9uuv2sq/production/24d94fc04d991c57a86a9faf5b5f5047bd498859-2500x2500.svg (existing TUM.ai CMS artwork).
+- `logos/ibm.png`: https://cdn.sanity.io/images/o9uuv2sq/production/982ee8db790d22c48645306531e0156e09f51e63-500x200.png (existing TUM.ai CMS artwork).
+- `logos/jane-street.svg`: https://www.janestreet.com/assets/logo_horizontal-16929188a56384c8e77bea91967c4553146ed7293f60a8f4f2ab6a06187881ce.svg (official header). `marquee/jane-street.svg` preserves these paths in monochrome white for the dark hero.
+- `logos/amd.webp`: https://d1io3yog0oux5.cloudfront.net/_2cc0365702ea365c1c931183919aa7d4/amd/logo.png (official https://ir.amd.com/ logo, encoded as WebP).
+- `marquee/amd.svg`: https://rocm.docs.amd.com/en/latest/_static/images/amd-header-logo.svg (official white artwork).
+- `marquee/nvidia.webp`: https://www.nvidia.com/content/dam/en-zz/Solutions/about-nvidia/logo-and-brand/nvidia-logo-color.svg (green-symbol/white-wordmark group from the official color-variant sheet, isolated from its demonstration background, trimmed and encoded as WebP).
+- `marquee/aws.webp`: https://a0.awsstatic.com/libra-css/images/logos/aws_logo_smile_1200x630.png (official white logo; flat background removed and encoded losslessly).
+- `marquee/mckinsey.svg`: existing official `logos/mckinsey.svg` artwork in monochrome white for the dark hero, preserving paths and proportions.
+
+NVIDIA, McKinsey, and AWS card artwork reuse the existing sourced assets above. BMW and IBM retain their original color artwork in the marquee.

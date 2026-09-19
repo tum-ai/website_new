@@ -72,6 +72,62 @@ export const featuredPartners: Partner[] = [
     image: "/assets/partners/logos/mutagent.svg",
     link: "https://mutagent.io/",
   },
+  {
+    id: "nvidia",
+    name: "NVIDIA",
+    tier: "gold",
+    image: "/assets/partners/logos/nvidia.webp",
+    link: "https://www.nvidia.com/",
+  },
+  {
+    id: "entire",
+    name: "Entire.io",
+    tier: "gold",
+    image: "/assets/partners/logos/entire.svg",
+    link: "https://entire.io/",
+  },
+  {
+    id: "mckinsey",
+    name: "McKinsey & Company",
+    tier: "silver",
+    image: "/assets/partners/logos/mckinsey.svg",
+    link: "https://www.mckinsey.com/",
+  },
+  {
+    id: "jane-street",
+    name: "Jane Street",
+    tier: "silver",
+    image: "/assets/partners/logos/jane-street.svg",
+    link: "https://www.janestreet.com/",
+  },
+  {
+    id: "bmw",
+    name: "BMW",
+    tier: "silver",
+    image: "/assets/partners/logos/bmw.svg",
+    link: "https://www.bmw.com/",
+  },
+  {
+    id: "aws",
+    name: "AWS",
+    tier: "silver",
+    image: "/assets/partners/logos/aws.svg",
+    link: "https://aws.amazon.com/",
+  },
+  {
+    id: "amd",
+    name: "AMD",
+    tier: "bronze",
+    image: "/assets/partners/logos/amd.webp",
+    link: "https://www.amd.com/",
+  },
+  {
+    id: "ibm",
+    name: "IBM",
+    tier: "bronze",
+    image: "/assets/partners/logos/ibm.png",
+    link: "https://www.ibm.com/",
+  },
 ];
 
 export const alumniDestinations = [

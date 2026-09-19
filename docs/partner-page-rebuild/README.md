@@ -67,3 +67,38 @@ Replaced tier outlines with one muted lavender heading per group, matching the a
 Added missing local artwork for OpenAI, Anthropic, Spherecast, and Dryft. JetBrains uses its official color-gradient symbol with white lettering. All ten curated partners now render images in the marquee; the regression test requires both a mapping and a shipped asset for each partner. New CMS partners can still use a readable name fallback.
 
 `pnpm verify` passed lint, all 40 tests, and production build. The first attempt hit a local disk-space error; retry passed after clearing this worktree's generated build output. Browser checks confirmed ten decoded images, no fallback labels, and no overflow at 1440, 1024, 768, 390, and 320 pixels. Dark-background artwork and reduced-motion rendering were visually inspected; affected screenshots refreshed.
+
+## Partner roster, photography, and rotation update (2026-09-19)
+
+The curated roster now contains eight Gold partners, seven Silver partners, and three Bronze partners. NVIDIA and Entire.io join Gold; McKinsey & Company, Jane Street, BMW, and AWS join Silver; AMD and IBM join Bronze. CMS tier overrides remain supported, while alias normalization prevents duplicate companies across categories. Each addition also has local hero-marquee artwork.
+
+The hero and three profiles use the supplied photographs. The outcome photos follow the confirmed mapping: atmo1 → Osapiens, atmo 2 → BMW, atmo 3 → QuantCo. WebP encoding preserves original dimensions without upscaling. Asset provenance and monochrome adaptations are documented in `public/assets/partners/SOURCES.md`.
+
+Each tier has three stationary card frames, arranged horizontally from 768px upward and vertically on phones. Gold and Silver replace one company every 2.5 seconds with offset timers and a 600ms blur/scale dissolve. Bronze remains static. The scheduler shuffles slot order in groups of three, avoids consecutive use of the same slot, chooses the least-shown hidden companies, and favors a different previous slot when equally eligible. A transition reserves its outgoing and incoming companies until completion, preventing duplicates even during the dissolve.
+
+Hover, keyboard focus, offscreen rows, and hidden documents pause automatic rotation. Explicit pause/resume and next controls remain available. Reduced motion disables autoplay and transitions, retaining keyboard-operable manual next controls. Image preloading has a bounded timeout; broken images retain the existing company-name fallback. Server rendering stays deterministic, with no CMS schema changes.
+
+### Verification
+
+- `pnpm verify` was run. The corrected run passed lint and all 43 tests; its subsequent build stage was interrupted during runner troubleshooting. A separate `pnpm build` then passed compilation, TypeScript, and static generation. No verification claim relies on the interrupted build. The first attempt also overlapped a dev server and failed; that server was stopped before final checks.
+- The scheduler suite exercises 45,000 transitions across five roster sizes and three seeds, checking unique visible partners, least-shown selection, slot coverage, and shuffled-slot invariants. The real seven/eight-company rosters retain balanced appearance counts. Zero-to-three-company and duplicate-input cases remain static.
+- Production browser checks: `http://127.0.0.1:3107/partners`, Chromium via Playwright (Browser plugin unavailable), widths 1440, 1024, 768, 390, and 320 in both light and dark color schemes. Every tier has exactly three active cards; layout switches at 768px. No horizontal overflow or broken images.
+- Page title and content match `/partners`; no framework error overlay. Hero, portraits, case-study crops, and logos were visually inspected after image decoding.
+- Five timed samples showed unique active companies and staggered replacements. Transition inspection confirmed a 0.6s animation, unique outgoing/incoming companies, and identical card-frame geometry before/during animation.
+- Hover and keyboard-focus pause, explicit pause, manual next, offscreen pause, reduced-motion manual switching, and resume passed. Hidden-document behavior passed with a simulated visibility event; native browser background-tab throttling was not separately tested.
+- Existing local Sanity Live CORS errors and speculative preload warnings remain. Server-side CMS loading succeeds; no application exception was observed. Node 26 also reports its existing localStorage build warning; Biome reports its existing schema-version informational notice.
+- `git diff --check` passed. Changes are scoped to `feat/partner-page-rebuild` for PR #257; unrelated E-Lab edits in the main checkout are preserved.
+
+### Updated visual evidence
+
+| Surface | Screenshot |
+| --- | --- |
+| Hero, desktop | [Desktop hero](refresh-hero-desktop.png) |
+| Hero, mobile | [Mobile hero](refresh-hero-mobile.png) |
+| Supplied portraits | [Profiles](refresh-profiles.png) |
+| Outcome photographs | [Case studies](refresh-cases.png) |
+| Three-card tiers, desktop | [1440 px](refresh-wall-1440.png) |
+| Three-card tiers, tablet | [768 px](refresh-wall-768.png) |
+| Stacked tiers, phones | [390 px](refresh-wall-390.png), [320 px](refresh-wall-320.png) |
+
+Wall screenshots are cropped from full-page captures with the header at the top of the document, avoiding sticky-header overlap in element screenshots. Autoplay is paused for these static captures.

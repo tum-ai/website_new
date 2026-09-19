@@ -118,7 +118,7 @@ test("email and booking carry readable, encoded intent, timeframe, and recommend
   );
 });
 
-test("launch defaults include the ten named partners in the specified order", () => {
+test("launch defaults include the eighteen partners in tier order", () => {
   const result = getPartnerDirectory([]);
   assert.deepEqual(
     result.map((p) => p.name),
@@ -129,25 +129,26 @@ test("launch defaults include the ten named partners in the specified order", ()
       "Hudson River Trading",
       "JetBrains",
       "Unite",
+      "NVIDIA",
+      "Entire.io",
       "Spherecast",
       "Dryft",
       "Reply",
+      "McKinsey & Company",
+      "Jane Street",
+      "BMW",
+      "AWS",
       "Mutagent",
+      "AMD",
+      "IBM",
     ],
   );
   assert.deepEqual(
     result.map((p) => p.tier),
     [
-      "gold",
-      "gold",
-      "gold",
-      "gold",
-      "gold",
-      "gold",
-      "silver",
-      "silver",
-      "silver",
-      "bronze",
+      ...Array(8).fill("gold"),
+      ...Array(7).fill("silver"),
+      ...Array(3).fill("bronze"),
     ],
   );
 });
@@ -213,7 +214,7 @@ test("CMS overrides defaults, aliases consolidate, and unclassified legacy entri
     "Hudson River Trading",
   );
   assert.equal(result.filter((p) => p.name.toLowerCase() === "ibm").length, 1);
-  assert.equal(result.find((p) => p.name === "ibm")?.tier, "supporter");
+  assert.equal(result.find((p) => p.name === "IBM")?.tier, "bronze");
   assert.equal(result.find((p) => p.name === "New partner")?.link, undefined);
 });
 
@@ -252,7 +253,7 @@ test("email CCs reach both partnership contacts with and without finder context"
 });
 
 test("marquee includes every highlighted tier and follows CMS overrides and aliases", () => {
-  assert.equal(getHighlightedPartners(getPartnerDirectory([])).length, 10);
+  assert.equal(getHighlightedPartners(getPartnerDirectory([])).length, 18);
   const directory = getPartnerDirectory([
     { id: "openai-cms", name: "OpenAI", tier: "supporter" },
     { id: "hrt-cms", name: "HRT", tier: "silver" },
@@ -261,7 +262,7 @@ test("marquee includes every highlighted tier and follows CMS overrides and alia
     { id: "legacy", name: "Legacy supporter", featured: true },
   ]);
   const highlighted = getHighlightedPartners(directory);
-  assert.equal(highlighted.length, 10);
+  assert.equal(highlighted.length, 18);
   assert.equal(
     highlighted.filter((partner) => partner.name === "Hudson River Trading")
       .length,

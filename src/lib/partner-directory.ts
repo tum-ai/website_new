@@ -15,7 +15,17 @@ const tierOrder: PartnerTier[] = ["gold", "silver", "bronze", "supporter"];
 
 export function getPartnerKey(name: string) {
   const key = name.toLowerCase().replace(/[^a-z0-9]/g, "");
-  return key === "hrt" ? "hudsonrivertrading" : key;
+  const aliases: Record<string, string> = {
+    hrt: "hudsonrivertrading",
+    mckinsey: "mckinseycompany",
+    mckinseyandcompany: "mckinseycompany",
+    entire: "entireio",
+    amazonwebservices: "aws",
+    bmwgroup: "bmw",
+    internationalbusinessmachines: "ibm",
+    advancedmicrodevices: "amd",
+  };
+  return aliases[key] ?? key;
 }
 
 /** Merge CMS records with launch defaults without duplicating cross-category partners. */

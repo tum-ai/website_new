@@ -144,21 +144,21 @@ export const partnerProfiles = [
     role: "Co-Founder & CTO @Dryft",
     detail: "5M raised, GC/Neo-backed",
     image: "/assets/partners/people/leonie.webp",
-    position: "50% 35%",
+    position: "56% 35%",
   },
   {
     name: "Mohamed Elrefaie",
     role: "PhD Researcher @MIT",
     detail: "Schwarzman College",
     image: "/assets/partners/people/mohamed.webp",
-    position: "50% 30%",
+    position: "52% 30%",
   },
   {
     name: "Jasmin El-Wafi",
     role: "ML Consultant & Systems Architect @AWS",
     detail: "",
-    image: "/assets/apply/jasmin_el-wafi.webp",
-    position: "50% 35%",
+    image: "/assets/partners/people/jasmin.webp",
+    position: "55% 35%",
   },
 ] as const;
 
@@ -168,8 +168,8 @@ export const partnerCaseStudies = [
     metric: "75%",
     label: "From collaboration to colleagues",
     copy: "From one joint project, 3 out of 4 members joined QuantCo full-time. A 75% conversion from collaboration to permanent hires.",
-    image: "/assets/industry/project_cards/quantco.jpeg",
-    alt: "QuantCo virtual biopsy research project",
+    image: "/assets/partners/cases/quantco.webp",
+    alt: "Participants listening to a hackathon presentation",
     imagePosition: "center",
   },
   {
@@ -179,7 +179,7 @@ export const partnerCaseStudies = [
     copy: '"40 of Munich\'s best AI engineers. Some really tangible results. In just 48 hours."',
     attribution: "Manuel, Head of Innovation, BMW Group",
     image: "/assets/partners/cases/bmw.webp",
-    alt: "BMW Open Innovation Robotics AI Hackathon event artwork",
+    alt: "Participants at the BMW and OpenAI hackathon",
     imagePosition: "center",
   },
   {
@@ -187,8 +187,8 @@ export const partnerCaseStudies = [
     metric: "20+",
     label: "Applications into the hiring pipeline",
     copy: "One hackathon. 40 competing teams. 20+ applications straight into the hiring pipeline.",
-    image: "/assets/partners/logos/osapiens.svg",
-    alt: "Osapiens",
+    image: "/assets/partners/cases/osapiens.webp",
+    alt: "Hackathon participants collaborating on their laptops",
     imagePosition: "center",
   },
 ] as const;
