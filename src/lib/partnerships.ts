@@ -86,7 +86,9 @@ export function getPartnershipContext(selection: PartnershipSelection) {
     .join("\n");
 }
 
-export function getPartnershipEmailUrl(selection: PartnershipSelection) {
+export function getPartnershipEmailUrl(
+  selection: PartnershipSelection = { intent: null, duration: null },
+) {
   const intent = partnershipIntents.find(
     (item) => item.id === selection.intent,
   );
@@ -98,6 +100,7 @@ export function getPartnershipEmailUrl(selection: PartnershipSelection) {
 
 export function getPartnershipBookingUrl(selection: PartnershipSelection) {
   const url = new URL(PARTNER_BOOKING_URL);
+  url.searchParams.append("guest", PARTNER_EMAIL);
   url.searchParams.set("notes", getPartnershipContext(selection));
   return url.toString();
 }

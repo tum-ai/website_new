@@ -14,6 +14,7 @@ import {
   getPartnershipContext,
   getPartnershipEmailUrl,
   PARTNER_BOOKING_URL,
+  PARTNER_EMAIL,
   type PartnershipSelection,
 } from "@/lib/partnerships";
 
@@ -36,6 +37,7 @@ export default function BookingDialog({
   const config = useMemo(
     () => ({
       notes: getPartnershipContext(selection),
+      guests: [PARTNER_EMAIL],
       layout: "month_view" as const,
       theme: "light" as const,
     }),

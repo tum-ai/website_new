@@ -104,10 +104,20 @@ test("email and booking carry readable, encoded intent, timeframe, and recommend
   const booking = new URL(getPartnershipBookingUrl(selection));
   assert.equal(booking.origin, "https://cal.eu");
   assert.equal(booking.pathname, "/silaszamzow/tumai-quick-chat");
+  assert.deepEqual(booking.searchParams.getAll("guest"), [
+    "partners@tum-ai.com",
+  ]);
   assert.match(booking.searchParams.get("notes") ?? "", /Hackathon|hackathon/);
+  const defaultEmail = new URL(getPartnershipEmailUrl());
+  assert.equal(defaultEmail.pathname, "partners@tum-ai.com");
+  assert.equal(
+    defaultEmail.searchParams.get("cc"),
+    "silas.zamzow@tum-ai.com,kim.schlemmer@tum-ai.com",
+  );
+  assert.equal(defaultEmail.searchParams.getAll("cc").length, 1);
   assert.match(
-    getPartnershipEmailUrl(initialFunnelState),
-    /subject=Partnership%20request/,
+    defaultEmail.searchParams.get("subject") ?? "",
+    /^Partnership request/,
   );
   const brandEmail = new URL(
     getPartnershipEmailUrl({ intent: "brand", duration: "one-off" }),
