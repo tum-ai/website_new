@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { getPartnershipEmailUrl } from "@/lib/partnerships";
 import { Button } from "./button";
 
 export const Hero = () => {
@@ -29,7 +30,7 @@ export const Hero = () => {
           variant="primary"
           className="w-full rounded-md px-6 py-3 text-center sm:w-auto"
         >
-          <a href="mailto:partners@tum-ai.com">Become a Partner</a>
+          <a href={getPartnershipEmailUrl()}>Become a Partner</a>
         </Button>
 
         <Button

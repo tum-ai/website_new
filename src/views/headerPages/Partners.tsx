@@ -1,288 +1,376 @@
-"use client";
-
-import { cx } from "class-variance-authority";
-import { Brain, Handshake, Megaphone, Users } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUpRight,
+  BriefcaseBusiness,
+  Globe2,
+  Network,
+  Users,
+} from "lucide-react";
 import Image from "next/image";
-import { useMemo } from "react";
-import Benefits from "@/components/Benefit";
-import Layout from "@/components/Layout";
+import Link from "next/link";
+import {
+  ContactActions,
+  HeroContact,
+} from "@/components/partners/ContactActions";
+import PartnerLogo from "@/components/partners/PartnerLogo";
+import PartnerMarquee from "@/components/partners/PartnerMarquee";
+import PartnerSupporters from "@/components/partners/PartnerSupporters";
+import { PartnershipProvider } from "@/components/partners/PartnershipContext";
+import PartnershipFinder from "@/components/partners/PartnershipFinder";
+import PartnerTier from "@/components/partners/PartnerTier";
 import { Button } from "@/components/ui/button";
+import { alumniDestinations } from "@/data/partner-logos";
+import {
+  partnerCaseStudies,
+  partnerPillars,
+  partnerProfiles,
+  partnerReasons,
+  partnerStats,
+} from "@/data/partners";
+import {
+  getHighlightedPartners,
+  getPartnerDirectory,
+  getPartnerKey,
+} from "@/lib/partner-directory";
 import type { Partner } from "@/lib/types";
+import "@/styles/partners.css";
 
-// Display order for partner categories (pre-Sanity order).
-const CATEGORY_ORDER = [
-  "Technical Partners",
-  "Industry Partners",
-  "Research Partners",
-  "Venture Capital",
-  "Initiatives",
-];
+const reasonIcons = [Users, BriefcaseBusiness, Network];
 
 export default function Partners({
   initialPartners = [],
 }: {
   initialPartners?: Partner[];
 }) {
-  const groupedPartners = useMemo(() => {
-    // Filter out partners with no category
-    const partnersWithCategory = initialPartners.filter(
-      (partner) => partner.category,
-    );
-
-    return partnersWithCategory.reduce(
-      (acc, partner) => {
-        const category = partner.category!;
-        if (!acc[category]) {
-          acc[category] = [];
-        }
-        acc[category].push(partner);
-        return acc;
-      },
-      {} as Record<string, Partner[]>,
-    );
-  }, [initialPartners]);
-
-  // Sort categories by the defined order
-  const sortedCategories = useMemo(() => {
-    return Object.entries(groupedPartners).sort(([a], [b]) => {
-      const indexA = CATEGORY_ORDER.indexOf(a);
-      const indexB = CATEGORY_ORDER.indexOf(b);
-
-      // If both are in the order list, sort by index
-      if (indexA !== -1 && indexB !== -1) {
-        return indexA - indexB;
-      }
-      // If only a is in the list, it comes first
-      if (indexA !== -1) return -1;
-      // If only b is in the list, it comes first
-      if (indexB !== -1) return 1;
-      // If neither is in the list, sort alphabetically
-      return a.localeCompare(b);
-    });
-  }, [groupedPartners]);
-
-  const benefits = [
-    {
-      title: "AI Talent Pool",
-      text: "Connect with motivated AI students for internships or working roles.",
-      icon: Brain,
-    },
-    {
-      title: "Marketing & Awareness",
-      text: "Boost your brand through our website and campaigns (14k+ followers).",
-      icon: Megaphone,
-    },
-    {
-      title: "Project Collaborations",
-      text: "Join Hackathons, research, or industry projects with our members.",
-      icon: Handshake,
-    },
-    {
-      title: "Network & Ecosystem",
-      text: "Tap into AI startups, R&D insights, and Germany's leading AI student community.",
-      icon: Users,
-    },
-  ];
-
+  const partners = getPartnerDirectory(initialPartners);
+  const supporters = partners.filter((partner) => partner.tier === "supporter");
   return (
-    <>
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Background image */}
-        <Image
-          src="/assets/partners.webp"
-          alt="Hero background image"
-          fill
-          priority
-          sizes="100vw"
-          className="absolute w-full h-full object-cover scale-110 transition-transform duration-700 hover:scale-105"
-        />
-        {/* Dark overlay for contrast */}
-        <div className="absolute inset-0 bg-black/50" />
-
-        {/* Hero content */}
-        <div className="relative container mx-auto px-8 text-center z-10">
-          <h1
-            className="text-5xl md:text-7xl font-bold tracking-tight bg-clip-text text-transparent
-                    bg-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.7)]"
-          >
-            Partners & Sponsors
-          </h1>
-          <p className="mt-6 text-lg md:text-2xl text-white/90 max-w-3xl mx-auto">
-            Get access to Germany&apos;s largest student talent pool of AI
-            enthusiasts
-          </p>
-          <Button
-            asChild
-            variant="primary"
-            className="w-full rounded-md mt-10 shadow-xl shadow-black/30 px-6 py-3 text-center sm:w-auto"
-          >
-            <a href="mailto:partners@tum-ai.com">Become a Partner</a>
-          </Button>
-        </div>
-      </section>
-
-      <div>
-        {/* PARTNER LOGOS */}
-        <Layout>
-          <section className="p-8 md:p-10 sm:py-16 lg:py-16 text-center md:text-start px-[1rem]">
-            <div className="container mx-auto space-y-16 justify-center md:justify-start items-center md:items-start">
-              {/* Dynamically render sections based on the Sanity data */}
-              {sortedCategories.map(([category, partners]) => (
-                <PartnerSection
-                  key={category}
-                  title={category}
-                  logos={partners}
-                />
+    <PartnershipProvider>
+      <main className="partners-page">
+        <section className="partner-hero" aria-labelledby="partner-hero-title">
+          <div className="partner-container partner-hero-layout">
+            <div className="partner-hero-copy">
+              <p className="partner-hero-intro">
+                The next generation doesn’t wait.
+              </p>
+              <h1 id="partner-hero-title">
+                Meet the
+                <br />
+                cracked &amp;
+                <br />
+                the curious
+              </h1>
+              <p className="partner-hero-description">
+                Germany&apos;s largest AI student initiative. Partner with the
+                people building Europe&apos;s next AI companies.
+              </p>
+              <div className="partner-hero-actions">
+                <HeroContact />
+                <Button
+                  asChild
+                  variant="outline"
+                  data-tone="outline"
+                  className="partner-button"
+                >
+                  <a href="#find-your-fit">
+                    Find your fit
+                    <ArrowDown size={18} />
+                  </a>
+                </Button>
+              </div>
+            </div>
+            <figure className="partner-hero-photo">
+              <Image
+                src="/assets/partners/hero.webp"
+                alt="A speaker presenting to a packed auditorium at a TUM.ai event"
+                fill
+                priority
+                sizes="(min-width: 1024px) 45vw, (min-width: 768px) 40vw, 100vw"
+              />
+              <figcaption>
+                <span>
+                  Ideas become companies.
+                  <br />
+                  People make it happen.
+                </span>
+                <span className="partner-photo-signature">TUM.ai</span>
+              </figcaption>
+            </figure>
+          </div>
+          <PartnerMarquee partners={getHighlightedPartners(partners)} />
+        </section>
+        <PartnershipFinder />
+        <section
+          className="partner-reasons partner-section"
+          aria-labelledby="partner-reasons-title"
+        >
+          <div className="partner-container">
+            <div className="partner-section-heading">
+              <h2 id="partner-reasons-title">
+                Your next advantage
+                <br />
+                is already here.
+              </h2>
+              <p>
+                Exceptional talent. Tomorrow’s decision makers. A community
+                moving AI forward.
+              </p>
+            </div>
+            <div className="partner-reason-grid">
+              {partnerReasons.map((reason, index) => {
+                const Icon = reasonIcons[index];
+                return (
+                  <article className="partner-reason-card" key={reason.name}>
+                    <div className="partner-reason-name">
+                      <Icon size={22} />
+                      <span>{reason.name}</span>
+                    </div>
+                    <h3>{reason.title}</h3>
+                    <p>{reason.description}</p>
+                  </article>
+                );
+              })}
+            </div>
+            <div className="partner-section-contact">
+              <h3>Let’s talk.</h3>
+              <ContactActions />
+            </div>
+          </div>
+        </section>
+        <section
+          className="partner-proof"
+          aria-labelledby="partner-proof-title"
+        >
+          <div className="partner-container">
+            <h2 id="partner-proof-title">
+              Small acceptance rate. Outsized potential.
+            </h2>
+            <dl className="partner-stat-grid">
+              {partnerStats.map((stat) => (
+                <div key={stat.value}>
+                  <dt>{stat.label}</dt>
+                  <dd>{stat.value}</dd>
+                  {"detail" in stat ? <span>{stat.detail}</span> : null}
+                </div>
+              ))}
+            </dl>
+          </div>
+        </section>
+        <section
+          className="partner-pillars partner-section"
+          aria-labelledby="partner-pillars-title"
+        >
+          <div className="partner-container">
+            <div className="partner-section-heading">
+              <h2 id="partner-pillars-title">
+                Three pillars.
+                <br />
+                One ecosystem.
+              </h2>
+              <p>
+                From the first research question to the next venture. Find your
+                place at every stage.
+              </p>
+            </div>
+            <div className="partner-pillar-grid">
+              {partnerPillars.map((pillar) => (
+                <article className="partner-pillar-card" key={pillar.title}>
+                  <div className="partner-pillar-photo">
+                    <Image
+                      src={pillar.image}
+                      alt={pillar.alt}
+                      fill
+                      sizes="(min-width: 768px) 33vw, 100vw"
+                    />
+                  </div>
+                  <div className="partner-pillar-content">
+                    <Link href={pillar.href} className="partner-pillar-title">
+                      <h3>{pillar.title}</h3>
+                      <ArrowUpRight size={22} />
+                    </Link>
+                    <p className="partner-pillar-metric">
+                      <strong>{pillar.metric}</strong>
+                      <span>{pillar.metricLabel}</span>
+                    </p>
+                    <p>{pillar.description}</p>
+                  </div>
+                </article>
               ))}
             </div>
-          </section>
-        </Layout>
-
-        {/* COLLABORATION OPPORTUNITIES */}
-        <section className="relative overflow-hidden border-t border-b border-purple-100 py-12 sm:py-12 lg:py-16 w-full bg-gradient-to-br from-purple-100 via-white to-blue-100">
-          {/* Decorative gradient blobs for depth */}
-          <div className="pointer-events-none absolute -bottom-4 -left-14 h-72 w-72 rounded-full bg-gradient-to-br from-purple-400/20 to-fuchsia-400/30 blur-3xl"></div>
-          <div className="pointer-events-none absolute -bottom-24 -right-16 h-80 w-80 rounded-full bg-gradient-to-br from-indigo-400/20 to-sky-400/10 blur-3xl"></div>
-          <div className="pointer-events-none absolute top-1/3 -right-24 h-64 w-64 rounded-full bg-gradient-to-br from-pink-400/20 to-purple-400/20 blur-3xl"></div>
-
-          <Layout>
-            <div className="container relative z-10 mx-auto flex flex-col lg:flex-row gap-12 items-start">
-              {/* Info Card */}
-              <div className="flex-1 space-y-8">
-                <h1 className="text-title sm:text-2xl md:text-[2rem] font-semibold animate-item">
-                  Partner with TUM.ai
-                </h1>
-                <p className="max-w-lg text-gray-700">
-                  Access our exclusive talent pool of AI enthusiasts,
-                  experienced in software development, data science, and AI
-                  strategy.
+          </div>
+        </section>
+        <section
+          className="partner-people partner-section"
+          aria-labelledby="partner-people-title"
+        >
+          <div className="partner-container">
+            <div className="partner-section-heading">
+              <h2 id="partner-people-title">The cracked 2%.</h2>
+              <p>
+                Meet the people who turn
+                <br />
+                “what if” into what’s next.
+              </p>
+            </div>
+            <div className="partner-profile-grid">
+              {partnerProfiles.map((profile) => (
+                <article className="partner-profile" key={profile.name}>
+                  <div className="partner-profile-photo">
+                    <Image
+                      src={profile.image}
+                      alt={profile.name}
+                      unoptimized
+                      fill
+                      sizes="(min-width: 1024px) 25vw, (min-width: 600px) 50vw, 100vw"
+                      style={{ objectPosition: profile.position }}
+                    />
+                  </div>
+                  <h3>{profile.name}</h3>
+                  <p>{profile.role}</p>
+                  {profile.detail ? <span>{profile.detail}</span> : null}
+                </article>
+              ))}
+              <div className="partner-profile-community">
+                <Globe2 size={34} strokeWidth={1.3} />
+                <strong>+1000</strong>
+                <h3>top tier individuals</h3>
+                <p>
+                  20+ majors
+                  <br />
+                  30+ universities
                 </p>
-
-                <div className="grid gap-8 md:grid-cols-2">
-                  <OpportunityCard
-                    title="Events & Community"
-                    items={[
-                      "AI Summit Speaker",
-                      "Makeathon Challenge",
-                      "Workshop Host",
-                      "Mentorship Program",
-                    ]}
-                  />
-                  <OpportunityCard
-                    title="Industry & Projects"
-                    items={[
-                      "Industry Project Partner",
-                      "E-Lab Judge",
-                      "Post Open Positions",
-                    ]}
-                  />
-                </div>
-
-                <OpportunityCard
-                  title="Education & Knowledge"
-                  items={[
-                    "AI Academy Lecturer",
-                    "Technical Workshop Leader",
-                    "Research Collaboration",
-                  ]}
-                />
-
-                <a href="mailto:partners@tum-ai.com">
-                  <Button
-                    variant="primary"
-                    className="mt-6 w-full border border-gray-300"
-                  >
-                    Become a Partner
-                  </Button>
-                </a>
-              </div>
-
-              {/* Visual Image */}
-              <div className="flex-1 relative mt-[9.5rem] rounded-xl h-[405px] overflow-hidden shadow-lg">
-                <Image
-                  src="/assets/partners/martin_talk.jpg"
-                  alt="Martin talk"
-                  fill
-                  sizes="(min-width: 1024px) 50vw, 100vw"
-                  className="rounded-xl object-cover transition-transform duration-500 hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                <div className="absolute bottom-8 left-8 right-8 text-white font-semibold text-lg">
-                  Join our network of industry leaders and innovators
-                </div>
+                <span>
+                  Different backgrounds.
+                  <br />
+                  Shared ambition.
+                </span>
               </div>
             </div>
-          </Layout>
+            <div className="partner-destinations">
+              <h3>Where they go afterwards</h3>
+              <div>
+                {alumniDestinations.map((company) => (
+                  <span key={company.name}>
+                    <PartnerLogo {...company} />
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
         </section>
-
-        {/* BENEFITS */}
-        <section className="p-8 sm:py-16 lg:py-32">
-          <div className="container mx-auto">
-            <h1 className="text-title sm:text-2xl text-center mb-12 md:text-[2rem] font-semibold animate-item">
-              What We Offer
-            </h1>
-            <Benefits
-              benefits={benefits}
-              showShadow
-              columns={4}
-              color="purple"
+        <section
+          id="our-partners"
+          className="partner-directory partner-section"
+          aria-labelledby="partner-directory-title"
+        >
+          <div className="partner-container">
+            <div className="partner-section-heading">
+              <h2 id="partner-directory-title">
+                The company
+                <br />
+                we keep.
+              </h2>
+              <p>
+                Meet the partners helping
+                <br />
+                the next generation build.
+              </p>
+            </div>
+            <div className="partner-featured-wall">
+              {(["gold", "silver", "bronze"] as const).map((tier, index) => {
+                const group = partners.filter(
+                  (partner) => partner.tier === tier,
+                );
+                return (
+                  <PartnerTier
+                    key={`${tier}:${group.map((partner) => getPartnerKey(partner.name)).join(",")}`}
+                    tier={tier}
+                    partners={group}
+                    index={index}
+                  />
+                );
+              })}
+            </div>
+            <PartnerSupporters
+              key={supporters
+                .map((partner) => getPartnerKey(partner.name))
+                .join(",")}
+              partners={supporters}
             />
           </div>
         </section>
-      </div>
-    </>
-  );
-}
-
-// Partner logos reusable section
-function PartnerSection({ title, logos }: { title: string; logos: Partner[] }) {
-  if (!logos || logos.length === 0) return null;
-
-  return (
-    <div>
-      <h3
-        className={cx(
-          "text-2xl font-semibold mb-6 bg-clip-text text-transparent",
-          "gradient-text",
-        )}
-      >
-        {title}
-      </h3>
-      <div className="flex flex-wrap items-center justify-center md:items-start md:justify-start gap-2">
-        {logos.map((logo) => (
-          <a
-            key={logo.id}
-            href={logo.link}
-            {...(logo.link && { target: "_blank", rel: "noopener noreferrer" })}
-            aria-label={`Visit ${logo.name}`}
-            className="transition-transform duration-150 hover:scale-105 hover:shadow-lg flex h-20 w-40 items-center justify-center rounded-lg border-1 bg-white p-4 py-6"
-          >
-            {logo.image && (
-              <img
-                src={logo.image}
-                alt={logo.name}
-                className="max-h-full max-w-full object-contain"
-              />
-            )}
-          </a>
-        ))}
-      </div>
-    </div>
-  );
-}
-// Opportunity card component
-function OpportunityCard({ title, items }: { title: string; items: string[] }) {
-  return (
-    <div className="rounded-2xl border border-gray-300 bg-white p-6 shadow-sm transition hover:shadow-md">
-      <h4 className="text-lg font-semibold text-gray-900 mb-4">{title}</h4>
-      <ul className="space-y-2 text-gray-700 text-sm">
-        {items.map((item) => (
-          <li key={item} className="flex items-center gap-2">
-            <span className="h-1 w-1 rounded-full bg-purple-500" />
-            <span>{item}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
+        <section
+          className="partner-cases partner-section"
+          aria-labelledby="partner-cases-title"
+        >
+          <div className="partner-container">
+            <div className="partner-section-heading">
+              <h2 id="partner-cases-title">
+                Real partnerships.
+                <br />
+                Real outcomes.
+              </h2>
+              <p>
+                Good conversations are a start.
+                <br />
+                Here’s what comes after.
+              </p>
+            </div>
+            <div className="partner-case-grid">
+              {partnerCaseStudies.map((study) => (
+                <article className="partner-case-card" key={study.name}>
+                  <div className="partner-case-image">
+                    <Image
+                      src={study.image}
+                      alt={study.alt}
+                      fill
+                      sizes="(min-width: 768px) 33vw, 100vw"
+                      style={{ objectPosition: study.imagePosition }}
+                    />
+                  </div>
+                  <div className="partner-case-content">
+                    <h3>{study.name}</h3>
+                    <div className="partner-case-metric">{study.metric}</div>
+                    <p className="partner-case-label">{study.label}</p>
+                    <blockquote>
+                      <p>{study.copy}</p>
+                      {"attribution" in study ? (
+                        <cite>— {study.attribution}</cite>
+                      ) : null}
+                    </blockquote>
+                  </div>
+                </article>
+              ))}
+            </div>
+            <div className="partner-section-contact">
+              <h3>Get the same results — book a call.</h3>
+              <ContactActions bookingFirst />
+            </div>
+          </div>
+        </section>
+        <section
+          id="partner-contact"
+          className="partner-final"
+          aria-labelledby="partner-final-title"
+        >
+          <div className="partner-container">
+            <div className="partner-final-mark" aria-hidden="true">
+              <ArrowUpRight size={72} strokeWidth={1} />
+            </div>
+            <h2 id="partner-final-title">
+              Let&apos;s build
+              <br />
+              something big!
+            </h2>
+            <p>
+              The next chapter of AI starts with the right people.
+              <br />
+              Let’s bring yours and ours together.
+            </p>
+            <ContactActions bookingFirst emailLabel="Email us" />
+          </div>
+        </section>
+      </main>
+    </PartnershipProvider>
   );
 }

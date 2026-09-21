@@ -1,12 +1,39 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { evaluate, parse } from "groq-js";
-import { EVENTS_QUERY, RESEARCH_QUERY } from "../src/lib/sanity-queries";
+import {
+  EVENTS_QUERY,
+  PARTNERS_QUERY,
+  RESEARCH_QUERY,
+} from "../src/lib/sanity-queries";
 
 async function run(query: string, dataset: unknown[]) {
   const value = await evaluate(parse(query), { dataset });
   return value.get();
 }
+
+test("partner query preserves legacy fields while exposing optional wall settings", async () => {
+  const [legacy, current] = await run(PARTNERS_QUERY, [
+    {
+      _id: "legacy",
+      _type: "partner",
+      name: "IBM",
+      category: "Research Partners",
+    },
+    {
+      _id: "current",
+      _type: "partner",
+      name: "Google",
+      tier: "gold",
+      featured: true,
+    },
+  ]);
+  assert.equal(legacy.id, "legacy");
+  assert.equal(legacy.category, "Research Partners");
+  assert.equal(legacy.tier, null);
+  assert.equal(current.tier, "gold");
+  assert.equal(current.featured, true);
+});
 
 type TestEvent = {
   id: string;
