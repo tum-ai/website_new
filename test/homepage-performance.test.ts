@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import test from "node:test";
 import { clearNextArtifacts } from "../scripts/next-artifacts.mjs";
 
@@ -52,8 +53,18 @@ function getImagePreloads(html: string) {
     .filter((href): href is string => href !== undefined);
 }
 
+function getBuiltCss() {
+  const cssDir = join(DIST_DIR, "static", "css");
+
+  return readdirSync(cssDir)
+    .filter((fileName) => fileName.endsWith(".css"))
+    .map((fileName) => readFileSync(join(cssDir, fileName), "utf8"))
+    .join("\n");
+}
+
 const homepageHtml = buildHomepageHtml();
 const homepageMarkup = stripScripts(homepageHtml);
+const builtCss = getBuiltCss();
 
 test("homepage limits above-the-fold image preloads to the hero logo", () => {
   const imagePreloads = getImagePreloads(homepageHtml);
@@ -68,4 +79,10 @@ test("homepage limits above-the-fold image preloads to the hero logo", () => {
 test("homepage hero background stays decorative without server-rendered media tiles", () => {
   assert.doesNotMatch(homepageMarkup, /brand-grid-tile/);
   assert.doesNotMatch(homepageMarkup, /mix-blend-overlay/);
+});
+
+test("next build emits Tailwind utility classes for app routes", () => {
+  assert.match(builtCss, /\.fixed\s*\{/);
+  assert.match(builtCss, /\.min-h-screen\s*\{/);
+  assert.match(builtCss, /\.text-minimal-gray\s*\{/);
 });

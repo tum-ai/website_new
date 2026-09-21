@@ -105,7 +105,7 @@ Wall screenshots are cropped from full-page captures with the header at the top 
 
 ### Portrait resolution correction (2026-09-19)
 
-Replaced the landscape portrait sources with lossless 708 × 864 crops from the supplied PNGs and disabled Next.js recompression for these three images. The original width-based responsive selection was undersampling the vertical resolution needed by `object-fit: cover`, especially at Retina density. New asset filenames avoid stale optimized-image caches.
+Replaced the landscape portrait sources with lossless 708 × 864 crops from the supplied PNG files and disabled Next.js recompression for these three images. The original width-based responsive selection was undersampling the vertical resolution needed by `object-fit: cover`, especially at Retina density. New asset filenames avoid stale optimized-image caches.
 
 Verified pixel-for-pixel equality between each lossless WebP and its original PNG crop. Production browser verification at 1440px with device scale factor 2 confirms all three direct asset URLs serve 708 × 864 pixels, exceeding the 604 × 736 pixels needed by each 302 × 368 CSS-pixel card. Also visually checked at 390px. The profiles screenshot above now records this Retina verification. Scoped lint, all ten partnership tests, the production build, and `git diff --check` passed.
 
