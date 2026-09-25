@@ -1,10 +1,10 @@
 import { assert, expect, test } from "vitest";
-import { getPartnerDirectory } from "../src/lib/partner-directory";
+import { getPartnerDirectory } from "./partner-directory";
 import {
   createPartnerRotation,
   nextPartnerBatch,
   nextPartnerRotation,
-} from "../src/lib/partner-rotation";
+} from "./partner-rotation";
 
 function seeded(seed: number) {
   let value = seed;

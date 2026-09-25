@@ -1,27 +1,24 @@
 import { existsSync } from "node:fs";
 import { expect, test } from "vitest";
-import {
-  alumniDestinations,
-  featuredPartners,
-} from "../src/data/partner-logos";
-import { marqueeLogos } from "../src/data/partner-marquee-logos";
+import { alumniDestinations, featuredPartners } from "./data/partner-logos";
+import { marqueeLogos } from "./data/partner-marquee-logos";
 import {
   partnerCaseStudies,
   partnerPillars,
   partnerProfiles,
-} from "../src/data/partners";
+} from "./data/partners";
 import {
   getHighlightedPartners,
   getPartnerDirectory,
   getPartnerKey,
-} from "../src/lib/partner-directory";
+} from "./partner-directory";
 import {
   getPartnershipBookingUrl,
   getPartnershipEmailUrl,
   getPartnershipRecommendation,
   initialFunnelState,
   partnershipFunnelReducer,
-} from "../src/lib/partnerships";
+} from "./partnerships";
 
 test("all eight paths produce the brief's recommendation", () => {
   const expected = {
@@ -155,7 +152,7 @@ test("every highlighted launch partner has a shipped marquee logo", () => {
       `Missing marquee logo mapping for ${partner.name}`,
     ).toBeTruthy();
     expect(
-      existsSync(new URL(`../public${image}`, import.meta.url)),
+      existsSync(new URL(`../../../public${image}`, import.meta.url)),
       `Missing marquee asset for ${partner.name}: ${image}`,
     ).toBe(true);
   }
@@ -172,7 +169,7 @@ test("every curated logo, portrait, and case-study image ships with the page", (
   ]) {
     expect(item.image, "Missing curated partner image").toBeTruthy();
     expect(
-      existsSync(new URL(`../public${item.image}`, import.meta.url)),
+      existsSync(new URL(`../../../public${item.image}`, import.meta.url)),
       `Missing public asset: ${item.image}`,
     ).toBe(true);
   }

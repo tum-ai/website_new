@@ -21,10 +21,10 @@ import {
   Section,
   Text,
 } from "@/components/ds";
-import { partnershipDurations, partnershipIntents } from "@/data/partners";
-import { getPartnershipRecommendation } from "@/lib/partnerships";
-import { ContactActions } from "./ContactActions";
-import { usePartnership } from "./PartnershipContext";
+import { ContactActions } from "./contact-actions";
+import { partnershipDurations, partnershipIntents } from "./data/partners";
+import { usePartnership } from "./partnership-context";
+import { getPartnershipRecommendation } from "./partnerships";
 
 const icons = {
   talent: Users,
@@ -80,7 +80,7 @@ function FinderOption({
   );
 }
 
-export default function PartnershipFinder() {
+export function PartnershipFinder() {
   const { selection, dispatch } = usePartnership();
   const { step, intent } = selection;
   const heading = useRef<HTMLHeadingElement>(null);

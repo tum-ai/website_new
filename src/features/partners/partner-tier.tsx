@@ -1,7 +1,7 @@
 import type { Partner } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import PartnerRotationGrid from "./PartnerRotationGrid";
-import type { PartnerTileSize } from "./PartnerTile";
+import { PartnerRotationGrid } from "./partner-rotation-grid";
+import type { PartnerTileSize } from "./partner-tile";
 
 const labels = { gold: "Gold", silver: "Silver", bronze: "Bronze" };
 
@@ -12,7 +12,7 @@ const rows: { width: string; size: PartnerTileSize }[] = [
   { width: "md:w-[72%]", size: "sm" },
 ];
 
-export default function PartnerTier({
+export function PartnerTier({
   partners,
   tier,
   index,

@@ -1,4 +1,4 @@
-import type { Partner } from "../lib/types";
+import type { Partner } from "@/lib/types";
 
 // These brief-approved defaults also keep the core wall available before CMS backfill.
 export const featuredPartners: Partner[] = [

@@ -1,6 +1,6 @@
-import { featuredPartners } from "../data/partner-logos";
-import { getSafeExternalUrl } from "./security";
-import type { Partner, PartnerTier } from "./types";
+import { getSafeExternalUrl } from "@/lib/security";
+import type { Partner, PartnerTier } from "@/lib/types";
+import { featuredPartners } from "./data/partner-logos";
 
 export function getHighlightedPartners(partners: Partner[]) {
   return partners.filter(

@@ -15,10 +15,13 @@ import {
   type PartnershipFunnelAction,
   type PartnershipFunnelState,
   partnershipFunnelReducer,
-} from "@/lib/partnerships";
+} from "./partnerships";
 
 // Loaded on the first "Book a call"; the Cal.eu embed mounts only while open.
-const BookingDialog = dynamic(() => import("./BookingDialog"), { ssr: false });
+const BookingDialog = dynamic(
+  () => import("./booking-dialog").then((m) => m.BookingDialog),
+  { ssr: false },
+);
 
 const PartnershipContext = createContext<{
   selection: PartnershipFunnelState;

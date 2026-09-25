@@ -26,7 +26,7 @@ function parse(text: string) {
  * the server renders the final text, screen readers only ever get the final
  * text, and reduced motion or figures already on screen stay untouched.
  */
-export default function StatValue({
+export function StatValue({
   value,
   className,
 }: {

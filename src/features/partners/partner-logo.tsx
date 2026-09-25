@@ -13,7 +13,7 @@ type PartnerLogoProps = {
  * hooks for the rotation dissolve in src/styles/partners.css. The surrounding
  * tile caps the logo size through `[&_.partner-logo-image]:…` variants.
  */
-export default function PartnerLogo(props: PartnerLogoProps) {
+export function PartnerLogo(props: PartnerLogoProps) {
   // A changed source gets its own retry budget instead of inheriting a failure.
   return <LogoImage key={props.image} {...props} />;
 }

@@ -23,33 +23,30 @@ import {
   Text,
   TopBlend,
 } from "@/components/ds";
-import {
-  ContactActions,
-  HeroContact,
-} from "@/components/partners/ContactActions";
-import PartnerLogo from "@/components/partners/PartnerLogo";
-import PartnerMarquee from "@/components/partners/PartnerMarquee";
-import PartnerSupporters from "@/components/partners/PartnerSupporters";
-import { PartnershipProvider } from "@/components/partners/PartnershipContext";
-import PartnershipFinder from "@/components/partners/PartnershipFinder";
-import PartnerTier from "@/components/partners/PartnerTier";
-import StatValue from "@/components/partners/StatValue";
 import { officialMembers, organizationFacts } from "@/config/organization";
-import { alumniDestinations } from "@/data/partner-logos";
+import type { Partner } from "@/lib/types";
+import { ContactActions, HeroContact } from "./contact-actions";
+import { alumniDestinations } from "./data/partner-logos";
 import {
   partnerCaseStudies,
   partnerPillars,
   partnerProfiles,
   partnerReasons,
   partnerStats,
-} from "@/data/partners";
+} from "./data/partners";
 import {
   getHighlightedPartners,
   getPartnerDirectory,
   getPartnerKey,
-} from "@/lib/partner-directory";
-import type { Partner } from "@/lib/types";
-import "@/styles/partners.css";
+} from "./partner-directory";
+import { PartnerLogo } from "./partner-logo";
+import { PartnerMarquee } from "./partner-marquee";
+import { PartnerSupporters } from "./partner-supporters";
+import { PartnerTier } from "./partner-tier";
+import { PartnershipProvider } from "./partnership-context";
+import { PartnershipFinder } from "./partnership-finder";
+import { StatValue } from "./stat-value";
+import "./partners.css";
 
 const reasonIcons = [Users, BriefcaseBusiness, Network];
 
@@ -79,7 +76,7 @@ function ContactRow({
   );
 }
 
-export default function Partners({
+export function PartnersPage({
   initialPartners = [],
 }: {
   initialPartners?: Partner[];

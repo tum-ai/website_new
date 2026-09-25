@@ -4,7 +4,7 @@ import { AboutSection } from "@/components/home/AboutSection";
 import { ExploreSection } from "@/components/home/ExploreSection";
 import { HomeHero } from "@/components/home/HomeHero";
 import { PartnersSection } from "@/components/home/PartnersSection";
-import { getPartnershipEmailUrl } from "@/lib/partnerships";
+import { getPartnershipEmailUrl } from "@/features/partners";
 
 /**
  * Home page: ink hero, "What is TUM.ai?" (paper and mist), the destinations

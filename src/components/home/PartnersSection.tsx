@@ -11,13 +11,13 @@ import {
   Reveal,
   Section,
 } from "@/components/ds";
-import { marqueeLogos } from "@/data/partner-marquee-logos";
 import {
   getHighlightedPartners,
   getPartnerDirectory,
   getPartnerKey,
-} from "@/lib/partner-directory";
-import { getPartnershipEmailUrl } from "@/lib/partnerships";
+  getPartnershipEmailUrl,
+  marqueeLogos,
+} from "@/features/partners";
 
 /** Icon-only marks that need the partner name beside them to read. */
 const LOCKUP_KEYS = new Set(["mutagent", "dryft"]);

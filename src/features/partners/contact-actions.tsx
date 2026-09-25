@@ -2,8 +2,8 @@
 
 import { CalendarDays, Mail } from "lucide-react";
 import { Actions, Button, ButtonLink } from "@/components/ds";
-import { getPartnershipEmailUrl } from "@/lib/partnerships";
-import { usePartnership } from "./PartnershipContext";
+import { usePartnership } from "./partnership-context";
+import { getPartnershipEmailUrl } from "./partnerships";
 
 /** Email (mailto with CCs and finder context) and booking-dialog actions. */
 export function ContactActions({

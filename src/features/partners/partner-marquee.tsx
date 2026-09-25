@@ -1,16 +1,16 @@
 import type { CSSProperties } from "react";
 import { ButtonLink } from "@/components/ds";
-import { marqueeLogos } from "@/data/partner-marquee-logos";
-import { getPartnerKey } from "@/lib/partner-directory";
 import type { Partner } from "@/lib/types";
-import PartnerLogo from "./PartnerLogo";
+import { marqueeLogos } from "./data/partner-marquee-logos";
+import { getPartnerKey } from "./partner-directory";
+import { PartnerLogo } from "./partner-logo";
 
 /**
  * Highlighted-partner rail for the dark hero. Unlike the DS `Marquee` (which
  * duplicates its list), every partner is rendered once and moves at an equal
  * rate, wrapping outside the clipped window; mechanics live in partners.css.
  */
-export default function PartnerMarquee({ partners }: { partners: Partner[] }) {
+export function PartnerMarquee({ partners }: { partners: Partner[] }) {
   if (!partners.length) return null;
   const animated = partners.length > 3;
   return (

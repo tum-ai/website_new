@@ -2,7 +2,7 @@ import { ArrowUpRight } from "lucide-react";
 import { getSafeExternalUrl } from "@/lib/security";
 import type { Partner } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import PartnerLogo from "./PartnerLogo";
+import { PartnerLogo } from "./partner-logo";
 
 const partnerTierLabels = { gold: "Gold", silver: "Silver", bronze: "Bronze" };
 
@@ -21,7 +21,7 @@ export const partnerTileSizes = {
 
 export type PartnerTileSize = keyof typeof partnerTileSizes;
 
-export default function PartnerTile({
+export function PartnerTile({
   partner,
   size = "lg",
 }: {

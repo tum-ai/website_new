@@ -16,7 +16,7 @@ import {
   PARTNER_BOOKING_URL,
   PARTNER_EMAIL,
   type PartnershipSelection,
-} from "@/lib/partnerships";
+} from "./partnerships";
 
 const namespace = "tumai-partners";
 const bookingUrl = new URL(PARTNER_BOOKING_URL);
@@ -30,7 +30,7 @@ const embedJsUrl = `${bookingUrl.origin}/embed.js`;
  * close button and fallback links stay on screen and the embed is the only
  * scroller.
  */
-export default function BookingDialog({
+export function BookingDialog({
   open,
   onOpenChange,
   selection,

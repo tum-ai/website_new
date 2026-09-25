@@ -2,13 +2,9 @@
 
 import { useEffect, useState } from "react";
 import type { Partner } from "@/lib/types";
-import PartnerRotationGrid from "./PartnerRotationGrid";
+import { PartnerRotationGrid } from "./partner-rotation-grid";
 
-export default function PartnerSupporters({
-  partners,
-}: {
-  partners: Partner[];
-}) {
+export function PartnerSupporters({ partners }: { partners: Partner[] }) {
   const [columns, setColumns] = useState(6);
   useEffect(() => {
     // Match the `.partner-supporter-grid` breakpoints in partners.css; each viewport keeps three rows.

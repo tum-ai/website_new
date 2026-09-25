@@ -7,14 +7,11 @@ import {
   useRef,
   useState,
 } from "react";
-import { getPartnerKey } from "@/lib/partner-directory";
-import {
-  createPartnerRotation,
-  nextPartnerBatch,
-} from "@/lib/partner-rotation";
 import type { Partner } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import PartnerTile, { type PartnerTileSize } from "./PartnerTile";
+import { getPartnerKey } from "./partner-directory";
+import { createPartnerRotation, nextPartnerBatch } from "./partner-rotation";
+import { PartnerTile, type PartnerTileSize } from "./partner-tile";
 
 // Bound a slow or broken remote CMS image; PartnerLogo supplies the name fallback.
 function preload(src?: string) {
@@ -40,7 +37,7 @@ function preload(src?: string) {
 }
 
 /** Remount when capacity or company keys change to cancel pending batches safely. */
-export default function PartnerRotationGrid({
+export function PartnerRotationGrid({
   partners,
   capacity = 3,
   batchSize = 1,

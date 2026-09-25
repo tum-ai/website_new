@@ -10,7 +10,7 @@ import {
   SplitWords,
   TopBlend,
 } from "@/components/ds";
-import { getPartnershipEmailUrl } from "@/lib/partnerships";
+import { getPartnershipEmailUrl } from "@/features/partners";
 import { HeroMosaic } from "./HeroMosaic";
 
 /**

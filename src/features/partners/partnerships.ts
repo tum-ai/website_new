@@ -1,11 +1,11 @@
-import { contactEmails } from "../config/contact";
+import { contactEmails } from "@/config/contact";
 import {
   type PartnershipDuration,
   type PartnershipIntent,
   partnershipDurations,
   partnershipIntents,
   recommendations,
-} from "../data/partners";
+} from "./data/partners";
 
 export const PARTNER_EMAIL = contactEmails.partners;
 export const PARTNER_EMAIL_CC = [

@@ -18,7 +18,7 @@ import {
 import { faq as applyFaq } from "../src/data/apply/faq.tsx";
 import { faq as eLabFaq } from "../src/data/e-lab/FAQ.tsx";
 import { eLabMetrics } from "../src/data/e-lab/venture-page.ts";
-import { partnerStats } from "../src/data/partners.ts";
+import { partnerStats } from "../src/features/partners/data/partners.ts";
 import { parseMunichDateTime } from "../src/lib/munich-time.ts";
 
 test("Munich wall-clock times resolve summer and winter time", () => {
@@ -116,12 +116,15 @@ const hardcodedFacts: [RegExp, string][] = [
 const srcDir = join(import.meta.dirname, "..", "src");
 const exempt = [join(srcDir, "config"), join(srcDir, "lib", "mock-cms.ts")];
 
+/** Colocated tests may spell facts out: they assert the rendered values. */
+const isTestFile = (name: string) => /\.test\.tsx?$/.test(name);
+
 function sourceFiles(dir: string): string[] {
   return readdirSync(dir).flatMap((name) => {
     const path = join(dir, name);
     if (exempt.some((entry) => path.startsWith(entry))) return [];
     if (statSync(path).isDirectory()) return sourceFiles(path);
-    return /\.(ts|tsx)$/.test(name) ? [path] : [];
+    return /\.(ts|tsx)$/.test(name) && !isTestFile(name) ? [path] : [];
   });
 }
 
