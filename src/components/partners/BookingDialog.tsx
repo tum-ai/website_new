@@ -25,7 +25,10 @@ const embedJsUrl = `${bookingUrl.origin}/embed.js`;
 /**
  * Booking dialog (Base UI). The popup content, and with it the Cal.eu embed,
  * mounts only while open; closing returns focus to `finalFocus`, the control
- * that opened it.
+ * that opened it. On phones the popup fills the dialog viewport (dynamic
+ * viewport height) and the calendar takes the remaining space, so the title,
+ * close button and fallback links stay on screen and the embed is the only
+ * scroller.
  */
 export default function BookingDialog({
   open,
@@ -43,22 +46,24 @@ export default function BookingDialog({
       <DialogContent
         size="xl"
         finalFocus={finalFocus}
-        className="flex max-w-[68.75rem] flex-col gap-5 p-5 sm:p-7"
+        className="max-w-[68.75rem] max-sm:h-full"
       >
-        <div className="pr-12">
-          <DialogTitle>Let’s talk about your partnership.</DialogTitle>
-          <DialogDescription className="mt-2">
-            Pick a time for a quick chat with Silas from TUM.ai.
-          </DialogDescription>
-        </div>
-        <BookingCalendar selection={selection} />
-        <div className="flex flex-wrap justify-between gap-x-6 gap-y-3 border-t border-hairline pt-4 text-small">
-          <TextLink href={getPartnershipBookingUrl(selection)} arrow>
-            Open booking page
-          </TextLink>
-          <TextLink href={getPartnershipEmailUrl(selection)}>
-            Email us instead
-          </TextLink>
+        <div className="flex h-full flex-col gap-5 p-5 sm:p-7">
+          <div className="pr-12">
+            <DialogTitle>Let’s talk about your partnership.</DialogTitle>
+            <DialogDescription className="mt-2">
+              Pick a time for a quick chat with Silas from TUM.ai.
+            </DialogDescription>
+          </div>
+          <BookingCalendar selection={selection} />
+          <div className="flex flex-wrap justify-between gap-x-6 gap-y-3 border-t border-hairline pt-4 text-small">
+            <TextLink href={getPartnershipBookingUrl(selection)} arrow>
+              Open booking page
+            </TextLink>
+            <TextLink href={getPartnershipEmailUrl(selection)}>
+              Email us instead
+            </TextLink>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
@@ -117,7 +122,7 @@ function BookingCalendar({ selection }: { selection: PartnershipSelection }) {
   }, []);
 
   return (
-    <div className="h-[min(630px,65dvh)] min-h-[360px] overflow-auto sm:min-h-[420px]">
+    <div className="min-h-0 flex-1 overflow-auto sm:h-[min(630px,65dvh)] sm:min-h-[420px] sm:flex-none">
       <p
         role="status"
         className={

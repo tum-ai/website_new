@@ -100,7 +100,7 @@ export function DialogContent({
         <BaseDialog.Popup
           data-tone="paper"
           className={cn(
-            "relative w-full overflow-hidden rounded-4xl bg-canvas text-fg shadow-lift outline-none",
+            "relative w-full overflow-clip rounded-4xl bg-canvas text-fg shadow-lift outline-none",
             "transition-[opacity,translate,scale] duration-500 ease-brand",
             "data-[starting-style]:translate-y-8 data-[starting-style]:scale-[0.97] data-[starting-style]:opacity-0",
             "data-[ending-style]:translate-y-4 data-[ending-style]:opacity-0 data-[ending-style]:duration-300",
@@ -111,12 +111,20 @@ export function DialogContent({
           {...props}
         >
           {showClose ? (
-            <BaseDialog.Close
-              aria-label="Close"
-              className="absolute top-3 right-3 z-20 grid size-10 place-items-center rounded-full bg-white/85 text-violet-950 shadow-soft backdrop-blur transition-[background-color,rotate] duration-300 ease-brand hover:rotate-90 hover:bg-white"
-            >
-              <X aria-hidden className="size-4" />
-            </BaseDialog.Close>
+            // A zero-height sticky rail keeps the close button in reach while
+            // a dialog taller than the screen scrolls in the viewport. The
+            // popup clips (overflow-clip) rather than hides, because a hidden
+            // overflow would make the popup the sticky scroller. The rail sits
+            // in flow, so padding on the popup (className) offsets it; put
+            // padding on an inner wrapper instead.
+            <div className="pointer-events-none sticky top-0 z-20 flex h-0 justify-end">
+              <BaseDialog.Close
+                aria-label="Close"
+                className="pointer-events-auto mt-3 mr-3 grid size-10 shrink-0 place-items-center rounded-full bg-white/85 text-violet-950 shadow-soft backdrop-blur transition-[background-color,rotate] duration-300 ease-brand hover:rotate-90 hover:bg-white"
+              >
+                <X aria-hidden className="size-4" />
+              </BaseDialog.Close>
+            </div>
           ) : null}
           {children}
         </BaseDialog.Popup>
