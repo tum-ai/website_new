@@ -17,7 +17,7 @@ interface MemberStoriesProps {
  * The band keeps `id="memberStories"`: the homepage links to
  * /community#memberStories.
  */
-export default function MemberStories({ stories }: MemberStoriesProps) {
+export function MemberStories({ stories }: MemberStoriesProps) {
   return (
     <Section
       tone="lavender"

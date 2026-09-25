@@ -3,7 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import { Container, Eyebrow, Reveal, Section } from "@/components/ds";
 import { cn } from "@/lib/utils";
-import { type JourneyStep, journeyStages, stepAnchor } from "./journeySteps";
+import {
+  type JourneyStep,
+  journeyStages,
+  stepAnchor,
+} from "./data/journey-steps";
 
 /**
  * Fraction of the viewport height that acts as the "reading line": rails fill

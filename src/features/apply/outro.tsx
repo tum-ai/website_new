@@ -1,9 +1,9 @@
 import { CtaBand, FaqSection, Highlight } from "@/components/ds";
-import { faq } from "@/data/apply/faq";
-import ApplyAction from "./ApplyAction";
+import { ApplyAction } from "./apply-action";
+import { faq } from "./data/faq";
 
 /** FAQ, then the closing call to apply (reflects the open/closed state). */
-export default function Outro() {
+export function Outro() {
   return (
     <>
       <FaqSection id="apply-faq" tone="mist" items={faq} />

@@ -7,7 +7,7 @@ import { membershipConfig } from "@/config/membership";
  * focusable but inert (`aria-disabled`), and its description points at the
  * status badge so assistive tech announces why it is unavailable.
  */
-export default function ApplyAction({ statusId }: { statusId: string }) {
+export function ApplyAction({ statusId }: { statusId: string }) {
   if (membershipConfig.applicationsOpen) {
     return (
       <ButtonLink

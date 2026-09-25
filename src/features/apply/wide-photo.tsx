@@ -20,7 +20,7 @@ type WidePhotoProps = {
  * is slightly oversized and drifts with scroll (static under reduced motion),
  * and eases into a slow zoom on hover.
  */
-export default function WidePhoto({
+export function WidePhoto({
   src,
   alt,
   aspectClassName = "aspect-[4/3] sm:aspect-[16/9] lg:aspect-[3/1]",

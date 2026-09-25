@@ -1,8 +1,8 @@
 import Image from "next/image";
 import { Highlight, PageHero } from "@/components/ds";
-import ApplyAction from "./ApplyAction";
+import { ApplyAction } from "./apply-action";
 
-export default function Hero() {
+export function Hero() {
   return (
     <PageHero
       titleId="apply-hero-title"

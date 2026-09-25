@@ -23,7 +23,7 @@ const figures = [
   },
 ];
 
-export default function About() {
+export function About() {
   return (
     <Section tone="paper" spacing="lg" aria-labelledby="apply-about-title">
       <Container>

@@ -1,9 +1,9 @@
 import Image from "next/image";
-import MemberStories from "@/components/apply/MemberStories";
-import { DepartmentsSection } from "@/components/community/DepartmentsSection";
-import { JourneySection } from "@/components/community/JourneySection";
 import { ButtonLink, CtaBand, Highlight, PageHero } from "@/components/ds";
-import { stories } from "@/data/apply/applyData";
+import { stories } from "./data/member-stories";
+import { DepartmentsSection } from "./departments-section";
+import { JourneySection } from "./journey-section";
+import { MemberStories } from "./member-stories";
 
 /** Hero media: an onboarding group photo in the brand's signature shape. */
 function HeroPhoto() {
@@ -21,7 +21,7 @@ function HeroPhoto() {
   );
 }
 
-export default function Community() {
+export function CommunityPage() {
   return (
     <main>
       <PageHero

@@ -18,8 +18,8 @@ import {
   SectionHeader,
   SpotlightCard,
 } from "@/components/ds";
-import { type Department, departments } from "@/data/community";
 import { cn } from "@/lib/utils";
+import { type Department, departments } from "./data/departments";
 
 /** Maps the icon names stored in src/data/community to Lucide icons. */
 const departmentIcons: Record<string, LucideIcon> = {

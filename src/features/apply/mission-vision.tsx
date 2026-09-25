@@ -6,7 +6,7 @@ import {
   Section,
   SectionHeader,
 } from "@/components/ds";
-import WidePhoto from "./WidePhoto";
+import { WidePhoto } from "./wide-photo";
 
 const statements = [
   { label: "Vision", text: "Foster the next generation of AI talent." },
@@ -17,7 +17,7 @@ const statements = [
 ];
 
 /** The brand guide's mission/vision slide: outlined pills over two columns. */
-export default function MissionVision() {
+export function MissionVision() {
   return (
     <Section tone="mist" spacing="lg" aria-labelledby="apply-mission-title">
       <Container>

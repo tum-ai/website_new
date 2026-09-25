@@ -1,6 +1,6 @@
 import type { LucideIcon } from "lucide-react";
-import Benefits from "@/components/Benefit";
 import { Container, Highlight, Section, SectionHeader } from "@/components/ds";
+import { Benefits } from "./benefits";
 
 interface Requirement {
   icon: LucideIcon;
@@ -12,9 +12,7 @@ interface RequirementsProps {
   requirementsWithIcons: Requirement[];
 }
 
-export default function Requirements({
-  requirementsWithIcons,
-}: RequirementsProps) {
+export function Requirements({ requirementsWithIcons }: RequirementsProps) {
   return (
     <Section
       tone="paper"

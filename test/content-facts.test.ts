@@ -15,7 +15,7 @@ import {
   officialMembers,
   organizationFacts,
 } from "../src/config/organization.ts";
-import { faq as applyFaq } from "../src/data/apply/faq.tsx";
+import { faq as applyFaq } from "../src/features/apply/data/faq.ts";
 import { faq as eLabFaq } from "../src/features/e-lab/data/faq.ts";
 import { eLabMetrics } from "../src/features/e-lab/data/venture-page.ts";
 import { partnerStats } from "../src/features/partners/data/partners.ts";

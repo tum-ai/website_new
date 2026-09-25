@@ -9,7 +9,7 @@ import {
   Section,
   SectionHeader,
 } from "@/components/ds";
-import WidePhoto from "./WidePhoto";
+import { WidePhoto } from "./wide-photo";
 
 /** Inline emphasis inside journey copy. */
 function Em({ children }: { children: ReactNode }) {
@@ -137,7 +137,7 @@ const offerings = [
  * pinned beside long copy on wide screens), then the three kinds of work as a
  * bento with the lecture-hall photo.
  */
-export default function MemberJourney() {
+export function MemberJourney() {
   return (
     <Section tone="lavender" spacing="lg" aria-labelledby="apply-journey-title">
       <Container>

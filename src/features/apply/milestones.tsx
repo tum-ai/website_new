@@ -86,7 +86,7 @@ const items: TimelineItem[] = steps.map((step) => ({
 }));
 
 /** Sticky heading beside a timeline whose rail fills as the years scroll by. */
-export default function Milestones() {
+export function Milestones() {
   return (
     <Section tone="paper" spacing="lg" aria-labelledby="apply-milestones-title">
       <Container className="grid gap-14 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)] lg:gap-20">

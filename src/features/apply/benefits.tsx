@@ -25,7 +25,7 @@ interface Props {
  * Icon-led spotlight cards (DS `FeatureCard`) with an editorial counter,
  * revealed in sequence. Icons always use the brand violet.
  */
-const Benefits = ({
+export const Benefits = ({
   benefits,
   columns = 2,
   variant = "raised",
@@ -51,5 +51,3 @@ const Benefits = ({
     </ul>
   );
 };
-
-export default Benefits;
