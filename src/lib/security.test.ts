@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { getSafeExternalUrl, serializeJsonLd } from "../src/lib/security.ts";
+import { getSafeExternalUrl, serializeJsonLd } from "@/lib/security";
 
 test("getSafeExternalUrl allows http and https", () => {
   expect(getSafeExternalUrl("https://www.tum-ai.com/apply")).toBe(

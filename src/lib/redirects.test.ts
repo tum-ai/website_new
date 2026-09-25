@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { getJoinHostRedirectDestination } from "../src/lib/redirects.ts";
+import { getJoinHostRedirectDestination } from "@/lib/redirects";
 
 test("join host redirects to the apply page", () => {
   const redirectUrl = getJoinHostRedirectDestination(

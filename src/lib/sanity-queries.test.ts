@@ -4,7 +4,7 @@ import {
   EVENTS_QUERY,
   PARTNERS_QUERY,
   RESEARCH_QUERY,
-} from "../src/lib/sanity-queries";
+} from "@/lib/sanity-queries";
 
 async function run(query: string, dataset: unknown[]) {
   const value = await evaluate(parse(query), { dataset });

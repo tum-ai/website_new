@@ -6,9 +6,9 @@ import {
   getMockPartners,
   getMockResearchProjects,
   shouldUseMockCms,
-} from "../src/lib/mock-cms.ts";
+} from "@/lib/mock-cms";
 
-const publicDir = path.resolve(import.meta.dirname, "../public");
+const publicDir = path.resolve(import.meta.dirname, "../../public");
 
 test("mock CMS data is opt-in and never used on Vercel", () => {
   expect(shouldUseMockCms({})).toBe(false);
