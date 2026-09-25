@@ -87,17 +87,16 @@ Rule of thumb: if a page is made of several sections and needs orchestration, th
 - `home/`
 - `innovation/`
 - `research/`
-- `ui/`
+- `ds/` (the design system)
 
 Cross-page building blocks live at the top level:
 
 - `Header.tsx`
 - `Footer.tsx`
-- `Layout.tsx`
 - `JsonLd.tsx`
-- `Logos.tsx`
+- `Benefit.tsx`
 
-`src/components/ui/` contains the closest thing to a shared design-system layer. Some pieces are shadcn/Radix-style primitives, but the site still relies heavily on custom brand classes defined in CSS.
+`src/components/ds/` is the design system: layout, typography, cards, motion and page patterns, with interactive primitives built on Base UI (`@base-ui/react`). Import from `@/components/ds`. Usage, tokens and rules are documented in [design-system.md](design-system.md); `/design-system` renders every component in development and on preview deployments.
 
 ### `src/data/`
 
@@ -136,8 +135,8 @@ Important details:
 
 - `src/app/globals.css` only re-imports `src/styles/index.css`
 - Tailwind v4 is configured CSS-first in `src/styles/index.css`
-- brand tokens, gradients, and utility classes live there
-- page-specific support styles live in files like `src/styles/Grid.css` and `src/styles/elab-font.css`
+- brand tokens, tone surfaces, type scale and motion tokens live there, all inside cascade layers
+- page-specific support styles live in `src/styles/pages/*.css` and `src/styles/partners.css`
 
 If a contributor only edits `src/app/globals.css`, they will miss most of the actual styling system.
 

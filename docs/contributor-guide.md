@@ -96,11 +96,10 @@ Start in `src/styles/index.css`.
 That file contains:
 
 - Tailwind imports
-- theme tokens
-- gradients
-- shared brand classes
+- theme tokens and tone surfaces
+- type scale and motion tokens
 
-Use `src/components/ui/` for reusable UI building blocks. Use page-specific component styles only when the styling is truly local to that page.
+Use `src/components/ds/` (see [design-system.md](design-system.md)) for reusable UI building blocks. Use page-specific component styles only when the styling is truly local to that page.
 
 ### Add or replace assets
 
