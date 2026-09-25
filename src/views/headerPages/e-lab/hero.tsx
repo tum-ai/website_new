@@ -3,7 +3,7 @@ import {
   ELabApplicationCta,
   ELabApplicationStatus,
 } from "@/components/e-lab/ApplicationCta";
-import { eLabApplicationCopy, eLabConfig } from "@/config/e-lab";
+import { eLabConfig } from "@/config/e-lab";
 
 const HERO_TITLE_ID = "elab-hero-title";
 
@@ -79,9 +79,7 @@ export const Hero = () => {
       lead={<Promises />}
       actions={
         <>
-          <ELabApplicationCta>
-            {eLabApplicationCopy.heroCtaLabel}
-          </ELabApplicationCta>
+          <ELabApplicationCta label="hero" />
           <ELabApplicationStatus />
         </>
       }

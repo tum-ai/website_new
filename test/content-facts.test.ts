@@ -4,11 +4,12 @@ import { join, relative } from "node:path";
 import test from "node:test";
 
 import {
-  eLabApplicationCopy,
+  eLabApplicationsCloseAt,
   eLabCompletedIterations,
   eLabConfig,
+  eLabPhaseCopy,
   eLabProgramSummary,
-  getELabTeaserStatus,
+  isApplicationWindowOpen,
 } from "../src/config/e-lab.ts";
 import { membershipConfig } from "../src/config/membership.ts";
 import {
@@ -19,23 +20,46 @@ import { faq as applyFaq } from "../src/data/apply/faq.tsx";
 import { faq as eLabFaq } from "../src/data/e-lab/FAQ.tsx";
 import { eLabMetrics } from "../src/data/e-lab/venture-page.ts";
 import { partnerStats } from "../src/data/partners.ts";
+import { parseMunichDateTime } from "../src/lib/munich-time.ts";
 
-test("E-Lab teaser status follows the application phase", () => {
-  const phase = {
-    applicationDeadlineDate: "26.09.2026",
-    nextApplicationWindow: "August",
-  };
+test("Munich wall-clock times resolve summer and winter time", () => {
   assert.equal(
-    getELabTeaserStatus({ ...phase, applicationsOpen: true }),
-    "Applications open until 26.09.2026",
+    parseMunichDateTime("26.09.2026", "23:59").toISOString(),
+    "2026-09-26T21:59:00.000Z",
   );
   assert.equal(
-    getELabTeaserStatus({ ...phase, applicationsOpen: false }),
-    "Applications open in August",
+    parseMunichDateTime("15.01.2027", "12:00").toISOString(),
+    "2027-01-15T11:00:00.000Z",
+  );
+  assert.throws(() => parseMunichDateTime("2026-09-26", "23:59"));
+});
+
+test("E-Lab applications close by themselves after the deadline minute", () => {
+  const deadline = parseMunichDateTime(
+    eLabConfig.applicationDeadlineDate,
+    eLabConfig.applicationDeadlineTime,
+  );
+  assert.equal(eLabApplicationsCloseAt.getTime(), deadline.getTime() + 60_000);
+
+  const at = (offsetMs: number) => ({
+    switchedOn: true,
+    closesAt: eLabApplicationsCloseAt,
+    now: new Date(deadline.getTime() + offsetMs),
+  });
+  assert.equal(isApplicationWindowOpen(at(0)), true); // 23:59:00
+  assert.equal(isApplicationWindowOpen(at(59_999)), true); // 23:59:59.999
+  assert.equal(isApplicationWindowOpen(at(60_000)), false); // 00:00:00
+  assert.equal(isApplicationWindowOpen({ ...at(0), switchedOn: false }), false);
+});
+
+test("E-Lab teaser status has a variant for each phase", () => {
+  assert.equal(
+    eLabPhaseCopy.open.teaserStatus,
+    `Applications open until ${eLabConfig.applicationDeadlineDate}`,
   );
   assert.equal(
-    eLabApplicationCopy.teaserStatus,
-    getELabTeaserStatus(eLabConfig),
+    eLabPhaseCopy.closed.teaserStatus,
+    `Applications open in ${eLabConfig.nextApplicationWindow}`,
   );
 });
 

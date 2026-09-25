@@ -1,6 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import { MediaCard, Reveal } from "@/components/ds";
-import { eLabApplicationCopy, eLabProgramSummary } from "@/config/e-lab";
+import { ELabPhaseSwitch } from "@/components/e-lab/ELabPhaseSwitch";
+import { eLabPhaseCopy, eLabProgramSummary } from "@/config/e-lab";
 import { cn } from "@/lib/utils";
 import { EXPLORE_CELLS, EXPLORE_GRID } from "./deferred-layout";
 
@@ -37,7 +38,12 @@ const DESTINATIONS = [
   },
   {
     image: "/assets/home_img4.webp",
-    eyebrow: eLabApplicationCopy.teaserStatus,
+    eyebrow: (
+      <ELabPhaseSwitch
+        open={eLabPhaseCopy.open.teaserStatus}
+        closed={eLabPhaseCopy.closed.teaserStatus}
+      />
+    ),
     title: "AI Entrepreneurship Lab (E-Lab)",
     description: `${eLabProgramSummary} with full support from Munich's innovation ecosystem`,
     action: "Learn more about E-Lab",

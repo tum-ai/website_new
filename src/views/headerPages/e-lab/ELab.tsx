@@ -4,13 +4,18 @@ import {
   ELabApplicationCta,
   ELabApplicationStatus,
 } from "@/components/e-lab/ApplicationCta";
+import { ELabPhase } from "@/components/e-lab/ELabPhase";
 import { ExpectationELab } from "@/components/e-lab/ExpectationELab";
 import { NotableStartups } from "@/components/e-lab/NotableStartups";
 import { Testimonials } from "@/components/e-lab/Testimonials";
 import { Timeline } from "@/components/e-lab/TimeLine";
 import JsonLd from "@/components/JsonLd";
 import { contactEmails } from "@/config/contact";
-import { eLabApplicationCopy, eLabProgramSummary } from "@/config/e-lab";
+import {
+  eLabApplicationCopy,
+  eLabPhaseCopy,
+  eLabProgramSummary,
+} from "@/config/e-lab";
 import { faq } from "@/data/e-lab/FAQ";
 import { Hero } from "./hero";
 
@@ -87,13 +92,23 @@ export default function ELab() {
       <CtaBand
         titleId="elab-apply-title"
         eyebrow={eLabApplicationCopy.cohortName}
-        title={<KeepCohortTogether text={eLabApplicationCopy.cardHeading} />}
-        lead={eLabApplicationCopy.cardDescription}
+        title={
+          <ELabPhase
+            open={<KeepCohortTogether text={eLabPhaseCopy.open.cardHeading} />}
+            closed={
+              <KeepCohortTogether text={eLabPhaseCopy.closed.cardHeading} />
+            }
+          />
+        }
+        lead={
+          <ELabPhase
+            open={eLabPhaseCopy.open.cardDescription}
+            closed={eLabPhaseCopy.closed.cardDescription}
+          />
+        }
         actions={
           <>
-            <ELabApplicationCta>
-              {eLabApplicationCopy.cardCtaLabel}
-            </ELabApplicationCta>
+            <ELabApplicationCta label="card" />
             <ELabApplicationStatus />
           </>
         }
