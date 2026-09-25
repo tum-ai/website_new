@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ds";
-import { BrandPlaceholder } from "@/components/research/BrandPlaceholder";
+import { BrandPlaceholder } from "@/features/research";
 import { cn } from "@/lib/utils";
 
 interface ProjectCardProps {

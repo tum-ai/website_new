@@ -15,8 +15,8 @@ import {
   TabsPanel,
   TabsTab,
 } from "@/components/ds";
-import ResearchCard from "@/components/research/ResearchCard";
 import type { Partner, Research as ResearchProject } from "@/lib/types";
+import { ResearchCard } from "./research-card";
 
 /* The REX copy names these labs; the grid repeats them as typography. */
 const rexInstitutions = ["Harvard", "MIT", "Cambridge", "INRIA"];
@@ -39,7 +39,7 @@ function logoColumns(count: number) {
   return 3;
 }
 
-export default function Research({
+export function ResearchPage({
   initialProjects = [],
   researchPartners = [],
 }: {

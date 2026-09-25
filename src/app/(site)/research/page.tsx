@@ -1,7 +1,7 @@
 import JsonLd from "@/components/JsonLd";
 import { buildMetadata, getJsonLd } from "@/config/seo";
+import { ResearchPage } from "@/features/research";
 import { getSanityPartners, getSanityResearchProjects } from "@/lib/sanity";
-import Research from "@/views/headerPages/Research";
 
 export const metadata = buildMetadata("research");
 export const revalidate = 900;
@@ -19,7 +19,7 @@ export default async function Page() {
   return (
     <>
       <JsonLd data={getJsonLd("research")} />
-      <Research
+      <ResearchPage
         initialProjects={projects}
         researchPartners={researchPartners}
       />

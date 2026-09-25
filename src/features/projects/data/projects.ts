@@ -1,11 +1,11 @@
-export interface InnovationProject {
+export interface Project {
   name: string;
   description: string;
   detailedDescription: string;
   image: string;
 }
 
-export const innovationProjects: InnovationProject[] = [
+export const projects: Project[] = [
   {
     name: "Women@TUM.ai",
     description:

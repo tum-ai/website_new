@@ -15,7 +15,7 @@ import {
 } from "@/components/ds";
 import { getSafeExternalUrl } from "@/lib/security";
 import { cn } from "@/lib/utils";
-import { BrandPlaceholder } from "./BrandPlaceholder";
+import { BrandPlaceholder } from "./brand-placeholder";
 
 type ResearchCardProps = {
   title: string;
@@ -158,7 +158,7 @@ function OpenHint({
  * status. The whole surface is one dialog trigger (labelled by the title)
  * that opens the full description and the publication link.
  */
-export default function ResearchCard({
+export function ResearchCard({
   title,
   description,
   image,

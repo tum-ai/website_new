@@ -1,7 +1,7 @@
 import { Container, PageHero, Reveal, Section } from "@/components/ds";
-import { ProjectCard } from "@/components/innovation/InnovationProjectCard";
-import { innovationProjects } from "@/data/projects";
 import { cn } from "@/lib/utils";
+import { projects } from "./data/projects";
+import { ProjectCard } from "./project-card";
 
 /*
  * Bento on wide screens (six-column grid): the first two task forces lead as
@@ -28,8 +28,8 @@ function tileLayout(index: number, count: number) {
   };
 }
 
-export default function Projects() {
-  const count = innovationProjects.length;
+export function ProjectsPage() {
+  const count = projects.length;
   return (
     <main>
       <PageHero
@@ -45,7 +45,7 @@ export default function Projects() {
             Task forces
           </h2>
           <ul className="grid gap-4 md:grid-cols-2 md:gap-5 xl:grid-cols-6 xl:gap-6">
-            {innovationProjects.map((project, index) => {
+            {projects.map((project, index) => {
               const layout = tileLayout(index, count);
               return (
                 <Reveal
