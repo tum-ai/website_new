@@ -41,8 +41,14 @@ export function DialogContent({
 }) {
   return (
     <BaseDialog.Portal>
-      <BaseDialog.Backdrop className="fixed inset-0 z-50 bg-ink-950/65 backdrop-blur-[6px] transition-opacity duration-500 ease-brand data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 supports-[-webkit-touch-callout:none]:absolute" />
-      <BaseDialog.Viewport className="fixed inset-0 z-50 flex [align-items:safe_end] justify-center overflow-y-auto overscroll-contain p-3 sm:[align-items:safe_center] sm:p-6">
+      {/*
+       * The backdrop spans the large viewport (h-lvh) so it also dims the areas
+       * behind Safari's status bar and toolbar, which Safari tints from it. The
+       * viewport uses the dynamic height (h-dvh) so the dialog itself always
+       * sits in the visible area, never under the toolbar.
+       */}
+      <BaseDialog.Backdrop className="fixed inset-x-0 top-0 z-50 h-lvh bg-ink-950/65 backdrop-blur-[6px] transition-opacity duration-500 ease-brand data-[ending-style]:opacity-0 data-[starting-style]:opacity-0" />
+      <BaseDialog.Viewport className="fixed inset-x-0 top-0 z-50 flex h-dvh [align-items:safe_end] justify-center overflow-y-auto overscroll-contain p-3 sm:[align-items:safe_center] sm:p-6">
         <BaseDialog.Popup
           data-tone="paper"
           className={cn(
