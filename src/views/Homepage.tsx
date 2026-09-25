@@ -1,27 +1,47 @@
+import "@/styles/pages/home.css";
+import { ButtonLink, CtaBand, Highlight } from "@/components/ds";
 import { AboutSection } from "@/components/home/AboutSection";
-import { DeferredHomeSections } from "@/components/home/DeferredHomeSections";
-import { Grid } from "@/components/home/Grid";
+import { ExploreSection } from "@/components/home/ExploreSection";
+import { HomeHero } from "@/components/home/HomeHero";
 import { PartnersSection } from "@/components/home/PartnersSection";
-import Layout from "@/components/Layout";
-import { Hero } from "@/components/ui/hero";
+import { getPartnershipEmailUrl } from "@/lib/partnerships";
 
+/**
+ * Home page: ink hero, "What is TUM.ai?" (paper and mist), the destinations
+ * bento, the partner teaser (ink) and a closing call to action. Must stay
+ * statically prerendered; see HomeHero for the image-preload contract.
+ */
 export default function Homepage() {
   return (
-    <>
-      <div className="brand-home-hero relative min-h-screen text-white">
-        <div className="hidden sm:block">
-          <Grid />
-          <div className="brand-home-hero-overlay absolute inset-0 pointer-events-none" />
-        </div>
-        <div className="relative z-10 flex items-center justify-center min-h-screen sm:items-end sm:justify-start sm:pl-8 sm:pb-8">
-          <Hero />
-        </div>
-      </div>
-      <Layout>
-        <AboutSection />
-        <DeferredHomeSections />
-        <PartnersSection />
-      </Layout>
-    </>
+    <main>
+      <HomeHero />
+      <AboutSection />
+      <ExploreSection />
+      <PartnersSection />
+      <CtaBand
+        titleId="join-title"
+        tone="lavender"
+        eyebrow="TUM.ai"
+        title={
+          <>
+            Join the <Highlight variant="fade">community</Highlight>
+          </>
+        }
+        actions={
+          <>
+            <ButtonLink href="/apply" size="lg" arrow>
+              Become a Member
+            </ButtonLink>
+            <ButtonLink
+              href={getPartnershipEmailUrl()}
+              size="lg"
+              variant="inverse"
+            >
+              Become a Partner
+            </ButtonLink>
+          </>
+        }
+      />
+    </main>
   );
 }

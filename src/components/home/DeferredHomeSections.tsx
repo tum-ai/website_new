@@ -1,32 +1,55 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { cn } from "@/lib/utils";
+import {
+  EXPLORE_CELLS,
+  EXPLORE_GRID,
+  PHOTO_RAIL_ITEM,
+} from "./deferred-layout";
 
-const DeferredScrollSection = dynamic(() => import("./ScrollSection"), {
-  ssr: false,
-  loading: () => (
-    <div
-      aria-hidden="true"
-      className="mx-4 mb-4 h-56 rounded-xl bg-gray-100/70 md:mx-8 md:mb-16 md:h-72"
-    />
-  ),
-});
+/*
+ * The image-heavy home sections load after hydration (ssr: false). This keeps
+ * their photos out of the prerendered HTML and out of the first paint's
+ * network queue (test/homepage-performance.test.ts allows only the hero logo
+ * as an image preload). Skeletons reserve the exact final boxes, so the swap
+ * doesn't shift the layout.
+ */
 
-const DeferredCarouselHome = dynamic(() => import("./CarouselHome"), {
-  ssr: false,
-  loading: () => (
-    <div
-      aria-hidden="true"
-      className="mx-4 mb-12 aspect-[16/9] rounded-xl bg-gray-100/80 md:mx-10"
-    />
-  ),
-});
-
-export function DeferredHomeSections() {
+function PhotoRailSkeleton() {
   return (
-    <>
-      <DeferredScrollSection />
-      <DeferredCarouselHome />
-    </>
+    <div
+      aria-hidden
+      className="flex gap-5 overflow-hidden mask-fade-x motion-reduce:[mask-image:none]"
+    >
+      {Array.from({ length: 6 }, (_, index) => (
+        <div
+          key={index}
+          className={cn("shrink-0 rounded-3xl bg-sunken", PHOTO_RAIL_ITEM)}
+        />
+      ))}
+    </div>
   );
 }
+
+function ExploreBentoSkeleton() {
+  return (
+    <div aria-hidden className={EXPLORE_GRID}>
+      {EXPLORE_CELLS.map((cell, index) => (
+        <div key={index} className={cn("rounded-4xl bg-sunken", cell)} />
+      ))}
+    </div>
+  );
+}
+
+/** Community photo rail (see ScrollSection). */
+export const DeferredPhotoRail = dynamic(() => import("./ScrollSection"), {
+  ssr: false,
+  loading: PhotoRailSkeleton,
+});
+
+/** Events, Research, Projects and E-Lab bento (see ExploreBento). */
+export const DeferredExploreBento = dynamic(() => import("./ExploreBento"), {
+  ssr: false,
+  loading: ExploreBentoSkeleton,
+});
