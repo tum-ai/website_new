@@ -14,6 +14,7 @@ export type ChipOption = { value: string; label: ReactNode; count?: number };
  */
 export function ChipGroup({
   label,
+  labelledBy,
   options,
   value,
   onValueChange,
@@ -21,6 +22,8 @@ export function ChipGroup({
 }: {
   /** Accessible group name, e.g. "Category". */
   label: string;
+  /** id of a visible label element; preferred over `label` when present. */
+  labelledBy?: string;
   options: ChipOption[];
   value: string;
   onValueChange: (value: string) => void;
@@ -28,7 +31,8 @@ export function ChipGroup({
 }) {
   return (
     <ToggleGroup
-      aria-label={label}
+      aria-label={labelledBy ? undefined : label}
+      aria-labelledby={labelledBy}
       value={[value]}
       onValueChange={(next) => {
         const selected = next[0];

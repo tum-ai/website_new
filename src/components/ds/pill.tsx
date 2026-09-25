@@ -34,23 +34,36 @@ export function Tag({ className, ...props }: ComponentPropsWithoutRef<"span">) {
   );
 }
 
+const statusSizes = {
+  sm: "h-9 pr-4 pl-3 text-[0.8125rem]",
+  md: "h-11 pr-5 pl-4 text-[0.9375rem]",
+  lg: "h-13 pr-6 pl-5 text-base",
+} as const;
+
 /**
  * Status line with a dot: `live` pulses (e.g. applications open), `idle` is
  * static and muted (e.g. closed).
  */
 export function StatusBadge({
   status = "live",
+  size = "md",
   children,
   className,
 }: {
   status?: "live" | "idle";
+  /**
+   * Matches Button heights (sm/md/lg; default md like Button) so badges sit
+   * flush beside buttons. Always use the size of the neighbouring button.
+   */
+  size?: keyof typeof statusSizes;
   children: ReactNode;
   className?: string;
 }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-2.5 rounded-full border border-hairline-strong bg-fg/[0.04] py-1.5 pr-4 pl-3 text-meta font-semibold text-fg backdrop-blur",
+        "inline-flex items-center gap-2.5 rounded-full border border-hairline-strong bg-fg/[0.04] font-semibold text-fg backdrop-blur",
+        statusSizes[size],
         className,
       )}
     >

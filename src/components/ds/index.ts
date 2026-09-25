@@ -40,7 +40,6 @@ export { FeatureCard } from "./feature-card";
 export { type LogoItem, LogoTile, LogoWall } from "./logo-wall";
 export { Marquee } from "./marquee";
 export { MediaCard } from "./media-card";
-export { MetaRow } from "./meta-row";
 export { PageHero } from "./page-hero";
 export { Parallax, ScrollProgress } from "./parallax";
 export { PersonCard } from "./person-card";

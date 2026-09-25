@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { cn } from "@/lib/utils";
 
 /**
@@ -18,7 +19,8 @@ export function BrandMark({
   /** Slow ambient drift (disabled under reduced motion). */
   drift?: boolean;
 }) {
-  const gradientId = "brand-mark-fade";
+  // Unique per instance: a shared id breaks when the first instance is hidden.
+  const gradientId = `brand-mark-fade-${useId().replace(/:/g, "")}`;
   return (
     <svg
       aria-hidden

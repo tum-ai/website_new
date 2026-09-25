@@ -13,6 +13,8 @@ type CtaBandProps = {
   lead?: ReactNode;
   actions?: ReactNode;
   titleId?: string;
+  /** Anchor id for the section (e.g. "contact"). */
+  id?: string;
   /**
    * `panel`: rounded ink panel inset in a light band (default).
    * `band`: full-bleed dark band.
@@ -30,6 +32,7 @@ export function CtaBand({
   lead,
   actions,
   titleId,
+  id,
   variant = "panel",
   tone = "paper",
   className,
@@ -72,6 +75,7 @@ export function CtaBand({
         tone="ink"
         spacing="xl"
         grain
+        id={id}
         aria-labelledby={titleId}
         className={cn("overflow-clip", className)}
       >
@@ -86,6 +90,7 @@ export function CtaBand({
     <Section
       tone={tone}
       spacing="md"
+      id={id}
       aria-labelledby={titleId}
       className={className}
     >

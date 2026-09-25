@@ -1,8 +1,6 @@
 @import "tailwindcss";
-@import "tw-animate-css";
 @plugin "@tailwindcss/typography";
 @source "../**/*.{js,ts,jsx,tsx,mdx}";
-@custom-variant dark (&:is(.dark *));
 
 /*
  * TUM.ai design tokens.
@@ -23,9 +21,6 @@
   --color-dark-purple: oklch(0.3932 0.1047 303.55); /* #523573 */
   --color-dark-indigo: oklch(0.2085 0.1188 288.93); /* #1B0049 */
   --color-black: oklch(0.1275 0.0481 312.72); /* #0D0214 */
-  --color-electric-start: var(--color-tumai-violet);
-  --color-electric-end: var(--color-dark-purple);
-  --color-text-gray: oklch(0.4 0 0);
 
   /* --- Violet scale: brand violet at 500, dark purple at 800, indigo at 950 --- */
   --color-violet-50: #f5efff;
@@ -53,15 +48,6 @@
   --color-ink-800: #2e2340;
   --color-ink-900: #1b0049;
   --color-ink-950: #0d0214;
-
-  /* Legacy scale overrides kept until every page has migrated. */
-  --color-gray-50: var(--color-white);
-  --color-gray-100: var(--color-minimal-gray);
-  --color-gray-900: var(--color-black);
-  --color-purple-50: var(--color-lavender-tint);
-  --color-purple-500: var(--color-tumai-violet);
-  --color-purple-900: var(--color-dark-indigo);
-  --color-purple-950: var(--color-black);
 
   /* --- Typography --- */
   --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
@@ -109,12 +95,6 @@
   --text-eyebrow--letter-spacing: 0.14em;
   --text-eyebrow--font-weight: 600;
 
-  /* Legacy em-relative sizes (still used by ui/button on /partners). */
-  --text-title: 1.4em;
-  --text-subtitle: 1.25em;
-  --text-base: 1em;
-  --text-subtext: 0.9em;
-
   /* --- Shape and depth --- */
   --radius-4xl: 2rem;
   --radius-5xl: 2.5rem;
@@ -134,7 +114,6 @@
   --animate-rise: rise 1s var(--ease-brand) both;
   --animate-rise-sm: rise-sm 0.8s var(--ease-brand) both;
   --animate-fade: fade 0.9s var(--ease-brand) both;
-  --animate-fade-in: fadeIn 700ms ease-out;
   --animate-aurora: aurora 26s var(--ease-in-out-soft) infinite alternate;
   --animate-drift: drift 22s var(--ease-in-out-soft) infinite alternate;
   --animate-marquee: marquee var(--marquee-duration, 48s) linear infinite;
@@ -177,15 +156,6 @@
     }
   }
 
-  @keyframes fadeIn {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-
   @keyframes aurora {
     0% {
       transform: translate3d(-6%, -4%, 0) rotate(0deg) scale(1);
@@ -222,15 +192,6 @@
     }
     to {
       transform: translate3d(0, 0, 0);
-    }
-  }
-
-  @keyframes marquee-scroll {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(-50%);
     }
   }
 
@@ -282,108 +243,17 @@
   --color-highlight: var(--tone-accent);
   --color-glow: var(--tone-glow);
 
-  /* shadcn semantic mapping, used by the legacy ui/* primitives on /partners. */
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
+  /* Radius steps (values unchanged from the previous theme). */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 0.875rem;
 }
 
 @layer base {
   :root {
-    --radius: 0.625rem;
     --gutter: clamp(1.25rem, 4.6vw, 3.5rem);
     --header-height: 4.25rem;
-
-    /* shadcn semantic tokens (legacy ui/* primitives). */
-    --background: var(--color-white);
-    --foreground: var(--color-dark-indigo);
-    --card: var(--color-white);
-    --card-foreground: var(--color-black);
-    --popover: var(--color-white);
-    --popover-foreground: var(--color-black);
-    --primary: var(--color-tumai-violet);
-    --primary-foreground: var(--color-white);
-    --secondary: var(--color-lavender-tint);
-    --secondary-foreground: var(--color-dark-purple);
-    --muted: var(--color-minimal-gray);
-    --muted-foreground: var(--color-gray-500);
-    --accent: var(--color-tumai-violet);
-    --accent-foreground: var(--color-black);
-    --destructive: oklch(0.577 0.245 27.325);
-    --destructive-foreground: var(--color-white);
-    --border: var(--color-minimal-gray);
-    --input: var(--color-minimal-gray);
-    --ring: var(--color-tumai-violet);
-
-    /* Legacy brand surfaces (removed once no page references them). */
-    --color-white-rgb: 255 255 255;
-    --color-black-rgb: 13 2 20;
-    --color-tumai-violet-rgb: 154 100 217;
-    --color-brand-page-end: color-mix(
-      in srgb,
-      var(--color-dark-purple) 72%,
-      var(--color-black)
-    );
-    --color-brand-panel: color-mix(
-      in srgb,
-      var(--color-dark-indigo) 60%,
-      var(--color-black)
-    );
-    --color-brand-grid-tile: color-mix(
-      in srgb,
-      var(--color-dark-purple) 88%,
-      var(--color-black)
-    );
-    --gradient-brand-page: linear-gradient(
-      135deg,
-      var(--color-black) 0%,
-      var(--color-black) 58%,
-      var(--color-brand-page-end) 100%
-    );
-    --gradient-brand-accent: linear-gradient(
-      135deg,
-      var(--color-black) 0%,
-      var(--color-dark-purple) 100%
-    );
-    --gradient-brand-highlight: linear-gradient(
-      90deg,
-      var(--color-tumai-violet) 0%,
-      var(--color-lavender-tint) 100%
-    );
-    --gradient-brand-home-overlay: linear-gradient(
-      to top right,
-      var(--color-black) 20%,
-      transparent
-    );
-    --gradient-brand-header-overlay: linear-gradient(
-      to bottom,
-      var(--color-black) 30%,
-      transparent
-    );
-    --gradient-brand-panel-glow: radial-gradient(
-      circle at center,
-      rgb(var(--color-tumai-violet-rgb) / 0.52) -30%,
-      transparent 80%
-    );
 
     font-family: var(--font-sans);
     line-height: 1.5;
@@ -463,14 +333,14 @@
     color-scheme: dark;
   }
 
-  /* Brand violet band: large type only (fg contrast 4.9:1). */
+  /* Brand violet band: fg and fg-muted reach 4.9:1; fg-subtle (4.2:1) is for large type only. */
   [data-tone="violet"] {
     --tone-canvas: #9a64d9;
     --tone-raised: #a574de;
     --tone-sunken: #8a55c9;
     --tone-fg: #0d0214;
-    --tone-fg-muted: #1b0049;
-    --tone-fg-subtle: #2f1757;
+    --tone-fg-muted: #0d0214;
+    --tone-fg-subtle: #1b0049;
     --tone-hairline: rgb(27 0 73 / 0.2);
     --tone-hairline-strong: rgb(27 0 73 / 0.34);
     --tone-accent: #0d0214;
@@ -482,8 +352,12 @@
     color: var(--tone-fg);
   }
 
-  * {
-    @apply border-border outline-ring/50;
+  /* Tone-aware default border color (no default outline color: it would make
+     focus rings fade in whenever an element also transitions colors). */
+  *,
+  ::before,
+  ::after {
+    border-color: var(--tone-hairline);
   }
 
   html,
@@ -665,156 +539,5 @@
 
   .tabular {
     font-variant-numeric: tabular-nums;
-  }
-
-  /* --- Legacy utilities: removed in the cleanup pass once unused. --- */
-  .brand-highlight-text {
-    background-image: var(--gradient-brand-highlight);
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .brand-page-shell {
-    background-color: var(--color-black);
-    background-image: var(--gradient-brand-page);
-  }
-
-  .brand-accent-shell {
-    background-color: var(--color-black);
-    background-image: var(--gradient-brand-accent);
-  }
-
-  .brand-home-hero {
-    background-color: var(--color-black);
-  }
-
-  .brand-home-hero-overlay {
-    background-image: var(--gradient-brand-home-overlay);
-  }
-
-  .brand-header-overlay {
-    background-image: var(--gradient-brand-header-overlay);
-    z-index: -1;
-  }
-
-  .brand-panel {
-    background-color: var(--color-brand-panel);
-  }
-
-  .brand-panel-glow {
-    background-image: var(--gradient-brand-panel-glow);
-  }
-
-  .brand-grid-tile {
-    background-color: var(--color-brand-grid-tile);
-  }
-
-  .brand-icon-badge {
-    background-color: rgb(var(--color-white-rgb) / 0.05);
-  }
-
-  .gradient-text {
-    background: linear-gradient(
-      to right,
-      var(--color-electric-start),
-      var(--color-electric-end)
-    );
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  @keyframes marquee-left {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(-50%);
-    }
-  }
-
-  .animate-scroll-left {
-    animation: marquee-left var(--marquee-duration, 28s) linear infinite;
-    will-change: transform;
-  }
-
-  .animate-scroll-left:hover,
-  .animate-scroll-left:focus-within {
-    animation-play-state: paused;
-  }
-
-  @keyframes journey-card-enter {
-    0% {
-      opacity: 0;
-      transform: translateY(2rem) scale(0.985);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
-
-  @keyframes journey-path-draw {
-    0% {
-      opacity: 0.15;
-      stroke-dashoffset: 1;
-    }
-    100% {
-      opacity: 1;
-      stroke-dashoffset: 0;
-    }
-  }
-
-  .journey-card {
-    opacity: 0;
-    transform: translateY(2rem) scale(0.985);
-    will-change: transform, opacity;
-  }
-
-  .journey-path-segment {
-    opacity: 0;
-    stroke-dasharray: 1;
-    stroke-dashoffset: 1;
-    will-change: stroke-dashoffset, opacity;
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .journey-card[data-active="true"] {
-      animation: journey-card-enter 720ms cubic-bezier(0.22, 1, 0.36, 1)
-        forwards;
-      animation-delay: var(--journey-delay, 0ms);
-    }
-
-    .journey-path-segment[data-active="true"] {
-      animation: journey-path-draw 500ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
-      animation-delay: var(--journey-delay, 0ms);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .journey-card {
-      opacity: 1;
-      transform: none;
-    }
-
-    .journey-path-segment {
-      opacity: 1;
-      stroke-dashoffset: 0;
-    }
-
-    .animate-scroll-left {
-      animation: none;
-      transform: none;
-    }
-
-    .marquee-viewport {
-      overflow-x: auto;
-    }
-
-    .marquee-copy {
-      display: none;
-    }
   }
 }

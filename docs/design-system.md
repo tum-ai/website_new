@@ -10,9 +10,9 @@ calm light bands for reading. Motion is small, purposeful and always optional.
 - Tokens: `src/styles/index.css`
 - Live reference: `/design-system` (development and Vercel previews only)
 
-`/partners` still uses its own CSS (`src/styles/partners.css`) and the legacy
-`src/components/ui/button.tsx` and `ui/dialog.tsx`. Don't change those files
-when you work on other pages.
+Every page, including `/partners`, is built from these components. Page-only
+styles are the exception: keyframes or mechanics that belong to one page live in
+`src/styles/pages/*.css` or, for the partner page, `src/styles/partners.css`.
 
 ## Principles
 
@@ -82,10 +82,9 @@ Layout
 - `Container`: sizes `default` (80rem), `wide`, `narrow`, `prose`. Gutters match `/partners`.
 - `Section`: props `tone`, `spacing` (`sm`–`xl`), `grain` (dark bands). Give it an `id` and `aria-labelledby`.
 - `SectionHeader`: props `eyebrow`, `index`, `title`, `lead`, `actions`, and `layout` (`split` | `stack` | `center`). Reveals on scroll.
-- `MetaRow`: the brand guide's three-label hairline row.
 
 Page patterns
-- `PageHero`: every page starts with one (ink by default). It accepts `meta`, `eyebrow`, `title` (strings rise in word by word, and `<Highlight>` parts work), `lead`, `actions`, an optional `media` column and `children` (for stats or filters under the headline). It clears the fixed header.
+- `PageHero`: every page starts with one (ink by default). It accepts `eyebrow`, `title` (strings rise in word by word, and `<Highlight>` parts work), `lead`, `actions`, an optional `media` column and `children` (for stats or filters under the headline). It clears the fixed header.
 - `CtaBand`: closing call to action. `variant="panel"` is an inset ink panel; `variant="band"` is full bleed.
 - `FaqSection`: sticky heading beside an accordion. `FaqList` renders the accordion on its own.
 - `Timeline`: a vertical rail that fills as you scroll. Pass `alternate` to zig-zag the items.
@@ -106,7 +105,7 @@ Content
 - `StatGrid`: numeric values count up when they scroll into view; strings render as they are.
 - `Pill`: outlined brand pill.
 - `Tag`: keyword chip.
-- `StatusBadge`: `live` (pulsing dot) or `idle`.
+- `StatusBadge`: `live` (pulsing dot) or `idle`. Its `size` (`sm`, `md`, `lg`) matches button heights; always pair it at the same size as the button beside it.
 - `EmptyState`.
 
 Interactive (Base UI)
@@ -133,6 +132,17 @@ Motion
 - Prefix every looping or entrance animation with `motion-safe:`. Components already handle reduced motion themselves.
 - Hover effects should be small: slow image zoom (1.04), arrow nudges, a 4px card lift, spotlight. Nothing bouncy.
 - framer-motion runs inside `LazyMotion strict`: import `m`, not `motion`.
+
+## Composition rules
+
+These come from design review. Treat them as hard rules.
+
+- **No meta rows.** Don't put a row of small labels between hairlines above hero headlines or sections.
+- **Nested corners:** never set a rounded image or tile against a straight divider or straight edge inside a card. Either let the media bleed to the card edge, where the card's outer radius clips it and its inner edges stay straight, or inset it evenly on all sides with inner radius = outer radius − inset.
+- **Alignment:** within a panel, labels, titles and controls share one baseline or grid. Icons are optically centered on the text they label. Never nudge them by hand.
+- **Equal heights:** a button and a badge or chip placed side by side use the same size step.
+- **No redundant labels:** if a logo already shows the name (a wordmark), don't repeat the name next to it. Symbol-only logos get the name inside the chip as a lockup, and only information the logo lacks sits outside it.
+- **No em dashes in visible copy.** Use a comma, colon, period or a spaced hyphen instead. The same goes for separators in labels.
 
 ## Accessibility rules
 

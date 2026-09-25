@@ -29,13 +29,17 @@ type MediaCardProps = {
   sizes?: string;
   /** For CMS URLs outside next.config image patterns. */
   unoptimized?: boolean;
+  /** Fill the parent's height (e.g. a bento cell) instead of using `aspect`. */
+  fill?: boolean;
+  /** Overlay scrim: `strong` keeps copy legible on bright photos. */
+  scrim?: "default" | "strong";
   className?: string;
 };
 
 /**
  * Photo-led card. The whole card is clickable through a stretched title link
- * (so the accessible name is the title); the image eases into a slow zoom and
- * the corner arrow turns on hover.
+ * (so the accessible name is the title) and shows its focus ring around the
+ * card; the image eases into a slow zoom and the corner arrow turns on hover.
  */
 export function MediaCard({
   image,
@@ -49,6 +53,8 @@ export function MediaCard({
   headingAs: HeadingTag = "h3",
   sizes = "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw",
   unoptimized,
+  fill = false,
+  scrim = "default",
   className,
 }: MediaCardProps) {
   const external = href ? /^https?:\/\//.test(href) : false;
@@ -58,7 +64,7 @@ export function MediaCard({
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="outline-none after:absolute after:inset-0 after:z-10 after:rounded-[inherit] focus-visible:after:outline-3 focus-visible:after:outline-violet-300 focus-visible:after:outline-offset-4"
+        className="outline-none after:absolute after:inset-0 after:z-10 after:rounded-[inherit]"
       >
         {title}
         <span className="sr-only"> (opens in a new tab)</span>
@@ -66,7 +72,7 @@ export function MediaCard({
     ) : (
       <Link
         href={href}
-        className="outline-none after:absolute after:inset-0 after:z-10 after:rounded-[inherit] focus-visible:after:outline-3 focus-visible:after:outline-violet-500 focus-visible:after:outline-offset-4"
+        className="outline-none after:absolute after:inset-0 after:z-10 after:rounded-[inherit]"
       >
         {title}
       </Link>
@@ -79,7 +85,7 @@ export function MediaCard({
     <div
       className={cn(
         "relative overflow-hidden bg-sunken",
-        aspects[aspect],
+        fill ? "h-full min-h-72" : aspects[aspect],
         layout === "stacked" && "rounded-3xl",
       )}
     >
@@ -94,13 +100,18 @@ export function MediaCard({
       {layout === "overlay" ? (
         <div
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-t from-ink-950/90 via-ink-950/30 to-transparent transition-opacity duration-700 ease-brand group-hover/media:opacity-95"
+          className={cn(
+            "absolute inset-0 transition-opacity duration-700 ease-brand group-hover/media:opacity-95",
+            scrim === "strong"
+              ? "bg-[linear-gradient(to_top,rgb(13_2_20/0.9)_0%,rgb(13_2_20/0.7)_45%,rgb(13_2_20/0.25)_78%,transparent)]"
+              : "bg-gradient-to-t from-ink-950/90 via-ink-950/30 to-transparent",
+          )}
         />
       ) : null}
       {href ? (
         <span
           aria-hidden
-          className="absolute top-4 right-4 z-[1] grid size-10 place-items-center rounded-full bg-white/90 text-violet-950 shadow-soft backdrop-blur transition-[rotate,background-color] duration-500 ease-brand group-hover/media:rotate-45 group-hover/media:bg-white"
+          className="absolute top-3 right-3 z-[1] grid size-10 place-items-center rounded-full bg-white/90 text-violet-950 shadow-soft backdrop-blur transition-[rotate,background-color] duration-500 ease-brand group-hover/media:rotate-45 group-hover/media:bg-white"
         >
           <ArrowUpRight className="size-4" />
         </span>
@@ -110,7 +121,13 @@ export function MediaCard({
 
   if (layout === "stacked") {
     return (
-      <article className={cn("group/media relative", className)}>
+      <article
+        className={cn(
+          "group/media relative rounded-3xl has-[a:focus-visible]:outline-3 has-[a:focus-visible]:outline-offset-4 has-[a:focus-visible]:outline-violet-500",
+          fill && "h-full",
+          className,
+        )}
+      >
         {media}
         <div className="pt-5">
           {eyebrow ? (
@@ -135,11 +152,13 @@ export function MediaCard({
       data-tone="night"
       className={cn(
         "group/media relative isolate overflow-hidden rounded-4xl bg-transparent",
+        "has-[a:focus-visible]:outline-3 has-[a:focus-visible]:outline-offset-4 has-[a:focus-visible]:outline-violet-300",
+        fill && "h-full",
         className,
       )}
     >
       {media}
-      <div className="absolute inset-x-0 bottom-0 z-[1] p-6 md:p-7">
+      <div className="absolute inset-0 z-[1] flex flex-col justify-end rounded-[inherit] p-6 md:p-7">
         {eyebrow ? (
           <p className="text-eyebrow text-violet-200 uppercase">{eyebrow}</p>
         ) : null}

@@ -1,13 +1,30 @@
 "use client";
 
+import { m, useScroll, useSpring, useTransform } from "framer-motion";
 import {
-  m,
-  useReducedMotion,
-  useScroll,
-  useSpring,
-  useTransform,
-} from "framer-motion";
-import { type ReactNode, type RefObject, useRef } from "react";
+  type ReactNode,
+  type RefObject,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
+/**
+ * True only after hydration, and only when the visitor allows motion.
+ * Scroll-linked styles must not render on the server: the server cannot know
+ * the visitor's reduced-motion preference, and a mismatch breaks hydration.
+ */
+function useScrollMotionEnabled() {
+  const [enabled, setEnabled] = useState(false);
+  useEffect(() => {
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setEnabled(!query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+  return enabled;
+}
 
 type ParallaxProps = {
   children: ReactNode;
@@ -19,7 +36,7 @@ type ParallaxProps = {
 /** Scroll-linked vertical drift for decorative layers and media. */
 export function Parallax({ children, offset = 60, className }: ParallaxProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const reduceMotion = useReducedMotion();
+  const enabled = useScrollMotionEnabled();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
@@ -30,11 +47,7 @@ export function Parallax({ children, offset = 60, className }: ParallaxProps) {
   );
 
   return (
-    <m.div
-      ref={ref}
-      className={className}
-      style={reduceMotion ? undefined : { y }}
-    >
+    <m.div ref={ref} className={className} style={enabled ? { y } : undefined}>
       {children}
     </m.div>
   );
@@ -49,14 +62,14 @@ type ScrollProgressProps = {
 
 /**
  * A bar that fills as `target` scrolls past the middle of the viewport.
- * Reduced motion shows it fully filled.
+ * Server render and reduced motion show it fully filled.
  */
 export function ScrollProgress({
   target,
   className,
   axis = "y",
 }: ScrollProgressProps) {
-  const reduceMotion = useReducedMotion();
+  const enabled = useScrollMotionEnabled();
   const { scrollYProgress } = useScroll({
     target,
     offset: ["start 65%", "end 55%"],
@@ -72,7 +85,7 @@ export function ScrollProgress({
       aria-hidden
       className={className}
       style={
-        reduceMotion
+        !enabled
           ? undefined
           : axis === "y"
             ? { scaleY: progress, transformOrigin: "top" }

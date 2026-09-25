@@ -1,4 +1,4 @@
-import { Children, isValidElement, type ReactNode } from "react";
+import { Children, Fragment, isValidElement, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 type SplitWordsProps = {
@@ -11,7 +11,8 @@ type SplitWordsProps = {
 };
 
 /**
- * Headline entrance: every word rises out of its own line mask. Pure CSS, so
+ * Headline entrance: every word rises out of its own line mask (clipped only
+ * below the line, so glyph overhangs and tight tracking never get cut). Pure CSS, so
  * it starts before hydration and never delays LCP. Strings are split into
  * words; elements (e.g. <Highlight>) animate as one unit. Reduced motion
  * renders the text statically.
@@ -23,15 +24,24 @@ export function SplitWords({
   className,
 }: SplitWordsProps) {
   const units: ReactNode[] = [];
-  for (const child of Children.toArray(children)) {
-    if (typeof child === "string" || typeof child === "number") {
-      for (const part of String(child).split(/(\s+)/)) {
-        if (part) units.push(part);
+  const collect = (node: ReactNode) => {
+    for (const child of Children.toArray(node)) {
+      if (typeof child === "string" || typeof child === "number") {
+        for (const part of String(child).split(/(\s+)/)) {
+          if (part) units.push(part);
+        }
+      } else if (isValidElement(child)) {
+        // Unwrap fragments so `<>Build the <Highlight>…</Highlight></>` still
+        // animates word by word.
+        if (child.type === Fragment) {
+          collect((child.props as { children?: ReactNode }).children);
+        } else {
+          units.push(child);
+        }
       }
-    } else if (isValidElement(child)) {
-      units.push(child);
     }
-  }
+  };
+  collect(children);
 
   let wordIndex = 0;
   return (
@@ -44,7 +54,7 @@ export function SplitWords({
         return (
           <span
             key={index}
-            className="-mb-[0.14em] inline-block overflow-hidden pb-[0.14em] align-bottom"
+            className="-mb-[0.28em] inline-block pb-[0.28em] align-bottom [clip-path:inset(-0.6em_-0.35em_0_-0.35em)]"
           >
             <span
               className={cn("inline-block motion-safe:animate-rise")}

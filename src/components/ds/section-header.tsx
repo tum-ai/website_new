@@ -62,7 +62,7 @@ export function SectionHeader({
       <Reveal
         delay={140}
         className={cn(
-          layout === "split" && "md:max-w-sm md:pb-1.5",
+          layout === "split" && "lg:max-w-sm lg:pb-1.5",
           layout === "stack" && "mt-6 max-w-2xl",
           layout === "center" && "mx-auto mt-6 max-w-2xl",
         )}
@@ -87,7 +87,7 @@ export function SectionHeader({
       className={cn(
         "mb-12 md:mb-16",
         layout === "split" &&
-          "flex flex-col gap-6 md:flex-row md:items-end md:justify-between md:gap-16",
+          "flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-16",
         layout === "center" && "text-center",
         className,
       )}

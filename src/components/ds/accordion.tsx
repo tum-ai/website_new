@@ -77,7 +77,7 @@ export function AccordionPanel({
     >
       <div
         className={cn(
-          "max-w-3xl pr-14 pb-7 text-body text-fg-muted [&_a]:font-semibold [&_a]:text-highlight [&_a]:underline [&_a]:underline-offset-4",
+          "max-w-3xl pb-7 text-body md:pr-14 text-fg-muted [&_a]:font-semibold [&_a]:text-highlight [&_a]:underline [&_a]:underline-offset-4",
           className,
         )}
       >

@@ -7,14 +7,18 @@ export type StatItem = {
   value: number | string;
   prefix?: string;
   suffix?: string;
+  /** Fraction digits for numeric values (e.g. 2.3 → 1). */
+  decimals?: number;
+  /** Thousands separators for numeric values ("2,100"); default true. */
+  grouping?: boolean;
   label: ReactNode;
   description?: ReactNode;
 };
 
 const columnClasses = {
-  2: "sm:grid-cols-2",
-  3: "sm:grid-cols-3",
-  4: "sm:grid-cols-2 lg:grid-cols-4",
+  2: "grid-cols-2",
+  3: "grid-cols-1 sm:grid-cols-3",
+  4: "grid-cols-2 lg:grid-cols-4",
 } as const;
 
 /**
@@ -35,7 +39,7 @@ export function StatGrid({
   return (
     <dl
       className={cn(
-        "grid grid-cols-1 gap-px overflow-hidden rounded-3xl border border-hairline bg-hairline",
+        "grid gap-px overflow-hidden rounded-3xl border border-hairline bg-hairline",
         columnClasses[columns],
         className,
       )}
@@ -43,7 +47,7 @@ export function StatGrid({
       {items.map((item) => (
         <div
           key={String(item.label) + String(item.value)}
-          className="flex flex-col gap-3 bg-canvas p-6 md:p-8"
+          className="flex flex-col gap-3 bg-canvas p-5 sm:p-6 md:p-8"
         >
           <dt className="order-2 text-small font-medium text-fg-muted">
             {item.label}
@@ -61,6 +65,8 @@ export function StatGrid({
                 value={item.value}
                 prefix={item.prefix}
                 suffix={item.suffix}
+                decimals={item.decimals}
+                grouping={item.grouping}
               />
             ) : (
               <span className="tabular">

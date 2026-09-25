@@ -85,7 +85,6 @@ export function DesignSystemShowcase() {
   return (
     <main>
       <PageHero
-        meta={["TUM.ai", "Design system", "2026"]}
         eyebrow="Living reference"
         title={
           <>

@@ -154,7 +154,7 @@ export function getMockResearchProjects(): Research[] {
       image: "/assets/innovation/robotics_arm.webp",
     },
     {
-      id: "mock-research-medai",
+      id: "mock-research-medical",
       title: "LMU: Uncertainty-Aware Medical Imaging",
       description:
         "Calibrated uncertainty estimates for segmentation models used in radiology workflows, developed together with clinicians.",

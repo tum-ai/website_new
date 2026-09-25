@@ -27,6 +27,8 @@ type CarouselProps = {
   gap?: number;
   /** Hide the arrow/progress controls (e.g. tiny image carousels). */
   controls?: boolean;
+  /** Extra classes for the clipping viewport (e.g. rounded corners, aspect). */
+  viewportClassName?: string;
   className?: string;
 };
 
@@ -41,6 +43,7 @@ export function Carousel({
   slideClassName = "basis-[85%] sm:basis-1/2 lg:basis-1/3",
   gap = 1.25,
   controls = true,
+  viewportClassName,
   className,
 }: CarouselProps) {
   const [viewportRef, api] = useEmblaCarousel({
@@ -86,7 +89,10 @@ export function Carousel({
       onKeyDownCapture={handleKeyDown}
       className={cn("relative", className)}
     >
-      <div ref={viewportRef} className="overflow-hidden">
+      <div
+        ref={viewportRef}
+        className={cn("overflow-hidden", viewportClassName)}
+      >
         <div
           className="flex touch-pan-y"
           style={{ gap: `${gap}rem` } as CSSProperties}
@@ -119,6 +125,7 @@ export function Carousel({
             <IconButton
               aria-label="Previous slide"
               variant="outline"
+              focusableWhenDisabled
               disabled={!canPrev}
               onClick={() => api?.scrollPrev()}
             >
@@ -127,6 +134,7 @@ export function Carousel({
             <IconButton
               aria-label="Next slide"
               variant="outline"
+              focusableWhenDisabled
               disabled={!canNext}
               onClick={() => api?.scrollNext()}
             >

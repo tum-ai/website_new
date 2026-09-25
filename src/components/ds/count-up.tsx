@@ -9,6 +9,8 @@ type CountUpProps = {
   prefix?: string;
   suffix?: string;
   decimals?: number;
+  /** Thousands separators ("2,100"); default true. */
+  grouping?: boolean;
   /** Seconds. */
   duration?: number;
   className?: string;
@@ -19,10 +21,12 @@ function formatValue(
   prefix: string,
   suffix: string,
   decimals: number,
+  grouping = true,
 ) {
   return `${prefix}${value.toLocaleString("en-US", {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
+    useGrouping: grouping,
   })}${suffix}`;
 }
 
@@ -37,11 +41,12 @@ export function CountUp({
   prefix = "",
   suffix = "",
   decimals = 0,
+  grouping = true,
   duration = 1.8,
   className,
 }: CountUpProps) {
   const ref = useRef<HTMLSpanElement>(null);
-  const finalText = formatValue(value, prefix, suffix, decimals);
+  const finalText = formatValue(value, prefix, suffix, decimals, grouping);
 
   useEffect(() => {
     const node = ref.current;
@@ -49,7 +54,7 @@ export function CountUp({
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (node.getBoundingClientRect().top < window.innerHeight) return;
 
-    node.textContent = formatValue(0, prefix, suffix, decimals);
+    node.textContent = formatValue(0, prefix, suffix, decimals, grouping);
     let stop: (() => void) | undefined;
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -59,7 +64,13 @@ export function CountUp({
           duration,
           ease: [0.22, 1, 0.36, 1],
           onUpdate: (latest) => {
-            node.textContent = formatValue(latest, prefix, suffix, decimals);
+            node.textContent = formatValue(
+              latest,
+              prefix,
+              suffix,
+              decimals,
+              grouping,
+            );
           },
         });
         stop = () => controls.stop();
@@ -70,9 +81,9 @@ export function CountUp({
     return () => {
       observer.disconnect();
       stop?.();
-      node.textContent = formatValue(value, prefix, suffix, decimals);
+      node.textContent = formatValue(value, prefix, suffix, decimals, grouping);
     };
-  }, [value, prefix, suffix, decimals, duration]);
+  }, [value, prefix, suffix, decimals, grouping, duration]);
 
   return (
     <span className={cn("tabular", className)}>

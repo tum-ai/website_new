@@ -59,7 +59,7 @@ export function DialogContent({
           {showClose ? (
             <BaseDialog.Close
               aria-label="Close"
-              className="absolute top-4 right-4 z-20 grid size-10 place-items-center rounded-full bg-white/85 text-violet-950 shadow-soft backdrop-blur transition-[background-color,rotate] duration-300 ease-brand hover:rotate-90 hover:bg-white"
+              className="absolute top-3 right-3 z-20 grid size-10 place-items-center rounded-full bg-white/85 text-violet-950 shadow-soft backdrop-blur transition-[background-color,rotate] duration-300 ease-brand hover:rotate-90 hover:bg-white"
             >
               <X aria-hidden className="size-4" />
             </BaseDialog.Close>

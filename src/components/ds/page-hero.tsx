@@ -3,7 +3,6 @@ import { cn } from "@/lib/utils";
 import { Aurora } from "./aurora";
 import { BrandMark } from "./brand-mark";
 import { Container } from "./container";
-import { MetaRow } from "./meta-row";
 import { Section, type Tone } from "./section";
 import { SplitWords } from "./split-words";
 import { Eyebrow } from "./typography";
@@ -19,8 +18,6 @@ type PageHeroProps = {
   eyebrow?: ReactNode;
   lead?: ReactNode;
   actions?: ReactNode;
-  /** Brand-guide meta row above the headline, e.g. ["TUM.ai", "Research", "Since 2020"]. */
-  meta?: [ReactNode, ReactNode?, ReactNode?];
   /** Right column (image, card, stats). Stacks under the text on mobile. */
   media?: ReactNode;
   /** Content below the headline block (stats row, filters, tabs). */
@@ -44,7 +41,6 @@ export function PageHero({
   eyebrow,
   lead,
   actions,
-  meta,
   media,
   children,
   size = "lg",
@@ -58,6 +54,7 @@ export function PageHero({
       tone={tone}
       spacing="none"
       grain
+      aria-labelledby={titleId}
       className={cn(
         "overflow-clip pt-[calc(var(--header-height)+clamp(3rem,7vw,6rem))] pb-[clamp(3.5rem,7vw,6rem)]",
         className,
@@ -68,12 +65,6 @@ export function PageHero({
         <BrandMark className="absolute top-[6%] -right-[12%] -z-10 w-[min(64rem,78%)] text-white/[0.035]" />
       ) : null}
       <Container>
-        {meta ? (
-          <MetaRow
-            items={meta}
-            className="mb-12 motion-safe:animate-fade md:mb-20"
-          />
-        ) : null}
         <div
           className={cn(
             media &&
