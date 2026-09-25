@@ -1,0 +1,158 @@
+name: CI
+
+# No `branches:` filter on pull_request: stacked PRs target feature and
+# integration branches, not only main.
+on:
+  pull_request:
+  merge_group:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+# One run per PR (superseded pushes are cancelled). Pushes to main and merge
+# queue runs group by commit, so they are never cancelled.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up toolchain
+        uses: ./.github/actions/setup
+      - name: Biome
+        run: pnpm exec biome ci .
+
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up toolchain
+        uses: ./.github/actions/setup
+      - name: Typecheck
+        run: pnpm typecheck
+
+  unit:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up toolchain
+        uses: ./.github/actions/setup
+      - name: Vitest with coverage
+        run: pnpm test:coverage
+      - name: Upload coverage report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: coverage
+          path: coverage/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up toolchain
+        uses: ./.github/actions/setup
+      - name: Production build
+        run: pnpm build
+      - name: Homepage performance budget
+        run: pnpm test:perf
+
+  e2e:
+    name: E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      USE_MOCK_CMS: "1"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up toolchain
+        uses: ./.github/actions/setup
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium webkit
+      - name: Playwright
+        # `--pass-with-no-tests` until the first specs land in e2e/.
+        run: pnpm test:e2e --pass-with-no-tests
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  knip:
+    name: Knip (advisory)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up toolchain
+        uses: ./.github/actions/setup
+      - name: Unused files, exports and dependencies
+        # Advisory until the findings are cleaned up. Step-level (not job-level)
+        # continue-on-error keeps the check green, so it does not block
+        # dependabot-maintenance.yml, which merges only when every check passed.
+        continue-on-error: true
+        run: pnpm knip
+
+  verify:
+    name: Verify
+    needs:
+      - lint
+      - typecheck
+      - unit
+      - build
+      - e2e
+    # Run even when a dependency failed, so this check fails instead of being
+    # skipped (a skipped check would count as passing).
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require every gating job to pass
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          for result in $RESULTS; do
+            if [ "$result" != "success" ]; then
+              echo "::error::A gating job finished with result '$result'."
+              exit 1
+            fi
+          done

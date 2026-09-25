@@ -2,10 +2,9 @@ name: Workflow Lint
 
 on:
   pull_request:
-    branches:
-      - main
     paths:
       - ".github/workflows/**"
+      - ".github/actions/**"
 
 permissions:
   contents: read
@@ -14,14 +13,17 @@ jobs:
   workflow-lint:
     name: Workflow Lint
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Lint GitHub Actions workflows
-        uses: raven-actions/actionlint@v2
+        uses: raven-actions/actionlint@3d39aea434753780c3b3d4a1a31c854b4dbf49d7 # v2.2.0
       - name: Audit workflows with zizmor (advisory)
         # Advisory for now; promote to a hard gate once findings are triaged.
         # continue-on-error (not `|| true`) keeps tool-crash failures visible
         # in the step UI instead of silently swallowing them.
         continue-on-error: true
-        run: pipx run zizmor --no-progress .github/workflows
+        run: pipx run zizmor --no-progress .github/workflows .github/actions

@@ -1,6 +1,4 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
+# Dependabot version updates. Options:
 # https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 
 version: 2
@@ -18,39 +16,23 @@ updates:
       - "javascript"
     commit-message:
       prefix: "chore(dependency)"
+    # A dependency joins the first group that matches it.
     groups:
-      npm-dev:
-        dependency-type: "development"
+      # Vitest packages must share one version, including across majors.
+      vitest:
         patterns:
-          - "*"
-        update-types:
-          - "patch"
-          - "minor"
-      npm-prod:
-        dependency-type: "production"
+          - "vitest"
+          - "@vitest/*"
+          - "vite"
+          - "@vitejs/*"
+      # Playwright bumps change the browsers (and visual baselines), so they
+      # land on their own and are never auto-merged with unrelated updates.
+      playwright:
         patterns:
-          - "*"
-        update-types:
-          - "patch"
-          - "minor"
-      npm-security:
-        applies-to: "security-updates"
-        patterns:
-          - "*"
-  - package-ecosystem: "npm"
-    directory: "/packages/notion-data"
-    schedule:
-      interval: "daily"
-      time: "05:05"
-      timezone: "Europe/Berlin"
-    rebase-strategy: "auto"
-    open-pull-requests-limit: 10
-    labels:
-      - "dependencies"
-      - "javascript"
-    commit-message:
-      prefix: "chore(dependency)"
-    groups:
+          - "@playwright/test"
+          - "playwright"
+          - "playwright-core"
+          - "@axe-core/playwright"
       npm-dev:
         dependency-type: "development"
         patterns:
@@ -70,7 +52,9 @@ updates:
         patterns:
           - "*"
   - package-ecosystem: "github-actions"
-    directory: "/"
+    directories:
+      - "/"
+      - "/.github/actions/*"
     schedule:
       interval: "daily"
       time: "05:15"
