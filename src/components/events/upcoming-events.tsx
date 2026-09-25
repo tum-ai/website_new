@@ -1,231 +1,166 @@
+"use client";
+
 import { format } from "date-fns";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { getSafeExternalUrl } from "@/lib/security";
+import { CalendarDays, MapPin } from "lucide-react";
+import { EmptyState, Reveal, SpotlightCard, Tag } from "@/components/ds";
 import type { Event } from "@/lib/types";
 import { groupEventsByMonth } from "@/lib/utils";
+import {
+  EventDetailsDialog,
+  formatEventLocation,
+  hasLongDescription,
+  SignUpAction,
+  truncateDescription,
+} from "./event-details";
+import { EventImage } from "./event-media";
 
+/**
+ * Upcoming events, soonest first, grouped by month. On wide screens the
+ * month label sticks beside its events while they scroll past.
+ */
 export default function UpcomingEvents({ events }: { events: Event[] }) {
-  events.sort(
+  // Sort a copy: `events` belongs to the parent.
+  const sortedEvents = [...events].sort(
     (a, b) =>
       new Date(a.event_date).getTime() - new Date(b.event_date).getTime(),
   );
-  const groupedEvents = groupEventsByMonth(events);
+  const groupedEvents = groupEventsByMonth(sortedEvents);
 
-  if (events.length === 0) {
+  if (sortedEvents.length === 0) {
     return (
-      <div className="py-12 text-center">
-        <p className="text-muted-foreground">
-          No upcoming events at the moment. Check back soon!
-        </p>
-      </div>
+      <EmptyState title="No upcoming events at the moment. Check back soon!" />
     );
   }
 
   return (
-    <div className="space-y-16 max-w-full">
-      {Object.entries(groupedEvents).map(([month, monthEvents]) => (
-        <div key={month} className="space-y-8">
-          <h3 className="text-2xl font-semibold text-primary">{month}</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {monthEvents.map((event) => (
-              <UpcomingEventCard key={event.id} event={event} />
-            ))}
+    <div className="space-y-16 md:space-y-24">
+      {Object.entries(groupedEvents).map(([month, monthEvents]) => {
+        const splitAt = month.lastIndexOf(" ");
+        const monthName = month.slice(0, splitAt);
+        const year = month.slice(splitAt + 1);
+        return (
+          <div
+            key={month}
+            className="grid gap-6 md:gap-8 xl:grid-cols-[minmax(0,14rem)_minmax(0,1fr)] xl:gap-12 2xl:grid-cols-[minmax(0,16rem)_minmax(0,1fr)]"
+          >
+            <Reveal className="flex items-center gap-4 xl:sticky xl:top-[calc(var(--header-height)+2.5rem)] xl:block xl:self-start">
+              <h3 className="flex shrink-0 items-baseline gap-2 text-heading-lg text-fg xl:block">
+                <span className="xl:block xl:text-display-md">{monthName}</span>{" "}
+                <span className="tabular text-fg-subtle xl:mt-2 xl:block xl:text-heading-md">
+                  {year}
+                </span>
+              </h3>
+              <span
+                aria-hidden
+                className="h-px flex-1 bg-hairline-strong xl:mt-6 xl:block xl:w-12 xl:flex-none"
+              />
+              <p className="shrink-0 text-meta text-fg-subtle xl:mt-4">
+                {monthEvents.length}{" "}
+                {monthEvents.length === 1 ? "event" : "events"}
+              </p>
+            </Reveal>
+            <div className="space-y-6 md:space-y-8">
+              {monthEvents.map((event, index) => (
+                <Reveal key={event.id} delay={index * 80}>
+                  <UpcomingEventCard event={event} />
+                </Reveal>
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
 
 function UpcomingEventCard({ event }: { event: Event }) {
   const eventDate = new Date(event.event_date);
-  const signUpUrl = getSafeExternalUrl(event.sign_up);
-  const applicationsClosed = !signUpUrl;
+  const location = formatEventLocation(event);
+  const longDescription = hasLongDescription(event);
+  const day = format(eventDate, "dd");
+  const monthShort = format(eventDate, "MMM");
 
   return (
-    <Card className="transition-transform bg-minimal-gray duration-150 hover:scale-101 justify-between w-full">
-      <div className="p-4">
-        <AspectRatio ratio={1 / 1}>
-          {event.poster ? (
-            <img
-              src={event.poster}
-              alt={event.title}
-              className="h-full w-full rounded-lg object-cover shadow-xl"
-            />
-          ) : (
-            <div className="h-full w-full rounded-lg bg-accent-foreground flex items-center justify-center">
-              <img
-                src="/assets/logo_new_white_standard.png"
-                alt="Placeholder"
-                className="h-3/4 w-3/4 object-contain opacity-50"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src =
-                    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='3' rx='2' ry='2'/%3E%3Ccircle cx='9' cy='9' r='2'/%3E%3Cpath d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'/%3E%3C/svg%3E";
-                }}
+    <article>
+      <SpotlightCard
+        variant="raised"
+        padding="none"
+        className="group/event grid overflow-hidden rounded-4xl md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] lg:grid-cols-[minmax(0,19rem)_minmax(0,1fr)]"
+      >
+        {/*
+         * The poster bleeds to the card edge; the card's own radius clips it,
+         * so there are no rounded corners meeting straight dividers.
+         */}
+        <div className="relative aspect-[16/10] overflow-hidden bg-sunken md:aspect-auto md:min-h-72">
+          <EventImage
+            src={event.poster}
+            alt={event.title}
+            sizes="(min-width: 1024px) 19rem, (min-width: 768px) 15rem, 100vw"
+            className="transition-transform duration-[1.4s] ease-brand group-hover/event:scale-[1.045] motion-reduce:transition-none"
+          />
+          {/* Date chip; the full date is in the meta list below. */}
+          <div
+            aria-hidden
+            className="absolute top-4 left-4 flex min-w-16 flex-col items-center rounded-2xl bg-white/95 px-3 pt-2.5 pb-2 text-violet-950 shadow-soft backdrop-blur"
+          >
+            <span className="text-[0.6875rem] font-semibold tracking-[0.14em] text-violet-700 uppercase">
+              {monthShort}
+            </span>
+            <span className="tabular mt-0.5 text-[2rem] leading-none font-semibold tracking-[-0.04em]">
+              {day}
+            </span>
+            <span className="mt-1 text-[0.6875rem] font-medium text-ink-600">
+              {format(eventDate, "EEE")}
+            </span>
+          </div>
+        </div>
+
+        <div className="flex min-w-0 flex-col px-5 pt-5 pb-6 sm:px-6 md:px-8 md:py-8 lg:px-10 lg:py-9">
+          {event.category ? (
+            <Tag className="mb-4 self-start">{event.category}</Tag>
+          ) : null}
+          <h4 className="text-heading-lg text-fg">{event.title}</h4>
+          <ul className="mt-4 space-y-1.5 text-small text-fg-muted">
+            <li className="flex items-start gap-2.5">
+              <CalendarDays
+                aria-hidden
+                className="mt-[0.2rem] size-4 shrink-0 text-highlight"
               />
-            </div>
-          )}
-        </AspectRatio>
-      </div>
-      <div className="flex flex-col justify-normal flex-1 min-w-0 p-4 pt-0">
-        <CardHeader className="pb-0 px-0">
-          <CardTitle className="text-primary text-lg">
-            {format(eventDate, "PPP")}
-          </CardTitle>
-          <CardTitle className="text-xl">{event.title}</CardTitle>
-          <CardDescription className="text-sm text-text-gray mt-1 pb-2">
-            {event.location ? `${event.location}` : ""}
-            {event.city ? `, ${event.city}` : ""}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="px-0">
-          <p className="text-sm">
-            {event.description.length > 300
-              ? event.description.slice(0, 300) + "..."
-              : event.description}
+              <time dateTime={event.event_date}>
+                {format(eventDate, "PPP")}
+              </time>
+            </li>
+            {location ? (
+              <li className="flex items-start gap-2.5">
+                <MapPin
+                  aria-hidden
+                  className="mt-[0.2rem] size-4 shrink-0 text-highlight"
+                />
+                {location}
+              </li>
+            ) : null}
+          </ul>
+          <p className="mt-5 text-small text-fg-muted md:text-body">
+            {truncateDescription(event.description)}
           </p>
-        </CardContent>
-        <CardFooter className="px-0 pt-4">
-          {event.description.length > 300 && event.sign_up && (
-            <div className="flex flex-col gap-2 w-full">
-              <Button
-                size={"xl"}
-                variant="primary"
-                className="text-white w-full"
-                disabled={applicationsClosed}
-                onClick={() => {
-                  if (signUpUrl) {
-                    const popup = window.open(
-                      signUpUrl,
-                      "_blank",
-                      "noopener,noreferrer",
-                    );
-                    if (popup) {
-                      popup.opener = null;
-                    }
+          {event.sign_up || longDescription ? (
+            <div className="mt-auto flex flex-wrap gap-3 pt-7">
+              {event.sign_up ? <SignUpAction event={event} /> : null}
+              {longDescription ? (
+                <EventDetailsDialog
+                  event={event}
+                  image={
+                    event.poster
+                      ? { src: event.poster, alt: event.title }
+                      : undefined
                   }
-                }}
-              >
-                {applicationsClosed ? "Applications Closed" : "Apply Now!"}
-              </Button>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button
-                    size={"xl"}
-                    variant="secondary"
-                    className="w-full text-white"
-                  >
-                    Read More
-                  </Button>
-                </DialogTrigger>
-
-                <DialogContent
-                  className="max-w-[calc(100vw-4rem)] max-h-[calc(100vh-4rem)] overflow-y-auto"
-                  showCloseButton={false}
-                >
-                  <DialogHeader>
-                    <DialogTitle className="text-purple-800 text-lg">
-                      {format(eventDate, "PPP")}
-                    </DialogTitle>
-                    <DialogTitle className="text-xl">{event.title}</DialogTitle>
-                    <DialogDescription className="text-sm text-muted-foreground">
-                      {event.location ? `${event.location}` : ""}
-                      {event.city ? `, ${event.city}` : ""}
-                    </DialogDescription>
-                  </DialogHeader>
-
-                  <div className="space-y-6">
-                    {/* Detailed Description */}
-                    <div>
-                      <p className="text-muted-foreground leading-relaxed">
-                        {event.description}
-                      </p>
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
+                  withSignUp
+                />
+              ) : null}
             </div>
-          )}
-          {event.description.length > 300 && !event.sign_up && (
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button
-                  size={"xl"}
-                  variant="primary"
-                  className="text-white w-full"
-                >
-                  Read More
-                </Button>
-              </DialogTrigger>
-
-              <DialogContent
-                className="max-w-[calc(100vw-4rem)] max-h-[calc(100vh-4rem)] overflow-y-auto"
-                showCloseButton={false}
-              >
-                <DialogHeader>
-                  <DialogTitle className="text-purple-800 text-lg">
-                    {format(eventDate, "PPP")}
-                  </DialogTitle>
-                  <DialogTitle className="text-xl">{event.title}</DialogTitle>
-                  <DialogDescription className="text-sm text-muted-foreground">
-                    {event.location ? `${event.location}` : ""}
-                    {event.city ? `, ${event.city}` : ""}
-                  </DialogDescription>
-                </DialogHeader>
-
-                <div className="space-y-6">
-                  {/* Detailed Description */}
-                  <div>
-                    <p className="text-muted-foreground leading-relaxed">
-                      {event.description}
-                    </p>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
-          )}
-          {event.description.length <= 300 && event.sign_up && (
-            <Button
-              size={"xl"}
-              variant="primary"
-              className="text-white w-full"
-              disabled={applicationsClosed}
-              onClick={() => {
-                if (signUpUrl) {
-                  const popup = window.open(
-                    signUpUrl,
-                    "_blank",
-                    "noopener,noreferrer",
-                  );
-                  if (popup) {
-                    popup.opener = null;
-                  }
-                }
-              }}
-            >
-              {applicationsClosed ? "Applications Closed" : "Apply Now!"}
-            </Button>
-          )}
-        </CardFooter>
-      </div>
-    </Card>
+          ) : null}
+        </div>
+      </SpotlightCard>
+    </article>
   );
 }

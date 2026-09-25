@@ -1,25 +1,40 @@
-import { X } from "lucide-react";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import type { EventFilters } from "@/lib/types.ts";
+"use client";
+
+import { SlidersHorizontal, X } from "lucide-react";
+import { useRef } from "react";
+import { Button, Card, ChipGroup } from "@/components/ds";
+import type { EventFilters } from "@/lib/types";
+
+export const DEFAULT_EVENT_FILTERS: EventFilters = {
+  category: "All Categories",
+  city: "All Cities",
+};
+
+export const eventCategories = ["All Categories", "Hackathon", "Speaker"];
+
+export const eventCities = ["All Cities", "Munich", "Online"];
 
 interface EventFiltersProps {
   filters: EventFilters;
   onFiltersChange: (filters: EventFilters) => void;
   eventCount: number;
+  /** Optional per-option result counts, keyed by option value. */
+  categoryCounts?: Record<string, number>;
+  cityCounts?: Record<string, number>;
 }
 
-const eventCategories = ["All Categories", "Hackathon", "Speaker"];
-
-const eventCities = ["All Cities", "Munich", "Online"];
-
+/**
+ * Category and city filter chips with the live result count. Sits on a dark
+ * band (the page hero), so it uses the glass card surface.
+ */
 export default function EventFiltersComponent({
   filters,
   onFiltersChange,
   eventCount,
+  categoryCounts,
+  cityCounts,
 }: EventFiltersProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const chipsRef = useRef<HTMLDivElement>(null);
 
   const handleFilterChange = (key: keyof EventFilters, value: string) => {
     onFiltersChange({
@@ -29,96 +44,96 @@ export default function EventFiltersComponent({
   };
 
   const clearFilters = () => {
-    onFiltersChange({
-      category: "All Categories",
-      city: "All Cities",
+    onFiltersChange(DEFAULT_EVENT_FILTERS);
+    // The Clear button unmounts; keep keyboard focus inside the panel.
+    requestAnimationFrame(() => {
+      chipsRef.current
+        ?.querySelector<HTMLElement>('[aria-pressed="true"]')
+        ?.focus();
     });
   };
 
   const hasActiveFilters =
-    filters.category !== "All Categories" || filters.city !== "All Cities";
+    filters.category !== DEFAULT_EVENT_FILTERS.category ||
+    filters.city !== DEFAULT_EVENT_FILTERS.city;
 
   return (
-    <div className="mb-8 p-4 rounded-lg border border-gray-500">
-      <div
-        className="flex items-center justify-between cursor-pointer"
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
-        <div className="flex items-center gap-2">
-          <h3 className="text-sm font-medium">Filters</h3>
-          <span className="text-xs text-muted-foreground">
-            ({eventCount} events)
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          {hasActiveFilters && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                clearFilters();
-              }}
+    <Card
+      as="section"
+      variant="glass"
+      padding="none"
+      aria-labelledby="event-filters-title"
+      className="rounded-4xl p-5 sm:p-6 md:p-8"
+    >
+      <div className="flex min-h-9 items-center justify-between gap-4 border-b border-hairline pb-5">
+        <div className="flex items-center gap-3">
+          <SlidersHorizontal
+            aria-hidden
+            className="size-4 shrink-0 text-highlight"
+            strokeWidth={1.75}
+          />
+          <div className="flex items-baseline gap-3">
+            <h2
+              id="event-filters-title"
+              className="text-heading-sm leading-6 text-fg"
             >
-              <X className="h-3 w-3 mr-1" />
-              Clear
-            </Button>
-          )}
-          <span className="text-xs text-muted-foreground">
-            {isExpanded ? "▲" : "▼"}
-          </span>
-        </div>
-      </div>
-
-      <div
-        className={`overflow-hidden transition-all duration-300 ease-in-out ${
-          isExpanded ? "max-h-96 mt-4" : "max-h-0"
-        }`}
-      >
-        <div className="space-y-4">
-          {/* Category Filter */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Label className="text-xs font-medium text-muted-foreground min-w-[60px]">
-              Category:
-            </Label>
-            <div className="flex flex-wrap gap-2">
-              {eventCategories.map((category) => (
-                <Button
-                  key={category}
-                  variant={
-                    filters.category === category ? "default" : "outline"
-                  }
-                  size="sm"
-                  className="h-7 px-2 text-xs"
-                  onClick={() => handleFilterChange("category", category)}
-                >
-                  {category}
-                </Button>
-              ))}
-            </div>
-          </div>
-
-          {/* City Filter */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Label className="text-xs font-medium text-muted-foreground min-w-[60px]">
-              City:
-            </Label>
-            <div className="flex flex-wrap gap-2">
-              {eventCities.map((city) => (
-                <Button
-                  key={city}
-                  variant={filters.city === city ? "default" : "outline"}
-                  size="sm"
-                  className="h-7 px-2 text-xs"
-                  onClick={() => handleFilterChange("city", city)}
-                >
-                  {city}
-                </Button>
-              ))}
-            </div>
+              Filters
+            </h2>
+            <p aria-live="polite" className="tabular text-meta text-fg-subtle">
+              ({eventCount} {eventCount === 1 ? "event" : "events"})
+            </p>
           </div>
         </div>
+        {hasActiveFilters ? (
+          <Button variant="ghost" size="sm" onClick={clearFilters}>
+            <X aria-hidden className="size-3.5" />
+            Clear
+          </Button>
+        ) : null}
       </div>
-    </div>
+
+      <div ref={chipsRef} className="mt-6 grid gap-6 md:grid-cols-2 md:gap-10">
+        <div>
+          <p
+            id="event-filter-category"
+            className="text-eyebrow text-fg-subtle uppercase"
+          >
+            Category
+          </p>
+          <ChipGroup
+            label="Category"
+            labelledBy="event-filter-category"
+            className="mt-3"
+            value={filters.category}
+            onValueChange={(value) => handleFilterChange("category", value)}
+            options={eventCategories.map((category) => ({
+              value: category,
+              label: category,
+              count: categoryCounts?.[category],
+            }))}
+          />
+        </div>
+        <div>
+          <p
+            id="event-filter-city"
+            className="text-eyebrow text-fg-subtle uppercase"
+          >
+            City
+          </p>
+          <ChipGroup
+            label="City"
+            labelledBy="event-filter-city"
+            className="mt-3"
+            value={filters.city}
+            onValueChange={(value) => handleFilterChange("city", value)}
+            options={eventCities.map((city) => ({
+              value: city,
+              label: city,
+              count: cityCounts?.[city],
+            }))}
+          />
+        </div>
+      </div>
+    </Card>
   );
 }
