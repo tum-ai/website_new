@@ -3,8 +3,9 @@ import localFont from "next/font/local";
 import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity/visual-editing";
 import { MotionProvider } from "@/components/ds/motion-provider";
-import Footer from "@/components/Footer";
-import { Header } from "@/components/Header";
+import { Footer } from "@/components/shell/footer";
+import { Header } from "@/components/shell/header";
+import { SkipLink } from "@/components/shell/skip-link";
 import { isSanityConfigured, SanityLive } from "@/lib/sanity";
 import "@/styles/index.css";
 
@@ -63,12 +64,7 @@ export default async function RootLayout({
     <html lang="en" className={manrope.variable}>
       {/* Browser extensions (e.g. Grammarly) inject attributes on <body>. */}
       <body suppressHydrationWarning>
-        <a
-          href="#main-content"
-          className="absolute top-3 left-3 z-[100] -translate-y-[200%] rounded-full bg-white px-5 py-3 text-small font-semibold text-violet-950 shadow-lift transition-transform focus-visible:translate-y-0"
-        >
-          Skip to content
-        </a>
+        <SkipLink />
         {/* Isolated root so Base UI portals always stack above page content. */}
         <div id="app-root" className="isolate">
           <MotionProvider>

@@ -70,7 +70,7 @@ function FooterAnchor({ label, href }: FooterLink) {
   );
 }
 
-export default function Footer() {
+export function Footer() {
   return (
     <footer data-tone="night" className="relative isolate overflow-clip">
       <div aria-hidden className="grain -z-10" />

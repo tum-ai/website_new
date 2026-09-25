@@ -1,5 +1,5 @@
 import { unstable_rethrow } from "next/navigation";
-import JsonLd from "@/components/JsonLd";
+import { JsonLd } from "@/components/json-ld";
 import { buildMetadata, getJsonLd } from "@/config/seo";
 import { PartnersPage } from "@/features/partners";
 import { getSanityPartners } from "@/lib/sanity";

@@ -1,4 +1,4 @@
-import JsonLd from "@/components/JsonLd";
+import { JsonLd } from "@/components/json-ld";
 import { buildMetadata, getJsonLd } from "@/config/seo";
 import { CommunityPage } from "@/features/community";
 

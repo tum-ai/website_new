@@ -1,6 +1,6 @@
 import type { Organization, WithContext } from "schema-dts";
 import { CtaBand, FaqSection } from "@/components/ds";
-import JsonLd from "@/components/JsonLd";
+import { JsonLd } from "@/components/json-ld";
 import { contactEmails } from "@/config/contact";
 import {
   eLabApplicationCopy,
