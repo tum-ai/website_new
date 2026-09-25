@@ -11,9 +11,11 @@ type SplitWordsProps = {
 };
 
 /**
- * Headline entrance: words rise, fade and sharpen in sequence. There is no
- * clipping mask, so descenders and overhangs are never cut mid-animation. Pure
- * CSS, so it starts before hydration and never delays LCP. Strings are split into
+ * Headline entrance: words rise, fade and sharpen in sequence. Each word's box
+ * is padded (and pulled back with negative margins, so layout is unchanged) to
+ * contain descenders and overhangs at tight display line-heights; Safari clips
+ * filtered elements to their box. Pure CSS, so it starts before hydration and
+ * never delays LCP. Strings are split into
  * words; elements (e.g. <Highlight>) animate as one unit. Reduced motion
  * renders the text statically.
  */
@@ -54,7 +56,9 @@ export function SplitWords({
         return (
           <span
             key={index}
-            className={cn("inline-block motion-safe:animate-rise")}
+            className={cn(
+              "-mx-[0.06em] -mt-[0.12em] -mb-[0.32em] inline-block px-[0.06em] pt-[0.12em] pb-[0.32em] motion-safe:animate-rise",
+            )}
             style={{ animationDelay: `${delay + current * step}ms` }}
           >
             {unit}

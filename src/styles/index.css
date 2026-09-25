@@ -111,7 +111,9 @@
   --ease-snappy: cubic-bezier(0.32, 0.72, 0, 1);
   --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
 
-  --animate-rise: rise 1s var(--ease-brand) both;
+  /* `backwards`: hold the start frame during the stagger delay, then release
+     the element entirely, so no filter layer outlives the animation. */
+  --animate-rise: rise 1s var(--ease-brand) backwards;
   --animate-rise-sm: rise-sm 0.8s var(--ease-brand) both;
   --animate-fade: fade 0.9s var(--ease-brand) both;
   --animate-aurora: aurora 26s var(--ease-in-out-soft) infinite alternate;
@@ -123,6 +125,7 @@
   --animate-shimmer: shimmer 2.2s linear infinite;
   --animate-line: line 1.2s var(--ease-brand) both;
 
+  /* Safari clips a filtered element to its box; see --animate-rise. */
   @keyframes rise {
     from {
       opacity: 0;
@@ -132,7 +135,7 @@
     to {
       opacity: 1;
       transform: none;
-      filter: blur(0);
+      filter: none;
     }
   }
 
