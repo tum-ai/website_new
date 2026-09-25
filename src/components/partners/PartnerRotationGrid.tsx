@@ -13,7 +13,8 @@ import {
   nextPartnerBatch,
 } from "@/lib/partner-rotation";
 import type { Partner } from "@/lib/types";
-import PartnerTile from "./PartnerTile";
+import { cn } from "@/lib/utils";
+import PartnerTile, { type PartnerTileSize } from "./PartnerTile";
 
 // Bound a slow or broken remote CMS image; PartnerLogo supplies the name fallback.
 function preload(src?: string) {
@@ -44,14 +45,14 @@ export default function PartnerRotationGrid({
   capacity = 3,
   batchSize = 1,
   offset = 0,
-  compact = false,
+  size = "lg",
   className,
 }: {
   partners: Partner[];
   capacity?: number;
   batchSize?: number;
   offset?: number;
-  compact?: boolean;
+  size?: PartnerTileSize;
   className: string;
 }) {
   const byKey = new Map(
@@ -155,7 +156,10 @@ export default function PartnerRotationGrid({
           : undefined;
         return partner ? (
           <div
-            className="partner-rotation-slot"
+            className={cn(
+              "partner-rotation-slot relative min-w-0 bg-white",
+              size === "compact" ? "rounded-xl" : "rounded-2xl",
+            )}
             key={`slot-${slot}`}
             style={
               {
@@ -164,22 +168,21 @@ export default function PartnerRotationGrid({
             }
           >
             <div
-              className={
-                outgoing
-                  ? "partner-rotation-current partner-rotation-enter"
-                  : "partner-rotation-current"
-              }
+              className={cn(
+                "partner-rotation-current h-full rounded-[inherit]",
+                outgoing && "partner-rotation-enter",
+              )}
               key={key}
             >
-              <PartnerTile partner={partner} compact={compact} />
+              <PartnerTile partner={partner} size={size} />
             </div>
             {outgoing && (
               <div
-                className="partner-rotation-outgoing"
+                className="partner-rotation-outgoing pointer-events-none absolute inset-0 rounded-[inherit]"
                 aria-hidden="true"
                 inert
               >
-                <PartnerTile partner={outgoing} compact={compact} />
+                <PartnerTile partner={outgoing} size={size} />
               </div>
             )}
           </div>

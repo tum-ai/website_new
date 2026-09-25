@@ -17,6 +17,7 @@ import {
   partnershipFunnelReducer,
 } from "@/lib/partnerships";
 
+// Loaded on the first "Book a call"; the Cal.eu embed mounts only while open.
 const BookingDialog = dynamic(() => import("./BookingDialog"), { ssr: false });
 
 const PartnershipContext = createContext<{
@@ -31,6 +32,7 @@ export function PartnershipProvider({ children }: { children: ReactNode }) {
     initialFunnelState,
   );
   const [bookingOpen, setBookingOpen] = useState(false);
+  const [bookingRequested, setBookingRequested] = useState(false);
   const bookingTrigger = useRef<HTMLElement | null>(null);
 
   return (
@@ -40,16 +42,18 @@ export function PartnershipProvider({ children }: { children: ReactNode }) {
         dispatch,
         openBooking: () => {
           bookingTrigger.current = document.activeElement as HTMLElement | null;
+          setBookingRequested(true);
           setBookingOpen(true);
         },
       }}
     >
       {children}
-      {bookingOpen ? (
+      {bookingRequested ? (
         <BookingDialog
+          open={bookingOpen}
+          onOpenChange={setBookingOpen}
           selection={selection}
-          onClose={() => setBookingOpen(false)}
-          onRestoreFocus={() => bookingTrigger.current?.focus()}
+          finalFocus={bookingTrigger}
         />
       ) : null}
     </PartnershipContext.Provider>

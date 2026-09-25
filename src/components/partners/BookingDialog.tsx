@@ -1,14 +1,14 @@
 "use client";
 
 import Cal, { getCalApi } from "@calcom/embed-react";
-import { ExternalLink } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { type RefObject, useEffect, useMemo, useState } from "react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogTitle,
-} from "@/components/ui/dialog";
+  TextLink,
+} from "@/components/ds";
 import {
   getPartnershipBookingUrl,
   getPartnershipContext,
@@ -22,15 +22,50 @@ const namespace = "tumai-partners";
 const bookingUrl = new URL(PARTNER_BOOKING_URL);
 const embedJsUrl = `${bookingUrl.origin}/embed.js`;
 
+/**
+ * Booking dialog (Base UI). The popup content, and with it the Cal.eu embed,
+ * mounts only while open; closing returns focus to `finalFocus`, the control
+ * that opened it.
+ */
 export default function BookingDialog({
+  open,
+  onOpenChange,
   selection,
-  onClose,
-  onRestoreFocus,
+  finalFocus,
 }: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   selection: PartnershipSelection;
-  onClose: () => void;
-  onRestoreFocus: () => void;
+  finalFocus: RefObject<HTMLElement | null>;
 }) {
+  return (
+    <Dialog open={open} onOpenChange={(next) => onOpenChange(next)}>
+      <DialogContent
+        size="xl"
+        finalFocus={finalFocus}
+        className="flex max-w-[68.75rem] flex-col gap-5 p-5 sm:p-7"
+      >
+        <div className="pr-12">
+          <DialogTitle>Let’s talk about your partnership.</DialogTitle>
+          <DialogDescription className="mt-2">
+            Pick a time for a quick chat with Silas from TUM.ai.
+          </DialogDescription>
+        </div>
+        <BookingCalendar selection={selection} />
+        <div className="flex flex-wrap justify-between gap-x-6 gap-y-3 border-t border-hairline pt-4 text-small">
+          <TextLink href={getPartnershipBookingUrl(selection)} arrow>
+            Open booking page
+          </TextLink>
+          <TextLink href={getPartnershipEmailUrl(selection)}>
+            Email us instead
+          </TextLink>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function BookingCalendar({ selection }: { selection: PartnershipSelection }) {
   const [status, setStatus] = useState<"loading" | "ready" | "failed">(
     "loading",
   );
@@ -82,58 +117,35 @@ export default function BookingDialog({
   }, []);
 
   return (
-    <Dialog
-      open
-      onOpenChange={(open) => {
-        if (!open) onClose();
-      }}
-    >
-      <DialogContent
-        className="partner-booking-dialog"
-        onCloseAutoFocus={(event) => {
-          event.preventDefault();
-          onRestoreFocus();
-        }}
+    <div className="h-[min(630px,65dvh)] min-h-[360px] overflow-auto sm:min-h-[420px]">
+      <p
+        role="status"
+        className={
+          status === "ready"
+            ? "sr-only"
+            : "flex items-center gap-2.5 p-4 text-small text-fg-muted"
+        }
       >
-        <div className="partner-booking-heading">
-          <DialogTitle>Let’s talk about your partnership.</DialogTitle>
-          <DialogDescription>
-            Pick a time for a quick chat with Silas from TUM.ai.
-          </DialogDescription>
-        </div>
-        <div className="partner-booking-calendar">
-          <p
-            role="status"
-            className={
-              status === "ready" ? "sr-only" : "partner-booking-status"
-            }
-          >
-            {status === "loading"
-              ? "Loading available times…"
-              : status === "failed"
-                ? "Calendar taking a while? Open the booking page below, or email us."
-                : "Calendar ready."}
-          </p>
-          <Cal
-            namespace={namespace}
-            calLink={bookingUrl.pathname.slice(1)}
-            calOrigin={bookingUrl.origin}
-            embedJsUrl={embedJsUrl}
-            config={config}
-            style={{ width: "100%", height: "100%", overflow: "auto" }}
+        {status === "loading" ? (
+          <span
+            aria-hidden
+            className="size-2 rounded-full bg-violet-500 motion-safe:animate-pulse-ring"
           />
-        </div>
-        <div className="partner-booking-fallback">
-          <a
-            href={getPartnershipBookingUrl(selection)}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Open booking page <ExternalLink size={14} />
-          </a>
-          <a href={getPartnershipEmailUrl(selection)}>Email us instead</a>
-        </div>
-      </DialogContent>
-    </Dialog>
+        ) : null}
+        {status === "loading"
+          ? "Loading available times…"
+          : status === "failed"
+            ? "Calendar taking a while? Open the booking page below, or email us."
+            : "Calendar ready."}
+      </p>
+      <Cal
+        namespace={namespace}
+        calLink={bookingUrl.pathname.slice(1)}
+        calOrigin={bookingUrl.origin}
+        embedJsUrl={embedJsUrl}
+        config={config}
+        style={{ width: "100%", height: "100%", overflow: "auto" }}
+      />
+    </div>
   );
 }
