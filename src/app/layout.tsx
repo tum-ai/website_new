@@ -45,11 +45,11 @@ export const metadata: Metadata = {
 };
 
 /**
- * Browser chrome (mobile status bar, Safari tab bar) matches the dark hero
- * every page opens with, instead of falling back to white.
+ * Browser chrome that still reads theme-color (e.g. Chrome on Android) uses the
+ * same brand black as the root canvas, the hero tops and the footer.
  */
 export const viewport: Viewport = {
-  themeColor: "#1b0049",
+  themeColor: "#0d0214",
 };
 
 export default async function RootLayout({

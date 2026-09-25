@@ -367,12 +367,14 @@
   }
 
   /*
-   * The canvas is dark indigo so Safari's status-bar tint and overscroll
-   * areas continue the dark hero at the top of every page. Page content sits
-   * on its own bands (and #main-content is white), so no dark shows through.
+   * The root canvas is brand black: Safari paints its status bar (at the top)
+   * and bottom toolbar from it, and every page starts with a hero that fades
+   * into it (TopBlend) and ends with the footer in the same color. Page
+   * content sits on its own bands (and #main-content is white), so it never
+   * shows through.
    */
   html {
-    background-color: var(--color-dark-indigo);
+    background-color: var(--color-black);
   }
 
   body {

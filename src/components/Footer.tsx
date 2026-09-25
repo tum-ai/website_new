@@ -3,6 +3,7 @@ import { Aurora } from "@/components/ds/aurora";
 import { BrandMark } from "@/components/ds/brand-mark";
 import { ButtonLink } from "@/components/ds/button";
 import { Container } from "@/components/ds/container";
+import { TopBlend } from "@/components/ds/top-blend";
 
 type FooterLink = { label: string; href: string };
 
@@ -79,9 +80,11 @@ export default function Footer() {
       <div aria-hidden className="grain -z-10" />
       <Aurora
         intensity="subtle"
-        className="[mask-image:linear-gradient(to_bottom,transparent,black_55%)]"
+        className="[mask-image:linear-gradient(to_bottom,transparent,black_35%,black_60%,transparent)]"
       />
       <BrandMark className="absolute -right-[6%] -bottom-[22%] -z-10 w-[min(46rem,90%)] text-white/[0.03]" />
+      {/* The bottom edge settles into the root canvas that Safari shows under its toolbar. */}
+      <TopBlend edge="bottom" />
       <Container className="pt-24 md:pt-32">
         <div className="grid gap-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-20">
           <div>
