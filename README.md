@@ -70,6 +70,13 @@ The app reads these environment variables to connect to the CMS:
 
 If the values are missing, the Sanity fetchers may fail to return data.
 
+## Design System
+
+UI is built from `src/components/ds` on top of Base UI. Tokens, tones, motion
+and accessibility rules are documented in
+[docs/design-system.md](docs/design-system.md); `/design-system` renders every
+component in development and on preview deployments.
+
 ## CMS Staging And Draft Preview
 
 Use a Vercel Preview deployment as the staging environment for CMS changes.

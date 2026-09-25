@@ -1,310 +1,181 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@plugin "@tailwindcss/typography";
 @source "../**/*.{js,ts,jsx,tsx,mdx}";
-/* TODO: fix unknown rules */
 @custom-variant dark (&:is(.dark *));
 
-:root {
-  font-family: var(--font-manrope), system-ui, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: var(
-    --color-dark-indigo
-  ); /* Dark Indigo as standard text in light mode */
-  background-color: var(
-    --color-white
-  ); /* minimal-grey as standard background */
-  width: 100%;
-  overflow-x: hidden;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  --radius: 0.625rem;
-  --color-white-rgb: 255 255 255;
-  --color-black-rgb: 13 2 20;
-  --color-tumai-violet-rgb: 154 100 217;
-  --color-brand-page-end: color-mix(
-    in srgb,
-    var(--color-dark-purple) 72%,
-    var(--color-black)
-  );
-  --color-brand-panel: color-mix(
-    in srgb,
-    var(--color-dark-indigo) 60%,
-    var(--color-black)
-  );
-  --color-brand-grid-tile: color-mix(
-    in srgb,
-    var(--color-dark-purple) 88%,
-    var(--color-black)
-  );
-  --gradient-brand-page: linear-gradient(
-    135deg,
-    var(--color-black) 0%,
-    var(--color-black) 58%,
-    var(--color-brand-page-end) 100%
-  );
-  --gradient-brand-accent: linear-gradient(
-    135deg,
-    var(--color-black) 0%,
-    var(--color-dark-purple) 100%
-  );
-  --gradient-brand-highlight: linear-gradient(
-    90deg,
-    var(--color-tumai-violet) 0%,
-    var(--color-lavender-tint) 100%
-  );
-  --gradient-brand-home-overlay: linear-gradient(
-    to top right,
-    var(--color-black) 20%,
-    transparent
-  );
-  --gradient-brand-header-overlay: linear-gradient(
-    to bottom,
-    var(--color-black) 30%,
-    transparent
-  );
-  --gradient-brand-panel-glow: radial-gradient(
-    circle at center,
-    rgb(var(--color-tumai-violet-rgb) / 0.52) -30%,
-    transparent 80%
-  );
-  /* --- LIGHT MODE THEME --- */
-  --background: var(--color-white);
-  --foreground: var(--color-dark-indigo); /* normal text */
-
-  --card: var(--color-white);
-  --card-foreground: var(--color-black);
-
-  --popover: var(--color-white);
-  --popover-foreground: var(--color-black);
-
-  --primary: var(--color-tumai-violet);
-  --primary-foreground: var(--color-white);
-
-  --secondary: var(--color-lavender-tint);
-  --secondary-foreground: var(--color-dark-violet);
-
-  --muted: var(--color-minimal-gray);
-  --muted-foreground: var(--color-gray-500);
-
-  --accent: var(--color-tumai-violet);
-  --accent-foreground: var(--color-black);
-
-  --destructive: oklch(
-    0.577 0.245 27.325
-  ); /* red for errors (stays standard) */
-  --destructive-foreground: var(--color-white);
-
-  --border: var(--color-minimal-gray); /* Frame for Inputs/Cards */
-  --input: var(--color-minimal-gray);
-  --ring: var(--color-tumai-violet); /* Fokus-Ring */
-
-  /* Charts (adopted to CI) */
-  --chart-1: var(--color-tumai-violet);
-  --chart-2: var(--color-electric-end);
-  --chart-3: var(--color-dark-indigo);
-  --chart-4: var(--color-lavender-tint);
-  --chart-5: var(--color-minimal-gray);
-
-  --sidebar: var(--color-white);
-  --sidebar-foreground: var(--color-black);
-  --sidebar-primary: var(--color-tumai-violet);
-  --sidebar-primary-foreground: var(--color-white);
-  --sidebar-accent: var(--color-minimal-gray);
-  --sidebar-accent-foreground: var(--color-tumai-violet);
-  --sidebar-border: var(--color-minimal-gray);
-  --sidebar-ring: var(--color-tumai-violet);
-}
-
-::selection {
-  background-color: oklch(0.65 0.16 285 / 0.3);
-  color: var(--color-black);
-}
-
-main a {
-  font-weight: 500;
-  color: var(--color-tumai-violet);
-  text-decoration: inherit;
-  transition: color 0.2s ease-in-out;
-}
-
-main a:hover {
-  color: var(--color-electric-end);
-}
-
-body {
-  margin: 0;
-  display: block;
-  min-width: 320px;
-  min-height: 100vh;
-  width: 100%;
-  overflow-x: hidden;
-  font-family: var(--font-manrope), sans-serif;
-  background-color: var(--color-white);
-  color: var(--color-black);
-}
-
-button {
-  border-radius: 8px;
-  border: 0px solid transparent;
-  padding: 1.2rem;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: var(--primary);
-  color: var(--primary-foreground);
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  background-image: none;
-}
-
-button:hover {
-  /* electric fade ad hover effect */
-  background-image: linear-gradient(
-    to right,
-    var(--color-electric-start),
-    var(--color-electric-end)
-  );
-  color: var(--color-white);
-  border-color: transparent;
-}
-
-button:focus,
-button:focus-visible {
-  outline: 4px auto var(--ring);
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: var(--color-black);
-    background-color: var(--color-white);
-  }
-
-  a:hover {
-    color: var(--color-primary);
-  }
-}
-
-.brand-highlight-text {
-  background-image: var(--gradient-brand-highlight);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-}
-
-.brand-page-shell {
-  background-color: var(--color-black);
-  background-image: var(--gradient-brand-page);
-}
-
-.brand-accent-shell {
-  background-color: var(--color-black);
-  background-image: var(--gradient-brand-accent);
-}
-
-.brand-home-hero {
-  background-color: var(--color-black);
-}
-
-.brand-home-hero-overlay {
-  background-image: var(--gradient-brand-home-overlay);
-}
-
-.brand-header-shell {
-  background-color: rgb(
-    var(--color-black-rgb) /
-    var(--brand-header-opacity, 0)
-  );
-  backdrop-filter: blur(var(--brand-header-blur, 0px));
-  -webkit-backdrop-filter: blur(var(--brand-header-blur, 0px));
-}
-
-.brand-header-overlay {
-  background-image: var(--gradient-brand-header-overlay);
-  z-index: -1;
-}
-
-.brand-panel {
-  background-color: var(--color-brand-panel);
-}
-
-.brand-panel-glow {
-  background-image: var(--gradient-brand-panel-glow);
-}
-
-.brand-grid-tile {
-  background-color: var(--color-brand-grid-tile);
-}
-
-.brand-icon-badge {
-  background-color: rgb(var(--color-white-rgb) / 0.05);
-}
+/*
+ * TUM.ai design tokens.
+ *
+ * Layering contract: every rule in this file lives in a cascade layer, so
+ * Tailwind utilities and component classes always win over element defaults.
+ * Brand values come from docs/brand/source (colors.jpeg, brand-guidelines.pdf);
+ * the tonal steps between them are derived from those anchors, never invented
+ * hues. See docs/design-system.md for usage.
+ */
 
 @theme {
-  /* --- TUM.AI CORE BRAND COLORS (from CI-Document) --- */
-
-  /* Neutrals */
+  /* --- Brand anchors (CI document) --- */
   --color-white: oklch(1 0 0); /* #FFFFFF */
   --color-minimal-gray: oklch(0.9521 0 0); /* #EFEFEF */
-  --color-text-gray: oklch(0.4 0 0); /* use for text so it is all uniform */
+  --color-lavender-tint: oklch(0.9614 0.0221 302.94); /* #F5EFFF */
+  --color-tumai-violet: oklch(0.6131 0.1751 302.89); /* #9A64D9 */
+  --color-dark-purple: oklch(0.3932 0.1047 303.55); /* #523573 */
+  --color-dark-indigo: oklch(0.2085 0.1188 288.93); /* #1B0049 */
+  --color-black: oklch(0.1275 0.0481 312.72); /* #0D0214 */
+  --color-electric-start: var(--color-tumai-violet);
+  --color-electric-end: var(--color-dark-purple);
+  --color-text-gray: oklch(0.4 0 0);
 
-  /* The Violet Scale */
-  --color-lavender-tint: oklch(
-    0.9614 0.0221 302.94
-  ); /* #F5EFFF (Lavender Tint, Backgrounds/Highlights) */
-  --color-tumai-violet: oklch(
-    0.6131 0.1751 302.89
-  ); /* #9A64D9 (Electric Lavender, Primary Brand Color) */
-  --color-dark-purple: oklch(0.3932 0.1047 303.55); /* #523573 (Dark Purple) */
-  --color-dark-indigo: oklch(
-    0.2085 0.1188 288.93
-  ); /* #1b0049 (Dark Indigo, Deeper UI Elements) */
-  --color-black: oklch(
-    0.1275 0.0481 312.72
-  ); /* #0D0214 (The deepest violet/black) */
+  /* --- Violet scale: brand violet at 500, dark purple at 800, indigo at 950 --- */
+  --color-violet-50: #f5efff;
+  --color-violet-100: #ece2fb;
+  --color-violet-200: #dcc8f3;
+  --color-violet-300: #c9a5ef;
+  --color-violet-400: #b389e6;
+  --color-violet-500: #9a64d9;
+  --color-violet-600: #8052c2;
+  --color-violet-700: #6a43a3;
+  --color-violet-800: #523573;
+  --color-violet-900: #2f1757;
+  --color-violet-950: #1b0049;
 
-  /* ELectric fade gradient, start- and endpoint */
-  --color-electric-start: var(--color-tumai-violet); /* #9A64D9 */
-  --color-electric-end: var(--color-dark-purple); /* #523573 */
+  /* --- Ink scale: violet-tinted neutrals for text and surfaces --- */
+  --color-ink-50: #faf8fd;
+  --color-ink-100: #f4f1f8;
+  --color-ink-150: #eee9f4;
+  --color-ink-200: #e4ddec;
+  --color-ink-300: #c9c0d4;
+  --color-ink-400: #9d90b3;
+  --color-ink-500: #7c7385;
+  --color-ink-600: #655b71;
+  --color-ink-700: #4a3f5a;
+  --color-ink-800: #2e2340;
+  --color-ink-900: #1b0049;
+  --color-ink-950: #0d0214;
 
-  /* --- EXTENDED SCALES (for Tailwind-compatibility, based on CI) --- */
+  /* Legacy scale overrides kept until every page has migrated. */
   --color-gray-50: var(--color-white);
   --color-gray-100: var(--color-minimal-gray);
   --color-gray-900: var(--color-black);
-
   --color-purple-50: var(--color-lavender-tint);
   --color-purple-500: var(--color-tumai-violet);
   --color-purple-900: var(--color-dark-indigo);
   --color-purple-950: var(--color-black);
 
-  /*
-  /*
-  --color-purple-50: #f6edfc;
-  --color-purple-100: #eddbfa;
-  --color-purple-200: #dab8f5;
-  --color-purple-300: #c894f0;
-  --color-purple-400: #b875eb;
-  --color-purple-500: #a450e6;
-  --color-purple-600: #891fdb;
-  --color-purple-700: #6517a1;
-  --color-purple-800: #430f6b;
-  --color-purple-900: #220836;
-  --color-purple-950: #11041b;
-  older purples if needed
+  /* --- Typography --- */
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
 
-  */
+  /* Brand guide: H1 120pt/1.0, H2 80pt/1.1, H3 48pt/1.2, text 21pt/1.4. */
+  --text-display-2xl: clamp(3.25rem, 1.35rem + 6.6vw, 8rem);
+  --text-display-2xl--line-height: 0.94;
+  --text-display-2xl--letter-spacing: -0.055em;
+  --text-display-2xl--font-weight: 500;
+  --text-display-xl: clamp(2.85rem, 1.45rem + 4.8vw, 6.25rem);
+  --text-display-xl--line-height: 0.98;
+  --text-display-xl--letter-spacing: -0.05em;
+  --text-display-xl--font-weight: 500;
+  --text-display-lg: clamp(2.35rem, 1.45rem + 3vw, 4.5rem);
+  --text-display-lg--line-height: 1.03;
+  --text-display-lg--letter-spacing: -0.045em;
+  --text-display-lg--font-weight: 500;
+  --text-display-md: clamp(2rem, 1.4rem + 1.9vw, 3.35rem);
+  --text-display-md--line-height: 1.08;
+  --text-display-md--letter-spacing: -0.04em;
+  --text-display-md--font-weight: 550;
+  --text-heading-lg: clamp(1.5rem, 1.25rem + 0.9vw, 2.125rem);
+  --text-heading-lg--line-height: 1.15;
+  --text-heading-lg--letter-spacing: -0.03em;
+  --text-heading-lg--font-weight: 600;
+  --text-heading-md: clamp(1.1875rem, 1.1rem + 0.35vw, 1.4375rem);
+  --text-heading-md--line-height: 1.28;
+  --text-heading-md--letter-spacing: -0.02em;
+  --text-heading-md--font-weight: 600;
+  --text-heading-sm: 1.0625rem;
+  --text-heading-sm--line-height: 1.4;
+  --text-heading-sm--letter-spacing: -0.01em;
+  --text-heading-sm--font-weight: 600;
+  --text-lead: clamp(1.0625rem, 0.98rem + 0.4vw, 1.3125rem);
+  --text-lead--line-height: 1.55;
+  --text-lead--letter-spacing: -0.012em;
+  --text-body: 1rem;
+  --text-body--line-height: 1.7;
+  --text-small: 0.875rem;
+  --text-small--line-height: 1.65;
+  --text-meta: 0.8125rem;
+  --text-meta--line-height: 1.45;
+  --text-eyebrow: 0.75rem;
+  --text-eyebrow--line-height: 1.2;
+  --text-eyebrow--letter-spacing: 0.14em;
+  --text-eyebrow--font-weight: 600;
 
+  /* Legacy em-relative sizes (still used by ui/button on /partners). */
   --text-title: 1.4em;
   --text-subtitle: 1.25em;
   --text-base: 1em;
   --text-subtext: 0.9em;
+
+  /* --- Shape and depth --- */
+  --radius-4xl: 2rem;
+  --radius-5xl: 2.5rem;
+  --shadow-soft:
+    0 1px 2px rgb(27 0 73 / 0.04), 0 14px 36px -16px rgb(27 0 73 / 0.2);
+  --shadow-lift:
+    0 2px 6px rgb(27 0 73 / 0.05), 0 28px 64px -24px rgb(27 0 73 / 0.34);
+  --shadow-glow:
+    0 0 0 1px rgb(154 100 217 / 0.35), 0 20px 60px -20px rgb(154 100 217 / 0.6);
+  --shadow-inset-hairline: inset 0 1px 0 rgb(255 255 255 / 0.08);
+
+  /* --- Motion --- */
+  --ease-brand: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-snappy: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --animate-rise: rise 1s var(--ease-brand) both;
+  --animate-rise-sm: rise-sm 0.8s var(--ease-brand) both;
+  --animate-fade: fade 0.9s var(--ease-brand) both;
   --animate-fade-in: fadeIn 700ms ease-out;
+  --animate-aurora: aurora 26s var(--ease-in-out-soft) infinite alternate;
+  --animate-drift: drift 22s var(--ease-in-out-soft) infinite alternate;
+  --animate-marquee: marquee var(--marquee-duration, 48s) linear infinite;
+  --animate-marquee-reverse: marquee-reverse var(--marquee-duration, 48s) linear
+    infinite;
+  --animate-pulse-ring: pulse-ring 2.4s var(--ease-brand) infinite;
+  --animate-shimmer: shimmer 2.2s linear infinite;
+  --animate-line: line 1.2s var(--ease-brand) both;
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 0.55em, 0);
+      filter: blur(8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+      filter: blur(0);
+    }
+  }
+
+  @keyframes rise-sm {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 14px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 
   @keyframes fadeIn {
     0% {
@@ -312,6 +183,45 @@ button:focus-visible {
     }
     100% {
       opacity: 1;
+    }
+  }
+
+  @keyframes aurora {
+    0% {
+      transform: translate3d(-6%, -4%, 0) rotate(0deg) scale(1);
+    }
+    50% {
+      transform: translate3d(4%, 3%, 0) rotate(8deg) scale(1.08);
+    }
+    100% {
+      transform: translate3d(-2%, 6%, 0) rotate(-6deg) scale(0.96);
+    }
+  }
+
+  @keyframes drift {
+    0% {
+      transform: translate3d(0, 0, 0) rotate(0deg);
+    }
+    100% {
+      transform: translate3d(-3%, 4%, 0) rotate(-2.5deg);
+    }
+  }
+
+  @keyframes marquee {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  @keyframes marquee-reverse {
+    from {
+      transform: translate3d(-50%, 0, 0);
+    }
+    to {
+      transform: translate3d(0, 0, 0);
     }
   }
 
@@ -323,9 +233,56 @@ button:focus-visible {
       transform: translateX(-50%);
     }
   }
+
+  @keyframes pulse-ring {
+    0% {
+      transform: scale(0.8);
+      opacity: 0.7;
+    }
+    80%,
+    100% {
+      transform: scale(2.4);
+      opacity: 0;
+    }
+  }
+
+  @keyframes shimmer {
+    from {
+      background-position: -200% 0;
+    }
+    to {
+      background-position: 200% 0;
+    }
+  }
+
+  @keyframes line {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
 }
 
+/*
+ * Tone surfaces. Components read these semantic tokens instead of raw colors,
+ * so one component works on every band. Each foreground pair meets WCAG AA
+ * against its canvas; the violet tone is reserved for large type.
+ */
 @theme inline {
+  --color-canvas: var(--tone-canvas);
+  --color-raised: var(--tone-raised);
+  --color-sunken: var(--tone-sunken);
+  --color-fg: var(--tone-fg);
+  --color-fg-muted: var(--tone-fg-muted);
+  --color-fg-subtle: var(--tone-fg-subtle);
+  --color-hairline: var(--tone-hairline);
+  --color-hairline-strong: var(--tone-hairline-strong);
+  --color-highlight: var(--tone-accent);
+  --color-glow: var(--tone-glow);
+
+  /* shadcn semantic mapping, used by the legacy ui/* primitives on /partners. */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -348,85 +305,427 @@ button:focus-visible {
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
-}
-
-.dark {
-  /* --- DARK MODE THEME --- */
-  --background: var(--color-black); /* dark background */
-  --foreground: var(--color-white); /* normal text */
-
-  --card: var(--color-dark-indigo);
-  --card-foreground: var(--color-white);
-
-  --popover: var(--color-dark-indigo);
-  --popover-foreground: var(--color-white);
-
-  --primary: var(--color-tumai-violet);
-  --primary-foreground: var(--color-white);
-
-  --secondary: var(--color-dark-indigo); /* Subtile Elemente im Dark Mode */
-  --secondary-foreground: var(--color-lavender-tint);
-
-  --muted: var(--color-dark-indigo);
-  --muted-foreground: var(--color-minimal-gray);
-
-  --accent: var(--color-tumai-violet);
-  --accent-foreground: var(--color-white);
-
-  --destructive: oklch(
-    0.704 0.191 22.216
-  ); /* slightly lighter red for better contrast */
-  --border: var(--color-dark-indigo);
-  --input: var(--color-dark-indigo);
-  --ring: var(--color-tumai-violet);
-
-  --chart-1: var(--color-tumai-violet);
-  --chart-2: var(--color-electric-end);
-  --chart-3: var(--color-lavender-tint);
-  --chart-4: var(--color-minimal-gray);
-  --chart-5: var(--color-dark-indigo);
-
-  --sidebar: var(--color-black);
-  --sidebar-foreground: var(--color-white);
-  --sidebar-primary: var(--color-tumai-violet);
-  --sidebar-primary-foreground: var(--color-white);
-  --sidebar-accent: var(--color-dark-indigo);
-  --sidebar-accent-foreground: var(--color-white);
-  --sidebar-border: var(--color-dark-indigo);
-  --sidebar-ring: var(--color-tumai-violet);
 }
 
 @layer base {
+  :root {
+    --radius: 0.625rem;
+    --gutter: clamp(1.25rem, 4.6vw, 3.5rem);
+    --header-height: 4.25rem;
+
+    /* shadcn semantic tokens (legacy ui/* primitives). */
+    --background: var(--color-white);
+    --foreground: var(--color-dark-indigo);
+    --card: var(--color-white);
+    --card-foreground: var(--color-black);
+    --popover: var(--color-white);
+    --popover-foreground: var(--color-black);
+    --primary: var(--color-tumai-violet);
+    --primary-foreground: var(--color-white);
+    --secondary: var(--color-lavender-tint);
+    --secondary-foreground: var(--color-dark-purple);
+    --muted: var(--color-minimal-gray);
+    --muted-foreground: var(--color-gray-500);
+    --accent: var(--color-tumai-violet);
+    --accent-foreground: var(--color-black);
+    --destructive: oklch(0.577 0.245 27.325);
+    --destructive-foreground: var(--color-white);
+    --border: var(--color-minimal-gray);
+    --input: var(--color-minimal-gray);
+    --ring: var(--color-tumai-violet);
+
+    /* Legacy brand surfaces (removed once no page references them). */
+    --color-white-rgb: 255 255 255;
+    --color-black-rgb: 13 2 20;
+    --color-tumai-violet-rgb: 154 100 217;
+    --color-brand-page-end: color-mix(
+      in srgb,
+      var(--color-dark-purple) 72%,
+      var(--color-black)
+    );
+    --color-brand-panel: color-mix(
+      in srgb,
+      var(--color-dark-indigo) 60%,
+      var(--color-black)
+    );
+    --color-brand-grid-tile: color-mix(
+      in srgb,
+      var(--color-dark-purple) 88%,
+      var(--color-black)
+    );
+    --gradient-brand-page: linear-gradient(
+      135deg,
+      var(--color-black) 0%,
+      var(--color-black) 58%,
+      var(--color-brand-page-end) 100%
+    );
+    --gradient-brand-accent: linear-gradient(
+      135deg,
+      var(--color-black) 0%,
+      var(--color-dark-purple) 100%
+    );
+    --gradient-brand-highlight: linear-gradient(
+      90deg,
+      var(--color-tumai-violet) 0%,
+      var(--color-lavender-tint) 100%
+    );
+    --gradient-brand-home-overlay: linear-gradient(
+      to top right,
+      var(--color-black) 20%,
+      transparent
+    );
+    --gradient-brand-header-overlay: linear-gradient(
+      to bottom,
+      var(--color-black) 30%,
+      transparent
+    );
+    --gradient-brand-panel-glow: radial-gradient(
+      circle at center,
+      rgb(var(--color-tumai-violet-rgb) / 0.52) -30%,
+      transparent 80%
+    );
+
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color-scheme: light;
+  }
+
+  /* Default tone: paper. */
+  :root,
+  [data-tone="paper"] {
+    --tone-canvas: #ffffff;
+    --tone-raised: #faf8fd;
+    --tone-sunken: #f4f1f8;
+    --tone-fg: #1b0049;
+    --tone-fg-muted: #5f566c;
+    --tone-fg-subtle: #756b80;
+    --tone-hairline: rgb(27 0 73 / 0.09);
+    --tone-hairline-strong: rgb(27 0 73 / 0.18);
+    --tone-accent: #7446b3;
+    --tone-glow: rgb(154 100 217 / 0.16);
+  }
+
+  [data-tone="mist"] {
+    --tone-canvas: #efefef;
+    --tone-raised: #ffffff;
+    --tone-sunken: #e6e3ea;
+    --tone-fg: #1b0049;
+    --tone-fg-muted: #574e64;
+    --tone-fg-subtle: #685f74;
+    --tone-hairline: rgb(27 0 73 / 0.1);
+    --tone-hairline-strong: rgb(27 0 73 / 0.2);
+    --tone-accent: #6a3fa6;
+    --tone-glow: rgb(154 100 217 / 0.18);
+  }
+
+  [data-tone="lavender"] {
+    --tone-canvas: #f5efff;
+    --tone-raised: #ffffff;
+    --tone-sunken: #ece2fb;
+    --tone-fg: #1b0049;
+    --tone-fg-muted: #574e66;
+    --tone-fg-subtle: #6a5f78;
+    --tone-hairline: rgb(82 53 115 / 0.14);
+    --tone-hairline-strong: rgb(82 53 115 / 0.26);
+    --tone-accent: #6a3fa6;
+    --tone-glow: rgb(154 100 217 / 0.2);
+  }
+
+  [data-tone="ink"] {
+    --tone-canvas: #1b0049;
+    --tone-raised: #24104f;
+    --tone-sunken: #140036;
+    --tone-fg: #ffffff;
+    --tone-fg-muted: #cfc5de;
+    --tone-fg-subtle: #a497b9;
+    --tone-hairline: rgb(245 239 255 / 0.12);
+    --tone-hairline-strong: rgb(245 239 255 / 0.24);
+    --tone-accent: #c9a5ef;
+    --tone-glow: rgb(154 100 217 / 0.34);
+    color-scheme: dark;
+  }
+
+  [data-tone="night"] {
+    --tone-canvas: #0d0214;
+    --tone-raised: #1b0049;
+    --tone-sunken: #07010c;
+    --tone-fg: #ffffff;
+    --tone-fg-muted: #c6bbd6;
+    --tone-fg-subtle: #9489a6;
+    --tone-hairline: rgb(245 239 255 / 0.1);
+    --tone-hairline-strong: rgb(245 239 255 / 0.22);
+    --tone-accent: #c9a5ef;
+    --tone-glow: rgb(154 100 217 / 0.3);
+    color-scheme: dark;
+  }
+
+  /* Brand violet band: large type only (fg contrast 4.9:1). */
+  [data-tone="violet"] {
+    --tone-canvas: #9a64d9;
+    --tone-raised: #a574de;
+    --tone-sunken: #8a55c9;
+    --tone-fg: #0d0214;
+    --tone-fg-muted: #1b0049;
+    --tone-fg-subtle: #2f1757;
+    --tone-hairline: rgb(27 0 73 / 0.2);
+    --tone-hairline-strong: rgb(27 0 73 / 0.34);
+    --tone-accent: #0d0214;
+    --tone-glow: rgb(255 255 255 / 0.25);
+  }
+
+  [data-tone] {
+    background-color: var(--tone-canvas);
+    color: var(--tone-fg);
+  }
+
   * {
     @apply border-border outline-ring/50;
   }
 
+  html,
   body {
-    @apply bg-background text-foreground;
+    width: 100%;
+    overflow-x: clip;
   }
 
-  html,
-  body,
-  #root {
-    width: 100%;
-    overflow-x: hidden;
+  body {
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+    background-color: var(--color-white);
+    color: var(--color-dark-indigo);
+    font-family: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  ::selection {
+    background-color: rgb(154 100 217 / 0.32);
+    color: inherit;
+  }
+
+  /* Tailwind preflight resets buttons to cursor: default. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+
+  :where(a, button, [role="button"], [tabindex], summary):focus-visible {
+    outline: 3px solid var(--color-violet-500);
+    outline-offset: 4px;
+  }
+
+  [data-tone="ink"]
+    :where(a, button, [role="button"], [tabindex]):focus-visible,
+  [data-tone="night"]
+    :where(a, button, [role="button"], [tabindex]):focus-visible {
+    outline-color: var(--color-violet-300);
+  }
+
+  :where(h1, h2, h3, h4) {
+    text-wrap: balance;
+  }
+
+  :where(p) {
+    text-wrap: pretty;
+  }
+}
+
+@layer components {
+  /*
+   * Scroll reveal. <Reveal> only marks elements that start below the fold as
+   * pending, so server-rendered and no-JS content is always visible.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    [data-reveal] {
+      transition-property: opacity, translate, scale, filter;
+      transition-duration: 0.9s, 1.05s, 1.05s, 0.9s;
+      transition-timing-function: var(--ease-brand);
+      transition-delay: var(--reveal-delay, 0ms);
+    }
+
+    [data-reveal="pending"] {
+      opacity: 0;
+      translate: 0 28px;
+      filter: blur(6px);
+    }
+
+    [data-reveal="pending"][data-reveal-variant="fade"] {
+      translate: none;
+      filter: none;
+    }
+
+    [data-reveal="pending"][data-reveal-variant="scale"] {
+      translate: none;
+      scale: 0.96;
+    }
+
+    [data-reveal="pending"][data-reveal-variant="left"] {
+      translate: -32px 0;
+    }
+
+    [data-reveal="pending"][data-reveal-variant="right"] {
+      translate: 32px 0;
+    }
+
+    [data-reveal="pending"][data-reveal-variant="line"] {
+      opacity: 1;
+      filter: none;
+      translate: none;
+      scale: 0 1;
+    }
+
+    [data-reveal-variant="line"] {
+      transform-origin: left center;
+    }
+  }
+
+  /* Subtle film grain for dark bands. */
+  .grain {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.07;
+    mix-blend-mode: soft-light;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /*
+   * Pointer spotlight (see <SpotlightCard>). JS only writes --spot-x/--spot-y
+   * and --spot-opacity; both layers sit behind the card content.
+   */
+  .spotlight-surface::before,
+  .spotlight-surface::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: var(--spot-opacity, 0);
+    transition: opacity 0.5s var(--ease-brand);
+  }
+
+  .spotlight-surface::before {
+    background: radial-gradient(
+      26rem circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      var(--tone-glow),
+      transparent 62%
+    );
+  }
+
+  .spotlight-surface::after {
+    padding: 1px;
+    background: radial-gradient(
+      16rem circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      rgb(201 165 239 / 0.8),
+      transparent 70%
+    );
+    mask:
+      linear-gradient(#000 0 0) content-box exclude,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+  }
+
+  /* Edge fade for marquees and horizontally scrolling rails. */
+  .mask-fade-x {
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 6%,
+      #000 94%,
+      transparent
+    );
+  }
+
+  .mask-fade-b {
+    mask-image: linear-gradient(to bottom, #000 60%, transparent);
   }
 }
 
 @layer utilities {
+  .rounded-signature {
+    border-radius: clamp(3.5rem, 9vw, 8.75rem) 1rem 1rem 1rem;
+  }
+
+  .text-gradient-brand {
+    background-image: linear-gradient(
+      100deg,
+      var(--color-violet-300) 0%,
+      var(--color-violet-500) 55%,
+      var(--color-violet-300) 100%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* --- Legacy utilities: removed in the cleanup pass once unused. --- */
+  .brand-highlight-text {
+    background-image: var(--gradient-brand-highlight);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .brand-page-shell {
+    background-color: var(--color-black);
+    background-image: var(--gradient-brand-page);
+  }
+
+  .brand-accent-shell {
+    background-color: var(--color-black);
+    background-image: var(--gradient-brand-accent);
+  }
+
+  .brand-home-hero {
+    background-color: var(--color-black);
+  }
+
+  .brand-home-hero-overlay {
+    background-image: var(--gradient-brand-home-overlay);
+  }
+
+  .brand-header-overlay {
+    background-image: var(--gradient-brand-header-overlay);
+    z-index: -1;
+  }
+
+  .brand-panel {
+    background-color: var(--color-brand-panel);
+  }
+
+  .brand-panel-glow {
+    background-image: var(--gradient-brand-panel-glow);
+  }
+
+  .brand-grid-tile {
+    background-color: var(--color-brand-grid-tile);
+  }
+
+  .brand-icon-badge {
+    background-color: rgb(var(--color-white-rgb) / 0.05);
+  }
+
+  .gradient-text {
+    background: linear-gradient(
+      to right,
+      var(--color-electric-start),
+      var(--color-electric-end)
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
   @keyframes marquee-left {
     from {
       transform: translateX(0);
@@ -518,15 +817,4 @@ button:focus-visible {
       display: none;
     }
   }
-}
-
-.gradient-text {
-  background: linear-gradient(
-    to right,
-    var(--color-electric-start),
-    var(--color-electric-end)
-  );
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 }

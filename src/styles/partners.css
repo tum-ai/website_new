@@ -1,4 +1,56 @@
 /* Partner-page components own their surface colors so the shared site theme stays intact. */
+
+/*
+ * Element defaults the partner page was built against. They used to be
+ * unlayered globals in index.css; the site-wide design system dropped them,
+ * so they are pinned here with the same specificity and cascade order to keep
+ * this page (and its portaled booking dialog) rendering unchanged.
+ */
+main:where(.partners-page) a {
+  font-weight: 500;
+  color: var(--color-tumai-violet);
+  text-decoration: inherit;
+  transition: color 0.2s ease-in-out;
+}
+main:where(.partners-page) a:hover {
+  color: var(--color-electric-end);
+}
+:where(.partners-page, .partner-booking-dialog) button {
+  border-radius: 8px;
+  border: 0px solid transparent;
+  padding: 1.2rem;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  background-image: none;
+}
+:where(.partners-page, .partner-booking-dialog) button:hover {
+  background-image: linear-gradient(
+    to right,
+    var(--color-electric-start),
+    var(--color-electric-end)
+  );
+  color: var(--color-white);
+  border-color: transparent;
+}
+:where(.partners-page, .partner-booking-dialog) button:focus,
+:where(.partners-page, .partner-booking-dialog) button:focus-visible {
+  outline: 4px auto var(--ring);
+}
+@media (prefers-color-scheme: light) {
+  :where(.partners-page, .partner-booking-dialog) a:hover {
+    color: var(--color-primary);
+  }
+}
+/* Opt out of the site-wide balanced/pretty wrapping; copy was set against normal wrapping. */
+:where(.partners-page, .partner-booking-dialog) :where(h1, h2, h3, h4, p) {
+  text-wrap: wrap;
+}
+
 .partners-page {
   --partner-ink: #1b0049;
   --partner-muted: #655b71;
