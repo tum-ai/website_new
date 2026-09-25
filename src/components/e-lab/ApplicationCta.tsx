@@ -74,14 +74,20 @@ export function ELabApplicationCta({
       aria-disabled="true"
       aria-label={eLabApplicationCopy.ariaLabel}
       className={cn(
-        "inline-flex max-w-full items-center gap-2.5 border border-hairline-strong bg-fg/[0.04] leading-snug font-semibold text-fg-muted select-none",
+        "inline-flex max-w-full items-center justify-center border border-hairline-strong bg-fg/[0.04] text-center leading-snug font-semibold text-balance text-fg-muted select-none",
         closedSizes[size],
         className,
         closedClassName,
       )}
     >
-      <span aria-hidden className="size-2 shrink-0 rounded-full bg-fg-subtle" />
-      {children}
+      {/* Inline dot, as in StatusBadge: a wrapped label stays centred. */}
+      <span>
+        <span
+          aria-hidden
+          className="mr-2.5 inline-block size-2 rounded-full bg-fg-subtle align-middle"
+        />
+        {children}
+      </span>
     </span>
   );
 }
@@ -102,8 +108,9 @@ export function ELabApplicationStatus({
   if (!eLabConfig.applicationsOpen) return null;
   return (
     <StatusBadge status="live" size={size} className={className}>
-      <span className="whitespace-nowrap">
-        {/* Shorter label on phones keeps the pill on one line. */}
+      <span>
+        {/* Shorter label on phones keeps the pill on one line; below about
+            360px it wraps (see StatusBadge). */}
         <span className="max-sm:hidden">Applications open</span>
         <span className="sm:hidden">Open</span> until{" "}
         <span className="tabular">{eLabApplicationCopy.deadline}</span>

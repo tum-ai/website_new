@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Fragment } from "react";
 import {
+  Actions,
   ButtonLink,
   Container,
   Eyebrow,
@@ -76,14 +77,14 @@ export function AboutSection() {
                 , fostering both groundbreaking research and entrepreneurial
                 ventures across diverse industries.
               </p>
-              <div className="mt-8 flex flex-wrap gap-3">
+              <Actions className="mt-8">
                 <ButtonLink href="/community#memberStories" arrow>
                   Meet our Members
                 </ButtonLink>
                 <ButtonLink href="/qanda" variant="outline">
                   More on our Mission
                 </ButtonLink>
-              </div>
+              </Actions>
             </Reveal>
           </div>
 

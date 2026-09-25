@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { Actions } from "./actions";
 import { Reveal } from "./reveal";
 import { Eyebrow } from "./typography";
 
@@ -11,6 +12,7 @@ type SectionHeaderProps = {
   /** Editorial counter, e.g. 1 → "01". */
   index?: string | number;
   lead?: ReactNode;
+  /** Buttons and status badges, laid out by <Actions>. */
   actions?: ReactNode;
   /**
    * `split`: title left, lead bottom-right (partner page rhythm).
@@ -69,15 +71,12 @@ export function SectionHeader({
       >
         {lead ? <p className="text-lead text-fg-muted">{lead}</p> : null}
         {actions ? (
-          <div
-            className={cn(
-              "flex flex-wrap gap-3",
-              lead && "mt-6",
-              layout === "center" && "justify-center",
-            )}
+          <Actions
+            align={layout === "center" ? "center" : "start"}
+            className={cn(lead && "mt-6")}
           >
             {actions}
-          </div>
+          </Actions>
         ) : null}
       </Reveal>
     ) : null;

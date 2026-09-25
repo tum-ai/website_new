@@ -259,7 +259,7 @@ export default function PartnershipFinder() {
                       With first choice on hackathon slots.
                     </p>
                   ) : null}
-                  <ContactActions className="mt-7 max-sm:flex-col max-sm:items-stretch" />
+                  <ContactActions className="mt-7 max-sm:w-full max-sm:flex-col max-sm:items-stretch" />
                   <Button
                     variant="ghost"
                     size="sm"

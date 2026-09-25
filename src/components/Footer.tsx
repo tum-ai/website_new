@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Actions } from "@/components/ds/actions";
 import { Aurora } from "@/components/ds/aurora";
 import { BrandMark } from "@/components/ds/brand-mark";
 import { ButtonLink } from "@/components/ds/button";
@@ -99,14 +100,14 @@ export default function Footer() {
             <p className="mt-10 max-w-lg text-display-md text-fg">
               Empowering students to build the future of AI.
             </p>
-            <div className="mt-10 flex flex-wrap gap-3">
+            <Actions className="mt-10">
               <ButtonLink href="/apply" arrow>
                 Become a Member
               </ButtonLink>
               <ButtonLink href="/partners" variant="outline">
                 Partner with us
               </ButtonLink>
-            </div>
+            </Actions>
           </div>
           <nav
             aria-label="Footer"

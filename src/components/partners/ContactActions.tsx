@@ -1,9 +1,8 @@
 "use client";
 
 import { CalendarDays, Mail } from "lucide-react";
-import { Button, ButtonLink } from "@/components/ds";
+import { Actions, Button, ButtonLink } from "@/components/ds";
 import { getPartnershipEmailUrl } from "@/lib/partnerships";
-import { cn } from "@/lib/utils";
 import { usePartnership } from "./PartnershipContext";
 
 /** Email (mailto with CCs and finder context) and booking-dialog actions. */
@@ -11,11 +10,13 @@ export function ContactActions({
   emailLabel = "Request via email",
   bookingFirst = false,
   size = "md",
+  align,
   className,
 }: {
   emailLabel?: string;
   bookingFirst?: boolean;
   size?: "md" | "lg";
+  align?: "start" | "center";
   className?: string;
 }) {
   const { selection, openBooking } = usePartnership();
@@ -42,9 +43,9 @@ export function ContactActions({
     </Button>
   );
   return (
-    <div className={cn("flex flex-wrap items-center gap-3", className)}>
+    <Actions align={align} className={className}>
       {bookingFirst ? [booking, email] : [email, booking]}
-    </div>
+    </Actions>
   );
 }
 

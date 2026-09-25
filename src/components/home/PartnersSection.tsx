@@ -1,5 +1,6 @@
 import Image from "next/image";
 import {
+  Actions,
   Aurora,
   BrandMark,
   ButtonLink,
@@ -68,14 +69,14 @@ export function PartnersSection() {
             </p>
           </Reveal>
           <Reveal delay={220}>
-            <div className="mt-10 flex flex-wrap gap-3">
+            <Actions className="mt-10">
               <ButtonLink href={getPartnershipEmailUrl()}>
                 Become a Partner
               </ButtonLink>
               <ButtonLink href="/partners" variant="inverse" arrow>
                 View Our Partners
               </ButtonLink>
-            </div>
+            </Actions>
           </Reveal>
         </div>
         <Reveal variant="scale" className="lg:order-1 lg:col-span-6">

@@ -93,6 +93,7 @@ Page patterns
 Actions
 - `ButtonLink`: for navigation. Uses next/link internally; external links open in a new tab and say so. Variants: `primary`, `secondary`, `outline`, `ghost`, `inverse` (white on dark), `link`. Sizes: `sm`, `md`, `lg`. `arrow` takes `true`, `"external"` or `"down"`.
 - `Button`: for actions (Base UI). Compose it into triggers with `render={<Button variant="outline" />}`.
+- `Actions`: the row for two or more buttons or badges (`align`: `start` | `center`). On one line each item keeps its width; once the row wraps on a phone, every item grows to the row width, so stacked actions share one width. `PageHero`, `CtaBand` and `SectionHeader` use it for their `actions`.
 - `IconButton`: requires `aria-label`.
 - `TextLink`: inline link with an underline that draws in on hover.
 
@@ -105,7 +106,7 @@ Content
 - `StatGrid`: numeric values count up when they scroll into view; strings render as they are.
 - `Pill`: outlined brand pill.
 - `Tag`: keyword chip.
-- `StatusBadge`: `live` (pulsing dot) or `idle`. Its `size` (`sm`, `md`, `lg`) matches button heights; always pair it at the same size as the button beside it.
+- `StatusBadge`: `live` (pulsing dot) or `idle`. Its `size` (`sm`, `md`, `lg`) matches button heights; always pair it at the same size as the button beside it. A label too long for a narrow phone wraps into a rounded rectangle, centred, with the dot on its first line.
 - `EmptyState`.
 
 Interactive (Base UI)
@@ -141,6 +142,7 @@ These come from design review. Treat them as hard rules.
 - **Nested corners:** never set a rounded image or tile against a straight divider or straight edge inside a card. Either let the media bleed to the card edge, where the card's outer radius clips it and its inner edges stay straight, or inset it evenly on all sides with inner radius = outer radius − inset.
 - **Alignment:** within a panel, labels, titles and controls share one baseline or grid. Icons are optically centered on the text they label. Never nudge them by hand.
 - **Equal heights:** a button and a badge or chip placed side by side use the same size step.
+- **Equal widths when stacked:** group actions in `Actions`, never a bare `flex flex-wrap` row, so buttons that stack on a phone line up at one width.
 - **No redundant labels:** if a logo already shows the name (a wordmark), don't repeat the name next to it. Symbol-only logos get the name inside the chip as a lockup, and only information the logo lacks sits outside it.
 - **Don't combine `hyphens: auto` with `SplitWords` headlines:** each word is its own box, so hyphenation strands syllables. Size the headline down instead.
 - **No em dashes in visible copy.** Use a comma, colon, period or a spaced hyphen instead. The same goes for separators in labels.

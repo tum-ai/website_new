@@ -9,6 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import {
+  Actions,
   Aurora,
   BrandMark,
   ButtonLink,
@@ -120,7 +121,7 @@ export default function Partners({
                   Germany&apos;s largest AI student initiative. Partner with the
                   people building Europe&apos;s next AI companies.
                 </Text>
-                <div className="mt-9 flex flex-wrap items-center gap-3 motion-safe:animate-rise-sm [animation-delay:540ms]">
+                <Actions className="mt-9 motion-safe:animate-rise-sm [animation-delay:540ms]">
                   <HeroContact className={heroActionSize} />
                   <ButtonLink
                     href="#find-your-fit"
@@ -131,7 +132,7 @@ export default function Partners({
                   >
                     Find your fit
                   </ButtonLink>
-                </div>
+                </Actions>
               </div>
               <figure className="group/hero relative isolate min-h-[18rem] overflow-hidden rounded-signature bg-sunken motion-safe:animate-rise-sm [animation-delay:260ms] md:min-h-[27rem] lg:min-h-[30rem]">
                 <Image
@@ -571,7 +572,8 @@ export default function Partners({
                   bookingFirst
                   emailLabel="Email us"
                   size="lg"
-                  className="mt-10 justify-center"
+                  align="center"
+                  className="mt-10"
                 />
               </Reveal>
             </div>

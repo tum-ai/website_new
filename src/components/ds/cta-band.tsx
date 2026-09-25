@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { Actions } from "./actions";
 import { Aurora } from "./aurora";
 import { BrandMark } from "./brand-mark";
 import { Container } from "./container";
@@ -11,6 +12,7 @@ type CtaBandProps = {
   title: ReactNode;
   eyebrow?: ReactNode;
   lead?: ReactNode;
+  /** Buttons and status badges, laid out by <Actions>. */
   actions?: ReactNode;
   titleId?: string;
   /** Anchor id for the section (e.g. "contact"). */
@@ -61,9 +63,9 @@ export function CtaBand({
       ) : null}
       {actions ? (
         <Reveal delay={220}>
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+          <Actions align="center" className="mt-10">
             {actions}
-          </div>
+          </Actions>
         </Reveal>
       ) : null}
     </div>

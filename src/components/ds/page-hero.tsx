@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { Actions } from "./actions";
 import { Aurora } from "./aurora";
 import { BrandMark } from "./brand-mark";
 import { Container } from "./container";
@@ -18,6 +19,7 @@ type PageHeroProps = {
   title: ReactNode;
   eyebrow?: ReactNode;
   lead?: ReactNode;
+  /** Buttons and status badges, laid out by <Actions>. */
   actions?: ReactNode;
   /** Right column (image, card, stats). Stacks under the text on mobile. */
   media?: ReactNode;
@@ -91,9 +93,9 @@ export function PageHero({
               </div>
             ) : null}
             {actions ? (
-              <div className="mt-10 flex flex-wrap items-center gap-3 motion-safe:animate-rise-sm [animation-delay:520ms]">
+              <Actions className="mt-10 motion-safe:animate-rise-sm [animation-delay:520ms]">
                 {actions}
-              </div>
+              </Actions>
             ) : null}
           </div>
           {media ? (

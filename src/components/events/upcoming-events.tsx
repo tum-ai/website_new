@@ -2,7 +2,13 @@
 
 import { format } from "date-fns";
 import { CalendarDays, MapPin } from "lucide-react";
-import { EmptyState, Reveal, SpotlightCard, Tag } from "@/components/ds";
+import {
+  Actions,
+  EmptyState,
+  Reveal,
+  SpotlightCard,
+  Tag,
+} from "@/components/ds";
 import type { Event } from "@/lib/types";
 import { groupEventsByMonth } from "@/lib/utils";
 import {
@@ -144,7 +150,7 @@ function UpcomingEventCard({ event }: { event: Event }) {
             {truncateDescription(event.description)}
           </p>
           {event.sign_up || longDescription ? (
-            <div className="mt-auto flex flex-wrap gap-3 pt-7">
+            <Actions className="mt-auto pt-7">
               {event.sign_up ? <SignUpAction event={event} /> : null}
               {longDescription ? (
                 <EventDetailsDialog
@@ -157,7 +163,7 @@ function UpcomingEventCard({ event }: { event: Event }) {
                   withSignUp
                 />
               ) : null}
-            </div>
+            </Actions>
           ) : null}
         </div>
       </SpotlightCard>

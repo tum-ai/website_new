@@ -12,6 +12,7 @@ export {
   type FaqItem,
   FaqList,
 } from "./accordion";
+export { Actions } from "./actions";
 export { Aurora } from "./aurora";
 export { BrandMark } from "./brand-mark";
 export { Button, ButtonLink, buttonStyles, IconButton } from "./button";

@@ -35,7 +35,7 @@ export default function ApplyAction({ statusId }: { statusId: string }) {
       >
         Apply now
       </Button>
-      <span id={statusId}>
+      <span id={statusId} className="grid">
         <StatusBadge status="idle" size="lg">
           Applications Closed
         </StatusBadge>
