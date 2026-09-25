@@ -60,7 +60,12 @@ export default function DataPrivacy() {
         size="md"
         title="Datenschutzerklärung TUM.ai e.V."
         actions={<LegalNav current="/data-privacy" />}
-        className="[&_h1]:hyphens-auto"
+        // "Datenschutzerklärung" is ~9.7em wide. SplitWords renders each word
+        // as an inline-block, so hyphenating it strands a lone syllable
+        // ("rung") on phones; instead the size eases down just enough for the
+        // word to fit the column (plain display-lg from ~430px up).
+        // `hyphens-auto` stays only as an overflow guard.
+        className="[&_h1]:hyphens-auto [&_h1]:text-[length:min(var(--text-display-lg),calc((100vw-2*var(--gutter))/10))]"
       />
 
       <Section as="div" tone="paper" spacing="lg">

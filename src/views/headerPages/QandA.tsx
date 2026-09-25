@@ -139,7 +139,10 @@ export default function QandA() {
               </h2>
             </Reveal>
           </div>
-          <Reveal delay={120} className="lg:col-span-8">
+          {/* Fade only: the default up+blur reveal would blur this whole, very
+              tall accordion at once, which is heavy in Safari and clipped to
+              the element's box there. */}
+          <Reveal delay={120} variant="fade" className="lg:col-span-8">
             <Accordion defaultValue={[questions[0]?.question]}>
               {questions.map((faq, index) => (
                 <AccordionItem key={faq.question} value={faq.question}>

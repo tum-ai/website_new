@@ -29,7 +29,7 @@ export function LegalNav({ current }: { current: LegalHref }) {
                 href={page.href}
                 size="sm"
                 variant={active ? "inverse" : "outline"}
-                className="max-sm:px-3"
+                className="h-10 max-sm:px-3"
                 aria-current={active ? "page" : undefined}
               >
                 {page.label}
