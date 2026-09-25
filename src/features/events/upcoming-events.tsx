@@ -24,7 +24,7 @@ import { EventImage } from "./event-media";
  * Upcoming events, soonest first, grouped by month. On wide screens the
  * month label sticks beside its events while they scroll past.
  */
-export default function UpcomingEvents({ events }: { events: Event[] }) {
+export function UpcomingEvents({ events }: { events: Event[] }) {
   // Sort a copy: `events` belongs to the parent.
   const sortedEvents = [...events].sort(
     (a, b) =>

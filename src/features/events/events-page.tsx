@@ -10,17 +10,18 @@ import {
   Section,
   SectionHeader,
 } from "@/components/ds";
-import EventFiltersComponent, {
-  DEFAULT_EVENT_FILTERS,
-  eventCategories,
-  eventCities,
-} from "@/components/events/events-filters";
-import PastEvents from "@/components/events/past-events";
-import UpcomingEvents from "@/components/events/upcoming-events";
 import type { Event, EventFilters } from "@/lib/types";
 import { cn, filterEvents } from "@/lib/utils";
+import {
+  DEFAULT_EVENT_FILTERS,
+  EventFiltersComponent,
+  eventCategories,
+  eventCities,
+} from "./events-filters";
+import { PastEvents } from "./past-events";
+import { UpcomingEvents } from "./upcoming-events";
 
-export default function Events({
+export function EventsPage({
   initialEvents = [],
 }: {
   initialEvents?: Event[];

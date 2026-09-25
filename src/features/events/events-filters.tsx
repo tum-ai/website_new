@@ -27,7 +27,7 @@ interface EventFiltersProps {
  * Category and city filter chips with the live result count. Sits on a dark
  * band (the page hero), so it uses the glass card surface.
  */
-export default function EventFiltersComponent({
+export function EventFiltersComponent({
   filters,
   onFiltersChange,
   eventCount,

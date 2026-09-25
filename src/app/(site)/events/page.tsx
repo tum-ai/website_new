@@ -1,7 +1,7 @@
 import JsonLd from "@/components/JsonLd";
 import { buildMetadata, getJsonLd } from "@/config/seo";
+import { EventsPage } from "@/features/events";
 import { getSanityEvents } from "@/lib/sanity";
-import Events from "@/views/headerPages/Events";
 
 export const metadata = buildMetadata("events");
 export const revalidate = 300;
@@ -12,7 +12,7 @@ export default async function Page() {
   return (
     <>
       <JsonLd data={getJsonLd("events")} />
-      <Events initialEvents={events} />
+      <EventsPage initialEvents={events} />
     </>
   );
 }

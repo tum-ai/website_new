@@ -121,7 +121,7 @@ function PhotoCarousel({
  * groups read as a rail: the first event of each month carries the label and
  * the hairline continues over the rest of that month.
  */
-export default function PastEvents({ events }: { events: Event[] }) {
+export function PastEvents({ events }: { events: Event[] }) {
   const groupedEvents = groupEventsByMonth(events);
 
   if (events.length === 0) {
