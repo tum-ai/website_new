@@ -42,7 +42,7 @@ const photoCarouselClasses = [
   "h-full [&>div:first-child]:h-full [&>div:first-child>div]:h-full",
   "[&>div:nth-child(2)]:absolute [&>div:nth-child(2)]:inset-x-4 [&>div:nth-child(2)]:bottom-4",
   "[&>div:nth-child(2)]:z-10 [&>div:nth-child(2)]:mt-0 [&>div:nth-child(2)]:gap-4",
-  "[&_button]:size-9 [&_button]:border-white/45 [&_button]:bg-ink-950/35 [&_button]:backdrop-blur-sm",
+  "[&_button]:size-10 [&_button]:border-white/45 [&_button]:bg-ink-950/35 [&_button]:backdrop-blur-sm",
 ].join(" ");
 
 /**
