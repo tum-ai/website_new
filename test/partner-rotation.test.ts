@@ -1,5 +1,4 @@
-import assert from "node:assert/strict";
-import test from "node:test";
+import { assert, expect, test } from "vitest";
 import { getPartnerDirectory } from "../src/lib/partner-directory";
 import {
   createPartnerRotation,
@@ -24,8 +23,8 @@ test("small and duplicate rosters stay static with no empty slots", () => {
     ["a", "a", "b"],
   ]) {
     const state = createPartnerRotation(keys);
-    assert.deepEqual(state.visible, [...new Set(keys)]);
-    assert.equal(nextPartnerRotation(state), null);
+    expect(state.visible).toStrictEqual([...new Set(keys)]);
+    expect(nextPartnerRotation(state)).toBeNull();
   }
 });
 
@@ -41,21 +40,20 @@ test("rotation stays unique, fair and changes positions across long seeded runs"
       let group: number[] = [];
       for (let i = 0; i < 3000; i++) {
         const next = nextPartnerRotation(state, random);
-        assert.ok(next);
-        assert.ok(!state.visible.includes(next.incoming));
-        assert.notEqual(next.incoming, next.outgoing);
-        assert.notEqual(next.slot, previousSlot);
-        assert.equal(new Set(next.state.visible).size, 3);
+        assert.exists(next);
+        expect(state.visible).not.toContain(next.incoming);
+        expect(next.incoming).not.toBe(next.outgoing);
+        expect(next.slot).not.toBe(previousSlot);
+        expect(new Set(next.state.visible).size).toBe(3);
         const eligible = Object.keys(state.appearances).filter(
           (key) => !state.visible.includes(key),
         );
-        assert.equal(
-          state.appearances[next.incoming],
+        expect(state.appearances[next.incoming]).toBe(
           Math.min(...eligible.map((key) => state.appearances[key])),
         );
         group.push(next.slot);
         if (group.length === 3) {
-          assert.equal(new Set(group).size, 3);
+          expect(new Set(group).size).toBe(3);
           group = [];
         }
         const slots = seen.get(next.incoming) ?? new Set<number>();
@@ -65,8 +63,12 @@ test("rotation stays unique, fair and changes positions across long seeded runs"
         previousSlot = next.slot;
       }
       const counts = Object.values(state.appearances);
-      if (size >= 6) assert.ok(Math.max(...counts) - Math.min(...counts) <= 2);
-      for (const slots of seen.values()) assert.equal(slots.size, 3);
+      if (size >= 6) {
+        expect(Math.max(...counts) - Math.min(...counts)).toBeLessThanOrEqual(
+          2,
+        );
+      }
+      for (const slots of seen.values()) expect(slots.size).toBe(3);
     }
   }
 });
@@ -83,7 +85,7 @@ test("company aliases consolidate across CMS categories and preserve requested t
     { id: "8", name: "IBM" },
     { id: "9", name: "ibm" },
   ]);
-  assert.equal(partners.length, 18);
+  expect(partners).toHaveLength(18);
   for (const [name, tier] of [
     ["Entire.io", "gold"],
     ["McKinsey & Company", "silver"],
@@ -92,7 +94,7 @@ test("company aliases consolidate across CMS categories and preserve requested t
     ["Jane Street", "silver"],
     ["IBM", "bronze"],
   ]) {
-    assert.equal(partners.find((partner) => partner.name === name)?.tier, tier);
+    expect(partners.find((partner) => partner.name === name)?.tier).toBe(tier);
   }
 });
 
@@ -110,38 +112,40 @@ test("supporter batches reserve outgoing companies and change multiple distinct 
       );
       const random = seeded(capacity + size);
       if (size === capacity) {
-        assert.equal(nextPartnerBatch(state, capacity / 3, random), null);
+        expect(nextPartnerBatch(state, capacity / 3, random)).toBeNull();
         continue;
       }
       const seen = new Set(state.visible);
       for (let step = 0; step < 1000; step++) {
         const batch = nextPartnerBatch(state, capacity / 3, random);
-        assert.ok(batch);
-        assert.ok(batch.changes.length <= capacity / 3);
-        assert.ok(batch.changes.length <= size - capacity);
-        if (size >= capacity * 2)
-          assert.equal(batch.changes.length, capacity / 3);
-        assert.equal(
-          new Set(batch.changes.map((change) => change.slot)).size,
+        assert.exists(batch);
+        expect(batch.changes.length).toBeLessThanOrEqual(capacity / 3);
+        expect(batch.changes.length).toBeLessThanOrEqual(size - capacity);
+        if (size >= capacity * 2) {
+          expect(batch.changes).toHaveLength(capacity / 3);
+        }
+        expect(new Set(batch.changes.map((change) => change.slot)).size).toBe(
           batch.changes.length,
         );
         const allOnScreen = [
           ...batch.state.visible,
           ...batch.changes.map((change) => change.outgoing),
         ];
-        assert.equal(new Set(allOnScreen).size, allOnScreen.length);
+        expect(new Set(allOnScreen).size).toBe(allOnScreen.length);
         for (const [index, change] of batch.changes.entries()) {
-          assert.ok(!state.visible.includes(change.incoming));
-          assert.equal(change.outgoing, state.visible[change.slot]);
-          assert.equal(change.delay, index * 90);
+          expect(state.visible).not.toContain(change.incoming);
+          expect(change.outgoing).toBe(state.visible[change.slot]);
+          expect(change.delay).toBe(index * 90);
           seen.add(change.incoming);
         }
         state = batch.state;
       }
-      assert.equal(seen.size, size);
+      expect(seen.size).toBe(size);
       if (size >= capacity * 2) {
         const counts = Object.values(state.appearances);
-        assert.ok(Math.max(...counts) - Math.min(...counts) <= 2);
+        expect(Math.max(...counts) - Math.min(...counts)).toBeLessThanOrEqual(
+          2,
+        );
       }
     }
   }

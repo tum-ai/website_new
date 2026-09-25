@@ -12,13 +12,16 @@
     "dev:web": "NEXT_DIST_DIR=.next-dev next dev",
     "build": "node scripts/run-next-command.mjs build .next-prod",
     "start": "node scripts/run-next-command.mjs start .next-prod",
-    "test": "node --import=tsx --test test/*.test.ts",
     "lint": "pnpm run lint:web",
     "lint:web": "biome check .",
     "lint:apply": "biome check . --write",
     "format": "biome format .",
-    "verify": "pnpm lint && pnpm test && pnpm build",
-    "typecheck": "NEXT_DIST_DIR=.next-typecheck next build"
+    "typecheck": "node scripts/run-next-command.mjs typegen .next-prod && tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:perf": "vitest run --config vitest.perf.config.ts",
+    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm test:perf"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
@@ -44,14 +47,23 @@
   "devDependencies": {
     "@biomejs/biome": "2.5.8",
     "@tailwindcss/postcss": "^4.3.3",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
     "@types/node": "^24.19.0",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^6.1.1",
+    "@vitest/coverage-v8": "^5.0.2",
+    "axe-core": "^4.13.0",
     "groq-js": "^1.30.3",
+    "jsdom": "^30.1.1",
     "schema-dts": "^2.0.0",
-    "tsx": "4.23.12",
     "typescript": "^5.9.3",
-    "vercel": "^54.21.1"
+    "vercel": "^54.21.1",
+    "vite": "^8.1.2",
+    "vitest": "^5.0.2"
   },
   "pnpm": {
     "overrides": {

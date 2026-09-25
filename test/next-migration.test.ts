@@ -1,5 +1,4 @@
-import assert from "node:assert/strict";
-import test from "node:test";
+import { expect, test } from "vitest";
 import { getJoinHostRedirectDestination } from "../src/lib/redirects.ts";
 
 test("join host redirects to the apply page", () => {
@@ -8,7 +7,7 @@ test("join host redirects to the apply page", () => {
     "https://join.tum-ai.com/some/path?utm=1",
   );
 
-  assert.equal(redirectUrl?.toString(), "https://join.tum-ai.com/apply");
+  expect(redirectUrl?.toString()).toBe("https://join.tum-ai.com/apply");
 });
 
 test("join host does not redirect the apply page to itself", () => {
@@ -17,7 +16,7 @@ test("join host does not redirect the apply page to itself", () => {
     "https://join.tum-ai.com/apply",
   );
 
-  assert.equal(redirectUrl, null);
+  expect(redirectUrl).toBeNull();
 });
 
 test("other hosts are not redirected", () => {
@@ -26,5 +25,5 @@ test("other hosts are not redirected", () => {
     "https://tum-ai.com/events",
   );
 
-  assert.equal(redirectUrl, null);
+  expect(redirectUrl).toBeNull();
 });
