@@ -23,7 +23,8 @@ type SectionProps<T extends ElementType> = {
 /**
  * A full-bleed page band. Children read `bg-canvas`, `text-fg`,
  * `text-fg-muted`, `border-hairline` and `text-highlight`, which resolve per
- * tone, so the same component works on light and dark bands.
+ * tone, so the same component works on light and dark bands. Adjacent bands
+ * of close tints blend softly at the seam (see `[data-band]` in index.css).
  */
 export function Section<T extends ElementType = "section">({
   as,
@@ -38,6 +39,7 @@ export function Section<T extends ElementType = "section">({
   return (
     <Component
       data-tone={tone}
+      data-band=""
       className={cn("relative isolate", spacing[space], className)}
       {...props}
     >

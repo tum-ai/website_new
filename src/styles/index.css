@@ -478,6 +478,46 @@
     }
   }
 
+  /*
+   * Soft seams between neighbouring bands of close tints (light next to
+   * light, dark next to dark): the lower band fades in from the previous
+   * band's color instead of starting with a hard edge. Light/dark contrasts
+   * stay crisp on purpose. Only applies to sibling <Section> bands.
+   */
+  [data-band]:is([data-tone="mist"], [data-tone="lavender"])
+  + [data-band][data-tone="paper"],
+  [data-band]:is([data-tone="paper"], [data-tone="lavender"])
+    + [data-band][data-tone="mist"],
+  [data-band]:is([data-tone="paper"], [data-tone="mist"])
+    + [data-band][data-tone="lavender"],
+  [data-band][data-tone="night"] + [data-band][data-tone="ink"],
+  [data-band][data-tone="ink"] + [data-band][data-tone="night"] {
+    background-image: linear-gradient(
+      to bottom,
+      var(--band-from),
+      color-mix(in srgb, var(--band-from) 55%, var(--tone-canvas)) 35%,
+      var(--tone-canvas)
+    );
+    background-size: 100% clamp(6rem, 14vw, 11rem);
+    background-repeat: no-repeat;
+  }
+
+  [data-band][data-tone="paper"] + [data-band] {
+    --band-from: #ffffff;
+  }
+  [data-band][data-tone="mist"] + [data-band] {
+    --band-from: #efefef;
+  }
+  [data-band][data-tone="lavender"] + [data-band] {
+    --band-from: #f5efff;
+  }
+  [data-band][data-tone="ink"] + [data-band] {
+    --band-from: #1b0049;
+  }
+  [data-band][data-tone="night"] + [data-band] {
+    --band-from: #0d0214;
+  }
+
   /* Subtle film grain for dark bands. */
   .grain {
     position: absolute;
