@@ -1,182 +1,133 @@
-"use client";
+import {
+  Handshake,
+  type LucideIcon,
+  Monitor,
+  Rocket,
+  Users,
+} from "lucide-react";
 
 import {
-  MotionValue,
-  motion,
-  useInView,
-  useMotionValue,
-  useSpring,
-  useTransform,
-} from "framer-motion";
-import { Handshake, Monitor, Rocket, Users } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-
+  BrandMark,
+  Container,
+  FeatureCard,
+  Reveal,
+  Section,
+  SectionHeader,
+  StatGrid,
+} from "@/components/ds";
 import { eLabMetrics, type Metric } from "@/data/e-lab/venture-page";
 
+const features: { title: string; body: string; icon: LucideIcon }[] = [
+  {
+    title: "Your own workspace",
+    body: "Desks, monitors, whiteboards; work from TUM.ai's headquarters.",
+    icon: Monitor,
+  },
+  {
+    title: "Operator sessions",
+    body: "Weekly sessions with builders and founders who've done it before.",
+    icon: Users,
+  },
+  {
+    title: "VC access",
+    body: "Warm intros and real feedback from top European funds.",
+    icon: Handshake,
+  },
+  {
+    title: "Build > Talk",
+    body: "Fast paced, builder-driven environment. Accountability through community.",
+    icon: Rocket,
+  },
+];
+
+/**
+ * "What to expect": a bento of four spotlight feature cards beside an ink
+ * manifesto panel, followed by a violet band with the E-Lab proof points
+ * counting up.
+ */
 export function ExpectationELab() {
   return (
-    <section className="relative w-full bg-white py-16">
-      <div className="relative mx-auto max-w-4xl px-6">
-        {/* Content only */}
-        <div className="w-full">
-          <h2
-            className={`text-title text-center sm:text-2xl md:text-[2rem] mb-4 font-semibold tracking-tight text-black }`}
-          >
-            What to expect
-          </h2>
-
-          <p className="mt-4 text-center text-base leading-relaxed text-text-gray">
-            Built by founders, for founders - 3 month's optimized for speed,
-            learning, and real traction.
-          </p>
-
-          {/* Feature cards */}
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
-            <FeatureCard
-              title="Your own workspace"
-              body="Desks, monitors, whiteboards; work from TUM.ai's headquarters."
-              icon={<Monitor className="h-6 w-6" strokeWidth={1.8} />}
-            />
-            <FeatureCard
-              title="Operator sessions"
-              body="Weekly sessions with builders and founders who've done it before."
-              icon={<Users className="h-6 w-6" strokeWidth={1.8} />}
-            />
-            <FeatureCard
-              title="VC access"
-              body="Warm intros and real feedback from top European funds."
-              icon={<Handshake className="h-6 w-6" strokeWidth={1.8} />}
-            />
-            <FeatureCard
-              title="Build > Talk"
-              body="Fast paced, builder-driven environment. Accountability through community."
-              icon={<Rocket className="h-6 w-6" strokeWidth={1.8} />}
-            />
+    <>
+      <Section tone="paper" spacing="lg" aria-labelledby="elab-expect-title">
+        <Container>
+          <SectionHeader
+            id="elab-expect-title"
+            eyebrow="Why E-Lab"
+            index={1}
+            title="What to expect"
+            lead="Built by founders, for founders - 3 month's optimized for speed, learning, and real traction."
+          />
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.15fr)] lg:grid-rows-2">
+            {features.map((feature, index) => (
+              <Reveal key={feature.title} delay={index * 80} className="h-full">
+                <FeatureCard
+                  icon={feature.icon}
+                  title={feature.title}
+                  index={String(index + 1).padStart(2, "0")}
+                >
+                  {feature.body}
+                </FeatureCard>
+              </Reveal>
+            ))}
+            <Reveal
+              delay={200}
+              className="md:col-span-2 lg:col-span-1 lg:col-start-3 lg:row-span-2 lg:row-start-1"
+            >
+              <div
+                data-tone="ink"
+                className="relative isolate flex h-full flex-col justify-between gap-10 overflow-clip rounded-3xl p-8 md:p-10"
+              >
+                <div aria-hidden className="grain -z-10" />
+                <div
+                  aria-hidden
+                  className="absolute -top-1/3 -left-1/4 -z-10 h-full w-full rounded-full bg-[radial-gradient(closest-side,rgb(154_100_217/0.4),transparent)]"
+                />
+                <BrandMark className="absolute -right-[18%] -bottom-[16%] -z-10 w-[80%] text-white/[0.05]" />
+                <p className="text-heading-lg text-fg">
+                  Have an idea, a prototype, or just relentless drive, and are
+                  ready to build?{" "}
+                  <span className="text-highlight">
+                    Build it here. No equity. No theory.
+                  </span>
+                </p>
+                <p className="border-t border-hairline pt-6 text-small font-medium text-fg-muted">
+                  Backed by TUM.ai and supported by leading VCs.
+                </p>
+              </div>
+            </Reveal>
           </div>
+        </Container>
+      </Section>
 
-          <p className={`mt-6 text-center text-base text-text-gray`}>
-            Have an idea, a prototype, or just relentless drive, and are ready
-            to build? Build it here. No equity. No theory.
-            <br />
-            Backed by TUM.ai and supported by leading VCs.
-          </p>
-
-          {/* Simple stats */}
-          <div className="mt-16">
-            <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
-              {eLabMetrics.map((metric) => (
-                <Stat key={metric.id} metric={metric} />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function FeatureCard({
-  title,
-  body,
-  icon,
-}: {
-  title: string;
-  body: string;
-  icon: React.ReactNode;
-}) {
-  return (
-    <div
-      className="group relative overflow-hidden rounded-2xl border border-white/20 p-5 transition-all duration-300 hover:border-white/30 backdrop-blur-2xl"
-      style={{
-        background:
-          "linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 100%)",
-        boxShadow:
-          "0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 0 rgba(255, 255, 255, 0.2)",
-        backdropFilter: "blur(40px) saturate(180%)",
-      }}
-    >
-      <div className="flex items-start gap-3">
-        <div
-          className="rounded-xl p-2 text-primary transition-all duration-300 group-hover:scale-105"
-          style={{
-            background: "rgba(255, 255, 255, 0.3)",
-            backdropFilter: "blur(10px)",
-            boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.4)",
-          }}
-        >
-          {icon}
-        </div>
-        <div>
-          <h3 className={`text-lg font-semibold text-black }`}>{title}</h3>
-          <p className={`mt-1 text-sm leading-relaxed text-text-gray `}>
-            {body}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Stat({ metric }: { metric: Metric }) {
-  const { label, from, to, prefix = "", suffix = "" } = metric;
-  const ref = useRef<HTMLDivElement | null>(null);
-  const inView = useInView(ref, { once: true, margin: "-50px" });
-  const mv = useMotionValue(from);
-  const spring = useSpring(mv, { stiffness: 50, damping: 26 });
-  const rounded = useTransform(spring, (latest) => Math.round(latest));
-
-  useEffect(() => {
-    if (inView) {
-      mv.set(to);
-    }
-  }, [inView, mv, to]);
-
-  return (
-    <div ref={ref} className="text-center">
-      <motion.div
-        style={{ fontVariantNumeric: "tabular-nums" }}
-        className="text-4xl font-bold sm:text-5xl"
+      <Section
+        tone="violet"
+        spacing="sm"
+        aria-labelledby="elab-numbers-title"
+        className="overflow-clip"
       >
-        <span
-          aria-label={prefix + to + suffix}
-          className="inline-flex items-center justify-center whitespace-nowrap rounded-xl px-3 py-2 text-white shadow-lg backdrop-blur-2xl border border-white/30"
-          style={{
-            background:
-              "linear-gradient(135deg, rgba(124, 58, 237, 0.5) 0%, rgba(168, 85, 247, 0.45) 33%, rgba(236, 72, 153, 0.45) 66%, rgba(99, 102, 241, 0.5) 100%)",
-            backdropFilter: "blur(20px) saturate(150%)",
-            boxShadow:
-              "0 8px 32px rgba(124, 58, 237, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 rgba(255, 255, 255, 0.1)",
-          }}
-        >
-          <AnimatedText value={rounded} prefix={prefix} suffix={suffix} />
-        </span>
-      </motion.div>
-      <div className="mt-2 text-sm text-text-gray">{label}</div>
-    </div>
+        <BrandMark className="absolute -right-[4%] -bottom-[55%] -z-10 w-[min(40rem,70%)] text-white/[0.1]" />
+        <Container className="grid gap-8 lg:grid-cols-[minmax(0,0.55fr)_minmax(0,1.45fr)] lg:items-end lg:gap-16">
+          <Reveal className="lg:pb-8">
+            <h2
+              id="elab-numbers-title"
+              className="max-w-[9ch] text-heading-lg text-fg"
+            >
+              E-Lab in numbers
+            </h2>
+          </Reveal>
+          <Reveal delay={80}>
+            <StatGrid
+              columns={3}
+              items={eLabMetrics.map((metric: Metric) => ({
+                value: metric.to,
+                prefix: metric.prefix,
+                suffix: metric.suffix,
+                label: metric.label,
+              }))}
+            />
+          </Reveal>
+        </Container>
+      </Section>
+    </>
   );
-}
-
-function AnimatedText({
-  value,
-  prefix = "",
-  suffix = "",
-  decimals = 0,
-}: {
-  value: MotionValue<number>;
-  prefix?: string;
-  suffix?: string;
-  decimals?: number;
-}) {
-  const [text, setText] = useState("0");
-  useEffect(() => {
-    const unsub = value.on("change", (v: number) => {
-      const num =
-        decimals > 0
-          ? (Math.round(v * 10) / 10).toFixed(decimals)
-          : Math.round(v).toString();
-      setText(`${prefix}${num}${suffix}`);
-    });
-    return () => unsub();
-  }, [value, prefix, suffix, decimals]);
-  return <span>{text}</span>;
 }

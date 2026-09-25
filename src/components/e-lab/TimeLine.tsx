@@ -1,119 +1,67 @@
-"use client";
-
-import { useEffect, useRef, useState } from "react";
-
+import {
+  Container,
+  Timeline as DsTimeline,
+  Reveal,
+  Section,
+  SectionHeader,
+} from "@/components/ds";
 import { programSteps } from "@/data/e-lab/venture-page";
 
-export const Timeline = () => {
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const timelineRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!timelineRef.current) return;
-
-      const rect = timelineRef.current.getBoundingClientRect();
-      const visibleTop = Math.max(0, window.innerHeight - rect.top);
-      const visibleHeight = Math.min(visibleTop, rect.height);
-      setScrollProgress(Math.min(1, Math.max(0, visibleHeight / rect.height)));
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
+/** Renders "a • b" copy verbatim, with the bullet in the accent color. */
+function StepDescription({ text }: { text: string }) {
+  const parts = text.split(" • ");
   return (
-    <section className="flex w-full flex-col items-center justify-center bg-white px-4 py-12 lg:py-16">
-      <h2 className="mb-8 text-center text-title font-semibold tracking-tight text-black sm:text-2xl md:text-[2rem]">
-        Program
-      </h2>
-      <div ref={timelineRef} className="relative mx-auto w-full max-w-5xl">
-        <div className="absolute top-8 bottom-8 left-6 w-1 -translate-x-1/2 rounded-full bg-gray-300 md:left-1/2">
-          <div
-            className="absolute top-0 left-0 w-full rounded-full bg-gradient-to-b from-primary to-purple-300 transition-all duration-300 ease-out"
-            style={{
-              height: scrollProgress * 100 + "%",
-              boxShadow:
-                scrollProgress > 0
-                  ? "0 0 20px rgba(168, 85, 247, 0.5)"
-                  : "none",
-            }}
+    <>
+      {parts.map((part, index) => (
+        <span key={part}>
+          {index > 0 ? (
+            <span aria-hidden className="px-1.5 text-highlight">
+              •
+            </span>
+          ) : null}
+          {part}
+        </span>
+      ))}
+    </>
+  );
+}
+
+/**
+ * "Program": the six-step journey on the DS timeline, whose rail fills as it
+ * scrolls, then a dashed rail that runs on into "Your journey continues...".
+ */
+export const Timeline = () => {
+  return (
+    <Section tone="paper" spacing="lg" aria-labelledby="elab-program-title">
+      <Container size="narrow">
+        <SectionHeader
+          id="elab-program-title"
+          eyebrow="The journey"
+          index={3}
+          title="Program"
+          layout="center"
+        />
+        <DsTimeline
+          alternate
+          items={programSteps.map((step, index) => ({
+            label: `Step ${String(index + 1).padStart(2, "0")}`,
+            title: step.title,
+            description: <StepDescription text={step.description} />,
+          }))}
+        />
+        <Reveal
+          variant="fade"
+          className="relative pl-14 md:pl-0 md:text-center"
+        >
+          <span
+            aria-hidden
+            className="absolute top-2 left-4 h-24 w-0.5 -translate-x-1/2 bg-[linear-gradient(to_bottom,var(--color-violet-500)_0_50%,transparent_50%_100%)] bg-size-[2px_10px] [mask-image:linear-gradient(to_bottom,#000_30%,transparent)] md:left-1/2"
           />
-        </div>
-
-        <ol className="relative space-y-14 md:space-y-16">
-          {programSteps.map((item, index) => {
-            const isActive =
-              Math.max(
-                0,
-                Math.min(1, scrollProgress * programSteps.length - index),
-              ) > 0;
-            const isLeft = index % 2 === 0;
-            const contentPosition = isLeft
-              ? "md:mr-auto md:pr-12 md:text-right"
-              : "md:ml-auto md:pr-0 md:pl-12";
-            const inactiveOffset = isLeft
-              ? "md:translate-x-8"
-              : "md:-translate-x-8";
-
-            return (
-              <li key={item.id} className="relative min-h-24">
-                <div className="absolute top-1 left-6 z-10 -translate-x-1/2 md:left-1/2">
-                  <div
-                    className={
-                      "relative h-8 w-8 rounded-full border-4 transition-all duration-300 " +
-                      (isActive
-                        ? "scale-110 border-purple-300 bg-primary shadow-lg shadow-purple-300/50"
-                        : "scale-100 border-gray-400 bg-white")
-                    }
-                  >
-                    {isActive ? (
-                      <div className="absolute inset-0 animate-ping rounded-full bg-dark-purple opacity-30 motion-reduce:animate-none" />
-                    ) : null}
-                  </div>
-                </div>
-
-                <div
-                  className={
-                    "w-full pl-16 text-left md:w-1/2 md:pl-0 " + contentPosition
-                  }
-                >
-                  <div
-                    className={
-                      "transition-all duration-500 motion-reduce:transform-none " +
-                      (isActive
-                        ? "translate-x-0 opacity-100"
-                        : inactiveOffset + " opacity-60")
-                    }
-                  >
-                    <h3
-                      className={
-                        "mb-2 text-xl font-semibold leading-snug transition-colors duration-300 " +
-                        (isActive ? "text-dark-purple" : "text-gray-800")
-                      }
-                    >
-                      {item.title}
-                    </h3>
-                    <p
-                      className={
-                        "text-sm leading-relaxed transition-colors duration-300 " +
-                        (isActive ? "text-primary" : "text-text-gray")
-                      }
-                    >
-                      {item.description}
-                    </p>
-                  </div>
-                </div>
-              </li>
-            );
-          })}
-        </ol>
-      </div>
-      <p className="mt-12 text-center text-base font-medium text-text-gray">
-        Your journey continues...
-      </p>
-    </section>
+          <p className="pt-30 text-heading-md text-fg-muted">
+            Your journey continues...
+          </p>
+        </Reveal>
+      </Container>
+    </Section>
   );
 };

@@ -1,95 +1,91 @@
-import { ELabApplicationCta } from "@/components/e-lab/ApplicationCta";
+import { Highlight, PageHero } from "@/components/ds";
+import {
+  ELabApplicationCta,
+  ELabApplicationStatus,
+} from "@/components/e-lab/ApplicationCta";
 import { eLabApplicationCopy, eLabConfig } from "@/config/e-lab";
+
+const HERO_TITLE_ID = "elab-hero-title";
+
+/**
+ * Cohort logo "by" TUM.ai (both white artwork, made for the ink hero). The
+ * cohort SVG's viewBox starts 248 units left of the letterforms, so a negative
+ * margin (0.468 × its height) aligns the "E" with the headline below.
+ */
+function LogoLockup() {
+  return (
+    <span className="flex flex-wrap items-end gap-x-4 gap-y-3 pb-3 md:pb-5">
+      <img
+        src={eLabConfig.heroLogo.src}
+        alt={eLabConfig.heroLogo.alt}
+        width={287}
+        height={56}
+        fetchPriority="high"
+        className="-ml-[1.17rem] h-10 w-auto md:-ml-[1.64rem] md:h-14"
+      />
+      <span className="flex items-center gap-3 pb-0.5 md:pb-1">
+        <span className="text-fg-subtle">by</span>
+        <img
+          src="/assets/tum_ai_logo_new.svg"
+          alt="TUM.ai Logo"
+          width={100}
+          height={25}
+          className="h-5 w-auto md:h-6"
+        />
+      </span>
+    </span>
+  );
+}
+
+const promises = ["Equity-free", "Munich-based", "Founder-focused"];
+
+/**
+ * "Equity-free • Munich-based • Founder-focused". Each item carries its
+ * leading bullet in the gap; the row is shifted left under a clip, so the
+ * bullet of whichever item starts a line is hidden and wrapped lines never
+ * begin or end with a dangling "•".
+ */
+function Promises() {
+  return (
+    <p className="overflow-hidden">
+      <span className="-ml-7 flex flex-wrap gap-y-1 font-medium text-fg">
+        {promises.map((promise, index) => (
+          <span key={promise} className="relative pl-7">
+            <span
+              aria-hidden
+              className="absolute left-0 w-7 text-center text-highlight"
+            >
+              {index > 0 ? "•" : ""}
+            </span>
+            {promise}
+            {index < promises.length - 1 ? " " : ""}
+          </span>
+        ))}
+      </span>
+    </p>
+  );
+}
 
 export const Hero = () => {
   return (
-    <section className="relative h-screen bg-gradient-to-br from-dark-purple via-[#220836] to-black overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0">
-        {/* Floating orbs */}
-        <div
-          className="absolute top-20 left-10 w-32 h-32 bg-primary rounded-full blur-xl"
-          style={{
-            animation: "floatingPulse 25s ease-in-out infinite",
-            animationDelay: "0s",
-          }}
-        ></div>
-        <div
-          className="absolute top-40 right-20 w-24 h-24 bg-dark-purple/50 rounded-full blur-lg"
-          style={{
-            animation: "floatingPulse 30s ease-in-out infinite",
-            animationDelay: "8s",
-          }}
-        ></div>
-        <div
-          className="absolute bottom-32 left-1/4 w-40 h-40 bg-purple-400/60 rounded-full blur-2xl"
-          style={{
-            animation: "floatingPulse 35s ease-in-out infinite",
-            animationDelay: "15s",
-          }}
-        ></div>
-      </div>
-
-      {/* Main content */}
-      <div className="relative z-10 flex h-full w-full text-white">
-        <div className="max-w-6xl mx-auto text-center p-8 flex flex-col justify-between h-full">
-          {/* Main content area */}
-          <div className="flex-1 flex flex-col justify-center space-y-8">
-            {/* Sphere and Title */}
-            <div className="flex flex-col items-center space-y-4 pt-8">
-              <div className="space-y-3">
-                <div className="flex justify-center">
-                  <div className="h-28 md:h-40 flex items-center">
-                    <img
-                      src={eLabConfig.heroLogo.src}
-                      alt={eLabConfig.heroLogo.alt}
-                      width={400}
-                      height={160}
-                      className="h-28 md:h-40 w-auto object-contain"
-                    />
-                  </div>
-                </div>
-                <div className="flex items-center justify-center space-x-3">
-                  <span className="text-lg text-minimal-gray">by</span>
-                  <img
-                    src="/assets/tum_ai_logo_new.svg"
-                    alt="TUM.ai Logo"
-                    width={100}
-                    height={35}
-                    className="h-7 w-auto"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Tagline */}
-            <div className="max-w-2xl mx-auto space-y-2">
-              <p className="text-lg md:text-xl text-minimal-gray leading-relaxed">
-                Build the next generation of{" "}
-                <span className="text-primary font-semibold">AI startups</span>{" "}
-                in 12 weeks
-              </p>
-              <p className="text-base text-white/60">
-                Equity-free • Munich-based • Founder-focused
-              </p>
-            </div>
-
-            {/* CTA Button */}
-            <div className="pt-1">
-              <ELabApplicationCta
-                className="group relative inline-flex items-center justify-center rounded-full border px-7 py-2 text-base font-normal transition-colors duration-200"
-                openClassName="border-primary bg-primary text-white hover:border-dark-purple hover:bg-dark-purple"
-                closedClassName="cursor-not-allowed border-dark-purple/50 bg-dark-purple/40 text-minimal-gray/80 pointer-events-none"
-              >
-                <span className="relative flex items-center space-x-2">
-                  <span>{eLabApplicationCopy.heroCtaLabel}</span>
-                </span>
-              </ELabApplicationCta>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    <PageHero
+      titleId={HERO_TITLE_ID}
+      eyebrow={<LogoLockup />}
+      title={[
+        "Build the next generation of ",
+        <Highlight key="highlight">AI startups</Highlight>,
+        " in 12 weeks",
+      ]}
+      lead={<Promises />}
+      actions={
+        <>
+          <ELabApplicationCta>
+            {eLabApplicationCopy.heroCtaLabel}
+          </ELabApplicationCta>
+          <ELabApplicationStatus />
+        </>
+      }
+    />
   );
 };
 

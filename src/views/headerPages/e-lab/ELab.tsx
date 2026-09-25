@@ -1,16 +1,38 @@
 import type { Organization, WithContext } from "schema-dts";
-import { ELabApplicationCta } from "@/components/e-lab/ApplicationCta";
+import { CtaBand, FaqSection } from "@/components/ds";
+import {
+  ELabApplicationCta,
+  ELabApplicationStatus,
+} from "@/components/e-lab/ApplicationCta";
 import { ExpectationELab } from "@/components/e-lab/ExpectationELab";
 import { NotableStartups } from "@/components/e-lab/NotableStartups";
 import { Testimonials } from "@/components/e-lab/Testimonials";
 import { Timeline } from "@/components/e-lab/TimeLine";
 import JsonLd from "@/components/JsonLd";
-import FAQ from "@/components/ui/FAQ";
 import { eLabApplicationCopy } from "@/config/e-lab";
 import { faq } from "@/data/e-lab/FAQ";
 import { Hero } from "./hero";
-// import "@/styles/elab-font.css";
 
+/** Keeps "E-Lab 6.0" on one line so display type never breaks at the hyphen. */
+function KeepCohortTogether({ text }: { text: string }) {
+  const { cohortName } = eLabApplicationCopy;
+  const index = text.indexOf(cohortName);
+  if (index === -1) return text;
+  return (
+    <>
+      {text.slice(0, index)}
+      <span className="whitespace-nowrap">{cohortName}</span>
+      {text.slice(index + cohortName.length)}
+    </>
+  );
+}
+
+/**
+ * /e-lab: ink hero with the cohort lockup and live application status, what
+ * to expect with proof points, community voices, the program timeline,
+ * alumni ventures, FAQ and the closing application call to action. All cohort
+ * copy and state comes from src/config/e-lab.ts.
+ */
 export default function ELab() {
   const jsonLd: WithContext<Organization> = {
     "@context": "https://schema.org",
@@ -48,10 +70,8 @@ export default function ELab() {
   };
 
   return (
-    <div className="elab-font">
-      <section>
-        <JsonLd data={jsonLd} />
-      </section>
+    <main>
+      <JsonLd data={jsonLd} />
       <Hero />
 
       <ExpectationELab />
@@ -60,78 +80,24 @@ export default function ELab() {
 
       <Timeline />
 
-      <section className="relative overflow-hidden border-t border-b border-purple-100 py-12 sm:py-12 lg:py-16 w-full bg-gradient-to-br from-purple-50 via-white to-blue-50">
-        {/* Decorative gradient blobs for depth */}
-        <div className="pointer-events-none absolute -top-24 -left-24 h-72 w-72 rounded-full bg-gradient-to-br from-purple-400/40 to-fuchsia-400/30 blur-3xl"></div>
-        <div className="pointer-events-none absolute -bottom-24 -right-16 h-80 w-80 rounded-full bg-gradient-to-br from-indigo-400/30 to-sky-400/30 blur-3xl"></div>
-        <div className="pointer-events-none absolute top-1/3 -right-24 h-64 w-64 rounded-full bg-gradient-to-br from-pink-400/20 to-purple-400/20 blur-3xl"></div>
-
-        <div className="container mx-auto">
-          <div className="relative z-10 mx-auto max-w-7xl px-4">
-            <div className="flex flex-col items-center">
-              {/* Main card */}
-              <div className="relative mx-auto w-full max-w-3xl overflow-hidden rounded-[28px] border-2 border-white/40 bg-white/10 shadow-2xl backdrop-blur-2xl backdrop-saturate-150 transition-transform duration-300 ease-out hover:scale-[1.01] md:hover:scale-[1.02]">
-                {/* Liquid glass tint and inner gradient */}
-                <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-purple-200/25 via-white/10 to-indigo-200/15"></div>
-                {/* Inner subtle bevel */}
-                <div className="pointer-events-none absolute inset-0 rounded-[28px] shadow-[inset_0_1px_0_rgba(255,255,255,0.55),inset_0_-1px_0_rgba(255,255,255,0.12)]"></div>
-
-                {/* Top highlight */}
-                <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/70 to-transparent"></div>
-
-                {/* Left highlight */}
-                <div className="absolute inset-y-0 left-0 w-[1px] bg-gradient-to-b from-transparent via-white/60 to-transparent"></div>
-
-                {/* Specular reflections */}
-                <div className="pointer-events-none absolute -top-20 left-1/4 h-40 w-1/2 rotate-6 rounded-full bg-gradient-to-r from-white/60 to-transparent blur-2xl"></div>
-                <div className="pointer-events-none absolute top-1/3 -right-10 h-24 w-72 -rotate-12 rounded-full bg-gradient-to-r from-white/25 to-transparent blur-xl"></div>
-                {/* Top-left highlight bubble */}
-                <div className="pointer-events-none absolute -top-6 -left-6 h-24 w-32 rounded-full bg-[radial-gradient(ellipse_at_center,_rgba(255,255,255,0.9),_rgba(255,255,255,0.35)_60%,_transparent_70%)] blur-md"></div>
-                <div className="pointer-events-none absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-slate-900/5 to-transparent"></div>
-
-                <div className="relative px-12 py-18 md:px-18 md:py-20">
-                  <div className="text-center">
-                    <h2
-                      className={`mb-5 text-3xl md:text-4xl font-bold text-black`}
-                    >
-                      <style></style>
-                      {eLabApplicationCopy.cardHeading}
-                    </h2>
-
-                    <p
-                      className={`mx-auto mb-10 max-w-2xl text-base leading-relaxed text-text-gray`}
-                    >
-                      {eLabApplicationCopy.cardDescription}
-                    </p>
-
-                    <div className="flex justify-center">
-                      <div className="relative">
-                        {/* Radiating glow effect - always visible */}
-                        <div className="absolute -inset-2 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg opacity-45 blur-xl"></div>
-
-                        {/* Sparkling effects - always visible */}
-
-                        <ELabApplicationCta
-                          className="group relative inline-flex items-center justify-center overflow-hidden rounded-2xl border px-6 py-3 text-base font-semibold transition-colors duration-200"
-                          openClassName="border-primary bg-primary text-white hover:border-dark-purple hover:bg-dark-purple"
-                          closedClassName="cursor-not-allowed border-dark-purple/50 bg-dark-purple/40 text-minimal-gray/80 pointer-events-none"
-                        >
-                          <span className="relative z-10 flex items-center gap-2">
-                            <span>{eLabApplicationCopy.cardCtaLabel}</span>
-                          </span>
-                        </ELabApplicationCta>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
       <NotableStartups />
 
-      <FAQ faq={faq}></FAQ>
-    </div>
+      <FaqSection items={faq} tone="lavender" />
+
+      <CtaBand
+        titleId="elab-apply-title"
+        eyebrow={eLabApplicationCopy.cohortName}
+        title={<KeepCohortTogether text={eLabApplicationCopy.cardHeading} />}
+        lead={eLabApplicationCopy.cardDescription}
+        actions={
+          <>
+            <ELabApplicationCta>
+              {eLabApplicationCopy.cardCtaLabel}
+            </ELabApplicationCta>
+            <ELabApplicationStatus />
+          </>
+        }
+      />
+    </main>
   );
 }
