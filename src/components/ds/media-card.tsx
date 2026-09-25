@@ -84,7 +84,7 @@ export function MediaCard({
   const media = (
     <div
       className={cn(
-        "relative overflow-hidden bg-sunken",
+        "relative isolate overflow-hidden bg-sunken",
         fill ? "h-full min-h-72" : aspects[aspect],
         layout === "stacked" && "rounded-3xl",
       )}

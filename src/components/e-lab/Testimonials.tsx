@@ -78,7 +78,7 @@ function OrganizationRow({ testimonial }: { testimonial: TestimonialCard }) {
  */
 function CommunityQuote({ testimonial }: { testimonial: TestimonialCard }) {
   return (
-    <figure className="flex h-full w-[min(20.5rem,calc(100vw-3rem))] flex-col rounded-3xl border border-white/10 bg-white/[0.045] p-7 shadow-inset-hairline backdrop-blur-md md:w-[25rem] md:p-8">
+    <figure className="flex h-full w-[min(20.5rem,calc(100vw-3rem))] flex-col rounded-3xl border border-white/10 bg-white/[0.045] p-7 shadow-inset-hairline md:w-[25rem] md:p-8">
       <div className="flex min-h-7 items-center justify-between gap-4">
         <svg
           aria-hidden

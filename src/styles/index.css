@@ -389,6 +389,15 @@
     font-family: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
   }
 
+  /* iOS: brand-tinted tap flash; no double-tap zoom on repeated taps. */
+  :root {
+    -webkit-tap-highlight-color: rgb(154 100 217 / 0.16);
+  }
+
+  :where(a, button, [role="button"], summary, label) {
+    touch-action: manipulation;
+  }
+
   ::selection {
     background-color: rgb(154 100 217 / 0.32);
     color: inherit;
@@ -424,12 +433,14 @@
 @layer components {
   /*
    * Scroll reveal. <Reveal> only marks elements that start below the fold as
-   * pending, so server-rendered and no-JS content is always visible.
+   * pending, so server-rendered and no-JS content is always visible. No blur:
+   * Safari clips filtered boxes (cutting descenders and rounded edges), and
+   * blurring large sections stutters on phones.
    */
   @media (prefers-reduced-motion: no-preference) {
     [data-reveal] {
-      transition-property: opacity, translate, scale, filter;
-      transition-duration: 0.9s, 1.05s, 1.05s, 0.9s;
+      transition-property: opacity, translate, scale;
+      transition-duration: 0.9s, 1.05s, 1.05s;
       transition-timing-function: var(--ease-brand);
       transition-delay: var(--reveal-delay, 0ms);
     }
@@ -437,12 +448,10 @@
     [data-reveal="pending"] {
       opacity: 0;
       translate: 0 28px;
-      filter: blur(6px);
     }
 
     [data-reveal="pending"][data-reveal-variant="fade"] {
       translate: none;
-      filter: none;
     }
 
     [data-reveal="pending"][data-reveal-variant="scale"] {
@@ -460,7 +469,6 @@
 
     [data-reveal="pending"][data-reveal-variant="line"] {
       opacity: 1;
-      filter: none;
       translate: none;
       scale: 0 1;
     }

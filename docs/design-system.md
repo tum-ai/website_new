@@ -122,13 +122,13 @@ Motion
 - `CountUp`, `Parallax`, `ScrollProgress`.
 - `BrandMark`: the logomark as a tonal background shape. Use it as decoration only, never as a logo substitute.
 - `Aurora`: slow light field for dark bands.
-- `Marquee`: infinite rail. Pauses on hover and focus, and falls back to a static wrapped list under reduced motion.
+- `Marquee`: infinite rail. Pauses on hover and focus, and becomes a static, horizontally scrollable row under reduced motion.
 
 ## Motion rules
 
 - Above the fold, use the CSS utilities (`motion-safe:animate-rise`, `-rise-sm`, `-fade`) or `SplitWords`. Never use `Reveal` there: it waits for hydration.
 - Below the fold, use `Reveal`. Only elements that start below the viewport are hidden, so server-rendered HTML and no-JS visitors always see content.
-- Animate only `transform`, `opacity` and `filter`. Use the house easing `ease-brand` (`cubic-bezier(0.22,1,0.36,1)`). Keep durations between 300ms (hover) and 1.2s (entrances).
+- Animate only `transform` and `opacity`. Avoid `filter` on anything containing text or large areas: Safari clips filtered elements to their box (cutting descenders) and large blurs stutter on phones. Any filter must be released when the animation ends. Use the house easing `ease-brand` (`cubic-bezier(0.22,1,0.36,1)`). Keep durations between 300ms (hover) and 1.2s (entrances).
 - Prefix every looping or entrance animation with `motion-safe:`. Components already handle reduced motion themselves.
 - Hover effects should be small: slow image zoom (1.04), arrow nudges, a 4px card lift, spotlight. Nothing bouncy.
 - framer-motion runs inside `LazyMotion strict`: import `m`, not `motion`.
@@ -142,6 +142,7 @@ These come from design review. Treat them as hard rules.
 - **Alignment:** within a panel, labels, titles and controls share one baseline or grid. Icons are optically centered on the text they label. Never nudge them by hand.
 - **Equal heights:** a button and a badge or chip placed side by side use the same size step.
 - **No redundant labels:** if a logo already shows the name (a wordmark), don't repeat the name next to it. Symbol-only logos get the name inside the chip as a lockup, and only information the logo lacks sits outside it.
+- **Don't combine `hyphens: auto` with `SplitWords` headlines:** each word is its own box, so hyphenation strands syllables. Size the headline down instead.
 - **No em dashes in visible copy.** Use a comma, colon, period or a spaced hyphen instead. The same goes for separators in labels.
 
 ## Accessibility rules

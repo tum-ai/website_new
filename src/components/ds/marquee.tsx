@@ -39,8 +39,7 @@ export function Marquee({
       className={cn(
         "flex shrink-0 items-center",
         copy && "motion-reduce:hidden",
-        !copy &&
-          "motion-reduce:w-full motion-reduce:flex-wrap motion-reduce:justify-center motion-reduce:pr-0",
+        !copy && "motion-reduce:pr-0",
       )}
       style={listStyle}
     >
@@ -55,14 +54,14 @@ export function Marquee({
   return (
     <div
       className={cn(
-        "group/marquee relative overflow-hidden mask-fade-x motion-reduce:[mask-image:none]",
+        "group/marquee relative overflow-hidden mask-fade-x motion-reduce:overflow-x-auto motion-reduce:overscroll-x-contain motion-reduce:[mask-image:none]",
         className,
       )}
       style={{ "--marquee-duration": `${duration}s` } as CSSProperties}
     >
       <div
         className={cn(
-          "flex w-max group-hover/marquee:[animation-play-state:paused] group-focus-within/marquee:[animation-play-state:paused] motion-reduce:w-full",
+          "flex w-max group-hover/marquee:[animation-play-state:paused] group-focus-within/marquee:[animation-play-state:paused]",
           reverse
             ? "motion-safe:animate-marquee-reverse"
             : "motion-safe:animate-marquee",

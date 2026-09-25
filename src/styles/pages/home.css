@@ -73,6 +73,7 @@
     @media (prefers-reduced-motion: no-preference) {
       .home-lit-word {
         animation: home-lit linear both;
+        animation-duration: auto;
         animation-timeline: view();
         animation-range: entry 0% cover 42%;
       }

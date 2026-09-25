@@ -50,7 +50,7 @@ const columns: { title: string; links: FooterLink[] }[] = [
 ];
 
 const linkClass =
-  "text-small text-fg-muted transition-colors duration-300 hover:text-fg";
+  "-my-1.5 inline-block py-1.5 text-small text-fg-muted transition-colors duration-300 hover:text-fg";
 
 function FooterAnchor({ label, href }: FooterLink) {
   if (href.startsWith("/")) {

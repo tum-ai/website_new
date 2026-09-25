@@ -211,7 +211,7 @@ export const Header = () => {
                 href={cta.href}
                 size="sm"
                 arrow={isPartners ? undefined : true}
-                className={cn(!isPartners && "hidden sm:inline-flex")}
+                className={cn("h-10", !isPartners && "hidden sm:inline-flex")}
               >
                 {cta.label}
               </ButtonLink>
@@ -240,8 +240,13 @@ export const Header = () => {
             className="absolute right-[-18%] bottom-[18%] -z-10 w-[85%] text-white/[0.035]"
           />
           {/* Content fills the visible viewport; the panel itself extends under Safari's toolbars. */}
-          <div className="flex min-h-dvh flex-col">
-            <div className="flex h-[4.25rem] items-center justify-between pt-2.5 pr-[1.125rem] pl-[1.625rem] md:pt-3 md:pr-[calc(var(--gutter)-0.5rem)] md:pl-8">
+          {/*
+           * min-h-lvh + bottom padding of (lvh - dvh): the layout fills the
+           * visible viewport, and when the menu overflows (small phones,
+           * landscape) its last row can still scroll above Safari's toolbar.
+           */}
+          <div className="flex min-h-lvh flex-col pb-[calc(100lvh-100dvh)]">
+            <div className="flex h-[4.25rem] items-center justify-between pt-2 pr-[1.1875rem] pl-[1.6875rem] md:pt-3 md:pr-[calc(var(--gutter)-0.4375rem)] md:pl-8">
               <img
                 src="/assets/tum_ai_logo_new.svg"
                 alt=""
