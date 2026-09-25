@@ -20,6 +20,7 @@ import {
   SplitWords,
   SpotlightCard,
   Text,
+  TopBlend,
 } from "@/components/ds";
 import {
   ContactActions,
@@ -95,6 +96,7 @@ export default function Partners({
         >
           <Aurora />
           <BrandMark className="absolute top-[4%] -right-[14%] -z-10 w-[min(64rem,80%)] text-white/[0.035]" />
+          <TopBlend />
           <Container>
             <div className="grid gap-10 md:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] md:items-stretch md:gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-16">
               <div className="flex flex-col justify-center">

@@ -55,6 +55,7 @@ export { type StepItem, Steps } from "./steps";
 export { Tabs, TabsList, TabsPanel, TabsTab } from "./tabs";
 export { TextLink } from "./text-link";
 export { Timeline, type TimelineItem } from "./timeline";
+export { TopBlend } from "./top-blend";
 export {
   Display,
   Eyebrow,

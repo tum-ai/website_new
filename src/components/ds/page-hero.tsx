@@ -5,6 +5,7 @@ import { BrandMark } from "./brand-mark";
 import { Container } from "./container";
 import { Section, type Tone } from "./section";
 import { SplitWords } from "./split-words";
+import { TopBlend } from "./top-blend";
 import { Eyebrow } from "./typography";
 
 const titleSizes = {
@@ -64,6 +65,7 @@ export function PageHero({
       {mark ? (
         <BrandMark className="absolute top-[6%] -right-[12%] -z-10 w-[min(64rem,78%)] text-white/[0.035]" />
       ) : null}
+      <TopBlend />
       <Container>
         <div
           className={cn(
