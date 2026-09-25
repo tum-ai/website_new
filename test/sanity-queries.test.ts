@@ -1,6 +1,5 @@
-import assert from "node:assert/strict";
-import test from "node:test";
 import { evaluate, parse } from "groq-js";
+import { expect, test } from "vitest";
 import {
   EVENTS_QUERY,
   PARTNERS_QUERY,
@@ -28,11 +27,11 @@ test("partner query preserves legacy fields while exposing optional wall setting
       featured: true,
     },
   ]);
-  assert.equal(legacy.id, "legacy");
-  assert.equal(legacy.category, "Research Partners");
-  assert.equal(legacy.tier, null);
-  assert.equal(current.tier, "gold");
-  assert.equal(current.featured, true);
+  expect(legacy.id).toBe("legacy");
+  expect(legacy.category).toBe("Research Partners");
+  expect(legacy.tier).toBeNull();
+  expect(current.tier).toBe("gold");
+  expect(current.featured).toBe(true);
 });
 
 type TestEvent = {
@@ -66,14 +65,15 @@ test("event query: images compacts poster+img, drops missing, description falls 
   const result = (await run(EVENTS_QUERY, dataset)) as TestEvent[];
   const byId = Object.fromEntries(result.map((e) => [e.id, e]));
 
-  assert.deepEqual(byId["evt-both"].images, [
+  expect(byId["evt-both"].images).toStrictEqual([
     "https://cdn/poster.png",
     "https://cdn/img.png",
   ]);
-  assert.deepEqual(byId["evt-poster-only"].images, ["https://cdn/poster.png"]);
-  assert.ok(Array.isArray(byId["evt-poster-only"].images));
-  assert.equal(byId["evt-poster-only"].description, "");
-  assert.equal(byId["evt-both"].id, "evt-both");
+  expect(byId["evt-poster-only"].images).toStrictEqual([
+    "https://cdn/poster.png",
+  ]);
+  expect(byId["evt-poster-only"].description).toBe("");
+  expect(byId["evt-both"].id).toBe("evt-both");
 });
 
 test("research query: keywords joined to a string, description falls back", async () => {
@@ -88,8 +88,7 @@ test("research query: keywords joined to a string, description falls back", asyn
 
   const [project] = await run(RESEARCH_QUERY, dataset);
 
-  assert.equal(typeof project.keywords, "string");
-  assert.equal(project.keywords, "AI, Machine Learning, Robotics");
-  assert.equal(project.description, "");
-  assert.equal(project.id, "res-1");
+  expect(project.keywords).toBe("AI, Machine Learning, Robotics");
+  expect(project.description).toBe("");
+  expect(project.id).toBe("res-1");
 });

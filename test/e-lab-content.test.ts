@@ -1,7 +1,6 @@
-import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import test from "node:test";
+import { expect, test } from "vitest";
 
 import { eLabApplicationCopy, eLabConfig } from "../src/config/e-lab.ts";
 import { faq } from "../src/data/e-lab/FAQ.tsx";
@@ -11,6 +10,7 @@ import {
   programSteps,
   testimonialCards,
 } from "../src/data/e-lab/venture-page.ts";
+import { parseMunichDateTime } from "../src/lib/munich-time.ts";
 
 const expectedTimeline = [
   [
@@ -31,36 +31,40 @@ const expectedTimeline = [
 ];
 
 test("E-Lab metrics match the approved proof points", () => {
-  assert.deepEqual(
+  expect(
     eLabMetrics.map(({ label, to, prefix = "", suffix = "" }) => [
       prefix + to + suffix,
       label,
     ]),
-    [
-      ["~500", "applications per batch"],
-      ["€8M", "raised by E-Lab ventures"],
-      ["5", "E-Lab Iterations"],
-    ],
-  );
+  ).toStrictEqual([
+    ["~500", "applications per batch"],
+    ["€8M", "raised by E-Lab ventures"],
+    ["5", "E-Lab Iterations"],
+  ]);
 });
 
+// Editors change the deadline every round (docs/contributor-guide.md), so this
+// checks its format and that the copy follows the config, not a fixed date.
 test("E-Lab deadline is centralized and used by the FAQ", () => {
-  assert.equal(eLabConfig.applicationDeadlineDate, "26.09.2026");
-  assert.equal(eLabConfig.applicationDeadlineTime, "23:59");
-  assert.equal(eLabApplicationCopy.deadline, "26.09.2026 at 23:59");
+  const { applicationDeadlineDate: date, applicationDeadlineTime: time } =
+    eLabConfig;
+  expect(date).toMatch(/^\d{2}\.\d{2}\.\d{4}$/);
+  expect(time).toMatch(/^([01]\d|2[0-3]):[0-5]\d$/);
+  expect(() => parseMunichDateTime(date, time)).not.toThrow();
+
+  expect(eLabApplicationCopy.deadline).toBe(`${date} at ${time}`);
 
   const deadlineFaq = faq.find(
     (item) => item.question === "When is the application deadline?",
   );
-  assert.equal(
-    deadlineFaq?.answer,
-    "The application phase closes on 26.09.2026 at 23:59.",
+  expect(deadlineFaq?.answer).toBe(
+    `The application phase closes on ${date} at ${time}.`,
   );
 });
 
 test("E-Lab testimonials include the requested people and exact quotes", () => {
   const axel = testimonialCards.find((card) => card.id === "axel-taeubert");
-  assert.deepEqual(axel && [axel.name, axel.role, axel.quote], [
+  expect(axel && [axel.name, axel.role, axel.quote]).toStrictEqual([
     "Axel Täubert",
     "Head of Startups @ Google Cloud",
     "Truly impressive what the team has built. 🚀 We’re just getting started",
@@ -69,41 +73,37 @@ test("E-Lab testimonials include the requested people and exact quotes", () => {
   const alexandra = testimonialCards.find(
     (card) => card.id === "alexandra-reinert",
   );
-  assert.deepEqual(
+  expect(
     alexandra && [alexandra.name, alexandra.role, alexandra.quote],
-    [
-      "Alexandra Reinert",
-      "Partner @ Accel",
-      "The density of real builders at the E-Lab Final Pitch is exactly what Tier-1 venture funds look for at the pre-seed stage",
-    ],
-  );
+  ).toStrictEqual([
+    "Alexandra Reinert",
+    "Partner @ Accel",
+    "The density of real builders at the E-Lab Final Pitch is exactly what Tier-1 venture funds look for at the pre-seed stage",
+  ]);
 });
 
 test("E-Lab program timeline is the approved six-step journey", () => {
-  assert.deepEqual(
+  expect(
     programSteps.map(({ title, description }) => [title, description]),
-    expectedTimeline,
-  );
+  ).toStrictEqual(expectedTimeline);
 });
 
 test("E-Lab startup list includes Invertix and the revised workshop copy", () => {
-  assert.deepEqual(
+  expect(
     notableStartups.find((startup) => startup.id === "invertix"),
-    {
-      id: "invertix",
-      name: "Invertix",
-      href: "https://www.invertix.ai/",
-      logoSrc: "/assets/e-lab/startups/invertix.webp",
-      logoAlt: "Invertix logo",
-      wordmarkLabel: "Invertix",
-    },
-  );
+  ).toStrictEqual({
+    id: "invertix",
+    name: "Invertix",
+    href: "https://www.invertix.ai/",
+    logoSrc: "/assets/e-lab/startups/invertix.webp",
+    logoAlt: "Invertix logo",
+    wordmarkLabel: "Invertix",
+  });
 
   const commitmentFaq = faq.find((item) =>
     item.question.startsWith("Can I apply if I’m still a student"),
   );
-  assert.match(
-    commitmentFaq?.answer ?? "",
+  expect(commitmentFaq?.answer ?? "").toMatch(
     /attend the workshops, and engage with mentors\./,
   );
 });
@@ -118,10 +118,9 @@ test("Every E-Lab content image references an existing local asset", () => {
   ]);
 
   for (const asset of referencedAssets) {
-    assert.equal(
+    expect(
       existsSync(join(process.cwd(), "public", asset.slice(1))),
-      true,
-      "Missing local E-Lab asset: " + asset,
-    );
+      `Missing local E-Lab asset: ${asset}`,
+    ).toBe(true);
   }
 });

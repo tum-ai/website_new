@@ -1,6 +1,5 @@
-import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
-import test from "node:test";
+import { expect, test } from "vitest";
 import {
   alumniDestinations,
   featuredPartners,
@@ -35,16 +34,14 @@ test("all eight paths produce the brief's recommendation", () => {
     for (const [index, duration] of (
       ["one-off", "ongoing"] as const
     ).entries()) {
-      assert.equal(
-        getPartnershipRecommendation({ intent, duration })?.name,
+      expect(getPartnershipRecommendation({ intent, duration })?.name).toBe(
         expected[intent][index],
       );
     }
   }
-  assert.equal(
+  expect(
     getPartnershipRecommendation({ intent: "talent", duration: null }),
-    null,
-  );
+  ).toBeNull();
 });
 
 test("changing intent or going back clears stale recommendations and restart clears both answers", () => {
@@ -56,120 +53,111 @@ test("changing intent or going back clears stale recommendations and restart cle
     type: "duration",
     duration: "ongoing",
   });
-  assert.equal(state.step, "result");
+  expect(state.step).toBe("result");
   state = partnershipFunnelReducer(state, { type: "back" });
-  assert.deepEqual(state, {
+  expect(state).toStrictEqual({
     step: "duration",
     intent: "hackathon",
     duration: null,
   });
-  assert.equal(getPartnershipRecommendation(state), null);
+  expect(getPartnershipRecommendation(state)).toBeNull();
   state = partnershipFunnelReducer(state, {
     type: "intent",
     intent: "research",
   });
-  assert.equal(state.duration, null);
-  assert.equal(state.step, "duration");
-  assert.deepEqual(
-    partnershipFunnelReducer(state, { type: "reset" }),
+  expect(state.duration).toBeNull();
+  expect(state.step).toBe("duration");
+  expect(partnershipFunnelReducer(state, { type: "reset" })).toStrictEqual(
     initialFunnelState,
   );
-  assert.deepEqual(
+  expect(
     partnershipFunnelReducer(initialFunnelState, {
       type: "duration",
       duration: "ongoing",
     }),
-    initialFunnelState,
-  );
+  ).toStrictEqual(initialFunnelState);
 });
 
 test("email and booking carry readable, encoded intent, timeframe, and recommendation", () => {
   const selection = { intent: "hackathon", duration: "ongoing" } as const;
   const email = new URL(getPartnershipEmailUrl(selection));
-  assert.equal(email.protocol, "mailto:");
-  assert.equal(email.pathname, "partners@tum-ai.com");
-  assert.equal(
-    email.searchParams.get("subject"),
+  expect(email.protocol).toBe("mailto:");
+  expect(email.pathname).toBe("partners@tum-ai.com");
+  expect(email.searchParams.get("subject")).toBe(
     "Partnership request: Hackathon challenge",
   );
-  assert.match(
-    email.searchParams.get("body") ?? "",
+  expect(email.searchParams.get("body") ?? "").toMatch(
     /An ongoing, strategic relationship/,
   );
-  assert.match(
-    email.searchParams.get("body") ?? "",
+  expect(email.searchParams.get("body") ?? "").toMatch(
     /Long-Term Partnership \(with first-choice hackathons\)/,
   );
   const booking = new URL(getPartnershipBookingUrl(selection));
-  assert.equal(booking.origin, "https://cal.eu");
-  assert.equal(booking.pathname, "/silaszamzow/tumai-quick-chat");
-  assert.deepEqual(booking.searchParams.getAll("guest"), [
+  expect(booking.origin).toBe("https://cal.eu");
+  expect(booking.pathname).toBe("/silaszamzow/tumai-quick-chat");
+  expect(booking.searchParams.getAll("guest")).toStrictEqual([
     "partners@tum-ai.com",
   ]);
-  assert.match(booking.searchParams.get("notes") ?? "", /Hackathon|hackathon/);
+  expect(booking.searchParams.get("notes") ?? "").toMatch(
+    /Hackathon|hackathon/,
+  );
   const defaultEmail = new URL(getPartnershipEmailUrl());
-  assert.equal(defaultEmail.pathname, "partners@tum-ai.com");
-  assert.equal(
-    defaultEmail.searchParams.get("cc"),
+  expect(defaultEmail.pathname).toBe("partners@tum-ai.com");
+  expect(defaultEmail.searchParams.get("cc")).toBe(
     "silas.zamzow@tum-ai.com,kim.schlemmer@tum-ai.com",
   );
-  assert.equal(defaultEmail.searchParams.getAll("cc").length, 1);
-  assert.match(
-    defaultEmail.searchParams.get("subject") ?? "",
+  expect(defaultEmail.searchParams.getAll("cc").length).toBe(1);
+  expect(defaultEmail.searchParams.get("subject") ?? "").toMatch(
     /^Partnership request/,
   );
   const brandEmail = new URL(
     getPartnershipEmailUrl({ intent: "brand", duration: "one-off" }),
   );
-  assert.match(
-    brandEmail.searchParams.get("body") ?? "",
+  expect(brandEmail.searchParams.get("body") ?? "").toMatch(
     /Community & Brand Activation/,
   );
 });
 
 test("launch defaults include the eighteen partners in tier order", () => {
   const result = getPartnerDirectory([]);
-  assert.deepEqual(
-    result.map((p) => p.name),
-    [
-      "OpenAI",
-      "Google",
-      "Anthropic",
-      "Hudson River Trading",
-      "JetBrains",
-      "Unite",
-      "NVIDIA",
-      "Entire.io",
-      "Spherecast",
-      "Dryft",
-      "Reply",
-      "McKinsey & Company",
-      "Jane Street",
-      "BMW",
-      "AWS",
-      "Mutagent",
-      "AMD",
-      "IBM",
-    ],
-  );
-  assert.deepEqual(
-    result.map((p) => p.tier),
-    [
-      ...Array(8).fill("gold"),
-      ...Array(7).fill("silver"),
-      ...Array(3).fill("bronze"),
-    ],
-  );
+  expect(result.map((p) => p.name)).toStrictEqual([
+    "OpenAI",
+    "Google",
+    "Anthropic",
+    "Hudson River Trading",
+    "JetBrains",
+    "Unite",
+    "NVIDIA",
+    "Entire.io",
+    "Spherecast",
+    "Dryft",
+    "Reply",
+    "McKinsey & Company",
+    "Jane Street",
+    "BMW",
+    "AWS",
+    "Mutagent",
+    "AMD",
+    "IBM",
+  ]);
+  expect(result.map((p) => p.tier)).toStrictEqual([
+    ...Array(8).fill("gold"),
+    ...Array(7).fill("silver"),
+    ...Array(3).fill("bronze"),
+  ]);
 });
 
 test("every highlighted launch partner has a shipped marquee logo", () => {
   for (const partner of getHighlightedPartners(getPartnerDirectory([]))) {
     const image = marqueeLogos[getPartnerKey(partner.name)];
-    assert.ok(image, `Missing marquee logo mapping for ${partner.name}`);
-    assert.ok(
+    expect(
+      image,
+      `Missing marquee logo mapping for ${partner.name}`,
+    ).toBeTruthy();
+    expect(
       existsSync(new URL(`../public${image}`, import.meta.url)),
       `Missing marquee asset for ${partner.name}: ${image}`,
-    );
+    ).toBe(true);
   }
 });
 
@@ -182,11 +170,11 @@ test("every curated logo, portrait, and case-study image ships with the page", (
     ...partnerPillars,
     ...partnerCaseStudies,
   ]) {
-    assert.ok(item.image, "Missing curated partner image");
-    assert.ok(
+    expect(item.image, "Missing curated partner image").toBeTruthy();
+    expect(
       existsSync(new URL(`../public${item.image}`, import.meta.url)),
       `Missing public asset: ${item.image}`,
-    );
+    ).toBe(true);
   }
 });
 
@@ -214,17 +202,16 @@ test("CMS overrides defaults, aliases consolidate, and unclassified legacy entri
     { id: "missing-logo", name: "New partner", link: "javascript:alert(1)" },
   ]);
   const hrt = result.filter((p) => p.name === "Hudson River Trading");
-  assert.equal(hrt.length, 1);
-  assert.equal(hrt[0].tier, "silver");
-  assert.equal(hrt[0].featured, true);
-  assert.equal(hrt[0].image, "https://cdn.example/hrt.svg");
-  assert.equal(
-    result.find((p) => p.tier === "silver")?.name,
+  expect(hrt.length).toBe(1);
+  expect(hrt[0].tier).toBe("silver");
+  expect(hrt[0].featured).toBe(true);
+  expect(hrt[0].image).toBe("https://cdn.example/hrt.svg");
+  expect(result.find((p) => p.tier === "silver")?.name).toBe(
     "Hudson River Trading",
   );
-  assert.equal(result.filter((p) => p.name.toLowerCase() === "ibm").length, 1);
-  assert.equal(result.find((p) => p.name === "IBM")?.tier, "bronze");
-  assert.equal(result.find((p) => p.name === "New partner")?.link, undefined);
+  expect(result.filter((p) => p.name.toLowerCase() === "ibm").length).toBe(1);
+  expect(result.find((p) => p.name === "IBM")?.tier).toBe("bronze");
+  expect(result.find((p) => p.name === "New partner")?.link).toBeUndefined();
 });
 
 test("email CCs reach both partnership contacts with and without finder context", () => {
@@ -233,22 +220,20 @@ test("email CCs reach both partnership contacts with and without finder context"
     { intent: "hackathon", duration: "ongoing" } as const,
   ]) {
     const email = new URL(getPartnershipEmailUrl(selection));
-    assert.equal(email.pathname, "partners@tum-ai.com");
-    assert.equal(
-      email.searchParams.get("cc"),
+    expect(email.pathname).toBe("partners@tum-ai.com");
+    expect(email.searchParams.get("cc")).toBe(
       "silas.zamzow@tum-ai.com,kim.schlemmer@tum-ai.com",
     );
-    assert.equal(email.searchParams.getAll("cc").length, 1);
-    assert.match(
-      email.searchParams.get("subject") ?? "",
+    expect(email.searchParams.getAll("cc").length).toBe(1);
+    expect(email.searchParams.get("subject") ?? "").toMatch(
       /^Partnership request/,
     );
-    assert.match(email.searchParams.get("body") ?? "", /^Hi TUM.ai team,/);
+    expect(email.searchParams.get("body") ?? "").toMatch(/^Hi TUM.ai team,/);
   }
 });
 
 test("marquee includes every highlighted tier and follows CMS overrides and aliases", () => {
-  assert.equal(getHighlightedPartners(getPartnerDirectory([])).length, 18);
+  expect(getHighlightedPartners(getPartnerDirectory([])).length).toBe(18);
   const directory = getPartnerDirectory([
     { id: "openai-cms", name: "OpenAI", tier: "supporter" },
     { id: "hrt-cms", name: "HRT", tier: "silver" },
@@ -257,16 +242,17 @@ test("marquee includes every highlighted tier and follows CMS overrides and alia
     { id: "legacy", name: "Legacy supporter", featured: true },
   ]);
   const highlighted = getHighlightedPartners(directory);
-  assert.equal(highlighted.length, 18);
-  assert.equal(
+  expect(highlighted.length).toBe(18);
+  expect(
     highlighted.filter((partner) => partner.name === "Hudson River Trading")
       .length,
-    1,
+  ).toBe(1);
+  expect(highlighted.some((partner) => partner.name === "New partner")).toBe(
+    true,
   );
-  assert.ok(highlighted.some((partner) => partner.name === "New partner"));
-  assert.ok(!highlighted.some((partner) => partner.name === "OpenAI"));
-  assert.ok(
-    !highlighted.some((partner) => partner.name === "Legacy supporter"),
-  );
-  assert.deepEqual(getHighlightedPartners([]), []);
+  expect(highlighted.some((partner) => partner.name === "OpenAI")).toBe(false);
+  expect(
+    highlighted.some((partner) => partner.name === "Legacy supporter"),
+  ).toBe(false);
+  expect(getHighlightedPartners([])).toStrictEqual([]);
 });

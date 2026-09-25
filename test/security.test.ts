@@ -1,25 +1,21 @@
-import assert from "node:assert/strict";
-import test from "node:test";
+import { expect, test } from "vitest";
 import { getSafeExternalUrl, serializeJsonLd } from "../src/lib/security.ts";
 
 test("getSafeExternalUrl allows http and https", () => {
-  assert.equal(
-    getSafeExternalUrl("https://www.tum-ai.com/apply"),
+  expect(getSafeExternalUrl("https://www.tum-ai.com/apply")).toBe(
     "https://www.tum-ai.com/apply",
   );
-  assert.equal(
-    getSafeExternalUrl("http://localhost:3000/events"),
+  expect(getSafeExternalUrl("http://localhost:3000/events")).toBe(
     "http://localhost:3000/events",
   );
 });
 
 test("getSafeExternalUrl rejects unsafe or invalid protocols", () => {
-  assert.equal(getSafeExternalUrl("javascript:alert(1)"), null);
-  assert.equal(
+  expect(getSafeExternalUrl("javascript:alert(1)")).toBeNull();
+  expect(
     getSafeExternalUrl("data:text/html,<script>alert(1)</script>"),
-    null,
-  );
-  assert.equal(getSafeExternalUrl("not-a-url"), null);
+  ).toBeNull();
+  expect(getSafeExternalUrl("not-a-url")).toBeNull();
 });
 
 test("serializeJsonLd escapes characters that can break out of a script tag", () => {
@@ -28,7 +24,7 @@ test("serializeJsonLd escapes characters that can break out of a script tag", ()
     ampersand: "A&B",
   });
 
-  assert.doesNotMatch(serialized, /<\/script>/i);
-  assert.match(serialized, /\\u003c\/script\\u003e/i);
-  assert.match(serialized, /\\u0026/);
+  expect(serialized).not.toMatch(/<\/script>/i);
+  expect(serialized).toMatch(/\\u003c\/script\\u003e/i);
+  expect(serialized).toMatch(/\\u0026/);
 });

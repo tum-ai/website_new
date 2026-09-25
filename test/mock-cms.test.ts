@@ -1,7 +1,6 @@
-import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import path from "node:path";
-import test from "node:test";
+import { expect, test } from "vitest";
 import {
   getMockEvents,
   getMockPartners,
@@ -12,10 +11,10 @@ import {
 const publicDir = path.resolve(import.meta.dirname, "../public");
 
 test("mock CMS data is opt-in and never used on Vercel", () => {
-  assert.equal(shouldUseMockCms({}), false);
-  assert.equal(shouldUseMockCms({ USE_MOCK_CMS: "0" }), false);
-  assert.equal(shouldUseMockCms({ USE_MOCK_CMS: "1" }), true);
-  assert.equal(shouldUseMockCms({ USE_MOCK_CMS: "1", VERCEL: "1" }), false);
+  expect(shouldUseMockCms({})).toBe(false);
+  expect(shouldUseMockCms({ USE_MOCK_CMS: "0" })).toBe(false);
+  expect(shouldUseMockCms({ USE_MOCK_CMS: "1" })).toBe(true);
+  expect(shouldUseMockCms({ USE_MOCK_CMS: "1", VERCEL: "1" })).toBe(false);
 });
 
 test("mock events cover upcoming and past events across filters", () => {
@@ -24,36 +23,36 @@ test("mock events cover upcoming and past events across filters", () => {
   const upcoming = events.filter((event) => new Date(event.event_date) >= now);
   const past = events.filter((event) => new Date(event.event_date) < now);
 
-  assert.ok(upcoming.length >= 3);
-  assert.ok(past.length >= 3);
-  assert.equal(new Set(events.map((event) => event.id)).size, events.length);
+  expect(upcoming.length).toBeGreaterThanOrEqual(3);
+  expect(past.length).toBeGreaterThanOrEqual(3);
+  expect(new Set(events.map((event) => event.id)).size).toBe(events.length);
   for (const category of ["Hackathon", "Speaker", "Event", "E-Lab"]) {
-    assert.ok(
+    expect(
       events.some((event) => event.category === category),
       category,
-    );
+    ).toBe(true);
   }
   for (const city of ["Munich", "Online"]) {
-    assert.ok(
+    expect(
       events.some((event) => event.city === city),
       city,
-    );
+    ).toBe(true);
   }
-  assert.ok(events.some((event) => event.description.length > 300));
-  assert.ok(events.some((event) => event.sign_up));
-  assert.ok(upcoming.some((event) => !event.sign_up));
+  expect(events.some((event) => event.description.length > 300)).toBe(true);
+  expect(events.some((event) => event.sign_up)).toBe(true);
+  expect(upcoming.some((event) => !event.sign_up)).toBe(true);
 });
 
 test("mock research covers both statuses with local images only", () => {
   const projects = getMockResearchProjects();
-  assert.ok(projects.some((project) => project.status === "ongoing"));
-  assert.ok(projects.some((project) => project.status === "completed"));
-  assert.ok(projects.some((project) => project.publication));
+  expect(projects.some((project) => project.status === "ongoing")).toBe(true);
+  expect(projects.some((project) => project.status === "completed")).toBe(true);
+  expect(projects.some((project) => project.publication)).toBe(true);
 
   const partners = getMockPartners();
-  assert.ok(
+  expect(
     partners.every((partner) => partner.category === "Research Partners"),
-  );
+  ).toBe(true);
 
   const images = [
     ...getMockEvents().flatMap((event) => [
@@ -65,7 +64,7 @@ test("mock research covers both statuses with local images only", () => {
   ].filter((image): image is string => Boolean(image));
 
   for (const image of images) {
-    assert.ok(image.startsWith("/assets/"), image);
-    assert.ok(existsSync(path.join(publicDir, image)), image);
+    expect(image).toMatch(/^\/assets\//);
+    expect(existsSync(path.join(publicDir, image)), image).toBe(true);
   }
 });

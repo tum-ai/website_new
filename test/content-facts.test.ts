@@ -1,7 +1,6 @@
-import assert from "node:assert/strict";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
-import test from "node:test";
+import { expect, test } from "vitest";
 
 import {
   eLabApplicationsCloseAt,
@@ -23,15 +22,13 @@ import { partnerStats } from "../src/data/partners.ts";
 import { parseMunichDateTime } from "../src/lib/munich-time.ts";
 
 test("Munich wall-clock times resolve summer and winter time", () => {
-  assert.equal(
-    parseMunichDateTime("26.09.2026", "23:59").toISOString(),
+  expect(parseMunichDateTime("26.09.2026", "23:59").toISOString()).toBe(
     "2026-09-26T21:59:00.000Z",
   );
-  assert.equal(
-    parseMunichDateTime("15.01.2027", "12:00").toISOString(),
+  expect(parseMunichDateTime("15.01.2027", "12:00").toISOString()).toBe(
     "2027-01-15T11:00:00.000Z",
   );
-  assert.throws(() => parseMunichDateTime("2026-09-26", "23:59"));
+  expect(() => parseMunichDateTime("2026-09-26", "23:59")).toThrow();
 });
 
 test("E-Lab applications close by themselves after the deadline minute", () => {
@@ -39,52 +36,49 @@ test("E-Lab applications close by themselves after the deadline minute", () => {
     eLabConfig.applicationDeadlineDate,
     eLabConfig.applicationDeadlineTime,
   );
-  assert.equal(eLabApplicationsCloseAt.getTime(), deadline.getTime() + 60_000);
+  expect(eLabApplicationsCloseAt.getTime()).toBe(deadline.getTime() + 60_000);
 
   const at = (offsetMs: number) => ({
     switchedOn: true,
     closesAt: eLabApplicationsCloseAt,
     now: new Date(deadline.getTime() + offsetMs),
   });
-  assert.equal(isApplicationWindowOpen(at(0)), true); // 23:59:00
-  assert.equal(isApplicationWindowOpen(at(59_999)), true); // 23:59:59.999
-  assert.equal(isApplicationWindowOpen(at(60_000)), false); // 00:00:00
-  assert.equal(isApplicationWindowOpen({ ...at(0), switchedOn: false }), false);
+  expect(isApplicationWindowOpen(at(0))).toBe(true); // 23:59:00
+  expect(isApplicationWindowOpen(at(59_999))).toBe(true); // 23:59:59.999
+  expect(isApplicationWindowOpen(at(60_000))).toBe(false); // 00:00:00
+  expect(isApplicationWindowOpen({ ...at(0), switchedOn: false })).toBe(false);
 });
 
 test("E-Lab teaser status has a variant for each phase", () => {
-  assert.equal(
-    eLabPhaseCopy.open.teaserStatus,
+  expect(eLabPhaseCopy.open.teaserStatus).toBe(
     `Applications open until ${eLabConfig.applicationDeadlineDate}`,
   );
-  assert.equal(
-    eLabPhaseCopy.closed.teaserStatus,
+  expect(eLabPhaseCopy.closed.teaserStatus).toBe(
     `Applications open in ${eLabConfig.nextApplicationWindow}`,
   );
 });
 
 test("E-Lab program length and proof points come from the config", () => {
   const weeks = `${eLabConfig.programWeeks}-week`;
-  assert.ok(eLabProgramSummary.startsWith(weeks));
+  expect(eLabProgramSummary.startsWith(weeks)).toBe(true);
   const commitment = eLabFaq.find(
     (item) => item.question === "What is the time commitment for the program?",
   );
-  assert.ok(commitment?.answer.includes(weeks));
+  expect(commitment?.answer).toContain(weeks);
 
   const metric = (id: string) => eLabMetrics.find((item) => item.id === id);
-  assert.equal(metric("iterations")?.to, eLabCompletedIterations);
-  assert.equal(metric("funding")?.to, eLabConfig.ventureFundingMillions);
+  expect(metric("iterations")?.to).toBe(eLabCompletedIterations);
+  expect(metric("funding")?.to).toBe(eLabConfig.ventureFundingMillions);
 });
 
 test("member figures add up and feed the partner stats", () => {
-  assert.equal(
-    officialMembers,
+  expect(officialMembers).toBe(
     organizationFacts.activeMembers + organizationFacts.alumni,
   );
   const members = partnerStats.find(
     (stat) => stat.label === "Official members",
   );
-  assert.equal(members?.value, `${officialMembers}+`);
+  expect(members?.value).toBe(`${officialMembers}+`);
 });
 
 test("the Apply FAQ timeline comes from the recruiting config", () => {
@@ -92,7 +86,7 @@ test("the Apply FAQ timeline comes from the recruiting config", () => {
     (item) => item.question === "How does the application timeline look like?",
   );
   for (const window of Object.values(membershipConfig.timeline)) {
-    assert.ok(timeline?.answer.includes(window), window);
+    expect(timeline?.answer, window).toContain(window);
   }
 });
 
@@ -142,5 +136,5 @@ test("pages read recurring facts from src/config instead of hardcoding them", ()
       }
     }
   }
-  assert.deepEqual(offences, []);
+  expect(offences).toStrictEqual([]);
 });
