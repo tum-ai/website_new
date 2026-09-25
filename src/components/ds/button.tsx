@@ -49,7 +49,11 @@ export const buttonStyles = cva(
         "icon-sm": "size-9",
       },
     },
-    compoundVariants: [{ variant: "link", className: "h-auto px-0" }],
+    compoundVariants: [
+      // Text-height links get a finger-sized hit area; the negative margin
+      // keeps their layout box unchanged.
+      { variant: "link", className: "-my-3 h-auto px-0 py-3" },
+    ],
     defaultVariants: { variant: "primary", size: "md" },
   },
 );
