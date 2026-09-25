@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity/visual-editing";
+import { MotionProvider } from "@/components/ds/motion-provider";
 import Footer from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { isSanityConfigured, SanityLive } from "@/lib/sanity";
@@ -51,11 +52,28 @@ export default async function RootLayout({
   const { isEnabled: isDraftMode } = await draftMode();
 
   return (
-    <html lang="en">
-      <body className={manrope.variable}>
-        <Header />
-        {children}
-        <Footer />
+    <html lang="en" className={manrope.variable}>
+      <body>
+        <a
+          href="#main-content"
+          className="fixed top-3 left-3 z-[100] -translate-y-[200%] rounded-full bg-white px-5 py-3 text-small font-semibold text-violet-950 shadow-lift transition-transform focus-visible:translate-y-0"
+        >
+          Skip to content
+        </a>
+        {/* Isolated root so Base UI portals always stack above page content. */}
+        <div className="isolate">
+          <MotionProvider>
+            <Header />
+            <div
+              id="main-content"
+              tabIndex={-1}
+              className="min-h-screen outline-none"
+            >
+              {children}
+            </div>
+            <Footer />
+          </MotionProvider>
+        </div>
         {isSanityConfigured ? <SanityLive includeDrafts={isDraftMode} /> : null}
         {isDraftMode ? <VisualEditing /> : null}
       </body>
