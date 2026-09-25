@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
+import { JSDOM } from "jsdom";
 import { describe, expect, test } from "vitest";
 
 /**
@@ -16,34 +17,24 @@ if (!existsSync(homepagePath)) {
   );
 }
 
-const homepageHtml = readFileSync(homepagePath, "utf8");
+const { document } = new JSDOM(readFileSync(homepagePath, "utf8")).window;
 
-function stripScripts(html: string) {
-  return html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, "");
+function hrefs(selector: string) {
+  return [...document.querySelectorAll(selector)]
+    .map((element) => element.getAttribute("href"))
+    .filter((href): href is string => href !== null);
 }
 
-function linkTags(html: string) {
-  return [...html.matchAll(/<link\b[^>]*>/g)].map(([tag]) => tag);
-}
-
-function hrefOf(tag: string) {
-  return tag.match(/href="([^"]+)"/)?.[1];
-}
-
-function getImagePreloads(html: string) {
-  return linkTags(html)
-    .filter((tag) => /rel="preload"/.test(tag) && /as="image"/.test(tag))
-    .map(hrefOf)
-    .filter((href): href is string => href !== undefined);
+/** Server-rendered markup without the inline RSC payload scripts. */
+function markupWithoutScripts() {
+  const root = document.documentElement.cloneNode(true) as HTMLElement;
+  for (const script of root.querySelectorAll("script")) script.remove();
+  return root.outerHTML;
 }
 
 /** The CSS the homepage actually links, read from the build output. */
-function getHomepageCss(html: string) {
-  const stylesheets = linkTags(html)
-    .filter((tag) => /rel="stylesheet"/.test(tag))
-    .map(hrefOf)
-    .filter((href): href is string => href?.startsWith("/_next/") ?? false);
-
+function getHomepageCss() {
+  const stylesheets = hrefs('link[rel="stylesheet"][href^="/_next/"]');
   expect(stylesheets.length, "homepage links no built CSS").toBeGreaterThan(0);
 
   return stylesheets
@@ -55,7 +46,7 @@ function getHomepageCss(html: string) {
 
 describe("homepage build output", () => {
   test("limits above-the-fold image preloads to the hero logo", () => {
-    const imagePreloads = getImagePreloads(homepageHtml);
+    const imagePreloads = hrefs('link[rel="preload"][as="image"]');
 
     expect(imagePreloads).toStrictEqual(["/assets/tum_ai_logo_new.svg"]);
     expect(imagePreloads).not.toContain("/assets/open_ai_speaker_event.webp");
@@ -65,14 +56,15 @@ describe("homepage build output", () => {
   });
 
   test("hero background stays decorative without server-rendered media tiles", () => {
-    const markup = stripScripts(homepageHtml);
+    const markup = markupWithoutScripts();
 
+    expect(markup).toContain('id="main-content"');
     expect(markup).not.toMatch(/brand-grid-tile/);
     expect(markup).not.toMatch(/mix-blend-overlay/);
   });
 
   test("linked CSS contains the Tailwind utilities the page uses", () => {
-    const css = getHomepageCss(homepageHtml);
+    const css = getHomepageCss();
 
     expect(css).toMatch(/\.fixed\s*\{/);
     expect(css).toMatch(/\.min-h-screen\s*\{/);
