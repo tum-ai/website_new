@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity/visual-editing";
@@ -44,6 +44,14 @@ export const metadata: Metadata = {
   },
 };
 
+/**
+ * Browser chrome (mobile status bar, Safari tab bar) matches the dark hero
+ * every page opens with, instead of falling back to white.
+ */
+export const viewport: Viewport = {
+  themeColor: "#1b0049",
+};
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -68,7 +76,7 @@ export default async function RootLayout({
             <div
               id="main-content"
               tabIndex={-1}
-              className="min-h-screen outline-none"
+              className="min-h-screen bg-white outline-none"
             >
               {children}
             </div>

@@ -366,11 +366,20 @@
     overflow-x: clip;
   }
 
+  /*
+   * The canvas is dark indigo so Safari's status-bar tint and overscroll
+   * areas continue the dark hero at the top of every page. Page content sits
+   * on its own bands (and #main-content is white), so no dark shows through.
+   */
+  html {
+    background-color: var(--color-dark-indigo);
+  }
+
   body {
     margin: 0;
     min-width: 320px;
     min-height: 100vh;
-    background-color: var(--color-white);
+    background-color: transparent;
     color: var(--color-dark-indigo);
     font-family: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
   }
