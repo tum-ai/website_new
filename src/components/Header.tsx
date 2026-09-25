@@ -1,6 +1,6 @@
 "use client";
 
-import { Drawer } from "@base-ui/react/drawer";
+import { Dialog } from "@base-ui/react/dialog";
 import { ArrowUpRight, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -12,7 +12,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { Aurora } from "@/components/ds/aurora";
+import { BrandMark } from "@/components/ds/brand-mark";
 import { ButtonLink } from "@/components/ds/button";
 import { cn } from "@/lib/utils";
 
@@ -33,19 +33,21 @@ const socialLinks = [
 ];
 
 /**
- * Site header, always visible.
+ * Site header: a floating pill, always visible.
  *
- * - Transparent over the dark page hero; solid once the page scrolls.
- * - Phones: a full-width bar flush with the top edge. Its solid fill is the
- *   same dark indigo as the browser status bar (theme-color and root canvas in
- *   layout.tsx / index.css), so both read as one continuous top bar.
- * - md and up: a floating frosted pill.
+ * - Transparent over the dark page hero; frosted once the page scrolls.
+ * - The fixed element starts 12px below the top edge on purpose: Safari 26
+ *   tints its status bar from fixed elements touching the top, and we want
+ *   the page itself to show through there once it scrolls.
  * - Home keeps the logo hidden until the hero (which shows it large) scrolls
- *   away. /partners keeps the bar solid and swaps the CTA for its in-page
+ *   away. /partners keeps the pill frosted and swaps the CTA for its in-page
  *   contact anchor.
- * - Below xl the navigation lives in a Base UI Drawer (focus trap, scroll
- *   lock, Escape and swipe-to-dismiss included).
- * - Bar bottom stays within 80px: /partners anchors use a 110px scroll margin.
+ * - Below xl the navigation opens as a full-screen Base UI Dialog (focus
+ *   trap, scroll lock, Escape, focus return; deliberately no swipe gesture).
+ *   Its flat dark-indigo panel covers the whole large viewport, so Safari's
+ *   top and bottom bars both tint to the same color and nothing of the page
+ *   shows below it.
+ * - Pill bottom stays within 80px: /partners anchors use a 110px scroll margin.
  */
 export const Header = () => {
   const pathname = usePathname();
@@ -132,14 +134,14 @@ export const Header = () => {
     : { href: "/apply", label: "Become a Member" };
 
   return (
-    <Drawer.Root open={open} onOpenChange={setOpen} swipeDirection="right">
-      <header className="pointer-events-none fixed inset-x-0 top-0 z-40">
-        <div className="mx-auto w-full md:w-[min(82rem,calc(100%-2*var(--gutter)+2rem))] md:pt-3">
+    <Dialog.Root open={open} onOpenChange={setOpen}>
+      <header className="pointer-events-none fixed inset-x-0 top-2.5 z-40 md:top-3">
+        <div className="mx-auto w-[min(82rem,calc(100%-1.25rem))] md:w-[min(82rem,calc(100%-2*var(--gutter)+2rem))]">
           <div
             className={cn(
-              "pointer-events-auto relative flex h-14 items-center gap-2 border-b pr-3 pl-5 text-white transition-[background-color,border-color,box-shadow] duration-500 ease-brand md:rounded-full md:border md:pr-2",
+              "pointer-events-auto relative flex h-14 items-center gap-2 rounded-full border pr-2 pl-4 text-white transition-[background-color,border-color,box-shadow] duration-500 ease-brand md:pl-5",
               solid
-                ? "border-white/10 bg-[#1b0049] shadow-[0_12px_32px_-22px_rgb(13_2_20/0.9)] md:bg-[#0d0214]/75 md:shadow-[0_16px_40px_-18px_rgb(13_2_20/0.8)] md:backdrop-blur-xl md:backdrop-saturate-150"
+                ? "border-white/10 bg-[#0d0214]/75 shadow-[0_16px_40px_-18px_rgb(13_2_20/0.8)] backdrop-blur-xl backdrop-saturate-150"
                 : "border-transparent bg-transparent",
             )}
           >
@@ -213,7 +215,7 @@ export const Header = () => {
               >
                 {cta.label}
               </ButtonLink>
-              <Drawer.Trigger
+              <Dialog.Trigger
                 aria-label="Open menu"
                 className="group/menu grid size-10 place-items-center rounded-full bg-white/10 text-white transition-colors duration-300 hover:bg-white/20 xl:hidden"
               >
@@ -221,107 +223,108 @@ export const Header = () => {
                   <span className="h-[1.5px] w-full rounded-full bg-current transition-transform duration-300 ease-brand group-hover/menu:translate-x-0.5" />
                   <span className="h-[1.5px] w-2/3 rounded-full bg-current transition-[width] duration-300 ease-brand group-hover/menu:w-full" />
                 </span>
-              </Drawer.Trigger>
+              </Dialog.Trigger>
             </div>
           </div>
         </div>
       </header>
 
-      <Drawer.Portal>
-        <Drawer.Backdrop className="fixed inset-0 z-50 bg-ink-950/60 opacity-[calc(1-var(--drawer-swipe-progress,0))] backdrop-blur-sm transition-opacity duration-500 ease-brand data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 data-[swiping]:duration-0 supports-[-webkit-touch-callout:none]:absolute" />
-        <Drawer.Viewport className="fixed inset-0 z-50 flex justify-end">
-          <Drawer.Popup
-            data-tone="ink"
-            className="group/drawer relative isolate flex h-full w-full max-w-md flex-col overflow-y-auto overscroll-contain outline-none [transform:translateX(var(--drawer-swipe-movement-x,0px))] transition-transform duration-500 ease-snappy data-[ending-style]:[transform:translateX(100%)] data-[starting-style]:[transform:translateX(100%)] data-[swiping]:select-none motion-reduce:transition-none"
-          >
-            <div aria-hidden className="grain -z-10" />
-            <Aurora intensity="subtle" />
-            <Drawer.Content className="flex min-h-full flex-col">
-              <div className="flex h-14 items-center justify-between pr-3 pl-5 md:h-[4.25rem] md:px-6 md:pt-2.5">
-                <img
-                  src="/assets/tum_ai_logo_new.svg"
-                  alt=""
-                  width={1640}
-                  height={406}
-                  loading="lazy"
-                  className="h-6 w-auto"
-                />
-                <Drawer.Close
-                  aria-label="Close menu"
-                  className="grid size-10 place-items-center rounded-full bg-white/10 text-white transition-[background-color,rotate] duration-300 ease-brand hover:rotate-90 hover:bg-white/20"
-                >
-                  <X aria-hidden className="size-4" />
-                </Drawer.Close>
-              </div>
-              <Drawer.Title className="sr-only">Menu</Drawer.Title>
-              <nav aria-label="Main" className="flex-1 px-6 pt-8">
-                <ul>
-                  {links.map(({ href, text }, index) => {
-                    const active = isActive(href);
-                    return (
-                      <li
-                        key={href}
-                        style={{ transitionDelay: `${90 + index * 45}ms` }}
-                        className="transition-[opacity,translate] duration-700 ease-brand group-data-[starting-style]/drawer:translate-x-8 group-data-[starting-style]/drawer:opacity-0 motion-reduce:transition-none"
-                      >
-                        <Link
-                          href={href}
-                          aria-current={active ? "page" : undefined}
-                          onClick={() => setOpen(false)}
-                          className="group/item flex items-center justify-between border-b border-hairline py-4 text-heading-lg text-fg transition-colors duration-300 hover:text-violet-300"
-                        >
-                          <span className="flex items-center gap-3">
-                            {text}
-                            {active ? (
-                              <span
-                                aria-hidden
-                                className="size-1.5 rounded-full bg-violet-400"
-                              />
-                            ) : null}
-                          </span>
-                          <ArrowUpRight
-                            aria-hidden
-                            className="size-5 -translate-x-1 opacity-0 transition-[opacity,translate] duration-300 ease-brand group-hover/item:translate-x-0 group-hover/item:opacity-100"
-                          />
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </nav>
-              <div className="px-6 pt-10 pb-8">
-                <ButtonLink
-                  href={cta.href}
-                  size="lg"
-                  arrow
-                  className="w-full"
-                  onClick={() => setOpen(false)}
-                >
-                  {cta.label}
-                </ButtonLink>
-                <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-small text-fg-muted">
-                  {socialLinks.map(({ href, text }) => (
-                    <li key={href}>
-                      <a
+      <Dialog.Portal>
+        <Dialog.Backdrop className="fixed inset-x-0 top-0 z-50 h-lvh bg-ink-950/60 backdrop-blur-sm transition-opacity duration-500 ease-brand data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 motion-reduce:transition-none" />
+        <Dialog.Popup
+          data-tone="ink"
+          className="group/menu-panel fixed top-0 right-0 z-50 isolate h-lvh w-full max-w-md overflow-y-auto overscroll-contain bg-canvas outline-none transition-[translate] duration-500 ease-snappy data-[ending-style]:translate-x-full data-[starting-style]:translate-x-full motion-reduce:transition-none"
+        >
+          <BrandMark
+            drift={false}
+            className="absolute right-[-18%] bottom-[18%] -z-10 w-[85%] text-white/[0.035]"
+          />
+          {/* Content fills the visible viewport; the panel itself extends under Safari's toolbars. */}
+          <div className="flex min-h-dvh flex-col">
+            <div className="flex h-[4.25rem] items-center justify-between pt-2.5 pr-[1.125rem] pl-[1.625rem] md:pt-3 md:pr-[calc(var(--gutter)-0.5rem)] md:pl-8">
+              <img
+                src="/assets/tum_ai_logo_new.svg"
+                alt=""
+                width={1640}
+                height={406}
+                loading="lazy"
+                className="h-6 w-auto md:h-7"
+              />
+              <Dialog.Close
+                aria-label="Close menu"
+                className="grid size-10 place-items-center rounded-full bg-white/10 text-white transition-[background-color,rotate] duration-300 ease-brand hover:rotate-90 hover:bg-white/20"
+              >
+                <X aria-hidden className="size-4" />
+              </Dialog.Close>
+            </div>
+            <Dialog.Title className="sr-only">Menu</Dialog.Title>
+            <nav aria-label="Main" className="flex-1 px-6 pt-8">
+              <ul>
+                {links.map(({ href, text }, index) => {
+                  const active = isActive(href);
+                  return (
+                    <li
+                      key={href}
+                      style={{ transitionDelay: `${90 + index * 45}ms` }}
+                      className="transition-[opacity,translate] duration-700 ease-brand group-data-[starting-style]/menu-panel:translate-x-8 group-data-[starting-style]/menu-panel:opacity-0 motion-reduce:transition-none"
+                    >
+                      <Link
                         href={href}
-                        target={href.startsWith("http") ? "_blank" : undefined}
-                        rel={
-                          href.startsWith("http")
-                            ? "noopener noreferrer"
-                            : undefined
-                        }
-                        className="transition-colors duration-300 hover:text-fg"
+                        aria-current={active ? "page" : undefined}
+                        onClick={() => setOpen(false)}
+                        className="group/item flex items-center justify-between border-b border-hairline py-4 text-heading-lg text-fg transition-colors duration-300 hover:text-violet-300"
                       >
-                        {text}
-                      </a>
+                        <span className="flex items-center gap-3">
+                          {text}
+                          {active ? (
+                            <span
+                              aria-hidden
+                              className="size-1.5 rounded-full bg-violet-400"
+                            />
+                          ) : null}
+                        </span>
+                        <ArrowUpRight
+                          aria-hidden
+                          className="size-5 -translate-x-1 opacity-0 transition-[opacity,translate] duration-300 ease-brand group-hover/item:translate-x-0 group-hover/item:opacity-100"
+                        />
+                      </Link>
                     </li>
-                  ))}
-                </ul>
-              </div>
-            </Drawer.Content>
-          </Drawer.Popup>
-        </Drawer.Viewport>
-      </Drawer.Portal>
-    </Drawer.Root>
+                  );
+                })}
+              </ul>
+            </nav>
+            <div className="px-6 pt-10 pb-8">
+              <ButtonLink
+                href={cta.href}
+                size="lg"
+                arrow
+                className="w-full"
+                onClick={() => setOpen(false)}
+              >
+                {cta.label}
+              </ButtonLink>
+              <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-small text-fg-muted">
+                {socialLinks.map(({ href, text }) => (
+                  <li key={href}>
+                    <a
+                      href={href}
+                      target={href.startsWith("http") ? "_blank" : undefined}
+                      rel={
+                        href.startsWith("http")
+                          ? "noopener noreferrer"
+                          : undefined
+                      }
+                      className="transition-colors duration-300 hover:text-fg"
+                    >
+                      {text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </Dialog.Popup>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 };

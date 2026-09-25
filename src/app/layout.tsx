@@ -65,7 +65,7 @@ export default async function RootLayout({
       <body suppressHydrationWarning>
         <a
           href="#main-content"
-          className="fixed top-3 left-3 z-[100] -translate-y-[200%] rounded-full bg-white px-5 py-3 text-small font-semibold text-violet-950 shadow-lift transition-transform focus-visible:translate-y-0"
+          className="absolute top-3 left-3 z-[100] -translate-y-[200%] rounded-full bg-white px-5 py-3 text-small font-semibold text-violet-950 shadow-lift transition-transform focus-visible:translate-y-0"
         >
           Skip to content
         </a>
