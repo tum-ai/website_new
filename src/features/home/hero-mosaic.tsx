@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { type CSSProperties, useEffect, useRef, useState } from "react";
-import { pictures } from "@/data/homepage";
+import { pictures } from "./data/homepage";
 
 const COLUMN_COUNT = 4;
 const TILES_PER_COLUMN = 5;

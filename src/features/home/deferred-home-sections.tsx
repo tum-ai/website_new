@@ -43,13 +43,19 @@ function ExploreBentoSkeleton() {
 }
 
 /** Community photo rail (see ScrollSection). */
-export const DeferredPhotoRail = dynamic(() => import("./ScrollSection"), {
-  ssr: false,
-  loading: PhotoRailSkeleton,
-});
+export const DeferredPhotoRail = dynamic(
+  () => import("./scroll-section").then((m) => m.ScrollSection),
+  {
+    ssr: false,
+    loading: PhotoRailSkeleton,
+  },
+);
 
 /** Events, Research, Projects and E-Lab bento (see ExploreBento). */
-export const DeferredExploreBento = dynamic(() => import("./ExploreBento"), {
-  ssr: false,
-  loading: ExploreBentoSkeleton,
-});
+export const DeferredExploreBento = dynamic(
+  () => import("./explore-bento").then((m) => m.ExploreBento),
+  {
+    ssr: false,
+    loading: ExploreBentoSkeleton,
+  },
+);

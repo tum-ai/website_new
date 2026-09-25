@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Marquee } from "@/components/ds";
-import { pictures } from "@/data/homepage";
+import { pictures } from "./data/homepage";
 import { PHOTO_RAIL_ITEM } from "./deferred-layout";
 
 /**
@@ -37,5 +37,3 @@ export function ScrollSection() {
     </div>
   );
 }
-
-export default ScrollSection;

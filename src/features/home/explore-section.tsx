@@ -1,5 +1,5 @@
 import { Container, Highlight, Section, SectionHeader } from "@/components/ds";
-import { DeferredExploreBento } from "./DeferredHomeSections";
+import { DeferredExploreBento } from "./deferred-home-sections";
 
 /**
  * Server-rendered band and heading for the destinations bento; the photo

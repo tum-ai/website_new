@@ -1,17 +1,17 @@
-import "@/styles/pages/home.css";
+import "./home.css";
 import { ButtonLink, CtaBand, Highlight } from "@/components/ds";
-import { AboutSection } from "@/components/home/AboutSection";
-import { ExploreSection } from "@/components/home/ExploreSection";
-import { HomeHero } from "@/components/home/HomeHero";
-import { PartnersSection } from "@/components/home/PartnersSection";
 import { getPartnershipEmailUrl } from "@/features/partners";
+import { AboutSection } from "./about-section";
+import { ExploreSection } from "./explore-section";
+import { HomeHero } from "./home-hero";
+import { PartnersSection } from "./partners-section";
 
 /**
  * Home page: ink hero, "What is TUM.ai?" (paper and mist), the destinations
  * bento, the partner teaser (ink) and a closing call to action. Must stay
  * statically prerendered; see HomeHero for the image-preload contract.
  */
-export default function Homepage() {
+export function HomePage() {
   return (
     <main>
       <HomeHero />

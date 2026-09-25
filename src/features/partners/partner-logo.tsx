@@ -10,7 +10,7 @@ type PartnerLogoProps = {
 
 /*
  * `partner-logo-image`, `partner-logo-fallback` and `partner-logo-lockup` are
- * hooks for the rotation dissolve in src/styles/partners.css. The surrounding
+ * hooks for the rotation dissolve in partners.css. The surrounding
  * tile caps the logo size through `[&_.partner-logo-image]:…` variants.
  */
 export function PartnerLogo(props: PartnerLogoProps) {

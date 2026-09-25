@@ -12,8 +12,8 @@ import {
   type StatItem,
 } from "@/components/ds";
 import { organizationFacts } from "@/config/organization";
-import { aboutText } from "@/data/homepage";
-import { DeferredPhotoRail } from "./DeferredHomeSections";
+import { aboutText } from "./data/homepage";
+import { DeferredPhotoRail } from "./deferred-home-sections";
 
 const PRIMARY_KEYWORDS = new Set([
   "members",

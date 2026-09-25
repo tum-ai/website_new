@@ -115,5 +115,3 @@ export function ExploreBento() {
     </ul>
   );
 }
-
-export default ExploreBento;

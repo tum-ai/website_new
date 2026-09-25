@@ -11,7 +11,7 @@ import {
   TopBlend,
 } from "@/components/ds";
 import { getPartnershipEmailUrl } from "@/features/partners";
-import { HeroMosaic } from "./HeroMosaic";
+import { HeroMosaic } from "./hero-mosaic";
 
 /**
  * Home hero: full-height ink band with the logo, the tagline as the page's
