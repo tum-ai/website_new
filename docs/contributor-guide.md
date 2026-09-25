@@ -49,6 +49,20 @@ Edit:
 - `src/components/Footer.tsx`
 - `src/app/layout.tsx` if the global shell itself changes
 
+### Update site facts (cohorts, recruiting, figures, contacts)
+
+Facts that change every semester or cohort live in one file each under `src/config/`. Pages, FAQs and JSON-LD read them from there, so one edit updates every page. `test/content-facts.test.ts` fails when a page types one of these facts in directly.
+
+| Update | Edit |
+|---|---|
+| E-Lab applications open or close, new deadline | `src/config/e-lab.ts`: `applicationsOpen`, `applicationDeadlineDate`, `applicationDeadlineTime`, `applicationUrl` |
+| When the next E-Lab application phase opens (shown while closed) | `src/config/e-lab.ts`: `nextApplicationWindow` |
+| New E-Lab cohort | `src/config/e-lab.ts`: `currentIteration` (and `heroLogo.src` if the logo changes). The completed-iterations metric follows. |
+| E-Lab length or money raised | `src/config/e-lab.ts`: `programWeeks`, `ventureFundingMillions` |
+| Membership recruiting round | `src/config/membership.ts`: `applicationsOpen`, `applicationUrl`, `timeline` |
+| Member counts, majors, universities, nationalities | `src/config/organization.ts` |
+| Role emails and social links | `src/config/contact.ts` |
+
 ### Change static copy or curated content
 
 Check `src/data/` first.

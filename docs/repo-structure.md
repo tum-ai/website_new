@@ -25,7 +25,7 @@ This document explains how the repository is organized today and which layer own
 src/
 ├── app/         route entrypoints, API handlers, root layout, and embedded CMS (/studio)
 ├── components/  shared UI and page sections
-├── config/      SEO and metadata configuration
+├── config/      site facts (E-Lab, recruiting, figures, contacts) and SEO
 ├── data/        static copy and FAQs
 ├── lib/         helpers, types, security, redirects, Sanity cache wrapper
 ├── sanity/      CMS configuration and schemas
@@ -229,6 +229,7 @@ If you need to change:
 - CMS schemas: `src/sanity/schemas/`
 - live data fetching: `src/lib/sanity.ts`
 - SEO: `src/config/seo.ts`
+- site facts (E-Lab phase, recruiting, member figures, contacts): `src/config/`
 - global shell: `src/app/layout.tsx`, `src/components/Header.tsx`, `src/components/Footer.tsx`
 - global styles/tokens: `src/styles/index.css`
 - static media: `public/assets/`
