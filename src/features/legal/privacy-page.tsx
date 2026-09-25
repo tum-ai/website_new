@@ -5,8 +5,8 @@ import {
   LegalSection,
   LegalSubsection,
   legalLinkClass,
-} from "./LegalDocument";
-import { LegalToc, type LegalTocItem } from "./LegalToc";
+} from "./legal-document";
+import { LegalToc, type LegalTocItem } from "./legal-toc";
 
 /** Section headings, verbatim; also feed the table of contents. */
 const sections = [
@@ -40,7 +40,7 @@ const sections = [
   },
 ] satisfies LegalTocItem[];
 
-export default function DataPrivacy() {
+export function PrivacyPage() {
   const [
     verantwortlicher,
     personenbezogen,

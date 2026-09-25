@@ -1,11 +1,11 @@
 import { Container, PageHero, Section } from "@/components/ds";
-import { LegalNav } from "./LegalDocument";
+import { LegalNav } from "./legal-document";
 
 /**
  * The disclaimer is one paragraph; it is set as an editorial split (opening
  * statement left, the rest right) without changing a word.
  */
-export default function Disclaimer() {
+export function DisclaimerPage() {
   return (
     <main>
       <PageHero

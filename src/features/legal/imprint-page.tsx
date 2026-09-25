@@ -1,6 +1,6 @@
 import { Container, Eyebrow, PageHero, Prose, Section } from "@/components/ds";
 import { contactEmails, registeredOfficeAddressLine } from "@/config/contact";
-import { LegalNav, LegalSection, legalLinkClass } from "./LegalDocument";
+import { LegalNav, LegalSection, legalLinkClass } from "./legal-document";
 
 /** Organisation facts, shown as a definition list. Values are verbatim. */
 const organisation = [
@@ -17,7 +17,7 @@ const organisation = [
   },
 ] satisfies { term: string; value: string; href?: string }[];
 
-export default function Imprint() {
+export function ImprintPage() {
   return (
     <main lang="de">
       <PageHero

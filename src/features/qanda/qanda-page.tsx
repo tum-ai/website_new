@@ -13,7 +13,7 @@ import {
   Section,
 } from "@/components/ds";
 import { contactEmails } from "@/config/contact";
-import { faqs } from "@/data/qanda";
+import { faqs } from "./data/qanda";
 
 /**
  * The homepage's "More on our Mission" link lands here, so the mission answer
@@ -107,7 +107,7 @@ function MissionStatement({ answer }: { answer: string }) {
   );
 }
 
-export default function QandA() {
+export function QandAPage() {
   const faqIndex = mission ? "02" : "01";
   return (
     <main>

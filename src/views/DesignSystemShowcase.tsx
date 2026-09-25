@@ -34,7 +34,7 @@ import {
 import { socialLinks } from "@/config/contact";
 import { eLabConfig } from "@/config/e-lab";
 import { organizationFacts } from "@/config/organization";
-import { faqs } from "@/data/qanda";
+import { faqs } from "@/features/qanda";
 import { DesignSystemInteractive } from "./DesignSystemInteractive";
 
 const tones: { tone: Tone; name: string; hex: string }[] = [
