@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { DesignSystemShowcase } from "@/views/DesignSystemShowcase";
+import { DesignSystemPage } from "@/features/design-system";
 
 export const metadata: Metadata = {
   title: "Design system",
@@ -16,5 +16,5 @@ export default function Page() {
     process.env.NODE_ENV !== "production" ||
     process.env.VERCEL_ENV === "preview";
   if (!enabled) notFound();
-  return <DesignSystemShowcase />;
+  return <DesignSystemPage />;
 }

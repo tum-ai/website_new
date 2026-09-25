@@ -35,7 +35,7 @@ import { socialLinks } from "@/config/contact";
 import { eLabConfig } from "@/config/e-lab";
 import { organizationFacts } from "@/config/organization";
 import { faqs } from "@/features/qanda";
-import { DesignSystemInteractive } from "./DesignSystemInteractive";
+import { DesignSystemInteractive } from "./design-system-interactive";
 
 const tones: { tone: Tone; name: string; hex: string }[] = [
   { tone: "paper", name: "Paper", hex: "#FFFFFF" },
@@ -84,7 +84,7 @@ function Block({
   );
 }
 
-export function DesignSystemShowcase() {
+export function DesignSystemPage() {
   return (
     <main>
       <PageHero
