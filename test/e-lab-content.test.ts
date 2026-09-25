@@ -45,8 +45,9 @@ test("E-Lab metrics match the approved proof points", () => {
 });
 
 test("E-Lab deadline is centralized and used by the FAQ", () => {
-  assert.equal(eLabConfig.applicationDeadline, "26.09.2026 at 23:59");
-  assert.equal(eLabApplicationCopy.deadline, eLabConfig.applicationDeadline);
+  assert.equal(eLabConfig.applicationDeadlineDate, "26.09.2026");
+  assert.equal(eLabConfig.applicationDeadlineTime, "23:59");
+  assert.equal(eLabApplicationCopy.deadline, "26.09.2026 at 23:59");
 
   const deadlineFaq = faq.find(
     (item) => item.question === "When is the application deadline?",

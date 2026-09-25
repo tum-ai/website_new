@@ -15,6 +15,7 @@ import {
 import { BrandMark } from "@/components/ds/brand-mark";
 import { ButtonLink } from "@/components/ds/button";
 import { useInertBackground } from "@/components/ds/dialog";
+import { contactEmails, socialLinks } from "@/config/contact";
 import { cn } from "@/lib/utils";
 
 const links = [
@@ -27,10 +28,10 @@ const links = [
   { href: "/qanda", text: "Q&A" },
 ];
 
-const socialLinks = [
-  { href: "https://de.linkedin.com/company/tum-ai", text: "LinkedIn" },
-  { href: "https://www.instagram.com/tum.ai_official/", text: "Instagram" },
-  { href: "mailto:contact@tum-ai.com", text: "Email" },
+const connectLinks = [
+  { href: socialLinks.linkedin, text: "LinkedIn" },
+  { href: socialLinks.instagram, text: "Instagram" },
+  { href: `mailto:${contactEmails.general}`, text: "Email" },
 ];
 
 /**
@@ -313,7 +314,7 @@ export const Header = () => {
                 {cta.label}
               </ButtonLink>
               <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-small text-fg-muted">
-                {socialLinks.map(({ href, text }) => (
+                {connectLinks.map(({ href, text }) => (
                   <li key={href}>
                     <a
                       href={href}

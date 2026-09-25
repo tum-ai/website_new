@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
-import { registeredOfficePostalAddress } from "@/config/contact";
+import {
+  contactEmails,
+  registeredOfficePostalAddress,
+  socialLinks,
+} from "@/config/contact";
+import { organizationFacts } from "@/config/organization";
 
 const siteUrl = "https://www.tum-ai.com";
 const socialImagePath = "/assets/logo_new_white_standard.png";
@@ -16,22 +21,22 @@ export const baseOrganizationJsonLd = {
   url: "https://www.tum-ai.com",
   logo: "https://upload.wikimedia.org/wikipedia/commons/a/a2/TUM.ai_Logo_Blue_%26_Violet.svg",
   sameAs: [
-    "https://www.linkedin.com/company/tum-ai",
-    "https://www.instagram.com/tum.ai_official/",
-    "https://www.facebook.com/p/Tumai-100064870068663/",
-    "https://x.com/TUMai_official",
-    "https://www.youtube.com/@tum.aistudentinitiative",
+    socialLinks.linkedin,
+    socialLinks.instagram,
+    socialLinks.facebook,
+    socialLinks.x,
+    socialLinks.youtube,
     "http://www.wikidata.org/entity/Q128339659",
-    "https://github.com/tum-ai",
+    socialLinks.github,
     "https://www.crunchbase.com/organization/tum-ai",
     "https://www.reddit.com/r/TUM_ai/",
-    "https://www.tiktok.com/@tum.ai_",
+    socialLinks.tiktok,
     "https://tum-ai.podbean.com/",
     "https://theorg.com/org/tum-ai",
     "https://www.eventbrite.de/o/tumai-31793295023",
   ],
-  email: "contact@tum-ai.com",
-  foundingDate: "2020",
+  email: contactEmails.general,
+  foundingDate: String(organizationFacts.foundingYear),
   foundingLocation: "Munich, Germany",
   location: [
     {
@@ -55,7 +60,7 @@ export const baseOrganizationJsonLd = {
   },
   contactPoint: {
     "@type": "ContactPoint",
-    email: "partners@tum-ai.com",
+    email: contactEmails.partners,
     contactType: "Partner and sponsorship inquiries",
   },
 };

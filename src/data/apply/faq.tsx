@@ -1,3 +1,8 @@
+import { contactEmails } from "@/config/contact";
+import { membershipConfig } from "@/config/membership";
+
+const { timeline } = membershipConfig;
+
 export const faq = [
   {
     question: "Do I need to be proficient in AI to join TUM.ai?",
@@ -6,8 +11,7 @@ export const faq = [
   },
   {
     question: "How does the application timeline look like?",
-    answer:
-      "Application September 24th - October 27th: Fill out our application form. Interview November 2nd - November 8th: If you passed the screening phase, we will invite you to an interview round to get to know you better. Onboarding (Mandatory) November 14th - November 16th: Congratulations! You are invited to our Onboarding program to get to know TUM.ai!",
+    answer: `Application ${timeline.application}: Fill out our application form. Interview ${timeline.interview}: If you passed the screening phase, we will invite you to an interview round to get to know you better. Onboarding (Mandatory) ${timeline.onboarding}: Congratulations! You are invited to our Onboarding program to get to know TUM.ai!`,
   },
   {
     question: "How should I prepare myself for the interview?",
@@ -16,7 +20,6 @@ export const faq = [
   },
   {
     question: "Where can I contact TUM.ai for recruitment purposes?",
-    answer:
-      "If you have further questions, feel free to write us an email at recruitment@tum-ai.com.",
+    answer: `If you have further questions, feel free to write us an email at ${contactEmails.recruitment}.`,
   },
 ];

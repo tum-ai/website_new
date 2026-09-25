@@ -1,5 +1,5 @@
 import { Container, Eyebrow, PageHero, Prose, Section } from "@/components/ds";
-import { registeredOfficeAddressLine } from "@/config/contact";
+import { contactEmails, registeredOfficeAddressLine } from "@/config/contact";
 import { LegalNav, LegalSection, legalLinkClass } from "./LegalDocument";
 
 /** Organisation facts, shown as a definition list. Values are verbatim. */
@@ -12,8 +12,8 @@ const organisation = [
   },
   {
     term: "Mail",
-    value: "contact@tum-ai.com",
-    href: "mailto:contact@tum-ai.com",
+    value: contactEmails.general,
+    href: `mailto:${contactEmails.general}`,
   },
 ] satisfies { term: string; value: string; href?: string }[];
 

@@ -1,3 +1,5 @@
+import { eLabCompletedIterations, eLabConfig } from "@/config/e-lab";
+
 /** A numeric E-Lab proof point rendered with a count-up animation. */
 export interface Metric {
   id: string;
@@ -51,7 +53,7 @@ export const eLabMetrics = [
     id: "funding",
     label: "raised by E-Lab ventures",
     from: 0,
-    to: 8,
+    to: eLabConfig.ventureFundingMillions,
     prefix: "€",
     suffix: "M",
   },
@@ -59,7 +61,7 @@ export const eLabMetrics = [
     id: "iterations",
     label: "E-Lab Iterations",
     from: 0,
-    to: 5,
+    to: eLabCompletedIterations,
   },
 ] satisfies readonly Metric[];
 

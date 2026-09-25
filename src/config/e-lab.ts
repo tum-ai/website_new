@@ -1,36 +1,74 @@
-/** Cohort-specific settings shared by the E-Lab page and application CTAs. */
+/**
+ * Single source for E-Lab facts: the cohort, whether applications are open,
+ * the deadline and the program length. Every page (the E-Lab page, the
+ * landing page's E-Lab card, the FAQ, JSON-LD) derives its copy from here, so
+ * a new cohort or phase is one edit in this file. See "Updating site facts"
+ * in docs/contributor-guide.md.
+ */
 export type ELabConfig = {
   currentIteration: string;
   applicationsOpen: boolean;
   applicationUrl: string;
-  applicationDeadline: string;
+  applicationDeadlineDate: string;
+  applicationDeadlineTime: string;
+  /** When the next application phase opens; shown while applications are closed. */
+  nextApplicationWindow: string;
+  programWeeks: number;
+  /** Money raised by E-Lab ventures, in million euros. */
+  ventureFundingMillions: number;
   heroLogo: {
     src: string;
     alt: string;
   };
 };
 
+/**
+ * Update this when the next E-Lab cohort launches, e.g. "6.0".
+ * If the cohort logo changes, update heroLogo at the same time.
+ */
+const currentIteration = "6.0";
+
 export const eLabConfig: ELabConfig = {
-  /**
-   * Update this when the next E-Lab cohort launches, e.g. "6.0".
-   * If the cohort logo changes, update heroLogo at the same time.
-   */
-  currentIteration: "6.0",
+  currentIteration,
   /** Toggle this when applications open or close. */
   applicationsOpen: true,
   applicationUrl: "https://tally.so/r/xXBkW9",
-  applicationDeadline: "26.09.2026 at 23:59",
+  applicationDeadlineDate: "26.09.2026",
+  applicationDeadlineTime: "23:59",
+  nextApplicationWindow: "August",
+  programWeeks: 14,
+  ventureFundingMillions: 8,
   heroLogo: {
     src: "/assets/e-lab/E-Lab5Logo.svg",
-    alt: "E-LAB 6.0",
+    alt: `E-LAB ${currentIteration}`,
   },
 };
+
+/** Short status for teasers elsewhere on the site, e.g. the landing page. */
+export function getELabTeaserStatus(
+  config: Pick<
+    ELabConfig,
+    "applicationsOpen" | "applicationDeadlineDate" | "nextApplicationWindow"
+  >,
+): string {
+  return config.applicationsOpen
+    ? `Applications open until ${config.applicationDeadlineDate}`
+    : `Applications open in ${config.nextApplicationWindow}`;
+}
+
+/** "14-week equity-free AI startup incubator". */
+export const eLabProgramSummary = `${eLabConfig.programWeeks}-week equity-free AI startup incubator`;
+
+/** Cohorts that have run so far: the current one is still ahead. */
+export const eLabCompletedIterations =
+  Number.parseInt(eLabConfig.currentIteration, 10) - 1;
 
 const cohortName = `E-Lab ${eLabConfig.currentIteration}`;
 
 export const eLabApplicationCopy = {
   cohortName,
-  deadline: eLabConfig.applicationDeadline,
+  deadline: `${eLabConfig.applicationDeadlineDate} at ${eLabConfig.applicationDeadlineTime}`,
+  teaserStatus: getELabTeaserStatus(eLabConfig),
   heroCtaLabel: eLabConfig.applicationsOpen
     ? `${cohortName} - Apply Now!`
     : `${cohortName} - Applications Closed`,

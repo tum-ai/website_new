@@ -34,6 +34,7 @@ import { PartnershipProvider } from "@/components/partners/PartnershipContext";
 import PartnershipFinder from "@/components/partners/PartnershipFinder";
 import PartnerTier from "@/components/partners/PartnerTier";
 import StatValue from "@/components/partners/StatValue";
+import { officialMembers, organizationFacts } from "@/config/organization";
 import { alumniDestinations } from "@/data/partner-logos";
 import {
   partnerCaseStudies,
@@ -376,15 +377,15 @@ export default function Partners({
                     strokeWidth={1.3}
                   />
                   <strong className="mt-8 text-[clamp(2.5rem,1.6rem+2.6vw,4rem)] leading-none font-medium tracking-[-0.06em] text-fg">
-                    <StatValue value="+1000" />
+                    <StatValue value={`+${officialMembers}`} />
                   </strong>
                   <h3 className="mt-2.5 text-heading-sm text-fg">
                     top tier individuals
                   </h3>
                   <p className="mt-6 text-small text-fg-muted">
-                    20+ majors
+                    {organizationFacts.majors}+ majors
                     <br />
-                    30+ universities
+                    {organizationFacts.universities}+ universities
                   </p>
                   <span className="mt-6 text-meta text-fg-subtle">
                     Different backgrounds.

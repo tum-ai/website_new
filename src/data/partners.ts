@@ -1,3 +1,6 @@
+import { eLabConfig } from "@/config/e-lab";
+import { officialMembers, organizationFacts } from "@/config/organization";
+
 export const partnershipIntents = [
   {
     id: "talent",
@@ -94,9 +97,9 @@ export const partnerStats = [
   { value: "2100+", label: "Started applications per batch" },
   { value: "2.3%", label: "Acceptance rate per batch" },
   {
-    value: "1000+",
+    value: `${officialMembers}+`,
     label: "Official members",
-    detail: "150 active, 850 alumni",
+    detail: `${organizationFacts.activeMembers} active, ${organizationFacts.alumni} alumni`,
   },
   {
     value: "1.2M+",
@@ -118,7 +121,7 @@ export const partnerPillars = [
   },
   {
     title: "Venture (E-Lab)",
-    metric: "8M+",
+    metric: `${eLabConfig.ventureFundingMillions}M+`,
     metricLabel: "Raised",
     description:
       "Raised by alumni and counting (YC, EWOR, Spherecast, Mercura, dryft). 25 teams each incubator iteration, alumni backed by YC, EWOR and top VCs, partners join exclusive demo days early.",

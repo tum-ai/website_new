@@ -5,6 +5,7 @@ import { BrandMark } from "@/components/ds/brand-mark";
 import { ButtonLink } from "@/components/ds/button";
 import { Container } from "@/components/ds/container";
 import { TopBlend } from "@/components/ds/top-blend";
+import { contactEmails, socialLinks } from "@/config/contact";
 
 type FooterLink = { label: string; href: string };
 
@@ -24,16 +25,10 @@ const columns: { title: string; links: FooterLink[] }[] = [
   {
     title: "Connect",
     links: [
-      { label: "LinkedIn", href: "https://de.linkedin.com/company/tum-ai" },
-      {
-        label: "Instagram",
-        href: "https://www.instagram.com/tum.ai_official/",
-      },
-      {
-        label: "Slack",
-        href: "https://join.slack.com/t/tumaipublic/shared_invite/zt-10kg0t1f9-JLRXDxY_d_vprKWgab0cVw",
-      },
-      { label: "Email", href: "mailto:contact@tum-ai.com" },
+      { label: "LinkedIn", href: socialLinks.linkedin },
+      { label: "Instagram", href: socialLinks.instagram },
+      { label: "Slack", href: socialLinks.slack },
+      { label: "Email", href: `mailto:${contactEmails.general}` },
     ],
   },
   {
@@ -46,7 +41,7 @@ const columns: { title: string; links: FooterLink[] }[] = [
   },
   {
     title: "Contribute",
-    links: [{ label: "GitHub", href: "https://github.com/tum-ai/" }],
+    links: [{ label: "GitHub", href: socialLinks.github }],
   },
 ];
 

@@ -8,6 +8,7 @@ import {
   Rocket,
   Zap,
 } from "lucide-react";
+import { organizationFacts } from "@/config/organization";
 
 export const requirements = [
   {
@@ -41,7 +42,7 @@ export const values = [
   {
     icon: Globe,
     title: "Diversity & Inclusiveness",
-    text: "Our club consists of students from 20+ majors and 35+ nationalities worldwide. We recognize and embrace the power of collaborative teams of unique individuals, which help us foster better decision-making and stimulate new ideas.",
+    text: `Our club consists of students from ${organizationFacts.majors}+ majors and ${organizationFacts.nationalities}+ nationalities worldwide. We recognize and embrace the power of collaborative teams of unique individuals, which help us foster better decision-making and stimulate new ideas.`,
   },
   {
     icon: Book,

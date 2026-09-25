@@ -1,4 +1,4 @@
-import { eLabApplicationCopy } from "@/config/e-lab";
+import { eLabApplicationCopy, eLabConfig } from "@/config/e-lab";
 
 export const faq = [
   {
@@ -18,8 +18,7 @@ export const faq = [
   },
   {
     question: "What is the time commitment for the program?",
-    answer:
-      "The E-Lab is a 14-week intensive program that requires significant time commitment. We expect participants to dedicate substantial time each week to building their startups, attending workshops, and participating in program activities.",
+    answer: `The E-Lab is a ${eLabConfig.programWeeks}-week intensive program that requires significant time commitment. We expect participants to dedicate substantial time each week to building their startups, attending workshops, and participating in program activities.`,
   },
   {
     question: "Do you take equity in my startup?",

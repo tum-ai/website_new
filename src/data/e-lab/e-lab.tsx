@@ -1,3 +1,5 @@
+import { contactEmails } from "@/config/contact";
+
 export const partners = [
   {
     href: "https://www.atoss.com/de",
@@ -202,7 +204,7 @@ export const team: Person[] = [
       instagram: "",
       youtube: "",
       website: "",
-      email: "venture@tum-ai.com",
+      email: contactEmails.venture,
     },
   },
   {

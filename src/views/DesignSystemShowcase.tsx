@@ -31,6 +31,9 @@ import {
   Timeline,
   type Tone,
 } from "@/components/ds";
+import { socialLinks } from "@/config/contact";
+import { eLabConfig } from "@/config/e-lab";
+import { organizationFacts } from "@/config/organization";
 import { faqs } from "@/data/qanda";
 import { DesignSystemInteractive } from "./DesignSystemInteractive";
 
@@ -203,7 +206,7 @@ export function DesignSystemShowcase() {
             <ButtonLink href="#buttons" variant="ghost">
               Ghost
             </ButtonLink>
-            <ButtonLink href="https://github.com/tum-ai/" arrow="external">
+            <ButtonLink href={socialLinks.github} arrow="external">
               External
             </ButtonLink>
             <ButtonLink href="#buttons" size="sm">
@@ -225,7 +228,8 @@ export function DesignSystemShowcase() {
             From first idea to funded startup in the E-Lab.
           </FeatureCard>
           <FeatureCard icon={Users} title="Community" index="03">
-            400+ alumni across 33 nationalities.
+            {organizationFacts.alumni}+ alumni across{" "}
+            {organizationFacts.nationalities} nationalities.
           </FeatureCard>
           <FeatureCard icon={Handshake} title="Industry" index="04">
             Projects and hackathons with partners.
@@ -273,10 +277,26 @@ export function DesignSystemShowcase() {
           </h2>
           <StatGrid
             items={[
-              { value: 400, suffix: "+", label: "Alumni Members" },
-              { value: "2020", label: "Founding Year" },
-              { value: 33, suffix: "+", label: "Nationalities" },
-              { value: 8, prefix: "€", suffix: "M", label: "Raised" },
+              {
+                value: organizationFacts.alumni,
+                suffix: "+",
+                label: "Alumni Members",
+              },
+              {
+                value: String(organizationFacts.foundingYear),
+                label: "Founding Year",
+              },
+              {
+                value: organizationFacts.nationalities,
+                suffix: "+",
+                label: "Nationalities",
+              },
+              {
+                value: eLabConfig.ventureFundingMillions,
+                prefix: "€",
+                suffix: "M",
+                label: "Raised",
+              },
             ]}
           />
         </Container>

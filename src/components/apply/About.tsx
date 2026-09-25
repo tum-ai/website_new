@@ -6,12 +6,21 @@ import {
   Section,
   StatGrid,
 } from "@/components/ds";
+import { organizationFacts } from "@/config/organization";
 
 /** Figures quoted in this page's own copy (About and Values). */
 const figures = [
-  { value: 90, suffix: "+", label: "Active members" },
-  { value: 20, suffix: "+", label: "Majors" },
-  { value: 35, suffix: "+", label: "Nationalities" },
+  {
+    value: organizationFacts.activeMembers,
+    suffix: "+",
+    label: "Active members",
+  },
+  { value: organizationFacts.majors, suffix: "+", label: "Majors" },
+  {
+    value: organizationFacts.nationalities,
+    suffix: "+",
+    label: "Nationalities",
+  },
 ];
 
 export default function About() {
@@ -31,11 +40,12 @@ export default function About() {
           <Reveal delay={140} className="lg:pt-2">
             <p className="text-lead text-fg md:text-[1.375rem] md:leading-[1.55]">
               As a leading student initiative focused on AI, we bring together a
-              diverse group of over 90 active members, each with technical
-              skills and cultural backgrounds. Our community consists of
-              passionate AI enthusiasts who are determined to make an impact on
-              the AI landscape worldwide. The journey towards shaping the future
-              of AI is open to everyone – including you!
+              diverse group of over {organizationFacts.activeMembers} active
+              members, each with technical skills and cultural backgrounds. Our
+              community consists of passionate AI enthusiasts who are determined
+              to make an impact on the AI landscape worldwide. The journey
+              towards shaping the future of AI is open to everyone – including
+              you!
             </p>
           </Reveal>
         </div>

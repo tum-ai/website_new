@@ -74,7 +74,7 @@ export const Hero = () => {
       title={[
         "Build the next generation of ",
         <Highlight key="highlight">AI startups</Highlight>,
-        " in 12 weeks",
+        ` in ${eLabConfig.programWeeks} weeks`,
       ]}
       lead={<Promises />}
       actions={

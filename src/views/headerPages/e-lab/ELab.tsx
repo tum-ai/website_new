@@ -9,7 +9,8 @@ import { NotableStartups } from "@/components/e-lab/NotableStartups";
 import { Testimonials } from "@/components/e-lab/Testimonials";
 import { Timeline } from "@/components/e-lab/TimeLine";
 import JsonLd from "@/components/JsonLd";
-import { eLabApplicationCopy } from "@/config/e-lab";
+import { contactEmails } from "@/config/contact";
+import { eLabApplicationCopy, eLabProgramSummary } from "@/config/e-lab";
 import { faq } from "@/data/e-lab/FAQ";
 import { Hero } from "./hero";
 
@@ -44,10 +45,9 @@ export default function ELab() {
       "E-Lab by TUM.ai",
       "AI Entrepreneurship Lab by TUM.ai",
     ],
-    description:
-      "The Venture Department is the entrepreneurial arm of TUM.ai and organizes the AI Entrepreneurship Lab, a 14-week equity-free AI startup incubator.",
+    description: `The Venture Department is the entrepreneurial arm of TUM.ai and organizes the AI Entrepreneurship Lab, a ${eLabProgramSummary}.`,
     url: "https://www.tum-ai.com/e-lab",
-    email: "venture@tum-ai.com",
+    email: contactEmails.venture,
     sameAs: [
       "https://www.startbase.de/organization/ai-e-lab/",
       "https://www.startup-insider.com/investor/ai-e-lab-by-tum-ai",
@@ -60,11 +60,11 @@ export default function ELab() {
       alternateName: "TUM.ai Student Initiative",
       url: "https://www.tum-ai.com",
       logo: "https://upload.wikimedia.org/wikipedia/commons/a/a2/TUM.ai_Logo_Blue_%26_Violet.svg",
-      email: "contact@tum-ai.com",
+      email: contactEmails.general,
     },
     contactPoint: {
       "@type": "ContactPoint",
-      email: "venture@tum-ai.com",
+      email: contactEmails.venture,
       contactType: "Venture Department",
     },
   };

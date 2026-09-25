@@ -12,6 +12,7 @@ import {
   Reveal,
   Section,
 } from "@/components/ds";
+import { contactEmails } from "@/config/contact";
 import { faqs } from "@/data/qanda";
 
 /**
@@ -172,8 +173,8 @@ export default function QandA() {
         eyebrow="Contact"
         title="Still have a question?"
         actions={
-          <ButtonLink href="mailto:contact@tum-ai.com" arrow>
-            contact@tum-ai.com
+          <ButtonLink href={`mailto:${contactEmails.general}`} arrow>
+            {contactEmails.general}
           </ButtonLink>
         }
       />

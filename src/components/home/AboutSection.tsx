@@ -11,6 +11,7 @@ import {
   StatGrid,
   type StatItem,
 } from "@/components/ds";
+import { organizationFacts } from "@/config/organization";
 import { aboutText } from "@/data/homepage";
 import { DeferredPhotoRail } from "./DeferredHomeSections";
 
@@ -31,10 +32,14 @@ const PRIMARY_KEYWORDS = new Set([
 ]);
 
 const STATS: StatItem[] = [
-  { value: 400, suffix: "+", label: "Alumni Members" },
-  { value: "2020", label: "Founding Year" },
-  { value: 33, suffix: "+", label: "Nationalities" },
-  { value: 15, suffix: "+", label: "Majors" },
+  { value: organizationFacts.alumni, suffix: "+", label: "Alumni Members" },
+  { value: String(organizationFacts.foundingYear), label: "Founding Year" },
+  {
+    value: organizationFacts.nationalities,
+    suffix: "+",
+    label: "Nationalities",
+  },
+  { value: organizationFacts.majors, suffix: "+", label: "Majors" },
 ];
 
 const aboutWords = aboutText.trim().split(" ");
@@ -68,8 +73,9 @@ export function AboutSection() {
             </Reveal>
             <Reveal delay={140} className="lg:col-span-6">
               <p className="text-lead text-fg-muted">
-                With over 90 active members, TUM.ai empowers the next generation
-                of AI innovators. Founded in 2020, our mission is to create{" "}
+                With over {organizationFacts.activeMembers} active members,
+                TUM.ai empowers the next generation of AI innovators. Founded in{" "}
+                {organizationFacts.foundingYear}, our mission is to create{" "}
                 <strong className="font-semibold text-highlight">
                   a community of students who innovate, research, and build at
                   the forefront of AI

@@ -1,5 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import { MediaCard, Reveal } from "@/components/ds";
+import { eLabApplicationCopy, eLabProgramSummary } from "@/config/e-lab";
 import { cn } from "@/lib/utils";
 import { EXPLORE_CELLS, EXPLORE_GRID } from "./deferred-layout";
 
@@ -36,10 +37,9 @@ const DESTINATIONS = [
   },
   {
     image: "/assets/home_img4.webp",
-    eyebrow: "APPLICATIONS OPEN IN AUGUST",
+    eyebrow: eLabApplicationCopy.teaserStatus,
     title: "AI Entrepreneurship Lab (E-Lab)",
-    description:
-      "14-week equity-free AI startup incubator with full support from Munich's innovation ecosystem",
+    description: `${eLabProgramSummary} with full support from Munich's innovation ecosystem`,
     action: "Learn more about E-Lab",
     href: "/e-lab",
     sizes: "(min-width: 1280px) 80rem, 100vw",

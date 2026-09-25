@@ -1,25 +1,20 @@
 import { Button, ButtonLink, StatusBadge } from "@/components/ds";
-
-/** Application form (Tally). */
-const APPLICATION_URL = "https://tally.so/r/OD0Vgg";
+import { membershipConfig } from "@/config/membership";
 
 /**
- * Single switch for the recruiting phase. `false` renders a disabled action
- * plus an "Applications Closed" status; `true` renders a real link to the
- * form. Both the hero and the closing CTA read it, so reopening applications
- * is a one-line change.
- */
-const applicationsOpen: boolean = false;
-
-/**
- * Primary apply action. While applications are closed the button stays
+ * Primary apply action, driven by `membershipConfig` (the hero and the closing
+ * CTA both render it). While applications are closed the button stays
  * focusable but inert (`aria-disabled`), and its description points at the
  * status badge so assistive tech announces why it is unavailable.
  */
 export default function ApplyAction({ statusId }: { statusId: string }) {
-  if (applicationsOpen) {
+  if (membershipConfig.applicationsOpen) {
     return (
-      <ButtonLink href={APPLICATION_URL} size="lg" arrow="external">
+      <ButtonLink
+        href={membershipConfig.applicationUrl}
+        size="lg"
+        arrow="external"
+      >
         Apply now
       </ButtonLink>
     );

@@ -7,6 +7,7 @@ import {
   Timeline,
   type TimelineItem,
 } from "@/components/ds";
+import { organizationFacts } from "@/config/organization";
 
 const steps = [
   {
@@ -91,7 +92,7 @@ export default function Milestones() {
       <Container className="grid gap-14 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)] lg:gap-20">
         <div className="lg:sticky lg:top-32 lg:self-start">
           <Reveal>
-            <Eyebrow index={3}>Since 2020</Eyebrow>
+            <Eyebrow index={3}>Since {organizationFacts.foundingYear}</Eyebrow>
           </Reveal>
           <Reveal delay={60}>
             <h2

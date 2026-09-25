@@ -1,3 +1,4 @@
+import { contactEmails } from "../config/contact";
 import {
   type PartnershipDuration,
   type PartnershipIntent,
@@ -6,7 +7,7 @@ import {
   recommendations,
 } from "../data/partners";
 
-export const PARTNER_EMAIL = "partners@tum-ai.com";
+export const PARTNER_EMAIL = contactEmails.partners;
 export const PARTNER_EMAIL_CC = [
   "silas.zamzow@tum-ai.com",
   "kim.schlemmer@tum-ai.com",
