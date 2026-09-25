@@ -70,7 +70,7 @@ export default async function RootLayout({
           Skip to content
         </a>
         {/* Isolated root so Base UI portals always stack above page content. */}
-        <div className="isolate">
+        <div id="app-root" className="isolate">
           <MotionProvider>
             <Header />
             <div

@@ -33,6 +33,7 @@ export {
   DialogDescription,
   DialogTitle,
   DialogTrigger,
+  useInertBackground,
 } from "./dialog";
 export { EmptyState } from "./empty-state";
 export { FaqSection } from "./faq-section";

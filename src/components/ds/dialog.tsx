@@ -2,7 +2,7 @@
 
 import { Dialog as BaseDialog } from "@base-ui/react/dialog";
 import { X } from "lucide-react";
-import type { ReactNode } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 /*
@@ -17,7 +17,55 @@ import { cn } from "@/lib/utils";
  *     </DialogContent>
  *   </Dialog>
  */
-export const Dialog = BaseDialog.Root;
+/** Open modals holding the page inert (supports nested dialogs). */
+let inertHolders = 0;
+
+/**
+ * Makes the page behind an open modal inert: nothing there can be focused,
+ * tapped or scrolled into view. Base UI's focus guards alone leak in Safari,
+ * whose Tab key skips links by default, so focus (and the scroll position)
+ * escaped to the page behind. The page root is `#app-root` (layout.tsx);
+ * portals render outside it. Released as soon as the modal starts closing,
+ * so focus can return to the trigger.
+ */
+export function useInertBackground(open: boolean) {
+  useEffect(() => {
+    if (!open) return;
+    const root = document.getElementById("app-root");
+    if (!root) return;
+    inertHolders += 1;
+    root.inert = true;
+    return () => {
+      inertHolders = Math.max(0, inertHolders - 1);
+      if (inertHolders === 0) root.inert = false;
+    };
+  }, [open]);
+}
+
+/** Base UI Dialog root that also makes the page behind it inert while open. */
+export function Dialog({
+  open,
+  defaultOpen,
+  onOpenChange,
+  ...props
+}: BaseDialog.Root.Props) {
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(
+    defaultOpen ?? false,
+  );
+  useInertBackground(open ?? uncontrolledOpen);
+  return (
+    <BaseDialog.Root
+      open={open}
+      defaultOpen={defaultOpen}
+      onOpenChange={(next, details) => {
+        setUncontrolledOpen(next);
+        onOpenChange?.(next, details);
+      }}
+      {...props}
+    />
+  );
+}
+
 export const DialogTrigger = BaseDialog.Trigger;
 export const DialogClose = BaseDialog.Close;
 

@@ -14,6 +14,7 @@ import {
 } from "react";
 import { BrandMark } from "@/components/ds/brand-mark";
 import { ButtonLink } from "@/components/ds/button";
+import { useInertBackground } from "@/components/ds/dialog";
 import { cn } from "@/lib/utils";
 
 const links = [
@@ -124,6 +125,9 @@ export const Header = () => {
   const hidePill = useCallback(() => {
     navRef.current?.style.setProperty("--pill-o", "0");
   }, []);
+
+  // The page behind the open menu is inert (see useInertBackground).
+  useInertBackground(open);
 
   const solid = isPartners || scrolled || open;
   const isActive = (href: string) =>
