@@ -17,7 +17,7 @@ import type { Event } from "@/lib/types";
 import { EventArtwork, EventImage } from "./event-media";
 
 /** Cards show this many characters; longer descriptions get "Read More". */
-export const DESCRIPTION_LIMIT = 300;
+const DESCRIPTION_LIMIT = 300;
 
 export function hasLongDescription(event: Event) {
   return event.description.length > DESCRIPTION_LIMIT;

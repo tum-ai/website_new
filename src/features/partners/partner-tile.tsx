@@ -11,7 +11,7 @@ const partnerTierLabels = { gold: "Gold", silver: "Silver", bronze: "Bronze" };
  * compact board for supporters. The white surface lives on the rotation slot,
  * so the outgoing copy of a tile stays transparent during the dissolve.
  */
-export const partnerTileSizes = {
+const partnerTileSizes = {
   lg: "min-h-[6.875rem] p-6 sm:min-h-[9.125rem] sm:px-8 sm:py-9 lg:px-12 [&_.partner-logo-image]:max-h-[2.875rem] sm:[&_.partner-logo-image]:max-h-[4.2rem] [&_.partner-logo-image]:max-w-[13.75rem]",
   md: "min-h-[5.3rem] p-4 sm:min-h-[7rem] sm:px-6 sm:py-7 lg:px-10 [&_.partner-logo-image]:max-h-8 sm:[&_.partner-logo-image]:max-h-[2.8rem] [&_.partner-logo-image]:max-w-[10.6rem]",
   sm: "min-h-[5.4rem] p-6 [&_.partner-logo-image]:max-h-9 [&_.partner-logo-image]:max-w-[13.75rem]",

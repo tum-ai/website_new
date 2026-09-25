@@ -25,8 +25,7 @@ export type JourneyStage =
   | { kind: "fork"; steps: [JourneyStep, JourneyStep] };
 
 /**
- * The member journey as shown on /community. The copy is page-specific and
- * intentionally differs from the older `steps` export in src/data/community.
+ * The member journey as shown on /community. The copy is page-specific.
  */
 export const journeyStages: JourneyStage[] = [
   {

@@ -47,8 +47,7 @@ export const legalLinkClass =
   "font-semibold text-highlight underline decoration-1 underline-offset-4 transition-colors duration-300 [overflow-wrap:anywhere] hover:text-fg hover:decoration-2";
 
 /** Scroll offset so anchored headings clear the fixed header. */
-export const legalAnchorOffset =
-  "scroll-mt-[calc(var(--header-height)+2.5rem)]";
+const legalAnchorOffset = "scroll-mt-[calc(var(--header-height)+2.5rem)]";
 
 /**
  * One titled part of a legal document. `number` renders the existing
