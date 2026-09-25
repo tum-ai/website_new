@@ -8,6 +8,11 @@ type PartnerLogoProps = {
   eager?: boolean;
 };
 
+/*
+ * `partner-logo-image`, `partner-logo-fallback` and `partner-logo-lockup` are
+ * hooks for the rotation dissolve in src/styles/partners.css. The surrounding
+ * tile caps the logo size through `[&_.partner-logo-image]:…` variants.
+ */
 export default function PartnerLogo(props: PartnerLogoProps) {
   // A changed source gets its own retry budget instead of inheriting a failure.
   return <LogoImage key={props.image} {...props} />;
@@ -30,10 +35,12 @@ function LogoImage({ name, image, eager = false }: PartnerLogoProps) {
       width={200}
       height={80}
       loading={eager ? "eager" : "lazy"}
-      className="partner-logo-image"
+      className="partner-logo-image block h-full max-h-full w-full object-contain"
       onError={() => setAttempt((value) => Math.min(value + 1, 2))}
     />
   ) : (
-    <span className="partner-logo-fallback">{name}</span>
+    <span className="partner-logo-fallback text-center text-heading-sm font-bold text-violet-950">
+      {name}
+    </span>
   );
 }

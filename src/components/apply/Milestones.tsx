@@ -1,96 +1,110 @@
+import {
+  Container,
+  Eyebrow,
+  Highlight,
+  Reveal,
+  Section,
+  Timeline,
+  type TimelineItem,
+} from "@/components/ds";
+import { organizationFacts } from "@/config/organization";
+
+const steps = [
+  {
+    year: "2020",
+    content: [
+      "Official Accreditation as a Student Initiative at TUM",
+      "Development of a first concept for the initiative at the BusinessPlan-Seminar at UnternehmerTUM",
+      "First Application Phase",
+    ],
+  },
+  {
+    year: "2021",
+    content: [
+      "TUM.ai officially a non-profit organization",
+      "Launch of the first TUM.ai Makeathon",
+      "Launch of the first Industry Phase",
+      "Launch of the first AI Academy",
+      "First Participation in ETH AI Center Summit",
+    ],
+  },
+  {
+    year: "2022",
+    content: [
+      "First Start-Up tour in Berlin",
+      "First AI Bootcamp in collaboration with KNUST",
+      "Launch of the AI Entrepreneur-Lab 1.0",
+    ],
+  },
+  {
+    year: "2023",
+    content: [
+      "Launch of the AI.Summit (2-day conference)",
+      "Speaker at the TUM Dies Academicus",
+    ],
+  },
+  {
+    year: "2024",
+    content: [
+      "Launch of the Impact Projects with 10 cooperation partners (MIT, Unite, MI4People, Allianz, IBM Research, Flower)",
+      "First paper publications at NeurIPS '24",
+      "Launch of new Taskforces (Med.ai, TUM.ai Build, TUM.ai Robotics)",
+    ],
+  },
+  {
+    year: "2025",
+    content: [
+      "First Smaller-sized Hackathon with Aleph Alpha",
+      "Launch of TUM.ai Expansion Berlin",
+      "First ever event together with OpenAI after their office launch in Munich (1200+ signups)",
+      "ICML main track paper, ICLR publication",
+      "Biggest Makeathon yet with 500+ registrations",
+      "TUM.ai Hackathon Summer with AWS, Lovable, ElevenLabs, Google, Anthropic, etc.",
+    ],
+  },
+];
+
+const items: TimelineItem[] = steps.map((step) => ({
+  title: (
+    <span className="tabular text-display-md font-medium tracking-[-0.05em]">
+      {step.year}
+    </span>
+  ),
+  description: (
+    <ul className="mt-5 divide-y divide-hairline border-t border-hairline">
+      {step.content.map((item) => (
+        <li key={item} className="flex gap-4 py-3.5 text-body text-fg-muted">
+          <span
+            aria-hidden
+            className="mt-[0.7em] h-px w-3 shrink-0 bg-violet-500"
+          />
+          <span>{item}</span>
+        </li>
+      ))}
+    </ul>
+  ),
+}));
+
+/** Sticky heading beside a timeline whose rail fills as the years scroll by. */
 export default function Milestones() {
-  const steps = [
-    {
-      year: "2020",
-      content: [
-        "Official Accreditation as a Student Initiative at TUM",
-        "Development of a first concept for the initiative at the BusinessPlan-Seminar at UnternehmerTUM",
-        "First Application Phase",
-      ],
-    },
-    {
-      year: "2021",
-      content: [
-        "TUM.ai officially a non-profit organization",
-        "Launch of the first TUM.ai Makeathon",
-        "Launch of the first Industry Phase",
-        "Launch of the first AI Academy",
-        "First Participation in ETH AI Center Summit",
-      ],
-    },
-    {
-      year: "2022",
-      content: [
-        "First Start-Up tour in Berlin",
-        "First AI Bootcamp in collaboration with KNUST",
-        "Launch of the AI Entrepreneur-Lab 1.0",
-      ],
-    },
-    {
-      year: "2023",
-      content: [
-        "Launch of the AI.Summit (2-day conference)",
-        "Speaker at the TUM Dies Academicus",
-      ],
-    },
-    {
-      year: "2024",
-      content: [
-        "Launch of the Impact Projects with 10 cooperation partners (MIT, Unite, MI4People, Allianz, IBM Research, Flower)",
-        "First paper publications at NeurIPS '24",
-        "Launch of new Taskforces (Med.ai, TUM.ai Build, TUM.ai Robotics)",
-      ],
-    },
-    {
-      year: "2025",
-      content: [
-        "First Smaller-sized Hackathon with Aleph Alpha",
-        "Launch of TUM.ai Expansion Berlin",
-        "First ever event together with OpenAI after their office launch in Munich (1200+ signups)",
-        "ICML main track paper, ICLR publication",
-        "Biggest Makeathon yet with 500+ registrations",
-        "TUM.ai Hackathon Summer with AWS, Lovable, ElevenLabs, Google, Anthropic, etc.",
-      ],
-    },
-  ];
-
   return (
-    <div className="flex flex-col gap-8 px-8 md:px-16">
-      <h2 className="text-title sm:text-2xl md:text-[2rem] font-semibold animate-item">
-        Our <span className="gradient-text"> Milestones </span>
-      </h2>
-
-      <div className="flex flex-col gap-8 max-w-[700px] mx-auto">
-        {steps.map((step, index) => (
-          <div key={step.year} className="contents">
-            <div
-              className={`w-full border-1 rounded-xl shadow-lg p-8 flex flex-col items-start text-left`}
+    <Section tone="paper" spacing="lg" aria-labelledby="apply-milestones-title">
+      <Container className="grid gap-14 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)] lg:gap-20">
+        <div className="lg:sticky lg:top-32 lg:self-start">
+          <Reveal>
+            <Eyebrow index={3}>Since {organizationFacts.foundingYear}</Eyebrow>
+          </Reveal>
+          <Reveal delay={60}>
+            <h2
+              id="apply-milestones-title"
+              className="mt-5 text-display-md text-fg"
             >
-              <h4 className="text-2xl font-bold mb-6 w-full">{step.year}</h4>
-              <div className="flex flex-col gap-3 w-full">
-                {step.content.map((item) => (
-                  <p key={item} className="text-base pl-4 -indent-4">
-                    • {item}
-                  </p>
-                ))}
-              </div>
-            </div>
-            {index < steps.length - 1 && (
-              <div className="flex justify-center items-center py-4 w-full">
-                <svg className="w-10 h-10" fill="none" viewBox="0 0 40 40">
-                  <path
-                    d="M20 8v24M20 32l-8-8M20 32l8-8"
-                    strokeWidth="3"
-                    stroke="var(--color-tumai-violet)"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
+              Our <Highlight>Milestones</Highlight>
+            </h2>
+          </Reveal>
+        </div>
+        <Timeline items={items} />
+      </Container>
+    </Section>
   );
 }

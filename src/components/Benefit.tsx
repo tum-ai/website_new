@@ -1,5 +1,6 @@
-import { cva, type VariantProps } from "class-variance-authority";
-import { type LucideIcon } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { FeatureCard, Reveal } from "@/components/ds";
+import { cn } from "@/lib/utils";
 
 interface Benefit {
   icon: LucideIcon;
@@ -7,80 +8,47 @@ interface Benefit {
   title: string;
 }
 
-// Define styles with cva, including dynamic variants for color and columns.
-const iconContainerStyles = cva(
-  "flex items-center justify-center rounded-xl p-3 backdrop-blur-sm transition-all duration-300",
-  {
-    variants: {
-      color: {
-        purple: "bg-primary/10 text-primary ring-1 ring-dark-purple/20",
-        yellow: "bg-yellow-500/10 text-yellow-500 ring-1 ring-yellow-500/20",
-      },
-    },
-  },
-);
+const gridColumns = {
+  2: "md:grid-cols-2",
+  4: "md:grid-cols-2 xl:grid-cols-4",
+} as const;
 
-const headingStyles = cva("text-base font-medium text-foreground", {
-  variants: {
-    color: {
-      purple: "text-primary",
-      yellow: "text-yellow-600",
-    },
-  },
-});
-
-const gridStyles = cva("grid gap-8", {
-  variants: {
-    columns: {
-      1: "md:grid-cols-1",
-      2: "md:grid-cols-2",
-      3: "md:grid-cols-3",
-      4: "md:grid-cols-2 xl:grid-cols-4",
-    },
-  },
-  defaultVariants: {
-    columns: 2,
-  },
-});
-
-const articleStyles = cva("flex flex-col gap-4 transition-all duration-200", {
-  variants: {
-    shadow: {
-      true: "rounded-xl p-6 bg-white/5 backdrop-blur-md border border-white/10",
-      false: "p-5",
-    },
-  },
-});
-
-interface Props
-  extends VariantProps<typeof iconContainerStyles>,
-    VariantProps<typeof gridStyles> {
+interface Props {
   benefits: Benefit[];
-  showShadow?: boolean;
+  columns?: keyof typeof gridColumns;
+  /** `glass` on dark bands, `raised` on light ones. */
+  variant?: "raised" | "glass";
+  className?: string;
 }
 
-const Benefits = ({ benefits, color, columns, showShadow = false }: Props) => {
+/**
+ * Icon-led spotlight cards (DS `FeatureCard`) with an editorial counter,
+ * revealed in sequence. Icons always use the brand violet.
+ */
+const Benefits = ({
+  benefits,
+  columns = 2,
+  variant = "raised",
+  className,
+}: Props) => {
   return (
-    <div className={gridStyles({ columns })}>
-      {benefits.map((benefit) => (
-        <article
-          key={benefit.title}
-          className={articleStyles({ shadow: showShadow })}
-        >
-          <div className="flex flex-row items-start gap-4">
-            <div className={iconContainerStyles({ color })}>
-              <benefit.icon size={20} strokeWidth={1.5} />
-            </div>
-            <div className="space-y-2">
-              <h3 className={headingStyles({ color })}>{benefit.title}</h3>
-              <p className="text-muted-foreground text-subtext leading-relaxed">
-                {benefit.text}
-              </p>
-            </div>
-          </div>
-        </article>
+    <ul className={cn("grid gap-4 md:gap-5", gridColumns[columns], className)}>
+      {benefits.map((benefit, index) => (
+        <Reveal as="li" key={benefit.title} delay={index * 90}>
+          <FeatureCard
+            icon={benefit.icon}
+            title={benefit.title}
+            index={String(index + 1).padStart(2, "0")}
+            variant={variant}
+          >
+            {/* Wide two-column cards carry long copy: read it at body size. */}
+            <p className={cn(columns === 2 && "md:text-body")}>
+              {benefit.text}
+            </p>
+          </FeatureCard>
+        </Reveal>
       ))}
-    </div>
+    </ul>
   );
 };
 

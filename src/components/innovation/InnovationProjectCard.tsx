@@ -1,128 +1,154 @@
 "use client";
 
-import { X } from "lucide-react";
-import { useState } from "react";
+import { Plus } from "lucide-react";
+import Image from "next/image";
+import { useId, useState } from "react";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/ds";
+import { BrandPlaceholder } from "@/components/research/BrandPlaceholder";
+import { cn } from "@/lib/utils";
 
 interface ProjectCardProps {
   name: string;
   description: string;
   image: string;
   detailedDescription: string;
+  /** Position in the grid: drives the "01" counter and the placeholder art. */
+  index?: number;
+  /** Shape of the tile; the grid decides it (default 4:5). */
+  className?: string;
+  /** next/image `sizes` for the tile photo. */
+  sizes?: string;
 }
 
+/**
+ * Task force tile: photo (or a branded ink placeholder) with the name on a
+ * scrim. On hover or keyboard focus the detailed description rises in; the
+ * whole tile is one dialog trigger, labelled by the name.
+ */
 export function ProjectCard({
   name,
   description,
   image,
   detailedDescription,
+  index = 0,
+  className,
+  sizes = "(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw",
 }: ProjectCardProps) {
-  const [isOpen, setIsOpen] = useState(false);
   const [imageUnavailable, setImageUnavailable] = useState(!image);
+  const titleId = useId();
+  const number = String(index + 1).padStart(2, "0");
+
+  const renderMedia = (imageSizes: string) =>
+    imageUnavailable ? (
+      <BrandPlaceholder seed={index} />
+    ) : (
+      <Image
+        src={image}
+        alt={`${name} task force`}
+        fill
+        sizes={imageSizes}
+        onError={() => setImageUnavailable(true)}
+        className="object-cover transition-transform duration-[1.4s] ease-brand group-hover/media:scale-[1.045] motion-reduce:transition-none"
+      />
+    );
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <button
-          type="button"
-          className="group relative block aspect-[4/5] w-full overflow-hidden rounded-lg bg-dark-indigo !p-0 text-left text-white shadow-sm !outline-none transition-shadow duration-200 hover:shadow-2xl hover:shadow-black/30 focus:!outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
-          style={{ backgroundImage: "none" }}
-          aria-label={name}
-        >
-          {!imageUnavailable ? (
-            <img
-              src={image}
-              alt={`${name} task force`}
-              className="absolute inset-0 h-full w-full object-cover"
-              loading="lazy"
-              decoding="async"
-              onError={() => setImageUnavailable(true)}
-            />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center bg-[linear-gradient(135deg,var(--color-dark-indigo),var(--color-black))]">
-              <img
-                src="/assets/logo_new_white_standard.png"
-                alt="Placeholder"
-                className="h-1/2 w-2/3 object-contain opacity-45"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-          )}
-
-          <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/10 to-black/10" />
-
-          <div className="absolute inset-x-0 top-0 p-6 md:p-7">
-            <h3 className="max-w-[15rem] text-3xl font-bold leading-none tracking-[-0.04em] text-white md:text-4xl">
-              {name}
-            </h3>
-          </div>
-
-          <div className="absolute inset-0 bg-black p-6 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100 md:p-7">
-            <h3 className="max-w-[15rem] text-3xl font-bold leading-none tracking-[-0.04em] md:text-4xl">
-              {name}
-            </h3>
-            <p className="mt-5 text-sm leading-6 text-white/78 md:text-[0.95rem]">
-              {detailedDescription}
-            </p>
-          </div>
-        </button>
-      </DialogTrigger>
-
-      <DialogContent
-        className="max-h-[86vh] w-[calc(100vw-2rem)] overflow-y-auto border-0 bg-white p-0 text-black shadow-2xl !outline-none focus:!outline-none sm:max-w-3xl"
-        showCloseButton={false}
+    <Dialog>
+      <article
+        className={cn(
+          "group/media relative isolate aspect-[4/5] rounded-4xl bg-violet-950 text-white shadow-soft",
+          "transition-[translate,box-shadow] duration-500 ease-brand hover:-translate-y-1 hover:shadow-lift motion-reduce:transition-none motion-reduce:hover:translate-y-0",
+          className,
+        )}
       >
-        <DialogClose
-          className="absolute top-4 right-4 z-20 flex h-10 w-10 items-center justify-center rounded-full !bg-black/70 !p-0 text-white transition hover:!bg-dark-purple focus:!outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
-          style={{ backgroundImage: "none" }}
-        >
-          <X className="h-4 w-4" />
-          <span className="sr-only">Close</span>
-        </DialogClose>
-
-        <div className="relative h-72 overflow-hidden bg-dark-indigo sm:h-96">
-          {!imageUnavailable ? (
-            <img
-              src={image}
-              alt={`${name} task force`}
-              className="h-full w-full object-cover"
-              onError={() => setImageUnavailable(true)}
+        {/* Only the imagery is clipped, so the trigger's focus ring can sit
+            outside the tile like every other focus ring on the site. */}
+        <div className="absolute inset-0 overflow-hidden rounded-[inherit]">
+          {renderMedia(sizes)}
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-gradient-to-t from-ink-950/90 via-ink-950/30 to-ink-950/10"
+          />
+          {imageUnavailable ? null : (
+            <div
+              aria-hidden
+              className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-ink-950/45 to-transparent"
             />
-          ) : (
-            <div className="flex h-full items-center justify-center bg-[linear-gradient(135deg,var(--color-dark-indigo),var(--color-black))]">
-              <img
-                src="/assets/logo_new_white_standard.png"
-                alt="Placeholder"
-                className="h-32 w-72 object-contain opacity-45"
-              />
-            </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
-          <DialogHeader className="absolute right-6 bottom-6 left-6 text-left">
-            <DialogTitle className="text-4xl font-bold tracking-[-0.04em] text-white md:text-5xl">
+          {/* Veil that darkens the tile so the detailed description reads. */}
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-ink-950/80 opacity-0 backdrop-blur-[3px] transition-opacity duration-500 ease-brand group-hover/media:opacity-100 group-has-[:focus-visible]/media:opacity-100 motion-reduce:transition-none"
+          />
+        </div>
+        {/* The disc sits 12px from the 32px corner (20px radius), so it is
+            concentric; the counter lines up with the title's left edge. */}
+        <div
+          aria-hidden
+          className="absolute inset-x-0 top-3 flex items-center justify-between pr-3 pl-6 md:pl-7"
+        >
+          <span className="tabular text-eyebrow font-semibold text-white/75">
+            {number}
+          </span>
+          <span className="grid size-10 place-items-center rounded-full bg-white/90 text-violet-950 shadow-soft backdrop-blur transition-[rotate,background-color] duration-500 ease-brand group-hover/media:rotate-90 group-hover/media:bg-white motion-reduce:transition-none">
+            <Plus className="size-4" />
+          </span>
+        </div>
+        {/* Visual preview only: the dialog carries the same text for everyone. */}
+        <p
+          aria-hidden
+          className="absolute inset-x-0 top-20 translate-y-3 px-6 text-small text-white/90 opacity-0 transition-[opacity,translate] duration-500 ease-brand group-hover/media:translate-y-0 group-hover/media:opacity-100 group-has-[:focus-visible]/media:translate-y-0 group-has-[:focus-visible]/media:opacity-100 motion-reduce:translate-y-0 motion-reduce:transition-none md:top-22 md:px-7"
+        >
+          {detailedDescription}
+        </p>
+        <div className="absolute inset-x-0 bottom-0 p-6 md:p-7">
+          <h3 id={titleId} className="text-heading-lg text-white">
+            {name}
+          </h3>
+          <p className="mt-2 line-clamp-3 max-w-md text-small text-white/80 md:min-h-[4.95em] transition-opacity duration-300 ease-brand group-hover/media:opacity-0 group-has-[:focus-visible]/media:opacity-0">
+            {description}
+          </p>
+        </div>
+        <DialogTrigger
+          aria-labelledby={titleId}
+          className="absolute inset-0 z-10 rounded-[inherit]"
+        />
+      </article>
+
+      <DialogContent size="lg">
+        <div
+          data-tone="night"
+          className="relative aspect-[4/3] overflow-hidden sm:aspect-[16/9]"
+        >
+          {renderMedia("(min-width: 800px) 768px, 100vw")}
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-gradient-to-t from-ink-950/85 via-ink-950/15 to-transparent"
+          />
+          <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8 md:p-10">
+            <p className="text-eyebrow text-violet-200 uppercase">
+              Task force {number}
+            </p>
+            <DialogTitle className="mt-3 text-display-md text-white">
               {name}
             </DialogTitle>
-            <DialogDescription className="sr-only">
-              {description}
-            </DialogDescription>
-          </DialogHeader>
+          </div>
         </div>
-
-        <div className="space-y-7 p-6 md:p-8">
-          <div>
-            <h4 className="mb-2 text-lg font-semibold text-dark-indigo">
-              About
-            </h4>
-            <p className="leading-7 text-text-gray">{detailedDescription}</p>
+        <div className="p-6 sm:p-8 md:p-10">
+          <DialogDescription className="text-lead text-fg">
+            {description}
+          </DialogDescription>
+          <div className="mt-8 grid gap-3 border-t border-hairline pt-8 md:grid-cols-[8rem_minmax(0,1fr)] md:items-baseline md:gap-8">
+            <h3 className="text-eyebrow text-fg-subtle uppercase">About</h3>
+            <p className="text-body leading-relaxed text-fg-muted">
+              {detailedDescription}
+            </p>
           </div>
         </div>
       </DialogContent>

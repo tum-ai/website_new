@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import Benefits from "@/components/Benefit";
+import { Container, Highlight, Section, SectionHeader } from "@/components/ds";
 
 interface Requirement {
   icon: LucideIcon;
@@ -15,25 +16,25 @@ export default function Requirements({
   requirementsWithIcons,
 }: RequirementsProps) {
   return (
-    <div className="flex flex-col gap-8 px-8 md:px-16 pt-8 md:pt-16">
-      <div className="flex flex-col gap-4">
-        <h2 className="text-title sm:text-2xl md:text-[2rem] font-semibold animate-item">
-          Is TUM.ai the <span className="gradient-text">right choice</span> for
-          me?
-        </h2>
-        <p className="text-xl md:text-2xl animate-item">
-          There is no secret to TUM.ai's fast-paced growth. Every semester, we
-          have recruited amazing members who drive the initiative forward. If
-          you can identify with the following qualities, you are the one that we
-          are looking for!
-        </p>
-        <Benefits
-          benefits={requirementsWithIcons}
-          columns={2}
-          showShadow
-          color="purple"
+    <Section
+      tone="paper"
+      spacing="lg"
+      aria-labelledby="apply-requirements-title"
+    >
+      <Container>
+        <SectionHeader
+          id="apply-requirements-title"
+          eyebrow="Who we look for"
+          index={6}
+          title={
+            <>
+              Is TUM.ai the <Highlight>right choice</Highlight> for me?
+            </>
+          }
+          lead="There is no secret to TUM.ai's fast-paced growth. Every semester, we have recruited amazing members who drive the initiative forward. If you can identify with the following qualities, you are the one that we are looking for!"
         />
-      </div>
-    </div>
+        <Benefits benefits={requirementsWithIcons} columns={4} />
+      </Container>
+    </Section>
   );
 }

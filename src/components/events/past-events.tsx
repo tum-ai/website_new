@@ -1,175 +1,209 @@
+"use client";
+
 import { format } from "date-fns";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { MapPin } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { Carousel, EmptyState, Reveal, Tag } from "@/components/ds";
 import type { Event } from "@/lib/types";
 import { groupEventsByMonth } from "@/lib/utils";
-import { Button } from "../ui/button";
+import {
+  EventDetailsDialog,
+  formatEventLocation,
+  hasLongDescription,
+  truncateDescription,
+} from "./event-details";
+import { EventImage } from "./event-media";
 
+type EventPhoto = { src: string; alt: string };
+
+const cardImageSizes =
+  "(min-width: 1024px) 26rem, (min-width: 640px) 50vw, 100vw";
+
+/** Photos first, then the poster; empty when there is neither. */
+function getEventPhotos(event: Event): EventPhoto[] {
+  if (event.images && event.images.length > 0) {
+    return event.images.map((src, index) => ({
+      src,
+      alt: `${event.title} Image ${index + 1}`,
+    }));
+  }
+  if (event.poster) {
+    return [{ src: event.poster, alt: `${event.title} Poster` }];
+  }
+  return [];
+}
+
+/*
+ * The DS Carousel has no overlay/compact controls or exposed API, so the
+ * image variant is styled from here: the viewport fills the frame and the
+ * progress line + arrows sit on a scrim at the bottom of the photo.
+ */
+const photoCarouselClasses = [
+  "h-full [&>div:first-child]:h-full [&>div:first-child>div]:h-full",
+  "[&>div:nth-child(2)]:absolute [&>div:nth-child(2)]:inset-x-4 [&>div:nth-child(2)]:bottom-4",
+  "[&>div:nth-child(2)]:z-10 [&>div:nth-child(2)]:mt-0 [&>div:nth-child(2)]:gap-4",
+  "[&_button]:size-10 [&_button]:border-white/45 [&_button]:bg-ink-950/35 [&_button]:backdrop-blur-sm",
+].join(" ");
+
+/**
+ * The DS Carousel disables an arrow at either end, so a focused arrow that
+ * reaches the end drops keyboard focus to <body>. This moves focus to the
+ * arrow that is still enabled.
+ */
+function useArrowFocusRescue() {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    const handleClick = (event: MouseEvent) => {
+      const button = (event.target as Element | null)?.closest("button");
+      if (!button || document.activeElement !== button) return;
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          if (!button.disabled || node.contains(document.activeElement)) {
+            return;
+          }
+          node
+            .querySelector<HTMLButtonElement>("button:not(:disabled)")
+            ?.focus();
+        }),
+      );
+    };
+    node.addEventListener("click", handleClick);
+    return () => node.removeEventListener("click", handleClick);
+  }, []);
+
+  return ref;
+}
+
+/** Swipeable photo set with its controls laid over the bottom of the frame. */
+function PhotoCarousel({
+  title,
+  photos,
+  imageClassName,
+}: {
+  title: string;
+  photos: EventPhoto[];
+  imageClassName: string;
+}) {
+  const ref = useArrowFocusRescue();
+
+  return (
+    <div ref={ref} data-tone="night" className="absolute inset-0">
+      <Carousel
+        label={`${title} photos`}
+        slideClassName="relative h-full basis-full"
+        gap={0}
+        className={photoCarouselClasses}
+      >
+        {photos.map((photo, index) => (
+          <div key={`${index}-${photo.src}`} className="absolute inset-0">
+            <EventImage
+              src={photo.src}
+              alt={photo.alt}
+              sizes={cardImageSizes}
+              className={imageClassName}
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-ink-950/65 to-transparent"
+            />
+          </div>
+        ))}
+      </Carousel>
+    </div>
+  );
+}
+
+/**
+ * Past events, newest first as passed in, in a compact photo grid. Month
+ * groups read as a rail: the first event of each month carries the label and
+ * the hairline continues over the rest of that month.
+ */
 export default function PastEvents({ events }: { events: Event[] }) {
   const groupedEvents = groupEventsByMonth(events);
 
   if (events.length === 0) {
-    return (
-      <div className="py-12 text-center">
-        <p className="text-muted-foreground">No past events to display.</p>
-      </div>
-    );
+    return <EmptyState title="No past events to display." />;
   }
 
   return (
-    <div className="space-y-16 max-w-full">
-      {Object.entries(groupedEvents).map(([month, monthEvents]) => (
-        <div key={month} className="space-y-8">
-          <h3 className="text-2xl font-semibold text-primary">{month}</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {monthEvents.map((event) => (
-              <PastEventCard key={event.id} event={event} />
-            ))}
-          </div>
-        </div>
-      ))}
+    <div className="grid gap-x-6 gap-y-14 sm:grid-cols-2 md:gap-y-16 lg:grid-cols-3 lg:gap-x-8">
+      {Object.entries(groupedEvents).flatMap(([month, monthEvents]) =>
+        monthEvents.map((event, index) => (
+          <Reveal key={event.id} className="flex flex-col">
+            <div className="mb-5 flex h-5 items-center gap-3">
+              {index === 0 ? (
+                <h3 className="flex shrink-0 items-center gap-2.5 text-eyebrow text-highlight uppercase">
+                  <span
+                    aria-hidden
+                    className="size-1.5 rounded-full bg-current"
+                  />
+                  {month}
+                </h3>
+              ) : null}
+              <span aria-hidden className="h-px flex-1 bg-hairline-strong" />
+            </div>
+            <PastEventCard event={event} />
+          </Reveal>
+        )),
+      )}
     </div>
   );
 }
 
 function PastEventCard({ event }: { event: Event }) {
   const eventDate = new Date(event.event_date);
+  const location = formatEventLocation(event);
+  const photos = getEventPhotos(event);
+  const zoom =
+    "transition-transform duration-[1.4s] ease-brand group-hover/media:scale-[1.045] motion-reduce:transition-none";
 
   return (
-    <Card className="flex flex-col bg-minimal-gray overflow-hidden w-full transition-transform duration-150 hover:scale-101">
-      <div className="relative w-full aspect-square group p-4 flex-shrink-0">
-        <Carousel className="w-full h-full">
-          <CarouselContent className="h-full">
-            {event.images && event.images.length > 0 ? (
-              event.images.map((image, index) => (
-                <CarouselItem key={index} className="h-full">
-                  <div className="h-full">
-                    <div className="aspect-square w-full relative overflow-hidden rounded-lg">
-                      <img
-                        src={image}
-                        alt={`${event.title} Image ${index + 1}`}
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                  </div>
-                </CarouselItem>
-              ))
-            ) : event.poster ? (
-              <CarouselItem className="h-full">
-                <div className="h-full">
-                  <div className="aspect-square w-full relative overflow-hidden rounded-lg">
-                    <img
-                      src={event.poster}
-                      alt={`${event.title} Poster`}
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                </div>
-              </CarouselItem>
-            ) : (
-              <CarouselItem className="h-full">
-                <div className="h-full">
-                  <div className="aspect-square w-full relative overflow-hidden rounded-lg bg-accent-foreground flex items-center justify-center">
-                    <img
-                      src="/assets/tum_ai_logo_new.svg"
-                      alt="Placeholder"
-                      className="h-3/4 w-3/4 object-contain opacity-50"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src =
-                          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='3' rx='2' ry='2'/%3E%3Ccircle cx='9' cy='9' r='2'/%3E%3Cpath d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'/%3E%3C/svg%3E";
-                      }}
-                    />
-                  </div>
-                </div>
-              </CarouselItem>
-            )}
-          </CarouselContent>
-          <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out" />
-          <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out" />
-        </Carousel>
-      </div>
-
-      <div className="flex flex-col justify-normal flex-1 min-w-0 p-4 pt-0">
-        <CardHeader className="pb-0 px-0">
-          <CardTitle className="text-primary text-lg">
-            {format(eventDate, "PPP")}
-          </CardTitle>
-          <CardTitle className="text-xl">{event.title}</CardTitle>
-          <CardDescription className="text-sm text-text-gray mt-1 pb-2">
-            {event.location ? `${event.location}` : ""}
-            {event.city ? `, ${event.city}` : ""}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="px-0">
-          <p className="text-sm">
-            {event.description.length > 300
-              ? event.description.slice(0, 300) + "..."
-              : event.description}
-          </p>
-        </CardContent>
-        {event.description.length > 300 && (
-          <CardFooter className="px-0 pt-4">
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button
-                  size={"xl"}
-                  variant="primary"
-                  className="text-white w-full"
-                >
-                  Read More
-                </Button>
-              </DialogTrigger>
-
-              <DialogContent
-                className="max-w-[calc(100vw-4rem)] max-h-[calc(100vh-4rem)] overflow-y-auto"
-                showCloseButton={false}
-              >
-                <DialogHeader>
-                  <DialogTitle className="text-purple-800 text-lg">
-                    {format(eventDate, "PPP")}
-                  </DialogTitle>
-                  <DialogTitle className="text-xl">{event.title}</DialogTitle>
-                  <DialogDescription className="text-sm text-text-gray">
-                    {event.location ? `${event.location}` : ""}
-                    {event.city ? `, ${event.city}` : ""}
-                  </DialogDescription>
-                </DialogHeader>
-
-                <div className="space-y-6">
-                  {/* Detailed Description */}
-                  <div>
-                    <p className="text-muted-foreground leading-relaxed">
-                      {event.description}
-                    </p>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
-          </CardFooter>
+    <article className="group/media flex flex-1 flex-col">
+      <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-sunken">
+        {photos.length > 1 ? (
+          <PhotoCarousel
+            title={event.title}
+            photos={photos}
+            imageClassName={zoom}
+          />
+        ) : (
+          <EventImage
+            src={photos[0]?.src}
+            alt={photos[0]?.alt ?? ""}
+            sizes={cardImageSizes}
+            className={zoom}
+          />
         )}
       </div>
-    </Card>
+
+      <div className="flex flex-1 flex-col pt-5">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-meta font-medium text-fg-subtle">
+          <time dateTime={event.event_date}>{format(eventDate, "PPP")}</time>
+          {event.category ? <Tag>{event.category}</Tag> : null}
+        </div>
+        <h4 className="mt-3 text-heading-md text-fg">{event.title}</h4>
+        {location ? (
+          <p className="mt-1.5 flex items-start gap-2 text-meta text-fg-subtle">
+            <MapPin aria-hidden className="mt-0.5 size-3.5 shrink-0" />
+            {location}
+          </p>
+        ) : null}
+        <p className="mt-3 text-small text-fg-muted">
+          {truncateDescription(event.description)}
+        </p>
+        {hasLongDescription(event) ? (
+          <div className="mt-auto pt-5">
+            <EventDetailsDialog
+              event={event}
+              image={photos[0]}
+              triggerVariant="link"
+            />
+          </div>
+        ) : null}
+      </div>
+    </article>
   );
 }

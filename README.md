@@ -70,6 +70,18 @@ The app reads these environment variables to connect to the CMS:
 
 If the values are missing, the Sanity fetchers may fail to return data.
 
+To work on CMS-backed pages without credentials, start the dev server with
+`USE_MOCK_CMS=1 pnpm dev`. Events, research projects and research partners then
+come from local fixtures in `src/lib/mock-cms.ts`. Mock mode never runs on
+Vercel.
+
+## Design System
+
+UI is built from `src/components/ds` on top of Base UI. Tokens, tones, motion
+and accessibility rules are documented in
+[docs/design-system.md](docs/design-system.md); `/design-system` renders every
+component in development and on preview deployments.
+
 ## CMS Staging And Draft Preview
 
 Use a Vercel Preview deployment as the staging environment for CMS changes.

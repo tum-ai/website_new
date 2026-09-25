@@ -1,131 +1,140 @@
 import Link from "next/link";
+import { Actions } from "@/components/ds/actions";
+import { Aurora } from "@/components/ds/aurora";
+import { BrandMark } from "@/components/ds/brand-mark";
+import { ButtonLink } from "@/components/ds/button";
+import { Container } from "@/components/ds/container";
+import { TopBlend } from "@/components/ds/top-blend";
+import { contactEmails, socialLinks } from "@/config/contact";
+
+type FooterLink = { label: string; href: string };
+
+const columns: { title: string; links: FooterLink[] }[] = [
+  {
+    title: "Explore",
+    links: [
+      { label: "Events", href: "/events" },
+      { label: "Research", href: "/research" },
+      { label: "Projects", href: "/projects" },
+      { label: "Entrepreneurship", href: "/e-lab" },
+      { label: "Community", href: "/community" },
+      { label: "Partners", href: "/partners" },
+      { label: "Q&A", href: "/qanda" },
+    ],
+  },
+  {
+    title: "Connect",
+    links: [
+      { label: "LinkedIn", href: socialLinks.linkedin },
+      { label: "Instagram", href: socialLinks.instagram },
+      { label: "Slack", href: socialLinks.slack },
+      { label: "Email", href: `mailto:${contactEmails.general}` },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { label: "Imprint", href: "/imprint" },
+      { label: "Data Privacy", href: "/data-privacy" },
+      { label: "Disclaimer", href: "/disclaimer" },
+    ],
+  },
+  {
+    title: "Contribute",
+    links: [{ label: "GitHub", href: socialLinks.github }],
+  },
+];
+
+const linkClass =
+  "-my-1.5 inline-block py-1.5 text-small text-fg-muted transition-colors duration-300 hover:text-fg";
+
+function FooterAnchor({ label, href }: FooterLink) {
+  if (href.startsWith("/")) {
+    return (
+      <Link href={href} className={linkClass}>
+        {label}
+      </Link>
+    );
+  }
+  const external = href.startsWith("http");
+  return (
+    <a
+      href={href}
+      className={linkClass}
+      target={external ? "_blank" : undefined}
+      rel={external ? "noopener noreferrer" : undefined}
+    >
+      {label}
+      {external ? <span className="sr-only"> (opens in a new tab)</span> : null}
+    </a>
+  );
+}
 
 export default function Footer() {
   return (
-    <footer className="brand-accent-shell relative overflow-hidden border-t border-white/1">
-      <div className="bg-grid-white/[0.02] absolute inset-0 [mask-image:radial-gradient(white,transparent_85%)]" />
-
-      <section className="relative">
-        <div className="container mx-auto px-8 py-8 md:px-10">
-          <div className="flex flex-col gap-12 sm:flex-row sm:justify-between">
-            <div>
-              <img
-                src="/assets/tum_ai_logo_new.svg"
-                className="flex text-2xl transition-all duration-300 hover:opacity-90 ml-1"
-                alt="Logo"
-                width="128"
-                height="32"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 sm:gap-x-12 md:gap-x-8">
-              <div className="col-span-1">
-                <p className="mb-3 text-xs font-medium tracking-wider text-white/50 uppercase">
-                  Connect
-                </p>
-                <ul className="space-y-2">
-                  <li>
-                    <a
-                      href="https://de.linkedin.com/company/tum-ai"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-white/80 transition-colors duration-300 hover:text-primary"
-                      aria-label="LinkedIn"
-                    >
-                      LinkedIn
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="https://www.instagram.com/tum.ai_official/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-white/80 transition-colors duration-300 hover:text-primary"
-                      aria-label="Instagram"
-                    >
-                      Instagram
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="https://join.slack.com/t/tumaipublic/shared_invite/zt-10kg0t1f9-JLRXDxY_d_vprKWgab0cVw"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-white/80 transition-colors duration-300 hover:text-primary"
-                      aria-label="Slack"
-                    >
-                      Slack
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="mailto:contact@tum-ai.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-white/80 transition-colors duration-300 hover:text-primary"
-                      aria-label="Email"
-                    >
-                      Email
-                    </a>
-                  </li>
-                </ul>
-              </div>
-              <div className="col-span-1">
-                <p className="mb-3 text-xs font-medium tracking-wider text-white/50 uppercase">
-                  Legal
-                </p>
-                <ul className="space-y-2">
-                  <li>
-                    <Link
-                      className="text-sm text-white/80 transition-colors duration-300 hover:text-primary"
-                      href="/imprint"
-                    >
-                      Imprint
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      className="text-sm text-white/80 transition-colors duration-300 hover:text-primary"
-                      href="/data-privacy"
-                    >
-                      Data Privacy
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      className="text-sm text-white/80 transition-colors duration-300 hover:text-primary"
-                      href="/disclaimer"
-                    >
-                      Disclaimer
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-              <div className="col-span-1">
-                <p className="mb-3 text-xs font-medium tracking-wider text-white/50 uppercase">
-                  Contribute
-                </p>
-                <ul className="space-y-2">
-                  <li>
-                    <a
-                      className="text-sm text-white/80 transition-colors duration-300 hover:text-primary"
-                      href="https://github.com/tum-ai/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      GitHub
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div className="mt-12 flex flex-col items-center justify-between border-t border-white/10 pt-8 sm:flex-row">
-            <p className="text-sm text-white/40">
-              TUM.ai - Student Initiative at Technical University of Munich
+    <footer data-tone="night" className="relative isolate overflow-clip">
+      <div aria-hidden className="grain -z-10" />
+      <Aurora
+        intensity="subtle"
+        className="[mask-image:linear-gradient(to_bottom,transparent,black_35%,black_60%,transparent)]"
+      />
+      <BrandMark className="absolute -right-[6%] -bottom-[22%] -z-10 w-[min(46rem,90%)] text-white/[0.03]" />
+      {/* The bottom edge settles into the root canvas that Safari shows under its toolbar. */}
+      <TopBlend edge="bottom" />
+      <Container className="pt-24 md:pt-32">
+        <div className="grid gap-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-20">
+          <div>
+            <img
+              src="/assets/tum_ai_logo_new.svg"
+              alt="TUM.ai"
+              width={1640}
+              height={406}
+              loading="lazy"
+              className="h-8 w-auto"
+            />
+            <p className="mt-10 max-w-lg text-display-md text-fg">
+              Empowering students to build the future of AI.
             </p>
+            <Actions className="mt-10">
+              <ButtonLink href="/apply" arrow>
+                Become a Member
+              </ButtonLink>
+              <ButtonLink href="/partners" variant="outline">
+                Partner with us
+              </ButtonLink>
+            </Actions>
           </div>
+          <nav
+            aria-label="Footer"
+            className="grid grid-cols-2 gap-x-8 gap-y-12 sm:grid-cols-4"
+          >
+            {columns.map((column) => {
+              const titleId = `footer-${column.title.toLowerCase()}`;
+              return (
+                <div key={column.title}>
+                  <p
+                    id={titleId}
+                    className="text-eyebrow text-fg-subtle uppercase"
+                  >
+                    {column.title}
+                  </p>
+                  <ul aria-labelledby={titleId} className="mt-5 space-y-3">
+                    {column.links.map((link) => (
+                      <li key={link.href}>
+                        <FooterAnchor {...link} />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
+          </nav>
         </div>
-      </section>
+        <div className="mt-24 flex flex-col gap-3 border-t border-hairline py-8 text-meta text-fg-subtle md:flex-row md:items-center md:justify-between">
+          <p>TUM.ai - Student Initiative at Technical University of Munich</p>
+          <p>Munich, Germany</p>
+        </div>
+      </Container>
     </footer>
   );
 }

@@ -1,7 +1,19 @@
 import Image from "next/image";
-import Link from "next/link";
+import { Fragment } from "react";
+import {
+  Actions,
+  ButtonLink,
+  Container,
+  Eyebrow,
+  Highlight,
+  Reveal,
+  Section,
+  StatGrid,
+  type StatItem,
+} from "@/components/ds";
+import { organizationFacts } from "@/config/organization";
 import { aboutText } from "@/data/homepage";
-import { Button } from "../ui/button";
+import { DeferredPhotoRail } from "./DeferredHomeSections";
 
 const PRIMARY_KEYWORDS = new Set([
   "members",
@@ -19,117 +31,135 @@ const PRIMARY_KEYWORDS = new Set([
   "workshops",
 ]);
 
-const STATS = [
-  { title: "Alumni Members", value: "400+" },
-  { title: "Founding Year", value: "2020" },
-  { title: "Nationalities", value: "33+" },
-  { title: "Majors", value: "15+" },
+const STATS: StatItem[] = [
+  { value: organizationFacts.alumni, suffix: "+", label: "Alumni Members" },
+  { value: String(organizationFacts.foundingYear), label: "Founding Year" },
+  {
+    value: organizationFacts.nationalities,
+    suffix: "+",
+    label: "Nationalities",
+  },
+  { value: organizationFacts.majors, suffix: "+", label: "Majors" },
 ];
 
-export const AboutSection = () => {
+const aboutWords = aboutText.trim().split(" ");
+
+/**
+ * "What is TUM.ai?": an editorial split (headline beside the intro), the
+ * team panorama with the stats beneath it, then a mist band
+ * where the statement lights up line by line as it scrolls in beside the
+ * onboarding photo, followed by the deferred photo rail.
+ */
+export function AboutSection() {
   return (
-    <div className="flex flex-col gap-8 p-8 md:p-16">
-      <div className="flex w-full items-center md:max-h-2/3">
-        <Image
-          className="h-auto w-full rounded-xl bg-gray-200 object-cover"
-          src="/assets/apply/new_section_photo_1.webp"
-          alt="TUM.ai members"
-          width={1920}
-          height={563}
-          sizes="(min-width: 1024px) 80rem, 100vw"
-        />
-      </div>
-
-      <div className="my-2 flex w-full flex-wrap justify-between md:min-h-1/3">
-        <div className="flex w-full flex-col text-start md:w-3/6 md:text-left">
-          <div className="flex flex-col gap-4">
-            <h1 className="text-title font-semibold sm:text-2xl md:text-[2rem]">
-              What is <span className="gradient-text font-bold">TUM.ai</span>
-              {"?"}
-            </h1>
-            <p className="text-xl md:text-2xl">
-              With over 90 active members, TUM.ai empowers the next generation
-              of AI innovators. Founded in 2020, our mission is to create
-              <span className="text-primary font-bold">
-                {" "}
-                a community of students who innovate, research, and build at the
-                forefront of AI
-              </span>
-              , fostering both groundbreaking research and entrepreneurial
-              ventures across diverse industries.
-            </p>
-            <div className="mb-4 flex flex-col justify-start gap-4 md:flex-row">
-              <Button
-                asChild
-                variant="primary"
-                className="w-full rounded-md px-6 py-3 text-center md:w-auto"
-              >
-                <Link href="/community#memberStories">Meet our Members</Link>
-              </Button>
-
-              <Button
-                asChild
-                variant="outline2"
-                className="!text-primary w-full rounded-md px-6 py-3 text-center md:w-auto"
-              >
-                <Link href="/qanda">More on our Mission</Link>
-              </Button>
-            </div>
+    <>
+      <Section
+        tone="paper"
+        spacing="lg"
+        id="about"
+        aria-labelledby="about-title"
+      >
+        <Container>
+          <Reveal>
+            <Eyebrow index={1}>About</Eyebrow>
+          </Reveal>
+          {/* Headline and intro share one grid row, bottom-aligned: the last
+              headline line sits on the same line as the buttons. */}
+          <div className="mt-5 grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-16">
+            <Reveal delay={60} className="lg:col-span-6">
+              <h2 id="about-title" className="text-display-xl text-fg">
+                What is <Highlight>TUM.ai</Highlight>?
+              </h2>
+            </Reveal>
+            <Reveal delay={140} className="lg:col-span-6">
+              <p className="text-lead text-fg-muted">
+                With over {organizationFacts.activeMembers} active members,
+                TUM.ai empowers the next generation of AI innovators. Founded in{" "}
+                {organizationFacts.foundingYear}, our mission is to create{" "}
+                <strong className="font-semibold text-highlight">
+                  a community of students who innovate, research, and build at
+                  the forefront of AI
+                </strong>
+                , fostering both groundbreaking research and entrepreneurial
+                ventures across diverse industries.
+              </p>
+              <Actions className="mt-8">
+                <ButtonLink href="/community#memberStories" arrow>
+                  Meet our Members
+                </ButtonLink>
+                <ButtonLink href="/qanda" variant="outline">
+                  More on our Mission
+                </ButtonLink>
+              </Actions>
+            </Reveal>
           </div>
-        </div>
 
-        <div className="flex w-full flex-col items-center justify-center-safe md:w-3/7">
-          <div className="flex w-full items-center justify-center">
-            <div className="grid w-full grid-cols-2 gap-6 sm:grid-cols-2">
-              {STATS.map((stat) => (
-                <div
-                  key={stat.title}
-                  className="flex flex-col items-center justify-start md:items-start"
-                >
-                  <div className="text-4xl font-bold">
-                    <span className="gradient-text inline-flex items-start justify-start">
-                      {stat.value}
-                    </span>
-                  </div>
-                  <div className="mt-2 text-xl font-medium text-gray-600">
-                    {stat.title}
-                  </div>
-                </div>
-              ))}
+          <Reveal variant="scale" className="mt-14 md:mt-20">
+            <div className="group/pano relative aspect-[4/3] overflow-hidden rounded-4xl bg-sunken sm:aspect-[16/8] lg:aspect-[1920/620]">
+              <Image
+                src="/assets/apply/new_section_photo_1.webp"
+                alt="TUM.ai members"
+                fill
+                sizes="(min-width: 1280px) 80rem, 100vw"
+                className="object-cover transition-transform duration-[1.6s] ease-brand group-hover/pano:scale-[1.03] motion-reduce:transition-none"
+              />
             </div>
-          </div>
-        </div>
-      </div>
+          </Reveal>
 
-      <div className="flex w-full flex-col-reverse gap-8 md:flex-row">
-        <div className="flex w-full items-center justify-center md:w-1/2 lg:w-1/3">
-          <p className="pr-0 text-start text-lg md:pr-4 md:text-2xl md:text-left">
-            {aboutText.split(" ").map((word, index) => {
-              const stripped = word.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
-              const extraClass = PRIMARY_KEYWORDS.has(stripped)
-                ? "text-primary font-semibold"
-                : "";
+          <Reveal delay={120} className="mt-4 md:mt-5">
+            <StatGrid
+              items={STATS}
+              className="grid-cols-2 max-sm:[&_dd]:text-[clamp(2rem,10vw,2.75rem)] max-sm:[&>div]:p-5"
+            />
+          </Reveal>
+        </Container>
+      </Section>
 
+      <Section as="div" tone="mist" spacing="lg" className="overflow-clip">
+        <Container className="grid gap-12 lg:grid-cols-12 lg:items-center lg:gap-16">
+          <p className="text-[clamp(1.5rem,1.02rem+1.55vw,2.45rem)] leading-[1.22] font-medium tracking-[-0.032em] text-fg lg:col-span-6 xl:col-span-5">
+            {aboutWords.map((word, index) => {
+              const keyword = PRIMARY_KEYWORDS.has(
+                word.replace(/[^a-zA-Z0-9]/g, "").toLowerCase(),
+              );
+              // Inline-block so each word gets its own view timeline; the
+              // space sits outside so lines still wrap between words.
               return (
-                <span key={index} className={`word inline-block ${extraClass}`}>
-                  {word}&nbsp;
-                </span>
+                <Fragment key={index}>
+                  <span
+                    className={
+                      keyword
+                        ? "home-lit-word inline-block font-semibold text-highlight"
+                        : "home-lit-word inline-block"
+                    }
+                  >
+                    {word}
+                  </span>
+                  {index < aboutWords.length - 1 ? " " : null}
+                </Fragment>
               );
             })}
           </p>
+          <Reveal
+            variant="scale"
+            delay={120}
+            className="lg:col-span-6 xl:col-span-7"
+          >
+            <div className="group/onboarding relative aspect-[3/2] overflow-hidden lg:aspect-[5/4] xl:aspect-[3/2] rounded-4xl bg-sunken">
+              <Image
+                src="/assets/homepage/Onboarding25.webp"
+                alt="TUM.ai onboarding"
+                fill
+                sizes="(min-width: 1280px) 46rem, (min-width: 1024px) 48vw, 100vw"
+                className="object-cover transition-transform duration-[1.6s] ease-brand group-hover/onboarding:scale-[1.04] motion-reduce:transition-none"
+              />
+            </div>
+          </Reveal>
+        </Container>
+        <div className="mt-16 md:mt-24">
+          <DeferredPhotoRail />
         </div>
-
-        <div className="flex w-full items-center justify-center md:w-2/3">
-          <Image
-            className="min-h-[200px] rounded-xl bg-gray-200 object-cover"
-            src="/assets/homepage/Onboarding25.webp"
-            alt="TUM.ai onboarding"
-            width={1920}
-            height={1280}
-            sizes="(min-width: 1024px) 52vw, 100vw"
-          />
-        </div>
-      </div>
-    </div>
+      </Section>
+    </>
   );
-};
+}

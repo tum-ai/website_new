@@ -49,6 +49,20 @@ Edit:
 - `src/components/Footer.tsx`
 - `src/app/layout.tsx` if the global shell itself changes
 
+### Update site facts (cohorts, recruiting, figures, contacts)
+
+Facts that change every semester or cohort live in one file each under `src/config/`. Pages, FAQs and JSON-LD read them from there, so one edit updates every page. `test/content-facts.test.ts` fails when a page types one of these facts in directly.
+
+| Update | Edit |
+|---|---|
+| E-Lab application round: form link and deadline | `src/config/e-lab.ts`: `applicationUrl`, `applicationDeadlineDate`, `applicationDeadlineTime` (Munich time, as shown on the site). Applications close by themselves after the deadline minute: the E-Lab page, its buttons and badge, and the landing card switch live, and `/e-lab` regenerates every 5 minutes. `applicationsOpen` is the master switch for closing early or while no round is announced. |
+| When the next E-Lab application phase opens (shown while closed) | `src/config/e-lab.ts`: `nextApplicationWindow` |
+| New E-Lab cohort | `src/config/e-lab.ts`: `currentIteration` (and `heroLogo.src` if the logo changes). The completed-iterations metric follows. |
+| E-Lab length or money raised | `src/config/e-lab.ts`: `programWeeks`, `ventureFundingMillions` |
+| Membership recruiting round | `src/config/membership.ts`: `applicationsOpen`, `applicationUrl`, `timeline` |
+| Member counts, majors, universities, nationalities | `src/config/organization.ts` |
+| Role emails and social links | `src/config/contact.ts` |
+
 ### Change static copy or curated content
 
 Check `src/data/` first.
@@ -96,11 +110,10 @@ Start in `src/styles/index.css`.
 That file contains:
 
 - Tailwind imports
-- theme tokens
-- gradients
-- shared brand classes
+- theme tokens and tone surfaces
+- type scale and motion tokens
 
-Use `src/components/ui/` for reusable UI building blocks. Use page-specific component styles only when the styling is truly local to that page.
+Use `src/components/ds/` (see [design-system.md](design-system.md)) for reusable UI building blocks. Use page-specific component styles only when the styling is truly local to that page.
 
 ### Add or replace assets
 

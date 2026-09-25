@@ -1,18 +1,21 @@
 "use client";
 
-import { ExternalLink, X } from "lucide-react";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { FileText, Plus } from "lucide-react";
+import { useId, useState } from "react";
 import {
+  ButtonLink,
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+  SpotlightCard,
+  StatusBadge,
+  Tag,
+} from "@/components/ds";
 import { getSafeExternalUrl } from "@/lib/security";
+import { cn } from "@/lib/utils";
+import { BrandPlaceholder } from "./BrandPlaceholder";
 
 type ResearchCardProps = {
   title: string;
@@ -20,6 +23,12 @@ type ResearchCardProps = {
   image?: string;
   publication?: string;
   keywords?: string;
+  /** CMS status: "ongoing" or "completed". */
+  status?: string;
+  /** Position in its list, rendered as an editorial counter ("01"). */
+  index?: number;
+  /** `card`: image-led grid card. `row`: compact archive row with a thumbnail. */
+  layout?: "card" | "row";
 };
 
 function getCollaboratorName(title: string) {
@@ -52,145 +61,273 @@ function getCollaboratorName(title: string) {
   return lead.split(",")[0]?.trim() || lead;
 }
 
+const statusLabels: Record<string, string> = {
+  ongoing: "Ongoing",
+  completed: "Completed",
+};
+
+function splitKeywords(keywords?: string) {
+  return (keywords ?? "")
+    .split(",")
+    .map((keyword) => keyword.trim())
+    .filter(Boolean);
+}
+
+const counter = (index: number) => String(index + 1).padStart(2, "0");
+
+function KeywordTags({
+  keywords,
+  className,
+}: {
+  keywords: string[];
+  className?: string;
+}) {
+  if (keywords.length === 0) return null;
+  return (
+    <ul
+      aria-label="Keywords"
+      className={cn("flex flex-wrap gap-1.5", className)}
+    >
+      {keywords.map((keyword) => (
+        <li key={keyword}>
+          <Tag>{keyword}</Tag>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** Small static status line for cards; the dialog uses the full StatusBadge. */
+function StatusLine({ status }: { status?: string }) {
+  const label = status ? statusLabels[status] : undefined;
+  if (!label) return null;
+  return (
+    <span className="inline-flex items-center gap-2 text-meta font-semibold text-fg-muted">
+      <span
+        aria-hidden
+        className={cn(
+          "size-1.5 rounded-full",
+          status === "ongoing"
+            ? "bg-violet-500 shadow-[0_0_0_3px_rgb(154_100_217/0.18)]"
+            : "border border-fg-subtle",
+        )}
+      />
+      {label}
+    </span>
+  );
+}
+
+function PublicationHint() {
+  return (
+    <span className="inline-flex items-center gap-1.5 text-meta font-medium text-fg-subtle">
+      <FileText aria-hidden className="size-3.5" strokeWidth={1.75} />
+      Publication
+    </span>
+  );
+}
+
+/**
+ * The dialog-opening affordance: a disc whose plus turns on hover. `media`
+ * is the white disc for photos; `tonal` sits on the card surface.
+ */
+function OpenHint({
+  variant = "media",
+  className,
+}: {
+  variant?: "media" | "tonal";
+  className?: string;
+}) {
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        "grid shrink-0 place-items-center rounded-full transition-[rotate,background-color] duration-500 ease-brand group-hover/media:rotate-90 motion-reduce:transition-none",
+        variant === "media"
+          ? "bg-white/90 text-violet-950 shadow-soft backdrop-blur group-hover/media:bg-white"
+          : "bg-fg/[0.07] text-fg group-hover/media:bg-fg/[0.12]",
+        className,
+      )}
+    >
+      <Plus className="size-4" />
+    </span>
+  );
+}
+
+/**
+ * A research project: the collaborator as eyebrow, title, keywords and
+ * status. The whole surface is one dialog trigger (labelled by the title)
+ * that opens the full description and the publication link.
+ */
 export default function ResearchCard({
   title,
   description,
   image,
   publication,
   keywords,
+  status,
+  index = 0,
+  layout = "card",
 }: ResearchCardProps) {
   const publicationUrl = getSafeExternalUrl(publication);
-  const [isOpen, setIsOpen] = useState(false);
   const [imageUnavailable, setImageUnavailable] = useState(!image);
-  const hasImage = !imageUnavailable;
+  const titleId = useId();
   const collaboratorName = getCollaboratorName(title);
-  const titleColorClass = hasImage
-    ? "text-black drop-shadow-[0_1px_14px_rgb(255_255_255/0.35)]"
-    : "text-white";
-  const titleOverlayClass = hasImage
-    ? "bg-gradient-to-b from-white/70 via-white/20 to-transparent"
-    : "bg-gradient-to-b from-black/55 via-black/10 to-black/10";
+  const keywordList = splitKeywords(keywords);
+  const statusLabel = status ? statusLabels[status] : undefined;
+
+  /* CMS (Sanity) URLs sit outside next/image's configured hosts, so a plain
+     lazy <img> is used. On error the branded placeholder takes over. */
+  const renderMedia = (alt: string, placeholderType: string) =>
+    imageUnavailable ? (
+      <BrandPlaceholder seed={index}>
+        <span
+          className={cn(
+            "absolute bottom-0 left-0 p-5 leading-none font-light tracking-[-0.04em] text-white/90 md:p-6",
+            placeholderType,
+          )}
+        >
+          {collaboratorName}
+        </span>
+      </BrandPlaceholder>
+    ) : (
+      <img
+        src={image}
+        alt={alt}
+        loading="lazy"
+        decoding="async"
+        onError={() => setImageUnavailable(true)}
+        className="absolute inset-0 size-full object-cover transition-transform duration-[1.4s] ease-brand group-hover/media:scale-[1.04] motion-reduce:transition-none"
+      />
+    );
+
+  const trigger = (
+    <DialogTrigger
+      aria-labelledby={titleId}
+      className="absolute inset-0 z-10 rounded-[inherit]"
+    />
+  );
+
+  const card =
+    layout === "row" ? (
+      <article className="group/media relative isolate grid grid-cols-[minmax(0,1fr)_6.5rem] items-start gap-x-5 gap-y-4 rounded-3xl py-6 sm:grid-cols-[2.5rem_minmax(0,1fr)_10rem] md:grid-cols-[3.5rem_minmax(0,1fr)_14rem] md:gap-x-8 md:py-8 lg:grid-cols-[4rem_minmax(0,1fr)_17rem]">
+        {/* Explicit placement: on phones the tags run under both the text
+            and the thumbnail; from `sm` they sit in the text column. The
+            counter and the text column share one baseline. */}
+        <span
+          aria-hidden
+          className="tabular hidden self-baseline text-eyebrow text-fg-subtle sm:col-start-1 sm:row-span-2 sm:row-start-1 sm:block"
+        >
+          {counter(index)}
+        </span>
+        <div className="col-start-1 row-start-1 min-w-0 self-baseline sm:col-start-2">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
+            <p className="text-eyebrow text-highlight uppercase">
+              {collaboratorName}
+            </p>
+            {publicationUrl ? <PublicationHint /> : null}
+          </div>
+          <h3
+            id={titleId}
+            className="mt-2.5 text-heading-md text-fg transition-colors duration-300 ease-brand group-hover/media:text-highlight"
+          >
+            {title}
+          </h3>
+          <p className="mt-2 line-clamp-2 max-w-2xl text-small text-fg-muted max-sm:hidden">
+            {description}
+          </p>
+        </div>
+        {/* Radius 24px = disc radius 16px + 8px inset, so the disc sits
+            concentric in the corner. */}
+        <div
+          className={cn(
+            "relative col-start-2 row-start-1 aspect-square overflow-hidden rounded-3xl bg-sunken sm:col-start-3 sm:aspect-[16/10]",
+            keywordList.length > 0 && "sm:row-span-2",
+          )}
+        >
+          {renderMedia("", "hidden text-heading-lg md:block")}
+          <OpenHint className="absolute top-2 right-2 size-8" />
+        </div>
+        <KeywordTags
+          keywords={keywordList}
+          className="col-span-2 row-start-2 sm:col-span-1 sm:col-start-2"
+        />
+        {trigger}
+      </article>
+    ) : (
+      <SpotlightCard
+        variant="raised"
+        padding="none"
+        interactive
+        className="group/media flex h-full flex-col sm:max-lg:grid sm:max-lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)]"
+      >
+        {/* Media bleeds to the card edge: outer corners follow the card's
+            radius (minus its 1px border), inner edges stay straight. */}
+        <div className="relative aspect-[16/10] overflow-hidden rounded-t-[calc(1.5rem-1px)] bg-sunken sm:max-lg:aspect-auto sm:max-lg:h-full sm:max-lg:min-h-64 sm:max-lg:rounded-l-[calc(1.5rem-1px)] sm:max-lg:rounded-tr-none">
+          {renderMedia("", "text-display-md")}
+        </div>
+        <div className="flex flex-1 flex-col p-5 sm:max-lg:p-7 md:p-6">
+          <div className="flex items-center justify-between gap-4">
+            <p className="text-eyebrow text-highlight uppercase">
+              {collaboratorName}
+            </p>
+            <span aria-hidden className="tabular text-eyebrow text-fg-subtle">
+              {counter(index)}
+            </span>
+          </div>
+          <h3 id={titleId} className="mt-3 text-heading-md text-fg">
+            {title}
+          </h3>
+          <p className="mt-3 line-clamp-3 text-small text-fg-muted">
+            {description}
+          </p>
+          <KeywordTags keywords={keywordList} className="mt-5" />
+          <div className="mt-auto pt-6">
+            <div className="flex items-center justify-between gap-4 border-t border-hairline pt-4">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                <StatusLine status={status} />
+                {publicationUrl ? <PublicationHint /> : null}
+              </div>
+              <OpenHint variant="tonal" className="size-9" />
+            </div>
+          </div>
+        </div>
+        {trigger}
+      </SpotlightCard>
+    );
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <button
-          type="button"
-          className="group relative block aspect-[4/5] w-full overflow-hidden rounded-lg bg-dark-indigo !p-0 text-left text-white shadow-sm !outline-none transition-shadow duration-200 hover:shadow-2xl hover:shadow-black/30 focus:!outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
-          style={{ backgroundImage: "none" }}
-          aria-label={title}
-        >
-          {!imageUnavailable ? (
-            <img
-              src={image}
-              alt={title}
-              className="absolute inset-0 h-full w-full object-cover"
-              loading="lazy"
-              decoding="async"
-              onError={() => setImageUnavailable(true)}
-            />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center bg-[linear-gradient(135deg,var(--color-dark-indigo),var(--color-black))]">
-              <img
-                src="/assets/logo_new_white_standard.png"
-                alt="Placeholder"
-                className="h-1/2 w-2/3 object-contain opacity-45"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-          )}
-
-          <div className={`absolute inset-0 ${titleOverlayClass}`} />
-
-          <div className="absolute inset-x-0 top-0 p-6 md:p-7">
-            <h3
-              className={`max-w-[16rem] text-3xl font-bold leading-none tracking-[-0.04em] md:text-4xl ${titleColorClass}`}
-            >
+    <Dialog>
+      {card}
+      <DialogContent size="lg">
+        <div className="relative aspect-[16/10] overflow-hidden bg-sunken sm:aspect-[2/1]">
+          {renderMedia(title, "text-display-lg")}
+        </div>
+        <div className="p-6 sm:p-8 md:p-10">
+          <div className="flex flex-wrap items-center justify-between gap-3 pr-0">
+            <p className="text-eyebrow text-highlight uppercase">
               {collaboratorName}
-            </h3>
-          </div>
-
-          <div className="absolute inset-0 bg-black p-6 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100 md:p-7">
-            <h3 className="max-w-[16rem] text-3xl font-bold leading-none tracking-[-0.04em] md:text-4xl">
-              {title}
-            </h3>
-            {keywords && (
-              <p className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-                {keywords}
-              </p>
-            )}
-            <p className="mt-5 text-sm leading-6 text-white/78 md:text-[0.95rem]">
-              {description}
             </p>
+            {statusLabel ? (
+              <StatusBadge status={status === "ongoing" ? "live" : "idle"}>
+                {statusLabel}
+              </StatusBadge>
+            ) : null}
           </div>
-        </button>
-      </DialogTrigger>
-
-      <DialogContent
-        className="max-h-[86vh] w-[calc(100vw-2rem)] overflow-y-auto border-0 bg-white p-0 text-black shadow-2xl !outline-none focus:!outline-none sm:max-w-3xl"
-        showCloseButton={false}
-      >
-        <DialogClose
-          className="absolute top-4 right-4 z-20 flex h-10 w-10 items-center justify-center rounded-full !bg-black/70 !p-0 text-white transition hover:!bg-dark-purple focus:!outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
-          style={{ backgroundImage: "none" }}
-        >
-          <X className="h-4 w-4" />
-          <span className="sr-only">Close</span>
-        </DialogClose>
-
-        <div className="relative h-72 overflow-hidden bg-dark-indigo sm:h-96">
-          {!imageUnavailable ? (
-            <img
-              src={image}
-              alt={title}
-              className="h-full w-full object-cover"
-              onError={() => setImageUnavailable(true)}
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center bg-[linear-gradient(135deg,var(--color-dark-indigo),var(--color-black))]">
-              <img
-                src="/assets/logo_new_white_standard.png"
-                alt="Placeholder"
-                className="h-32 w-72 object-contain opacity-45"
-              />
-            </div>
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
-          <DialogHeader className="absolute right-6 bottom-6 left-6 text-left">
-            <DialogTitle className="text-4xl font-bold tracking-[-0.04em] text-white md:text-5xl">
-              {title}
-            </DialogTitle>
-            <DialogDescription className="sr-only">
+          <DialogTitle className="mt-4 max-w-2xl">{title}</DialogTitle>
+          <KeywordTags keywords={keywordList} className="mt-5" />
+          <div className="mt-8 grid gap-3 border-t border-hairline pt-8 md:grid-cols-[8rem_minmax(0,1fr)] md:items-baseline md:gap-8">
+            <h3 className="text-eyebrow text-fg-subtle uppercase">About</h3>
+            <DialogDescription className="leading-relaxed">
               {description}
             </DialogDescription>
-          </DialogHeader>
-        </div>
-
-        <div className="space-y-7 p-6 md:p-8">
-          {keywords && (
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
-              {keywords}
-            </p>
-          )}
-          <div>
-            <h4 className="mb-2 text-lg font-semibold text-dark-indigo">
-              About
-            </h4>
-            <p className="leading-7 text-text-gray">{description}</p>
           </div>
-          {publicationUrl && (
-            <Button asChild variant="primary" className="h-11 rounded-md px-5">
-              <a
-                href={publicationUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <ExternalLink className="h-4 w-4" />
+          {publicationUrl ? (
+            <div className="mt-8 flex border-t border-hairline pt-8 md:pl-40">
+              <ButtonLink href={publicationUrl} arrow="external">
                 Read Publication
-              </a>
-            </Button>
-          )}
+              </ButtonLink>
+            </div>
+          ) : null}
         </div>
       </DialogContent>
     </Dialog>

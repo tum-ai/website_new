@@ -1,0 +1,82 @@
+/*
+ * Homepage-only motion: the hero photo mosaic, the hero scroll cue and the
+ * scroll-lit statement. Everything here is decorative and switches off under
+ * reduced motion; the scroll-lit text is a pure CSS enhancement that only
+ * runs where scroll-driven animations are supported, so server HTML and
+ * other browsers always show the text at full contrast.
+ */
+
+@layer components {
+  @keyframes home-mosaic-up {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(0, -50%, 0);
+    }
+  }
+
+  @keyframes home-mosaic-down {
+    from {
+      transform: translate3d(0, -50%, 0);
+    }
+    to {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes home-scroll-cue {
+    0% {
+      opacity: 0;
+      transform: translate3d(0, -6px, 0);
+    }
+    35%,
+    65% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translate3d(0, 8px, 0);
+    }
+  }
+
+  @keyframes home-lit {
+    from {
+      opacity: 0.2;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .home-mosaic-column {
+      animation: home-mosaic-up var(--mosaic-duration, 90s) linear infinite;
+      will-change: transform;
+    }
+
+    .home-mosaic-column[data-direction="down"] {
+      animation-name: home-mosaic-down;
+    }
+
+    /* The hero pauses its wall once it scrolls out of view (see HeroMosaic). */
+    .home-mosaic[data-paused="true"] .home-mosaic-column {
+      animation-play-state: paused;
+    }
+
+    .home-scroll-cue-arrow {
+      animation: home-scroll-cue 2.4s var(--ease-brand) infinite;
+    }
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .home-lit-word {
+        animation: home-lit linear both;
+        animation-duration: auto;
+        animation-timeline: view();
+        animation-range: entry 0% cover 42%;
+      }
+    }
+  }
+}
