@@ -1,502 +1,366 @@
 "use client";
 
-import {
-  Brain,
-  ChartNoAxesColumn,
-  Globe,
-  GraduationCap,
-  Handshake,
-  type LucideIcon,
-  Rocket,
-} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { Container, Eyebrow, Reveal, Section } from "@/components/ds";
+import { cn } from "@/lib/utils";
+import { type JourneyStep, journeyStages, stepAnchor } from "./journeySteps";
 
-import { Card } from "../ui/card";
+/**
+ * Fraction of the viewport height that acts as the "reading line": rails fill
+ * up to it and markers light up once their centre has crossed it.
+ */
+const READING_LINE = 0.4;
 
-type Step = {
-  step: string;
-  name: string;
-  description: string;
-};
+const stageNumber = (index: number) => String(index + 1).padStart(2, "0");
 
-type AnimatedCardProps = {
-  delayMs: number;
-  isVisible: boolean;
-  children: React.ReactNode;
-};
+/** Every step in order, tagged with its stage, for the side index. */
+const indexEntries = journeyStages.flatMap((stage, stageIndex) =>
+  (stage.kind === "single" ? [stage.step] : stage.steps).map((step) => ({
+    step,
+    stageIndex,
+  })),
+);
 
-type StepCardProps = {
-  step: Step;
-  index: number;
-  delayMs: number;
-  isVisible: boolean;
-};
+const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
 
-type CombinedStepCardProps = {
-  steps: Step[];
-  indices: number[];
-  delayMs: number;
-  isVisible: boolean;
-};
-
-type PathSegmentProps = {
-  delayMs: number;
-  d: string;
-  isVisible: boolean;
-};
-
-const stepIcons: LucideIcon[] = [
-  Rocket,
-  Brain,
-  Handshake,
-  ChartNoAxesColumn,
-  Globe,
-  GraduationCap,
-];
-
-export const iconColors = [
-  "#C084FC",
-  "#4FD1C5",
-  "#F472B6",
-  "#FDE047",
-  "#60A5FA",
-  "#FB923C",
-  "#34D399",
-  "#A78BFA",
-  "#F87171",
-] as const;
-
-const glowColor = "#9A64D9";
-const connectorDelayMs = 300;
-
-const customSteps: Step[] = [
-  {
-    step: "01",
-    name: "Batch Introduction",
-    description:
-      "Kick off your journey at the onboarding weekend! Meet members, join social events, and deepen connections on our getaway.",
-  },
-  {
-    step: "02A",
-    name: "Research Track",
-    description:
-      "Join a team on an Impact Project applying AI to real world challenges. Contribute to research, academic publications, or open-source work, and engage with the TUM.ai community through update sessions.",
-  },
-  {
-    step: "02B",
-    name: "Initiative Track",
-    description:
-      "Join one of our core departments and become a driving force behind everything that makes TUM.ai stand out. Shape the future of TUM.ai and develop your skills while engaging in trips, events, and learning opportunities.",
-  },
-  {
-    step: "03",
-    name: "Growth Opportunities",
-    description:
-      "After your first semester, expand your impact - Join new teams, lead a task force, or take on a Team Lead role.",
-  },
-  {
-    step: "04",
-    name: "Research Exchange (REX) Program",
-    description:
-      "After one semester, you can join the REX Program - conduct research at top institutions like MIT, Harvard, or Cambridge. With our alumni network, we guide you in finding a topic, navigating applications, and contributing to cutting-edge research.",
-  },
-  {
-    step: "05",
-    name: "Alumni Program",
-    description:
-      "Having been with TUM.ai for two or more semesters, you can join the Alumni Program, opening up opportunities for continued networking and collaboration.",
-  },
-];
-
-function AnimatedCard({ delayMs, isVisible, children }: AnimatedCardProps) {
-  return (
-    <div
-      className="journey-card relative"
-      data-active={isVisible}
-      style={{ ["--journey-delay" as string]: `${delayMs}ms` }}
-    >
-      {children}
-    </div>
-  );
-}
-
-function StepCard({ step, index, delayMs, isVisible }: StepCardProps) {
-  const Icon = stepIcons[index];
-
-  return (
-    <AnimatedCard delayMs={delayMs} isVisible={isVisible}>
-      <Card
-        className="relative h-full overflow-hidden rounded-3xl border border-primary/30 bg-[#18112F] p-6 text-white shadow-lg
-        before:absolute before:inset-0 before:bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] before:from-purple-900 before:to-transparent before:opacity-50"
-      >
-        <div
-          className="absolute inset-0 z-0 opacity-50"
-          style={{
-            background: `radial-gradient(circle at center, ${glowColor} -30%, transparent 80%)`,
-          }}
-        />
-        <div className="relative z-10 flex items-start justify-between">
-          <div className="invisible h-16 w-16" />
-          <div className="flex flex-col">
-            <div className="text-sm tracking-widest text-white/70">
-              {step.step}
-            </div>
-            <h3 className="text-2xl font-bold tracking-tight text-white">
-              {step.name}
-            </h3>
-          </div>
-          <div
-            className="flex h-16 w-16 items-center justify-center"
-            style={{ color: iconColors[index] }}
-          >
-            <Icon className="h-10 w-10" />
-          </div>
-        </div>
-        <p className="relative z-10 mt-4 text-sm leading-snug text-white/80">
-          {step.description}
-        </p>
-      </Card>
-    </AnimatedCard>
-  );
-}
-
-function CombinedStepCard({
-  steps,
-  indices,
-  delayMs,
-  isVisible,
-}: CombinedStepCardProps) {
-  return (
-    <AnimatedCard delayMs={delayMs} isVisible={isVisible}>
-      <Card
-        className="relative h-full overflow-hidden rounded-3xl border border-primary/30 bg-[#18112F] p-6 text-white shadow-lg
-        before:absolute before:inset-0 before:bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] before:from-purple-900 before:to-transparent before:opacity-50"
-      >
-        <div
-          className="absolute inset-0 z-0 opacity-50"
-          style={{
-            background: `radial-gradient(circle at center, ${glowColor} -30%, transparent 80%)`,
-          }}
-        />
-        <div className="relative z-10">
-          <div className="block md:hidden">
-            {steps.map((step, idx) => {
-              const Icon = stepIcons[indices[idx]];
-
-              return (
-                <div key={step.step}>
-                  <div className="mb-4 flex items-start justify-between">
-                    <div className="invisible h-16 w-16" />
-                    <div className="flex flex-col">
-                      <div className="text-sm tracking-widest text-white/70">
-                        {step.step}
-                      </div>
-                      <h3 className="text-2xl font-bold tracking-tight text-white">
-                        {step.name}
-                      </h3>
-                    </div>
-                    <div
-                      className="flex h-16 w-16 items-center justify-center"
-                      style={{ color: iconColors[indices[idx]] }}
-                    >
-                      <Icon className="h-10 w-10" />
-                    </div>
-                  </div>
-                  <p className="mb-4 text-sm leading-snug text-white/80">
-                    {step.description}
-                  </p>
-                  {idx < steps.length - 1 && (
-                    <div className="my-6 flex items-center justify-center">
-                      <div className="h-px flex-1 bg-white/20" />
-                      <span className="mx-4 text-sm font-semibold text-white/60">
-                        OR
-                      </span>
-                      <div className="h-px flex-1 bg-white/20" />
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="relative hidden items-stretch gap-8 md:flex">
-            {steps.map((step, idx) => {
-              const Icon = stepIcons[indices[idx]];
-
-              return (
-                <div key={step.step} className="flex-1">
-                  <div className="mb-4 flex items-start justify-between">
-                    <div className="invisible h-16 w-16" />
-                    <div className="flex flex-col">
-                      <div className="text-sm tracking-widest text-white/70">
-                        {step.step}
-                      </div>
-                      <h3 className="text-2xl font-bold tracking-tight text-white">
-                        {step.name}
-                      </h3>
-                    </div>
-                    <div
-                      className="flex h-16 w-16 items-center justify-center"
-                      style={{ color: iconColors[indices[idx]] }}
-                    >
-                      <Icon className="h-10 w-10" />
-                    </div>
-                  </div>
-                  <p className="text-sm leading-snug text-white/80">
-                    {step.description}
-                  </p>
-                </div>
-              );
-            })}
-
-            <div className="pointer-events-none absolute inset-y-0 left-1/2 hidden -translate-x-1/2 items-center px-4 md:flex">
-              <div className="flex h-full flex-col items-center justify-center">
-                <div className="min-h-[2rem] w-px flex-1 bg-white/20" />
-                <span className="my-4 whitespace-nowrap text-sm font-semibold text-white/60">
-                  OR
-                </span>
-                <div className="min-h-[2rem] w-px flex-1 bg-white/20" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </Card>
-    </AnimatedCard>
-  );
-}
-
-function PathSegment({ delayMs, d, isVisible }: PathSegmentProps) {
-  return (
-    <path
-      className="journey-path-segment"
-      d={d}
-      data-active={isVisible}
-      pathLength={1}
-      stroke="url(#pathGradient)"
-      strokeWidth="8"
-      strokeLinecap="round"
-      fill="none"
-      style={{
-        filter: "drop-shadow(0 0 16px var(--color-tumai-violet))",
-        ["--journey-delay" as string]: `${delayMs}ms`,
-      }}
-    />
-  );
-}
-
-function JourneyPathSVG({ visibleStages }: { visibleStages: boolean[] }) {
-  return (
-    <svg
-      className="pointer-events-none absolute top-0 left-1/2 z-0 hidden -translate-x-1/2 md:block"
-      width="600"
-      height="1100"
-      viewBox="0 0 600 1100"
-      fill="none"
-      style={{ minWidth: 600, minHeight: 1100 }}
-    >
-      <PathSegment
-        d="
-          M300 40
-          L300 180
-          C300 220, 120 240, 120 320
-          L120 400
-        "
-        delayMs={connectorDelayMs}
-        isVisible={visibleStages[1]}
-      />
-      <PathSegment
-        d="
-          M300 180
-          C300 220, 480 240, 480 320
-          L480 400
-        "
-        delayMs={connectorDelayMs}
-        isVisible={visibleStages[1]}
-      />
-      <PathSegment
-        d="
-          M120 400
-          C120 500, 300 520, 300 600
-        "
-        delayMs={connectorDelayMs}
-        isVisible={visibleStages[2]}
-      />
-      <PathSegment
-        d="
-          M480 400
-          C480 500, 300 520, 300 600
-        "
-        delayMs={connectorDelayMs}
-        isVisible={visibleStages[2]}
-      />
-      <PathSegment
-        d="M300 600 L300 700"
-        delayMs={connectorDelayMs}
-        isVisible={visibleStages[3]}
-      />
-      <PathSegment
-        d="M300 700 L300 860"
-        delayMs={connectorDelayMs}
-        isVisible={visibleStages[4]}
-      />
-      <PathSegment
-        d="M300 860 L300 1020"
-        delayMs={connectorDelayMs}
-        isVisible={visibleStages[4]}
-      />
-      <defs>
-        <linearGradient
-          id="pathGradient"
-          x1="0"
-          y1="0"
-          x2="0"
-          y2="1100"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="#9A64D9" />
-          <stop offset="1" stopColor="#F5EFFF" />
-        </linearGradient>
-      </defs>
-    </svg>
-  );
-}
-
+/**
+ * Scroll-driven member journey. A violet rail fills as the reader scrolls;
+ * at stage 02 it forks into two parallel tracks (with an "OR" node on the
+ * branch) and merges again. Markers light up as they cross the reading line,
+ * and a sticky index on wide screens tracks the current stage.
+ *
+ * Progress is written straight to the DOM from one rAF-throttled scroll
+ * handler, so scrolling never re-renders the list. Server HTML shows the
+ * unfilled path; reduced motion shows it fully drawn.
+ */
 export function JourneySection() {
-  const [visibleStages, setVisibleStages] = useState<boolean[]>(() =>
-    Array.from({ length: 5 }, () => false),
-  );
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const stageRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const pathRef = useRef<HTMLOListElement>(null);
+  const [currentStage, setCurrentStage] = useState(0);
 
   useEffect(() => {
-    if (!sectionRef.current) {
-      return;
-    }
+    const root = pathRef.current;
+    if (!root) return;
 
-    const observers = stageRefs.current.map(
-      (element, index) =>
-        new IntersectionObserver(
-          ([entry]) => {
-            if (!entry?.isIntersecting) {
-              return;
-            }
-
-            setVisibleStages((currentStages) => {
-              if (currentStages[index]) {
-                return currentStages;
-              }
-
-              const nextStages = [...currentStages];
-              nextStages[index] = true;
-              return nextStages;
-            });
-          },
-          { rootMargin: "0px 0px -18% 0px", threshold: 0.35 },
-        ),
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const tracks = Array.from(
+      root.querySelectorAll<HTMLElement>("[data-track]"),
+    ).map((track) => ({
+      track,
+      fill: track.querySelector<HTMLElement>("[data-fill]"),
+    }));
+    const connectors = Array.from(
+      root.querySelectorAll<HTMLElement>("[data-connector]"),
+    );
+    const markers = Array.from(
+      root.querySelectorAll<HTMLElement>("[data-marker]"),
     );
 
-    for (const [index, observer] of observers.entries()) {
-      const element = stageRefs.current[index];
-      if (!element) {
-        continue;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const line = window.innerHeight * READING_LINE;
+      const complete = reducedMotion.matches;
+      const progressOf = (rect: DOMRect) =>
+        complete ? 1 : clamp01((line - rect.top) / Math.max(rect.height, 1));
+
+      for (const { track, fill } of tracks) {
+        if (fill) {
+          fill.style.transform = `scaleY(${progressOf(track.getBoundingClientRect())})`;
+        }
+      }
+      for (const connector of connectors) {
+        connector.style.opacity = String(
+          progressOf(connector.getBoundingClientRect()),
+        );
       }
 
-      observer.observe(element);
-    }
+      let reached = 0;
+      for (const marker of markers) {
+        const rect = marker.getBoundingClientRect();
+        const passed = rect.top + rect.height / 2 <= line;
+        marker.toggleAttribute("data-lit", complete || passed);
+        if (passed && marker.dataset.stage) {
+          reached = Math.max(reached, Number(marker.dataset.stage));
+        }
+      }
+      setCurrentStage(reached);
+    };
 
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    reducedMotion.addEventListener("change", schedule);
     return () => {
-      for (const observer of observers) {
-        observer.disconnect();
-      }
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      reducedMotion.removeEventListener("change", schedule);
     };
   }, []);
 
   return (
-    <div
-      ref={sectionRef}
-      className="relative z-10 mx-auto w-full max-w-[1600px] overflow-hidden px-4 pt-32 pb-16 text-center md:px-8"
+    <Section
+      tone="paper"
+      spacing="lg"
+      id="journey"
+      aria-labelledby="journey-title"
     >
-      <div className="mb-12">
-        <h1 className="text-4xl font-bold md:text-5xl">
-          The TUM.ai
-          <b className="bg-gradient-to-r font-semibold from-[#9A64D9] to-[#F5EFFF] bg-clip-text text-transparent">
-            {" "}
-            Member Journey
-          </b>
-        </h1>
-        <p className="mx-auto max-w-2xl pt-4 text-base text-white/80 md:text-lg">
-          At TUM.ai, members contribute through AI projects, workshops, and
-          community initiatives - turning bold ideas into real-world impact.
+      <Container>
+        <div className="grid gap-14 md:gap-16 xl:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] xl:gap-20 2xl:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] 2xl:gap-24">
+          <JourneyIndex currentStage={currentStage} />
+          <ol ref={pathRef} className="relative">
+            {journeyStages.map((stage, index) =>
+              stage.kind === "single" ? (
+                <SingleStage
+                  key={stage.step.step}
+                  step={stage.step}
+                  stageIndex={index}
+                  isLast={index === journeyStages.length - 1}
+                />
+              ) : (
+                <ForkStage
+                  key={stage.steps[0].step}
+                  steps={stage.steps}
+                  stageIndex={index}
+                />
+              ),
+            )}
+          </ol>
+        </div>
+      </Container>
+    </Section>
+  );
+}
+
+/** Sticky side index: section label, live stage counter and jump links. */
+function JourneyIndex({ currentStage }: { currentStage: number }) {
+  return (
+    <div className="xl:sticky xl:top-[calc(var(--header-height)+3.5rem)] xl:self-start xl:pt-[1.0625rem]">
+      <h2 id="journey-title">
+        <Eyebrow as="span">Member Journey</Eyebrow>
+      </h2>
+      <div className="hidden xl:block">
+        <p aria-hidden className="mt-10 flex items-baseline gap-3">
+          <span className="-mb-[0.14em] inline-block overflow-hidden pb-[0.14em]">
+            <span
+              key={currentStage}
+              className="inline-block text-display-xl text-fg tabular motion-safe:animate-rise-sm"
+            >
+              {stageNumber(currentStage)}
+            </span>
+          </span>
+          <span className="text-meta text-fg-subtle tabular">
+            / {stageNumber(journeyStages.length - 1)}
+          </span>
         </p>
-      </div>
-      <div className="relative mt-16 grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-2 lg:gap-x-12">
-        <JourneyPathSVG visibleStages={visibleStages} />
-        <div
-          ref={(node) => {
-            stageRefs.current[0] = node;
-          }}
-          className="col-span-1 w-full max-w-md justify-self-center md:col-start-1 md:col-end-3"
-        >
-          <StepCard
-            step={customSteps[0]}
-            index={0}
-            delayMs={0}
-            isVisible={visibleStages[0]}
-          />
-        </div>
-        <div
-          ref={(node) => {
-            stageRefs.current[1] = node;
-          }}
-          className="col-span-1 w-full max-w-md justify-self-center md:col-start-1 md:col-end-3 md:max-w-5xl"
-        >
-          <CombinedStepCard
-            steps={[customSteps[1], customSteps[2]]}
-            indices={[1, 2]}
-            delayMs={0}
-            isVisible={visibleStages[1]}
-          />
-        </div>
-        <div
-          ref={(node) => {
-            stageRefs.current[2] = node;
-          }}
-          className="col-span-1 w-full max-w-md justify-self-center md:col-start-1 md:col-end-3"
-        >
-          <StepCard
-            step={customSteps[3]}
-            index={3}
-            delayMs={0}
-            isVisible={visibleStages[2]}
-          />
-        </div>
-        <div
-          ref={(node) => {
-            stageRefs.current[3] = node;
-          }}
-          className="col-span-1 w-full max-w-md justify-self-center md:col-start-1 md:col-end-3"
-        >
-          <StepCard
-            step={customSteps[4]}
-            index={4}
-            delayMs={0}
-            isVisible={visibleStages[3]}
-          />
-        </div>
-        <div
-          ref={(node) => {
-            stageRefs.current[4] = node;
-          }}
-          className="col-span-1 w-full max-w-md justify-self-center md:col-start-1 md:col-end-3"
-        >
-          <StepCard
-            step={customSteps[5]}
-            index={5}
-            delayMs={0}
-            isVisible={visibleStages[4]}
-          />
-        </div>
+        <nav aria-label="Member journey stages" className="mt-10">
+          <ol className="border-l border-hairline">
+            {indexEntries.map(({ step, stageIndex }) => {
+              const state =
+                stageIndex < currentStage
+                  ? "done"
+                  : stageIndex === currentStage
+                    ? "current"
+                    : "next";
+              return (
+                <li key={step.step}>
+                  <a
+                    href={`#${stepAnchor(step.step)}`}
+                    data-state={state}
+                    className="group/index relative -ml-px flex items-baseline gap-4 py-2 pl-5 text-small text-fg-subtle transition-[color] duration-300 ease-brand hover:text-fg data-[state=current]:text-fg data-[state=done]:text-fg-muted"
+                  >
+                    <span
+                      aria-hidden
+                      className="absolute inset-y-1 left-0 w-0.5 origin-center scale-y-0 rounded-full bg-violet-500 transition-[scale,opacity] duration-500 ease-brand group-data-[state=current]/index:scale-y-100 group-data-[state=done]/index:scale-y-100 group-data-[state=done]/index:opacity-30"
+                    />
+                    <span className="w-8 shrink-0 text-meta tabular">
+                      {step.step}
+                    </span>
+                    <span className="font-medium">{step.name}</span>
+                  </a>
+                </li>
+              );
+            })}
+          </ol>
+        </nav>
       </div>
     </div>
+  );
+}
+
+/** Vertical rail segment; the scroll handler scales its violet fill. */
+function Track({ className }: { className?: string }) {
+  return (
+    <span
+      aria-hidden
+      data-track
+      className={cn(
+        "pointer-events-none absolute w-0.5 -translate-x-1/2 overflow-hidden rounded-full bg-hairline-strong",
+        className,
+      )}
+    >
+      <span
+        data-fill
+        className="block size-full origin-top bg-gradient-to-b from-violet-400 to-violet-600 [transform:scaleY(0)]"
+      />
+    </span>
+  );
+}
+
+/**
+ * Curved branch between the main rail and the second lane (md and up).
+ * Rendered twice: a hairline base and a violet copy that fades in.
+ */
+function Connector({ shape }: { shape: string }) {
+  const base =
+    "pointer-events-none absolute left-[calc(1.5rem_-_1px)] hidden w-[calc(50%_+_var(--fork-gap)/2_+_2px)] md:block";
+  return (
+    <>
+      <span aria-hidden className={cn(base, shape, "border-hairline-strong")} />
+      <span
+        aria-hidden
+        data-connector
+        className={cn(base, shape, "border-violet-500 opacity-0")}
+      />
+    </>
+  );
+}
+
+function Marker({
+  step,
+  stageIndex,
+}: {
+  step: JourneyStep;
+  stageIndex: number;
+}) {
+  const Icon = step.icon;
+  return (
+    <span
+      aria-hidden
+      data-marker
+      data-stage={stageIndex}
+      className="absolute top-0 left-0 z-10 grid size-12 place-items-center rounded-full border border-hairline-strong bg-canvas text-fg-subtle transition-[background-color,border-color,color,box-shadow] duration-700 ease-brand data-lit:border-violet-600 data-lit:bg-violet-600 data-lit:text-white data-lit:shadow-[0_0_0_6px_rgb(154_100_217/0.16)]"
+    >
+      <Icon className="size-5" strokeWidth={1.75} />
+    </span>
+  );
+}
+
+function OrNode({ className }: { className?: string }) {
+  return (
+    <span
+      aria-hidden
+      data-marker
+      className={cn(
+        "absolute z-10 grid h-8 min-w-12 place-items-center rounded-full border border-hairline-strong bg-canvas px-3 text-eyebrow text-fg-subtle uppercase transition-[border-color,color,box-shadow] duration-700 ease-brand data-lit:border-violet-500 data-lit:text-highlight data-lit:shadow-[0_0_0_5px_rgb(154_100_217/0.12)]",
+        className,
+      )}
+    >
+      OR
+    </span>
+  );
+}
+
+function StepContent({
+  step,
+  compact = false,
+}: {
+  step: JourneyStep;
+  /** Narrower column (the fork): slightly smaller title on tablets. */
+  compact?: boolean;
+}) {
+  return (
+    <Reveal className="pt-[1.0625rem]">
+      <p className="text-eyebrow text-highlight uppercase tabular">
+        {step.step}
+      </p>
+      <h3
+        className={cn(
+          "mt-3 text-heading-lg text-fg",
+          compact && "md:text-heading-md xl:text-heading-lg",
+        )}
+      >
+        {step.name}
+      </h3>
+      <p className="mt-4 max-w-2xl text-body text-fg-muted">
+        {step.description}
+      </p>
+    </Reveal>
+  );
+}
+
+const anchorOffset = "scroll-mt-[calc(var(--header-height)+2.5rem)]";
+
+function SingleStage({
+  step,
+  stageIndex,
+  isLast,
+}: {
+  step: JourneyStep;
+  stageIndex: number;
+  isLast: boolean;
+}) {
+  return (
+    <li
+      id={stepAnchor(step.step)}
+      className={cn(
+        "relative pl-18 md:pl-20",
+        !isLast && "pb-16 md:pb-24",
+        anchorOffset,
+      )}
+    >
+      {isLast ? null : <Track className="top-6 bottom-0 left-6" />}
+      <Marker step={step} stageIndex={stageIndex} />
+      <StepContent step={step} />
+    </li>
+  );
+}
+
+/**
+ * Two parallel tracks. On md and up the rail branches into a second lane
+ * (the "OR" node sits on the branch) and merges back below; on small screens
+ * both steps sit on the main rail with the "OR" node between them.
+ */
+function ForkStage({
+  steps,
+  stageIndex,
+}: {
+  steps: [JourneyStep, JourneyStep];
+  stageIndex: number;
+}) {
+  const [first, second] = steps;
+  return (
+    <li className="relative pb-16 [--fork-gap:2.5rem] md:pt-16 md:pb-24 lg:[--fork-gap:3rem]">
+      <Track className="top-0 bottom-0 left-6" />
+      <Connector shape="top-0 h-16 rounded-tr-[1.75rem] border-t-2 border-r-2" />
+      <Connector shape="bottom-0 h-24 rounded-br-[1.75rem] border-r-2 border-b-2" />
+      <Track className="top-[5.5rem] bottom-24 left-[calc(50%_+_var(--fork-gap)/2_+_1.5rem)] hidden md:block" />
+      <OrNode className="top-0 left-[calc(1.5rem_+_(50%_+_var(--fork-gap)/2)/2)] hidden -translate-x-1/2 -translate-y-1/2 md:grid" />
+
+      <div className="grid md:grid-cols-2 md:gap-x-(--fork-gap)">
+        <div
+          id={stepAnchor(first.step)}
+          className={cn("relative pl-18 md:pl-20", anchorOffset)}
+        >
+          <Marker step={first} stageIndex={stageIndex} />
+          <StepContent step={first} compact />
+        </div>
+        <div className="relative h-24 md:hidden">
+          <OrNode className="top-1/2 left-6 -translate-x-1/2 -translate-y-1/2" />
+        </div>
+        <p className="sr-only">or</p>
+        <div
+          id={stepAnchor(second.step)}
+          className={cn("relative pl-18 md:pl-20", anchorOffset)}
+        >
+          <Marker step={second} stageIndex={stageIndex} />
+          <StepContent step={second} compact />
+        </div>
+      </div>
+    </li>
   );
 }
