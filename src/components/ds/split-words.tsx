@@ -11,9 +11,9 @@ type SplitWordsProps = {
 };
 
 /**
- * Headline entrance: every word rises out of its own line mask (clipped only
- * below the line, so glyph overhangs and tight tracking never get cut). Pure CSS, so
- * it starts before hydration and never delays LCP. Strings are split into
+ * Headline entrance: words rise, fade and sharpen in sequence. There is no
+ * clipping mask, so descenders and overhangs are never cut mid-animation. Pure
+ * CSS, so it starts before hydration and never delays LCP. Strings are split into
  * words; elements (e.g. <Highlight>) animate as one unit. Reduced motion
  * renders the text statically.
  */
@@ -54,14 +54,10 @@ export function SplitWords({
         return (
           <span
             key={index}
-            className="-mb-[0.28em] inline-block pb-[0.28em] align-bottom [clip-path:inset(-0.6em_-0.35em_0_-0.35em)]"
+            className={cn("inline-block motion-safe:animate-rise")}
+            style={{ animationDelay: `${delay + current * step}ms` }}
           >
-            <span
-              className={cn("inline-block motion-safe:animate-rise")}
-              style={{ animationDelay: `${delay + current * step}ms` }}
-            >
-              {unit}
-            </span>
+            {unit}
           </span>
         );
       })}

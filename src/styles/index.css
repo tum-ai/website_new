@@ -126,8 +126,8 @@
   @keyframes rise {
     from {
       opacity: 0;
-      transform: translate3d(0, 0.55em, 0);
-      filter: blur(8px);
+      transform: translate3d(0, 0.32em, 0);
+      filter: blur(6px);
     }
     to {
       opacity: 1;
