@@ -11,7 +11,6 @@ import {
   partnerPillars,
   partnerProfiles,
 } from "../src/data/partners";
-import { getMobileHeaderVisibility } from "../src/lib/header-visibility";
 import {
   getHighlightedPartners,
   getPartnerDirectory,
@@ -226,20 +225,6 @@ test("CMS overrides defaults, aliases consolidate, and unclassified legacy entri
   assert.equal(result.filter((p) => p.name.toLowerCase() === "ibm").length, 1);
   assert.equal(result.find((p) => p.name === "IBM")?.tier, "bronze");
   assert.equal(result.find((p) => p.name === "New partner")?.link, undefined);
-});
-
-test("partner navigation remains visible while ordinary mobile navigation can hide", () => {
-  const input = {
-    scrollY: 500,
-    previousScrollY: 100,
-    isMenuOpen: false,
-    isCurrentlyVisible: true,
-  };
-  assert.equal(
-    getMobileHeaderVisibility({ ...input, keepVisible: true }),
-    true,
-  );
-  assert.equal(getMobileHeaderVisibility(input), false);
 });
 
 test("email CCs reach both partnership contacts with and without finder context", () => {

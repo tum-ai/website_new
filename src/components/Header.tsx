@@ -14,7 +14,6 @@ import {
 } from "react";
 import { Aurora } from "@/components/ds/aurora";
 import { ButtonLink } from "@/components/ds/button";
-import { getMobileHeaderVisibility } from "@/lib/header-visibility";
 import { cn } from "@/lib/utils";
 
 const links = [
@@ -34,13 +33,16 @@ const socialLinks = [
 ];
 
 /**
- * Floating site header.
+ * Site header, always visible.
  *
- * - Transparent over the dark page hero, frosted once the page scrolls.
+ * - Transparent over the dark page hero; solid once the page scrolls.
+ * - Phones: a full-width bar flush with the top edge. Its solid fill is the
+ *   same dark indigo as the browser status bar (theme-color and root canvas in
+ *   layout.tsx / index.css), so both read as one continuous top bar.
+ * - md and up: a floating frosted pill.
  * - Home keeps the logo hidden until the hero (which shows it large) scrolls
- *   away. /partners keeps the bar solid and always visible, and swaps the CTA
- *   for its in-page contact anchor.
- * - On phones the bar hides while scrolling down (see getMobileHeaderVisibility).
+ *   away. /partners keeps the bar solid and swaps the CTA for its in-page
+ *   contact anchor.
  * - Below xl the navigation lives in a Base UI Drawer (focus trap, scroll
  *   lock, Escape and swipe-to-dismiss included).
  * - Bar bottom stays within 80px: /partners anchors use a 110px scroll margin.
@@ -52,11 +54,8 @@ export const Header = () => {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [showLogo, setShowLogo] = useState(!isHome);
-  const [isMobileHeaderVisible, setIsMobileHeaderVisible] = useState(true);
-  const previousScrollY = useRef(0);
   const scrolledRef = useRef(false);
   const showLogoRef = useRef(!isHome);
-  const isMobileHeaderVisibleRef = useRef(true);
   const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -80,26 +79,6 @@ export const Header = () => {
         scrolledRef.current = nextScrolled;
         setScrolled(nextScrolled);
       }
-
-      if (isMobile) {
-        const nextMobileHeaderVisible = getMobileHeaderVisibility({
-          scrollY,
-          previousScrollY: previousScrollY.current,
-          isMenuOpen: open,
-          isCurrentlyVisible: isMobileHeaderVisibleRef.current,
-          keepVisible: isPartners,
-        });
-
-        if (isMobileHeaderVisibleRef.current !== nextMobileHeaderVisible) {
-          isMobileHeaderVisibleRef.current = nextMobileHeaderVisible;
-          setIsMobileHeaderVisible(nextMobileHeaderVisible);
-        }
-      } else if (!isMobileHeaderVisibleRef.current) {
-        isMobileHeaderVisibleRef.current = true;
-        setIsMobileHeaderVisible(true);
-      }
-
-      previousScrollY.current = scrollY;
     };
 
     const handleScroll = () => {
@@ -119,21 +98,10 @@ export const Header = () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleScroll);
     };
-  }, [isHome, isPartners, open]);
-
-  useEffect(() => {
-    if (open) {
-      isMobileHeaderVisibleRef.current = true;
-      setIsMobileHeaderVisible(true);
-    }
-    previousScrollY.current = window.scrollY;
-  }, [open]);
+  }, [isHome]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: pathname isn't read in the body, but is the intended re-run trigger on route change
   useEffect(() => {
-    isMobileHeaderVisibleRef.current = true;
-    setIsMobileHeaderVisible(true);
-    previousScrollY.current = window.scrollY;
     setOpen(false);
   }, [pathname]);
 
@@ -165,20 +133,13 @@ export const Header = () => {
 
   return (
     <Drawer.Root open={open} onOpenChange={setOpen} swipeDirection="right">
-      <header
-        className={cn(
-          "pointer-events-none fixed inset-x-0 top-0 z-40 transition-transform duration-500 ease-brand motion-reduce:transition-none",
-          isMobileHeaderVisible
-            ? "translate-y-0"
-            : "-translate-y-[calc(100%+1rem)] md:translate-y-0",
-        )}
-      >
-        <div className="mx-auto w-[min(82rem,calc(100%-1.25rem))] pt-2.5 md:w-[min(82rem,calc(100%-2*var(--gutter)+2rem))] md:pt-3">
+      <header className="pointer-events-none fixed inset-x-0 top-0 z-40">
+        <div className="mx-auto w-full md:w-[min(82rem,calc(100%-2*var(--gutter)+2rem))] md:pt-3">
           <div
             className={cn(
-              "pointer-events-auto relative flex h-14 items-center gap-2 rounded-full border pr-2 pl-4 text-white transition-[background-color,border-color,box-shadow] duration-500 ease-brand md:pl-5",
+              "pointer-events-auto relative flex h-14 items-center gap-2 border-b pr-3 pl-5 text-white transition-[background-color,border-color,box-shadow] duration-500 ease-brand md:rounded-full md:border md:pr-2",
               solid
-                ? "border-white/10 bg-[#0d0214]/75 shadow-[0_16px_40px_-18px_rgb(13_2_20/0.8)] backdrop-blur-xl backdrop-saturate-150"
+                ? "border-white/10 bg-[#1b0049] shadow-[0_12px_32px_-22px_rgb(13_2_20/0.9)] md:bg-[#0d0214]/75 md:shadow-[0_16px_40px_-18px_rgb(13_2_20/0.8)] md:backdrop-blur-xl md:backdrop-saturate-150"
                 : "border-transparent bg-transparent",
             )}
           >
@@ -270,13 +231,13 @@ export const Header = () => {
         <Drawer.Backdrop className="fixed inset-0 z-50 bg-ink-950/60 opacity-[calc(1-var(--drawer-swipe-progress,0))] backdrop-blur-sm transition-opacity duration-500 ease-brand data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 data-[swiping]:duration-0 supports-[-webkit-touch-callout:none]:absolute" />
         <Drawer.Viewport className="fixed inset-0 z-50 flex justify-end">
           <Drawer.Popup
-            data-tone="night"
+            data-tone="ink"
             className="group/drawer relative isolate flex h-full w-full max-w-md flex-col overflow-y-auto overscroll-contain outline-none [transform:translateX(var(--drawer-swipe-movement-x,0px))] transition-transform duration-500 ease-snappy data-[ending-style]:[transform:translateX(100%)] data-[starting-style]:[transform:translateX(100%)] data-[swiping]:select-none motion-reduce:transition-none"
           >
             <div aria-hidden className="grain -z-10" />
             <Aurora intensity="subtle" />
             <Drawer.Content className="flex min-h-full flex-col">
-              <div className="flex h-[4.25rem] items-center justify-between px-6 pt-2.5">
+              <div className="flex h-14 items-center justify-between pr-3 pl-5 md:h-[4.25rem] md:px-6 md:pt-2.5">
                 <img
                   src="/assets/tum_ai_logo_new.svg"
                   alt=""
