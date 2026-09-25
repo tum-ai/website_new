@@ -1,7 +1,7 @@
 "use client";
 
 import { type ReactNode, useEffect, useRef, useState } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 import { ScrollProgress } from "./parallax";
 import { Reveal } from "./reveal";
 

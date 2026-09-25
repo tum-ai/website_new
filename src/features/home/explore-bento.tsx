@@ -2,7 +2,7 @@ import { ArrowRight } from "lucide-react";
 import { MediaCard, Reveal } from "@/components/ds";
 import { eLabPhaseCopy, eLabProgramSummary } from "@/config/e-lab";
 import { ELabPhaseSwitch } from "@/features/e-lab";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 import { EXPLORE_CELLS, EXPLORE_GRID } from "./deferred-layout";
 
 const DESTINATIONS = [

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { BrandMark } from "@/components/ds";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 
 /**
  * On-brand stand-in for events without a poster or photos, and for CMS images

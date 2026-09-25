@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { BrandMark } from "@/components/ds";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 
 /* Three compositions so neighbouring placeholders don't look copy-pasted.
    Only the position of the light and the mark changes; the colors stay in

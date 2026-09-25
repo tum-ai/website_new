@@ -18,7 +18,7 @@ import {
   SectionHeader,
   SpotlightCard,
 } from "@/components/ds";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 import { type Department, departments } from "./data/departments";
 
 /** Maps the icon names stored in src/data/community to Lucide icons. */

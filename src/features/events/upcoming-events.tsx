@@ -10,7 +10,6 @@ import {
   Tag,
 } from "@/components/ds";
 import type { Event } from "@/lib/types";
-import { groupEventsByMonth } from "@/lib/utils";
 import {
   EventDetailsDialog,
   formatEventLocation,
@@ -19,6 +18,7 @@ import {
   truncateDescription,
 } from "./event-details";
 import { EventImage } from "./event-media";
+import { groupEventsByMonth } from "./events";
 
 /**
  * Upcoming events, soonest first, grouped by month. On wide screens the

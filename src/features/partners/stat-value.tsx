@@ -2,7 +2,7 @@
 
 import { animate } from "framer-motion";
 import { useEffect, useRef } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 
 /** "2.3%" → { prefix: "", value: 2.3, decimals: 1, suffix: "%" }. */
 function parse(text: string) {

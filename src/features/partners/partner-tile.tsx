@@ -1,7 +1,7 @@
 import { ArrowUpRight } from "lucide-react";
+import { cn } from "@/lib/cn";
 import { getSafeExternalUrl } from "@/lib/security";
 import type { Partner } from "@/lib/types";
-import { cn } from "@/lib/utils";
 import { PartnerLogo } from "./partner-logo";
 
 const partnerTierLabels = { gold: "Gold", silver: "Silver", bronze: "Bronze" };

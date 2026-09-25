@@ -3,7 +3,7 @@ import { useId } from "react";
 
 import { buttonStyles, StatusBadge } from "@/components/ds";
 import { eLabApplicationCopy, eLabConfig, eLabPhaseCopy } from "@/config/e-lab";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 import { ELabPhase } from "./e-lab-phase";
 
 type ELabApplicationCtaProps = {

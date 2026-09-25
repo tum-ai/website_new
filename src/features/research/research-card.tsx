@@ -13,8 +13,8 @@ import {
   StatusBadge,
   Tag,
 } from "@/components/ds";
+import { cn } from "@/lib/cn";
 import { getSafeExternalUrl } from "@/lib/security";
-import { cn } from "@/lib/utils";
 import { BrandPlaceholder } from "./brand-placeholder";
 
 type ResearchCardProps = {

@@ -11,7 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ds";
 import { BrandPlaceholder } from "@/features/research";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 
 interface ProjectCardProps {
   name: string;

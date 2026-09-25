@@ -16,7 +16,7 @@ import { BrandMark } from "@/components/ds/brand-mark";
 import { ButtonLink } from "@/components/ds/button";
 import { useInertBackground } from "@/components/ds/dialog";
 import { contactEmails, socialLinks } from "@/config/contact";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 
 const links = [
   { href: "/events", text: "Events" },

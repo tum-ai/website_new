@@ -7,8 +7,8 @@ import {
   useRef,
   useState,
 } from "react";
+import { cn } from "@/lib/cn";
 import type { Partner } from "@/lib/types";
-import { cn } from "@/lib/utils";
 import { getPartnerKey } from "./partner-directory";
 import { createPartnerRotation, nextPartnerBatch } from "./partner-rotation";
 import { PartnerTile, type PartnerTileSize } from "./partner-tile";

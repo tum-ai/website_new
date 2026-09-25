@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { ButtonLink } from "@/components/ds";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 
 /**
  * Shared building blocks for the legal pages (Imprint, Data Privacy,

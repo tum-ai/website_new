@@ -1,7 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
-import { format } from "date-fns";
 import { extendTailwindMerge } from "tailwind-merge";
-import type { Event, EventFilters } from "./types";
 
 /**
  * tailwind-merge only knows Tailwind's stock scales. Without registering the
@@ -59,49 +57,11 @@ const twMerge = extendTailwindMerge({
   },
 });
 
+/**
+ * Joins class names (clsx) and resolves Tailwind conflicts (tailwind-merge
+ * with the design-system tokens): when two classes set the same property, the
+ * later one wins.
+ */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-
-export function groupEventsByMonth(events: Event[]) {
-  return events.reduce((groups: Record<string, Event[]>, event) => {
-    const date = new Date(event.event_date);
-    const month = format(date, "MMMM yyyy");
-
-    if (!groups[month]) {
-      groups[month] = [];
-    }
-
-    groups[month].push(event);
-    return groups;
-  }, {});
-}
-
-export function filterEvents(events: Event[], filters: EventFilters): Event[] {
-  return events.filter((event) => {
-    // Category filter
-    if (
-      filters.category !== "All Categories" &&
-      event.category !== filters.category
-    ) {
-      return false;
-    }
-
-    // City filter
-    if (filters.city !== "All Cities" && event.city !== filters.city) {
-      return false;
-    }
-
-    return true;
-  });
-}
-
-export const scrollToSection = () => {
-  const element = document.getElementById("become-partner");
-  if (element) {
-    element.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  }
-};

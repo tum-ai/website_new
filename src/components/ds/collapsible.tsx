@@ -1,7 +1,7 @@
 "use client";
 
 import { Collapsible as BaseCollapsible } from "@base-ui/react/collapsible";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 
 /** Disclosure on Base UI with a smooth height transition. */
 export const Collapsible = BaseCollapsible.Root;

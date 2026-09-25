@@ -1,5 +1,5 @@
 import { Children, Fragment, isValidElement, type ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 
 type SplitWordsProps = {
   children: ReactNode;

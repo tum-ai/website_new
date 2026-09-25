@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 
 /**
  * Eases the edge of a dark band into the flat root canvas color (brand black,

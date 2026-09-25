@@ -10,8 +10,10 @@ import {
   Section,
   SectionHeader,
 } from "@/components/ds";
-import type { Event, EventFilters } from "@/lib/types";
-import { cn, filterEvents } from "@/lib/utils";
+import { cn } from "@/lib/cn";
+import type { Event } from "@/lib/types";
+import type { EventFilters } from "./events";
+import { filterEvents } from "./events";
 import {
   DEFAULT_EVENT_FILTERS,
   EventFiltersComponent,

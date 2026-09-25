@@ -3,7 +3,7 @@
 import { SlidersHorizontal, X } from "lucide-react";
 import { useRef } from "react";
 import { Button, Card, ChipGroup } from "@/components/ds";
-import type { EventFilters } from "@/lib/types";
+import type { EventFilters } from "./events";
 
 export const DEFAULT_EVENT_FILTERS: EventFilters = {
   category: "All Categories",

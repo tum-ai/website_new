@@ -1,5 +1,5 @@
 import { Container, PageHero, Reveal, Section } from "@/components/ds";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 import { projects } from "./data/projects";
 import { ProjectCard } from "./project-card";
 

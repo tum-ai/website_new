@@ -7,7 +7,7 @@ import {
   CollapsiblePanel,
   CollapsibleTrigger,
 } from "@/components/ds";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 
 export type LegalTocItem = {
   /** id of the `<section>` the entry points to. */

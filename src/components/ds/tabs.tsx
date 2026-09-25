@@ -1,7 +1,7 @@
 "use client";
 
 import { Tabs as BaseTabs } from "@base-ui/react/tabs";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 
 /** Tabs on Base UI: arrow-key navigation and ARIA wiring come from there. */
 export function Tabs({

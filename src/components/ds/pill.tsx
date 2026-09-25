@@ -1,5 +1,5 @@
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 
 /** Outlined violet pill from the brand guide ("Mission", "Vision"). */
 export function Pill({

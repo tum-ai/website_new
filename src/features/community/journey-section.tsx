@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Container, Eyebrow, Reveal, Section } from "@/components/ds";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 import {
   type JourneyStep,
   journeyStages,

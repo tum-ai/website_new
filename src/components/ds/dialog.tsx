@@ -3,7 +3,7 @@
 import { Dialog as BaseDialog } from "@base-ui/react/dialog";
 import { X } from "lucide-react";
 import { type ReactNode, useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 
 /*
  * Modal dialog on Base UI: focus trap, scroll lock, Escape, outside click and

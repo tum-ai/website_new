@@ -1,5 +1,5 @@
+import { cn } from "@/lib/cn";
 import type { Partner } from "@/lib/types";
-import { cn } from "@/lib/utils";
 import { PartnerRotationGrid } from "./partner-rotation-grid";
 import type { PartnerTileSize } from "./partner-tile";
 

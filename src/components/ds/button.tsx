@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { ArrowDown, ArrowRight, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 
 /**
  * Button styles, shared by <Button> (actions) and <ButtonLink> (navigation).
