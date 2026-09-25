@@ -6,10 +6,10 @@ import { MotionProvider } from "@/components/ds/motion-provider";
 import Footer from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { isSanityConfigured, SanityLive } from "@/lib/sanity";
-import "../styles/index.css";
+import "@/styles/index.css";
 
 const manrope = localFont({
-  src: "../../public/assets/Manrope.ttf",
+  src: "../../../public/assets/Manrope.ttf",
   variable: "--font-manrope",
   display: "swap",
 });

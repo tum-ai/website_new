@@ -10,6 +10,11 @@ const nextConfig: NextConfig = {
   images: {
     qualities: [40, 75],
   },
+  experimental: {
+    // The site and /studio are separate root layouts; unmatched URLs render
+    // `src/app/global-not-found.tsx` instead of a bare default document.
+    globalNotFound: true,
+  },
   ...(distDir ? { distDir } : {}),
 };
 

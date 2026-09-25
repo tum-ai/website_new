@@ -11,7 +11,7 @@ vi.mock("@/lib/sanity", () => ({
   SanityLive: () => null,
 }));
 
-const { metadata } = await import("../src/app/layout.tsx");
+const { metadata } = await import("../src/app/(site)/layout.tsx");
 
 function readPngDimensions(buffer: Buffer): { width: number; height: number } {
   expect(buffer.subarray(0, 8).toString("hex")).toBe("89504e470d0a1a0a");
