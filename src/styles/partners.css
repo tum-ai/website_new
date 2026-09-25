@@ -58,9 +58,14 @@
     var(--marquee-count)
   );
 }
-.partner-marquee:focus-within .partner-marquee-item,
-.partner-marquee-window:hover .partner-marquee-item {
+.partner-marquee:focus-within .partner-marquee-item {
   animation-play-state: paused;
+}
+/* Touch browsers keep :hover on the last tapped element, which would stop the rail until the next tap elsewhere. */
+@media (hover: hover) {
+  .partner-marquee-window:hover .partner-marquee-item {
+    animation-play-state: paused;
+  }
 }
 @keyframes partner-marquee-scroll {
   from {
