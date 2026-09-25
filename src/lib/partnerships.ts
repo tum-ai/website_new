@@ -93,8 +93,8 @@ export function getPartnershipEmailUrl(
     (item) => item.id === selection.intent,
   );
   const subject = intent
-    ? `Partnership request — ${intent.shortLabel}`
-    : "Partnership request — TUM.ai";
+    ? `Partnership request: ${intent.shortLabel}`
+    : "Partnership request: TUM.ai";
   return `mailto:${PARTNER_EMAIL}?cc=${encodeURIComponent(PARTNER_EMAIL_CC.join(","))}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Hi TUM.ai team,\n\n${getPartnershipContext(selection)}\n\n`)}`;
 }
 

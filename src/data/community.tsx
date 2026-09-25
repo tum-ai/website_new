@@ -32,14 +32,14 @@ export const steps: Step[] = [
     name: "Growth Opportunities",
     gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
     description:
-      "After your first semester, expand your impact — join new teams, lead a task force, or take on a Team Lead role.",
+      "After your first semester, expand your impact: join new teams, lead a task force, or take on a Team Lead role.",
   },
   {
     step: "03",
     name: "Research Exchange (REX) Program",
     gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
     description:
-      "After one semester, you can join the REX Program — conduct research at top institutions like MIT, Harvard, or Cambridge. With our alumni network, we guide you in finding a topic, navigating applications, and contributing to cutting-edge AI research globally.",
+      "After one semester, you can join the REX Program and conduct research at top institutions like MIT, Harvard, or Cambridge. With our alumni network, we guide you in finding a topic, navigating applications, and contributing to cutting-edge AI research globally.",
   },
   {
     step: "04",
@@ -111,7 +111,7 @@ export const departments: Department[] = [
     name: "Marketing",
     icon: "Megaphone",
     description:
-      "The Marketing Department shapes TUM.ai’s public image by driving strategic communication, creating impactful designs, and promoting our vision and events to the broader community. oder The Marketing Department at TUM.ai gives our vision a voice and a look — translating ideas into designs and stories that resonate across our students and professional network.",
+      "The Marketing Department shapes TUM.ai’s public image by driving strategic communication, creating impactful designs, and promoting our vision and events to the broader community. oder The Marketing Department at TUM.ai gives our vision a voice and a look, translating ideas into designs and stories that resonate across our students and professional network.",
     gradient: "bg-linear-to-br from-slate-50 via-slate-100 to-slate-200",
   },
   {

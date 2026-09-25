@@ -91,7 +91,7 @@ test("email and booking carry readable, encoded intent, timeframe, and recommend
   assert.equal(email.pathname, "partners@tum-ai.com");
   assert.equal(
     email.searchParams.get("subject"),
-    "Partnership request — Hackathon challenge",
+    "Partnership request: Hackathon challenge",
   );
   assert.match(
     email.searchParams.get("body") ?? "",
