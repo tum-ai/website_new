@@ -1,6 +1,6 @@
 import JsonLd from "@/components/JsonLd";
 import { buildMetadata, getJsonLd } from "@/config/seo";
-import ELab from "@/views/headerPages/e-lab/ELab";
+import { ELabPage } from "@/features/e-lab";
 
 export const metadata = buildMetadata("entrepreneurship");
 
@@ -12,7 +12,7 @@ export default function Page() {
   return (
     <>
       <JsonLd data={getJsonLd("entrepreneurship")} />
-      <ELab />
+      <ELabPage />
     </>
   );
 }

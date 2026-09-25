@@ -15,7 +15,7 @@ import {
   SectionHeader,
   StatGrid,
 } from "@/components/ds";
-import { eLabMetrics, type Metric } from "@/data/e-lab/venture-page";
+import { eLabMetrics, type Metric } from "./data/venture-page";
 
 const features: { title: string; body: string; icon: LucideIcon }[] = [
   {

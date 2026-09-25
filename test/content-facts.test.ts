@@ -16,8 +16,8 @@ import {
   organizationFacts,
 } from "../src/config/organization.ts";
 import { faq as applyFaq } from "../src/data/apply/faq.tsx";
-import { faq as eLabFaq } from "../src/data/e-lab/FAQ.tsx";
-import { eLabMetrics } from "../src/data/e-lab/venture-page.ts";
+import { faq as eLabFaq } from "../src/features/e-lab/data/faq.ts";
+import { eLabMetrics } from "../src/features/e-lab/data/venture-page.ts";
 import { partnerStats } from "../src/features/partners/data/partners.ts";
 import { parseMunichDateTime } from "../src/lib/munich-time.ts";
 

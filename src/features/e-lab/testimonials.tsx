@@ -8,10 +8,7 @@ import {
   SectionHeader,
   Tag,
 } from "@/components/ds";
-import {
-  type TestimonialCard,
-  testimonialCards,
-} from "@/data/e-lab/venture-page";
+import { type TestimonialCard, testimonialCards } from "./data/venture-page";
 
 /**
  * How each organization is shown, so the row never repeats what the logo

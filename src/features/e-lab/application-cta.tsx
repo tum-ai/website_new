@@ -4,7 +4,7 @@ import { useId } from "react";
 import { buttonStyles, StatusBadge } from "@/components/ds";
 import { eLabApplicationCopy, eLabConfig, eLabPhaseCopy } from "@/config/e-lab";
 import { cn } from "@/lib/utils";
-import { ELabPhase } from "./ELabPhase";
+import { ELabPhase } from "./e-lab-phase";
 
 type ELabApplicationCtaProps = {
   /** Which label set to show: the hero's (with the cohort) or the card's. */

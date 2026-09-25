@@ -1,9 +1,6 @@
 import { Highlight, PageHero } from "@/components/ds";
-import {
-  ELabApplicationCta,
-  ELabApplicationStatus,
-} from "@/components/e-lab/ApplicationCta";
 import { eLabConfig } from "@/config/e-lab";
+import { ELabApplicationCta, ELabApplicationStatus } from "./application-cta";
 
 const HERO_TITLE_ID = "elab-hero-title";
 
@@ -86,5 +83,3 @@ export const Hero = () => {
     />
   );
 };
-
-export default Hero;

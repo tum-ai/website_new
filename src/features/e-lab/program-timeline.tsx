@@ -1,11 +1,11 @@
 import {
   Container,
-  Timeline as DsTimeline,
   Reveal,
   Section,
   SectionHeader,
+  Timeline,
 } from "@/components/ds";
-import { programSteps } from "@/data/e-lab/venture-page";
+import { programSteps } from "./data/venture-page";
 
 /** Renders "a • b" copy verbatim, with the bullet in the accent color. */
 function StepDescription({ text }: { text: string }) {
@@ -30,7 +30,7 @@ function StepDescription({ text }: { text: string }) {
  * "Program": the six-step journey on the DS timeline, whose rail fills as it
  * scrolls, then a dashed rail that runs on into "Your journey continues...".
  */
-export const Timeline = () => {
+export const ProgramTimeline = () => {
   return (
     <Section tone="paper" spacing="lg" aria-labelledby="elab-program-title">
       <Container size="narrow">
@@ -41,7 +41,7 @@ export const Timeline = () => {
           title="Program"
           layout="center"
         />
-        <DsTimeline
+        <Timeline
           alternate
           items={programSteps.map((step, index) => ({
             label: `Step ${String(index + 1).padStart(2, "0")}`,

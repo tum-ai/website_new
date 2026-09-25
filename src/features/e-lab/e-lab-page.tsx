@@ -1,14 +1,5 @@
 import type { Organization, WithContext } from "schema-dts";
 import { CtaBand, FaqSection } from "@/components/ds";
-import {
-  ELabApplicationCta,
-  ELabApplicationStatus,
-} from "@/components/e-lab/ApplicationCta";
-import { ELabPhase } from "@/components/e-lab/ELabPhase";
-import { ExpectationELab } from "@/components/e-lab/ExpectationELab";
-import { NotableStartups } from "@/components/e-lab/NotableStartups";
-import { Testimonials } from "@/components/e-lab/Testimonials";
-import { Timeline } from "@/components/e-lab/TimeLine";
 import JsonLd from "@/components/JsonLd";
 import { contactEmails } from "@/config/contact";
 import {
@@ -16,8 +7,14 @@ import {
   eLabPhaseCopy,
   eLabProgramSummary,
 } from "@/config/e-lab";
-import { faq } from "@/data/e-lab/FAQ";
+import { ELabApplicationCta, ELabApplicationStatus } from "./application-cta";
+import { faq } from "./data/faq";
+import { ELabPhase } from "./e-lab-phase";
+import { ExpectationELab } from "./expectation-e-lab";
 import { Hero } from "./hero";
+import { NotableStartups } from "./notable-startups";
+import { ProgramTimeline } from "./program-timeline";
+import { Testimonials } from "./testimonials";
 
 /** Keeps "E-Lab 6.0" on one line so display type never breaks at the hyphen. */
 function KeepCohortTogether({ text }: { text: string }) {
@@ -39,7 +36,7 @@ function KeepCohortTogether({ text }: { text: string }) {
  * alumni ventures, FAQ and the closing application call to action. All cohort
  * copy and state comes from src/config/e-lab.ts.
  */
-export default function ELab() {
+export function ELabPage() {
   const jsonLd: WithContext<Organization> = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -83,7 +80,7 @@ export default function ELab() {
 
       <Testimonials />
 
-      <Timeline />
+      <ProgramTimeline />
 
       <NotableStartups />
 

@@ -1,10 +1,7 @@
 import { ArrowUpRight } from "lucide-react";
 
 import { Container, Reveal, Section, SectionHeader } from "@/components/ds";
-import {
-  type NotableStartup,
-  notableStartups,
-} from "@/data/e-lab/venture-page";
+import { type NotableStartup, notableStartups } from "./data/venture-page";
 
 /**
  * White logo tile linking to the startup. Unlike the DS LogoTile it can show

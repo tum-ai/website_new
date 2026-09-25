@@ -2,15 +2,15 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { expect, test } from "vitest";
 
-import { eLabApplicationCopy, eLabConfig } from "../src/config/e-lab.ts";
-import { faq } from "../src/data/e-lab/FAQ.tsx";
+import { eLabApplicationCopy, eLabConfig } from "@/config/e-lab";
+import { parseMunichDateTime } from "@/lib/munich-time";
+import { faq } from "./data/faq";
 import {
   eLabMetrics,
   notableStartups,
   programSteps,
   testimonialCards,
-} from "../src/data/e-lab/venture-page.ts";
-import { parseMunichDateTime } from "../src/lib/munich-time.ts";
+} from "./data/venture-page";
 
 const expectedTimeline = [
   [

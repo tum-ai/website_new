@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { isELabApplicationOpen } from "@/config/e-lab";
-import { ELabPhaseSwitch } from "./ELabPhaseSwitch";
+import { ELabPhaseSwitch } from "./e-lab-phase-switch";
 
 /**
  * Renders `open` while E-Lab applications are open and `closed` afterwards.
