@@ -7,6 +7,12 @@ import {
   type LivePerspective,
   resolvePerspectiveFromCookies,
 } from "next-sanity/live";
+import {
+  getMockEvents,
+  getMockPartners,
+  getMockResearchProjects,
+  shouldUseMockCms,
+} from "./mock-cms";
 import { EVENTS_QUERY, PARTNERS_QUERY, RESEARCH_QUERY } from "./sanity-queries";
 import type { Event, Partner, Research } from "./types";
 
@@ -68,14 +74,20 @@ async function fetchSanityList<T>(query: string, tags: string[]): Promise<T[]> {
   return Array.isArray(data) ? (data as T[]) : [];
 }
 
+/** Local design/testing only; see src/lib/mock-cms.ts. Never true on Vercel. */
+const useMockCms = shouldUseMockCms(process.env);
+
 export async function getSanityResearchProjects(): Promise<Research[]> {
+  if (useMockCms) return getMockResearchProjects();
   return fetchSanityList<Research>(RESEARCH_QUERY, ["research-projects"]);
 }
 
 export async function getSanityEvents(): Promise<Event[]> {
+  if (useMockCms) return getMockEvents();
   return fetchSanityList<Event>(EVENTS_QUERY, ["events"]);
 }
 
 export async function getSanityPartners(): Promise<Partner[]> {
+  if (useMockCms) return getMockPartners();
   return fetchSanityList<Partner>(PARTNERS_QUERY, ["partners"]);
 }
