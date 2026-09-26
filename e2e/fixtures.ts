@@ -269,7 +269,7 @@ export const wcagTags = [
 export const blockingImpacts = ["serious", "critical"] as const;
 
 /**
- * Decorative overlays hidden while axe runs. axe-core 4.13 mis-flattens
+ * Decorative overlays hidden while axe runs. axe-core 4.13 wrongly flattens
  * `mix-blend-mode` layers: the 7%-opacity soft-light `.grain` noise that sits
  * *behind* a white button on an ink band made axe report the button's
  * background as #4f0088 (contrast 1.47) although it renders white. Hiding the
