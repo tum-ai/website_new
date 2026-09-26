@@ -92,11 +92,16 @@ const functionalProjects: Project[] = [
   },
   {
     name: "webkit-iphone",
-    // iPhone viewport, user agent, touch and mobile layout, painted at 1x:
-    // software rendering at the real 3x starves WebKit's frames on CI runners
-    // (timeouts, "element is not stable"). Pixel density is irrelevant to the
-    // functional specs; the visual projects cover rendering.
-    use: { ...devices["iPhone 15"], deviceScaleFactor: 1 },
+    // iPhone viewport, user agent and touch, painted at 1x and without
+    // WebKit's `isMobile` emulation. On Linux CI runners that combination
+    // (3x software rendering, mobile viewport emulation) crashed or froze the
+    // page process mid-scroll. The site's layout depends only on the viewport
+    // width, and the visual projects cover rendering.
+    use: {
+      ...devices["iPhone 15"],
+      deviceScaleFactor: 1,
+      isMobile: false,
+    },
     testMatch: [
       "routes.spec.ts",
       "a11y.spec.ts",
