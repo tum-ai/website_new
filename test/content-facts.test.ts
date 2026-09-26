@@ -91,7 +91,8 @@ test("the Apply FAQ timeline comes from the recruiting config", () => {
 });
 
 /**
- * Facts that must be read from src/config/ instead of typed into pages. If
+ * Facts that must be read from src/config/ instead of typed into pages. A
+ * pattern with a capture group reports that group, not the whole match. If
  * this fails, import the value from the named config (see "Updating site
  * facts" in docs/contributor-guide.md) rather than silencing the pattern.
  */
@@ -112,7 +113,8 @@ const hardcodedFacts: [RegExp, string][] = [
   ],
   [/tally\.so\/r\//, "application forms: config/e-lab.ts or membership.ts"],
   [
-    /https?:\/\/(?:www\.)?tum-ai\.com\b/,
+    // Anchored per line (`m`); the first group is the reported literal.
+    /^.*?(https?:\/\/(?:www\.)?tum-ai\.com)(?![\w.-])/m,
     "site URL: absoluteUrl() or siteConfig.url from config/site.ts",
   ],
   [/\bVR ?\d{5,6}\b/, "register number: config/organization.ts"],
@@ -180,7 +182,7 @@ function findOffences(): Offence[] {
     const file = relative(srcDir, path).split(sep).join("/");
     return hardcodedFacts.flatMap(([pattern, fact]) => {
       const match = source.match(pattern);
-      return match ? [{ file, fact, match: match[0] }] : [];
+      return match ? [{ file, fact, match: match[1] ?? match[0] }] : [];
     });
   });
 }

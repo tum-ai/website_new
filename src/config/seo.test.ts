@@ -35,7 +35,7 @@ function urlsIn(value: unknown): string[] {
 test.each(keys)("%s: canonical and Open Graph URL agree", (key) => {
   const metadata = buildMetadata(key);
   const canonical = metadata.alternates?.canonical;
-  expect(canonical).toMatch(new RegExp(`^${siteConfig.url}(/|$)`));
+  expect(new URL(String(canonical)).origin).toBe(siteConfig.url);
   expect(metadata.openGraph).toMatchObject({
     url: canonical,
     siteName: siteConfig.name,
@@ -55,9 +55,15 @@ test.each(keys)(
     const [organization, page] = getJsonLd(key) as Record<string, unknown>[];
     expect(organization["@type"]).toBe("Organization");
     expect(page.url).toBe(buildMetadata(key).alternates?.canonical);
-    const siteUrls = urlsIn(page).filter((url) => url.includes("tum-ai.com"));
-    for (const url of siteUrls)
-      expect(url.startsWith(siteConfig.url)).toBe(true);
+    // Every URL on the site's own domain uses the canonical origin.
+    const { hostname } = new URL(siteConfig.url);
+    const siteDomain = hostname.replace(/^www\./, "");
+    for (const url of urlsIn(page)) {
+      const host = new URL(url).hostname;
+      if (host === siteDomain || host.endsWith(`.${siteDomain}`)) {
+        expect(new URL(url).origin).toBe(siteConfig.url);
+      }
+    }
   },
 );
 
