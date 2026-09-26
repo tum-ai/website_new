@@ -4,22 +4,32 @@
   "version": "0.0.0",
   "type": "module",
   "packageManager": "pnpm@10.18.2",
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "dev": "NEXT_DIST_DIR=.next-dev next dev",
-    "dev:web": "NEXT_DIST_DIR=.next-dev next dev",
     "build": "node scripts/run-next-command.mjs build .next-prod",
     "start": "node scripts/run-next-command.mjs start .next-prod",
-    "test": "node --import=tsx --test test/*.test.ts",
-    "lint": "pnpm run lint:web",
-    "lint:web": "biome check .",
+    "lint": "biome check .",
     "lint:apply": "biome check . --write",
     "format": "biome format .",
-    "verify": "pnpm lint && pnpm test && pnpm build",
-    "typecheck": "NEXT_DIST_DIR=.next-typecheck next build"
+    "typecheck": "node scripts/run-next-command.mjs typegen .next-prod && tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:perf": "vitest run --config vitest.perf.config.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:visual": "E2E_VISUAL=1 playwright test",
+    "knip": "knip",
+    "sanity:typegen": "cd src/sanity && DO_NOT_TRACK=1 sanity schemas extract --enforce-required-fields --path ../../node_modules/.cache/sanity/schema.json && DO_NOT_TRACK=1 sanity typegen generate && cd ../.. && biome format --write src/lib/sanity.types.generated.ts",
+    "sanity:typegen:check": "pnpm sanity:typegen && git diff --exit-code -- src/lib/sanity.types.generated.ts",
+    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm test:perf"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
     "@calcom/embed-react": "^1.5.3",
+    "@date-fns/tz": "^1.5.0",
     "@tailwindcss/typography": "^0.5.20",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -32,30 +42,44 @@
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "sanity": "^6.3.0",
-    "schema-dts": "^2.0.0",
     "server-only": "^0.0.1",
     "styled-components": "^6.4.3",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.3.2"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@biomejs/biome": "2.5.8",
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4.3.3",
-    "@types/node": "^26.2.0",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@types/jsdom": "^30.0.0",
+    "@types/node": "^24.19.0",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.1.2",
-    "autoprefixer": "^10.5.4",
-    "globals": "^17.11.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "@vitest/coverage-v8": "^5.0.2",
+    "axe-core": "^4.13.0",
     "groq-js": "^1.30.3",
-    "react-markdown": "^10.1.0",
-    "tsx": "4.23.12",
-    "typescript": "~5.8.3",
-    "vercel": "^54.21.1"
+    "jsdom": "^30.1.1",
+    "knip": "^6.38.0",
+    "lefthook": "^2.1.14",
+    "schema-dts": "^2.0.0",
+    "typescript": "^5.9.3",
+    "vercel": "^54.21.1",
+    "vite": "^8.1.2",
+    "vitest": "^5.0.2"
   },
   "pnpm": {
     "overrides": {
       "@vercel/node>undici": "^6.27.0",
       "vercel>undici": "^6.27.0"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "lefthook"
+    ]
   }
 }

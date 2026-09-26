@@ -1,16 +1,25 @@
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
+import { IconBadge } from "./icon-badge";
 import { SpotlightCard } from "./spotlight-card";
+import type { HeadingLevel } from "./types";
 
-type FeatureCardProps = {
+/** Props for {@link FeatureCard}. */
+export type FeatureCardProps = {
+  /** Icon in a violet badge that tilts on hover. */
   icon?: LucideIcon;
+  /** The card title. */
   title: ReactNode;
+  /** A sentence or two of copy. */
   children?: ReactNode;
   /** Editorial counter shown top-right, e.g. "01". */
   index?: string;
-  headingAs?: "h2" | "h3" | "h4";
+  /** Heading level of the title. Default `h3`. */
+  headingAs?: HeadingLevel;
+  /** Card surface. Default `raised`. */
   variant?: "raised" | "glass" | "outline";
+  /** Classes merged over the card. */
   className?: string;
 };
 
@@ -19,7 +28,7 @@ type FeatureCardProps = {
  * violet; never assign per-card accent colors.
  */
 export function FeatureCard({
-  icon: Icon,
+  icon,
   title,
   children,
   index,
@@ -34,18 +43,14 @@ export function FeatureCard({
       className={cn("flex h-full flex-col", className)}
     >
       <div className="flex items-start justify-between gap-4">
-        {Icon ? (
-          <span className="grid size-12 place-items-center rounded-2xl bg-violet-500/12 text-highlight ring-1 ring-violet-500/20 ring-inset transition-[background-color,color,rotate] duration-500 ease-brand group-hover/card:-rotate-6 group-hover/card:bg-violet-600 group-hover/card:text-white">
-            <Icon aria-hidden className="size-5" strokeWidth={1.75} />
-          </span>
-        ) : null}
+        {icon ? <IconBadge icon={icon} interactive /> : null}
         {index ? (
-          <span className="tabular text-meta text-fg-subtle">{index}</span>
+          <span className="tabular text-fg-subtle text-meta">{index}</span>
         ) : null}
       </div>
-      <HeadingTag className="mt-7 text-heading-md text-fg">{title}</HeadingTag>
+      <HeadingTag className="mt-7 text-fg text-heading-md">{title}</HeadingTag>
       {children ? (
-        <div className="mt-3 text-small text-fg-muted">{children}</div>
+        <div className="mt-3 text-fg-muted text-small">{children}</div>
       ) : null}
     </SpotlightCard>
   );

@@ -1,29 +1,70 @@
-import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import test from "node:test";
+import { globSync } from "node:fs";
+import { dirname, relative, sep } from "node:path";
+import { createClient } from "next-sanity";
+import { expect, test, vi } from "vitest";
+import sanityConfig from "../src/sanity/sanity.config.ts";
 
-const sanityConfig = readFileSync(
-  new URL("../src/sanity/sanity.config.ts", import.meta.url),
-  "utf8",
-);
-const draftModeRoute = readFileSync(
-  new URL("../src/app/api/draft-mode/enable/route.ts", import.meta.url),
-  "utf8",
-);
-const appLayout = readFileSync(
-  new URL("../src/app/layout.tsx", import.meta.url),
-  "utf8",
-);
+// The route handler reads the shared client; the real module also defines
+// Sanity Live, which only loads under the react-server runtime.
+vi.mock("@/lib/sanity", () => ({
+  client: createClient({
+    projectId: "test-project-id",
+    dataset: "production",
+    apiVersion: "2024-03-01",
+    useCdn: false,
+  }),
+}));
 
-test("Sanity Studio presentation can enable website draft mode", () => {
-  assert.match(sanityConfig, /presentationTool/);
-  assert.match(sanityConfig, /enable:\s*"\/api\/draft-mode\/enable"/);
-  assert.match(draftModeRoute, /defineEnableDraftMode/);
-  assert.match(draftModeRoute, /SANITY_API_READ_TOKEN/);
+const appDir = new URL("../src/app/", import.meta.url).pathname;
+
+/** URL path an App Router file serves, ignoring route groups like `(site)`. */
+function routePathOf(file: string) {
+  const segments = relative(appDir, dirname(file))
+    .split(sep)
+    .filter((segment) => segment && !/^\(.+\)$/.test(segment));
+  return `/${segments.join("/")}`;
+}
+
+const routeHandlers = globSync(`${appDir}**/route.{ts,tsx}`);
+const pages = globSync(`${appDir}**/page.{ts,tsx}`);
+
+type PresentationOptions = {
+  previewUrl?: { initial?: string; previewMode?: { enable?: string } };
+};
+
+function presentationOptions(): PresentationOptions | undefined {
+  const tools = (sanityConfig.plugins ?? []).flatMap((plugin) =>
+    typeof plugin === "object" &&
+    "tools" in plugin &&
+    Array.isArray(plugin.tools)
+      ? plugin.tools
+      : [],
+  );
+  return tools.find((tool) => tool.name === "presentation")?.options;
+}
+
+test("Studio Presentation enables draft mode through an existing route handler", async () => {
+  const enablePath = presentationOptions()?.previewUrl?.previewMode?.enable;
+  expect(
+    enablePath,
+    "Presentation tool has no draft-mode enable path",
+  ).toBeTypeOf("string");
+
+  const handler = routeHandlers.find(
+    (file) => routePathOf(file) === enablePath,
+  );
+  expect(handler, `no route handler serves ${enablePath}`).toBeDefined();
+
+  const route = await import(/* @vite-ignore */ handler as string);
+  expect(route.GET).toBeTypeOf("function");
 });
 
-test("root layout wires Sanity live preview for draft sessions", () => {
-  assert.match(appLayout, /SanityLive/);
-  assert.match(appLayout, /includeDrafts={isDraftMode}/);
-  assert.match(appLayout, /VisualEditing/);
+test("Studio basePath is served by the embedded Studio catch-all page", () => {
+  const studioPages = pages
+    .map(routePathOf)
+    .filter((path) => path.startsWith(`${sanityConfig.basePath}/`));
+
+  expect(studioPages).toStrictEqual([
+    expect.stringMatching(/^\/studio\/\[\[\.\.\.\w+\]\]$/),
+  ]);
 });

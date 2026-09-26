@@ -1,5 +1,11 @@
 # Repo Structure
 
+> **Layout moved.** `src/` was reorganised into feature folders: pages live in
+> `src/features/<domain>/`, routes in `src/app/(site)/`, the header and footer in
+> `src/components/shell/`, and `src/views/` and `src/data/` are gone. AGENTS.md
+> (coming in the next cleanup wave) documents the new layout; paths below are
+> outdated until this document is rewritten.
+
 This document explains how the repository is organized today and which layer owns what.
 
 ## Top-Level Map

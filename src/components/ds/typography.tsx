@@ -1,98 +1,156 @@
-import type { ComponentPropsWithoutRef, ElementType, ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import { cva, type VariantProps } from "class-variance-authority";
+import type { ComponentProps, ElementType, ReactNode } from "react";
+import { cn } from "@/lib/cn";
+import type { PolymorphicProps, TextElement } from "./types";
 
-type Polymorphic<T extends ElementType, P = object> = P & {
-  as?: T;
-} & Omit<ComponentPropsWithoutRef<T>, "as" | keyof P>;
+/*
+ * Type components. The visual size never depends on the element: pick the
+ * element for the outline (`as`) and the size for the design (`size`).
+ */
 
-const displaySizes = {
-  "2xl": "text-display-2xl",
-  xl: "text-display-xl",
-  lg: "text-display-lg",
-  md: "text-display-md",
-} as const;
+const displayStyles = cva("text-fg", {
+  variants: {
+    /** Display step from the type scale (`text-display-*`). */
+    size: {
+      "2xl": "text-display-2xl",
+      xl: "text-display-xl",
+      lg: "text-display-lg",
+      md: "text-display-md",
+    },
+  },
+  defaultVariants: { size: "lg" },
+});
 
-/** Large editorial headline. Visual size is independent of the heading level. */
-export function Display<T extends ElementType = "h2">({
-  as,
-  size = "lg",
-  className,
-  ...props
-}: Polymorphic<T, { size?: keyof typeof displaySizes }>) {
-  const Component = as ?? "h2";
-  return (
-    <Component
-      className={cn(displaySizes[size], "text-fg", className)}
-      {...props}
-    />
-  );
-}
-
-const headingSizes = {
-  lg: "text-heading-lg",
-  md: "text-heading-md",
-  sm: "text-heading-sm",
-} as const;
-
-export function Heading<T extends ElementType = "h3">({
-  as,
-  size = "md",
-  className,
-  ...props
-}: Polymorphic<T, { size?: keyof typeof headingSizes }>) {
-  const Component = as ?? "h3";
-  return (
-    <Component
-      className={cn(headingSizes[size], "text-fg", className)}
-      {...props}
-    />
-  );
-}
-
-const textSizes = {
-  lead: "text-lead",
-  body: "text-body",
-  small: "text-small",
-  meta: "text-meta",
-} as const;
-
-const textTones = {
-  default: "text-fg",
-  muted: "text-fg-muted",
-  subtle: "text-fg-subtle",
-} as const;
-
-export function Text<T extends ElementType = "p">({
-  as,
-  size = "body",
-  tone = "muted",
-  className,
-  ...props
-}: Polymorphic<
+/** Props for {@link Display}. */
+export type DisplayProps<T extends TextElement = "h2"> = PolymorphicProps<
   T,
-  { size?: keyof typeof textSizes; tone?: keyof typeof textTones }
->) {
-  const Component = as ?? "p";
+  VariantProps<typeof displayStyles>
+>;
+
+/** Large editorial headline. Renders an `h2` unless `as` says otherwise. */
+export function Display<T extends TextElement = "h2">({
+  as,
+  size,
+  className,
+  ...props
+}: DisplayProps<T>) {
+  const Component = (as ?? "h2") as ElementType;
+  return (
+    <Component className={cn(displayStyles({ size }), className)} {...props} />
+  );
+}
+
+const headingStyles = cva("text-fg", {
+  variants: {
+    /** Heading step from the type scale (`text-heading-*`). */
+    size: {
+      lg: "text-heading-lg",
+      md: "text-heading-md",
+      sm: "text-heading-sm",
+    },
+  },
+  defaultVariants: { size: "md" },
+});
+
+/** Props for {@link Heading}. */
+export type HeadingProps<T extends TextElement = "h3"> = PolymorphicProps<
+  T,
+  VariantProps<typeof headingStyles>
+>;
+
+/** Card and block title. Renders an `h3` unless `as` says otherwise. */
+export function Heading<T extends TextElement = "h3">({
+  as,
+  size,
+  className,
+  ...props
+}: HeadingProps<T>) {
+  const Component = (as ?? "h3") as ElementType;
+  return (
+    <Component className={cn(headingStyles({ size }), className)} {...props} />
+  );
+}
+
+const textStyles = cva("", {
+  variants: {
+    /** Body step from the type scale. */
+    size: {
+      lead: "text-lead",
+      body: "text-body",
+      small: "text-small",
+      meta: "text-meta",
+    },
+    /** Text color within the band's tone. */
+    emphasis: {
+      default: "text-fg",
+      muted: "text-fg-muted",
+      subtle: "text-fg-subtle",
+    },
+  },
+  defaultVariants: { size: "body", emphasis: "muted" },
+});
+
+/** The text colors {@link Text} can take. */
+export type TextEmphasis = NonNullable<
+  VariantProps<typeof textStyles>["emphasis"]
+>;
+
+/** Props for {@link Text}. */
+export type TextProps<T extends TextElement = "p"> = PolymorphicProps<
+  T,
+  VariantProps<typeof textStyles> & {
+    /**
+     * Text color.
+     * @deprecated Use `emphasis`; `tone` is reserved for band tones. Removed in W3.
+     */
+    tone?: TextEmphasis;
+  }
+>;
+
+/** Running text. Muted body copy in a `p` by default. */
+export function Text<T extends TextElement = "p">({
+  as,
+  size,
+  emphasis,
+  tone,
+  className,
+  ...props
+}: TextProps<T>) {
+  const Component = (as ?? "p") as ElementType;
   return (
     <Component
-      className={cn(textSizes[size], textTones[tone], className)}
+      className={cn(
+        textStyles({ size, emphasis: emphasis ?? tone }),
+        className,
+      )}
       {...props}
     />
   );
 }
+
+/** Props for {@link Eyebrow}. */
+export type EyebrowProps<T extends TextElement = "p"> = PolymorphicProps<
+  T,
+  {
+    /** Editorial counter before the label: 1 renders "01", a string as is. */
+    index?: string | number;
+    /** The label. */
+    children: ReactNode;
+  }
+>;
 
 /**
  * Small uppercase label above headlines. `index` renders an editorial counter
  * ("01") separated by a short rule, as in the brand guide.
  */
-export function Eyebrow<T extends ElementType = "p">({
+export function Eyebrow<T extends TextElement = "p">({
   as,
   index,
   className,
   children,
   ...props
-}: Polymorphic<T, { index?: string | number; children: ReactNode }>) {
-  const Component = as ?? "p";
+}: EyebrowProps<T>) {
+  const Component = (as ?? "p") as ElementType;
   return (
     <Component
       className={cn(
@@ -106,7 +164,7 @@ export function Eyebrow<T extends ElementType = "p">({
           <span className="tabular text-fg-subtle">
             {typeof index === "number" ? String(index).padStart(2, "0") : index}
           </span>
-          <span aria-hidden className="h-px w-6 bg-current opacity-50" />
+          <span aria-hidden="true" className="h-px w-6 bg-current opacity-50" />
         </>
       ) : null}
       <span>{children}</span>
@@ -114,39 +172,41 @@ export function Eyebrow<T extends ElementType = "p">({
   );
 }
 
-/**
- * Emphasis inside a headline. `fade` renders the Electric Fade gradient;
- * `accent` uses the tone's accessible accent color.
- */
-export function Highlight({
-  variant = "accent",
-  className,
-  ...props
-}: ComponentPropsWithoutRef<"span"> & { variant?: "accent" | "fade" }) {
+const highlightStyles = cva("", {
+  variants: {
+    /** `accent`: the tone's accessible accent color. `fade`: Electric Fade gradient. */
+    variant: {
+      accent: "text-highlight",
+      fade: "text-gradient-brand",
+    },
+  },
+  defaultVariants: { variant: "accent" },
+});
+
+/** Props for {@link Highlight}. */
+export type HighlightProps = ComponentProps<"span"> &
+  VariantProps<typeof highlightStyles>;
+
+/** Emphasis inside a headline, e.g. the last word of a hero title. */
+export function Highlight({ variant, className, ...props }: HighlightProps) {
   return (
-    <span
-      className={cn(
-        variant === "fade" ? "text-gradient-brand" : "text-highlight",
-        className,
-      )}
-      {...props}
-    />
+    <span className={cn(highlightStyles({ variant }), className)} {...props} />
   );
 }
 
+/** Props for {@link Prose}: a div's props. */
+export type ProseProps = ComponentProps<"div">;
+
 /** Long-form content (legal pages, rich descriptions) with brand typography. */
-export function Prose({
-  className,
-  ...props
-}: ComponentPropsWithoutRef<"div">) {
+export function Prose({ className, ...props }: ProseProps) {
   return (
     <div
       className={cn(
         "prose max-w-none text-body",
-        "prose-headings:text-fg prose-headings:tracking-tight prose-headings:font-semibold",
+        "prose-headings:font-semibold prose-headings:text-fg prose-headings:tracking-tight",
         "prose-h2:mt-14 prose-h2:text-heading-lg prose-h3:text-heading-md",
-        "prose-p:text-fg-muted prose-li:text-fg-muted prose-strong:text-fg",
-        "prose-a:text-highlight prose-a:font-medium prose-a:underline-offset-4 prose-a:decoration-1 hover:prose-a:decoration-2",
+        "prose-li:text-fg-muted prose-p:text-fg-muted prose-strong:text-fg",
+        "prose-a:font-medium prose-a:text-highlight prose-a:decoration-1 prose-a:underline-offset-4 hover:prose-a:decoration-2",
         "prose-hr:border-hairline prose-li:marker:text-highlight",
         className,
       )}

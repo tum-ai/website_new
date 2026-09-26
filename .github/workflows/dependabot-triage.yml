@@ -1,6 +1,8 @@
 name: Dependabot Triage
 
-on:
+# pull_request_target gives Dependabot PRs a token that can label and approve.
+# Safe here: no job checks out or runs code from the pull request.
+on: # zizmor: ignore[dangerous-triggers]
   pull_request_target:
     types:
       - opened
@@ -17,6 +19,7 @@ jobs:
   triage:
     if: github.event.pull_request.user.login == 'dependabot[bot]'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     # No checkout step in this job, so `gh` can't infer the repo from a git
     # remote; GH_REPO tells it explicitly.
@@ -32,7 +35,7 @@ jobs:
 
       - name: Fetch Dependabot metadata
         id: metadata
-        uses: dependabot/fetch-metadata@v3
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
 
       - name: Mark safe updates for auto-merge
         if: |

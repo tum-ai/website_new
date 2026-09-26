@@ -1,0 +1,87 @@
+name: E2E snapshots
+
+# Captures the Linux visual-regression baselines (e2e/visual.spec.ts) inside
+# the official Playwright Docker image, so they match what CI renders. Run it
+# by hand after a deliberate visual change. It uploads the screenshots and,
+# unless `commit` is off, commits them to the dispatched branch as
+# github-actions[bot].
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: Commit the updated baselines to the dispatched branch
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  snapshots:
+    name: Update visual baselines
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    container:
+      # Keep the tag in step with the installed @playwright/test version (the
+      # version check below fails when they drift).
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+    env:
+      PLAYWRIGHT_VERSION: 1.63.0
+      USE_MOCK_CMS: "1"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Credentials are kept only when the job pushes the baseline commit.
+          persist-credentials: ${{ inputs.commit }}
+      - name: Set up toolchain
+        uses: ./.github/actions/setup
+      - name: Check the image matches @playwright/test
+        run: |
+          installed="$(node -p "require('@playwright/test/package.json').version")"
+          if [ "$installed" != "$PLAYWRIGHT_VERSION" ]; then
+            echo "::error::@playwright/test is $installed but the image is v$PLAYWRIGHT_VERSION. Update the image tag and PLAYWRIGHT_VERSION in this workflow."
+            exit 1
+          fi
+      - name: Capture baselines
+        run: pnpm test:e2e:visual --update-snapshots=all
+      - name: Upload baselines
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: e2e-snapshots
+          path: e2e/__screenshots__/linux/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: e2e-snapshots-report
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Commit baselines
+        if: ${{ inputs.commit }}
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add e2e/__screenshots__/linux
+          if git diff --cached --quiet; then
+            echo "Baselines unchanged."
+            exit 0
+          fi
+          git commit -m "test(e2e): update visual baselines"
+          git push origin "HEAD:refs/heads/$BRANCH"

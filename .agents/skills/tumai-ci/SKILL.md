@@ -1,41 +1,44 @@
 ---
 name: tumai-ci
-description: Use when changing UI, styling, theming, logos, imagery, or visual copy in this repo so the result follows the TUM.ai corporate identity. Apply the repo-local brand guide, color system, typography, button treatment, and dark/light mode rules before shipping frontend work.
+description: TUM.ai corporate identity for the website. Use whenever a change touches how the site looks, even if the brand isn't mentioned, including colours, tones and backgrounds, typography, buttons and interactive states, logos, imagery, gradients, visual copy, or a new section or page. It gives the brand palette, tone bands, type scale and logo rules, taken from the brand guide and the live tokens.
 ---
 
 # TUM.ai CI
 
-Use this skill for any frontend or brand-facing change in this repo.
+The site's look is the 2026 TUM.ai brand guide, implemented as tokens in `src/styles/index.css`
+and components in `src/components/ds`. Work from those files, not from memory: the tokens are
+already tuned for WCAG AA, and guessed values usually break contrast or drift off brand.
 
 ## Read first
 
-Read [references/brand-tokens.md](references/brand-tokens.md) before making visual changes.
-
-If the task needs the raw source material, use these repo-local files:
-
-- `docs/brand/source/brand-guidelines.pdf`
-- `docs/brand/source/colors.jpeg`
-- `src/styles/index.css`
-- `src/components/ui/button.tsx`
-- `public/assets/tum_ai_logo_new.svg`
-- `public/assets/logo_new_white_standard.png`
-- `public/assets/Manrope.ttf`
+- `references/brand-tokens.md`: palette, tones, type scale, logos, buttons, identity.
+- `docs/design-system.md`: tones, typography, components, motion and composition rules.
+- Sources when the summary isn't enough: `docs/brand/source/brand-guidelines.pdf`,
+  `docs/brand/source/colors.jpeg`, `src/styles/index.css`, `src/components/ds/button.tsx`.
 
 ## Workflow
 
-1. Start from the repo-local brand tokens and source assets, not memory.
-2. Keep the primary violet stable across modes.
-3. Keep layouts minimal and precise. Prefer spacing, shadows, and contrast over heavy outlines.
-4. In dark mode, stay inside the same purple/indigo family as the website background. Do not drift into neutral gray UI.
-5. Reuse the provided logos and Manrope font. Do not invent alternate marks, crops, or colorways unless the task explicitly requires it.
-6. When changing buttons or interactive states, match the website treatment from `src/components/ui/button.tsx`.
+1. Build pages as tone bands: `<Section tone="paper|mist|lavender|ink|night|violet">`. The tone
+   sets semantic tokens (`bg-canvas`, `text-fg`, `text-fg-muted`, `border-hairline`,
+   `text-highlight`), so the same component works on light and dark bands.
+2. Use brand colours only, through tokens. Never add stock Tailwind greys or purples, raw hex in
+   components, or a per-item accent colour.
+3. There is no dark mode. Dark surfaces are the `ink` (#1B0049) and `night` (#0D0214) bands, used
+   for heroes, feature bands, CTAs and the footer.
+4. Primary actions use the ds `Button`/`ButtonLink` `primary` variant: violet-600 (#8052C2) so white
+   labels pass AA, dark purple (#523573) on hover. Don't restyle buttons locally.
+5. Violet #9A64D9 is the brand accent for large type, focus rings, fills and gradients. Don't put
+   small white text on it (fails AA); on the `violet` tone, text is black.
+6. Manrope only, through the type-scale utilities (`text-display-*`, `text-heading-*`,
+   `text-lead`, `text-body`, `text-small`, `text-meta`, `text-eyebrow`).
+7. Use the shipped logo files and `BrandMark` (logomark as decoration). Never redraw, recolour or
+   crop the logo.
 
 ## Finish check
 
-Before closing a UI task, confirm:
-
-- Typography uses Manrope or an already-established approved exception.
-- Primary actions use the TUM.ai violet and dark-purple hover treatment.
-- Surfaces remain minimal, not heavily outlined.
-- Dark mode still feels like TUM.ai, not like a generic dark theme.
-- No random accent colors were introduced.
+- Every colour comes from a token; the tone of each band is intentional.
+- Text on every band meets AA (the tone tokens do this; custom colours usually don't).
+- Primary action is the ds primary button; one primary per view where possible.
+- Headlines use the display scale with tight tracking; body copy is calm and short.
+- Logos are the provided files; no invented marks or colourways.
+- Motion follows `docs/design-system.md` (transform and opacity, `motion-safe:`, `ease-brand`).

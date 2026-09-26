@@ -3,9 +3,33 @@
 import { Toggle } from "@base-ui/react/toggle";
 import { ToggleGroup } from "@base-ui/react/toggle-group";
 import type { ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 
-export type ChipOption = { value: string; label: ReactNode; count?: number };
+/** One chip of a {@link ChipGroup}. */
+export type ChipOption = {
+  /** Value reported to `onValueChange`; unique within the group. */
+  value: string;
+  /** Visible label. */
+  label: ReactNode;
+  /** Optional count shown in a small badge (e.g. matching items). */
+  count?: number;
+};
+
+/** Props for {@link ChipGroup}. */
+export type ChipGroupProps = {
+  /** Accessible group name, e.g. "Category". */
+  label: string;
+  /** id of a visible label element; preferred over `label` when present. */
+  labelledBy?: string;
+  /** The chips, in order. */
+  options: ChipOption[];
+  /** The selected value (controlled). */
+  value: string;
+  /** Called with the newly selected value. */
+  onValueChange: (value: string) => void;
+  /** Classes merged over the wrapping row. */
+  className?: string;
+};
 
 /**
  * Single-select filter chips (Base UI ToggleGroup: roving focus with arrow
@@ -19,16 +43,7 @@ export function ChipGroup({
   value,
   onValueChange,
   className,
-}: {
-  /** Accessible group name, e.g. "Category". */
-  label: string;
-  /** id of a visible label element; preferred over `label` when present. */
-  labelledBy?: string;
-  options: ChipOption[];
-  value: string;
-  onValueChange: (value: string) => void;
-  className?: string;
-}) {
+}: ChipGroupProps) {
   return (
     <ToggleGroup
       aria-label={labelledBy ? undefined : label}
@@ -44,7 +59,7 @@ export function ChipGroup({
         <Toggle
           key={option.value}
           value={option.value}
-          className="group/chip inline-flex h-10 items-center gap-2 rounded-full border border-hairline-strong px-4 text-small font-semibold text-fg-muted transition-[background-color,color,border-color,scale] duration-300 ease-brand hover:border-fg/45 hover:text-fg active:scale-[0.97] data-[pressed]:border-transparent data-[pressed]:bg-fg data-[pressed]:text-canvas"
+          className="group/chip inline-flex h-10 items-center gap-2 rounded-full border border-hairline-strong px-4 font-semibold text-fg-muted text-small transition-[background-color,color,border-color,scale] duration-300 ease-brand hover:border-fg/45 hover:text-fg data-[pressed]:border-transparent data-[pressed]:bg-fg data-[pressed]:text-canvas motion-safe:active:scale-[0.97]"
         >
           {option.label}
           {option.count !== undefined ? (

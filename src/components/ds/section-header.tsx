@@ -1,28 +1,81 @@
+import { cva, type VariantProps } from "class-variance-authority";
 import type { ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 import { Actions } from "./actions";
 import { Reveal } from "./reveal";
+import type { HeadingLevel } from "./types";
 import { Eyebrow } from "./typography";
 
-type SectionHeaderProps = {
-  title: ReactNode;
-  /** id for the heading, referenced by the section's aria-labelledby. */
-  id?: string;
-  eyebrow?: ReactNode;
-  /** Editorial counter, e.g. 1 → "01". */
-  index?: string | number;
-  lead?: ReactNode;
-  /** Buttons and status badges, laid out by <Actions>. */
-  actions?: ReactNode;
-  /**
-   * `split`: title left, lead bottom-right (partner page rhythm).
-   * `stack`: lead under the title. `center`: centered stack.
-   */
-  layout?: "split" | "stack" | "center";
-  size?: "md" | "lg";
-  as?: "h2" | "h3";
-  className?: string;
+const headerStyles = cva("mb-12 md:mb-16", {
+  variants: {
+    /**
+     * `split`: title left, lead bottom-right (partner page rhythm).
+     * `stack`: lead under the title. `center`: centered stack.
+     */
+    layout: {
+      split:
+        "flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-16",
+      stack: "",
+      center: "text-center",
+    },
+  },
+  defaultVariants: { layout: "split" },
+});
+
+const titleStyles = cva("text-fg", {
+  variants: {
+    /** Display step of the title: `md` for sections, `lg` for key sections. */
+    size: {
+      md: "text-display-md",
+      lg: "text-display-lg",
+    },
+  },
+  defaultVariants: { size: "md" },
+});
+
+const asideStyles = cva("", {
+  variants: {
+    layout: {
+      split: "lg:max-w-sm lg:pb-1.5",
+      stack: "mt-6 max-w-2xl",
+      center: "mx-auto mt-6 max-w-2xl",
+    },
+  },
+  defaultVariants: { layout: "split" },
+});
+
+/** Class overrides for a section header's inner parts. */
+export type SectionHeaderClassNames = {
+  /** The heading. */
+  title?: string;
+  /** The lead paragraph. */
+  lead?: string;
+  /** The column that holds the lead and the actions. */
+  aside?: string;
 };
+
+/** Props for {@link SectionHeader}. */
+export type SectionHeaderProps = VariantProps<typeof headerStyles> &
+  VariantProps<typeof titleStyles> & {
+    /** The section's headline. */
+    title: ReactNode;
+    /** id for the heading, referenced by the section's `aria-labelledby`. */
+    id?: string;
+    /** Small label above the title. */
+    eyebrow?: ReactNode;
+    /** Editorial counter in the eyebrow, e.g. 1 → "01". */
+    index?: string | number;
+    /** One or two sentences that frame the section. */
+    lead?: ReactNode;
+    /** Buttons and status badges, laid out by <Actions>. */
+    actions?: ReactNode;
+    /** Heading level of the title. Default `h2`. */
+    headingAs?: HeadingLevel;
+    /** Class overrides for the inner parts. */
+    classNames?: SectionHeaderClassNames;
+    /** Classes merged over the `header` element. */
+    className?: string;
+  };
 
 /** Standard section opening: eyebrow, headline, lead and optional actions. */
 export function SectionHeader({
@@ -32,9 +85,10 @@ export function SectionHeader({
   index,
   lead,
   actions,
-  layout = "split",
-  size = "md",
-  as: HeadingTag = "h2",
+  layout,
+  size,
+  headingAs: HeadingTag = "h2",
+  classNames,
   className,
 }: SectionHeaderProps) {
   const heading = (
@@ -48,9 +102,9 @@ export function SectionHeader({
         <HeadingTag
           id={id}
           className={cn(
-            "text-fg",
+            titleStyles({ size }),
             eyebrow && "mt-5",
-            size === "lg" ? "text-display-lg" : "text-display-md",
+            classNames?.title,
           )}
         >
           {title}
@@ -63,13 +117,13 @@ export function SectionHeader({
     lead || actions ? (
       <Reveal
         delay={140}
-        className={cn(
-          layout === "split" && "lg:max-w-sm lg:pb-1.5",
-          layout === "stack" && "mt-6 max-w-2xl",
-          layout === "center" && "mx-auto mt-6 max-w-2xl",
-        )}
+        className={cn(asideStyles({ layout }), classNames?.aside)}
       >
-        {lead ? <p className="text-lead text-fg-muted">{lead}</p> : null}
+        {lead ? (
+          <p className={cn("text-fg-muted text-lead", classNames?.lead)}>
+            {lead}
+          </p>
+        ) : null}
         {actions ? (
           <Actions
             align={layout === "center" ? "center" : "start"}
@@ -82,15 +136,7 @@ export function SectionHeader({
     ) : null;
 
   return (
-    <header
-      className={cn(
-        "mb-12 md:mb-16",
-        layout === "split" &&
-          "flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-16",
-        layout === "center" && "text-center",
-        className,
-      )}
-    >
+    <header className={cn(headerStyles({ layout }), className)}>
       {heading}
       {aside}
     </header>

@@ -2,11 +2,14 @@ import { Button as BaseButton } from "@base-ui/react/button";
 import { cva, type VariantProps } from "class-variance-authority";
 import { ArrowDown, ArrowRight, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import type { ComponentPropsWithoutRef, ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import type { ComponentProps, ReactNode } from "react";
+import { cn } from "@/lib/cn";
+import { isExternalHref, isNonRouteHref } from "./internal";
 
 /**
  * Button styles, shared by <Button> (actions) and <ButtonLink> (navigation).
+ * Exported for the rare element that must look like a button but cannot be
+ * one of the two (e.g. a link with its own accessible-name wiring).
  *
  * Primary uses violet-600 (#8052C2) at rest so white labels meet WCAG AA
  * (5.4:1), and the brand's dark purple (#523573) on hover. Secondary, outline
@@ -15,18 +18,18 @@ import { cn } from "@/lib/utils";
 export const buttonStyles = cva(
   [
     "group/button relative isolate inline-flex shrink-0 items-center justify-center gap-2 overflow-hidden",
-    "whitespace-nowrap rounded-full font-semibold tracking-[-0.01em] select-none",
+    "select-none whitespace-nowrap rounded-full font-semibold tracking-[-0.01em]",
     "transition-[background-color,color,border-color,box-shadow,scale] duration-300 ease-brand",
-    "active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45",
+    "disabled:pointer-events-none disabled:opacity-45 motion-safe:active:scale-[0.98]",
     "data-[disabled]:pointer-events-none data-[disabled]:opacity-45 [&_svg]:shrink-0",
   ],
   {
     variants: {
+      /** Visual weight. `inverse` is solid white for dark bands and photos. */
       variant: {
         primary: [
-          "bg-violet-600 text-white",
-          "shadow-[inset_0_1px_0_rgb(255_255_255/0.2),0_10px_28px_-12px_rgb(154_100_217/0.9)]",
-          "hover:bg-violet-800 hover:shadow-[inset_0_1px_0_rgb(255_255_255/0.12),0_14px_36px_-14px_rgb(82_53_115/0.95)]",
+          "bg-violet-600 text-white shadow-button",
+          "hover:bg-violet-800 hover:shadow-button-hover",
           // Sheen that sweeps across once per hover.
           "before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:-z-10 before:w-1/2",
           "before:-translate-x-full before:skew-x-[-20deg] before:bg-gradient-to-r before:from-transparent before:via-white/25 before:to-transparent",
@@ -36,14 +39,15 @@ export const buttonStyles = cva(
         outline:
           "border border-fg/25 text-fg hover:border-fg/60 hover:bg-fg/[0.04]",
         ghost: "text-fg hover:bg-fg/[0.07]",
-        /** Solid white; for secondary actions on dark bands and photos. */
         inverse:
-          "bg-white text-violet-950 shadow-[0_10px_30px_-14px_rgb(13_2_20/0.6)] hover:bg-violet-50",
-        link: "h-auto rounded-none px-0 text-highlight underline-offset-[6px] decoration-1 hover:underline",
+          "bg-white text-violet-950 shadow-button-inverse hover:bg-violet-50",
+        link: "h-auto rounded-none px-0 text-highlight decoration-1 underline-offset-[6px] hover:underline",
       },
+      /** Height step; `icon` and `icon-sm` are square. */
       size: {
+        // 13px without text-meta's line height, so text-height links keep their box.
         sm: "h-9 px-4 text-[0.8125rem]",
-        md: "h-11 px-5.5 text-[0.9375rem]",
+        md: "h-11 px-5.5 text-label",
         lg: "h-13 px-7 text-base",
         icon: "size-11",
         "icon-sm": "size-9",
@@ -58,11 +62,16 @@ export const buttonStyles = cva(
   },
 );
 
-type ButtonStyleProps = VariantProps<typeof buttonStyles>;
+/** The variant props every button-styled component shares. */
+export type ButtonStyleProps = VariantProps<typeof buttonStyles>;
 
-type ArrowKind = boolean | "right" | "external" | "down";
+/**
+ * Trailing arrow: `true` or `"right"` points on, `"external"` up and out,
+ * `"down"` to a section below.
+ */
+export type ButtonArrowKind = boolean | "right" | "external" | "down";
 
-function ButtonArrow({ kind }: { kind: Exclude<ArrowKind, false> }) {
+function ButtonArrow({ kind }: { kind: Exclude<ButtonArrowKind, false> }) {
   const base =
     "size-4 transition-transform duration-500 ease-brand motion-reduce:transition-none";
   if (kind === "external") {
@@ -92,16 +101,20 @@ function ButtonArrow({ kind }: { kind: Exclude<ArrowKind, false> }) {
   );
 }
 
-type ButtonProps = BaseButton.Props &
+/** Props for {@link Button}: Base UI's button props plus the style variants. */
+export type ButtonProps = Omit<BaseButton.Props, "className"> &
   ButtonStyleProps & {
     /** Trailing arrow that nudges on hover. */
-    arrow?: ArrowKind;
+    arrow?: ButtonArrowKind;
+    /** Classes merged over the variant styles. */
     className?: string;
   };
 
 /**
  * Action button (Base UI): keyboard, focus and disabled semantics come from
- * the primitive. For navigation use <ButtonLink>.
+ * the primitive. Pass `focusableWhenDisabled` to keep a disabled button in
+ * the tab order (it is then `aria-disabled`). For navigation use
+ * <ButtonLink>.
  */
 export function Button({
   variant,
@@ -122,17 +135,18 @@ export function Button({
   );
 }
 
-type ButtonLinkProps = Omit<ComponentPropsWithoutRef<"a">, "href"> &
+/** Props for {@link ButtonLink}. */
+export type ButtonLinkProps = Omit<ComponentProps<"a">, "href"> &
   ButtonStyleProps & {
+    /** Route, in-page anchor, http(s), mailto: or tel: URL. */
     href: string;
-    arrow?: ArrowKind;
+    /** Trailing arrow that nudges on hover. */
+    arrow?: ButtonArrowKind;
     /** Force new-tab behavior; defaults to true for http(s) URLs. */
     external?: boolean;
+    /** The visible label. */
     children: ReactNode;
   };
-
-const isExternalHref = (href: string) => /^https?:\/\//.test(href);
-const isNonRouteHref = (href: string) => /^(https?:|mailto:|tel:|#)/.test(href);
 
 /**
  * Link styled as a button. Internal routes use next/link; external links open
@@ -181,8 +195,11 @@ export function ButtonLink({
   );
 }
 
-type IconButtonProps = Omit<ButtonProps, "arrow" | "size"> & {
+/** Props for {@link IconButton}. */
+export type IconButtonProps = Omit<ButtonProps, "arrow" | "size"> & {
+  /** Required: the only name an icon-only button has. */
   "aria-label": string;
+  /** Square size step. Default `icon`. */
   size?: "icon" | "icon-sm";
 };
 
