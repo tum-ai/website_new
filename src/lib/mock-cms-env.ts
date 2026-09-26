@@ -17,7 +17,7 @@ const isoInstant =
  * `MOCK_CMS_NOW` is ISO 8601: a date such as `2026-09-25` or a date-time
  * with an offset such as `2026-09-25T12:00:00Z`. A value without an offset
  * would depend on the machine's timezone, so it throws, as does anything
- * unparseable: a typo should fail the run, not fall back to the real clock.
+ * unparsable: a typo should fail the run, not fall back to the real clock.
  */
 export function getMockCmsNow(env: Env, fallback: Date = new Date()): Date {
   const value = env.MOCK_CMS_NOW?.trim();

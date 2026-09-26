@@ -36,7 +36,7 @@ export const legalEntity = {
   legalName: "TUM.ai e.V.",
   alternateNames: ["TUM.ai Student Initiative"],
   foundingLocation: "Munich, Germany",
-  /** The association's registered seat (Imprint "Adresse"). */
+  /** The association's registered seat (the Imprint's address row). */
   registeredOffice: {
     streetAddress: "Arcisstr. 21",
     postalCode: "80333",
