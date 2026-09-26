@@ -1,0 +1,66 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm lint *)",
+      "Bash(pnpm lint:apply *)",
+      "Bash(pnpm typecheck *)",
+      "Bash(pnpm test *)",
+      "Bash(pnpm test:watch *)",
+      "Bash(pnpm test:coverage *)",
+      "Bash(pnpm test:perf *)",
+      "Bash(pnpm test:e2e *)",
+      "Bash(pnpm build *)",
+      "Bash(pnpm knip *)",
+      "Bash(pnpm verify *)",
+      "Bash(pnpm sanity:typegen *)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(rg *)",
+      "Bash(gh pr view *)",
+      "Bash(gh pr checks *)",
+      "Bash(gh pr diff *)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.local)",
+      "Read(./.env.*.local)",
+      "Read(./.env.development)",
+      "Read(./.env.production)",
+      "Read(./.env.test)",
+      "Read(./.vercel/.env*)",
+      "Bash(rg *--pre*)",
+      "Bash(git push *--force*)",
+      "Bash(git push -f*)",
+      "Bash(git push * -f*)",
+      "Bash(git push * +*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/protect-generated.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/format.sh",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

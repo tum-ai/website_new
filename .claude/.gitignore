@@ -1,0 +1,3 @@
+# Personal Claude Code settings and agent worktrees stay local.
+settings.local.json
+worktrees/
