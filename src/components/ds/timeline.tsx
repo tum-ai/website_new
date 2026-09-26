@@ -123,92 +123,96 @@ export function Timeline({
   const railPosition = railPositionStyles({ alternate });
 
   return (
-    <div className={cn("relative", className)}>
-      {rail === "dashed" ? (
-        <div
-          aria-hidden="true"
-          className={cn("top-2 bottom-2", dashedLine, railPosition)}
-        />
-      ) : (
-        <>
+    <div className={className}>
+      {/* The rails span the list only, so a continuation below can fade out
+          on its own instead of running beside a rail that never ends. */}
+      <div data-timeline-track="" className="relative">
+        {rail === "dashed" ? (
           <div
             aria-hidden="true"
-            className={cn("top-2 bottom-2 w-px bg-hairline", railPosition)}
+            className={cn("top-2 bottom-2", dashedLine, railPosition)}
           />
-          <ScrollProgress
-            target={listRef}
-            className={cn(
-              "top-2 bottom-2 w-px bg-gradient-to-b from-violet-300 via-violet-500 to-violet-600",
-              railPosition,
-            )}
-          />
-        </>
-      )}
-      <ol ref={listRef} className="relative">
-        {items.map((item, index) => {
-          const isActive = active.has(index);
-          const right = alternate && index % 2 === 1;
-          const number = counter(index + 1);
-          return (
-            <li
-              key={item.id ?? textKey(item.title, number)}
-              data-index={index}
+        ) : (
+          <>
+            <div
+              aria-hidden="true"
+              className={cn("top-2 bottom-2 w-px bg-hairline", railPosition)}
+            />
+            <ScrollProgress
+              target={listRef}
               className={cn(
-                "relative pb-14 pl-14 last:pb-0",
-                alternate &&
-                  "md:grid md:grid-cols-2 md:gap-16 md:pl-0 md:[&>div]:col-start-1",
-                right && "md:[&>div]:col-start-2",
+                "top-2 bottom-2 w-px bg-gradient-to-b from-violet-300 via-violet-500 to-violet-600",
+                railPosition,
               )}
-            >
-              <span
-                aria-hidden="true"
-                className={markerStyles({ active: isActive, alternate })}
-              >
-                {marker === "number" ? (
-                  <span
-                    className={cn(
-                      "tabular font-semibold text-meta transition-colors duration-700 ease-brand motion-reduce:transition-none",
-                      isActive ? "text-highlight" : "text-fg-subtle",
-                    )}
-                  >
-                    {number}
-                  </span>
-                ) : (
-                  <span
-                    className={cn(
-                      "size-2.5 rounded-full transition-[background-color,scale] duration-700 ease-brand motion-reduce:transition-none",
-                      isActive
-                        ? "scale-100 bg-violet-500"
-                        : "scale-75 bg-fg-subtle",
-                    )}
-                  />
-                )}
-              </span>
-              <Reveal
-                variant={alternate ? (right ? "right" : "left") : "up"}
+            />
+          </>
+        )}
+        <ol ref={listRef} className="relative">
+          {items.map((item, index) => {
+            const isActive = active.has(index);
+            const right = alternate && index % 2 === 1;
+            const number = counter(index + 1);
+            return (
+              <li
+                key={item.id ?? textKey(item.title, number)}
+                data-index={index}
                 className={cn(
-                  alternate && !right && "md:pr-4 md:text-right",
-                  alternate && right && "md:pl-4",
+                  "relative pb-14 pl-14 last:pb-0",
+                  alternate &&
+                    "md:grid md:grid-cols-2 md:gap-16 md:pl-0 md:[&>div]:col-start-1",
+                  right && "md:[&>div]:col-start-2",
                 )}
               >
-                {item.label ? (
-                  <p className="text-eyebrow text-highlight uppercase">
-                    {item.label}
-                  </p>
-                ) : null}
-                <HeadingTag className="mt-2 text-fg text-heading-md">
-                  {item.title}
-                </HeadingTag>
-                {item.description ? (
-                  <div className="mt-3 text-body text-fg-muted">
-                    {item.description}
-                  </div>
-                ) : null}
-              </Reveal>
-            </li>
-          );
-        })}
-      </ol>
+                <span
+                  aria-hidden="true"
+                  className={markerStyles({ active: isActive, alternate })}
+                >
+                  {marker === "number" ? (
+                    <span
+                      className={cn(
+                        "tabular font-semibold text-meta transition-colors duration-700 ease-brand motion-reduce:transition-none",
+                        isActive ? "text-highlight" : "text-fg-subtle",
+                      )}
+                    >
+                      {number}
+                    </span>
+                  ) : (
+                    <span
+                      className={cn(
+                        "size-2.5 rounded-full transition-[background-color,scale] duration-700 ease-brand motion-reduce:transition-none",
+                        isActive
+                          ? "scale-100 bg-violet-500"
+                          : "scale-75 bg-fg-subtle",
+                      )}
+                    />
+                  )}
+                </span>
+                <Reveal
+                  variant={alternate ? (right ? "right" : "left") : "up"}
+                  className={cn(
+                    alternate && !right && "md:pr-4 md:text-right",
+                    alternate && right && "md:pl-4",
+                  )}
+                >
+                  {item.label ? (
+                    <p className="text-eyebrow text-highlight uppercase">
+                      {item.label}
+                    </p>
+                  ) : null}
+                  <HeadingTag className="mt-2 text-fg text-heading-md">
+                    {item.title}
+                  </HeadingTag>
+                  {item.description ? (
+                    <div className="mt-3 text-body text-fg-muted">
+                      {item.description}
+                    </div>
+                  ) : null}
+                </Reveal>
+              </li>
+            );
+          })}
+        </ol>
+      </div>
       {continuation ? (
         <Reveal
           variant="fade"
