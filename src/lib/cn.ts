@@ -34,7 +34,15 @@ const twMerge = extendTailwindMerge({
         "stat-lg",
         "stat-xl",
       ],
-      shadow: ["soft", "lift", "inset-hairline"],
+      shadow: [
+        "soft",
+        "lift",
+        "inset-hairline",
+        "button",
+        "button-hover",
+        "button-inverse",
+        "halo",
+      ],
       radius: ["signature"],
       ease: ["brand", "snappy", "in-out-soft"],
       animate: [

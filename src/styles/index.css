@@ -17,11 +17,11 @@
    * --- Brand anchors (CI document) ---
    * Electric Lavender #9A64D9 is violet-500, Dark Purple #523573 violet-800,
    * Lavender Tint #F5EFFF violet-50 and Dark Indigo #1B0049 violet-950 (use
-   * the scale). White is Tailwind's own. Black replaces Tailwind's #000 with
-   * the brand black, so `bg-black` and `var(--color-black)` are on-brand.
+   * the scale; there is no separate dark-indigo alias). White is Tailwind's
+   * own. Black replaces Tailwind's #000 with the brand black, so `bg-black`
+   * and `var(--color-black)` are on-brand.
    */
   --color-minimal-gray: oklch(0.9521 0 0); /* #EFEFEF */
-  --color-dark-indigo: oklch(0.2085 0.1188 288.93); /* #1B0049, = violet-950 */
   --color-black: oklch(0.1275 0.0481 312.72); /* #0D0214 */
 
   /* --- Violet scale: brand violet at 500, dark purple at 800, indigo at 950 --- */
@@ -37,18 +37,14 @@
   --color-violet-900: #2f1757;
   --color-violet-950: #1b0049;
 
-  /* --- Ink scale: violet-tinted neutrals for text and surfaces --- */
-  --color-ink-50: #faf8fd;
-  --color-ink-100: #f4f1f8;
-  --color-ink-150: #eee9f4;
+  /*
+   * --- Ink: violet-tinted neutrals ---
+   * Only the steps in use. Text and surfaces read the tone tokens (fg,
+   * fg-muted, raised, sunken) instead; the old 50-900 steps duplicated them
+   * or violet-950. ink-950 is the brand black, for scrims and backdrops.
+   */
   --color-ink-200: #e4ddec;
-  --color-ink-300: #c9c0d4;
-  --color-ink-400: #9d90b3;
-  --color-ink-500: #7c7385;
   --color-ink-600: #655b71;
-  --color-ink-700: #4a3f5a;
-  --color-ink-800: #2e2340;
-  --color-ink-900: #1b0049;
   --color-ink-950: #0d0214;
 
   /* --- Typography --- */
@@ -131,6 +127,17 @@
   --shadow-lift:
     0 2px 6px rgb(27 0 73 / 0.05), 0 28px 64px -24px rgb(27 0 73 / 0.34);
   --shadow-inset-hairline: inset 0 1px 0 rgb(255 255 255 / 0.08);
+  /* Primary button: a top highlight and a violet under-glow, deeper on hover. */
+  --shadow-button:
+    inset 0 1px 0 rgb(255 255 255 / 0.2),
+    0 10px 28px -12px rgb(154 100 217 / 0.9);
+  --shadow-button-hover:
+    inset 0 1px 0 rgb(255 255 255 / 0.12),
+    0 14px 36px -14px rgb(82 53 115 / 0.95);
+  /* White (inverse) button on dark bands. */
+  --shadow-button-inverse: 0 10px 30px -14px rgb(13 2 20 / 0.6);
+  /* Violet halo around an active marker (Timeline). */
+  --shadow-halo: 0 0 0 6px rgb(154 100 217 / 0.16);
 
   /*
    * --- Motion ---
@@ -399,7 +406,7 @@
     min-width: 320px;
     min-height: 100vh;
     background-color: transparent;
-    color: var(--color-dark-indigo);
+    color: var(--color-violet-950);
     font-family: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
   }
 
@@ -533,16 +540,6 @@
     --band-from: var(--tone-night);
   }
 
-  /* Subtle film grain for dark bands. */
-  .grain {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.07;
-    mix-blend-mode: soft-light;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-  }
-
   /*
    * Pointer spotlight (see <SpotlightCard>). JS only writes --spot-x/--spot-y
    * and --spot-opacity; both layers sit behind the card content.
@@ -586,6 +583,16 @@
  * take variants (`md:rounded-signature`) and lets tailwind-merge (lib/cn.ts)
  * resolve conflicts with Tailwind's own classes.
  */
+
+/* Subtle film grain for dark bands: fills its positioned parent. */
+@utility grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.07;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
 
 /* The brand guide's signature corner: one large radius, three small ones. */
 @utility rounded-signature {
