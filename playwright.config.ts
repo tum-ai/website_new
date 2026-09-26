@@ -19,9 +19,16 @@ import { defineConfig, devices, type Project } from "@playwright/test";
  * | chromium-tablet  | chromium | 768×1024        | layout, mobile menu                  |
  * | chromium-small   | chromium | 320×640         | routes                               |
  * | webkit-desktop   | webkit   | 1440×900        | layout, keyboard                     |
+ * | chromium-phone   | chromium | 390×844, touch  | routes, a11y, mobile menu, partners  |
  * | webkit-iphone    | webkit   | iPhone 15       | routes, a11y, mobile menu, partners  |
  * | reduced-motion   | chromium | 1440×900        | motion                               |
  * | no-js            | chromium | 1440×900        | no-js                                |
+ *
+ * `webkit-iphone` runs locally but not in CI unless `E2E_WEBKIT_MOBILE=1` is
+ * set: on GitHub's Linux runners WebKit's iPhone emulation froze the page
+ * process mid-test (every test timed out after its first scroll, while
+ * `webkit-desktop` on the same runner passed). CI covers phone widths with
+ * `chromium-phone`, and WebKit with `webkit-desktop` and `visual-webkit`.
  *
  * Visual regression (`visual.spec.ts`) runs only with `pnpm test:e2e:visual`
  * (`E2E_VISUAL=1`), in the `visual-chromium` and `visual-webkit` projects.
@@ -31,6 +38,7 @@ import { defineConfig, devices, type Project } from "@playwright/test";
 
 const isCI = Boolean(process.env.CI);
 const isVisualRun = process.env.E2E_VISUAL === "1";
+const runWebkitMobile = !isCI || process.env.E2E_WEBKIT_MOBILE === "1";
 const port = Number(process.env.PORT ?? 3000);
 const baseURL = `http://localhost:${port}`;
 
@@ -91,16 +99,11 @@ const functionalProjects: Project[] = [
     grep: /@layout|@keyboard/,
   },
   {
-    name: "webkit-iphone",
-    // iPhone viewport, user agent and touch, painted at 1x and without
-    // WebKit's `isMobile` emulation. On Linux CI runners that combination
-    // (3x software rendering, mobile viewport emulation) crashed or froze the
-    // page process mid-scroll. The site's layout depends only on the viewport
-    // width, and the visual projects cover rendering.
+    name: "chromium-phone",
     use: {
-      ...devices["iPhone 15"],
-      deviceScaleFactor: 1,
-      isMobile: false,
+      ...devices["Desktop Chrome"],
+      viewport: { width: 390, height: 844 },
+      hasTouch: true,
     },
     testMatch: [
       "routes.spec.ts",
@@ -110,6 +113,21 @@ const functionalProjects: Project[] = [
     ],
     grepInvert: /@layout|@keyboard|@desktop-only/,
   },
+  ...(runWebkitMobile
+    ? [
+        {
+          name: "webkit-iphone",
+          use: { ...devices["iPhone 15"] },
+          testMatch: [
+            "routes.spec.ts",
+            "a11y.spec.ts",
+            "keyboard.spec.ts",
+            "partners.spec.ts",
+          ],
+          grepInvert: /@layout|@keyboard|@desktop-only/,
+        },
+      ]
+    : []),
   {
     name: "reduced-motion",
     use: {
