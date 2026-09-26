@@ -41,7 +41,7 @@ const journey: JourneyStep[] = [
         </p>
         <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
           <li className="rounded-3xl border border-hairline bg-raised p-6 shadow-soft">
-            <h4 className="text-heading-sm text-fg">Research Track</h4>
+            <h4 className="text-fg text-heading-sm">Research Track</h4>
             <p className="mt-2 text-small">
               You'll join a dedicated team working on an <Em>Impact Project</Em>
               , aligned with your skill set. These projects are designed to
@@ -50,7 +50,7 @@ const journey: JourneyStep[] = [
             </p>
           </li>
           <li className="rounded-3xl border border-hairline bg-raised p-6 shadow-soft">
-            <h4 className="text-heading-sm text-fg">Initiative Track</h4>
+            <h4 className="text-fg text-heading-sm">Initiative Track</h4>
             <p className="mt-2 text-small">
               Join one of our <Em>core departments</Em> and become a driving
               force behind everything that makes TUM.ai stand out. In this
@@ -166,20 +166,20 @@ export function MemberJourney() {
           positionClassName="object-[50%_35%]"
         />
 
-        <ol className="mt-16 border-t border-hairline-strong md:mt-24">
+        <ol className="mt-16 border-hairline-strong border-t md:mt-24">
           {journey.map((step, index) => (
             <Reveal
               as="li"
               key={step.title}
-              className="grid gap-x-8 gap-y-5 border-b border-hairline py-10 md:grid-cols-[3.5rem_minmax(0,1fr)] md:py-12 lg:grid-cols-[3.5rem_minmax(0,0.85fr)_minmax(0,1.4fr)] lg:gap-x-12 lg:py-14"
+              className="grid gap-x-8 gap-y-5 border-hairline border-b py-10 md:grid-cols-[3.5rem_minmax(0,1fr)] md:py-12 lg:grid-cols-[3.5rem_minmax(0,0.85fr)_minmax(0,1.4fr)] lg:gap-x-12 lg:py-14"
             >
               <span
                 aria-hidden
-                className="grid size-12 place-items-center rounded-full border border-hairline-strong bg-raised text-small font-semibold text-fg tabular md:row-span-2 lg:sticky lg:top-32 lg:row-span-1 lg:self-start"
+                className="tabular grid size-12 place-items-center rounded-full border border-hairline-strong bg-raised font-semibold text-fg text-small md:row-span-2 lg:sticky lg:top-32 lg:row-span-1 lg:self-start"
               >
                 {String(index + 1).padStart(2, "0")}
               </span>
-              <h3 className="text-heading-lg text-fg md:col-start-2 lg:sticky lg:top-32 lg:self-start">
+              <h3 className="text-fg text-heading-lg md:col-start-2 lg:sticky lg:top-32 lg:self-start">
                 {step.title}
               </h3>
               <div className="flex flex-col gap-5 text-body text-fg-muted md:col-start-2 lg:col-start-3 lg:row-start-1">
@@ -227,7 +227,7 @@ export function MemberJourney() {
                 keep up! Our aim is to help you grow, both personally and in
                 your knowledge. Here's just a glimpse of what we offer:
               </p>
-              <ul className="mt-5 divide-y divide-hairline border-y border-hairline">
+              <ul className="mt-5 divide-y divide-hairline border-hairline border-y">
                 {offerings.map((offering) => (
                   <li key={offering.label} className="py-4">
                     <strong className="font-semibold text-fg">

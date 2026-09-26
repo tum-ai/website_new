@@ -59,7 +59,7 @@ export function DesignSystemInteractive() {
             Collapsible
           </CollapsibleTrigger>
           <CollapsiblePanel>
-            <p className="pt-4 text-small text-fg-muted">
+            <p className="pt-4 text-fg-muted text-small">
               Panel content with a smooth height transition.
             </p>
           </CollapsiblePanel>

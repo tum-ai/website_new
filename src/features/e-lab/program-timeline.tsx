@@ -57,7 +57,7 @@ export const ProgramTimeline = () => {
             aria-hidden
             className="absolute top-2 left-4 h-24 w-0.5 -translate-x-1/2 bg-[linear-gradient(to_bottom,var(--color-violet-500)_0_50%,transparent_50%_100%)] bg-size-[2px_10px] [mask-image:linear-gradient(to_bottom,#000_30%,transparent)] md:left-1/2"
           />
-          <p className="pt-30 text-heading-md text-fg-muted">
+          <p className="pt-30 text-fg-muted text-heading-md">
             Your journey continues...
           </p>
         </Reveal>

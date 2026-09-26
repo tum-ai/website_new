@@ -37,7 +37,7 @@ export function PartnerTile({
       : null;
   const content =
     partner.image === "/assets/partners/logos/mutagent.svg" ? (
-      <span className="partner-logo-lockup flex items-center gap-2.5 text-[0.9375rem] font-semibold text-violet-950 [&_.partner-logo-image]:size-9">
+      <span className="partner-logo-lockup flex items-center gap-2.5 font-semibold text-[0.9375rem] text-violet-950 [&_.partner-logo-image]:size-9">
         {logo}
         <span>{partner.name}</span>
       </span>

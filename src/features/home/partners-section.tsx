@@ -63,7 +63,7 @@ export function PartnersSection() {
             </h2>
           </Reveal>
           <Reveal delay={140}>
-            <p className="mt-6 max-w-xl text-lead text-fg-muted">
+            <p className="mt-6 max-w-xl text-fg-muted text-lead">
               Get access to our exclusive pre-selected talent pool of qualified
               Software/Data Engineers and AI Strategists.
             </p>
@@ -92,7 +92,7 @@ export function PartnersSection() {
         </Reveal>
       </Container>
 
-      <Container className="mt-20 border-t border-hairline md:mt-28" />
+      <Container className="mt-20 border-hairline border-t md:mt-28" />
       <Marquee
         label="Partners"
         duration={partnerLogos.length * 3.5}
@@ -105,7 +105,7 @@ export function PartnersSection() {
             className="flex h-12 w-36 items-center justify-center opacity-80 transition-opacity duration-300 hover:opacity-100 md:w-44"
           >
             {logo.image && LOCKUP_KEYS.has(logo.key) ? (
-              <span className="flex items-center gap-2.5 text-heading-sm text-fg">
+              <span className="flex items-center gap-2.5 text-fg text-heading-sm">
                 <img
                   src={logo.image}
                   alt=""
@@ -128,7 +128,7 @@ export function PartnersSection() {
                 className="h-8 w-auto max-w-[8.5rem] object-contain md:h-9 md:max-w-[9.5rem]"
               />
             ) : (
-              <span className="text-heading-sm text-fg">{logo.name}</span>
+              <span className="text-fg text-heading-sm">{logo.name}</span>
             )}
           </div>
         ))}

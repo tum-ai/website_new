@@ -34,7 +34,7 @@ export function TextLink({
   const Icon = external ? ArrowUpRight : ArrowRight;
   const content = (
     <>
-      <span className="bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_1px] bg-[position:0_100%] bg-no-repeat pb-0.5 transition-[background-size] duration-500 ease-brand group-hover/link:bg-[length:100%_1px] group-focus-visible/link:bg-[length:100%_1px]">
+      <span className="bg-[length:0%_1px] bg-[linear-gradient(currentColor,currentColor)] bg-[position:0_100%] bg-no-repeat pb-0.5 transition-[background-size] duration-500 ease-brand group-hover/link:bg-[length:100%_1px] group-focus-visible/link:bg-[length:100%_1px]">
         {children}
       </span>
       {external ? <span className="sr-only"> (opens in a new tab)</span> : null}

@@ -35,7 +35,7 @@ export function MemberStories({ stories }: MemberStoriesProps) {
         <ul className="grid gap-x-16 gap-y-14 md:grid-cols-2 md:gap-y-20 xl:gap-x-24">
           {stories.map((story, index) => (
             <Reveal as="li" key={story.name} delay={(index % 2) * 100}>
-              <figure className="group/story flex h-full flex-col border-t border-hairline-strong pt-8 md:pt-10">
+              <figure className="group/story flex h-full flex-col border-hairline-strong border-t pt-8 md:pt-10">
                 <svg
                   aria-hidden
                   viewBox="0 0 32 24"
@@ -44,7 +44,7 @@ export function MemberStories({ stories }: MemberStoriesProps) {
                 >
                   <path d="M0 24V14.4C0 6.24 4.32 1.44 12.96 0l1.44 3.36C9.6 4.8 7.2 7.68 7.2 12H13.2V24H0Zm18.8 0V14.4C18.8 6.24 23.12 1.44 31.76 0l1.44 3.36C28.4 4.8 26 7.68 26 12H32V24H18.8Z" />
                 </svg>
-                <blockquote className="mt-5 flex-1 text-lead text-fg">
+                <blockquote className="mt-5 flex-1 text-fg text-lead">
                   <p>{story.story}</p>
                 </blockquote>
                 <figcaption className="mt-8 flex items-center gap-4">
@@ -58,8 +58,8 @@ export function MemberStories({ stories }: MemberStoriesProps) {
                     />
                   </div>
                   <div className="min-w-0">
-                    <h3 className="text-heading-md text-fg">{story.name}</h3>
-                    <p className="mt-0.5 text-meta text-fg-subtle">
+                    <h3 className="text-fg text-heading-md">{story.name}</h3>
+                    <p className="mt-0.5 text-fg-subtle text-meta">
                       {story.role}
                     </p>
                   </div>

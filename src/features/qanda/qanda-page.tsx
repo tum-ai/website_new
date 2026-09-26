@@ -83,7 +83,7 @@ function MissionStatement({ answer }: { answer: string }) {
         </div>
         <div className="lg:col-span-8 lg:pt-10">
           <Reveal delay={120}>
-            <p className="text-heading-lg font-medium text-fg">{lead}</p>
+            <p className="font-medium text-fg text-heading-lg">{lead}</p>
           </Reveal>
           {rest.length > 0 ? (
             <div className="mt-12 grid gap-8 md:grid-cols-2 md:gap-10">
@@ -95,7 +95,7 @@ function MissionStatement({ answer }: { answer: string }) {
                     className="h-px bg-hairline-strong"
                   />
                   <Reveal delay={260 + index * 100}>
-                    <p className="pt-6 text-lead text-fg-muted">{sentence}</p>
+                    <p className="pt-6 text-fg-muted text-lead">{sentence}</p>
                   </Reveal>
                 </div>
               ))}
@@ -151,7 +151,7 @@ export function QandAPage() {
                     <span className="flex items-baseline gap-4 md:gap-6">
                       <span
                         aria-hidden
-                        className="tabular w-6 shrink-0 text-meta font-semibold text-fg-subtle"
+                        className="tabular w-6 shrink-0 font-semibold text-fg-subtle text-meta"
                       >
                         {String(index + 1).padStart(2, "0")}
                       </span>

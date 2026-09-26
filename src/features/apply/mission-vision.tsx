@@ -32,13 +32,13 @@ export function MissionVision() {
           }
           lead="Our long-term vision and mission are the key components that drive us forward without losing our direction."
         />
-        <dl className="grid gap-12 border-t border-hairline pt-12 md:grid-cols-2 md:gap-16 md:pt-16">
+        <dl className="grid gap-12 border-hairline border-t pt-12 md:grid-cols-2 md:gap-16 md:pt-16">
           {statements.map((statement, index) => (
             <Reveal key={statement.label} delay={index * 120}>
               <dt>
                 <Pill size="lg">{statement.label}</Pill>
               </dt>
-              <dd className="mt-7 max-w-xl text-heading-lg font-normal text-fg">
+              <dd className="mt-7 max-w-xl font-normal text-fg text-heading-lg">
                 {statement.text}
               </dd>
             </Reveal>

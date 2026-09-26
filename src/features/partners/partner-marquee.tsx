@@ -15,7 +15,7 @@ export function PartnerMarquee({ partners }: { partners: Partner[] }) {
   const animated = partners.length > 3;
   return (
     <div
-      className="partner-marquee mt-12 border-t border-hairline pt-5 motion-safe:animate-rise-sm [animation-delay:640ms] md:mt-14 md:pt-6"
+      className="partner-marquee mt-12 border-hairline border-t pt-5 [animation-delay:640ms] motion-safe:animate-rise-sm md:mt-14 md:pt-6"
       data-animated={animated}
       style={
         {
@@ -25,7 +25,7 @@ export function PartnerMarquee({ partners }: { partners: Partner[] }) {
       }
     >
       <div className="mb-4 flex items-center justify-between gap-4 md:mb-6">
-        <p className="text-meta font-semibold text-fg-muted">
+        <p className="font-semibold text-fg-muted text-meta">
           In good company.
         </p>
         <ButtonLink href="#our-partners" variant="link" size="sm" arrow="down">
@@ -47,7 +47,7 @@ export function PartnerMarquee({ partners }: { partners: Partner[] }) {
                 style={{ "--marquee-index": index } as CSSProperties}
               >
                 {(key === "mutagent" || key === "dryft") && image ? (
-                  <span className="partner-logo-lockup flex items-center gap-2.5 text-[0.9375rem] font-semibold [&_.partner-logo-image]:size-9">
+                  <span className="partner-logo-lockup flex items-center gap-2.5 font-semibold text-[0.9375rem] [&_.partner-logo-image]:size-9">
                     <PartnerLogo name="" image={image} eager />
                     <span>{partner.name}</span>
                   </span>

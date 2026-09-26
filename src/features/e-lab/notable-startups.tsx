@@ -25,7 +25,7 @@ function StartupTile({ startup }: { startup: NotableStartup }) {
         className="max-h-9 w-auto min-w-0 max-w-full object-contain mix-blend-multiply grayscale transition-[filter] duration-500 ease-brand group-hover/logo:grayscale-0 group-focus-visible/logo:grayscale-0 sm:max-h-10 sm:max-w-[9rem] md:max-h-11"
       />
       {startup.wordmarkLabel ? (
-        <span className="text-small font-semibold whitespace-nowrap text-violet-950 sm:text-heading-sm">
+        <span className="whitespace-nowrap font-semibold text-small text-violet-950 sm:text-heading-sm">
           {startup.wordmarkLabel}
         </span>
       ) : null}

@@ -54,14 +54,14 @@ export function Marquee({
   return (
     <div
       className={cn(
-        "group/marquee relative overflow-hidden mask-fade-x motion-reduce:overflow-x-auto motion-reduce:overscroll-x-contain motion-reduce:[mask-image:none]",
+        "group/marquee mask-fade-x relative overflow-hidden motion-reduce:overflow-x-auto motion-reduce:overscroll-x-contain motion-reduce:[mask-image:none]",
         className,
       )}
       style={{ "--marquee-duration": `${duration}s` } as CSSProperties}
     >
       <div
         className={cn(
-          "flex w-max group-hover/marquee:[animation-play-state:paused] group-focus-within/marquee:[animation-play-state:paused]",
+          "flex w-max group-focus-within/marquee:[animation-play-state:paused] group-hover/marquee:[animation-play-state:paused]",
           reverse
             ? "motion-safe:animate-marquee-reverse"
             : "motion-safe:animate-marquee",

@@ -34,20 +34,20 @@ export function ImprintPage() {
           >
             <div
               data-tone="lavender"
-              className="rounded-4xl p-7 md:p-9 [overflow-wrap:break-word]"
+              className="rounded-4xl p-7 [overflow-wrap:break-word] md:p-9"
             >
               <Eyebrow as="h2" id="organisation-title">
                 Organisation
               </Eyebrow>
-              <p className="mt-5 text-heading-lg text-fg">TUM.ai e.V.</p>
+              <p className="mt-5 text-fg text-heading-lg">TUM.ai e.V.</p>
               {/* Term beside value from sm up; stacked in the narrow lg sidebar. */}
-              <dl className="mt-7 divide-y divide-hairline border-y border-hairline">
+              <dl className="mt-7 divide-y divide-hairline border-hairline border-y">
                 {organisation.map((row) => (
                   <div
                     key={row.term}
                     className="py-4 sm:grid sm:grid-cols-[10rem_minmax(0,1fr)] sm:items-baseline sm:gap-6 lg:block"
                   >
-                    <dt className="text-meta font-medium text-fg-subtle">
+                    <dt className="font-medium text-fg-subtle text-meta">
                       {row.term}
                     </dt>
                     <dd className="mt-1 text-body text-fg sm:mt-0 lg:mt-1">

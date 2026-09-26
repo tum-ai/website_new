@@ -20,7 +20,7 @@ function PhotoRailSkeleton() {
   return (
     <div
       aria-hidden
-      className="flex gap-5 overflow-hidden mask-fade-x motion-reduce:[mask-image:none]"
+      className="mask-fade-x flex gap-5 overflow-hidden motion-reduce:[mask-image:none]"
     >
       {Array.from({ length: 6 }, (_, index) => (
         <div

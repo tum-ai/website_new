@@ -39,7 +39,7 @@ function OrganizationRow({ testimonial }: { testimonial: TestimonialCard }) {
   const qualifier = display ? display.qualifier : testimonial.organizationLabel;
 
   return (
-    <div className="mt-6 flex items-center gap-3 border-t border-hairline pt-5">
+    <div className="mt-6 flex items-center gap-3 border-hairline border-t pt-5">
       <span className="inline-flex h-9 shrink-0 items-center gap-2 rounded-xl bg-white px-3">
         <img
           src={logoSrc}
@@ -52,13 +52,13 @@ function OrganizationRow({ testimonial }: { testimonial: TestimonialCard }) {
           className="max-h-5 w-auto max-w-28 object-contain"
         />
         {display?.lockupName ? (
-          <span className="text-[0.8125rem] font-semibold tracking-[-0.01em] text-violet-950">
+          <span className="font-semibold text-[0.8125rem] text-violet-950 tracking-[-0.01em]">
             {display.lockupName}
           </span>
         ) : null}
       </span>
       {qualifier ? (
-        <span className="text-meta font-medium text-fg-subtle">
+        <span className="font-medium text-fg-subtle text-meta">
           {qualifier}
         </span>
       ) : null}
@@ -87,7 +87,7 @@ function CommunityQuote({ testimonial }: { testimonial: TestimonialCard }) {
         </svg>
         {testimonial.context ? <Tag>{testimonial.context}</Tag> : null}
       </div>
-      <blockquote className="mt-6 flex-1 text-lead text-fg">
+      <blockquote className="mt-6 flex-1 text-fg text-lead">
         {testimonial.quote}
       </blockquote>
       <figcaption className="mt-8">
@@ -101,8 +101,8 @@ function CommunityQuote({ testimonial }: { testimonial: TestimonialCard }) {
             className="size-13 shrink-0 rounded-full object-cover ring-2 ring-white/15"
           />
           <div className="min-w-0">
-            <p className="text-heading-sm text-fg">{testimonial.name}</p>
-            <p className="text-meta text-fg-muted">{testimonial.role}</p>
+            <p className="text-fg text-heading-sm">{testimonial.name}</p>
+            <p className="text-fg-muted text-meta">{testimonial.role}</p>
           </div>
         </div>
         <OrganizationRow testimonial={testimonial} />

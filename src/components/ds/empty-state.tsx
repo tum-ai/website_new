@@ -20,7 +20,7 @@ export function EmptyState({
     <div
       role="status"
       className={cn(
-        "flex flex-col items-center rounded-3xl border border-dashed border-hairline-strong px-6 py-16 text-center",
+        "flex flex-col items-center rounded-3xl border border-hairline-strong border-dashed px-6 py-16 text-center",
         className,
       )}
     >
@@ -29,9 +29,9 @@ export function EmptyState({
           <Icon aria-hidden className="size-6" strokeWidth={1.75} />
         </span>
       ) : null}
-      <p className="mt-5 text-heading-md text-fg">{title}</p>
+      <p className="mt-5 text-fg text-heading-md">{title}</p>
       {children ? (
-        <div className="mt-2 max-w-md text-small text-fg-muted">{children}</div>
+        <div className="mt-2 max-w-md text-fg-muted text-small">{children}</div>
       ) : null}
       {action ? <div className="mt-6">{action}</div> : null}
     </div>

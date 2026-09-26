@@ -49,7 +49,7 @@ export function HomeHero() {
 
         <h1
           id="home-hero-title"
-          className="mt-8 max-w-[11.5em] text-display-2xl font-light text-fg max-sm:text-[clamp(2.3rem,11.4vw,3.25rem)] md:mt-10"
+          className="mt-8 max-w-[11.5em] font-light text-display-2xl text-fg max-sm:text-[clamp(2.3rem,11.4vw,3.25rem)] md:mt-10"
         >
           <SplitWords delay={140} step={60}>
             Germany’s leading student initiative focused on{" "}
@@ -64,7 +64,7 @@ export function HomeHero() {
 
         {/* Calls to action and the scroll cue share one row and centre line. */}
         <div className="mt-10 flex items-center justify-between gap-8 md:mt-12">
-          <div className="grid w-full gap-3 motion-safe:animate-rise-sm [animation-delay:760ms] sm:flex sm:w-auto sm:flex-wrap">
+          <div className="grid w-full gap-3 [animation-delay:760ms] motion-safe:animate-rise-sm sm:flex sm:w-auto sm:flex-wrap">
             <ButtonLink href={getPartnershipEmailUrl()} size="lg">
               Become a Partner
             </ButtonLink>
@@ -74,7 +74,7 @@ export function HomeHero() {
           </div>
           <a
             href="#about"
-            className="group/cue hidden shrink-0 items-center gap-3 rounded-full py-1 pl-4 text-meta font-medium text-fg-muted transition-colors duration-300 hover:text-fg motion-safe:animate-fade [animation-delay:1000ms] md:inline-flex"
+            className="group/cue hidden shrink-0 items-center gap-3 rounded-full py-1 pl-4 font-medium text-fg-muted text-meta transition-colors duration-300 [animation-delay:1000ms] hover:text-fg motion-safe:animate-fade md:inline-flex"
           >
             Scroll<span className="sr-only"> to What is TUM.ai?</span>
             <span

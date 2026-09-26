@@ -122,7 +122,7 @@ export function Timeline({
                     {item.label}
                   </p>
                 ) : null}
-                <HeadingTag className="mt-2 text-heading-md text-fg">
+                <HeadingTag className="mt-2 text-fg text-heading-md">
                   {item.title}
                 </HeadingTag>
                 {item.description ? (

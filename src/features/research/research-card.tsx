@@ -102,7 +102,7 @@ function StatusLine({ status }: { status?: string }) {
   const label = status ? statusLabels[status] : undefined;
   if (!label) return null;
   return (
-    <span className="inline-flex items-center gap-2 text-meta font-semibold text-fg-muted">
+    <span className="inline-flex items-center gap-2 font-semibold text-fg-muted text-meta">
       <span
         aria-hidden
         className={cn(
@@ -119,7 +119,7 @@ function StatusLine({ status }: { status?: string }) {
 
 function PublicationHint() {
   return (
-    <span className="inline-flex items-center gap-1.5 text-meta font-medium text-fg-subtle">
+    <span className="inline-flex items-center gap-1.5 font-medium text-fg-subtle text-meta">
       <FileText aria-hidden className="size-3.5" strokeWidth={1.75} />
       Publication
     </span>
@@ -182,7 +182,7 @@ export function ResearchCard({
       <BrandPlaceholder seed={index}>
         <span
           className={cn(
-            "absolute bottom-0 left-0 p-5 leading-none font-light tracking-[-0.04em] text-white/90 md:p-6",
+            "absolute bottom-0 left-0 p-5 font-light text-white/90 leading-none tracking-[-0.04em] md:p-6",
             placeholderType,
           )}
         >
@@ -228,11 +228,11 @@ export function ResearchCard({
           </div>
           <h3
             id={titleId}
-            className="mt-2.5 text-heading-md text-fg transition-colors duration-300 ease-brand group-hover/media:text-highlight"
+            className="mt-2.5 text-fg text-heading-md transition-colors duration-300 ease-brand group-hover/media:text-highlight"
           >
             {title}
           </h3>
-          <p className="mt-2 line-clamp-2 max-w-2xl text-small text-fg-muted max-sm:hidden">
+          <p className="mt-2 line-clamp-2 max-w-2xl text-fg-muted text-small max-sm:hidden">
             {description}
           </p>
         </div>
@@ -274,15 +274,15 @@ export function ResearchCard({
               {counter(index)}
             </span>
           </div>
-          <h3 id={titleId} className="mt-3 text-heading-md text-fg">
+          <h3 id={titleId} className="mt-3 text-fg text-heading-md">
             {title}
           </h3>
-          <p className="mt-3 line-clamp-3 text-small text-fg-muted">
+          <p className="mt-3 line-clamp-3 text-fg-muted text-small">
             {description}
           </p>
           <KeywordTags keywords={keywordList} className="mt-5" />
           <div className="mt-auto pt-6">
-            <div className="flex items-center justify-between gap-4 border-t border-hairline pt-4">
+            <div className="flex items-center justify-between gap-4 border-hairline border-t pt-4">
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
                 <StatusLine status={status} />
                 {publicationUrl ? <PublicationHint /> : null}
@@ -315,14 +315,14 @@ export function ResearchCard({
           </div>
           <DialogTitle className="mt-4 max-w-2xl">{title}</DialogTitle>
           <KeywordTags keywords={keywordList} className="mt-5" />
-          <div className="mt-8 grid gap-3 border-t border-hairline pt-8 md:grid-cols-[8rem_minmax(0,1fr)] md:items-baseline md:gap-8">
+          <div className="mt-8 grid gap-3 border-hairline border-t pt-8 md:grid-cols-[8rem_minmax(0,1fr)] md:items-baseline md:gap-8">
             <h3 className="text-eyebrow text-fg-subtle uppercase">About</h3>
             <DialogDescription className="leading-relaxed">
               {description}
             </DialogDescription>
           </div>
           {publicationUrl ? (
-            <div className="mt-8 flex border-t border-hairline pt-8 md:pl-40">
+            <div className="mt-8 flex border-hairline border-t pt-8 md:pl-40">
               <ButtonLink href={publicationUrl} arrow="external">
                 Read Publication
               </ButtonLink>

@@ -56,7 +56,7 @@ export function BookingDialog({
             </DialogDescription>
           </div>
           <BookingCalendar selection={selection} />
-          <div className="flex flex-wrap justify-between gap-x-6 gap-y-3 border-t border-hairline pt-4 text-small">
+          <div className="flex flex-wrap justify-between gap-x-6 gap-y-3 border-hairline border-t pt-4 text-small">
             <TextLink href={getPartnershipBookingUrl(selection)} arrow>
               Open booking page
             </TextLink>
@@ -128,7 +128,7 @@ function BookingCalendar({ selection }: { selection: PartnershipSelection }) {
         className={
           status === "ready"
             ? "sr-only"
-            : "flex items-center gap-2.5 p-4 text-small text-fg-muted"
+            : "flex items-center gap-2.5 p-4 text-fg-muted text-small"
         }
       >
         {status === "loading" ? (

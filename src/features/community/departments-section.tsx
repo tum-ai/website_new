@@ -123,14 +123,14 @@ function FeaturedDepartmentCard({
               <Icon aria-hidden className="size-5" strokeWidth={1.75} />
             </span>
           ) : null}
-          <span className="tabular text-meta text-fg-subtle">
+          <span className="tabular text-fg-subtle text-meta">
             {counter(index)}
           </span>
         </div>
-        <h3 className={cn("mt-7 text-heading-md text-fg", wide.title)}>
+        <h3 className={cn("mt-7 text-fg text-heading-md", wide.title)}>
           {department.name}
         </h3>
-        <p className={cn("mt-3 text-small text-fg-muted", wide.copy)}>
+        <p className={cn("mt-3 text-fg-muted text-small", wide.copy)}>
           {department.description}
         </p>
       </div>

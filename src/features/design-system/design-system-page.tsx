@@ -128,10 +128,10 @@ export function DesignSystemPage() {
                   data-tone={tone}
                   className="flex h-44 flex-col justify-between rounded-3xl border border-hairline p-6"
                 >
-                  <p className="text-heading-md text-fg">{name}</p>
+                  <p className="text-fg text-heading-md">{name}</p>
                   <div>
-                    <p className="text-small text-fg-muted">Muted body text</p>
-                    <p className="text-meta text-highlight">
+                    <p className="text-fg-muted text-small">Muted body text</p>
+                    <p className="text-highlight text-meta">
                       {hex} · highlight
                     </p>
                   </div>
@@ -155,9 +155,9 @@ export function DesignSystemPage() {
             <p className="text-display-xl text-fg">Display xl</p>
             <p className="text-display-lg text-fg">Display lg</p>
             <p className="text-display-md text-fg">Display md</p>
-            <p className="text-heading-lg text-fg">Heading lg</p>
-            <p className="text-heading-md text-fg">Heading md</p>
-            <p className="text-lead text-fg-muted">
+            <p className="text-fg text-heading-lg">Heading lg</p>
+            <p className="text-fg text-heading-md">Heading md</p>
+            <p className="text-fg-muted text-lead">
               Lead: To bridge the gap between theory and practice by empowering
               students to build the future of AI.
             </p>

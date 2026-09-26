@@ -74,13 +74,13 @@ export function ResearchPage({
           <TabsList aria-label="Research tabs" activateOnFocus>
             <TabsTab
               value="projects"
-              className="max-sm:h-auto max-sm:min-h-10 max-sm:shrink max-sm:py-2 max-sm:leading-tight max-sm:whitespace-normal"
+              className="max-sm:h-auto max-sm:min-h-10 max-sm:shrink max-sm:whitespace-normal max-sm:py-2 max-sm:leading-tight"
             >
               Projects
             </TabsTab>
             <TabsTab
               value="exchange"
-              className="max-sm:h-auto max-sm:min-h-10 max-sm:shrink max-sm:py-2 max-sm:leading-tight max-sm:whitespace-normal"
+              className="max-sm:h-auto max-sm:min-h-10 max-sm:shrink max-sm:whitespace-normal max-sm:py-2 max-sm:leading-tight"
             >
               Research Exchange Program
             </TabsTab>
@@ -139,13 +139,13 @@ export function ResearchPage({
                   index={2}
                   title="Past Projects"
                 />
-                <ul className="border-t border-hairline">
+                <ul className="border-hairline border-t">
                   {pastProjects.map((project, index) => (
                     <Reveal
                       as="li"
                       key={project.id || project.title}
                       delay={Math.min(index, 4) * 60}
-                      className="border-b border-hairline"
+                      className="border-hairline border-b"
                     >
                       <ResearchCard
                         layout="row"
@@ -213,7 +213,7 @@ export function ResearchPage({
                   </Reveal>
                 </div>
                 <Reveal delay={140} className="lg:col-span-7">
-                  <p className="text-lead text-fg-muted">
+                  <p className="text-fg-muted text-lead">
                     Our Research Exchange (REX) Program provides TUM.ai members
                     with opportunities to conduct research abroad. Offers range
                     from final theses to research internships with leading labs
@@ -229,19 +229,19 @@ export function ResearchPage({
 
               <ul
                 aria-hidden
-                className="mt-16 grid grid-cols-2 border-y border-hairline-strong md:mt-24 lg:grid-cols-4"
+                className="mt-16 grid grid-cols-2 border-hairline-strong border-y md:mt-24 lg:grid-cols-4"
               >
                 {rexInstitutions.map((name, index) => (
                   <Reveal
                     as="li"
                     key={name}
                     delay={index * 90}
-                    className="min-w-0 border-hairline py-7 max-lg:odd:border-r max-lg:odd:pr-5 max-lg:even:pl-5 max-lg:[&:nth-child(-n+2)]:border-b md:py-9 lg:border-l lg:py-10 lg:pl-6 lg:first:border-l-0 lg:first:pl-0"
+                    className="min-w-0 border-hairline py-7 max-lg:even:pl-5 max-lg:odd:border-r max-lg:odd:pr-5 md:py-9 lg:border-l lg:py-10 lg:pl-6 lg:first:border-l-0 lg:first:pl-0 max-lg:[&:nth-child(-n+2)]:border-b"
                   >
-                    <span className="tabular text-meta text-fg-subtle">
+                    <span className="tabular text-fg-subtle text-meta">
                       {pad(index + 1)}
                     </span>
-                    <span className="mt-8 block text-[clamp(1.375rem,7vw,2rem)] font-light text-fg sm:text-display-md lg:mt-14">
+                    <span className="mt-8 block font-light text-[clamp(1.375rem,7vw,2rem)] text-fg sm:text-display-md lg:mt-14">
                       {name}
                     </span>
                   </Reveal>
@@ -262,21 +262,21 @@ export function ResearchPage({
               <div className="grid gap-4 lg:grid-cols-12 lg:gap-16">
                 <div className="lg:col-span-4">
                   <Reveal delay={60} className="lg:sticky lg:top-32 lg:pt-8">
-                    <p className="text-display-xl font-light text-fg">We</p>
+                    <p className="font-light text-display-xl text-fg">We</p>
                   </Reveal>
                 </div>
-                <ol className="border-t border-hairline-strong lg:col-span-8">
+                <ol className="border-hairline-strong border-t lg:col-span-8">
                   {rexProcess.map((step, index) => (
                     <Reveal
                       as="li"
                       key={step}
                       delay={index * 70}
-                      className="grid grid-cols-[2.75rem_minmax(0,1fr)] items-baseline gap-3 border-b border-hairline-strong py-6 md:grid-cols-[4.5rem_minmax(0,1fr)] md:py-8"
+                      className="grid grid-cols-[2.75rem_minmax(0,1fr)] items-baseline gap-3 border-hairline-strong border-b py-6 md:grid-cols-[4.5rem_minmax(0,1fr)] md:py-8"
                     >
-                      <span className="tabular text-meta font-semibold text-highlight">
+                      <span className="tabular font-semibold text-highlight text-meta">
                         {pad(index + 1)}
                       </span>
-                      <span className="text-heading-md font-normal text-fg md:text-heading-lg md:font-light">
+                      <span className="font-normal text-fg text-heading-md md:font-light md:text-heading-lg">
                         {step}
                       </span>
                     </Reveal>
@@ -302,14 +302,14 @@ export function ResearchPage({
                 </Eyebrow>
               </Reveal>
               <Reveal delay={60}>
-                <p className="mt-8 max-w-4xl text-display-md font-light text-fg">
+                <p className="mt-8 max-w-4xl font-light text-display-md text-fg">
                   REX was launched based on the observation that members were
                   already conducting research abroad and recommending others to
                   follow in their footsteps.
                 </p>
               </Reveal>
               <Reveal delay={140}>
-                <p className="mt-10 max-w-2xl text-lead text-fg-muted">
+                <p className="mt-10 max-w-2xl text-fg-muted text-lead">
                   It is therefore a testament to our tight-knit community that
                   we could build a network of great researchers who eagerly
                   introduce our members to their respective fields and trust

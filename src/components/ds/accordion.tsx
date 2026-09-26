@@ -15,7 +15,7 @@ export function Accordion({
 }: BaseAccordion.Root.Props & { className?: string }) {
   return (
     <BaseAccordion.Root
-      className={cn("border-t border-hairline", className)}
+      className={cn("border-hairline border-t", className)}
       {...props}
     />
   );
@@ -27,7 +27,7 @@ export function AccordionItem({
 }: BaseAccordion.Item.Props & { className?: string }) {
   return (
     <BaseAccordion.Item
-      className={cn("border-b border-hairline", className)}
+      className={cn("border-hairline border-b", className)}
       {...props}
     />
   );
@@ -46,7 +46,7 @@ export function AccordionTrigger({
     <BaseAccordion.Header render={<HeadingTag />} className="m-0">
       <BaseAccordion.Trigger
         className={cn(
-          "group/trigger flex w-full items-center justify-between gap-6 py-6 text-left text-heading-md text-fg transition-colors duration-300 hover:text-highlight md:py-7",
+          "group/trigger flex w-full items-center justify-between gap-6 py-6 text-left text-fg text-heading-md transition-colors duration-300 hover:text-highlight md:py-7",
           className,
         )}
       >
@@ -77,7 +77,7 @@ export function AccordionPanel({
     >
       <div
         className={cn(
-          "max-w-3xl pb-7 text-body md:pr-14 text-fg-muted [&_a]:font-semibold [&_a]:text-highlight [&_a]:underline [&_a]:underline-offset-4",
+          "max-w-3xl pb-7 text-body text-fg-muted md:pr-14 [&_a]:font-semibold [&_a]:text-highlight [&_a]:underline [&_a]:underline-offset-4",
           className,
         )}
       >

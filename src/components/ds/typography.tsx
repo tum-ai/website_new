@@ -143,10 +143,10 @@ export function Prose({
     <div
       className={cn(
         "prose max-w-none text-body",
-        "prose-headings:text-fg prose-headings:tracking-tight prose-headings:font-semibold",
+        "prose-headings:font-semibold prose-headings:text-fg prose-headings:tracking-tight",
         "prose-h2:mt-14 prose-h2:text-heading-lg prose-h3:text-heading-md",
-        "prose-p:text-fg-muted prose-li:text-fg-muted prose-strong:text-fg",
-        "prose-a:text-highlight prose-a:font-medium prose-a:underline-offset-4 prose-a:decoration-1 hover:prose-a:decoration-2",
+        "prose-li:text-fg-muted prose-p:text-fg-muted prose-strong:text-fg",
+        "prose-a:font-medium prose-a:text-highlight prose-a:decoration-1 prose-a:underline-offset-4 hover:prose-a:decoration-2",
         "prose-hr:border-hairline prose-li:marker:text-highlight",
         className,
       )}

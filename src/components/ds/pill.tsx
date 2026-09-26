@@ -26,7 +26,7 @@ export function Tag({ className, ...props }: ComponentPropsWithoutRef<"span">) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full bg-fg/[0.07] px-3 py-1 text-meta font-medium text-fg-muted",
+        "inline-flex items-center gap-1.5 rounded-full bg-fg/[0.07] px-3 py-1 font-medium text-fg-muted text-meta",
         className,
       )}
       {...props}
@@ -65,7 +65,7 @@ export function StatusBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center justify-center border border-hairline-strong bg-fg/[0.04] text-center leading-snug font-semibold text-balance text-fg backdrop-blur",
+        "inline-flex items-center justify-center text-balance border border-hairline-strong bg-fg/[0.04] text-center font-semibold text-fg leading-snug backdrop-blur",
         statusSizes[size],
         className,
       )}

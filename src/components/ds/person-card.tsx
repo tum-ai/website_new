@@ -34,12 +34,12 @@ export function PersonCard({
         />
       </div>
       <figcaption className="mt-4">
-        <HeadingTag className="text-heading-sm text-fg">{name}</HeadingTag>
+        <HeadingTag className="text-fg text-heading-sm">{name}</HeadingTag>
         {role ? (
-          <p className="mt-0.5 text-meta text-fg-subtle">{role}</p>
+          <p className="mt-0.5 text-fg-subtle text-meta">{role}</p>
         ) : null}
         {children ? (
-          <div className="mt-3 text-small text-fg-muted">{children}</div>
+          <div className="mt-3 text-fg-muted text-small">{children}</div>
         ) : null}
       </figcaption>
     </figure>

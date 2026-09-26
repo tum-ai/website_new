@@ -20,7 +20,7 @@ export function DisclaimerPage() {
             We are not an educational program.
           </p>
           <div className="lg:col-span-7 lg:pt-3">
-            <p className="text-lead text-fg-muted">
+            <p className="text-fg-muted text-lead">
               That means you are not only joining to learn but also to
               contribute to the development of the organization. We don't give
               in-depth lectures or crash courses in AI and coding yet - you need
@@ -28,7 +28,7 @@ export function DisclaimerPage() {
               given to those who ask. We do a lot of organizational work - the
               AI ecosystem is not ready, and you will be part of building it up.
             </p>
-            <p className="mt-10 border-t border-hairline pt-8 text-heading-md text-fg">
+            <p className="mt-10 border-hairline border-t pt-8 text-fg text-heading-md">
               We have a membership fee of 10€ per semester for all of our active
               members.
             </p>

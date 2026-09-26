@@ -152,17 +152,17 @@ function JourneyIndex({ currentStage }: { currentStage: number }) {
           <span className="-mb-[0.14em] inline-block overflow-hidden pb-[0.14em]">
             <span
               key={currentStage}
-              className="inline-block text-display-xl text-fg tabular motion-safe:animate-rise-sm"
+              className="tabular inline-block text-display-xl text-fg motion-safe:animate-rise-sm"
             >
               {stageNumber(currentStage)}
             </span>
           </span>
-          <span className="text-meta text-fg-subtle tabular">
+          <span className="tabular text-fg-subtle text-meta">
             / {stageNumber(journeyStages.length - 1)}
           </span>
         </p>
         <nav aria-label="Member journey stages" className="mt-10">
-          <ol className="border-l border-hairline">
+          <ol className="border-hairline border-l">
             {indexEntries.map(({ step, stageIndex }) => {
               const state =
                 stageIndex < currentStage
@@ -175,13 +175,13 @@ function JourneyIndex({ currentStage }: { currentStage: number }) {
                   <a
                     href={`#${stepAnchor(step.step)}`}
                     data-state={state}
-                    className="group/index relative -ml-px flex items-baseline gap-4 py-2 pl-5 text-small text-fg-subtle transition-[color] duration-300 ease-brand hover:text-fg data-[state=current]:text-fg data-[state=done]:text-fg-muted"
+                    className="group/index relative -ml-px flex items-baseline gap-4 py-2 pl-5 text-fg-subtle text-small transition-[color] duration-300 ease-brand hover:text-fg data-[state=current]:text-fg data-[state=done]:text-fg-muted"
                   >
                     <span
                       aria-hidden
                       className="absolute inset-y-1 left-0 w-0.5 origin-center scale-y-0 rounded-full bg-violet-500 transition-[scale,opacity] duration-500 ease-brand group-data-[state=current]/index:scale-y-100 group-data-[state=done]/index:scale-y-100 group-data-[state=done]/index:opacity-30"
                     />
-                    <span className="w-8 shrink-0 text-meta tabular">
+                    <span className="tabular w-8 shrink-0 text-meta">
                       {step.step}
                     </span>
                     <span className="font-medium">{step.name}</span>
@@ -279,12 +279,12 @@ function StepContent({
 }) {
   return (
     <Reveal className="pt-[1.0625rem]">
-      <p className="text-eyebrow text-highlight uppercase tabular">
+      <p className="tabular text-eyebrow text-highlight uppercase">
         {step.step}
       </p>
       <h3
         className={cn(
-          "mt-3 text-heading-lg text-fg",
+          "mt-3 text-fg text-heading-lg",
           compact && "md:text-heading-md xl:text-heading-lg",
         )}
       >

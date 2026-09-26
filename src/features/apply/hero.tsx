@@ -13,7 +13,7 @@ export function Hero() {
       }
       lead={
         <>
-          <p className="text-heading-md text-fg md:text-heading-lg">
+          <p className="text-fg text-heading-md md:text-heading-lg">
             Are you a young innovator passionate about making a difference?
           </p>
           <p className="mt-6">

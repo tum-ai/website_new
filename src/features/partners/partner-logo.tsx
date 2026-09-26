@@ -39,7 +39,7 @@ function LogoImage({ name, image, eager = false }: PartnerLogoProps) {
       onError={() => setAttempt((value) => Math.min(value + 1, 2))}
     />
   ) : (
-    <span className="partner-logo-fallback text-center text-heading-sm font-bold text-violet-950">
+    <span className="partner-logo-fallback text-center font-bold text-heading-sm text-violet-950">
       {name}
     </span>
   );

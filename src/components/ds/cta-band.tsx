@@ -56,7 +56,7 @@ export function CtaBand({
       </Reveal>
       {lead ? (
         <Reveal delay={140}>
-          <p className="mx-auto mt-6 max-w-xl text-lead text-fg-muted">
+          <p className="mx-auto mt-6 max-w-xl text-fg-muted text-lead">
             {lead}
           </p>
         </Reveal>

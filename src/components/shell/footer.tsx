@@ -130,7 +130,7 @@ export function Footer() {
             })}
           </nav>
         </div>
-        <div className="mt-24 flex flex-col gap-3 border-t border-hairline py-8 text-meta text-fg-subtle md:flex-row md:items-center md:justify-between">
+        <div className="mt-24 flex flex-col gap-3 border-hairline border-t py-8 text-fg-subtle text-meta md:flex-row md:items-center md:justify-between">
           <p>TUM.ai - Student Initiative at Technical University of Munich</p>
           <p>Munich, Germany</p>
         </div>

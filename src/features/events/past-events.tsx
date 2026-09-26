@@ -180,18 +180,18 @@ function PastEventCard({ event }: { event: Event }) {
       </div>
 
       <div className="flex flex-1 flex-col pt-5">
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-meta font-medium text-fg-subtle">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 font-medium text-fg-subtle text-meta">
           <time dateTime={event.event_date}>{format(eventDate, "PPP")}</time>
           {event.category ? <Tag>{event.category}</Tag> : null}
         </div>
-        <h4 className="mt-3 text-heading-md text-fg">{event.title}</h4>
+        <h4 className="mt-3 text-fg text-heading-md">{event.title}</h4>
         {location ? (
-          <p className="mt-1.5 flex items-start gap-2 text-meta text-fg-subtle">
+          <p className="mt-1.5 flex items-start gap-2 text-fg-subtle text-meta">
             <MapPin aria-hidden className="mt-0.5 size-3.5 shrink-0" />
             {location}
           </p>
         ) : null}
-        <p className="mt-3 text-small text-fg-muted">
+        <p className="mt-3 text-fg-muted text-small">
           {truncateDescription(event.description)}
         </p>
         {hasLongDescription(event) ? (

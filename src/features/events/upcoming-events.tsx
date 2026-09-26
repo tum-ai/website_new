@@ -50,7 +50,7 @@ export function UpcomingEvents({ events }: { events: Event[] }) {
             className="grid gap-6 md:gap-8 xl:grid-cols-[minmax(0,14rem)_minmax(0,1fr)] xl:gap-12 2xl:grid-cols-[minmax(0,16rem)_minmax(0,1fr)]"
           >
             <Reveal className="flex items-center gap-4 xl:sticky xl:top-[calc(var(--header-height)+2.5rem)] xl:block xl:self-start">
-              <h3 className="flex shrink-0 items-baseline gap-2 text-heading-lg text-fg xl:block">
+              <h3 className="flex shrink-0 items-baseline gap-2 text-fg text-heading-lg xl:block">
                 <span className="xl:block xl:text-display-md">{monthName}</span>{" "}
                 <span className="tabular text-fg-subtle xl:mt-2 xl:block xl:text-heading-md">
                   {year}
@@ -60,7 +60,7 @@ export function UpcomingEvents({ events }: { events: Event[] }) {
                 aria-hidden
                 className="h-px flex-1 bg-hairline-strong xl:mt-6 xl:block xl:w-12 xl:flex-none"
               />
-              <p className="shrink-0 text-meta text-fg-subtle xl:mt-4">
+              <p className="shrink-0 text-fg-subtle text-meta xl:mt-4">
                 {monthEvents.length}{" "}
                 {monthEvents.length === 1 ? "event" : "events"}
               </p>
@@ -109,13 +109,13 @@ function UpcomingEventCard({ event }: { event: Event }) {
             aria-hidden
             className="absolute top-4 left-4 flex min-w-16 flex-col items-center rounded-2xl bg-white/95 px-3 pt-2.5 pb-2 text-violet-950 shadow-soft backdrop-blur"
           >
-            <span className="text-[0.6875rem] font-semibold tracking-[0.14em] text-violet-700 uppercase">
+            <span className="font-semibold text-[0.6875rem] text-violet-700 uppercase tracking-[0.14em]">
               {monthShort}
             </span>
-            <span className="tabular mt-0.5 text-[2rem] leading-none font-semibold tracking-[-0.04em]">
+            <span className="tabular mt-0.5 font-semibold text-[2rem] leading-none tracking-[-0.04em]">
               {day}
             </span>
-            <span className="mt-1 text-[0.6875rem] font-medium text-ink-600">
+            <span className="mt-1 font-medium text-[0.6875rem] text-ink-600">
               {format(eventDate, "EEE")}
             </span>
           </div>
@@ -125,8 +125,8 @@ function UpcomingEventCard({ event }: { event: Event }) {
           {event.category ? (
             <Tag className="mb-4 self-start">{event.category}</Tag>
           ) : null}
-          <h4 className="text-heading-lg text-fg">{event.title}</h4>
-          <ul className="mt-4 space-y-1.5 text-small text-fg-muted">
+          <h4 className="text-fg text-heading-lg">{event.title}</h4>
+          <ul className="mt-4 space-y-1.5 text-fg-muted text-small">
             <li className="flex items-start gap-2.5">
               <CalendarDays
                 aria-hidden
@@ -146,7 +146,7 @@ function UpcomingEventCard({ event }: { event: Event }) {
               </li>
             ) : null}
           </ul>
-          <p className="mt-5 text-small text-fg-muted md:text-body">
+          <p className="mt-5 text-fg-muted text-small md:text-body">
             {truncateDescription(event.description)}
           </p>
           {event.sign_up || longDescription ? (

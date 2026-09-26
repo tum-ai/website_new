@@ -72,7 +72,7 @@ export function AboutSection() {
               </h2>
             </Reveal>
             <Reveal delay={140} className="lg:col-span-6">
-              <p className="text-lead text-fg-muted">
+              <p className="text-fg-muted text-lead">
                 With over {organizationFacts.activeMembers} active members,
                 TUM.ai empowers the next generation of AI innovators. Founded in{" "}
                 {organizationFacts.foundingYear}, our mission is to create{" "}
@@ -109,7 +109,7 @@ export function AboutSection() {
           <Reveal delay={120} className="mt-4 md:mt-5">
             <StatGrid
               items={STATS}
-              className="grid-cols-2 max-sm:[&_dd]:text-[clamp(2rem,10vw,2.75rem)] max-sm:[&>div]:p-5"
+              className="grid-cols-2 max-sm:[&>div]:p-5 max-sm:[&_dd]:text-[clamp(2rem,10vw,2.75rem)]"
             />
           </Reveal>
         </Container>
@@ -117,7 +117,7 @@ export function AboutSection() {
 
       <Section as="div" tone="mist" spacing="lg" className="overflow-clip">
         <Container className="grid gap-12 lg:grid-cols-12 lg:items-center lg:gap-16">
-          <p className="text-[clamp(1.5rem,1.02rem+1.55vw,2.45rem)] leading-[1.22] font-medium tracking-[-0.032em] text-fg lg:col-span-6 xl:col-span-5">
+          <p className="font-medium text-[clamp(1.5rem,1.02rem+1.55vw,2.45rem)] text-fg leading-[1.22] tracking-[-0.032em] lg:col-span-6 xl:col-span-5">
             {aboutWords.map((word, index) => {
               const keyword = PRIMARY_KEYWORDS.has(
                 word.replace(/[^a-zA-Z0-9]/g, "").toLowerCase(),
@@ -145,7 +145,7 @@ export function AboutSection() {
             delay={120}
             className="lg:col-span-6 xl:col-span-7"
           >
-            <div className="group/onboarding relative aspect-[3/2] overflow-hidden lg:aspect-[5/4] xl:aspect-[3/2] rounded-4xl bg-sunken">
+            <div className="group/onboarding relative aspect-[3/2] overflow-hidden rounded-4xl bg-sunken lg:aspect-[5/4] xl:aspect-[3/2]">
               <Image
                 src="/assets/homepage/Onboarding25.webp"
                 alt="TUM.ai onboarding"

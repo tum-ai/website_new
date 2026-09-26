@@ -154,7 +154,7 @@ export function EventDetailsDialog({
             {event.category ? (
               <Tag className="mt-5 self-start">{event.category}</Tag>
             ) : null}
-            <p className="mt-7 border-t border-hairline pt-7 text-body whitespace-pre-line text-fg-muted">
+            <p className="mt-7 whitespace-pre-line border-hairline border-t pt-7 text-body text-fg-muted">
               {event.description}
             </p>
             {withSignUp && event.sign_up ? (

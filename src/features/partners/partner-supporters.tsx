@@ -30,12 +30,12 @@ export function PartnerSupporters({ partners }: { partners: Partner[] }) {
   if (!partners.length) return null;
   return (
     <section
-      className="mt-16 border-t border-hairline pt-10 md:mt-20 md:pt-12"
+      className="mt-16 border-hairline border-t pt-10 md:mt-20 md:pt-12"
       aria-labelledby="partner-supporters-title"
     >
       <h3
         id="partner-supporters-title"
-        className="mb-6 text-heading-md text-fg-muted md:mb-8"
+        className="mb-6 text-fg-muted text-heading-md md:mb-8"
       >
         Supporters of the vision
       </h3>

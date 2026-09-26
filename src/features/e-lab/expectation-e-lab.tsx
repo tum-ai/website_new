@@ -83,14 +83,14 @@ export function ExpectationELab() {
                   className="absolute -top-1/3 -left-1/4 -z-10 h-full w-full rounded-full bg-[radial-gradient(closest-side,rgb(154_100_217/0.4),transparent)]"
                 />
                 <BrandMark className="absolute -right-[18%] -bottom-[16%] -z-10 w-[80%] text-white/[0.05]" />
-                <p className="text-heading-lg text-fg">
+                <p className="text-fg text-heading-lg">
                   Have an idea, a prototype, or just relentless drive, and are
                   ready to build?{" "}
                   <span className="text-highlight">
                     Build it here. No equity. No theory.
                   </span>
                 </p>
-                <p className="border-t border-hairline pt-6 text-small font-medium text-fg-muted">
+                <p className="border-hairline border-t pt-6 font-medium text-fg-muted text-small">
                   Backed by TUM.ai and supported by leading VCs.
                 </p>
               </div>
@@ -110,7 +110,7 @@ export function ExpectationELab() {
           <Reveal className="lg:pb-8">
             <h2
               id="elab-numbers-title"
-              className="max-w-[9ch] text-heading-lg text-fg"
+              className="max-w-[9ch] text-fg text-heading-lg"
             >
               E-Lab in numbers
             </h2>

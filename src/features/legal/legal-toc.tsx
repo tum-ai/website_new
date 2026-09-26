@@ -130,7 +130,7 @@ export function LegalToc({
     <>
       <nav aria-label={label} className="lg:hidden">
         <Collapsible className="rounded-3xl bg-sunken">
-          <CollapsibleTrigger className="flex w-full items-center justify-between gap-4 rounded-3xl px-6 py-4 text-left text-heading-sm text-fg">
+          <CollapsibleTrigger className="flex w-full items-center justify-between gap-4 rounded-3xl px-6 py-4 text-left text-fg text-heading-sm">
             <span>{label}</span>
             <ChevronDown
               aria-hidden

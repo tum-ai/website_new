@@ -68,8 +68,8 @@ function ContactRow({
   bookingFirst?: boolean;
 }) {
   return (
-    <Reveal className="mt-12 flex flex-col gap-6 border-t border-hairline pt-8 md:mt-16 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
-      <h3 className="text-heading-lg text-fg">{title}</h3>
+    <Reveal className="mt-12 flex flex-col gap-6 border-hairline border-t pt-8 md:mt-16 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
+      <h3 className="text-fg text-heading-lg">{title}</h3>
       <ContactActions bookingFirst={bookingFirst} />
     </Reveal>
   );
@@ -113,12 +113,12 @@ export function PartnersPage({
                 </h1>
                 <Text
                   size="lead"
-                  className="mt-7 max-w-md motion-safe:animate-rise-sm [animation-delay:420ms]"
+                  className="mt-7 max-w-md [animation-delay:420ms] motion-safe:animate-rise-sm"
                 >
                   Germany&apos;s largest AI student initiative. Partner with the
                   people building Europe&apos;s next AI companies.
                 </Text>
-                <Actions className="mt-9 motion-safe:animate-rise-sm [animation-delay:540ms]">
+                <Actions className="mt-9 [animation-delay:540ms] motion-safe:animate-rise-sm">
                   <HeroContact className={heroActionSize} />
                   <ButtonLink
                     href="#find-your-fit"
@@ -131,7 +131,7 @@ export function PartnersPage({
                   </ButtonLink>
                 </Actions>
               </div>
-              <figure className="group/hero relative isolate min-h-[18rem] overflow-hidden rounded-signature bg-sunken motion-safe:animate-rise-sm [animation-delay:260ms] md:min-h-[27rem] lg:min-h-[30rem]">
+              <figure className="group/hero relative isolate min-h-[18rem] overflow-hidden rounded-signature bg-sunken [animation-delay:260ms] motion-safe:animate-rise-sm md:min-h-[27rem] lg:min-h-[30rem]">
                 <Image
                   src="/assets/partners/hero.webp"
                   alt="A speaker presenting to a packed auditorium at a TUM.ai event"
@@ -142,9 +142,9 @@ export function PartnersPage({
                 />
                 <div
                   aria-hidden
-                  className="absolute inset-0 bg-gradient-to-b from-transparent from-40% to-ink-950/85"
+                  className="absolute inset-0 bg-gradient-to-b from-40% from-transparent to-ink-950/85"
                 />
-                <figcaption className="absolute inset-x-6 bottom-6 z-[1] flex items-end justify-between gap-3 text-body font-medium text-white md:inset-x-7 md:bottom-7 lg:text-lead">
+                <figcaption className="absolute inset-x-6 bottom-6 z-[1] flex items-end justify-between gap-3 font-medium text-body text-white md:inset-x-7 md:bottom-7 lg:text-lead">
                   <span>
                     Ideas become companies.
                     <br />
@@ -190,7 +190,7 @@ export function PartnersPage({
                       padding="lg"
                       className="flex h-full flex-col md:max-lg:grid md:max-lg:grid-cols-[12rem_minmax(0,1fr)] md:max-lg:gap-x-10"
                     >
-                      <div className="flex items-center gap-3 self-start text-small font-semibold text-highlight">
+                      <div className="flex items-center gap-3 self-start font-semibold text-highlight text-small">
                         <span className="grid size-11 place-items-center rounded-2xl bg-violet-500/15 ring-1 ring-violet-400/25 ring-inset transition-[background-color,color,rotate] duration-500 ease-brand group-hover/card:-rotate-6 group-hover/card:bg-violet-600 group-hover/card:text-white">
                           <Icon
                             aria-hidden
@@ -201,10 +201,10 @@ export function PartnersPage({
                         <span>{reason.name}</span>
                       </div>
                       <div className="mt-10 md:max-lg:mt-0 lg:mt-14">
-                        <h3 className="text-heading-md text-fg lg:text-heading-lg">
+                        <h3 className="text-fg text-heading-md lg:text-heading-lg">
                           {reason.title}
                         </h3>
-                        <p className="mt-4 text-small text-fg-muted">
+                        <p className="mt-4 text-fg-muted text-small">
                           {reason.description}
                         </p>
                       </div>
@@ -224,7 +224,7 @@ export function PartnersPage({
         >
           <Container>
             <Reveal>
-              <h2 id="partner-proof-title" className="text-heading-md text-fg">
+              <h2 id="partner-proof-title" className="text-fg text-heading-md">
                 Small acceptance rate. Outsized potential.
               </h2>
             </Reveal>
@@ -236,14 +236,14 @@ export function PartnersPage({
                     key={stat.value}
                     className="flex flex-col gap-2 bg-canvas p-4 sm:p-6 md:gap-3 md:p-8"
                   >
-                    <dt className="order-2 text-small font-semibold text-fg">
+                    <dt className="order-2 font-semibold text-fg text-small">
                       {stat.label}
                     </dt>
-                    <dd className="order-1 text-[clamp(2.25rem,1.5rem+3vw,4.5rem)] leading-none font-medium tracking-[-0.05em] text-fg">
+                    <dd className="order-1 font-medium text-[clamp(2.25rem,1.5rem+3vw,4.5rem)] text-fg leading-none tracking-[-0.05em]">
                       <StatValue value={stat.value} />
                     </dd>
                     {"detail" in stat ? (
-                      <dd className="order-3 text-meta text-fg">
+                      <dd className="order-3 text-fg text-meta">
                         {stat.detail}
                       </dd>
                     ) : null}
@@ -275,7 +275,7 @@ export function PartnersPage({
                   delay={index * 90}
                   className="h-full"
                 >
-                  <article className="group/pillar relative flex h-full flex-col overflow-hidden md:max-lg:grid md:max-lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] rounded-3xl border border-hairline bg-raised shadow-soft transition-[translate,box-shadow,border-color] duration-500 ease-brand hover:-translate-y-1 hover:border-hairline-strong hover:shadow-lift motion-reduce:hover:translate-y-0">
+                  <article className="group/pillar relative flex h-full flex-col overflow-hidden rounded-3xl border border-hairline bg-raised shadow-soft transition-[translate,box-shadow,border-color] duration-500 ease-brand hover:-translate-y-1 hover:border-hairline-strong hover:shadow-lift motion-reduce:hover:translate-y-0 md:max-lg:grid md:max-lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
                     <div className="relative aspect-[16/10] overflow-hidden bg-sunken md:max-lg:aspect-auto md:max-lg:min-h-64">
                       <Image
                         src={pillar.image}
@@ -289,7 +289,7 @@ export function PartnersPage({
                       {/* The title link stretches over the whole card. */}
                       <Link
                         href={pillar.href}
-                        className="flex items-center justify-between gap-3 text-fg outline-none after:absolute after:inset-0 after:z-10 after:rounded-3xl focus-visible:after:outline-3 focus-visible:after:outline-offset-4 focus-visible:after:outline-violet-500"
+                        className="flex items-center justify-between gap-3 text-fg outline-none after:absolute after:inset-0 after:z-10 after:rounded-3xl focus-visible:after:outline-3 focus-visible:after:outline-violet-500 focus-visible:after:outline-offset-4"
                       >
                         <h3 className="text-heading-md">{pillar.title}</h3>
                         <ArrowUpRight
@@ -298,14 +298,14 @@ export function PartnersPage({
                         />
                       </Link>
                       <p className="mt-6 flex items-baseline gap-2.5">
-                        <strong className="text-[2.5rem] leading-none font-medium tracking-[-0.05em] text-fg">
+                        <strong className="font-medium text-[2.5rem] text-fg leading-none tracking-[-0.05em]">
                           <StatValue value={pillar.metric} />
                         </strong>
-                        <span className="text-meta font-medium text-highlight">
+                        <span className="font-medium text-highlight text-meta">
                           {pillar.metricLabel}
                         </span>
                       </p>
-                      <p className="mt-5 text-small text-fg-muted">
+                      <p className="mt-5 text-fg-muted text-small">
                         {pillar.description}
                       </p>
                     </div>
@@ -346,14 +346,14 @@ export function PartnersPage({
                         className="object-cover transition-transform duration-[1.4s] ease-brand group-hover/person:scale-[1.04] motion-reduce:transition-none"
                       />
                     </div>
-                    <h3 className="mt-4 text-heading-sm text-fg">
+                    <h3 className="mt-4 text-fg text-heading-sm">
                       {profile.name}
                     </h3>
-                    <p className="mt-0.5 text-small text-fg-muted">
+                    <p className="mt-0.5 text-fg-muted text-small">
                       {profile.role}
                     </p>
                     {profile.detail ? (
-                      <span className="mt-1 block text-meta text-fg-subtle">
+                      <span className="mt-1 block text-fg-subtle text-meta">
                         {profile.detail}
                       </span>
                     ) : null}
@@ -372,18 +372,18 @@ export function PartnersPage({
                     className="mb-auto size-8 text-highlight"
                     strokeWidth={1.3}
                   />
-                  <strong className="mt-8 text-[clamp(2.5rem,1.6rem+2.6vw,4rem)] leading-none font-medium tracking-[-0.06em] text-fg">
+                  <strong className="mt-8 font-medium text-[clamp(2.5rem,1.6rem+2.6vw,4rem)] text-fg leading-none tracking-[-0.06em]">
                     <StatValue value={`+${officialMembers}`} />
                   </strong>
-                  <h3 className="mt-2.5 text-heading-sm text-fg">
+                  <h3 className="mt-2.5 text-fg text-heading-sm">
                     top tier individuals
                   </h3>
-                  <p className="mt-6 text-small text-fg-muted">
+                  <p className="mt-6 text-fg-muted text-small">
                     {organizationFacts.majors}+ majors
                     <br />
                     {organizationFacts.universities}+ universities
                   </p>
-                  <span className="mt-6 text-meta text-fg-subtle">
+                  <span className="mt-6 text-fg-subtle text-meta">
                     Different backgrounds.
                     <br />
                     Shared ambition.
@@ -391,7 +391,7 @@ export function PartnersPage({
                 </div>
               </Reveal>
             </div>
-            <Reveal className="mt-16 border-t border-hairline pt-8 md:mt-20 md:pt-10">
+            <Reveal className="mt-16 border-hairline border-t pt-8 md:mt-20 md:pt-10">
               <h3 className="text-center text-eyebrow text-fg-muted uppercase">
                 Where they go afterwards
               </h3>
@@ -497,16 +497,16 @@ export function PartnersPage({
                       <h3 className="text-eyebrow text-highlight uppercase">
                         {study.name}
                       </h3>
-                      <div className="mt-5 text-[clamp(3rem,2.4rem+1.8vw,4rem)] leading-none font-medium tracking-[-0.06em] text-fg">
+                      <div className="mt-5 font-medium text-[clamp(3rem,2.4rem+1.8vw,4rem)] text-fg leading-none tracking-[-0.06em]">
                         <StatValue value={study.metric} />
                       </div>
-                      <p className="mt-4 text-body font-semibold text-fg lg:max-xl:min-h-[3.4em]">
+                      <p className="mt-4 font-semibold text-body text-fg lg:max-xl:min-h-[3.4em]">
                         {study.label}
                       </p>
-                      <blockquote className="mt-5 border-l-2 border-violet-500/40 pl-4 text-small text-fg-muted">
+                      <blockquote className="mt-5 border-violet-500/40 border-l-2 pl-4 text-fg-muted text-small">
                         <p>{study.copy}</p>
                         {"attribution" in study ? (
-                          <cite className="mt-3 flex items-center gap-2.5 text-meta font-medium text-highlight not-italic">
+                          <cite className="mt-3 flex items-center gap-2.5 font-medium text-highlight text-meta not-italic">
                             <span
                               aria-hidden
                               className="h-px w-4 shrink-0 bg-current"
@@ -558,7 +558,7 @@ export function PartnersPage({
                 </h2>
               </Reveal>
               <Reveal delay={140}>
-                <p className="mx-auto mt-6 max-w-xl text-lead text-fg-muted">
+                <p className="mx-auto mt-6 max-w-xl text-fg-muted text-lead">
                   The next chapter of AI starts with the right people.
                   <br />
                   Let’s bring yours and ours together.

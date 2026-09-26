@@ -193,7 +193,7 @@ export const Header = () => {
                     onFocus={movePill}
                     onBlur={hidePill}
                     className={cn(
-                      "relative rounded-full px-3.5 py-2 text-[0.875rem] font-semibold transition-colors duration-300",
+                      "relative rounded-full px-3.5 py-2 font-semibold text-[0.875rem] transition-colors duration-300",
                       active
                         ? "text-white"
                         : "text-minimal-gray hover:text-white",
@@ -238,7 +238,7 @@ export const Header = () => {
         <Dialog.Backdrop className="fixed inset-x-0 top-0 z-50 h-lvh bg-ink-950/60 backdrop-blur-sm transition-opacity duration-500 ease-brand data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 motion-reduce:transition-none" />
         <Dialog.Popup
           data-tone="ink"
-          className="group/menu-panel fixed top-0 right-0 z-50 isolate h-lvh w-full max-w-md overflow-y-auto overscroll-contain bg-canvas outline-none transition-[translate] duration-500 ease-snappy data-[ending-style]:translate-x-full data-[starting-style]:translate-x-full motion-reduce:transition-none"
+          className="group/menu-panel fixed top-0 right-0 isolate z-50 h-lvh w-full max-w-md overflow-y-auto overscroll-contain bg-canvas outline-none transition-[translate] duration-500 ease-snappy data-[ending-style]:translate-x-full data-[starting-style]:translate-x-full motion-reduce:transition-none"
         >
           <BrandMark
             drift={false}
@@ -282,7 +282,7 @@ export const Header = () => {
                         href={href}
                         aria-current={active ? "page" : undefined}
                         onClick={() => setOpen(false)}
-                        className="group/item flex items-center justify-between border-b border-hairline py-4 text-heading-lg text-fg transition-colors duration-300 hover:text-violet-300"
+                        className="group/item flex items-center justify-between border-hairline border-b py-4 text-fg text-heading-lg transition-colors duration-300 hover:text-violet-300"
                       >
                         <span className="flex items-center gap-3">
                           {text}
@@ -313,7 +313,7 @@ export const Header = () => {
               >
                 {cta.label}
               </ButtonLink>
-              <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-small text-fg-muted">
+              <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-fg-muted text-small">
                 {connectLinks.map(({ href, text }) => (
                   <li key={href}>
                     <a

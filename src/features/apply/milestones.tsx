@@ -66,12 +66,12 @@ const steps = [
 
 const items: TimelineItem[] = steps.map((step) => ({
   title: (
-    <span className="tabular text-display-md font-medium tracking-[-0.05em]">
+    <span className="tabular font-medium text-display-md tracking-[-0.05em]">
       {step.year}
     </span>
   ),
   description: (
-    <ul className="mt-5 divide-y divide-hairline border-t border-hairline">
+    <ul className="mt-5 divide-y divide-hairline border-hairline border-t">
       {step.content.map((item) => (
         <li key={item} className="flex gap-4 py-3.5 text-body text-fg-muted">
           <span

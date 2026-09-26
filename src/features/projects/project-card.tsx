@@ -93,7 +93,7 @@ export function ProjectCard({
           aria-hidden
           className="absolute inset-x-0 top-3 flex items-center justify-between pr-3 pl-6 md:pl-7"
         >
-          <span className="tabular text-eyebrow font-semibold text-white/75">
+          <span className="tabular font-semibold text-eyebrow text-white/75">
             {number}
           </span>
           <span className="grid size-10 place-items-center rounded-full bg-white/90 text-violet-950 shadow-soft backdrop-blur transition-[rotate,background-color] duration-500 ease-brand group-hover/media:rotate-90 group-hover/media:bg-white motion-reduce:transition-none">
@@ -111,7 +111,7 @@ export function ProjectCard({
           <h3 id={titleId} className="text-heading-lg text-white">
             {name}
           </h3>
-          <p className="mt-2 line-clamp-3 max-w-md text-small text-white/80 md:min-h-[4.95em] transition-opacity duration-300 ease-brand group-hover/media:opacity-0 group-has-[:focus-visible]/media:opacity-0">
+          <p className="mt-2 line-clamp-3 max-w-md text-small text-white/80 transition-opacity duration-300 ease-brand group-hover/media:opacity-0 group-has-[:focus-visible]/media:opacity-0 md:min-h-[4.95em]">
             {description}
           </p>
         </div>
@@ -141,12 +141,12 @@ export function ProjectCard({
           </div>
         </div>
         <div className="p-6 sm:p-8 md:p-10">
-          <DialogDescription className="text-lead text-fg">
+          <DialogDescription className="text-fg text-lead">
             {description}
           </DialogDescription>
-          <div className="mt-8 grid gap-3 border-t border-hairline pt-8 md:grid-cols-[8rem_minmax(0,1fr)] md:items-baseline md:gap-8">
+          <div className="mt-8 grid gap-3 border-hairline border-t pt-8 md:grid-cols-[8rem_minmax(0,1fr)] md:items-baseline md:gap-8">
             <h3 className="text-eyebrow text-fg-subtle uppercase">About</h3>
-            <p className="text-body leading-relaxed text-fg-muted">
+            <p className="text-body text-fg-muted leading-relaxed">
               {detailedDescription}
             </p>
           </div>

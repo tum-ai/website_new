@@ -65,7 +65,7 @@ export function EventFiltersComponent({
       aria-labelledby="event-filters-title"
       className="rounded-4xl p-5 sm:p-6 md:p-8"
     >
-      <div className="flex min-h-9 items-center justify-between gap-4 border-b border-hairline pb-5">
+      <div className="flex min-h-9 items-center justify-between gap-4 border-hairline border-b pb-5">
         <div className="flex items-center gap-3">
           <SlidersHorizontal
             aria-hidden
@@ -75,11 +75,11 @@ export function EventFiltersComponent({
           <div className="flex items-baseline gap-3">
             <h2
               id="event-filters-title"
-              className="text-heading-sm leading-6 text-fg"
+              className="text-fg text-heading-sm leading-6"
             >
               Filters
             </h2>
-            <p aria-live="polite" className="tabular text-meta text-fg-subtle">
+            <p aria-live="polite" className="tabular text-fg-subtle text-meta">
               ({eventCount} {eventCount === 1 ? "event" : "events"})
             </p>
           </div>

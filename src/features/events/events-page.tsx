@@ -174,7 +174,7 @@ export function EventsPage({
 /** "(4)" set small and raised after a section title. */
 function SectionCount({ value }: { value: number }) {
   return (
-    <span className="tabular relative -top-[0.9em] ml-1 text-[0.42em] font-semibold tracking-[-0.01em] text-highlight">
+    <span className="tabular relative -top-[0.9em] ml-1 font-semibold text-[0.42em] text-highlight tracking-[-0.01em]">
       ({value})
     </span>
   );
@@ -196,11 +196,11 @@ function EventTotals({ upcoming, past }: { upcoming: number; past: number }) {
   ];
 
   return (
-    <div className="grid grid-cols-2 border-t border-hairline-strong lg:ml-auto lg:max-w-md">
+    <div className="grid grid-cols-2 border-hairline-strong border-t lg:ml-auto lg:max-w-md">
       {items.map((item, index) => {
         const content = (
           <>
-            <span className="flex items-center gap-2 text-small font-medium text-fg-muted">
+            <span className="flex items-center gap-2 font-medium text-fg-muted text-small">
               {item.live && item.value > 0 ? (
                 <span aria-hidden className="relative flex size-2">
                   <span className="absolute inset-0 rounded-full bg-violet-400 motion-safe:animate-pulse-ring" />
@@ -210,7 +210,7 @@ function EventTotals({ upcoming, past }: { upcoming: number; past: number }) {
               {item.label}
             </span>
             <span className="mt-auto flex items-end justify-between gap-3 pt-4">
-              <span className="tabular text-[clamp(3.25rem,2.4rem+3vw,5.5rem)] leading-[0.9] font-medium tracking-[-0.05em] text-fg">
+              <span className="tabular font-medium text-[clamp(3.25rem,2.4rem+3vw,5.5rem)] text-fg leading-[0.9] tracking-[-0.05em]">
                 {item.value}
               </span>
               {item.value > 0 ? (
@@ -225,7 +225,7 @@ function EventTotals({ upcoming, past }: { upcoming: number; past: number }) {
         const className = cn(
           "group/total flex flex-col pt-5 pb-1",
           index === 0
-            ? "border-r border-hairline pr-5 sm:pr-8"
+            ? "border-hairline border-r pr-5 sm:pr-8"
             : "pl-5 sm:pl-8",
         );
         return item.value > 0 ? (

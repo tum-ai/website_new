@@ -45,7 +45,7 @@ export function Steps({
           const Icon = item.icon;
           return (
             <Reveal as="li" key={index} delay={index * 90} className="relative">
-              <span className="relative grid size-12 place-items-center rounded-full border border-hairline-strong bg-canvas text-small font-semibold text-fg tabular">
+              <span className="tabular relative grid size-12 place-items-center rounded-full border border-hairline-strong bg-canvas font-semibold text-fg text-small">
                 {Icon ? (
                   <Icon
                     aria-hidden
@@ -57,20 +57,20 @@ export function Steps({
                 )}
               </span>
               {Icon ? (
-                <p className="mt-6 text-eyebrow text-fg-subtle uppercase tabular">
+                <p className="tabular mt-6 text-eyebrow text-fg-subtle uppercase">
                   {item.number ?? String(index + 1).padStart(2, "0")}
                 </p>
               ) : null}
               <HeadingTag
                 className={cn(
-                  "text-heading-md text-fg",
+                  "text-fg text-heading-md",
                   Icon ? "mt-2" : "mt-6",
                 )}
               >
                 {item.title}
               </HeadingTag>
               {item.description ? (
-                <div className="mt-3 text-small text-fg-muted">
+                <div className="mt-3 text-fg-muted text-small">
                   {item.description}
                 </div>
               ) : null}

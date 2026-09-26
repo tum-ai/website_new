@@ -69,7 +69,7 @@ export function SectionHeader({
           layout === "center" && "mx-auto mt-6 max-w-2xl",
         )}
       >
-        {lead ? <p className="text-lead text-fg-muted">{lead}</p> : null}
+        {lead ? <p className="text-fg-muted text-lead">{lead}</p> : null}
         {actions ? (
           <Actions
             align={layout === "center" ? "center" : "start"}

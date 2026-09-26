@@ -88,24 +88,24 @@ export function PageHero({
               <SplitWords delay={80}>{title}</SplitWords>
             </h1>
             {lead ? (
-              <div className="mt-7 max-w-2xl text-lead text-fg-muted motion-safe:animate-rise-sm [animation-delay:380ms]">
+              <div className="mt-7 max-w-2xl text-fg-muted text-lead [animation-delay:380ms] motion-safe:animate-rise-sm">
                 {lead}
               </div>
             ) : null}
             {actions ? (
-              <Actions className="mt-10 motion-safe:animate-rise-sm [animation-delay:520ms]">
+              <Actions className="mt-10 [animation-delay:520ms] motion-safe:animate-rise-sm">
                 {actions}
               </Actions>
             ) : null}
           </div>
           {media ? (
-            <div className="motion-safe:animate-rise-sm [animation-delay:260ms]">
+            <div className="[animation-delay:260ms] motion-safe:animate-rise-sm">
               {media}
             </div>
           ) : null}
         </div>
         {children ? (
-          <div className="mt-14 motion-safe:animate-rise-sm [animation-delay:640ms] md:mt-20">
+          <div className="mt-14 [animation-delay:640ms] motion-safe:animate-rise-sm md:mt-20">
             {children}
           </div>
         ) : null}

@@ -79,7 +79,7 @@ export function ELabApplicationCta({
           aria-disabled="true"
           aria-label={closed.ariaLabel}
           className={cn(
-            "inline-flex max-w-full items-center justify-center border border-hairline-strong bg-fg/[0.04] text-center leading-snug font-semibold text-balance text-fg-muted select-none",
+            "inline-flex max-w-full select-none items-center justify-center text-balance border border-hairline-strong bg-fg/[0.04] text-center font-semibold text-fg-muted leading-snug",
             closedSizes[size],
             className,
             closedClassName,

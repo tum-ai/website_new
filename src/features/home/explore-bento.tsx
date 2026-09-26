@@ -60,7 +60,7 @@ function ActionLabel({ text }: { text: string }) {
   const words = text.split(" ");
   const last = words.pop();
   return (
-    <span className="mt-5 block text-small font-semibold text-white">
+    <span className="mt-5 block font-semibold text-small text-white">
       {words.length ? `${words.join(" ")} ` : null}
       <span className="whitespace-nowrap">
         {last}

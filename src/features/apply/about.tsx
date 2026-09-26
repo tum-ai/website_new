@@ -38,7 +38,7 @@ export function About() {
             </h2>
           </Reveal>
           <Reveal delay={140} className="lg:pt-2">
-            <p className="text-lead text-fg md:text-[1.375rem] md:leading-[1.55]">
+            <p className="text-fg text-lead md:text-[1.375rem] md:leading-[1.55]">
               As a leading student initiative focused on AI, we bring together a
               diverse group of over {organizationFacts.activeMembers} active
               members, each with technical skills and cultural backgrounds. Our

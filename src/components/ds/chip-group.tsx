@@ -44,7 +44,7 @@ export function ChipGroup({
         <Toggle
           key={option.value}
           value={option.value}
-          className="group/chip inline-flex h-10 items-center gap-2 rounded-full border border-hairline-strong px-4 text-small font-semibold text-fg-muted transition-[background-color,color,border-color,scale] duration-300 ease-brand hover:border-fg/45 hover:text-fg active:scale-[0.97] data-[pressed]:border-transparent data-[pressed]:bg-fg data-[pressed]:text-canvas"
+          className="group/chip inline-flex h-10 items-center gap-2 rounded-full border border-hairline-strong px-4 font-semibold text-fg-muted text-small transition-[background-color,color,border-color,scale] duration-300 ease-brand hover:border-fg/45 hover:text-fg active:scale-[0.97] data-[pressed]:border-transparent data-[pressed]:bg-fg data-[pressed]:text-canvas"
         >
           {option.label}
           {option.count !== undefined ? (

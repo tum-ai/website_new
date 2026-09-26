@@ -57,18 +57,18 @@ function FinderOption({
       variant={null}
       size={null}
       onClick={onSelect}
-      className="w-full justify-start gap-3 rounded-2xl border border-hairline bg-raised p-3.5 text-left font-normal tracking-normal whitespace-normal text-fg hover:border-violet-500/50 hover:bg-violet-50 sm:gap-4 sm:p-4 md:px-5"
+      className="w-full justify-start gap-3 whitespace-normal rounded-2xl border border-hairline bg-raised p-3.5 text-left font-normal text-fg tracking-normal hover:border-violet-500/50 hover:bg-violet-50 sm:gap-4 sm:p-4 md:px-5"
     >
       {Icon ? (
-        <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-violet-500/12 sm:size-10 sm:rounded-xl text-highlight ring-1 ring-violet-500/20 ring-inset transition-[background-color,color,rotate] duration-500 ease-brand group-hover/button:-rotate-6 group-hover/button:bg-violet-600 group-hover/button:text-white">
+        <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-violet-500/12 text-highlight ring-1 ring-violet-500/20 ring-inset transition-[background-color,color,rotate] duration-500 ease-brand group-hover/button:-rotate-6 group-hover/button:bg-violet-600 group-hover/button:text-white sm:size-10 sm:rounded-xl">
           <Icon aria-hidden className="size-[1.125rem]" strokeWidth={1.75} />
         </span>
       ) : null}
       <span className="min-w-0 flex-1">
-        <strong className="block text-body font-semibold text-fg">
+        <strong className="block font-semibold text-body text-fg">
           {label}
         </strong>
-        <small className="mt-0.5 block text-small text-fg-muted">
+        <small className="mt-0.5 block text-fg-muted text-small">
           {detail}
         </small>
       </span>
@@ -154,15 +154,15 @@ export function PartnershipFinder() {
                     data-complete={complete}
                     className={
                       current
-                        ? "flex items-center gap-2 text-meta font-semibold text-fg"
-                        : "flex items-center gap-2 text-meta text-fg-subtle"
+                        ? "flex items-center gap-2 font-semibold text-fg text-meta"
+                        : "flex items-center gap-2 text-fg-subtle text-meta"
                     }
                   >
                     <span
                       className={
                         current || complete
-                          ? "grid size-6 place-items-center rounded-full bg-violet-950 text-[0.6875rem] font-semibold text-white transition-colors duration-500"
-                          : "grid size-6 place-items-center rounded-full bg-fg/[0.07] text-[0.6875rem] font-semibold transition-colors duration-500"
+                          ? "grid size-6 place-items-center rounded-full bg-violet-950 font-semibold text-[0.6875rem] text-white transition-colors duration-500"
+                          : "grid size-6 place-items-center rounded-full bg-fg/[0.07] font-semibold text-[0.6875rem] transition-colors duration-500"
                       }
                     >
                       {complete ? (
@@ -255,7 +255,7 @@ export function PartnershipFinder() {
                   <Text className="mt-5">{recommendation.description}</Text>
                   {intent === "hackathon" &&
                   selection.duration === "ongoing" ? (
-                    <p className="mt-4 text-body font-semibold text-highlight">
+                    <p className="mt-4 font-semibold text-body text-highlight">
                       With first choice on hackathon slots.
                     </p>
                   ) : null}
