@@ -26,7 +26,7 @@ export const socialLinks = {
 } as const;
 
 /**
- * German one-line form of the registered office for the Imprint ("Arcisstr.
+ * German one-line form of the registered office for the Imprint ("Arcisstraße
  * 21, 80333 München"). The address itself lives in config/organization.ts.
  */
 export const registeredOfficeAddressLine = `${legalEntity.registeredOffice.streetAddress}, ${legalEntity.registeredOffice.postalCode} München`;

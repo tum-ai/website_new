@@ -28,9 +28,6 @@ type PostalAddress = {
 
 /**
  * TUM.ai e.V., the registered association behind the site (Imprint, JSON-LD).
- *
- * TODO(content): confirm the registered-office spelling. Config says
- * "Arcisstr. 21"; the Privacy page spells it "Arcistrasse".
  */
 export const legalEntity = {
   legalName: "TUM.ai e.V.",
@@ -38,7 +35,7 @@ export const legalEntity = {
   foundingLocation: "Munich, Germany",
   /** The association's registered seat (the Imprint's address row). */
   registeredOffice: {
-    streetAddress: "Arcisstr. 21",
+    streetAddress: "Arcisstraße 21",
     postalCode: "80333",
     addressLocality: "Munich",
     addressCountry: "Germany",
