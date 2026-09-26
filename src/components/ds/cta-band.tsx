@@ -6,15 +6,44 @@ import { BrandMark } from "./brand-mark";
 import { Container } from "./container";
 import { Reveal } from "./reveal";
 import { Section, type Tone } from "./section";
+import type { HeadingLevel } from "./types";
 import { Eyebrow } from "./typography";
 
-type CtaBandProps = {
+/** Class overrides for a CTA band's inner parts (merged over the defaults). */
+export type CtaBandClassNames = {
+  /** The centered text column. */
+  content?: string;
+  /** The heading. */
+  title?: string;
+  /** The lead paragraph. */
+  lead?: string;
+  /** The <Actions> row around `actions`. */
+  actions?: string;
+  /** The wrapper around `children`. */
+  footer?: string;
+};
+
+/** Props for {@link CtaBand}. */
+export type CtaBandProps = {
+  /** The closing statement. */
   title: ReactNode;
+  /** Small label above the title. */
   eyebrow?: ReactNode;
+  /** Large icon or artwork above the title (decorative; hide it from AT). */
+  visual?: ReactNode;
+  /** One or two sentences under the title. */
   lead?: ReactNode;
   /** Buttons and status badges, laid out by <Actions>. */
   actions?: ReactNode;
+  /**
+   * Content under the lead that brings its own layout (e.g. a feature's
+   * contact row that is already an <Actions>), revealed after `actions`.
+   */
+  children?: ReactNode;
+  /** id of the heading, referenced by the section's `aria-labelledby`. */
   titleId?: string;
+  /** Heading level of the title. Default `h2`. */
+  headingAs?: HeadingLevel;
   /** Anchor id for the section (e.g. "contact"). */
   id?: string;
   /**
@@ -22,8 +51,11 @@ type CtaBandProps = {
    * `band`: full-bleed dark band.
    */
   variant?: "panel" | "band";
-  /** Surrounding band tone for the `panel` variant. */
+  /** Surrounding band tone for the `panel` variant. Default `paper`. */
   tone?: Tone;
+  /** Class overrides for the inner parts. */
+  classNames?: CtaBandClassNames;
+  /** Classes merged over the section. */
   className?: string;
 };
 
@@ -31,41 +63,68 @@ type CtaBandProps = {
 export function CtaBand({
   title,
   eyebrow,
+  visual,
   lead,
   actions,
+  children,
   titleId,
+  headingAs: HeadingTag = "h2",
   id,
   variant = "panel",
   tone = "paper",
+  classNames,
   className,
 }: CtaBandProps) {
   const inner = (
-    <div className="relative mx-auto max-w-3xl text-center">
+    <div
+      className={cn(
+        "relative mx-auto max-w-3xl text-center",
+        classNames?.content,
+      )}
+    >
+      {visual ? <Reveal variant="scale">{visual}</Reveal> : null}
       {eyebrow ? (
         <Reveal>
-          <Eyebrow>{eyebrow}</Eyebrow>
+          <Eyebrow className={cn(visual && "mt-6 md:mt-8")}>{eyebrow}</Eyebrow>
         </Reveal>
       ) : null}
       <Reveal delay={60}>
-        <h2
+        <HeadingTag
           id={titleId}
-          className={cn("text-display-lg text-fg", eyebrow && "mt-5")}
+          className={cn(
+            "text-display-lg text-fg",
+            eyebrow ? "mt-5" : visual && "mt-6 md:mt-8",
+            classNames?.title,
+          )}
         >
           {title}
-        </h2>
+        </HeadingTag>
       </Reveal>
       {lead ? (
         <Reveal delay={140}>
-          <p className="mx-auto mt-6 max-w-xl text-fg-muted text-lead">
+          <p
+            className={cn(
+              "mx-auto mt-6 max-w-xl text-fg-muted text-lead",
+              classNames?.lead,
+            )}
+          >
             {lead}
           </p>
         </Reveal>
       ) : null}
       {actions ? (
         <Reveal delay={220}>
-          <Actions align="center" className="mt-10">
+          <Actions align="center" className={cn("mt-10", classNames?.actions)}>
             {actions}
           </Actions>
+        </Reveal>
+      ) : null}
+      {children ? (
+        <Reveal
+          delay={actions ? 300 : 220}
+          className={cn("mt-10", classNames?.footer)}
+        >
+          {children}
         </Reveal>
       ) : null}
     </div>

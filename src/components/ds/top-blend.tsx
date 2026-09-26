@@ -1,4 +1,28 @@
+import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/cn";
+
+const topBlendStyles = cva(
+  "pointer-events-none absolute inset-x-0 -z-[5] h-[clamp(9rem,24vh,15rem)]",
+  {
+    variants: {
+      /** Which edge of the band blends into the root canvas. */
+      // Literal classes (Tailwind only sees complete strings): brand black
+      // fading out over a long, eased ramp.
+      edge: {
+        top: "top-0 bg-[linear-gradient(to_bottom,var(--color-black)_0%,color-mix(in_srgb,var(--color-black)_88%,transparent)_22%,color-mix(in_srgb,var(--color-black)_55%,transparent)_55%,color-mix(in_srgb,var(--color-black)_18%,transparent)_82%,transparent_100%)]",
+        bottom:
+          "bottom-0 bg-[linear-gradient(to_top,var(--color-black)_0%,color-mix(in_srgb,var(--color-black)_88%,transparent)_22%,color-mix(in_srgb,var(--color-black)_55%,transparent)_55%,color-mix(in_srgb,var(--color-black)_18%,transparent)_82%,transparent_100%)]",
+      },
+    },
+    defaultVariants: { edge: "top" },
+  },
+);
+
+/** Props for {@link TopBlend}. */
+export type TopBlendProps = VariantProps<typeof topBlendStyles> & {
+  /** Classes merged over the gradient layer. */
+  className?: string;
+};
 
 /**
  * Eases the edge of a dark band into the flat root canvas color (brand black,
@@ -8,23 +32,11 @@ import { cn } from "@/lib/cn";
  * seam. Place inside the band, after its decorative layers: it sits above
  * them (-z-[5]) and below the content.
  */
-export function TopBlend({
-  edge = "top",
-  className,
-}: {
-  edge?: "top" | "bottom";
-  className?: string;
-}) {
+export function TopBlend({ edge, className }: TopBlendProps) {
   return (
     <div
-      aria-hidden
-      className={cn(
-        "pointer-events-none absolute inset-x-0 -z-[5] h-[clamp(9rem,24vh,15rem)]",
-        edge === "top"
-          ? "top-0 bg-[linear-gradient(to_bottom,var(--color-black)_0%,color-mix(in_srgb,var(--color-black)_88%,transparent)_22%,color-mix(in_srgb,var(--color-black)_55%,transparent)_55%,color-mix(in_srgb,var(--color-black)_18%,transparent)_82%,transparent_100%)]"
-          : "bottom-0 bg-[linear-gradient(to_top,var(--color-black)_0%,color-mix(in_srgb,var(--color-black)_88%,transparent)_22%,color-mix(in_srgb,var(--color-black)_55%,transparent)_55%,color-mix(in_srgb,var(--color-black)_18%,transparent)_82%,transparent_100%)]",
-        className,
-      )}
+      aria-hidden="true"
+      className={cn(topBlendStyles({ edge }), className)}
     />
   );
 }

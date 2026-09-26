@@ -2,24 +2,34 @@
 
 import {
   type CSSProperties,
-  type HTMLAttributes,
-  type JSX,
-  type Ref,
+  type ElementType,
   useEffect,
   useRef,
   useState,
 } from "react";
+import { prefersReducedMotion } from "./internal";
+import { useComposedRef } from "./refs";
+import type { BlockElement, PolymorphicProps } from "./types";
 
+/**
+ * Entrance motions: `up` (default) rises, `fade` only fades, `scale` grows
+ * slightly, `left`/`right` slide in from that side, and `line` draws a rule
+ * from the left.
+ */
 export type RevealVariant = "up" | "fade" | "scale" | "left" | "right" | "line";
 
 type RevealState = "idle" | "pending" | "done";
 
-type RevealProps = HTMLAttributes<HTMLElement> & {
-  as?: keyof JSX.IntrinsicElements;
-  variant?: RevealVariant;
-  /** Delay in ms; use `index * 80` for staggered lists. */
-  delay?: number;
-};
+/** Props for {@link Reveal}. */
+export type RevealProps<T extends BlockElement = "div"> = PolymorphicProps<
+  T,
+  {
+    /** Entrance motion. Default `up`. */
+    variant?: RevealVariant;
+    /** Delay in ms; use `index * 80` for staggered lists. */
+    delay?: number;
+  }
+>;
 
 /* One shared observer for every Reveal on the page. */
 const listeners = new WeakMap<Element, () => void>();
@@ -47,36 +57,39 @@ function observe(node: Element, onEnter: () => void) {
 
 /**
  * Scroll-triggered entrance. Progressive enhancement by construction:
- * server HTML and no-JS visitors see content immediately; only elements that
- * start below the fold are hidden (after hydration) and revealed once. Reduced
- * motion disables it entirely. For above-the-fold content use the CSS
- * `motion-safe:animate-rise*` utilities instead.
+ * server HTML and no-JS visitors see content immediately (`data-reveal="idle"`
+ * has no hiding styles); only elements that start below the fold are hidden
+ * after hydration and revealed once. Reduced motion disables it entirely.
+ * For above-the-fold content use the CSS `motion-safe:animate-rise*`
+ * utilities instead.
  */
-export function Reveal({
-  as = "div",
+export function Reveal<T extends BlockElement = "div">({
+  as,
   variant = "up",
   delay = 0,
   style,
+  ref,
   children,
   ...props
-}: RevealProps) {
-  const ref = useRef<HTMLElement>(null);
+}: RevealProps<T>) {
+  const own = useRef<HTMLElement>(null);
+  const composedRef = useComposedRef<HTMLElement>(own, ref);
   const [state, setState] = useState<RevealState>("idle");
 
   useEffect(() => {
-    const node = ref.current;
+    const node = own.current;
     if (!node) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (prefersReducedMotion()) return;
     if (node.getBoundingClientRect().top < window.innerHeight * 0.94) return;
 
     setState("pending");
     return observe(node, () => setState("done"));
   }, []);
 
-  const Component = as as "div";
+  const Component = (as ?? "div") as ElementType;
   return (
     <Component
-      ref={ref as Ref<HTMLDivElement>}
+      ref={composedRef}
       data-reveal={state}
       data-reveal-variant={variant}
       style={

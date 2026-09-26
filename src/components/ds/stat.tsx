@@ -1,80 +1,127 @@
+import { cva, type VariantProps } from "class-variance-authority";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import { CountUp } from "./count-up";
+import { textKey } from "./internal";
 
+/** One figure of a {@link StatGrid}. */
 export type StatItem = {
-  /** Numbers count up on scroll; strings render as-is (e.g. "2020"). */
+  /**
+   * The figure. Numbers count up on scroll; strings render as they are
+   * (e.g. "2020") unless `count` is set.
+   */
   value: number | string;
+  /**
+   * Count a string figure such as "1.2M+" or "2,100+" up as well; it always
+   * settles on the exact text. Default: true for numbers, false for strings.
+   */
+  count?: boolean;
+  /** Text before a numeric value, e.g. "€". */
   prefix?: string;
+  /** Text after a numeric value, e.g. "+". */
   suffix?: string;
   /** Fraction digits for numeric values (e.g. 2.3 → 1). */
   decimals?: number;
   /** Thousands separators for numeric values ("2,100"); default true. */
   grouping?: boolean;
+  /** What the figure counts; also the list key, so keep it unique. */
   label: ReactNode;
+  /** A short line under the label. */
   description?: ReactNode;
 };
 
-const columnClasses = {
-  2: "grid-cols-2",
-  3: "grid-cols-1 sm:grid-cols-3",
-  4: "grid-cols-2 lg:grid-cols-4",
-} as const;
+const statGridStyles = cva(
+  "grid gap-px overflow-hidden rounded-3xl border border-hairline bg-hairline",
+  {
+    variants: {
+      /** Columns on wide screens. */
+      columns: {
+        2: "grid-cols-2",
+        3: "grid-cols-1 sm:grid-cols-3",
+        4: "grid-cols-2 lg:grid-cols-4",
+      },
+    },
+    defaultVariants: { columns: 4 },
+  },
+);
+
+const cellStyles = cva("flex flex-col bg-canvas", {
+  variants: {
+    size: {
+      sm: "gap-2 p-5",
+      md: "gap-3 p-5 sm:p-6 md:p-7",
+      lg: "gap-3 p-5 sm:p-6 md:p-8",
+      xl: "gap-4 p-6 sm:p-7 md:p-9",
+    },
+  },
+  defaultVariants: { size: "lg" },
+});
+
+const figureStyles = cva("order-1 text-fg", {
+  variants: {
+    /** Figure size, from the `text-stat-*` tokens. */
+    size: {
+      sm: "text-stat-sm",
+      md: "text-stat-md",
+      lg: "text-stat-lg",
+      xl: "text-stat-xl",
+    },
+  },
+  defaultVariants: { size: "lg" },
+});
+
+/** Props for {@link StatGrid}. */
+export type StatGridProps = VariantProps<typeof statGridStyles> &
+  VariantProps<typeof figureStyles> & {
+    /** The figures, in reading order. */
+    items: StatItem[];
+    /** Classes merged over the `dl`. */
+    className?: string;
+  };
+
+function StatFigure({ item }: { item: StatItem }) {
+  const { value, prefix, suffix, decimals, grouping } = item;
+  const count = item.count ?? typeof value === "number";
+  if (!count) {
+    return (
+      <span className="tabular">
+        {prefix}
+        {value}
+        {suffix}
+      </span>
+    );
+  }
+  if (typeof value === "string") {
+    return <CountUp value={`${prefix ?? ""}${value}${suffix ?? ""}`} />;
+  }
+  return (
+    <CountUp
+      value={value}
+      prefix={prefix}
+      suffix={suffix}
+      decimals={decimals}
+      grouping={grouping}
+    />
+  );
+}
 
 /**
  * Row of large figures separated by hairlines (definition list semantics:
  * the label is the term, the figure its value).
  */
-export function StatGrid({
-  items,
-  columns = 4,
-  size = "lg",
-  className,
-}: {
-  items: StatItem[];
-  columns?: keyof typeof columnClasses;
-  size?: "md" | "lg";
-  className?: string;
-}) {
+export function StatGrid({ items, columns, size, className }: StatGridProps) {
   return (
-    <dl
-      className={cn(
-        "grid gap-px overflow-hidden rounded-3xl border border-hairline bg-hairline",
-        columnClasses[columns],
-        className,
-      )}
-    >
+    <dl className={cn(statGridStyles({ columns }), className)}>
       {items.map((item) => (
         <div
-          key={String(item.label) + String(item.value)}
-          className="flex flex-col gap-3 bg-canvas p-5 sm:p-6 md:p-8"
+          key={`${textKey(item.label, "stat")}:${item.value}`}
+          className={cellStyles({ size })}
         >
           <dt className="order-2 font-medium text-fg-muted text-small">
             {item.label}
           </dt>
-          <dd
-            className={cn(
-              "order-1 font-medium text-fg tracking-[-0.05em]",
-              size === "lg"
-                ? "text-[clamp(2.75rem,2rem+2.6vw,4.5rem)] leading-none"
-                : "text-[clamp(2.25rem,1.8rem+1.4vw,3.25rem)] leading-none",
-            )}
-          >
-            {typeof item.value === "number" ? (
-              <CountUp
-                value={item.value}
-                prefix={item.prefix}
-                suffix={item.suffix}
-                decimals={item.decimals}
-                grouping={item.grouping}
-              />
-            ) : (
-              <span className="tabular">
-                {item.prefix}
-                {item.value}
-                {item.suffix}
-              </span>
-            )}
+          <dd className={figureStyles({ size })}>
+            <StatFigure item={item} />
           </dd>
           {item.description ? (
             <dd className="order-3 text-fg-subtle text-meta">

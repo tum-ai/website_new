@@ -26,14 +26,20 @@ function useScrollMotionEnabled() {
   return enabled;
 }
 
-type ParallaxProps = {
+/** Props for {@link Parallax}. */
+export type ParallaxProps = {
+  /** The layer that drifts. */
   children: ReactNode;
-  /** Pixels travelled across the element's pass through the viewport. */
+  /** Pixels travelled across the element's pass through the viewport. Default 60. */
   offset?: number;
+  /** Classes for the moving wrapper. */
   className?: string;
 };
 
-/** Scroll-linked vertical drift for decorative layers and media. */
+/**
+ * Scroll-linked vertical drift for decorative layers and media. Static on
+ * the server and under reduced motion.
+ */
 export function Parallax({ children, offset = 60, className }: ParallaxProps) {
   const ref = useRef<HTMLDivElement>(null);
   const enabled = useScrollMotionEnabled();
@@ -53,10 +59,13 @@ export function Parallax({ children, offset = 60, className }: ParallaxProps) {
   );
 }
 
-type ScrollProgressProps = {
+/** Props for {@link ScrollProgress}. */
+export type ScrollProgressProps = {
   /** Element whose scroll pass drives the progress (0 → 1). */
   target: RefObject<HTMLElement | null>;
+  /** Classes for the bar (size, position, color). */
   className?: string;
+  /** Fill direction: `y` grows downwards (default), `x` to the right. */
   axis?: "x" | "y";
 };
 
