@@ -1,92 +1,100 @@
-# TUM.ai Brand CI
+# TUM.ai brand tokens
 
-This summary is based on the repo-local brand material and implementation sources in this repository.
-
-## Source bundle
-
-- `docs/brand/source/brand-guidelines.pdf`
-- `docs/brand/source/colors.jpeg`
-- `src/styles/index.css`
-- `src/components/ui/button.tsx`
-- `public/assets/tum_ai_logo_new.svg`
-- `public/assets/logo_new_white_standard.png`
-- `public/assets/Manrope.ttf`
+Summary of `docs/brand/source/` (brand guide PDF and `colors.jpeg`) as implemented in
+`src/styles/index.css`. If this file and `index.css` disagree, `index.css` wins; fix this file.
 
 ## Identity
 
-The brand guide frames TUM.ai as the hub where academic rigor meets a make-it-happen builder mindset.
+The brand guide frames TUM.ai as the hub where academic rigour meets a make-it-happen builder
+mindset.
 
-Mission:
-"To bridge the gap between theory and practice by empowering students to build the future of AI."
+- Mission: "To bridge the gap between theory and practice by empowering students to build the
+  future of AI."
+- Vision: "To be the defining hub for AI talent in Europe, a community where technical precision
+  meets human creativity."
 
-Vision:
-"To be the defining hub for AI talent in Europe, a community where technical precision meets human creativity."
+For UI that means clean and technically precise, confident and modern, community-oriented but
+restrained. If a choice looks more like generic SaaS than TUM.ai, simplify it.
 
-When designing UI, that means:
+## Palette (brand anchors)
 
-- clean and technically precise, not noisy
-- confident and modern, not playful or random
-- community-oriented, but still restrained
+| Name | Hex | Theme token | Main use |
+|---|---|---|---|
+| White | #FFFFFF | `--color-white` | `paper` band, text on dark bands |
+| Minimal Grey | #EFEFEF | `--color-minimal-gray` | `mist` band |
+| Lavender Tint | #F5EFFF | `--color-lavender-tint`, `violet-50` | `lavender` band, soft emphasis |
+| Electric Lavender (TUM.ai violet) | #9A64D9 | `--color-tumai-violet`, `violet-500` | accent, large type, focus ring, `violet` band |
+| Dark Purple | #523573 | `--color-dark-purple`, `violet-800` | primary hover, gradient end |
+| Dark Indigo | #1B0049 | `--color-dark-indigo`, `violet-950` | `ink` band, text on light bands |
+| Black | #0D0214 | `--color-black`, `ink-950` | `night` band, footer, root canvas |
+| Electric Fade | #9A64D9 to #523573 | gradient | highlights (`Highlight variant="fade"`) |
 
-## Color system
+Derived scales (never invent other hues):
 
-Confirmed from `docs/brand/source/colors.jpeg` and `src/styles/index.css`.
+- `violet-50…950`: 500 is the brand violet, 800 dark purple, 950 dark indigo. **violet-600
+  (#8052C2)** is the primary button fill: white text on it reaches 5.4:1 (AA), which violet-500
+  does not.
+- `ink-50…950`: violet-tinted neutrals for rare surfaces and text.
 
-- White: `#FFFFFF`
-- Minimal Grey: `#EFEFEF`
-- Lavender Tint: `#F5EFFF`
-- Electric Lavender / TUM.ai violet: `#9A64D9`
-- Dark Purple: `#523573`
-- Dark Indigo: `#1B0049`
-- Black: `#0D0214`
-- Electric Fade gradient: `#9A64D9 -> #523573`
+## Tones
 
-Usage rules:
+`<Section tone>` sets `data-tone`, which defines the semantic tokens below. Each foreground pair
+meets WCAG AA on its canvas.
 
-- Keep `#9A64D9` as the main brand accent and primary action color.
-- Use `#523573` for stronger hover or pressed states.
-- Use `#F5EFFF` sparingly for tinted backgrounds and highlights.
-- In dark mode, backgrounds and surfaces should stay in the `#0D0214`, `#1B0049`, `#523573` family.
-- Avoid random per-item accent colors.
-- Avoid old or alternate purples from exploratory palettes unless a task explicitly asks for a legacy look.
+| Tone | Canvas | Text | Use |
+|---|---|---|---|
+| `paper` | #FFFFFF | dark indigo | default reading band |
+| `mist` | #EFEFEF | dark indigo | alternate light band |
+| `lavender` | #F5EFFF | dark indigo | soft emphasis, forms, FAQs |
+| `ink` | #1B0049 | white | heroes, feature bands, CTAs |
+| `night` | #0D0214 | white | deep contrast, footer |
+| `violet` | #9A64D9 | black | large type only (stats), sparingly |
+
+Semantic utilities: `bg-canvas`, `bg-raised`, `bg-sunken`, `text-fg`, `text-fg-muted`,
+`text-fg-subtle`, `border-hairline`, `border-hairline-strong`, `text-highlight` (AA-safe accent
+per tone), and tone-aware tints such as `bg-fg/[0.07]`.
 
 ## Typography
 
-The website loads `Manrope` from `public/assets/Manrope.ttf`.
+Manrope (`public/assets/Manrope.ttf`, loaded in `src/app/(site)/layout.tsx`) is the only typeface.
+The brand guide sets H1 120pt/1.0, H2 80pt/1.1, H3 48pt/1.2 and text 21pt/1.4; the site scales
+these fluidly:
 
-Usage rules:
+| Utility | Size | Use |
+|---|---|---|
+| `text-display-2xl` | up to 128px | home hero only |
+| `text-display-xl` | up to 100px | page heroes |
+| `text-display-lg` | up to 72px | big statements, CTAs |
+| `text-display-md` | up to 54px | section titles |
+| `text-heading-lg` / `-md` / `-sm` | 34 / 23 / 17px | card and sub-section titles |
+| `text-lead` | up to 21px | intros |
+| `text-body` / `text-small` / `text-meta` | 16 / 14 / 13px | copy and metadata |
+| `text-eyebrow` | 12px uppercase | labels above headlines |
 
-- Use Manrope for UI typography.
-- Favor clear hierarchy through size and weight, not decorative styling.
-- Keep copy crisp and minimal.
+Display sizes are medium weight with tight negative tracking. Hierarchy comes from size and
+weight, not decoration.
 
 ## Logos
 
-Repo-local logo assets:
+- `public/assets/tum_ai_logo_new.svg`: the primary logo (the homepage's only preloaded image).
+- `public/assets/logo_new_white_standard.png`: white logo, only on dark enough backgrounds.
+- `public/assets/favicon.svg`, `favicon-96.png`, `apple-touch-icon.png`, `src/app/icon.svg`: icons.
+- `BrandMark` (`src/components/ds/brand-mark.tsx`): the logomark geometry as a large tonal
+  background shape, as on the brand guide's section slides. Decoration only, never a logo.
 
-- `public/assets/tum_ai_logo_new.svg`
-- `public/assets/logo_new_white_standard.png`
-
-Usage rules:
-
-- Prefer the provided exported assets.
-- Do not redraw, recolor, crop, or rebuild the logo manually.
-- Use the white logo variant only on dark enough backgrounds.
+Never redraw, recolour, crop or rebuild the logo.
 
 ## Buttons and interaction
 
-The canonical implementation is `src/components/ui/button.tsx`.
+Canonical implementation: `src/components/ds/button.tsx` (`buttonStyles`, `Button`,
+`ButtonLink`, `IconButton`).
 
-Current brand-consistent behavior:
+- `primary`: violet-600 fill, white label, dark purple on hover, a single sheen on hover.
+- `secondary`, `outline`, `ghost`: read the surrounding tone, so they work on light and dark bands.
+- `inverse`: solid white, for secondary actions on dark bands and photos.
+- `link`: inline text action in the tone's highlight colour.
+- Sizes `sm`, `md`, `lg`; a badge next to a button uses the same size step.
+- Focus: a global 3px violet ring with offset (violet-300 on dark bands). Never remove it.
 
-- Primary button fill: brand violet
-- Primary button text: white or minimal gray depending on context
-- Primary hover: dark purple
-- Outline buttons: restrained border, subtle tinted hover
-- Interaction should feel crisp and confident, not bouncy or playful
-
-## Website-specific UI direction
-
-For this repo specifically:
-
-- If a design choice looks more generic SaaS than TUM.ai, simplify it.
+Interaction feels crisp and confident, never bouncy: small hover zoom (1.04), arrow nudges, a 4px
+lift, `ease-brand`.
