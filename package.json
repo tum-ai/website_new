@@ -20,6 +20,7 @@
     "test:coverage": "vitest run --coverage",
     "test:perf": "vitest run --config vitest.perf.config.ts",
     "test:e2e": "playwright test",
+    "test:e2e:visual": "E2E_VISUAL=1 playwright test",
     "knip": "knip",
     "sanity:typegen": "cd src/sanity && DO_NOT_TRACK=1 sanity schemas extract --enforce-required-fields --path ../../node_modules/.cache/sanity/schema.json && DO_NOT_TRACK=1 sanity typegen generate && cd ../.. && biome format --write src/lib/sanity.types.generated.ts",
     "sanity:typegen:check": "pnpm sanity:typegen && git diff --exit-code -- src/lib/sanity.types.generated.ts",
