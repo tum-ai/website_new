@@ -1,6 +1,6 @@
 import { JsonLd } from "@/components/json-ld";
 import { buildMetadata, getJsonLd } from "@/config/seo";
-import { EventsPage } from "@/features/events";
+import { EventsPage } from "@/features/events/events-page";
 import { getSanityEvents } from "@/lib/sanity";
 
 export const metadata = buildMetadata("events");

@@ -46,7 +46,6 @@ import { PartnerTier } from "./partner-tier";
 import { PartnershipProvider } from "./partnership-context";
 import { PartnershipFinder } from "./partnership-finder";
 import { StatValue } from "./stat-value";
-import "./partners.css";
 
 const reasonIcons = [Users, BriefcaseBusiness, Network];
 

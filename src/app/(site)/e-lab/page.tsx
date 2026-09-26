@@ -1,6 +1,6 @@
 import { JsonLd } from "@/components/json-ld";
 import { buildMetadata, getJsonLd } from "@/config/seo";
-import { ELabPage } from "@/features/e-lab";
+import { ELabPage } from "@/features/e-lab/e-lab-page";
 
 export const metadata = buildMetadata("entrepreneurship");
 

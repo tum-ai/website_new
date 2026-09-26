@@ -1,7 +1,9 @@
 /**
- * E-Lab feature: the /e-lab page and the application-phase switch that the
- * homepage teaser reuses. Other code imports only from here.
+ * E-Lab public API for other features: the application-phase switch that the
+ * homepage teaser renders.
+ *
+ * The /e-lab route imports `./e-lab-page` directly; never re-export a page
+ * here (see features/partners/index.ts).
  */
 
-export { ELabPage } from "./e-lab-page";
 export { ELabPhaseSwitch } from "./e-lab-phase-switch";

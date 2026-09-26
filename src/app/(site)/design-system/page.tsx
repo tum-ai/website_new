@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { DesignSystemPage } from "@/features/design-system";
+import { DesignSystemPage } from "@/features/design-system/design-system-page";
 
 export const metadata: Metadata = {
   title: "Design system",

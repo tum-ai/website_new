@@ -7,18 +7,26 @@ import { describe, expect, test } from "vitest";
  *
  * | Module              | May import                                          |
  * | ------------------- | --------------------------------------------------- |
- * | app, src/*.ts       | features/<x> (index only), components, config, lib, |
- * |                     | sanity, styles, app                                 |
+ * | app, src/*.ts       | features/<x>/<name>-page.tsx and page .css,         |
+ * |                     | components, config, lib, sanity, styles, app        |
  * | app/studio          | sanity, lib (no site shell, CSS or features)        |
- * | features/<x>        | its own files, features/<y> (index only),           |
+ * | features/<x>        | its own files except .css, features/<y> (index),    |
  * |                     | components/{ds,shell}, components/json-ld, config,  |
  * |                     | lib                                                 |
+ * | features/<x>/index  | its own feature's files except pages                |
  * | components/ds       | its own files and lib/cn                            |
  * | components/shell    | its own files, ds, config, lib                      |
  * | components/*.tsx    | ds, config, lib                                     |
  * | config              | config, lib                                         |
  * | lib                 | lib                                                 |
  * | sanity              | sanity, lib                                         |
+ *
+ * A route imports exactly its page module. A feature's `index.ts` is its API
+ * for other features and exists only where another feature needs something;
+ * it never re-exports a page. Turbopack keeps every re-exported module that
+ * has client islands (or CSS), so a page in a barrel ships its islands to
+ * every page that imports the barrel: the three legal routes would all load
+ * the privacy table of contents, and the homepage the partnership finder.
  *
  * Only local modules (`@/…` and relative paths) are checked; packages are not.
  * Imports are found with a regex over `import … from`, `export … from`,
@@ -109,8 +117,14 @@ function moduleOf(pathFromSrc: string): Module {
   return { path, layer: "root" };
 }
 
-const isFeatureIndex = (to: Module) =>
-  to.layer === "features" && to.path === `features/${to.feature}/index.ts`;
+const isFeatureIndex = (module: Module) =>
+  module.layer === "features" &&
+  module.path === `features/${module.feature}/index.ts`;
+
+const isPageModule = (to: Module) =>
+  to.layer === "features" && to.path.endsWith("-page.tsx");
+
+const isStylesheet = (to: Module) => to.path.endsWith(".css");
 
 /** Why `from` may not import `to`, or null when the import is allowed. */
 function importViolation(from: Module, to: Module): string | null {
@@ -118,9 +132,9 @@ function importViolation(from: Module, to: Module): string | null {
     case "app":
     case "root":
       if (to.layer === "features") {
-        return isFeatureIndex(to)
+        return isPageModule(to) || isStylesheet(to)
           ? null
-          : `import @/features/${to.feature} (the index), not its files`;
+          : "routes import a page module (<name>-page.tsx) or page CSS only";
       }
       return to.layer === "studio"
         ? "the site may not import the studio"
@@ -132,9 +146,18 @@ function importViolation(from: Module, to: Module): string | null {
         ? null
         : "the studio may import only sanity and lib";
     case "features":
+      // A CSS import is a side effect, so the bundler keeps the importing
+      // module in every page that imports it. Routes import page CSS instead.
+      if (isStylesheet(to)) return "import page CSS from the route file";
       if (to.layer === "features") {
-        if (to.feature === from.feature || isFeatureIndex(to)) return null;
-        return `import @/features/${to.feature} (the index), not its files`;
+        if (to.feature === from.feature) {
+          return isFeatureIndex(from) && isPageModule(to)
+            ? "a feature index may not re-export a page"
+            : null;
+        }
+        return isFeatureIndex(to)
+          ? null
+          : `import @/features/${to.feature} (the index), not its files`;
       }
       if (
         to.layer === "ds" ||
@@ -204,11 +227,16 @@ describe("import rules", () => {
     expect(checked).toBeGreaterThan(200);
   });
 
-  test("every feature folder has an index.ts", () => {
+  test("every feature folder has a page module for its route", () => {
     const featuresDir = join(srcDir, "features");
     const missing = readdirSync(featuresDir)
       .filter((name) => statSync(join(featuresDir, name)).isDirectory())
-      .filter((name) => !existsSync(join(featuresDir, name, "index.ts")));
+      .filter(
+        (name) =>
+          !readdirSync(join(featuresDir, name)).some((file) =>
+            file.endsWith("-page.tsx"),
+          ),
+      );
 
     expect(missing).toStrictEqual([]);
   });
@@ -217,11 +245,15 @@ describe("import rules", () => {
     ["components/ds/card.tsx", "config/contact.ts"],
     ["components/ds/card.tsx", "lib/sanity.ts"],
     ["features/home/home-page.tsx", "features/partners/partner-logo.tsx"],
+    ["features/home/home-page.tsx", "features/partners/partners-page.tsx"],
     ["features/home/home-page.tsx", "app/(site)/layout.tsx"],
-    ["app/(site)/page.tsx", "features/home/home-page.tsx"],
+    ["app/(site)/page.tsx", "features/partners/index.ts"],
+    ["app/(site)/page.tsx", "features/home/data/homepage.ts"],
     ["app/studio/[[...tool]]/layout.tsx", "components/shell/header.tsx"],
     ["lib/sanity.ts", "config/seo.ts"],
     ["config/seo.ts", "components/json-ld.tsx"],
+    ["features/home/home-page.tsx", "features/home/home.css"],
+    ["features/partners/index.ts", "features/partners/partners-page.tsx"],
   ])("flags %s → %s", (from, to) => {
     expect(importViolation(moduleOf(from), moduleOf(to))).not.toBeNull();
   });
@@ -230,7 +262,8 @@ describe("import rules", () => {
     ["components/ds/card.tsx", "lib/cn.ts"],
     ["features/home/home-page.tsx", "features/partners/index.ts"],
     ["features/home/home-page.tsx", "features/home/data/homepage.ts"],
-    ["app/(site)/page.tsx", "features/home/index.ts"],
+    ["app/(site)/page.tsx", "features/home/home-page.tsx"],
+    ["app/(site)/page.tsx", "features/home/home.css"],
     ["app/studio/[[...tool]]/page.tsx", "sanity/sanity.config.ts"],
   ])("allows %s → %s", (from, to) => {
     expect(importViolation(moduleOf(from), moduleOf(to))).toBeNull();

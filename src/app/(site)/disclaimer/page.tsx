@@ -1,6 +1,6 @@
 import { JsonLd } from "@/components/json-ld";
 import { buildMetadata, getJsonLd } from "@/config/seo";
-import { DisclaimerPage } from "@/features/legal";
+import { DisclaimerPage } from "@/features/legal/disclaimer-page";
 
 export const metadata = buildMetadata("disclaimer");
 

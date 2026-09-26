@@ -1,6 +1,10 @@
 /**
- * Partners feature: the /partners page, the partner directory and the
- * partnership contact helpers. Other code imports only from here.
+ * Partners public API for other features: the partner directory, the marquee
+ * logos and the partnership email helper (the homepage shows all three).
+ *
+ * The /partners route imports `./partners-page` directly. Never re-export a
+ * page here: the bundler would ship that page's client islands to every page
+ * that imports this index.
  */
 
 export { marqueeLogos } from "./data/partner-marquee-logos";
@@ -9,5 +13,4 @@ export {
   getPartnerDirectory,
   getPartnerKey,
 } from "./partner-directory";
-export { PartnersPage } from "./partners-page";
 export { getPartnershipEmailUrl } from "./partnerships";

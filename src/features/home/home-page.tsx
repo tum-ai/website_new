@@ -1,4 +1,3 @@
-import "./home.css";
 import { ButtonLink, CtaBand, Highlight } from "@/components/ds";
 import { getPartnershipEmailUrl } from "@/features/partners";
 import { AboutSection } from "./about-section";

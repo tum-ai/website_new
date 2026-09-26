@@ -1,6 +1,6 @@
 import { JsonLd } from "@/components/json-ld";
 import { buildMetadata, getJsonLd } from "@/config/seo";
-import { CommunityPage } from "@/features/community";
+import { CommunityPage } from "@/features/community/community-page";
 
 export const metadata = buildMetadata("community");
 
