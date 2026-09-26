@@ -1,5 +1,5 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
-import { join, relative } from "node:path";
+import { join, relative, sep } from "node:path";
 import { expect, test } from "vitest";
 
 import {
@@ -111,10 +111,54 @@ const hardcodedFacts: [RegExp, string][] = [
     "social links: config/contact.ts",
   ],
   [/tally\.so\/r\//, "application forms: config/e-lab.ts or membership.ts"],
+  [
+    /https?:\/\/(?:www\.)?tum-ai\.com\b/,
+    "site URL: absoluteUrl() or siteConfig.url from config/site.ts",
+  ],
+  [/\bVR ?\d{5,6}\b/, "register number: config/organization.ts"],
+  [
+    /\b[a-z]+\.[a-z]+@tum-ai\.com\b/i,
+    "personal emails: use a role address from config/contact.ts",
+  ],
+];
+
+/**
+ * Known offenders outside W1-Data's ownership, each waiting for the stream
+ * that owns the file. Keyed by file (relative to src/) and the pattern's
+ * owner label. Remove an entry when its file is fixed: the second test fails
+ * on entries that no longer match, so the list can only shrink.
+ */
+const allowlist: { file: string; fact: string; until: string }[] = [
+  {
+    file: "app/(site)/layout.tsx",
+    fact: "site URL: absoluteUrl() or siteConfig.url from config/site.ts",
+    until: "the layout reads `rootMetadata` from config/seo.ts",
+  },
+  {
+    file: "features/e-lab/e-lab-page.tsx",
+    fact: "site URL: absoluteUrl() or siteConfig.url from config/site.ts",
+    until: "W2 E-Lab builds its JSON-LD URLs with absoluteUrl()",
+  },
+  {
+    file: "features/legal/privacy-page.tsx",
+    fact: "site URL: absoluteUrl() or siteConfig.url from config/site.ts",
+    until: "W2 Legal renders the site links from config/site.ts",
+  },
+  {
+    file: "features/legal/imprint-page.tsx",
+    fact: "register number: config/organization.ts",
+    until:
+      "Justin confirms the register number (TODO(content) in config/organization.ts)",
+  },
+  {
+    file: "features/partners/partnerships.ts",
+    fact: "personal emails: use a role address from config/contact.ts",
+    until: "W2 Partners routes partner mail through a role address",
+  },
 ];
 
 const srcDir = join(import.meta.dirname, "..", "src");
-const exempt = [join(srcDir, "config"), join(srcDir, "lib", "mock-cms.ts")];
+const exempt = [join(srcDir, "config")];
 
 /** Colocated tests may spell facts out: they assert the rendered values. */
 const isTestFile = (name: string) => /\.test\.tsx?$/.test(name);
@@ -128,16 +172,38 @@ function sourceFiles(dir: string): string[] {
   });
 }
 
-test("pages read recurring facts from src/config instead of hardcoding them", () => {
-  const offences: string[] = [];
-  for (const file of sourceFiles(srcDir)) {
-    const source = readFileSync(file, "utf8");
-    for (const [pattern, owner] of hardcodedFacts) {
+type Offence = { file: string; fact: string; match: string };
+
+function findOffences(): Offence[] {
+  return sourceFiles(srcDir).flatMap((path) => {
+    const source = readFileSync(path, "utf8");
+    const file = relative(srcDir, path).split(sep).join("/");
+    return hardcodedFacts.flatMap(([pattern, fact]) => {
       const match = source.match(pattern);
-      if (match) {
-        offences.push(`${relative(srcDir, file)}: "${match[0]}" (${owner})`);
-      }
-    }
-  }
+      return match ? [{ file, fact, match: match[0] }] : [];
+    });
+  });
+}
+
+const isAllowed = (offence: Offence) =>
+  allowlist.some(
+    (entry) => entry.file === offence.file && entry.fact === offence.fact,
+  );
+
+test("pages read recurring facts from src/config instead of hardcoding them", () => {
+  const offences = findOffences()
+    .filter((offence) => !isAllowed(offence))
+    .map(({ file, fact, match }) => `${file}: "${match}" (${fact})`);
   expect(offences).toStrictEqual([]);
+});
+
+test("every allowlisted offence still exists, so fixed files leave the list", () => {
+  const offences = findOffences();
+  const stale = allowlist.filter(
+    (entry) =>
+      !offences.some(
+        (offence) => offence.file === entry.file && offence.fact === entry.fact,
+      ),
+  );
+  expect(stale).toStrictEqual([]);
 });
