@@ -11,10 +11,11 @@ type SplitWordsProps = {
 };
 
 /**
- * Headline entrance: words rise, fade and sharpen in sequence. Each word's box
- * is padded (and pulled back with negative margins, so layout is unchanged) to
- * contain descenders and overhangs at tight display line-heights; Safari clips
- * filtered elements to their box. Pure CSS, so it starts before hydration and
+ * Headline entrance: words rise and fade in, in sequence. Each word's box is
+ * padded (and pulled back with negative margins, so layout is unchanged) to
+ * contain descenders and overhangs at tight display line-heights, because
+ * Safari clips an animating inline-block to its box. Pure CSS, so it starts
+ * before hydration and
  * never delays LCP. Strings are split into
  * words; elements (e.g. <Highlight>) animate as one unit. Reduced motion
  * renders the text statically.
