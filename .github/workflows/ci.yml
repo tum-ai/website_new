@@ -101,8 +101,10 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium webkit
       - name: Playwright
-        # `--pass-with-no-tests` until the first specs land in e2e/.
-        run: pnpm test:e2e --pass-with-no-tests
+        # Functional, accessibility, keyboard, motion and no-JS specs in
+        # Chromium and WebKit. The visual spec runs only with
+        # `pnpm test:e2e:visual` (e2e-snapshots.yml captures its baselines).
+        run: pnpm test:e2e
       - name: Upload Playwright report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
