@@ -46,6 +46,11 @@ jobs:
         uses: ./.github/actions/setup
       - name: Typecheck
         run: pnpm typecheck
+      - name: Sanity TypeGen is fresh
+        # Regenerates src/lib/sanity.types.generated.ts from the schemas and
+        # GROQ queries and fails on any diff. Fix: run `pnpm sanity:typegen`
+        # and commit the result.
+        run: pnpm sanity:typegen:check
 
   unit:
     name: Unit tests
