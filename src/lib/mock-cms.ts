@@ -1,19 +1,17 @@
 /**
- * Local-only stand-ins for Sanity content, so CMS-backed pages (/events,
- * /research) can be designed and tested without CMS credentials.
+ * Local-only stand-ins for Sanity content, so the CMS-backed pages (/events,
+ * /research and /partners) can be designed and tested without CMS
+ * credentials.
  *
- * Enabled only with `USE_MOCK_CMS=1` and never on Vercel. The fixtures follow
- * the shapes produced by src/lib/sanity-queries.ts and use shipped assets from
- * public/, so nothing leaves the machine. This module must stay importable in
- * plain Node (tests), so it imports types only.
+ * Used only when `USE_MOCK_CMS=1`, never on Vercel: `lib/sanity.ts` loads
+ * this module with a dynamic `import()` behind that gate, so a normal request
+ * never evaluates it. `MOCK_CMS_NOW` fixes the date the events are relative
+ * to (see mock-cms-env.ts). The fixtures have
+ * the page shapes from lib/types.ts, use shipped assets from public/ and
+ * neutral example.com links, so nothing leaves the machine. Keep it free of
+ * runtime imports: tests load it in plain Node.
  */
-import type { Event, Partner, Research } from "./types";
-
-type Env = Record<string, string | undefined>;
-
-export function shouldUseMockCms(env: Env): boolean {
-  return env.USE_MOCK_CMS === "1" && !env.VERCEL;
-}
+import type { Event, Partner, ResearchProject } from "./types";
 
 const DAY = 24 * 60 * 60 * 1000;
 
@@ -39,7 +37,7 @@ export function getMockEvents(now: Date = new Date()): Event[] {
       category: "Hackathon",
       poster: "/assets/homepage/Makeathon.webp",
       images: ["/assets/homepage/Makeathon.webp"],
-      sign_up: "https://www.tum-ai.com/apply",
+      sign_up: "https://example.com/sign-up/makeathon",
     },
     {
       id: "mock-event-speaker-nvidia",
@@ -52,7 +50,7 @@ export function getMockEvents(now: Date = new Date()): Event[] {
       category: "Speaker",
       poster: "/assets/homepage/nvidia-5.webp",
       images: ["/assets/homepage/nvidia-5.webp"],
-      sign_up: "https://www.tum-ai.com/events",
+      sign_up: "https://example.com/sign-up/nvidia-talk",
     },
     {
       id: "mock-event-online-agents",
@@ -76,7 +74,7 @@ export function getMockEvents(now: Date = new Date()): Event[] {
       category: "E-Lab",
       poster: "/assets/homepage/venture_onboarding25.webp",
       images: ["/assets/homepage/venture_onboarding25.webp"],
-      sign_up: "https://tally.so/r/xXBkW9",
+      sign_up: "https://example.com/sign-up/e-lab-final-pitch",
     },
     {
       id: "mock-event-openai-talk",
@@ -142,7 +140,7 @@ export function getMockEvents(now: Date = new Date()): Event[] {
   ];
 }
 
-export function getMockResearchProjects(): Research[] {
+export function getMockResearchProjects(): ResearchProject[] {
   return [
     {
       id: "mock-research-robotics",
@@ -150,7 +148,7 @@ export function getMockResearchProjects(): Research[] {
       description:
         "We study how vision-language models can ground natural-language instructions into robust manipulation policies, with a focus on generalization to unseen objects.",
       status: "ongoing",
-      keywords: "Robotics, VLMs, Imitation Learning",
+      keywords: ["Robotics", "VLMs", "Imitation Learning"],
       image: "/assets/innovation/robotics_arm.webp",
     },
     {
@@ -159,7 +157,7 @@ export function getMockResearchProjects(): Research[] {
       description:
         "Calibrated uncertainty estimates for segmentation models used in radiology workflows, developed together with clinicians.",
       status: "ongoing",
-      keywords: "Healthcare, Computer Vision, Uncertainty",
+      keywords: ["Healthcare", "Computer Vision", "Uncertainty"],
       image: "/assets/innovation/med_ai.webp",
     },
     {
@@ -168,7 +166,7 @@ export function getMockResearchProjects(): Research[] {
       description:
         "Distillation and quantization strategies that make protein language models practical on a single GPU.",
       status: "ongoing",
-      keywords: "Biology, Efficiency, Transformers",
+      keywords: ["Biology", "Efficiency", "Transformers"],
       image: "/assets/innovation/accelerated_computing.webp",
     },
     {
@@ -178,7 +176,7 @@ export function getMockResearchProjects(): Research[] {
         "Fine-tuning geospatial foundation models for flood and wildfire mapping from satellite imagery.",
       status: "completed",
       publication: "https://arxiv.org/abs/2310.18660",
-      keywords: "Remote Sensing, Foundation Models",
+      keywords: ["Remote Sensing", "Foundation Models"],
       image: "/assets/innovation/robotics_discussion.webp",
     },
     {
@@ -188,7 +186,7 @@ export function getMockResearchProjects(): Research[] {
         "A benchmark suite and analysis of multi-step reasoning failures in sub-10B parameter models.",
       status: "completed",
       publication: "https://arxiv.org/abs/2305.10601",
-      keywords: "NLP, Evaluation, Reasoning",
+      keywords: ["NLP", "Evaluation", "Reasoning"],
     },
     {
       id: "mock-research-cambridge",
@@ -196,7 +194,7 @@ export function getMockResearchProjects(): Research[] {
       description:
         "Identifiability results and practical methods for learning causal variables from high-dimensional observations.",
       status: "completed",
-      keywords: "Causality, Representation Learning",
+      keywords: ["Causality", "Representation Learning"],
       image: "/assets/innovation/robotics_writing.webp",
     },
   ];
@@ -221,4 +219,11 @@ export function getMockPartners(): Partner[] {
     image: `/assets/partners/logos/${logo}`,
     category: "Research Partners",
   }));
+}
+
+/** The partners `RESEARCH_PARTNERS_QUERY` would return. */
+export function getMockResearchPartners(): Partner[] {
+  return getMockPartners().filter(
+    (partner) => partner.category === "Research Partners",
+  );
 }

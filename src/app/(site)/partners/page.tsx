@@ -1,4 +1,3 @@
-import { unstable_rethrow } from "next/navigation";
 import { JsonLd } from "@/components/json-ld";
 import { buildMetadata, getJsonLd } from "@/config/seo";
 import { PartnersPage } from "@/features/partners/partners-page";
@@ -12,13 +11,9 @@ export const metadata = buildMetadata("partners");
 export const revalidate = 900;
 
 export default async function Page() {
-  const partners = await getSanityPartners().catch((error: unknown) => {
-    unstable_rethrow(error);
-    console.error(
-      "Partner directory unavailable; showing curated launch partners.",
-    );
-    return [];
-  });
+  // Empty when the CMS is unavailable; the page then shows its curated
+  // launch partners.
+  const partners = await getSanityPartners();
 
   return (
     <>
