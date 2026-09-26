@@ -1,6 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 import { SpotlightCard } from "./spotlight-card";
 
 type FeatureCardProps = {
@@ -40,12 +40,12 @@ export function FeatureCard({
           </span>
         ) : null}
         {index ? (
-          <span className="tabular text-meta text-fg-subtle">{index}</span>
+          <span className="tabular text-fg-subtle text-meta">{index}</span>
         ) : null}
       </div>
-      <HeadingTag className="mt-7 text-heading-md text-fg">{title}</HeadingTag>
+      <HeadingTag className="mt-7 text-fg text-heading-md">{title}</HeadingTag>
       {children ? (
-        <div className="mt-3 text-small text-fg-muted">{children}</div>
+        <div className="mt-3 text-fg-muted text-small">{children}</div>
       ) : null}
     </SpotlightCard>
   );

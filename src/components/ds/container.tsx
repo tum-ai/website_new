@@ -1,5 +1,5 @@
 import type { ComponentPropsWithoutRef, ElementType } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 
 const widths = {
   /** Site grid: 80rem max, same gutters as the partner page. */

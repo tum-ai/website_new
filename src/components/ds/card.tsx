@@ -1,6 +1,6 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import type { ComponentPropsWithoutRef, ElementType } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 
 export const cardStyles = cva(
   "group/card relative isolate rounded-3xl text-fg",

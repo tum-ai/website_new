@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 import { Actions } from "./actions";
 import { Reveal } from "./reveal";
 import { Eyebrow } from "./typography";
@@ -69,7 +69,7 @@ export function SectionHeader({
           layout === "center" && "mx-auto mt-6 max-w-2xl",
         )}
       >
-        {lead ? <p className="text-lead text-fg-muted">{lead}</p> : null}
+        {lead ? <p className="text-fg-muted text-lead">{lead}</p> : null}
         {actions ? (
           <Actions
             align={layout === "center" ? "center" : "start"}

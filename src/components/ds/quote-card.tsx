@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 
 type QuoteCardProps = {
   quote: ReactNode;
@@ -42,7 +42,7 @@ export function QuoteCard({
         >
           <path d="M0 24V14.4C0 6.24 4.32 1.44 12.96 0l1.44 3.36C9.6 4.8 7.2 7.68 7.2 12H13.2V24H0Zm18.8 0V14.4C18.8 6.24 23.12 1.44 31.76 0l1.44 3.36C28.4 4.8 26 7.68 26 12H32V24H18.8Z" />
         </svg>
-        <blockquote className="mt-5 text-lead text-fg">{quote}</blockquote>
+        <blockquote className="mt-5 text-fg text-lead">{quote}</blockquote>
       </div>
       <figcaption className="flex items-center gap-4">
         {portrait ? (
@@ -55,8 +55,8 @@ export function QuoteCard({
           />
         ) : null}
         <div className="min-w-0 flex-1">
-          <p className="text-heading-sm text-fg">{name}</p>
-          {role ? <p className="text-meta text-fg-subtle">{role}</p> : null}
+          <p className="text-fg text-heading-sm">{name}</p>
+          {role ? <p className="text-fg-subtle text-meta">{role}</p> : null}
         </div>
         {logo ? (
           <img

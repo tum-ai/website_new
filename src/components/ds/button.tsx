@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { ArrowDown, ArrowRight, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 
 /**
  * Button styles, shared by <Button> (actions) and <ButtonLink> (navigation).
@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 export const buttonStyles = cva(
   [
     "group/button relative isolate inline-flex shrink-0 items-center justify-center gap-2 overflow-hidden",
-    "whitespace-nowrap rounded-full font-semibold tracking-[-0.01em] select-none",
+    "select-none whitespace-nowrap rounded-full font-semibold tracking-[-0.01em]",
     "transition-[background-color,color,border-color,box-shadow,scale] duration-300 ease-brand",
     "active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45",
     "data-[disabled]:pointer-events-none data-[disabled]:opacity-45 [&_svg]:shrink-0",
@@ -39,7 +39,7 @@ export const buttonStyles = cva(
         /** Solid white; for secondary actions on dark bands and photos. */
         inverse:
           "bg-white text-violet-950 shadow-[0_10px_30px_-14px_rgb(13_2_20/0.6)] hover:bg-violet-50",
-        link: "h-auto rounded-none px-0 text-highlight underline-offset-[6px] decoration-1 hover:underline",
+        link: "h-auto rounded-none px-0 text-highlight decoration-1 underline-offset-[6px] hover:underline",
       },
       size: {
         sm: "h-9 px-4 text-[0.8125rem]",

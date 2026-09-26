@@ -33,8 +33,3 @@ export interface Research {
   status?: string;
   keywords?: string;
 }
-
-export interface EventFilters {
-  category: string;
-  city: string;
-}

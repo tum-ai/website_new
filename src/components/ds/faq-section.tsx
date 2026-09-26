@@ -37,7 +37,7 @@ export function FaqSection({
               {title}
             </h2>
             {lead ? (
-              <p className="mt-6 text-lead text-fg-muted">{lead}</p>
+              <p className="mt-6 text-fg-muted text-lead">{lead}</p>
             ) : null}
             {aside ? <div className="mt-8">{aside}</div> : null}
           </Reveal>

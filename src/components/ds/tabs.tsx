@@ -1,7 +1,7 @@
 "use client";
 
 import { Tabs as BaseTabs } from "@base-ui/react/tabs";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 
 /** Tabs on Base UI: arrow-key navigation and ARIA wiring come from there. */
 export function Tabs({
@@ -41,7 +41,7 @@ export function TabsTab({
   return (
     <BaseTabs.Tab
       className={cn(
-        "relative h-10 shrink-0 rounded-full px-5 text-small font-semibold whitespace-nowrap text-fg-muted max-sm:h-auto max-sm:min-h-10 max-sm:shrink max-sm:py-2 max-sm:leading-tight max-sm:whitespace-normal transition-colors duration-300 hover:text-fg focus-visible:outline-offset-2 data-[active]:text-canvas",
+        "relative h-10 shrink-0 whitespace-nowrap rounded-full px-5 font-semibold text-fg-muted text-small transition-colors duration-300 hover:text-fg focus-visible:outline-offset-2 data-[active]:text-canvas max-sm:h-auto max-sm:min-h-10 max-sm:shrink max-sm:whitespace-normal max-sm:py-2 max-sm:leading-tight",
         className,
       )}
       {...props}

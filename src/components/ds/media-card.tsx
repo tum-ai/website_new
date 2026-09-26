@@ -2,7 +2,7 @@ import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 
 const aspects = {
   "4/5": "aspect-[4/5]",
@@ -123,7 +123,7 @@ export function MediaCard({
     return (
       <article
         className={cn(
-          "group/media relative rounded-3xl has-[a:focus-visible]:outline-3 has-[a:focus-visible]:outline-offset-4 has-[a:focus-visible]:outline-violet-500",
+          "group/media relative rounded-3xl has-[a:focus-visible]:outline-3 has-[a:focus-visible]:outline-violet-500 has-[a:focus-visible]:outline-offset-4",
           fill && "h-full",
           className,
         )}
@@ -133,14 +133,14 @@ export function MediaCard({
           {eyebrow ? (
             <p className="text-eyebrow text-highlight uppercase">{eyebrow}</p>
           ) : null}
-          <HeadingTag className="mt-2 text-heading-md text-fg">
+          <HeadingTag className="mt-2 text-fg text-heading-md">
             {titleNode}
           </HeadingTag>
           {meta ? (
-            <p className="mt-1 text-meta text-fg-subtle">{meta}</p>
+            <p className="mt-1 text-fg-subtle text-meta">{meta}</p>
           ) : null}
           {description ? (
-            <p className="mt-3 text-small text-fg-muted">{description}</p>
+            <p className="mt-3 text-fg-muted text-small">{description}</p>
           ) : null}
         </div>
       </article>
@@ -152,7 +152,7 @@ export function MediaCard({
       data-tone="night"
       className={cn(
         "group/media relative isolate overflow-hidden rounded-4xl bg-transparent",
-        "has-[a:focus-visible]:outline-3 has-[a:focus-visible]:outline-offset-4 has-[a:focus-visible]:outline-violet-300",
+        "has-[a:focus-visible]:outline-3 has-[a:focus-visible]:outline-violet-300 has-[a:focus-visible]:outline-offset-4",
         fill && "h-full",
         className,
       )}

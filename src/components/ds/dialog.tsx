@@ -3,7 +3,7 @@
 import { Dialog as BaseDialog } from "@base-ui/react/dialog";
 import { X } from "lucide-react";
 import { type ReactNode, useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 
 /*
  * Modal dialog on Base UI: focus trap, scroll lock, Escape, outside click and
@@ -96,7 +96,7 @@ export function DialogContent({
        * sits in the visible area, never under the toolbar.
        */}
       <BaseDialog.Backdrop className="fixed inset-x-0 top-0 z-50 h-lvh bg-ink-950/65 backdrop-blur-[6px] transition-opacity duration-500 ease-brand data-[ending-style]:opacity-0 data-[starting-style]:opacity-0" />
-      <BaseDialog.Viewport className="fixed inset-x-0 top-0 z-50 flex h-dvh [align-items:safe_end] justify-center overflow-y-auto overscroll-contain p-3 sm:[align-items:safe_center] sm:p-6">
+      <BaseDialog.Viewport className="fixed inset-x-0 top-0 z-50 flex h-dvh justify-center overflow-y-auto overscroll-contain p-3 [align-items:safe_end] sm:p-6 sm:[align-items:safe_center]">
         <BaseDialog.Popup
           data-tone="paper"
           className={cn(
@@ -139,7 +139,7 @@ export function DialogTitle({
 }: BaseDialog.Title.Props & { className?: string }) {
   return (
     <BaseDialog.Title
-      className={cn("text-heading-lg text-fg", className)}
+      className={cn("text-fg text-heading-lg", className)}
       {...props}
     />
   );

@@ -1,5 +1,11 @@
 # Contributor Guide
 
+> **Layout moved.** `src/` was reorganised into feature folders: pages live in
+> `src/features/<domain>/`, routes in `src/app/(site)/`, the header and footer in
+> `src/components/shell/`, and `src/views/` and `src/data/` are gone. AGENTS.md
+> (coming in the next cleanup wave) documents the new layout; paths below are
+> outdated until this document is rewritten.
+
 Use this document when you want the shortest path from "I need to change X" to the right files.
 
 ## First Principles

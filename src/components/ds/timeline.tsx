@@ -1,7 +1,7 @@
 "use client";
 
 import { type ReactNode, useEffect, useRef, useState } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 import { ScrollProgress } from "./parallax";
 import { Reveal } from "./reveal";
 
@@ -122,7 +122,7 @@ export function Timeline({
                     {item.label}
                   </p>
                 ) : null}
-                <HeadingTag className="mt-2 text-heading-md text-fg">
+                <HeadingTag className="mt-2 text-fg text-heading-md">
                   {item.title}
                 </HeadingTag>
                 {item.description ? (

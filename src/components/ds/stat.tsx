@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 import { CountUp } from "./count-up";
 
 export type StatItem = {
@@ -49,12 +49,12 @@ export function StatGrid({
           key={String(item.label) + String(item.value)}
           className="flex flex-col gap-3 bg-canvas p-5 sm:p-6 md:p-8"
         >
-          <dt className="order-2 text-small font-medium text-fg-muted">
+          <dt className="order-2 font-medium text-fg-muted text-small">
             {item.label}
           </dt>
           <dd
             className={cn(
-              "order-1 font-medium tracking-[-0.05em] text-fg",
+              "order-1 font-medium text-fg tracking-[-0.05em]",
               size === "lg"
                 ? "text-[clamp(2.75rem,2rem+2.6vw,4.5rem)] leading-none"
                 : "text-[clamp(2.25rem,1.8rem+1.4vw,3.25rem)] leading-none",
@@ -77,7 +77,7 @@ export function StatGrid({
             )}
           </dd>
           {item.description ? (
-            <dd className="order-3 text-meta text-fg-subtle">
+            <dd className="order-3 text-fg-subtle text-meta">
               {item.description}
             </dd>
           ) : null}

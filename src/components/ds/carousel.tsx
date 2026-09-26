@@ -11,7 +11,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 import { IconButton } from "./button";
 
 type EmblaOptionsType = NonNullable<Parameters<typeof useEmblaCarousel>[0]>;
