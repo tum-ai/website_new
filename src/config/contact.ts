@@ -1,9 +1,11 @@
 /**
  * Single source for TUM.ai contact details: role email addresses, social
- * profiles and the registered office. The header, footer, Q&A, imprint,
+ * profiles and the Imprint's address line. The header, footer, Q&A, imprint,
  * partner flows and JSON-LD read them. See "Updating site facts" in
  * docs/contributor-guide.md.
  */
+import { legalEntity } from "./organization";
+
 export const contactEmails = {
   general: "contact@tum-ai.com",
   partners: "partners@tum-ai.com",
@@ -23,13 +25,8 @@ export const socialLinks = {
     "https://join.slack.com/t/tumaipublic/shared_invite/zt-10kg0t1f9-JLRXDxY_d_vprKWgab0cVw",
 } as const;
 
-export const registeredOfficeStreetAddress = "Arcisstr. 21";
-
-export const registeredOfficeAddressLine = `${registeredOfficeStreetAddress}, 80333 München`;
-
-export const registeredOfficePostalAddress = {
-  streetAddress: registeredOfficeStreetAddress,
-  postalCode: "80333",
-  addressLocality: "Munich",
-  addressCountry: "Germany",
-} as const;
+/**
+ * German one-line form of the registered office for the Imprint ("Arcisstr.
+ * 21, 80333 München"). The address itself lives in config/organization.ts.
+ */
+export const registeredOfficeAddressLine = `${legalEntity.registeredOffice.streetAddress}, ${legalEntity.registeredOffice.postalCode} München`;
