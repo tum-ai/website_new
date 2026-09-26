@@ -89,7 +89,7 @@ export function AccordionPanel({
 
 export type FaqItem = { question: string; answer: ReactNode };
 
-/** Question/answer list. Keep the data in src/data; this only renders it. */
+/** Question/answer list. Keep the data in the feature's data/ folder; this only renders it. */
 export function FaqList({
   items,
   headingAs,

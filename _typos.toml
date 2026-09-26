@@ -9,8 +9,8 @@ extend-exclude = [
   "pnpm-lock.yaml",
   "*.svg",
   # German legal prose (Impressum / Datenschutz).
-  "src/views/footer/Imprint.tsx",
-  "src/views/footer/Privacy.tsx",
+  "src/features/legal/imprint-page.tsx",
+  "src/features/legal/privacy-page.tsx",
 ]
 
 [default]

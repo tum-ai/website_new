@@ -21,7 +21,7 @@ import {
 import { cn } from "@/lib/cn";
 import { type Department, departments } from "./data/departments";
 
-/** Maps the icon names stored in src/data/community to Lucide icons. */
+/** Maps the icon names stored in data/departments.ts to Lucide icons. */
 const departmentIcons: Record<string, LucideIcon> = {
   Building2,
   Code,
