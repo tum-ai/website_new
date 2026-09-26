@@ -527,17 +527,34 @@ export async function expectContentVisible(page: Page): Promise<void> {
 // ---------------------------------------------------------------------------
 
 /**
- * Regions whose pixels change between runs even with animations disabled:
- * marquee rails (scroll position), the home hero photo mosaic, the rotating
- * partner logo grids, and count-up figures. `toHaveScreenshot` paints them
- * over with a solid box.
+ * Regions whose pixels change between runs even under reduced motion:
+ * marquee rails (scroll position), the rotating partner logo grids, and
+ * count-up figures. `toHaveScreenshot` paints them over with a solid box.
+ *
+ * The home hero mosaic is deliberately not masked: it is an `inset-0` layer
+ * behind the whole hero (masking it would hide the logo, heading and CTAs),
+ * and reduced motion, which the visual projects use, already holds it still.
  */
 export const visualMaskSelectors = [
   '[class~="group/marquee"]',
-  ".home-mosaic",
   "[data-rotating]",
   ".tabular:has(> [aria-hidden] + .sr-only)",
 ] as const;
+
+/**
+ * Per-route CSS that visual.spec.ts injects before screenshotting
+ * for content that depends on the current date rather than on the code.
+ *
+ * `/events` splits its fixtures into upcoming and past with `new Date()`,
+ * both on the server (ISR render) and in the browser (hydration). Pinning
+ * only the browser clock would cause a hydration mismatch, and the server
+ * `now` is not pinnable yet (handoff to W2-Events), so both date-dependent
+ * sections are removed from the layout: a mask alone would still let the
+ * page height change as events move from upcoming to past.
+ */
+export const visualDateDependentStyles: Readonly<Record<string, string>> = {
+  "/events": "#upcoming-events, #past-events { display: none !important; }",
+};
 
 /** Locators for `toHaveScreenshot({ mask })`, see `visualMaskSelectors`. */
 export function visualMasks(page: Page): Locator[] {

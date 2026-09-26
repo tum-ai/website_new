@@ -4,6 +4,7 @@ import {
   routeSlug,
   siteRoutes,
   test,
+  visualDateDependentStyles,
   visualMasks,
   waitForAnimations,
 } from "./fixtures";
@@ -32,9 +33,14 @@ for (const viewport of widths) {
         await loadLazyContent(page);
         await waitForAnimations(page);
         await page.evaluate(() => document.fonts.ready);
+        const dateDependent = visualDateDependentStyles[route.path];
+        if (dateDependent) await page.addStyleTag({ content: dateDependent });
         await expect(page).toHaveScreenshot(
           `${routeSlug(route.path)}-${viewport.width}.png`,
-          { fullPage: true, mask: visualMasks(page) },
+          {
+            fullPage: true,
+            mask: visualMasks(page),
+          },
         );
       });
     }
