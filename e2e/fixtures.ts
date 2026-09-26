@@ -155,8 +155,12 @@ export function collectFailedImages(page: Page): FailedImageLog {
 export async function loadLazyContent(page: Page): Promise<void> {
   await page.evaluate(async () => {
     const step = Math.max(window.innerHeight * 0.75, 200);
+    // A frame, or 100 ms when a busy renderer (WebKit on CI) delays frames.
     const frame = () =>
-      new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
+      new Promise((resolve) => {
+        requestAnimationFrame(() => resolve(null));
+        setTimeout(resolve, 100);
+      });
     for (let y = 0; y < document.documentElement.scrollHeight; y += step) {
       window.scrollTo({ top: y, behavior: "instant" });
       // Two frames: IntersectionObserver callbacks run after layout.

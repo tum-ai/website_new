@@ -92,7 +92,11 @@ const functionalProjects: Project[] = [
   },
   {
     name: "webkit-iphone",
-    use: { ...devices["iPhone 15"] },
+    // iPhone viewport, user agent, touch and mobile layout, painted at 1x:
+    // software rendering at the real 3x starves WebKit's frames on CI runners
+    // (timeouts, "element is not stable"). Pixel density is irrelevant to the
+    // functional specs; the visual projects cover rendering.
+    use: { ...devices["iPhone 15"], deviceScaleFactor: 1 },
     testMatch: [
       "routes.spec.ts",
       "a11y.spec.ts",

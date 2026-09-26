@@ -158,7 +158,11 @@ test.describe("disclosure widgets", { tag: "@keyboard" }, () => {
     await page.keyboard.press("Enter");
     await expect(second).toHaveAttribute("aria-expanded", "true");
     const panelId = await second.getAttribute("aria-controls");
-    await expect(page.locator(`[id="${panelId}"]`)).toBeVisible();
+    // The open state, not the height transition, which a slow renderer can
+    // leave mid-way for a while.
+    await expect(page.locator(`[id="${panelId}"]`)).toHaveAttribute(
+      "data-open",
+    );
 
     await page.keyboard.press("Space");
     await expect(second).toHaveAttribute("aria-expanded", "false");
