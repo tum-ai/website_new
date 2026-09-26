@@ -1,8 +1,12 @@
 import { evaluate, parse } from "groq-js";
-import { expect, test } from "vitest";
+import { describe, expect, test } from "vitest";
 import {
   EVENTS_QUERY,
   PARTNERS_QUERY,
+  PUBLIC_EVENTS_QUERY,
+  PUBLIC_PARTNERS_QUERY,
+  PUBLIC_RESEARCH_QUERY,
+  RESEARCH_PARTNERS_QUERY,
   RESEARCH_QUERY,
 } from "@/lib/sanity-queries";
 
@@ -76,7 +80,7 @@ test("event query: images compacts poster+img, drops missing, description falls 
   expect(byId["evt-both"].id).toBe("evt-both");
 });
 
-test("research query: keywords joined to a string, description falls back", async () => {
+test("research query: keywords stay an array, description falls back", async () => {
   const dataset = [
     {
       _id: "res-1",
@@ -84,11 +88,102 @@ test("research query: keywords joined to a string, description falls back", asyn
       title: "Study",
       keywords: ["AI", "Machine Learning", "Robotics"],
     },
+    { _id: "res-2", _type: "research", title: "No keywords" },
   ];
 
-  const [project] = await run(RESEARCH_QUERY, dataset);
+  const [project, bare] = await run(RESEARCH_QUERY, dataset);
 
-  expect(project.keywords).toBe("AI, Machine Learning, Robotics");
+  expect(project.keywords).toStrictEqual([
+    "AI",
+    "Machine Learning",
+    "Robotics",
+  ]);
   expect(project.description).toBe("");
   expect(project.id).toBe("res-1");
+  expect(bare.keywords).toStrictEqual([]);
+});
+
+test("research partners query filters the category in GROQ", async () => {
+  const partners = await run(RESEARCH_PARTNERS_QUERY, [
+    { _id: "a", _type: "partner", name: "IBM", category: "Research Partners" },
+    { _id: "b", _type: "partner", name: "Acme", category: "Industry" },
+    { _id: "c", _type: "partner", name: "Legacy" },
+  ]);
+  expect(partners.map((partner: { id: string }) => partner.id)).toStrictEqual([
+    "a",
+  ]);
+});
+
+test("the page event query no longer fetches the unused detail text", async () => {
+  const [event] = await run(EVENTS_QUERY, [
+    {
+      _id: "e",
+      _type: "event",
+      title: "T",
+      event_date: "2026-01-01",
+      detail: "x",
+    },
+  ]);
+  expect(event).not.toHaveProperty("detail");
+});
+
+/**
+ * The public API bodies (/api/getNotes, /api/getPartners, /api/getResearch)
+ * are read by external consumers, so their keys and legacy formats are frozen.
+ */
+describe("public API query shapes are frozen", () => {
+  test("events keep every legacy key, including detail", async () => {
+    const [event] = await run(PUBLIC_EVENTS_QUERY, [
+      {
+        _id: "e",
+        _type: "event",
+        title: "T",
+        event_date: "2026-01-01",
+        detail: "Long text",
+      },
+    ]);
+    expect(Object.keys(event).sort()).toStrictEqual(
+      [
+        "category",
+        "city",
+        "description",
+        "detail",
+        "event_date",
+        "id",
+        "images",
+        "location",
+        "poster",
+        "sign_up",
+        "title",
+      ].sort(),
+    );
+    expect(event.detail).toBe("Long text");
+  });
+
+  test("research keeps keywords as one comma-joined string", async () => {
+    const [project] = await run(PUBLIC_RESEARCH_QUERY, [
+      { _id: "r", _type: "research", title: "S", keywords: ["AI", "ML"] },
+    ]);
+    expect(project.keywords).toBe("AI, ML");
+    expect(Object.keys(project).sort()).toStrictEqual(
+      [
+        "description",
+        "id",
+        "image",
+        "keywords",
+        "publication",
+        "status",
+        "title",
+      ].sort(),
+    );
+  });
+
+  test("partners keep their keys", async () => {
+    const [partner] = await run(PUBLIC_PARTNERS_QUERY, [
+      { _id: "p", _type: "partner", name: "IBM" },
+    ]);
+    expect(Object.keys(partner).sort()).toStrictEqual(
+      ["category", "featured", "id", "image", "link", "name", "tier"].sort(),
+    );
+  });
 });
