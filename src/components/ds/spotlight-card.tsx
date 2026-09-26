@@ -1,17 +1,17 @@
 "use client";
 
-import type { VariantProps } from "class-variance-authority";
 import {
-  type ComponentPropsWithoutRef,
+  type ComponentProps,
   type PointerEvent,
   useCallback,
   useRef,
 } from "react";
 import { cn } from "@/lib/cn";
-import { cardStyles } from "./card";
+import { type CardStyleProps, cardStyles } from "./card";
+import { useComposedRef } from "./refs";
 
-type SpotlightCardProps = ComponentPropsWithoutRef<"div"> &
-  VariantProps<typeof cardStyles>;
+/** Props for {@link SpotlightCard}: a div's props plus the card variants. */
+export type SpotlightCardProps = ComponentProps<"div"> & CardStyleProps;
 
 /**
  * Card with a soft light that follows the pointer and a glow that traces the
@@ -25,16 +25,18 @@ export function SpotlightCard({
   className,
   onPointerMove,
   onPointerLeave,
+  ref,
   ...props
 }: SpotlightCardProps) {
-  const ref = useRef<HTMLDivElement>(null);
+  const own = useRef<HTMLDivElement>(null);
+  const composedRef = useComposedRef(own, ref);
   const frame = useRef(0);
 
   const handleMove = useCallback(
     (event: PointerEvent<HTMLDivElement>) => {
       onPointerMove?.(event);
       if (event.pointerType === "touch") return;
-      const node = ref.current;
+      const node = own.current;
       if (!node) return;
       const { clientX, clientY } = event;
       cancelAnimationFrame(frame.current);
@@ -52,14 +54,14 @@ export function SpotlightCard({
     (event: PointerEvent<HTMLDivElement>) => {
       onPointerLeave?.(event);
       cancelAnimationFrame(frame.current);
-      ref.current?.style.setProperty("--spot-opacity", "0");
+      own.current?.style.setProperty("--spot-opacity", "0");
     },
     [onPointerLeave],
   );
 
   return (
     <div
-      ref={ref}
+      ref={composedRef}
       onPointerMove={handleMove}
       onPointerLeave={handleLeave}
       className={cn(

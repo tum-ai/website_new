@@ -1,48 +1,134 @@
 "use client";
 
+import { cva } from "class-variance-authority";
 import useEmblaCarousel from "embla-carousel-react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import {
-  Children,
-  type CSSProperties,
   type KeyboardEvent,
   type ReactNode,
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { cn } from "@/lib/cn";
 import { IconButton } from "./button";
+import { keyedChildren } from "./internal";
 
 type EmblaOptionsType = NonNullable<Parameters<typeof useEmblaCarousel>[0]>;
 
-type CarouselProps = {
+/** Layout of a carousel and its controls. */
+export type CarouselVariant = "rail" | "overlay";
+
+const rootStyles = cva("relative", {
+  variants: {
+    variant: { rail: "", overlay: "h-full" },
+  },
+});
+
+const viewportStyles = cva("overflow-hidden", {
+  variants: {
+    variant: { rail: "", overlay: "h-full" },
+  },
+});
+
+/* `h-full` fills a viewport of definite height and is a no-op otherwise. */
+const trackStyles = "flex h-full touch-pan-y";
+
+const controlsStyles = cva("flex items-center", {
+  variants: {
+    variant: {
+      rail: "mt-8 gap-6",
+      overlay: "absolute inset-x-4 bottom-4 z-10 gap-4",
+    },
+  },
+});
+
+const buttonStyles = cva("", {
+  variants: {
+    variant: {
+      rail: "",
+      overlay: "size-10 border-white/45 bg-ink-950/35 backdrop-blur-sm",
+    },
+  },
+});
+
+/** Class overrides for a carousel's inner parts (merged over the defaults). */
+export type CarouselClassNames = {
+  /** The clipping viewport (rounded corners, aspect ratio). */
+  viewport?: string;
+  /** The flex row that holds the slides. */
+  track?: string;
+  /**
+   * Every slide. Replaces the default widths ("basis-[85%] sm:basis-1/2
+   * lg:basis-1/3"), so include the width classes you want, e.g. "basis-full".
+   */
+  slide?: string;
+  /** The row with the progress line and the arrows. */
+  controls?: string;
+  /** The progress line's track. */
+  progress?: string;
+  /** Both arrow buttons. */
+  button?: string;
+};
+
+/** Props for {@link Carousel}. */
+export type CarouselProps = {
+  /** One element per slide. */
   children: ReactNode;
-  /** Accessible name, e.g. "Program highlights". */
+  /** Accessible name of the carousel, e.g. "Program highlights". */
   label: string;
+  /** Embla options, merged over `align: "start"` and `containScroll: "trimSnaps"`. */
   options?: EmblaOptionsType;
-  /** Width classes for each slide, e.g. "basis-[85%] md:basis-1/2". */
-  slideClassName?: string;
-  /** Gap between slides in rem. */
+  /**
+   * `rail`: controls in a row under the slides. `overlay`: the carousel
+   * fills its parent (a photo frame) and the controls sit on its bottom edge.
+   */
+  variant?: CarouselVariant;
+  /** Gap between slides in rem. Default 1.25. */
   gap?: number;
-  /** Hide the arrow/progress controls (e.g. tiny image carousels). */
+  /** Show the arrows and progress line when the slides overflow. Default true. */
   controls?: boolean;
-  /** Extra classes for the clipping viewport (e.g. rounded corners, aspect). */
+  /** Screen-reader label for each slide. Default "2 of 5". */
+  slideLabel?: (position: number, total: number) => string;
+  /** Class overrides for the inner parts. */
+  classNames?: CarouselClassNames;
+  /**
+   * Width classes for each slide.
+   * @deprecated Use `classNames.slide`. Removed in W3.
+   */
+  slideClassName?: string;
+  /**
+   * Classes for the clipping viewport.
+   * @deprecated Use `classNames.viewport`. Removed in W3.
+   */
   viewportClassName?: string;
+  /** Classes merged over the root region. */
   className?: string;
 };
 
+const defaultSlideLabel = (position: number, total: number) =>
+  `${position} of ${total}`;
+
 /**
- * Swipeable rail (Embla) with arrow buttons, a progress hairline, keyboard
- * arrows on the region, and slide semantics for screen readers.
+ * Swipeable rail (Embla) with arrow buttons, a progress line, the arrow keys
+ * on the whole region, and APG carousel semantics (a labelled region of
+ * slides, each announced as "slide, 2 of 5").
+ *
+ * An arrow that runs out of slides stays focusable (`aria-disabled`); if it
+ * had focus, focus moves to the other arrow, so keyboard users never land on
+ * a dead control or lose their place.
  */
 export function Carousel({
   children,
   label,
   options,
-  slideClassName = "basis-[85%] sm:basis-1/2 lg:basis-1/3",
+  variant = "rail",
   gap = 1.25,
   controls = true,
+  slideLabel = defaultSlideLabel,
+  classNames,
+  slideClassName,
   viewportClassName,
   className,
 }: CarouselProps) {
@@ -54,7 +140,9 @@ export function Carousel({
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(false);
   const [progress, setProgress] = useState(0);
-  const slides = Children.toArray(children);
+  const previousButton = useRef<HTMLButtonElement>(null);
+  const nextButton = useRef<HTMLButtonElement>(null);
+  const slides = keyedChildren(children);
 
   const sync = useCallback(() => {
     if (!api) return;
@@ -72,7 +160,23 @@ export function Carousel({
     };
   }, [api, sync]);
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+  // Keep keyboard focus on a working arrow at either end of the rail.
+  useEffect(() => {
+    const focused = document.activeElement;
+    if (!canNext && canPrev && focused === nextButton.current) {
+      previousButton.current?.focus();
+    } else if (!canPrev && canNext && focused === previousButton.current) {
+      nextButton.current?.focus();
+    }
+  }, [canPrev, canNext]);
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+    // Leave arrow keys to controls inside a slide that handle them. The
+    // arrows themselves cancel keys while disabled, so they don't count.
+    const fromArrow =
+      event.target === previousButton.current ||
+      event.target === nextButton.current;
+    if (event.defaultPrevented && !fromArrow) return;
     if (event.key === "ArrowLeft") {
       event.preventDefault();
       api?.scrollPrev();
@@ -82,61 +186,79 @@ export function Carousel({
     }
   };
 
+  const buttonClassName = cn(buttonStyles({ variant }), classNames?.button);
+
   return (
+    // biome-ignore lint/a11y/noNoninteractiveElementInteractions: arrow keys bubble up from the focusable slides and arrows inside; the region itself takes no focus.
     <section
       aria-roledescription="carousel"
       aria-label={label}
-      onKeyDownCapture={handleKeyDown}
-      className={cn("relative", className)}
+      onKeyDown={handleKeyDown}
+      className={cn(rootStyles({ variant }), className)}
     >
       <div
         ref={viewportRef}
-        className={cn("overflow-hidden", viewportClassName)}
+        className={cn(
+          viewportStyles({ variant }),
+          viewportClassName,
+          classNames?.viewport,
+        )}
       >
-        <div
-          className="flex touch-pan-y"
-          style={{ gap: `${gap}rem` } as CSSProperties}
+        <ul
+          className={cn(trackStyles, classNames?.track)}
+          style={{ gap: `${gap}rem` }}
         >
-          {slides.map((slide, index) => (
-            <div
-              key={index}
-              role="group"
+          {slides.map(({ key, node }, index) => (
+            <li
+              key={key}
               aria-roledescription="slide"
-              aria-label={`${index + 1} of ${slides.length}`}
-              className={cn("min-w-0 shrink-0 grow-0", slideClassName)}
+              aria-label={slideLabel(index + 1, slides.length)}
+              className={cn(
+                "min-w-0 shrink-0 grow-0",
+                classNames?.slide ??
+                  slideClassName ??
+                  "basis-[85%] sm:basis-1/2 lg:basis-1/3",
+              )}
             >
-              {slide}
-            </div>
+              {node}
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
       {controls && (canPrev || canNext) ? (
-        <div className="mt-8 flex items-center gap-6">
+        <div className={cn(controlsStyles({ variant }), classNames?.controls)}>
           <div
-            aria-hidden
-            className="relative h-px flex-1 overflow-hidden bg-hairline"
+            aria-hidden="true"
+            className={cn(
+              "relative h-px flex-1 overflow-hidden bg-hairline",
+              classNames?.progress,
+            )}
           >
             <div
-              className="absolute inset-y-0 left-0 w-full origin-left bg-fg transition-transform duration-300 ease-brand"
+              className="absolute inset-y-0 left-0 w-full origin-left bg-fg transition-transform duration-300 ease-brand motion-reduce:transition-none"
               style={{ transform: `scaleX(${Math.max(progress, 0.06)})` }}
             />
           </div>
           <div className="flex gap-2">
             <IconButton
+              ref={previousButton}
               aria-label="Previous slide"
               variant="outline"
               focusableWhenDisabled
               disabled={!canPrev}
               onClick={() => api?.scrollPrev()}
+              className={buttonClassName}
             >
               <ArrowLeft aria-hidden className="size-4" />
             </IconButton>
             <IconButton
+              ref={nextButton}
               aria-label="Next slide"
               variant="outline"
               focusableWhenDisabled
               disabled={!canNext}
               onClick={() => api?.scrollNext()}
+              className={buttonClassName}
             >
               <ArrowRight aria-hidden className="size-4" />
             </IconButton>

@@ -1,21 +1,33 @@
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
+import { IconBadge } from "./icon-badge";
 
-/** Friendly placeholder for empty lists and filter results. */
+/** Props for {@link EmptyState}. */
+export type EmptyStateProps = {
+  /** Icon above the title. */
+  icon?: LucideIcon;
+  /** What is empty, e.g. "No events found". */
+  title: ReactNode;
+  /** What to do about it. */
+  children?: ReactNode;
+  /** A button that resolves it (e.g. "Clear filters"). */
+  action?: ReactNode;
+  /** Classes merged over the dashed panel. */
+  className?: string;
+};
+
+/**
+ * Friendly placeholder for empty lists and filter results. It is a status
+ * region, so a filter that empties a list is announced.
+ */
 export function EmptyState({
-  icon: Icon,
+  icon,
   title,
   children,
   action,
   className,
-}: {
-  icon?: LucideIcon;
-  title: ReactNode;
-  children?: ReactNode;
-  action?: ReactNode;
-  className?: string;
-}) {
+}: EmptyStateProps) {
   return (
     <div
       role="status"
@@ -24,10 +36,8 @@ export function EmptyState({
         className,
       )}
     >
-      {Icon ? (
-        <span className="grid size-14 place-items-center rounded-full bg-fg/[0.06] text-highlight">
-          <Icon aria-hidden className="size-6" strokeWidth={1.75} />
-        </span>
+      {icon ? (
+        <IconBadge icon={icon} variant="soft" size="lg" shape="circle" />
       ) : null}
       <p className="mt-5 text-fg text-heading-md">{title}</p>
       {children ? (

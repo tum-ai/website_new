@@ -1,40 +1,56 @@
-import { useId } from "react";
+import { cva } from "class-variance-authority";
+import { type ComponentProps, useId } from "react";
 import { cn } from "@/lib/cn";
+
+const brandMarkStyles = cva("pointer-events-none select-none", {
+  variants: {
+    drift: {
+      true: "motion-safe:animate-drift",
+      false: "",
+    },
+  },
+  defaultVariants: { drift: true },
+});
+
+/** Props for {@link BrandMark}. */
+export type BrandMarkProps = Omit<
+  ComponentProps<"svg">,
+  "children" | "viewBox" | "fill"
+> & {
+  /** `tonal`: one currentColor fill. `gradient`: violet fade on the center stroke. */
+  variant?: "tonal" | "gradient";
+  /** Slow ambient drift (still under reduced motion). Default true. */
+  drift?: boolean;
+};
 
 /**
  * The official TUM.ai logomark geometry (paths from
  * public/assets/tum_ai_logo_new.svg), used as a large tonal background shape
  * exactly as the 2026 brand guide does on its section slides. It is
- * decoration only: never recolor it into a logo substitute or place it where
- * the real logo belongs.
+ * decoration only (hidden from assistive technology): never recolor it into
+ * a logo substitute or place it where the real logo belongs. Size and place
+ * it with `className`, and color it with a text color.
  */
 export function BrandMark({
   className,
   variant = "tonal",
-  drift = true,
-}: {
-  className?: string;
-  /** `tonal`: single currentColor fill. `gradient`: violet fade on the center stroke. */
-  variant?: "tonal" | "gradient";
-  /** Slow ambient drift (disabled under reduced motion). */
-  drift?: boolean;
-}) {
+  drift,
+  ...props
+}: BrandMarkProps) {
   // Unique per instance: a shared id breaks when the first instance is hidden.
   const gradientId = `brand-mark-fade-${useId().replace(/:/g, "")}`;
   return (
     <svg
-      aria-hidden
+      aria-hidden="true"
       focusable="false"
       viewBox="0 0 477 406"
-      className={cn(
-        "pointer-events-none select-none",
-        drift && "motion-safe:animate-drift",
-        className,
-      )}
+      className={cn(brandMarkStyles({ drift }), className)}
       fill="currentColor"
+      {...props}
     >
       {variant === "gradient" ? (
         <defs>
+          {/* The official logo's gradient stops. */}
           <linearGradient
             id={gradientId}
             x1="153.72"

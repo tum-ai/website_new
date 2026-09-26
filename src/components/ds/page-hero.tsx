@@ -1,3 +1,4 @@
+import { cva, type VariantProps } from "class-variance-authority";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import { Actions } from "./actions";
@@ -9,27 +10,64 @@ import { SplitWords } from "./split-words";
 import { TopBlend } from "./top-blend";
 import { Eyebrow } from "./typography";
 
-const titleSizes = {
-  md: "text-display-lg",
-  lg: "text-display-xl",
-  xl: "text-display-2xl",
-} as const;
+const titleStyles = cva("text-fg", {
+  variants: {
+    /** Display step of the headline. */
+    size: {
+      md: "text-display-lg",
+      lg: "text-display-xl",
+      xl: "text-display-2xl",
+    },
+  },
+  defaultVariants: { size: "lg" },
+});
 
-type PageHeroProps = {
+/** Class overrides for a page hero's inner parts (merged over the defaults). */
+export type PageHeroClassNames = {
+  /** The two-column grid, when there is `media` (column ratio, alignment). */
+  grid?: string;
+  /** The text column. */
+  content?: string;
+  /** The `h1`. */
+  title?: string;
+  /** The lead. */
+  lead?: string;
+  /** The <Actions> row around `actions`. */
+  actions?: string;
+  /** The wrapper around `media`. */
+  media?: string;
+  /** The wrapper around `children`, below the headline block. */
+  footer?: string;
+};
+
+/** Props for {@link PageHero}. */
+export type PageHeroProps = VariantProps<typeof titleStyles> & {
+  /** The page's `h1`. */
   title: ReactNode;
+  /** Small label above the title. */
   eyebrow?: ReactNode;
+  /** One or two sentences under the title. */
   lead?: ReactNode;
   /** Buttons and status badges, laid out by <Actions>. */
   actions?: ReactNode;
   /** Right column (image, card, stats). Stacks under the text on mobile. */
   media?: ReactNode;
-  /** Content below the headline block (stats row, filters, tabs). */
+  /** Content below the headline block (stats row, filters, tabs, a marquee). */
   children?: ReactNode;
-  size?: keyof typeof titleSizes;
+  /**
+   * Animate the title word by word (<SplitWords>). Set false when the title
+   * brings its own SplitWords, e.g. one per line with custom delays.
+   */
+  splitTitle?: boolean;
+  /** Dark band tone. Default `ink`. */
   tone?: Extract<Tone, "ink" | "night">;
-  /** Large drifting logomark in the background. */
+  /** Large drifting logomark in the background. Default true. */
   mark?: boolean;
+  /** id of the `h1`, referenced by the section's `aria-labelledby`. */
   titleId?: string;
+  /** Class overrides for the inner parts. */
+  classNames?: PageHeroClassNames;
+  /** Classes merged over the section (e.g. its top and bottom padding). */
   className?: string;
 };
 
@@ -46,10 +84,12 @@ export function PageHero({
   actions,
   media,
   children,
-  size = "lg",
+  size,
+  splitTitle = true,
   tone = "ink",
   mark = true,
   titleId,
+  classNames,
   className,
 }: PageHeroProps) {
   return (
@@ -73,9 +113,10 @@ export function PageHero({
           className={cn(
             media &&
               "grid gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-end lg:gap-16",
+            media && classNames?.grid,
           )}
         >
-          <div className={cn(!media && "max-w-5xl")}>
+          <div className={cn(!media && "max-w-5xl", classNames?.content)}>
             {eyebrow ? (
               <Eyebrow className="motion-safe:animate-rise-sm">
                 {eyebrow}
@@ -83,29 +124,53 @@ export function PageHero({
             ) : null}
             <h1
               id={titleId}
-              className={cn("text-fg", titleSizes[size], eyebrow && "mt-6")}
+              className={cn(
+                titleStyles({ size }),
+                eyebrow && "mt-6",
+                classNames?.title,
+              )}
             >
-              <SplitWords delay={80}>{title}</SplitWords>
+              {splitTitle ? <SplitWords delay={80}>{title}</SplitWords> : title}
             </h1>
             {lead ? (
-              <div className="mt-7 max-w-2xl text-fg-muted text-lead [animation-delay:380ms] motion-safe:animate-rise-sm">
+              <div
+                className={cn(
+                  "mt-7 max-w-2xl text-fg-muted text-lead [animation-delay:380ms] motion-safe:animate-rise-sm",
+                  classNames?.lead,
+                )}
+              >
                 {lead}
               </div>
             ) : null}
             {actions ? (
-              <Actions className="mt-10 [animation-delay:520ms] motion-safe:animate-rise-sm">
+              <Actions
+                className={cn(
+                  "mt-10 [animation-delay:520ms] motion-safe:animate-rise-sm",
+                  classNames?.actions,
+                )}
+              >
                 {actions}
               </Actions>
             ) : null}
           </div>
           {media ? (
-            <div className="[animation-delay:260ms] motion-safe:animate-rise-sm">
+            <div
+              className={cn(
+                "[animation-delay:260ms] motion-safe:animate-rise-sm",
+                classNames?.media,
+              )}
+            >
               {media}
             </div>
           ) : null}
         </div>
         {children ? (
-          <div className="mt-14 [animation-delay:640ms] motion-safe:animate-rise-sm md:mt-20">
+          <div
+            className={cn(
+              "mt-14 [animation-delay:640ms] motion-safe:animate-rise-sm md:mt-20",
+              classNames?.footer,
+            )}
+          >
             {children}
           </div>
         ) : null}

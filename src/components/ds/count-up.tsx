@@ -3,32 +3,32 @@
 import { animate } from "framer-motion";
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/cn";
+import { formatFigure, type ParsedFigure, parseFigure } from "./figure";
+import { prefersReducedMotion } from "./internal";
 
-type CountUpProps = {
-  value: number;
+/** `--ease-brand` as a framer-motion cubic bezier. */
+const easeBrand = [0.22, 1, 0.36, 1] as const;
+
+/** Props for {@link CountUp}. */
+export type CountUpProps = {
+  /**
+   * A number, formatted with the props below, or a copy figure ("1.2M+",
+   * "2.3%") that counts up and always settles on the exact source text.
+   */
+  value: number | string;
+  /** Text before a numeric value, e.g. "~". Ignored for strings. */
   prefix?: string;
+  /** Text after a numeric value, e.g. "+". Ignored for strings. */
   suffix?: string;
+  /** Fraction digits of a numeric value. Ignored for strings. */
   decimals?: number;
-  /** Thousands separators ("2,100"); default true. */
+  /** Thousands separators for a numeric value ("2,100"); default true. */
   grouping?: boolean;
-  /** Seconds. */
+  /** Seconds. Default 1.2, the longest entrance the motion rules allow. */
   duration?: number;
+  /** Classes merged over the wrapper (which sets tabular figures). */
   className?: string;
 };
-
-function formatValue(
-  value: number,
-  prefix: string,
-  suffix: string,
-  decimals: number,
-  grouping = true,
-) {
-  return `${prefix}${value.toLocaleString("en-US", {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-    useGrouping: grouping,
-  })}${suffix}`;
-}
 
 /**
  * Number that counts up when scrolled into view. The server renders the final
@@ -42,35 +42,52 @@ export function CountUp({
   suffix = "",
   decimals = 0,
   grouping = true,
-  duration = 1.8,
+  duration = 1.2,
   className,
 }: CountUpProps) {
   const ref = useRef<HTMLSpanElement>(null);
-  const finalText = formatValue(value, prefix, suffix, decimals, grouping);
+  const figure: ParsedFigure | null =
+    typeof value === "number"
+      ? { prefix, value, decimals, grouping, suffix }
+      : parseFigure(value);
+  const finalText =
+    typeof value === "string" || !figure
+      ? String(value)
+      : formatFigure(value, figure);
+
+  // Primitives only, so the effect doesn't rerun for an equal figure.
+  const target = figure?.value;
+  const figurePrefix = figure?.prefix ?? "";
+  const figureSuffix = figure?.suffix ?? "";
+  const figureDecimals = figure?.decimals ?? 0;
+  const figureGrouping = figure?.grouping ?? false;
 
   useEffect(() => {
     const node = ref.current;
-    if (!node) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!node || target === undefined) return;
+    if (prefersReducedMotion()) return;
     if (node.getBoundingClientRect().top < window.innerHeight) return;
 
-    node.textContent = formatValue(0, prefix, suffix, decimals, grouping);
+    const parts = {
+      prefix: figurePrefix,
+      suffix: figureSuffix,
+      decimals: figureDecimals,
+      grouping: figureGrouping,
+    };
+    node.textContent = formatFigure(0, parts);
     let stop: (() => void) | undefined;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry?.isIntersecting) return;
         observer.disconnect();
-        const controls = animate(0, value, {
+        const controls = animate(0, target, {
           duration,
-          ease: [0.22, 1, 0.36, 1],
+          ease: easeBrand,
           onUpdate: (latest) => {
-            node.textContent = formatValue(
-              latest,
-              prefix,
-              suffix,
-              decimals,
-              grouping,
-            );
+            node.textContent = formatFigure(latest, parts);
+          },
+          onComplete: () => {
+            node.textContent = finalText;
           },
         });
         stop = () => controls.stop();
@@ -81,13 +98,21 @@ export function CountUp({
     return () => {
       observer.disconnect();
       stop?.();
-      node.textContent = formatValue(value, prefix, suffix, decimals, grouping);
+      node.textContent = finalText;
     };
-  }, [value, prefix, suffix, decimals, grouping, duration]);
+  }, [
+    target,
+    figurePrefix,
+    figureSuffix,
+    figureDecimals,
+    figureGrouping,
+    finalText,
+    duration,
+  ]);
 
   return (
     <span className={cn("tabular", className)}>
-      <span aria-hidden ref={ref}>
+      <span aria-hidden="true" ref={ref}>
         {finalText}
       </span>
       <span className="sr-only">{finalText}</span>
