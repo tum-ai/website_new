@@ -13,13 +13,15 @@
  */
 
 @theme {
-  /* --- Brand anchors (CI document) --- */
-  --color-white: oklch(1 0 0); /* #FFFFFF */
+  /*
+   * --- Brand anchors (CI document) ---
+   * Electric Lavender #9A64D9 is violet-500, Dark Purple #523573 violet-800,
+   * Lavender Tint #F5EFFF violet-50 and Dark Indigo #1B0049 violet-950 (use
+   * the scale). White is Tailwind's own. Black replaces Tailwind's #000 with
+   * the brand black, so `bg-black` and `var(--color-black)` are on-brand.
+   */
   --color-minimal-gray: oklch(0.9521 0 0); /* #EFEFEF */
-  --color-lavender-tint: oklch(0.9614 0.0221 302.94); /* #F5EFFF */
-  --color-tumai-violet: oklch(0.6131 0.1751 302.89); /* #9A64D9 */
-  --color-dark-purple: oklch(0.3932 0.1047 303.55); /* #523573 */
-  --color-dark-indigo: oklch(0.2085 0.1188 288.93); /* #1B0049 */
+  --color-dark-indigo: oklch(0.2085 0.1188 288.93); /* #1B0049, = violet-950 */
   --color-black: oklch(0.1275 0.0481 312.72); /* #0D0214 */
 
   /* --- Violet scale: brand violet at 500, dark purple at 800, indigo at 950 --- */
@@ -94,19 +96,48 @@
   --text-eyebrow--line-height: 1.2;
   --text-eyebrow--letter-spacing: 0.14em;
   --text-eyebrow--font-weight: 600;
+  /* UI labels: md buttons and badges, logo lockups (15px). Size only, so it
+     keeps the surrounding line height like the arbitrary size it replaces. */
+  --text-label: 0.9375rem;
+
+  /* Big figures (StatGrid, counters): tight, medium weight, one line high. */
+  --text-stat-sm: clamp(2rem, 1.75rem + 0.8vw, 2.5rem);
+  --text-stat-sm--line-height: 1;
+  --text-stat-sm--letter-spacing: -0.05em;
+  --text-stat-sm--font-weight: 500;
+  --text-stat-md: clamp(2.25rem, 1.8rem + 1.4vw, 3.25rem);
+  --text-stat-md--line-height: 1;
+  --text-stat-md--letter-spacing: -0.05em;
+  --text-stat-md--font-weight: 500;
+  --text-stat-lg: clamp(2.75rem, 2rem + 2.6vw, 4.5rem);
+  --text-stat-lg--line-height: 1;
+  --text-stat-lg--letter-spacing: -0.05em;
+  --text-stat-lg--font-weight: 500;
+  --text-stat-xl: clamp(3.25rem, 2.4rem + 3vw, 5.5rem);
+  --text-stat-xl--line-height: 1;
+  --text-stat-xl--letter-spacing: -0.05em;
+  --text-stat-xl--font-weight: 500;
 
   /* --- Shape and depth --- */
+  /* Radius steps; sm to xl keep the previous theme's values. */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 0.875rem;
   --radius-4xl: 2rem;
   --radius-5xl: 2.5rem;
   --shadow-soft:
     0 1px 2px rgb(27 0 73 / 0.04), 0 14px 36px -16px rgb(27 0 73 / 0.2);
   --shadow-lift:
     0 2px 6px rgb(27 0 73 / 0.05), 0 28px 64px -24px rgb(27 0 73 / 0.34);
-  --shadow-glow:
-    0 0 0 1px rgb(154 100 217 / 0.35), 0 20px 60px -20px rgb(154 100 217 / 0.6);
   --shadow-inset-hairline: inset 0 1px 0 rgb(255 255 255 / 0.08);
 
-  /* --- Motion --- */
+  /*
+   * --- Motion ---
+   * House easing everywhere (`ease-brand`). Durations run from 300ms (hover)
+   * to 1.2s (entrances); only ambient loops (aurora, drift, marquee) are
+   * longer, and those only run under `motion-safe:`.
+   */
   --ease-brand: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-snappy: cubic-bezier(0.32, 0.72, 0, 1);
   --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
@@ -122,8 +153,6 @@
   --animate-marquee-reverse: marquee-reverse var(--marquee-duration, 48s) linear
     infinite;
   --animate-pulse-ring: pulse-ring 2.4s var(--ease-brand) infinite;
-  --animate-shimmer: shimmer 2.2s linear infinite;
-  --animate-line: line 1.2s var(--ease-brand) both;
 
   /* Transform and opacity only: a filter (the old blur) would make Safari
      clip each word to its box and repaint large headlines every frame. */
@@ -208,24 +237,6 @@
       opacity: 0;
     }
   }
-
-  @keyframes shimmer {
-    from {
-      background-position: -200% 0;
-    }
-    to {
-      background-position: 200% 0;
-    }
-  }
-
-  @keyframes line {
-    from {
-      transform: scaleX(0);
-    }
-    to {
-      transform: scaleX(1);
-    }
-  }
 }
 
 /*
@@ -243,19 +254,23 @@
   --color-hairline: var(--tone-hairline);
   --color-hairline-strong: var(--tone-hairline-strong);
   --color-highlight: var(--tone-accent);
-  --color-glow: var(--tone-glow);
-
-  /* Radius steps (values unchanged from the previous theme). */
-  --radius-sm: 0.375rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.625rem;
-  --radius-xl: 0.875rem;
 }
 
 @layer base {
   :root {
     --gutter: clamp(1.25rem, 4.6vw, 3.5rem);
     --header-height: 4.25rem;
+    /* Where in-page anchors land: below the floating header (its pill ends
+       within 80px) with some air. Read it through `scroll-mt-header`. */
+    --header-offset: calc(var(--header-height) + 2.625rem);
+
+    /* Canvas of each tone, shared by the tone scopes and the band seams. */
+    --tone-paper: var(--color-white);
+    --tone-mist: var(--color-minimal-gray);
+    --tone-lavender: var(--color-violet-50);
+    --tone-ink: var(--color-violet-950);
+    --tone-night: var(--color-black);
+    --tone-violet: var(--color-violet-500);
 
     font-family: var(--font-sans);
     line-height: 1.5;
@@ -269,7 +284,7 @@
   /* Default tone: paper. */
   :root,
   [data-tone="paper"] {
-    --tone-canvas: #ffffff;
+    --tone-canvas: var(--tone-paper);
     --tone-raised: #faf8fd;
     --tone-sunken: #f4f1f8;
     --tone-fg: #1b0049;
@@ -282,7 +297,7 @@
   }
 
   [data-tone="mist"] {
-    --tone-canvas: #efefef;
+    --tone-canvas: var(--tone-mist);
     --tone-raised: #ffffff;
     --tone-sunken: #e6e3ea;
     --tone-fg: #1b0049;
@@ -295,7 +310,7 @@
   }
 
   [data-tone="lavender"] {
-    --tone-canvas: #f5efff;
+    --tone-canvas: var(--tone-lavender);
     --tone-raised: #ffffff;
     --tone-sunken: #ece2fb;
     --tone-fg: #1b0049;
@@ -308,7 +323,7 @@
   }
 
   [data-tone="ink"] {
-    --tone-canvas: #1b0049;
+    --tone-canvas: var(--tone-ink);
     --tone-raised: #24104f;
     --tone-sunken: #140036;
     --tone-fg: #ffffff;
@@ -322,7 +337,7 @@
   }
 
   [data-tone="night"] {
-    --tone-canvas: #0d0214;
+    --tone-canvas: var(--tone-night);
     --tone-raised: #1b0049;
     --tone-sunken: #07010c;
     --tone-fg: #ffffff;
@@ -337,7 +352,7 @@
 
   /* Brand violet band: fg and fg-muted reach 4.9:1; fg-subtle (4.2:1) is for large type only. */
   [data-tone="violet"] {
-    --tone-canvas: #9a64d9;
+    --tone-canvas: var(--tone-violet);
     --tone-raised: #a574de;
     --tone-sunken: #8a55c9;
     --tone-fg: #0d0214;
@@ -501,20 +516,21 @@
     background-repeat: no-repeat;
   }
 
+  /* The previous band's canvas (its own --tone-canvas is out of scope). */
   [data-band][data-tone="paper"] + [data-band] {
-    --band-from: #ffffff;
+    --band-from: var(--tone-paper);
   }
   [data-band][data-tone="mist"] + [data-band] {
-    --band-from: #efefef;
+    --band-from: var(--tone-mist);
   }
   [data-band][data-tone="lavender"] + [data-band] {
-    --band-from: #f5efff;
+    --band-from: var(--tone-lavender);
   }
   [data-band][data-tone="ink"] + [data-band] {
-    --band-from: #1b0049;
+    --band-from: var(--tone-ink);
   }
   [data-band][data-tone="night"] + [data-band] {
-    --band-from: #0d0214;
+    --band-from: var(--tone-night);
   }
 
   /* Subtle film grain for dark bands. */
@@ -563,42 +579,68 @@
       linear-gradient(#000 0 0);
     -webkit-mask-composite: xor;
   }
+}
 
-  /* Edge fade for marquees and horizontally scrolling rails. */
-  .mask-fade-x {
-    mask-image: linear-gradient(
-      to right,
-      transparent,
-      #000 6%,
-      #000 94%,
-      transparent
-    );
-  }
+/*
+ * Custom utilities. `@utility` puts them in the utilities layer, lets them
+ * take variants (`md:rounded-signature`) and lets tailwind-merge (lib/cn.ts)
+ * resolve conflicts with Tailwind's own classes.
+ */
 
-  .mask-fade-b {
-    mask-image: linear-gradient(to bottom, #000 60%, transparent);
+/* The brand guide's signature corner: one large radius, three small ones. */
+@utility rounded-signature {
+  border-radius: clamp(3.5rem, 9vw, 8.75rem) 1rem 1rem 1rem;
+}
+
+/* Electric Fade text (see <Highlight variant="fade">). */
+@utility text-gradient-brand {
+  background-image: linear-gradient(
+    100deg,
+    var(--color-violet-300) 0%,
+    var(--color-violet-500) 55%,
+    var(--color-violet-300) 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Figures that change or line up in columns. */
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Edge fade for marquees and horizontally scrolling rails. */
+@utility mask-fade-x {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 6%,
+    #000 94%,
+    transparent
+  );
+}
+
+/*
+ * The one hover zoom for media in cards: put `zoom-media` on the image (or a
+ * decorative layer) and `group/zoom` on the element whose hover starts it,
+ * usually the card. Scale 1.04 on the house easing; no zoom at all when the
+ * visitor prefers reduced motion, and none on touch-only devices.
+ */
+@utility zoom-media {
+  @media (prefers-reduced-motion: no-preference) {
+    transition: scale 1.2s var(--ease-brand);
+
+    @media (hover: hover) {
+      :where(.group\/zoom):hover & {
+        scale: 1.04;
+      }
+    }
   }
 }
 
-@layer utilities {
-  .rounded-signature {
-    border-radius: clamp(3.5rem, 9vw, 8.75rem) 1rem 1rem 1rem;
-  }
-
-  .text-gradient-brand {
-    background-image: linear-gradient(
-      100deg,
-      var(--color-violet-300) 0%,
-      var(--color-violet-500) 55%,
-      var(--color-violet-300) 100%
-    );
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .tabular {
-    font-variant-numeric: tabular-nums;
-  }
+/* Anchor targets land below the fixed header (see --header-offset). */
+@utility scroll-mt-header {
+  scroll-margin-top: var(--header-offset);
 }

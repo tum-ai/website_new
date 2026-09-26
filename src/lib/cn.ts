@@ -2,9 +2,15 @@ import { type ClassValue, clsx } from "clsx";
 import { extendTailwindMerge } from "tailwind-merge";
 
 /**
- * tailwind-merge only knows Tailwind's stock scales. Without registering the
- * design-system tokens from src/styles/index.css it would treat
- * `text-display-xl` as a color and drop it next to `text-fg`.
+ * tailwind-merge only knows Tailwind's stock scales. Every custom token and
+ * utility from src/styles/index.css that competes with a stock class is
+ * registered here; without it `text-display-xl` would read as a text color
+ * and be dropped next to `text-fg`. Keep this list in sync with the theme
+ * (`src/lib/cn.test.ts` checks the important pairs).
+ *
+ * Colors need no entry: tailwind-merge treats any unknown `text-*`, `bg-*`
+ * or `border-*` value as a color, so `bg-canvas` and `text-fg-muted` already
+ * conflict with `bg-raised` and `text-fg`.
  */
 const twMerge = extendTailwindMerge({
   extend: {
@@ -22,24 +28,14 @@ const twMerge = extendTailwindMerge({
         "small",
         "meta",
         "eyebrow",
-        "title",
-        "subtitle",
-        "subtext",
+        "label",
+        "stat-sm",
+        "stat-md",
+        "stat-lg",
+        "stat-xl",
       ],
-      color: [
-        "canvas",
-        "raised",
-        "sunken",
-        "fg",
-        "fg-muted",
-        "fg-subtle",
-        "hairline",
-        "hairline-strong",
-        "highlight",
-        "glow",
-      ],
-      shadow: ["soft", "lift", "glow", "inset-hairline"],
-      radius: ["4xl", "5xl"],
+      shadow: ["soft", "lift", "inset-hairline"],
+      radius: ["signature"],
       ease: ["brand", "snappy", "in-out-soft"],
       animate: [
         "rise",
@@ -50,9 +46,11 @@ const twMerge = extendTailwindMerge({
         "marquee",
         "marquee-reverse",
         "pulse-ring",
-        "shimmer",
-        "line",
       ],
+    },
+    classGroups: {
+      "fvn-spacing": ["tabular"],
+      "scroll-mt": [{ "scroll-mt": ["header"] }],
     },
   },
 });
