@@ -26,8 +26,8 @@ export const eLabConfig: ELabConfig = {
    */
   applicationsOpen: true,
   applicationUrl: "https://tally.so/r/xXBkW9",
-  applicationDeadline: "2026-09-27T21:00:00+02:00",
-  applicationDeadlineLabel: "27.09.2026 at 21:00 (Munich time)",
+  applicationDeadline: "2026-09-27T22:00:00+02:00",
+  applicationDeadlineLabel: "27.09.2026 at 22:00 (Munich time)",
   heroLogo: {
     src: "/assets/e-lab/E-Lab5Logo.svg",
     alt: "E-LAB 6.0",

@@ -49,7 +49,7 @@ test("E-Lab metrics match the approved proof points", () => {
 });
 
 test("E-Lab deadline is centralized and used by the FAQ", () => {
-  assert.equal(eLabConfig.applicationDeadline, "2026-09-27T21:00:00+02:00");
+  assert.equal(eLabConfig.applicationDeadline, "2026-09-27T22:00:00+02:00");
   assert.equal(
     getELabApplicationCopy(true).deadline,
     eLabConfig.applicationDeadlineLabel,
@@ -60,17 +60,17 @@ test("E-Lab deadline is centralized and used by the FAQ", () => {
   );
   assert.equal(
     deadlineFaq?.answer,
-    "The application phase closes on 27.09.2026 at 21:00 (Munich time).",
+    "The application phase closes on 27.09.2026 at 22:00 (Munich time).",
   );
 });
 
 test("E-Lab applications close exactly at the deadline", () => {
   assert.equal(
-    isELabApplicationOpen(Date.parse("2026-09-27T20:59:59+02:00")),
+    isELabApplicationOpen(Date.parse("2026-09-27T21:59:59+02:00")),
     true,
   );
   assert.equal(
-    isELabApplicationOpen(Date.parse("2026-09-27T21:00:00+02:00")),
+    isELabApplicationOpen(Date.parse("2026-09-27T22:00:00+02:00")),
     false,
   );
   assert.equal(
