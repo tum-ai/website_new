@@ -1,5 +1,8 @@
-import { ELabApplicationCta } from "@/components/e-lab/ApplicationCta";
-import { eLabApplicationCopy, eLabConfig } from "@/config/e-lab";
+import {
+  ELabApplicationCta,
+  ELabApplicationText,
+} from "@/components/e-lab/ApplicationCta";
+import { eLabConfig } from "@/config/e-lab";
 
 export const Hero = () => {
   return (
@@ -82,7 +85,9 @@ export const Hero = () => {
                 closedClassName="cursor-not-allowed border-dark-purple/50 bg-dark-purple/40 text-minimal-gray/80 pointer-events-none"
               >
                 <span className="relative flex items-center space-x-2">
-                  <span>{eLabApplicationCopy.heroCtaLabel}</span>
+                  <span>
+                    <ELabApplicationText field="heroCtaLabel" />
+                  </span>
                 </span>
               </ELabApplicationCta>
             </div>

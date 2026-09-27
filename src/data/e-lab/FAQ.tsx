@@ -1,4 +1,4 @@
-import { eLabApplicationCopy } from "@/config/e-lab";
+import { eLabConfig } from "@/config/e-lab";
 
 export const faq = [
   {
@@ -40,7 +40,7 @@ export const faq = [
 
   {
     question: "When is the application deadline?",
-    answer: `The application phase closes on ${eLabApplicationCopy.deadline}.`,
+    answer: `The application phase closes on ${eLabConfig.applicationDeadlineLabel}.`,
   },
   {
     question: "Can I apply with a team?",

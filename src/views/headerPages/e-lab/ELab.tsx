@@ -1,12 +1,14 @@
 import type { Organization, WithContext } from "schema-dts";
-import { ELabApplicationCta } from "@/components/e-lab/ApplicationCta";
+import {
+  ELabApplicationCta,
+  ELabApplicationText,
+} from "@/components/e-lab/ApplicationCta";
 import { ExpectationELab } from "@/components/e-lab/ExpectationELab";
 import { NotableStartups } from "@/components/e-lab/NotableStartups";
 import { Testimonials } from "@/components/e-lab/Testimonials";
 import { Timeline } from "@/components/e-lab/TimeLine";
 import JsonLd from "@/components/JsonLd";
 import FAQ from "@/components/ui/FAQ";
-import { eLabApplicationCopy } from "@/config/e-lab";
 import { faq } from "@/data/e-lab/FAQ";
 import { Hero } from "./hero";
 // import "@/styles/elab-font.css";
@@ -95,13 +97,13 @@ export default function ELab() {
                       className={`mb-5 text-3xl md:text-4xl font-bold text-black`}
                     >
                       <style></style>
-                      {eLabApplicationCopy.cardHeading}
+                      <ELabApplicationText field="cardHeading" />
                     </h2>
 
                     <p
                       className={`mx-auto mb-10 max-w-2xl text-base leading-relaxed text-text-gray`}
                     >
-                      {eLabApplicationCopy.cardDescription}
+                      <ELabApplicationText field="cardDescription" />
                     </p>
 
                     <div className="flex justify-center">
@@ -117,7 +119,9 @@ export default function ELab() {
                           closedClassName="cursor-not-allowed border-dark-purple/50 bg-dark-purple/40 text-minimal-gray/80 pointer-events-none"
                         >
                           <span className="relative z-10 flex items-center gap-2">
-                            <span>{eLabApplicationCopy.cardCtaLabel}</span>
+                            <span>
+                              <ELabApplicationText field="cardCtaLabel" />
+                            </span>
                           </span>
                         </ELabApplicationCta>
                       </div>

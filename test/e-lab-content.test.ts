@@ -3,7 +3,11 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import test from "node:test";
 
-import { eLabApplicationCopy, eLabConfig } from "../src/config/e-lab.ts";
+import {
+  eLabConfig,
+  getELabApplicationCopy,
+  isELabApplicationOpen,
+} from "../src/config/e-lab.ts";
 import { faq } from "../src/data/e-lab/FAQ.tsx";
 import {
   eLabMetrics,
@@ -45,15 +49,33 @@ test("E-Lab metrics match the approved proof points", () => {
 });
 
 test("E-Lab deadline is centralized and used by the FAQ", () => {
-  assert.equal(eLabConfig.applicationDeadline, "26.09.2026 at 23:59");
-  assert.equal(eLabApplicationCopy.deadline, eLabConfig.applicationDeadline);
+  assert.equal(eLabConfig.applicationDeadline, "2026-09-27T21:00:00+02:00");
+  assert.equal(
+    getELabApplicationCopy(true).deadline,
+    eLabConfig.applicationDeadlineLabel,
+  );
 
   const deadlineFaq = faq.find(
     (item) => item.question === "When is the application deadline?",
   );
   assert.equal(
     deadlineFaq?.answer,
-    "The application phase closes on 26.09.2026 at 23:59.",
+    "The application phase closes on 27.09.2026 at 21:00 (Munich time).",
+  );
+});
+
+test("E-Lab applications close exactly at the deadline", () => {
+  assert.equal(
+    isELabApplicationOpen(Date.parse("2026-09-27T20:59:59+02:00")),
+    true,
+  );
+  assert.equal(
+    isELabApplicationOpen(Date.parse("2026-09-27T21:00:00+02:00")),
+    false,
+  );
+  assert.equal(
+    getELabApplicationCopy(false).cardCtaLabel,
+    "Applications Closed",
   );
 });
 
