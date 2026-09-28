@@ -1,4 +1,4 @@
-import { assert, expect, test } from "vitest";
+import { expect, test } from "vitest";
 import { getPartnerDirectory } from "./partner-directory";
 import {
   createPartnerRotation,
@@ -28,6 +28,11 @@ test("small and duplicate rosters stay static with no empty slots", () => {
   }
 });
 
+/*
+ * The long runs check their invariants with plain comparisons and assert once
+ * per run: tens of thousands of `expect()` calls took seconds and timed out on
+ * loaded CI runners, while the seeded runs themselves take milliseconds.
+ */
 test("rotation stays unique, fair and changes positions across long seeded runs", () => {
   for (const size of [4, 5, 7, 8, 20]) {
     for (const seed of [1, 42, 257]) {
@@ -36,24 +41,35 @@ test("rotation stays unique, fair and changes positions across long seeded runs"
         Array.from({ length: size }, (_, i) => `partner-${i}`),
       );
       const seen = new Map<string, Set<number>>();
+      const failures = new Set<string>();
       let previousSlot = -1;
       let group: number[] = [];
       for (let i = 0; i < 3000; i++) {
         const next = nextPartnerRotation(state, random);
-        assert.exists(next);
-        expect(state.visible).not.toContain(next.incoming);
-        expect(next.incoming).not.toBe(next.outgoing);
-        expect(next.slot).not.toBe(previousSlot);
-        expect(new Set(next.state.visible).size).toBe(3);
+        if (!next) {
+          failures.add("ran out of partners");
+          break;
+        }
+        if (state.visible.includes(next.incoming))
+          failures.add("incoming was already visible");
+        if (next.incoming === next.outgoing)
+          failures.add("incoming replaced itself");
+        if (next.slot === previousSlot)
+          failures.add("same slot twice in a row");
+        if (new Set(next.state.visible).size !== 3)
+          failures.add("wall lost a unique slot");
         const eligible = Object.keys(state.appearances).filter(
           (key) => !state.visible.includes(key),
         );
-        expect(state.appearances[next.incoming]).toBe(
-          Math.min(...eligible.map((key) => state.appearances[key])),
-        );
+        if (
+          state.appearances[next.incoming] !==
+          Math.min(...eligible.map((key) => state.appearances[key]))
+        )
+          failures.add("incoming was not among the least shown");
         group.push(next.slot);
         if (group.length === 3) {
-          expect(new Set(group).size).toBe(3);
+          if (new Set(group).size !== 3)
+            failures.add("a round of three repeated a slot");
           group = [];
         }
         const slots = seen.get(next.incoming) ?? new Set<number>();
@@ -62,13 +78,19 @@ test("rotation stays unique, fair and changes positions across long seeded runs"
         state = next.state;
         previousSlot = next.slot;
       }
+      const run = `size ${size}, seed ${seed}`;
+      expect([...failures], run).toStrictEqual([]);
       const counts = Object.values(state.appearances);
       if (size >= 6) {
-        expect(Math.max(...counts) - Math.min(...counts)).toBeLessThanOrEqual(
-          2,
-        );
+        expect(
+          Math.max(...counts) - Math.min(...counts),
+          run,
+        ).toBeLessThanOrEqual(2);
       }
-      for (const slots of seen.values()) expect(slots.size).toBe(3);
+      expect(
+        [...seen.values()].every((slots) => slots.size === 3),
+        run,
+      ).toBe(true);
     }
   }
 });
@@ -111,41 +133,53 @@ test("supporter batches reserve outgoing companies and change multiple distinct 
         capacity,
       );
       const random = seeded(capacity + size);
+      const run = `capacity ${capacity}, size ${size}`;
       if (size === capacity) {
-        expect(nextPartnerBatch(state, capacity / 3, random)).toBeNull();
+        expect(nextPartnerBatch(state, capacity / 3, random), run).toBeNull();
         continue;
       }
       const seen = new Set(state.visible);
+      const failures = new Set<string>();
       for (let step = 0; step < 1000; step++) {
         const batch = nextPartnerBatch(state, capacity / 3, random);
-        assert.exists(batch);
-        expect(batch.changes.length).toBeLessThanOrEqual(capacity / 3);
-        expect(batch.changes.length).toBeLessThanOrEqual(size - capacity);
-        if (size >= capacity * 2) {
-          expect(batch.changes).toHaveLength(capacity / 3);
+        if (!batch) {
+          failures.add("ran out of supporters");
+          break;
         }
-        expect(new Set(batch.changes.map((change) => change.slot)).size).toBe(
-          batch.changes.length,
-        );
+        const { changes } = batch;
+        if (changes.length > capacity / 3) failures.add("batch too large");
+        if (changes.length > size - capacity)
+          failures.add("batch larger than the hidden pool");
+        if (size >= capacity * 2 && changes.length !== capacity / 3)
+          failures.add("full pool gave a short batch");
+        if (
+          new Set(changes.map((change) => change.slot)).size !== changes.length
+        )
+          failures.add("batch reused a slot");
         const allOnScreen = [
           ...batch.state.visible,
-          ...batch.changes.map((change) => change.outgoing),
+          ...changes.map((change) => change.outgoing),
         ];
-        expect(new Set(allOnScreen).size).toBe(allOnScreen.length);
-        for (const [index, change] of batch.changes.entries()) {
-          expect(state.visible).not.toContain(change.incoming);
-          expect(change.outgoing).toBe(state.visible[change.slot]);
-          expect(change.delay).toBe(index * 90);
+        if (new Set(allOnScreen).size !== allOnScreen.length)
+          failures.add("a company is on screen twice");
+        for (const [index, change] of changes.entries()) {
+          if (state.visible.includes(change.incoming))
+            failures.add("incoming was already visible");
+          if (change.outgoing !== state.visible[change.slot])
+            failures.add("outgoing is not the slot's company");
+          if (change.delay !== index * 90) failures.add("stagger is off");
           seen.add(change.incoming);
         }
         state = batch.state;
       }
-      expect(seen.size).toBe(size);
+      expect([...failures], run).toStrictEqual([]);
+      expect(seen.size, run).toBe(size);
       if (size >= capacity * 2) {
         const counts = Object.values(state.appearances);
-        expect(Math.max(...counts) - Math.min(...counts)).toBeLessThanOrEqual(
-          2,
-        );
+        expect(
+          Math.max(...counts) - Math.min(...counts),
+          run,
+        ).toBeLessThanOrEqual(2);
       }
     }
   }
