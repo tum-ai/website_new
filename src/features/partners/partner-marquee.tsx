@@ -1,21 +1,32 @@
 import type { CSSProperties } from "react";
-import { ButtonLink } from "@/components/ds";
+import { ButtonLink, FallbackImage } from "@/components/ds";
 import type { Partner } from "@/lib/types";
+import { symbolOnlyLogos } from "./data/partner-logos";
 import { marqueeLogos } from "./data/partner-marquee-logos";
 import { getPartnerKey } from "./partner-directory";
-import { PartnerLogo } from "./partner-logo";
+
+/** The partner name, set in place of (or beside) artwork on the dark hero. */
+function PartnerName({ name }: { name: string }) {
+  return (
+    <span className="text-center font-bold text-fg text-heading-sm">
+      {name}
+    </span>
+  );
+}
 
 /**
  * Highlighted-partner rail for the dark hero. Unlike the DS `Marquee` (which
  * duplicates its list), every partner is rendered once and moves at an equal
  * rate, wrapping outside the clipped window; mechanics live in partners.css.
+ * Only artwork verified on dark bands is shown (`marqueeLogos`); everything
+ * else, and artwork that fails to load, falls back to the name.
  */
 export function PartnerMarquee({ partners }: { partners: Partner[] }) {
   if (!partners.length) return null;
   const animated = partners.length > 3;
   return (
     <div
-      className="partner-marquee mt-12 border-hairline border-t pt-5 [animation-delay:640ms] motion-safe:animate-rise-sm md:mt-14 md:pt-6"
+      className="partner-marquee border-hairline border-t pt-5 md:pt-6"
       data-animated={animated}
       style={
         {
@@ -32,27 +43,41 @@ export function PartnerMarquee({ partners }: { partners: Partner[] }) {
           Meet our partners
         </ButtonLink>
       </div>
-      <div className="partner-marquee-window">
-        <ul
-          className="partner-marquee-set text-violet-50 [&_.partner-logo-fallback]:text-violet-50 [&_.partner-logo-image]:max-h-8 md:[&_.partner-logo-image]:max-h-10"
-          aria-label="Highlighted partners"
-        >
+      <div className="partner-marquee-window motion-safe:mask-fade-x">
+        <ul className="partner-marquee-set" aria-label="Highlighted partners">
           {partners.map((partner, index) => {
             const key = getPartnerKey(partner.name);
             const image = marqueeLogos[key];
+            const lockup = image ? symbolOnlyLogos.has(image) : false;
             return (
               <li
                 key={key}
                 className="partner-marquee-item opacity-80 transition-opacity duration-300 ease-brand hover:opacity-100"
                 style={{ "--marquee-index": index } as CSSProperties}
               >
-                {(key === "mutagent" || key === "dryft") && image ? (
-                  <span className="partner-logo-lockup flex items-center gap-2.5 font-semibold text-[0.9375rem] [&_.partner-logo-image]:size-9">
-                    <PartnerLogo name="" image={image} eager />
-                    <span>{partner.name}</span>
+                {lockup ? (
+                  <span className="flex items-center gap-2.5 font-semibold text-fg text-label">
+                    <FallbackImage
+                      src={image}
+                      alt=""
+                      width={72}
+                      height={72}
+                      loading="eager"
+                      className="size-9 object-contain"
+                      fallback={null}
+                    />
+                    {partner.name}
                   </span>
                 ) : (
-                  <PartnerLogo name={partner.name} image={image} eager />
+                  <FallbackImage
+                    src={image}
+                    alt={partner.name}
+                    width={200}
+                    height={80}
+                    loading="eager"
+                    className="block h-full max-h-8 w-full object-contain md:max-h-10"
+                    fallback={<PartnerName name={partner.name} />}
+                  />
                 )}
               </li>
             );

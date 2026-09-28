@@ -1,3 +1,4 @@
+import { communityFacts } from "@/config/community";
 import { eLabConfig } from "@/config/e-lab";
 import { officialMembers, organizationFacts } from "@/config/organization";
 
@@ -133,8 +134,7 @@ export const partnerPillars = [
     title: "Hackathons",
     metric: "2500+",
     metricLabel: "Hackers",
-    description:
-      "Over all our hackathons (OpenAI, AWS, Anthropic, Google). 500+ hackers at our signature Makeathon, European Hackathon League across 4 cities (Munich, Berlin, Zurich, Paris), partners host challenges, booths and company pitches.",
+    description: `Over all our hackathons (OpenAI, AWS, Anthropic, Google). ${communityFacts.makeathonSize}+ hackers at our signature Makeathon, European Hackathon League across 4 cities (Munich, Berlin, Zurich, Paris), partners host challenges, booths and company pitches.`,
     image: "/assets/homepage/Makeathon.webp",
     alt: "The TUM.ai Makeathon team",
     href: "/events",

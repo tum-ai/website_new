@@ -17,12 +17,7 @@ import {
 const knownIssues: Record<
   string,
   Partial<Record<"axe" | "newTab" | "labelInName", string>>
-> = {
-  "/partners": {
-    newTab:
-      "Partners: partner logo tiles (Visit <partner>) open a new tab without saying so.",
-  },
-};
+> = {};
 
 /*
  * axe-core (WCAG 2 A/AA) on every route, desktop Chromium and iPhone WebKit.

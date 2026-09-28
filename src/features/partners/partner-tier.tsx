@@ -5,13 +5,14 @@ import type { PartnerTileSize } from "./partner-tile";
 
 const labels = { gold: "Gold", silver: "Silver", bronze: "Bronze" };
 
-/* Narrower rows and smaller tiles carry the tier hierarchy from 768px up. */
+/* Narrower rows and smaller tiles carry the tier hierarchy from `md` up. */
 const rows: { width: string; size: PartnerTileSize }[] = [
   { width: "md:w-full", size: "lg" },
-  { width: "md:w-[84%]", size: "md" },
-  { width: "md:w-[72%]", size: "sm" },
+  { width: "md:w-5/6", size: "md" },
+  { width: "md:w-3/4", size: "md" },
 ];
 
+/** One tier's heading and its rotating row of three tiles. */
 export function PartnerTier({
   partners,
   tier,

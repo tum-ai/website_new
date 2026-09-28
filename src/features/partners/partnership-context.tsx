@@ -29,6 +29,12 @@ const PartnershipContext = createContext<{
   openBooking: () => void;
 } | null>(null);
 
+/**
+ * Holds the partnership finder's answers and the booking dialog for the whole
+ * page, so every contact action (hero, rows, finder, closing band) sends the
+ * same context. The dialog's code loads on the first "Book a call", and
+ * closing it returns focus to the control that opened it.
+ */
 export function PartnershipProvider({ children }: { children: ReactNode }) {
   const [selection, dispatch] = useReducer(
     partnershipFunnelReducer,
@@ -63,6 +69,7 @@ export function PartnershipProvider({ children }: { children: ReactNode }) {
   );
 }
 
+/** The finder state, its dispatch and `openBooking`; throws outside the provider. */
 export function usePartnership() {
   const context = useContext(PartnershipContext);
   if (!context)
