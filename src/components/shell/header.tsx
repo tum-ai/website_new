@@ -53,6 +53,8 @@ const logo = {
  *   the page shows below it.
  * - The pill's bottom stays above `--header-offset` (`scroll-mt-header`), so
  *   in-page anchors land below it.
+ *
+ * Safari workarounds: docs/browser-quirks.md.
  */
 export const Header = () => {
   const pathname = usePathname();
@@ -252,7 +254,7 @@ export const Header = () => {
          * The panel extends under Safari's toolbars; its content fills the
          * visible viewport. min-h-lvh + bottom padding of (lvh - dvh): when
          * the menu overflows (small phones, landscape), its last row can
-         * still scroll above Safari's toolbar.
+         * still scroll above Safari's toolbar. See docs/browser-quirks.md.
          */}
         <div className="flex min-h-lvh flex-col pb-[calc(100lvh-100dvh)]">
           {/* Lines the close button up with the menu button it replaces. */}

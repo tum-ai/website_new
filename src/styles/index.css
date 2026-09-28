@@ -179,7 +179,8 @@
   --animate-pulse-ring: pulse-ring 2.4s var(--ease-brand) infinite;
 
   /* Transform and opacity only: a filter (the old blur) would make Safari
-     clip each word to its box and repaint large headlines every frame. */
+     clip each word to its box and repaint large headlines every frame.
+     See docs/browser-quirks.md. */
   @keyframes rise {
     from {
       opacity: 0;
@@ -412,7 +413,7 @@
    * and bottom toolbar from it, and every page starts with a hero that fades
    * into it (TopBlend) and ends with the footer in the same color. Page
    * content sits on its own bands (and #main-content is white), so it never
-   * shows through.
+   * shows through. See docs/browser-quirks.md.
    */
   html {
     background-color: var(--color-black);
@@ -473,7 +474,7 @@
    * Scroll reveal. <Reveal> only marks elements that start below the fold as
    * pending, so server-rendered and no-JS content is always visible. No blur:
    * Safari clips filtered boxes (cutting descenders and rounded edges), and
-   * blurring large sections stutters on phones.
+   * blurring large sections stutters on phones. See docs/browser-quirks.md.
    */
   @media (prefers-reduced-motion: no-preference) {
     [data-reveal] {

@@ -1,7 +1,7 @@
 import { JsonLd } from "@/components/json-ld";
 import { buildMetadata, getJsonLd } from "@/config/seo";
 import { EventsPage } from "@/features/events/events-page";
-import { getMockCmsNow } from "@/lib/mock-cms-env";
+import { getCmsNow } from "@/lib/mock-cms-env";
 import { getSanityEvents } from "@/lib/sanity";
 
 export const metadata = buildMetadata("events");
@@ -22,24 +22,13 @@ export const metadata = buildMetadata("events");
  */
 export const revalidate = 300;
 
-/**
- * The render time, or `MOCK_CMS_NOW` under the mock CMS (the same condition
- * as in `lib/sanity.ts`), so the fixtures and the split share one clock and
- * end-to-end tests are deterministic.
- */
-function getRenderNow(): Date {
-  return process.env.USE_MOCK_CMS === "1" && !process.env.VERCEL
-    ? getMockCmsNow(process.env)
-    : new Date();
-}
-
 export default async function Page() {
   const events = await getSanityEvents();
 
   return (
     <>
       <JsonLd data={getJsonLd("events")} />
-      <EventsPage events={events} now={getRenderNow()} />
+      <EventsPage events={events} now={getCmsNow()} />
     </>
   );
 }

@@ -47,11 +47,10 @@ jobs:
     permissions:
       contents: write
     container:
-      # Keep the tag in step with the installed @playwright/test version (the
-      # version check below fails when they drift) and with ci.yml's Visual job.
+      # Must match @playwright/test (the check below fails when they drift)
+      # and ci.yml's E2E and Visual jobs.
       image: mcr.microsoft.com/playwright:v1.63.0-noble
     env:
-      PLAYWRIGHT_VERSION: 1.63.0
       USE_MOCK_CMS: "1"
     steps:
       - name: Checkout repository
@@ -65,12 +64,7 @@ jobs:
       - name: Set up toolchain
         uses: ./.github/actions/setup
       - name: Check the image matches @playwright/test
-        run: |
-          installed="$(node -p "require('@playwright/test/package.json').version")"
-          if [ "$installed" != "$PLAYWRIGHT_VERSION" ]; then
-            echo "::error::@playwright/test is $installed but the image is v$PLAYWRIGHT_VERSION. Update the image tag and PLAYWRIGHT_VERSION in this workflow and in ci.yml."
-            exit 1
-          fi
+        uses: ./.github/actions/check-playwright-image
       - name: Capture baselines
         # `changed` rewrites only baselines that fail the comparison (and
         # writes missing ones). `all` also rewrote untouched routes with

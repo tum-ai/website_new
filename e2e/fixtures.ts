@@ -70,13 +70,13 @@ export const MOCK_CMS_NOW = "2026-10-01T12:00:00Z";
 // ---------------------------------------------------------------------------
 
 /** A console message that is known noise, with the reason it is ignored. */
-export type ConsoleAllowance = { pattern: RegExp; reason: string };
+type ConsoleAllowance = { pattern: RegExp; reason: string };
 
 /**
  * Console errors that are not the site's fault. Keep this list short and give
  * every entry a reason; anything else fails `expectNoConsoleErrors`.
  */
-export const consoleAllowlist: readonly ConsoleAllowance[] = [
+const consoleAllowlist: readonly ConsoleAllowance[] = [
   {
     // The booking dialog loads Cal.eu's embed from a third-party origin;
     // tests block it (see partners.spec.ts), and its own iframe logs.
@@ -95,7 +95,7 @@ export type ConsoleErrorLog = {
  * Starts collecting `console.error` output and uncaught exceptions (including
  * React hydration errors) from `page`. Call it before `page.goto`.
  */
-export function collectConsoleErrors(
+function collectConsoleErrors(
   page: Page,
   allowlist: readonly ConsoleAllowance[] = consoleAllowlist,
 ): ConsoleErrorLog {
@@ -127,7 +127,7 @@ export type FailedImageLog = { readonly urls: string[] };
  * Catches images that a component swaps for a fallback `onError`, which the
  * DOM check in `expectNoBrokenImages` can no longer see. Call before `goto`.
  */
-export function collectFailedImages(page: Page): FailedImageLog {
+function collectFailedImages(page: Page): FailedImageLog {
   const urls: string[] = [];
   page.on("response", (response) => {
     if (
@@ -261,7 +261,7 @@ export async function expectNoHorizontalOverflow(page: Page): Promise<void> {
 // ---------------------------------------------------------------------------
 
 /** WCAG 2.0, 2.1 and 2.2 level A and AA rules. */
-export const wcagTags = [
+const wcagTags = [
   "wcag2a",
   "wcag2aa",
   "wcag21a",
@@ -270,7 +270,7 @@ export const wcagTags = [
 ] as const;
 
 /** Impacts that fail the suite; minor and moderate findings are reported only. */
-export const blockingImpacts = ["serious", "critical"] as const;
+const blockingImpacts = ["serious", "critical"] as const;
 
 /**
  * Decorative overlays hidden while axe runs. axe-core 4.13 wrongly flattens
@@ -279,7 +279,7 @@ export const blockingImpacts = ["serious", "critical"] as const;
  * background as #4f0088 (contrast 1.47) although it renders white. Hiding the
  * texture changes real contrast by well under 1%.
  */
-export const axeHiddenOverlays = [".grain"] as const;
+const axeHiddenOverlays = [".grain"] as const;
 
 export type A11yOptions = {
   /** CSS selectors to exclude from the scan (e.g. third-party iframes). */
@@ -410,14 +410,6 @@ export async function expectNoA11yViolations(
 // ---------------------------------------------------------------------------
 
 /**
- * Emulates `prefers-reduced-motion: reduce` for the rest of the test. The
- * `reduced-motion` project sets it for the whole context instead.
- */
-export async function emulateReducedMotion(page: Page): Promise<void> {
-  await page.emulateMedia({ reducedMotion: "reduce" });
-}
-
-/**
  * Waits until every finite CSS animation and transition on the page has
  * finished (infinite ones, like marquees, are ignored). Capped at `timeout`.
  */
@@ -535,7 +527,7 @@ export async function expectContentVisible(page: Page): Promise<void> {
  * behind the whole hero (masking it would hide the logo, heading and CTAs),
  * and reduced motion, which the visual projects use, already holds it still.
  */
-export const visualMaskSelectors = [
+const visualMaskSelectors = [
   '[class~="group/marquee"]',
   "[data-rotating]",
   ".tabular:has(> [aria-hidden] + .sr-only)",

@@ -31,7 +31,9 @@ jobs:
       - name: Set up toolchain
         uses: ./.github/actions/setup
       - name: Biome
-        run: pnpm exec biome ci .
+        # Every rule is an error; --error-on-warnings keeps a rule that Biome
+        # itself reports as a warning from slipping through.
+        run: pnpm exec biome ci --error-on-warnings .
 
   typecheck:
     name: Typecheck
@@ -64,6 +66,7 @@ jobs:
       - name: Set up toolchain
         uses: ./.github/actions/setup
       - name: Vitest with coverage
+        # Fails below the line-coverage thresholds in vitest.config.ts.
         run: pnpm test:coverage
       - name: Upload coverage report
         if: ${{ !cancelled() }}
@@ -91,21 +94,21 @@ jobs:
         run: pnpm test:perf
 
   e2e:
-    # Split across three runners so the specs (about 4 minutes on one runner)
-    # take about a third of that. Each shard builds the site itself: waiting
+    # Split across four runners so the specs (about 4 minutes on one runner)
+    # take about a quarter of that. Each shard builds the site itself: waiting
     # for a shared build job first would add its whole runtime to the critical
     # path, while runner minutes are free for this public repo.
-    name: E2E (${{ matrix.shard }}/3)
+    name: E2E (${{ matrix.shard }}/4)
     runs-on: ubuntu-latest
     timeout-minutes: 20
     container:
-      # Browsers and system dependencies preinstalled; keep the tag in step
-      # with @playwright/test (see e2e-snapshots.yml).
+      # Browsers and system dependencies preinstalled. The tag must match
+      # @playwright/test; the check-playwright-image step fails when not.
       image: mcr.microsoft.com/playwright:v1.63.0-noble
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3]
+        shard: [1, 2, 3, 4]
     env:
       USE_MOCK_CMS: "1"
       SHARD: ${{ matrix.shard }}
@@ -116,10 +119,12 @@ jobs:
           persist-credentials: false
       - name: Set up toolchain
         uses: ./.github/actions/setup
+      - name: Check the image matches @playwright/test
+        uses: ./.github/actions/check-playwright-image
       - name: Playwright
         # Functional, accessibility, keyboard, motion and no-JS specs in
         # Chromium and WebKit. The visual spec runs in the Visual job.
-        run: pnpm test:e2e --shard="$SHARD/3" --reporter=blob
+        run: pnpm test:e2e --shard="$SHARD/4" --reporter=blob
       - name: Upload blob report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -161,15 +166,22 @@ jobs:
           retention-days: 14
 
   visual:
-    name: Visual
+    # Two runners, like the E2E shards: each builds the site and compares
+    # half of the screenshots.
+    name: Visual (${{ matrix.shard }}/2)
     runs-on: ubuntu-latest
     timeout-minutes: 30
     container:
-      # The image e2e-snapshots.yml captures the baselines in; keep both tags
-      # in step with @playwright/test.
+      # The image e2e-snapshots.yml captures the baselines in; both tags must
+      # match @playwright/test (checked below).
       image: mcr.microsoft.com/playwright:v1.63.0-noble
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2]
     env:
       USE_MOCK_CMS: "1"
+      SHARD: ${{ matrix.shard }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -177,16 +189,18 @@ jobs:
           persist-credentials: false
       - name: Set up toolchain
         uses: ./.github/actions/setup
+      - name: Check the image matches @playwright/test
+        uses: ./.github/actions/check-playwright-image
       - name: Visual regression
         # Compares every route at 390 and 1440 px against the committed Linux
         # baselines (e2e/__screenshots__/linux). To accept an intended change,
         # add the `update-snapshots` label to the PR (e2e-snapshots.yml).
-        run: pnpm test:e2e:visual
+        run: pnpm test:e2e:visual --shard="$SHARD/2"
       - name: Upload Playwright report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: visual-report
+          name: visual-report-${{ matrix.shard }}
           path: |
             playwright-report/
             test-results/
@@ -194,7 +208,7 @@ jobs:
           retention-days: 14
 
   knip:
-    name: Knip (advisory)
+    name: Knip
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -205,10 +219,8 @@ jobs:
       - name: Set up toolchain
         uses: ./.github/actions/setup
       - name: Unused files, exports and dependencies
-        # Advisory until the findings are cleaned up. Step-level (not job-level)
-        # continue-on-error keeps the check green, so it does not block
-        # dependabot-maintenance.yml, which merges only when every check passed.
-        continue-on-error: true
+        # Configured in knip.json (generated types, ds prop types and the
+        # dependencies that are open questions are ignored there, with reasons).
         run: pnpm knip
 
   verify:
@@ -220,6 +232,7 @@ jobs:
       - build
       - e2e
       - visual
+      - knip
     # Run even when a dependency failed, so this check fails instead of being
     # skipped (a skipped check would count as passing).
     if: ${{ always() }}

@@ -15,7 +15,7 @@ const MAX_TIMEOUT = 2 ** 31 - 1;
  * `initialOpen` must equal what the server rendered, so hydration matches.
  * Omit it in client-only trees; the clock is read on the first render then.
  */
-export function useELabApplicationsOpen(initialOpen?: boolean): boolean {
+function useELabApplicationsOpen(initialOpen?: boolean): boolean {
   const [open, setOpen] = useState(
     () => initialOpen ?? isELabApplicationOpen(new Date()),
   );

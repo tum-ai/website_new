@@ -30,7 +30,7 @@ export type TopBlendProps = VariantProps<typeof topBlendStyles> & {
  * canvas at the page's ends, so without this the aurora and logomark of a
  * hero (top) or the footer (bottom) meet the browser chrome at a visible
  * seam. Place inside the band, after its decorative layers: it sits above
- * them (-z-[5]) and below the content.
+ * them (-z-[5]) and below the content. See docs/browser-quirks.md.
  */
 export function TopBlend({ edge, className }: TopBlendProps) {
   return (

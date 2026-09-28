@@ -7,9 +7,10 @@ import { describe, expect, test } from "vitest";
  *
  * | Module              | May import                                          |
  * | ------------------- | --------------------------------------------------- |
- * | app, src/*.ts       | features/<x>/<name>-page.tsx and page .css,         |
- * |                     | components, config, lib, sanity, styles, app        |
+ * | app                 | features/<x>/<name>-page.tsx and page .css,         |
+ * |                     | components, config, lib, styles, app                |
  * | app/studio          | sanity, lib (no site shell, CSS or features)        |
+ * | src/*.ts            | config, lib (proxy.ts)                              |
  * | features/<x>        | its own files except .css, features/<y> (index),    |
  * |                     | components/{ds,shell}, components/json-ld, config,  |
  * |                     | lib                                                 |
@@ -20,6 +21,10 @@ import { describe, expect, test } from "vitest";
  * | config              | config, lib                                         |
  * | lib                 | lib                                                 |
  * | sanity              | sanity, lib                                         |
+ * | styles              | styles                                              |
+ *
+ * Outside the design system, ds is imported through its barrel
+ * (`@/components/ds`), the one public API its docs and showcase describe.
  *
  * A route imports exactly its page module. A feature's `index.ts` is its API
  * for other features and exists only where another feature needs something;
@@ -27,6 +32,11 @@ import { describe, expect, test } from "vitest";
  * has client islands (or CSS), so a page in a barrel ships its islands to
  * every page that imports the barrel: the three legal routes would all load
  * the privacy table of contents, and the homepage the partnership finder.
+ * For the same reason a route file imports at most one page module, plus
+ * CSS of that page's feature only.
+ *
+ * There are no exceptions: a new import that breaks a rule changes the code
+ * or, deliberately, the rule (here and in docs/architecture.md).
  *
  * Only local modules (`@/…` and relative paths) are checked; packages are not.
  * Imports are found with a regex over `import … from`, `export … from`,
@@ -126,19 +136,27 @@ const isPageModule = (to: Module) =>
 
 const isStylesheet = (to: Module) => to.path.endsWith(".css");
 
+const dsBarrel = "components/ds/index.ts";
+
 /** Why `from` may not import `to`, or null when the import is allowed. */
 function importViolation(from: Module, to: Module): string | null {
+  if (to.layer === "ds" && from.layer !== "ds" && to.path !== dsBarrel) {
+    return "import the design system from @/components/ds (its barrel)";
+  }
   switch (from.layer) {
     case "app":
-    case "root":
       if (to.layer === "features") {
         return isPageModule(to) || isStylesheet(to)
           ? null
           : "routes import a page module (<name>-page.tsx) or page CSS only";
       }
-      return to.layer === "studio"
-        ? "the site may not import the studio"
-        : null;
+      if (to.layer === "studio") return "the site may not import the studio";
+      if (to.layer === "sanity") return "only the studio imports sanity";
+      return null;
+    case "root":
+      return to.layer === "config" || to.layer === "lib"
+        ? null
+        : "top-level files (proxy.ts) may import only config and lib";
     case "studio":
       return to.layer === "studio" ||
         to.layer === "sanity" ||
@@ -192,7 +210,7 @@ function importViolation(from: Module, to: Module): string | null {
         ? null
         : "sanity may import only lib";
     case "styles":
-      return null;
+      return to.layer === "styles" ? null : "styles may import only styles";
   }
 }
 
@@ -204,10 +222,6 @@ describe("import rules", () => {
     for (const file of sourceFiles(srcDir)) {
       const from = moduleOf(relative(srcDir, file));
       for (const specifier of localSpecifiers(readFileSync(file, "utf8"))) {
-        if (/^@\/(views|data)(\/|$)/.test(specifier)) {
-          violations.push(`${from.path} → ${specifier} (removed directory)`);
-          continue;
-        }
         const target = resolveImport(file, specifier);
         if (!target) {
           violations.push(`${from.path} → ${specifier} (does not resolve)`);
@@ -225,6 +239,34 @@ describe("import rules", () => {
     expect(violations).toStrictEqual([]);
     // Guards the regex: the tree has hundreds of local imports.
     expect(checked).toBeGreaterThan(200);
+  });
+
+  test("a route file imports one page and only its feature's CSS", () => {
+    const violations: string[] = [];
+
+    for (const file of sourceFiles(join(srcDir, "app"))) {
+      const from = moduleOf(relative(srcDir, file));
+      const featureImports = localSpecifiers(readFileSync(file, "utf8"))
+        .map((specifier) => resolveImport(file, specifier))
+        .filter((target): target is string => target !== null)
+        .map((target) => moduleOf(relative(srcDir, target)))
+        .filter((to) => to.layer === "features");
+
+      const pages = featureImports.filter(isPageModule);
+      if (pages.length > 1) {
+        violations.push(
+          `${from.path} imports ${pages.length} page modules: ${pages.map((page) => page.path).join(", ")}`,
+        );
+      }
+      const features = new Set(featureImports.map((to) => to.feature));
+      if (features.size > 1) {
+        violations.push(
+          `${from.path} imports from ${features.size} features: ${[...features].join(", ")}`,
+        );
+      }
+    }
+
+    expect(violations).toStrictEqual([]);
   });
 
   test("every feature folder has a page module for its route", () => {
@@ -254,6 +296,11 @@ describe("import rules", () => {
     ["config/seo.ts", "components/json-ld.tsx"],
     ["features/home/home-page.tsx", "features/home/home.css"],
     ["features/partners/index.ts", "features/partners/partners-page.tsx"],
+    ["features/home/home-page.tsx", "components/ds/button.tsx"],
+    ["components/shell/header.tsx", "components/ds/dialog.tsx"],
+    ["app/(site)/layout.tsx", "sanity/sanity.config.ts"],
+    ["proxy.ts", "features/home/home-page.tsx"],
+    ["proxy.ts", "components/json-ld.tsx"],
   ])("flags %s → %s", (from, to) => {
     expect(importViolation(moduleOf(from), moduleOf(to))).not.toBeNull();
   });
@@ -265,6 +312,9 @@ describe("import rules", () => {
     ["app/(site)/page.tsx", "features/home/home-page.tsx"],
     ["app/(site)/page.tsx", "features/home/home.css"],
     ["app/studio/[[...tool]]/page.tsx", "sanity/sanity.config.ts"],
+    ["features/home/home-page.tsx", "components/ds/index.ts"],
+    ["components/ds/dialog.tsx", "components/ds/refs.ts"],
+    ["proxy.ts", "lib/redirects.ts"],
   ])("allows %s → %s", (from, to) => {
     expect(importViolation(moduleOf(from), moduleOf(to))).toBeNull();
   });

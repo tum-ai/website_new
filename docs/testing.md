@@ -7,8 +7,8 @@ runners were chosen is in [ADR 0004](adr/0004-vitest-and-playwright.md).
 ## Where tests run
 
 **CI on the pull request is the gate.** Every push to a PR runs lint, typecheck, unit tests with
-coverage, the production build with the homepage budget, three E2E shards and the visual
-comparison (see [github-actions.md](github-actions.md)).
+coverage thresholds, the production build with the homepage budget, four E2E shards, the visual
+comparison (two shards) and knip (see [github-actions.md](github-actions.md)).
 
 **Coding agents run only `pnpm lint`, `pnpm typecheck` and targeted Vitest locally**: while
 writing tests, `pnpm exec vitest run <files you touched>`. The full unit suite, `pnpm build`,
@@ -31,7 +31,9 @@ People can run any suite locally when it helps; the commands are below.
 | Visual | `e2e/visual.spec.ts` | `pnpm test:e2e:visual` | Playwright `visual-chromium`, `visual-webkit` |
 
 Coverage: `pnpm test:coverage` writes `coverage/` (v8; `src/**` without tests, `src/sanity/**` and
-`src/app/studio/**`). CI uploads it as an artifact. No thresholds are enforced yet.
+`src/app/studio/**`). CI uploads it as an artifact. The run fails below these line-coverage
+thresholds (`vitest.config.ts`): `src/lib/**` and `src/features/**/*.ts` 90 %,
+`src/components/ds/**` 80 %.
 
 ### Vitest
 
@@ -125,13 +127,16 @@ Screenshots taken on macOS differ and are never committed (`e2e/.gitignore`).
 
 While capturing, `e2e/visual-screenshot.css` hides photos, video and the film grain but keeps
 their boxes, and the spec masks moving regions (marquees, rotating partner grids, count-ups).
-The screenshots test layout, not image content. The comparison allows
-`maxDiffPixelRatio: 0.001` of the full page.
+The screenshots test layout, not image content. A screenshot may differ from its baseline in at
+most 100 pixels (`maxDiffPixels`); a pixel counts only when it differs beyond Playwright's
+per-pixel `threshold` (0.2), so anti-aliasing noise doesn't. An absolute budget replaced
+`maxDiffPixelRatio: 0.001`, which let a whole header change through on long pages.
 
 ### Accepting an intended change
 
 1. Push the change. The Visual job fails on the routes whose layout moved.
-2. Check the diffs: download the `visual-report` artifact, or compare the baseline PNG files from git
+2. Check the diffs: download the `visual-report-1` or `visual-report-2` artifact (one per
+   Visual shard), or compare the baseline PNG files from git
    (`git show "<ref>:e2e/__screenshots__/linux/<project>/<route>-<width>.png"`); the artifact is
    large and can stall.
 3. Add the label: `gh pr edit <number> --add-label update-snapshots`. The `E2E snapshots`
@@ -153,7 +158,12 @@ label is the only trigger.
   runners, so the project runs only locally (or with `E2E_WEBKIT_MOBILE=1`). Phone widths are
   covered in CI by `chromium-phone`; WebKit by `webkit-desktop` and `visual-webkit`.
 - **Chromium `home-1440`:** faint anti-aliasing noise (about 128 pixels, at most 2/255) stays
-  under the threshold. Leave it.
+  under the per-pixel threshold, so it doesn't count against `maxDiffPixels`. Leave it.
+- **WebKit `data-privacy-1440`:** the table of contents' scroll spy can still mark the last
+  section as current after `loadLazyContent` scrolls back to the top, so the first capture
+  fails "two consecutive stable screenshots" (about 1,400 pixels in the TOC) and the retry
+  passes. The old ratio tolerance hid it. Fix pending: wait for the spy to settle in the
+  visual spec, or let it update synchronously on scroll.
 - **Fixed:** the E-Lab and Apply timeline markers used to depend on scroll timing; the ds
   `Timeline` is static under reduced motion now (#280). The partner rotation property test
   collects failures and asserts once per run, so it no longer times out (#278).

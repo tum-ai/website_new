@@ -29,10 +29,10 @@ let inertHolders = 0;
  * whose Tab key skips links by default, so focus (and the scroll position)
  * escaped to the page behind. The page root is `#app-root` (layout.tsx);
  * portals render outside it. Released as soon as the modal starts closing,
- * so focus can return to the trigger. <Dialog> calls it for you; use it
- * directly only around a raw Base UI dialog.
+ * so focus can return to the trigger. Every <Dialog> calls it.
+ * See docs/browser-quirks.md.
  */
-export function useInertBackground(open: boolean) {
+function useInertBackground(open: boolean) {
   useEffect(() => {
     if (!open) return;
     const root = document.getElementById("app-root");
@@ -154,7 +154,7 @@ function CloseButton({ label }: { label: string }) {
 /**
  * The dialog surface, portalled with its backdrop. The backdrop spans the
  * large viewport (h-lvh) so it also dims the areas behind Safari's status
- * bar and toolbar, which Safari tints from it.
+ * bar and toolbar, which Safari tints from it (docs/browser-quirks.md).
  */
 export function DialogContent({
   children,

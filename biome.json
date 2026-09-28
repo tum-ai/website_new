@@ -35,7 +35,7 @@
       "a11y": "error",
       "nursery": {
         "useSortedClasses": {
-          "level": "warn",
+          "level": "error",
           "fix": "safe",
           "options": { "functions": ["cn", "cva"] }
         }
@@ -44,18 +44,18 @@
         "noBarrelFile": "off"
       },
       "security": {
-        "noDangerouslySetInnerHtml": "warn"
+        "noDangerouslySetInnerHtml": "error"
       },
       "style": {
         "useFilenamingConvention": {
-          "level": "warn",
+          "level": "error",
           "options": { "filenameCases": ["kebab-case"] }
         }
       },
       "suspicious": {
-        "noArrayIndexKey": "warn",
+        "noArrayIndexKey": "error",
         "noConsole": {
-          "level": "warn",
+          "level": "error",
           "options": { "allow": ["error", "warn"] }
         }
       }
@@ -68,12 +68,16 @@
   },
   "overrides": [
     {
+      "includes": ["knip.json"],
+      "json": { "parser": { "allowComments": true } }
+    },
+    {
       "includes": ["src/components/ds/**"],
       "linter": {
         "rules": {
           "style": {
             "noRestrictedImports": {
-              "level": "warn",
+              "level": "error",
               "options": {
                 "patterns": [
                   {
@@ -144,20 +148,6 @@
                 ]
               }
             }
-          }
-        }
-      }
-    },
-    {
-      "includes": ["**"],
-      "linter": {
-        "rules": {
-          "a11y": {
-            "noNoninteractiveElementInteractions": "warn",
-            "noSvgWithoutTitle": "warn",
-            "useAriaPropsSupportedByRole": "warn",
-            "useSemanticElements": "warn",
-            "useValidAriaRole": "warn"
           }
         }
       }
