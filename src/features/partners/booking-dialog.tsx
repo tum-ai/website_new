@@ -9,6 +9,7 @@ import {
   DialogTitle,
   TextLink,
 } from "@/components/ds";
+import { partnershipContact } from "@/config/contact";
 import {
   getPartnershipBookingUrl,
   getPartnershipContext,
@@ -46,13 +47,14 @@ export function BookingDialog({
       <DialogContent
         size="xl"
         finalFocus={finalFocus}
-        className="max-w-[68.75rem] max-sm:h-full"
+        className="max-w-275 max-sm:h-full"
       >
         <div className="flex h-full flex-col gap-5 p-5 sm:p-7">
           <div className="pr-12">
             <DialogTitle>Let’s talk about your partnership.</DialogTitle>
             <DialogDescription className="mt-2">
-              Pick a time for a quick chat with Silas from TUM.ai.
+              Pick a time for a quick chat with {partnershipContact.bookingHost}{" "}
+              from TUM.ai.
             </DialogDescription>
           </div>
           <BookingCalendar selection={selection} />
@@ -122,7 +124,7 @@ function BookingCalendar({ selection }: { selection: PartnershipSelection }) {
   }, []);
 
   return (
-    <div className="min-h-0 flex-1 overflow-auto sm:h-[min(630px,65dvh)] sm:min-h-[420px] sm:flex-none">
+    <div className="min-h-0 flex-1 overflow-auto sm:h-[65dvh] sm:max-h-160 sm:min-h-105 sm:flex-none">
       <p
         role="status"
         className={
