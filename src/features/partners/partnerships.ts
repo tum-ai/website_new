@@ -1,4 +1,4 @@
-import { contactEmails } from "@/config/contact";
+import { contactEmails, partnershipContact } from "@/config/contact";
 import {
   type PartnershipDuration,
   type PartnershipIntent,
@@ -7,13 +7,10 @@ import {
   recommendations,
 } from "./data/partners";
 
+/** The role address partnership requests go to (also the booking guest). */
 export const PARTNER_EMAIL = contactEmails.partners;
-export const PARTNER_EMAIL_CC = [
-  "silas.zamzow@tum-ai.com",
-  "kim.schlemmer@tum-ai.com",
-] as const;
-export const PARTNER_BOOKING_URL =
-  "https://cal.eu/silaszamzow/tumai-quick-chat";
+/** The Cal.eu page "Book a call" embeds (see `partnershipContact`). */
+export const PARTNER_BOOKING_URL = partnershipContact.bookingUrl;
 
 export interface PartnershipSelection {
   intent: PartnershipIntent | null;
@@ -96,7 +93,7 @@ export function getPartnershipEmailUrl(
   const subject = intent
     ? `Partnership request: ${intent.shortLabel}`
     : "Partnership request: TUM.ai";
-  return `mailto:${PARTNER_EMAIL}?cc=${encodeURIComponent(PARTNER_EMAIL_CC.join(","))}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Hi TUM.ai team,\n\n${getPartnershipContext(selection)}\n\n`)}`;
+  return `mailto:${PARTNER_EMAIL}?cc=${encodeURIComponent(partnershipContact.cc.join(","))}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Hi TUM.ai team,\n\n${getPartnershipContext(selection)}\n\n`)}`;
 }
 
 export function getPartnershipBookingUrl(selection: PartnershipSelection) {

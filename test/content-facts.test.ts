@@ -157,17 +157,6 @@ const allowlist: { file: string; fact: string; until: string }[] = [
     until:
       "Justin confirms the register number (TODO(content) in config/organization.ts)",
   },
-  {
-    file: "features/partners/partnerships.ts",
-    fact: "personal emails: use a role address from config/contact.ts",
-    until: "W2 Partners routes partner mail through a role address",
-  },
-  {
-    file: "features/partners/data/partners.ts",
-    fact: "Makeathon size: config/community.ts",
-    until:
-      "Partners reads communityFacts.makeathonSize (handoff from W2 Apply+Community)",
-  },
 ];
 
 const srcDir = join(import.meta.dirname, "..", "src");

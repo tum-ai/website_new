@@ -4,27 +4,31 @@ import { useEffect, useState } from "react";
 import type { Partner } from "@/lib/types";
 import { PartnerRotationGrid } from "./partner-rotation-grid";
 
+/**
+ * Columns of `.partner-supporter-grid` per media query (partners.css), widest
+ * first: Tailwind's `lg`, `md` and `sm`, and three below that.
+ */
+const columnQueries = [
+  { query: "(width >= 64rem)", columns: 6 },
+  { query: "(width >= 48rem)", columns: 5 },
+  { query: "(width >= 40rem)", columns: 4 },
+] as const;
+
+/** The supporter board: three rows of small tiles that rotate a row at a time. */
 export function PartnerSupporters({ partners }: { partners: Partner[] }) {
   const [columns, setColumns] = useState(6);
   useEffect(() => {
-    // Match the `.partner-supporter-grid` breakpoints in partners.css; each viewport keeps three rows.
-    const queries = [600, 850, 1100].map((width) =>
-      window.matchMedia(`(max-width: ${width}px)`),
-    );
+    const queries = columnQueries.map((entry) => ({
+      media: window.matchMedia(entry.query),
+      columns: entry.columns,
+    }));
     const update = () =>
-      setColumns(
-        queries[0].matches
-          ? 3
-          : queries[1].matches
-            ? 4
-            : queries[2].matches
-              ? 5
-              : 6,
-      );
+      setColumns(queries.find(({ media }) => media.matches)?.columns ?? 3);
     update();
-    for (const query of queries) query.addEventListener("change", update);
+    for (const { media } of queries) media.addEventListener("change", update);
     return () => {
-      for (const query of queries) query.removeEventListener("change", update);
+      for (const { media } of queries)
+        media.removeEventListener("change", update);
     };
   }, []);
   if (!partners.length) return null;
@@ -45,7 +49,7 @@ export function PartnerSupporters({ partners }: { partners: Partner[] }) {
         capacity={columns * 3}
         batchSize={columns}
         offset={600}
-        size="compact"
+        size="sm"
         className="partner-supporter-grid"
       />
     </section>

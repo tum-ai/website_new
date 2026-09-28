@@ -8,7 +8,10 @@ import { expect, test } from "./fixtures";
  * cannot load.
  */
 
-/** Scroll margin of every /partners anchor target (clears the header pill). */
+/**
+ * Where every /partners anchor target lands: the `scroll-mt-header` utility,
+ * `--header-offset` = 4.25rem header + 2.625rem air = 110px (clears the pill).
+ */
 const ANCHOR_OFFSET = 110;
 
 /** Blocks the third-party Cal.eu embed so tests never depend on it. */

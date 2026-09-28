@@ -7,13 +7,12 @@ import {
   useRef,
   useState,
 } from "react";
-import { cn } from "@/lib/cn";
 import type { Partner } from "@/lib/types";
 import { getPartnerKey } from "./partner-directory";
 import { createPartnerRotation, nextPartnerBatch } from "./partner-rotation";
 import { PartnerTile, type PartnerTileSize } from "./partner-tile";
 
-// Bound a slow or broken remote CMS image; PartnerLogo supplies the name fallback.
+// Bound a slow or broken remote CMS image; the tile falls back to the name.
 function preload(src?: string) {
   if (!src) return Promise.resolve();
   return new Promise<void>((resolve) => {
@@ -36,7 +35,14 @@ function preload(src?: string) {
   });
 }
 
-/** Remount when capacity or company keys change to cancel pending batches safely. */
+/**
+ * A wall of partner tiles that, when there are more partners than
+ * `capacity`, swaps `batchSize` of them every 2.5 s with a dissolve (the
+ * `partner-rotation-*` classes in partners.css). It pauses off screen, in
+ * background tabs and under reduced motion, where it shows every partner.
+ * Remount it (`key`) when capacity or the company keys change, which cancels
+ * pending batches safely.
+ */
 export function PartnerRotationGrid({
   partners,
   capacity = 3,
@@ -153,10 +159,9 @@ export function PartnerRotationGrid({
           : undefined;
         return partner ? (
           <div
-            className={cn(
-              "partner-rotation-slot relative min-w-0 bg-white",
-              size === "compact" ? "rounded-xl" : "rounded-2xl",
-            )}
+            className="partner-rotation-slot"
+            // Slots are fixed positions on the wall; the company inside changes.
+            // biome-ignore lint/suspicious/noArrayIndexKey: the slot index is the identity
             key={`slot-${slot}`}
             style={
               {
@@ -165,23 +170,24 @@ export function PartnerRotationGrid({
             }
           >
             <div
-              className={cn(
-                "partner-rotation-current h-full rounded-[inherit]",
-                outgoing && "partner-rotation-enter",
-              )}
+              className={
+                outgoing
+                  ? "partner-rotation-current partner-rotation-enter"
+                  : "partner-rotation-current"
+              }
               key={key}
             >
               <PartnerTile partner={partner} size={size} />
             </div>
-            {outgoing && (
+            {outgoing ? (
               <div
-                className="partner-rotation-outgoing pointer-events-none absolute inset-0 rounded-[inherit]"
+                className="partner-rotation-outgoing"
                 aria-hidden="true"
                 inert
               >
-                <PartnerTile partner={outgoing} size={size} />
+                <PartnerTile partner={outgoing} size={size} transparent />
               </div>
-            )}
+            ) : null}
           </div>
         ) : null;
       })}

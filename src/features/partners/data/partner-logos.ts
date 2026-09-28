@@ -130,6 +130,15 @@ export const featuredPartners: Partner[] = [
   },
 ];
 
+/**
+ * Symbol-only artwork that doesn't name its company: tiles and the hero
+ * marquee set the partner name beside it as a wordmark lockup.
+ */
+export const symbolOnlyLogos: ReadonlySet<string> = new Set([
+  "/assets/partners/logos/mutagent.svg",
+  "/assets/partners/marquee/dryft.png",
+]);
+
 export const alumniDestinations = [
   { name: "OpenAI", image: "/assets/partners/logos/openai-wordmark.webp" },
   { name: "Google", image: "/assets/partners/logos/google.webp" },
