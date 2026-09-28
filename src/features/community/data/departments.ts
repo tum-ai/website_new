@@ -1,7 +1,7 @@
 import { communityFacts } from "@/config/community";
 
 /** A photo of a department's own team or work, with a factual caption. */
-export interface DepartmentPhoto {
+interface DepartmentPhoto {
   src: string;
   alt: string;
   caption: string;
@@ -22,7 +22,7 @@ export const departments: Department[] = [
     name: "Makeathon",
     photo: {
       src: "/assets/homepage/Makeathon.webp",
-      alt: "The Makeathon organizing team together on stage",
+      alt: "The organizing team posing on stage in front of the Makeathon banner",
       caption: "The Makeathon team on stage",
       position: "50% 60%",
     },
@@ -32,7 +32,7 @@ export const departments: Department[] = [
     name: "Venture",
     photo: {
       src: "/assets/homepage/venture_onboarding25.webp",
-      alt: "The venture team posing around a meeting table, two of them holding up Makeathon T-shirts",
+      alt: "About fifteen people around a meeting table, two of them holding up Makeathon T-shirts",
       caption: "Venture onboarding, 2025",
       position: "50% 62%",
     },
@@ -53,7 +53,7 @@ export const departments: Department[] = [
     name: "Community",
     photo: {
       src: "/assets/homepage/IBM_visit.webp",
-      alt: "A large group of TUM.ai members on a company visit at the IBM Innovation Studio",
+      alt: "A large group of members standing together in a high-rise event space",
       // TODO(content): confirm the year of the IBM visit for the caption.
       caption: "Company visit at the IBM Innovation Studio",
       position: "50% 55%",
@@ -72,7 +72,7 @@ export const departments: Department[] = [
     name: "Partners & Sponsors",
     photo: {
       src: "/assets/open_ai_speaker_event.webp",
-      alt: "A speaker from OpenAI on stage in front of a full auditorium",
+      alt: "A speaker on a lit stage in front of a full, steeply raked auditorium",
       caption: "OpenAI Deutschland at TUM.ai, 2025",
       position: "62% 50%",
     },

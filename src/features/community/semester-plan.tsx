@@ -36,6 +36,11 @@ const columnLeft = (semester: number) =>
  */
 const MARKER_TOP = "4.75rem";
 
+/** One grid track per timetable column, so the columns follow the data. */
+const COLUMNS: CSSProperties = {
+  gridTemplateColumns: `repeat(${semesterColumns.length}, minmax(0, 1fr))`,
+};
+
 /** Places an element from a step's opening semester to the last column. */
 const fromColumn = (step: JourneyStep): CSSProperties => ({
   gridColumn: `${step.fromSemester + 1} / -1`,
@@ -103,9 +108,10 @@ function ColumnRules() {
     <div
       aria-hidden="true"
       className={cn(
-        "pointer-events-none absolute inset-y-0 right-0 hidden grid-cols-4 lg:grid",
+        "pointer-events-none absolute inset-y-0 right-0 hidden lg:grid",
         RAIL_WIDTH,
       )}
+      style={COLUMNS}
     >
       {semesterColumns.map((label) => (
         <span key={label} className="border-hairline border-l" />
@@ -122,7 +128,7 @@ function ColumnHeads() {
       className={cn("hidden border-hairline-strong border-b pb-8", ROW_GRID)}
     >
       <p className="self-end text-fg-subtle text-meta">Semester</p>
-      <div className="grid grid-cols-4">
+      <div className="grid" style={COLUMNS}>
         {semesterColumns.map((label, index) => (
           <div key={label} className="pl-5">
             <span className="tabular block text-display-lg text-highlight">
@@ -163,7 +169,7 @@ function StepRow({
       {connect ? (
         <span
           aria-hidden="true"
-          className="absolute hidden w-0.5 -translate-x-1/2 bg-highlight lg:block"
+          className="absolute z-20 hidden w-0.5 -translate-x-1/2 bg-highlight lg:block"
           style={{
             left: columnLeft(step.fromSemester),
             ...(connect === "down"
@@ -173,18 +179,20 @@ function StepRow({
         />
       ) : null}
       <div>
-        <SemesterStrip step={step} />
         <h3 className="text-fg text-heading-lg">{step.name}</h3>
-        <p className="mt-2 text-fg-subtle text-meta">{opensIn(step)}</p>
+        <div className="mt-2 flex items-center gap-4">
+          <p className="text-fg-subtle text-meta">{opensIn(step)}</p>
+          <SemesterStrip step={step} />
+        </div>
         <p className="mt-4 max-w-xl text-body text-fg-muted">
           {step.description}
         </p>
       </div>
-      <div className="lg:grid lg:grid-cols-4 lg:content-start">
+      <div className="lg:grid lg:content-start" style={COLUMNS}>
         <Rule step={step} />
         {step.evidence && story ? (
           <figure
-            className="mt-8 max-w-md lg:mt-6 lg:pr-6 lg:pl-5"
+            className="relative z-10 mt-8 max-w-md lg:mt-4 lg:ml-px lg:bg-canvas lg:py-2 lg:pr-6 lg:pl-5"
             style={fromColumn(step)}
           >
             <blockquote className="text-body text-fg">
@@ -240,34 +248,28 @@ function Rule({ step }: { step: JourneyStep }) {
 }
 
 /**
- * The timetable row in miniature, for screens without the columns: the
- * semesters in a row, the opening one marked and the rest of the run drawn.
+ * The timetable row in miniature, beside the words, for screens without the
+ * columns: one cell per semester, the opening one marked and the rest of the
+ * run drawn.
  */
 function SemesterStrip({ step }: { step: JourneyStep }) {
   return (
-    <div aria-hidden="true" className="mb-6 grid grid-cols-4 lg:hidden">
+    <div aria-hidden="true" className="grid h-3 w-24 lg:hidden" style={COLUMNS}>
       {semesterColumns.map((label, index) => {
         const opens = index === step.fromSemester;
         const runs = step.span === "ongoing" && index > step.fromSemester;
         return (
-          <div key={label} className="border-hairline border-l pl-2">
-            <span
-              className={cn(
-                "tabular text-meta",
-                opens || runs ? "text-highlight" : "text-fg-subtle",
-              )}
-            >
-              {label}
-            </span>
-            <span className="relative mt-2 block h-3">
-              {opens ? (
-                <span className="absolute top-1/2 -left-2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-highlight" />
-              ) : null}
-              {(opens && step.span === "ongoing") || runs ? (
-                <span className="absolute top-1/2 right-0 -left-2 h-0.5 -translate-y-1/2 bg-highlight" />
-              ) : null}
-            </span>
-          </div>
+          <span
+            key={label}
+            className="relative border-hairline-strong border-l"
+          >
+            {opens ? (
+              <span className="absolute top-1/2 left-0 z-10 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-highlight" />
+            ) : null}
+            {(opens && step.span === "ongoing") || runs ? (
+              <span className="absolute inset-x-0 top-1/2 h-0.5 -translate-y-1/2 bg-highlight" />
+            ) : null}
+          </span>
         );
       })}
     </div>
@@ -287,10 +289,18 @@ function ForkDivider({ step }: { step: JourneyStep }) {
         style={{ left: columnLeft(step.fromSemester) }}
       />
       <p
-        className="text-fg-subtle text-meta lg:absolute lg:top-1/2 lg:ml-4 lg:-translate-y-1/2"
+        className="flex items-center gap-3 text-fg-subtle text-meta lg:absolute lg:top-1/2 lg:ml-4 lg:block lg:-translate-y-1/2"
         style={{ left: columnLeft(step.fromSemester) }}
       >
+        <span
+          aria-hidden="true"
+          className="h-px w-6 bg-hairline-strong lg:hidden"
+        />
         or
+        <span
+          aria-hidden="true"
+          className="h-px flex-1 bg-hairline lg:hidden"
+        />
       </p>
     </div>
   );

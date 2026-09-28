@@ -96,7 +96,7 @@ export const memberJourney: JourneyStage[] = [
       step: "03",
       name: "Growth Opportunities",
       description:
-        "After your first semester, expand your impact - Join new teams, lead a task force, or take on a Team Lead role.",
+        "After your first semester, expand your impact: join new teams, lead a task force, or take on a Team Lead role.",
       icon: ChartNoAxesColumn,
       fromSemester: 2,
       span: "ongoing",
@@ -115,7 +115,7 @@ export const memberJourney: JourneyStage[] = [
       // TODO(content): REX partner school, Berkeley or Cambridge? The Apply
       // page used to name Berkeley; this copy (now on both pages) says Cambridge.
       description:
-        "After one semester, you can join the REX Program - conduct research at top institutions like MIT, Harvard, or Cambridge. With our alumni network, we guide you in finding a topic, navigating applications, and contributing to cutting-edge research.",
+        "After one semester, you can join the REX Program and conduct research at top institutions like MIT, Harvard, or Cambridge. With our alumni network, we guide you in finding a topic, navigating applications, and contributing to cutting-edge research.",
       icon: Globe,
       fromSemester: 2,
       span: "ongoing",

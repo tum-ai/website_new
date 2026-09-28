@@ -52,16 +52,16 @@ export function MemberStories({ stories }: MemberStoriesProps) {
                   <div className="relative size-14 shrink-0 overflow-hidden rounded-full bg-sunken">
                     <Image
                       src={story.image}
-                      alt={`Portrait of ${story.name}`}
+                      alt=""
                       fill
                       sizes="56px"
                       className="object-cover"
                     />
                   </div>
                   <div className="min-w-0">
-                    <p className="font-medium text-fg text-small">
+                    <h3 className="font-medium text-fg text-small">
                       {story.name}
-                    </p>
+                    </h3>
                     <p className="mt-0.5 text-fg-muted text-meta">
                       {story.role}
                     </p>
