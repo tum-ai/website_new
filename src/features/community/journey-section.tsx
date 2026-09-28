@@ -162,7 +162,7 @@ function OrNode({ className }: { className?: string }) {
       aria-hidden="true"
       data-marker=""
       className={cn(
-        "absolute z-10 grid h-8 min-w-12 place-items-center rounded-full border border-hairline-strong bg-canvas px-3 text-eyebrow text-fg-subtle uppercase transition-[border-color,color,box-shadow] duration-700 ease-brand data-lit:border-violet-500 data-lit:text-highlight data-lit:shadow-halo motion-reduce:transition-none",
+        "absolute z-10 grid h-8 min-w-12 place-items-center rounded-full border border-hairline-strong bg-canvas px-3 text-eyebrow text-fg-subtle transition-[border-color,color,box-shadow] duration-700 ease-brand data-lit:border-violet-500 data-lit:text-highlight data-lit:shadow-halo motion-reduce:transition-none",
         className,
       )}
     >
@@ -181,9 +181,7 @@ function StepContent({
 }) {
   return (
     <Reveal className="pt-[1.0625rem]">
-      <p className="tabular text-eyebrow text-highlight uppercase">
-        {step.step}
-      </p>
+      <p className="tabular text-eyebrow text-highlight">{step.step}</p>
       <h3
         className={cn(
           "mt-3 text-fg text-heading-lg",

@@ -31,8 +31,7 @@ const steps = ["Your goal", "Your timeframe", "Your fit"];
 /* Step headings receive focus programmatically; the panel scrolls below the fixed header. */
 const stepHeading =
   "scroll-mt-header text-heading-lg text-fg outline-none focus-visible:outline-none";
-const stepLabel =
-  "flex items-center gap-2 text-eyebrow text-highlight uppercase";
+const stepLabel = "flex items-center gap-2 text-eyebrow text-highlight";
 
 function FinderOption({
   icon,

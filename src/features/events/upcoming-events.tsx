@@ -64,7 +64,7 @@ export function UpcomingEventCard({
             aria-hidden
             className="absolute top-4 left-4 flex min-w-16 flex-col items-center rounded-2xl bg-white/95 px-3 pt-2.5 pb-2 text-violet-950 shadow-soft backdrop-blur"
           >
-            <span className="text-eyebrow text-violet-700 uppercase">
+            <span className="text-eyebrow text-violet-700">
               {date.monthShort}
             </span>
             <span className="tabular mt-0.5 font-semibold text-stat-sm">

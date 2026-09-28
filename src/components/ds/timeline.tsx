@@ -202,9 +202,7 @@ export function Timeline({
                   )}
                 >
                   {item.label ? (
-                    <p className="text-eyebrow text-highlight uppercase">
-                      {item.label}
-                    </p>
+                    <p className="text-eyebrow text-highlight">{item.label}</p>
                   ) : null}
                   <HeadingTag className="mt-2 text-fg text-heading-md">
                     {item.title}

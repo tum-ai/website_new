@@ -263,7 +263,7 @@ export function MediaCard({
         {media}
         <div className="pt-5">
           {eyebrow ? (
-            <p className="text-eyebrow text-highlight uppercase">{eyebrow}</p>
+            <p className="text-eyebrow text-highlight">{eyebrow}</p>
           ) : null}
           <HeadingTag id={titleId} className="mt-2 text-fg text-heading-md">
             {titleNode}
@@ -300,7 +300,7 @@ export function MediaCard({
       {media}
       <div className="absolute inset-0 z-[1] flex flex-col justify-end rounded-[inherit] p-6 md:p-7">
         {eyebrow ? (
-          <p className="text-eyebrow text-violet-200 uppercase">{eyebrow}</p>
+          <p className="text-eyebrow text-violet-200">{eyebrow}</p>
         ) : null}
         <HeadingTag id={titleId} className="mt-2 text-heading-lg text-white">
           {titleNode}

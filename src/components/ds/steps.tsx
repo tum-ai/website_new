@@ -121,7 +121,7 @@ export function Steps({
                 ) : null}
               </span>
               {numberAbove ? (
-                <p className="tabular mt-6 text-eyebrow text-fg-subtle uppercase">
+                <p className="tabular mt-6 text-eyebrow text-fg-subtle">
                   {number}
                 </p>
               ) : null}

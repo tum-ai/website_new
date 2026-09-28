@@ -74,9 +74,7 @@ export function ProjectCard({
             className="absolute inset-0 bg-gradient-to-t from-ink-950/85 via-ink-950/15 to-transparent"
           />
           <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8 md:p-10">
-            <p className="text-eyebrow text-violet-200 uppercase">
-              Task force {number}
-            </p>
+            <p className="text-eyebrow text-violet-200">Task force {number}</p>
             <DialogTitle className="mt-3 text-display-md text-white">
               {name}
             </DialogTitle>
@@ -87,7 +85,7 @@ export function ProjectCard({
             {description}
           </DialogDescription>
           <div className="mt-8 grid gap-3 border-hairline border-t pt-8 md:grid-cols-[8rem_minmax(0,1fr)] md:items-baseline md:gap-8">
-            <h3 className="text-eyebrow text-fg-subtle uppercase">About</h3>
+            <h3 className="text-eyebrow text-fg-subtle">About</h3>
             <p className="text-body text-fg-muted leading-relaxed">
               {detailedDescription}
             </p>

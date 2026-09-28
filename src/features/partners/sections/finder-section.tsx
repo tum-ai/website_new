@@ -13,7 +13,7 @@ export function FinderSection() {
     >
       <Container className="grid gap-10 md:gap-12 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-center lg:gap-12 xl:gap-20">
         <Reveal>
-          <p className="flex items-center gap-2 text-eyebrow text-highlight uppercase">
+          <p className="flex items-center gap-2 text-eyebrow text-highlight">
             <Sparkles aria-hidden className="size-4" />
             Your way in
           </p>

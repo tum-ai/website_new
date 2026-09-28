@@ -26,7 +26,7 @@ const titleStyles = cva("text-fg", {
   variants: {
     /**
      * Display step of the title: `md` for sections, `lg` for key sections,
-     * `xl` for a page's lead statement (the home "About" headline).
+     * `xl` for a page's lead statement.
      */
     size: {
       md: "text-display-md",

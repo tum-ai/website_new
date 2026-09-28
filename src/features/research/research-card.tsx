@@ -151,7 +151,7 @@ export function ResearchCard({
         </span>
         <div className="col-start-1 row-start-1 min-w-0 self-baseline sm:col-start-2">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
-            <p className="text-eyebrow text-highlight uppercase">
+            <p className="text-eyebrow text-highlight">
               {project.collaborator}
             </p>
             {publicationUrl ? <PublicationHint /> : null}
@@ -209,7 +209,7 @@ export function ResearchCard({
         </div>
         <div className="flex flex-1 flex-col p-5 sm:max-lg:p-7 md:p-6">
           <div className="flex items-center justify-between gap-4">
-            <p className="text-eyebrow text-highlight uppercase">
+            <p className="text-eyebrow text-highlight">
               {project.collaborator}
             </p>
             <span
@@ -255,7 +255,7 @@ export function ResearchCard({
         </div>
         <div className="p-6 sm:p-8 md:p-10">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-eyebrow text-highlight uppercase">
+            <p className="text-eyebrow text-highlight">
               {project.collaborator}
             </p>
             <StatusBadge
@@ -267,7 +267,7 @@ export function ResearchCard({
           <DialogTitle className="mt-4 max-w-2xl">{project.title}</DialogTitle>
           <KeywordTags keywords={project.keywords} className="mt-5" />
           <div className="mt-8 grid gap-3 border-hairline border-t pt-8 md:grid-cols-[8rem_minmax(0,1fr)] md:items-baseline md:gap-8">
-            <h3 className="text-eyebrow text-fg-subtle uppercase">About</h3>
+            <h3 className="text-eyebrow text-fg-subtle">About</h3>
             <DialogDescription className="leading-relaxed">
               {project.description}
             </DialogDescription>

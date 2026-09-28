@@ -266,7 +266,7 @@ function PastMonths({ months }: { months: EventMonthEntries[] }) {
           <Reveal key={entry.id} className="flex flex-col">
             <div className="mb-5 flex h-5 items-center gap-3">
               {index === 0 ? (
-                <h3 className="flex shrink-0 items-center gap-2.5 text-eyebrow text-highlight uppercase">
+                <h3 className="flex shrink-0 items-center gap-2.5 text-eyebrow text-highlight">
                   <span
                     aria-hidden
                     className="size-1.5 rounded-full bg-current"

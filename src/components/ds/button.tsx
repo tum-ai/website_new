@@ -11,7 +11,8 @@ import { Anchor } from "./anchor";
  * one of the two (e.g. a link with its own accessible-name wiring).
  *
  * Primary uses violet-600 (#8052C2) at rest so white labels meet WCAG AA
- * (5.4:1), and the brand's dark purple (#523573) on hover. Secondary, outline
+ * (5.4:1), and the brand's dark purple (#523573) on hover: a flat, exact
+ * fill with a hairline highlight, no glow or sheen. Secondary, outline
  * and ghost read the surrounding tone, so they work on light and dark bands.
  */
 export const buttonStyles = cva(
@@ -26,14 +27,8 @@ export const buttonStyles = cva(
     variants: {
       /** Visual weight. `inverse` is solid white for dark bands and photos. */
       variant: {
-        primary: [
-          "bg-violet-600 text-white shadow-button",
-          "hover:bg-violet-800 hover:shadow-button-hover",
-          // Sheen that sweeps across once per hover.
-          "before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:-z-10 before:w-1/2",
-          "before:-translate-x-full before:skew-x-[-20deg] before:bg-gradient-to-r before:from-transparent before:via-white/25 before:to-transparent",
-          "motion-safe:before:transition-transform motion-safe:before:duration-700 motion-safe:before:ease-brand motion-safe:hover:before:translate-x-[260%]",
-        ],
+        primary:
+          "bg-violet-600 text-white shadow-button hover:bg-violet-800 hover:shadow-button-hover",
         secondary: "bg-fg/[0.07] text-fg hover:bg-fg/[0.12]",
         outline:
           "border border-fg/25 text-fg hover:border-fg/60 hover:bg-fg/[0.04]",

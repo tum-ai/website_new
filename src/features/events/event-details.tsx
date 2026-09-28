@@ -68,7 +68,7 @@ export function EventDetailsDialog({
             />
           </div>
           <div className="flex min-w-0 flex-col px-6 py-8 sm:px-10 sm:py-10 md:pt-14">
-            <p className="text-eyebrow text-highlight uppercase">
+            <p className="text-eyebrow text-highlight">
               <time dateTime={date.dateTime}>{date.long}</time>
             </p>
             <DialogTitle className="mt-4 md:pr-8">{title}</DialogTitle>

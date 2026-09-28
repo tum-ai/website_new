@@ -80,7 +80,7 @@ export function PeopleSection() {
           </Reveal>
         </div>
         <Reveal className="mt-16 border-hairline border-t pt-8 md:mt-20 md:pt-10">
-          <h3 className="text-center text-eyebrow text-fg-muted uppercase">
+          <h3 className="text-center text-eyebrow text-fg-muted">
             Where they go afterwards
           </h3>
           <ul className="mt-7 flex flex-wrap items-center justify-center gap-2.5 md:gap-4">

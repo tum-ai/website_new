@@ -130,8 +130,9 @@ export type EyebrowProps<T extends TextElement = "p"> = PolymorphicProps<
 >;
 
 /**
- * Small uppercase label above headlines. `index` renders an editorial counter
- * ("01") separated by a short rule, as in the brand guide.
+ * Small sentence-case label above headlines, set like the brand guide's
+ * captions ("Primary Logo"). `index` renders an editorial counter ("01")
+ * separated by a short rule; use it only where the sections form a sequence.
  */
 export function Eyebrow<T extends TextElement = "p">({
   as,
@@ -144,7 +145,7 @@ export function Eyebrow<T extends TextElement = "p">({
   return (
     <Component
       className={cn(
-        "inline-flex items-center gap-3 text-eyebrow text-highlight uppercase",
+        "inline-flex items-center gap-3 text-eyebrow text-fg-muted",
         className,
       )}
       {...props}

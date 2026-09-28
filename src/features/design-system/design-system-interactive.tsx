@@ -36,7 +36,7 @@ export function DesignSystemInteractive() {
         </strong>
       </p>
       <div>
-        <p id="chip-label" className="text-eyebrow text-fg-subtle uppercase">
+        <p id="chip-label" className="text-eyebrow text-fg-subtle">
           Chip group
         </p>
         <ChipGroup

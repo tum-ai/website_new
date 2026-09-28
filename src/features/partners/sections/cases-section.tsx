@@ -46,9 +46,7 @@ export function CasesSection() {
                   />
                 </div>
                 <div className="flex flex-1 flex-col p-6 md:p-7">
-                  <h3 className="text-eyebrow text-highlight uppercase">
-                    {study.name}
-                  </h3>
+                  <h3 className="text-eyebrow text-highlight">{study.name}</h3>
                   <div className="mt-5 text-fg text-stat-lg">
                     <CountUp value={study.metric} />
                   </div>

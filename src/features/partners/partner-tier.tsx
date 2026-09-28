@@ -30,10 +30,7 @@ export function PartnerTier({
   return (
     <section className="w-full" aria-labelledby={`partner-tier-${tier}`}>
       <div className="mb-4 flex min-h-7 items-center justify-center">
-        <h3
-          id={`partner-tier-${tier}`}
-          className="text-eyebrow text-highlight uppercase"
-        >
+        <h3 id={`partner-tier-${tier}`} className="text-eyebrow text-highlight">
           {labels[tier]} partners
         </h3>
       </div>

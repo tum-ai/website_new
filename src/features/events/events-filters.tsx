@@ -65,10 +65,7 @@ export function EventFiltersPanel() {
 
       <div ref={chipsRef} className="mt-6 grid gap-6 md:grid-cols-2 md:gap-10">
         <div>
-          <p
-            id="event-filter-category"
-            className="text-eyebrow text-fg-subtle uppercase"
-          >
+          <p id="event-filter-category" className="text-eyebrow text-fg-subtle">
             Category
           </p>
           <ChipGroup
@@ -87,10 +84,7 @@ export function EventFiltersPanel() {
           />
         </div>
         <div>
-          <p
-            id="event-filter-city"
-            className="text-eyebrow text-fg-subtle uppercase"
-          >
+          <p id="event-filter-city" className="text-eyebrow text-fg-subtle">
             City
           </p>
           <ChipGroup

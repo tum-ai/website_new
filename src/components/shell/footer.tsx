@@ -68,10 +68,7 @@ export function Footer() {
               const titleId = `footer-${column.title.toLowerCase()}`;
               return (
                 <div key={column.title}>
-                  <p
-                    id={titleId}
-                    className="text-eyebrow text-fg-subtle uppercase"
-                  >
+                  <p id={titleId} className="text-eyebrow text-fg-subtle">
                     {column.title}
                   </p>
                   <ul aria-labelledby={titleId} className="mt-5 space-y-3">
