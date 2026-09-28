@@ -127,7 +127,15 @@ const hardcodedFacts: [RegExp, string][] = [
     /^.*?(https?:\/\/(?:www\.)?tum-ai\.com)(?![\w.-])/m,
     "site URL: absoluteUrl() or siteConfig.url from config/site.ts",
   ],
-  [/\bVR ?\d{5,6}\b/, "register number: config/organization.ts"],
+  [/\bVR ?\d+\b/, "register number: legalEntity in config/organization.ts"],
+  [
+    /\b210726\b/,
+    "retired register number: legalEntity.registerNumber is the confirmed one",
+  ],
+  [
+    /\binvoice@tum-ai\.com\b/,
+    "invoice email: legalEntity in config/organization.ts",
+  ],
   [
     /\b[a-z]+\.[a-z]+@tum-ai\.com\b/i,
     "personal emails: use a role address from config/contact.ts",
@@ -145,17 +153,6 @@ const allowlist: { file: string; fact: string; until: string }[] = [
     file: "features/e-lab/e-lab-page.tsx",
     fact: "site URL: absoluteUrl() or siteConfig.url from config/site.ts",
     until: "W2 E-Lab builds its JSON-LD URLs with absoluteUrl()",
-  },
-  {
-    file: "features/legal/privacy-page.tsx",
-    fact: "site URL: absoluteUrl() or siteConfig.url from config/site.ts",
-    until: "W2 Legal renders the site links from config/site.ts",
-  },
-  {
-    file: "features/legal/imprint-page.tsx",
-    fact: "register number: config/organization.ts",
-    until:
-      "Justin confirms the register number (TODO(content) in config/organization.ts)",
   },
   {
     file: "features/partners/partnerships.ts",

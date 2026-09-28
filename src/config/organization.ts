@@ -48,6 +48,20 @@ export const legalEntity = {
     addressCountry: "Germany",
   },
   /**
+   * Entry in the register of associations (Vereinsregister): the Imprint's
+   * "Vereinsregisternummer" and the JSON-LD identifier. Confirmed by Justin
+   * on 2026-09-28; it replaces the different number the JSON-LD used to carry.
+   *
+   * TODO(content): the register court (Registergericht) is not named
+   * anywhere. Add it here once confirmed, and show it on the Imprint.
+   */
+  registerNumber: "VR 209059",
+  /**
+   * The association's mailbox for legal and data-protection requests: the
+   * controller contact and the objection address on the Privacy page.
+   */
+  invoiceEmail: "invoice@tum-ai.com",
+  /**
    * Board members authorised to represent the association (Imprint
    * "Vertreter"), as the Imprint lists them.
    */
@@ -58,18 +72,17 @@ export const legalEntity = {
   foundingLocation: string;
   registeredOffice: PostalAddress;
   headquarters: PostalAddress;
+  registerNumber: string;
+  invoiceEmail: string;
   representatives: readonly string[];
 };
 
 /**
- * TODO(content): the register number is UNCONFIRMED. The Imprint prints
- * "VR209059" and the JSON-LD has always said "VR 210726"; at most one is
- * right. This module deliberately does not pick one: each consumer keeps the
- * value it showed before. Once Justin confirms the number, replace this with a
- * single `legalEntity.registerNumber`, point the Imprint and JSON-LD at it,
- * and drop the Imprint's allowlist entry in test/content-facts.test.ts.
+ * The registered office in German postal form, one entry per line
+ * ("Arcisstraße 21", "80333 München"), for the German legal pages. The
+ * JSON-LD keeps the English `legalEntity.registeredOffice`.
  */
-export const unconfirmedRegisterNumbers = {
-  imprint: "VR209059",
-  jsonLd: "VR 210726",
-} as const;
+export const registeredOfficeLinesDe = [
+  legalEntity.registeredOffice.streetAddress,
+  `${legalEntity.registeredOffice.postalCode} München`,
+] as const;

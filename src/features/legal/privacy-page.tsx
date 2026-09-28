@@ -1,4 +1,6 @@
 import { Container, PageHero, Prose, Section } from "@/components/ds";
+import { legalEntity, registeredOfficeLinesDe } from "@/config/organization";
+import { absoluteUrl } from "@/config/site";
 import {
   AddressCard,
   LegalNav,
@@ -40,6 +42,10 @@ const sections = [
   },
 ] satisfies LegalTocItem[];
 
+const siteUrl = absoluteUrl();
+const applyUrl = absoluteUrl("/apply");
+const privacyUrl = absoluteUrl("/data-privacy");
+
 export function PrivacyPage() {
   const [
     verantwortlicher,
@@ -61,33 +67,39 @@ export function PrivacyPage() {
         title="Datenschutzerklärung TUM.ai e.V."
         actions={<LegalNav current="/data-privacy" />}
         // "Datenschutzerklärung" is ~9.7em wide. SplitWords renders each word
-        // as an inline-block, so hyphenating it strands a lone syllable
-        // ("rung") on phones; instead the size eases down just enough for the
+        // as an inline-block, so it must not hyphenate (a lone "rung" would
+        // strand on phones); instead the size eases down just enough for the
         // word to fit the column (plain display-lg from ~430px up).
-        // `hyphens-auto` stays only as an overflow guard.
-        className="[&_h1]:hyphens-auto [&_h1]:text-[length:min(var(--text-display-lg),calc((100vw-2*var(--gutter))/10))]"
+        classNames={{
+          title:
+            "text-[length:min(var(--text-display-lg),calc((100vw-2*var(--gutter))/10))]",
+        }}
       />
 
       <Section as="div" tone="paper" spacing="lg">
         <Container className="grid gap-10 lg:grid-cols-[minmax(0,16.5rem)_minmax(0,46rem)] lg:gap-[clamp(3.5rem,7vw,7rem)]">
           <LegalToc items={sections} label="Inhalt" />
 
-          <Prose className="[overflow-wrap:break-word]">
+          <Prose className="wrap-break-word">
             <LegalSection {...verantwortlicher}>
               <p>
                 Diese Datenschutz-Information gilt für die Datenverarbeitung
                 durch die
               </p>
+              {/* TODO(content): the controller is named "TUM e.V." here, while
+                  the Imprint names TUM.ai e.V. (legalEntity.legalName). Which
+                  is right? Legal wording, so it stays until confirmed. */}
               <AddressCard title="TUM e.V." className="sm:max-w-sm">
-                <p>Arcistrasse 21</p>
-                <p>80333 München</p>
+                {registeredOfficeLinesDe.map((line) => (
+                  <p key={line}>{line}</p>
+                ))}
                 <p>
                   E-Mail:{" "}
                   <a
-                    href="mailto:invoice@tum-ai.com"
+                    href={`mailto:${legalEntity.invoiceEmail}`}
                     className={legalLinkClass}
                   >
-                    invoice@tum-ai.com
+                    {legalEntity.invoiceEmail}
                   </a>
                 </p>
               </AddressCard>
@@ -96,8 +108,7 @@ export function PrivacyPage() {
             <LegalSection {...personenbezogen}>
               <LegalSubsection letter="a)" title="Beim Besuch der Website">
                 <p>
-                  Beim Aufrufen der Website{" "}
-                  <a href="https://www.tum-ai.com/">https://www.tum-ai.com/</a>{" "}
+                  Beim Aufrufen der Website <a href={siteUrl}>{siteUrl}</a>{" "}
                   (kurz: "TUM.ai Website") werden durch den auf Ihrem Endgerät
                   zum Einsatz kommenden Browser automatisch Informationen an den
                   Server unserer Website gesendet. Diese Informationen werden
@@ -149,10 +160,7 @@ export function PrivacyPage() {
                 <p>
                   Für die Bewerbung auf eine Mitgliedschaft ist das Ausfüllen
                   eines Kontaktformulars notwendig,{" "}
-                  <a href="https://www.tum-ai.com/apply">
-                    https://www.tum-ai.com/apply
-                  </a>
-                  .
+                  <a href={applyUrl}>{applyUrl}</a>.
                 </p>
                 <p>
                   Dabei ist die Angabe Ihres Namens und einer gültigen
@@ -284,6 +292,9 @@ export function PrivacyPage() {
             </LegalSection>
 
             <LegalSection {...drittanbieter}>
+              {/* TODO(content): the partner booking dialog embeds a Cal.eu
+                  calendar, which this section does not disclose yet. A
+                  maintainer adds the legal wording. */}
               <LegalSubsection letter="a)" title="Social Media Buttons">
                 <p>
                   Auf unserer Website befinden sich Schaltflächen mit Links zu
@@ -527,7 +538,9 @@ export function PrivacyPage() {
               <p>
                 Möchten Sie von Ihrem Widerrufs- oder Widerspruchsrecht Gebrauch
                 machen, genügt eine E-Mail an{" "}
-                <a href="mailto:invoice@tum-ai.com">invoice@tum-ai.com</a>
+                <a href={`mailto:${legalEntity.invoiceEmail}`}>
+                  {legalEntity.invoiceEmail}
+                </a>
               </p>
             </LegalSection>
 
@@ -566,10 +579,8 @@ export function PrivacyPage() {
                 behördlicher Vorgaben kann es notwendig werden, diese
                 Datenschutzerklärung zu ändern. Die jeweils aktuelle
                 Datenschutzerklärung kann jederzeit auf unserer Website unter{" "}
-                <a href="https://www.tum-ai.com/data-privacy">
-                  https://www.tum-ai.com/data-privacy
-                </a>{" "}
-                von Ihnen abgerufen und ausgedruckt werden.
+                <a href={privacyUrl}>{privacyUrl}</a> von Ihnen abgerufen und
+                ausgedruckt werden.
               </p>
             </LegalSection>
           </Prose>

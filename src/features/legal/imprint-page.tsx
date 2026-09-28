@@ -3,9 +3,9 @@ import { contactEmails, registeredOfficeAddressLine } from "@/config/contact";
 import { legalEntity } from "@/config/organization";
 import { LegalNav, LegalSection, legalLinkClass } from "./legal-document";
 
-/** Organisation facts, shown as a definition list. Values are verbatim. */
+/** Organisation facts, shown as a definition list; every value is from config. */
 const organisation = [
-  { term: "Vereinsregisternummer", value: "VR209059" },
+  { term: "Vereinsregisternummer", value: legalEntity.registerNumber },
   { term: "Adresse", value: registeredOfficeAddressLine },
   { term: "Vertreter", value: legalEntity.representatives.join(", ") },
   {
@@ -28,16 +28,18 @@ export function ImprintPage() {
         <Container className="grid gap-14 lg:grid-cols-[minmax(0,21rem)_minmax(0,46rem)] lg:gap-[clamp(3.5rem,7vw,7rem)]">
           <section
             aria-labelledby="organisation-title"
-            className="lg:sticky lg:top-28 lg:self-start"
+            className="lg:sticky lg:top-(--header-offset) lg:self-start"
           >
             <div
               data-tone="lavender"
-              className="rounded-4xl p-7 [overflow-wrap:break-word] md:p-9"
+              className="wrap-break-word rounded-4xl p-7 md:p-9"
             >
               <Eyebrow as="h2" id="organisation-title">
                 Organisation
               </Eyebrow>
-              <p className="mt-5 text-fg text-heading-lg">TUM.ai e.V.</p>
+              <p className="mt-5 text-fg text-heading-lg">
+                {legalEntity.legalName}
+              </p>
               {/* Term beside value from sm up; stacked in the narrow lg sidebar. */}
               <dl className="mt-7 divide-y divide-hairline border-hairline border-y">
                 {organisation.map((row) => (
@@ -65,6 +67,9 @@ export function ImprintPage() {
 
           <Prose>
             <LegalSection id="haftung-fuer-inhalte" title="Haftung für Inhalte">
+              {/* TODO(content): §§ 7 to 10 TMG are now §§ 7 to 10 DDG (the
+                  Digitale-Dienste-Gesetz replaced the TMG in May 2024). A
+                  maintainer updates the legal wording. */}
               <p>
                 Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene
                 Inhalte auf diesen Seiten nach den allgemeinen Gesetzen

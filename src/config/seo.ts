@@ -9,11 +9,7 @@
  */
 import type { Metadata } from "next";
 import { contactEmails, socialLinks } from "./contact";
-import {
-  legalEntity,
-  organizationFacts,
-  unconfirmedRegisterNumbers,
-} from "./organization";
+import { legalEntity, organizationFacts } from "./organization";
 import { absoluteUrl, siteConfig, siteTitle } from "./site";
 
 /** Profiles on other sites that describe TUM.ai (JSON-LD `sameAs`). */
@@ -62,8 +58,7 @@ const organizationJsonLd = {
   identifier: {
     "@type": "PropertyValue",
     name: "Register of Associations",
-    // TODO(content): unconfirmed; see `unconfirmedRegisterNumbers`.
-    value: unconfirmedRegisterNumbers.jsonLd,
+    value: legalEntity.registerNumber,
   },
   contactPoint: {
     "@type": "ContactPoint",
