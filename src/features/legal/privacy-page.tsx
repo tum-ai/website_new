@@ -540,6 +540,9 @@ export function PrivacyPage() {
             </LegalSection>
 
             <LegalSection {...aktualitaet}>
+              {/* TODO(content): the "Stand" date predates the removal of the
+                  Google Analytics section. Should it move to the date that
+                  change goes live? */}
               <p>
                 Diese Datenschutzerklärung ist aktuell gültig und hat den Stand
                 August 2024.
