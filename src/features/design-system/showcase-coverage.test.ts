@@ -13,7 +13,6 @@ const barrel = readFileSync(join(root, "components/ds/index.ts"), "utf8");
 /** Exports with nothing to show, and where they are exercised instead. */
 const withoutVisuals: Record<string, string> = {
   MotionProvider: "rendered once by the (site) layout around every page",
-  useInertBackground: "called by every <Dialog> on the page",
 };
 
 function runtimeExports(source: string): string[] {

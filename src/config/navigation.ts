@@ -77,7 +77,7 @@ export const headerCtas = {
 export type HeaderCtaVariant = keyof typeof headerCtas;
 
 /** The variants that have an href: the only ones the setting accepts. */
-export type LinkedHeaderCtaVariant = {
+type LinkedHeaderCtaVariant = {
   [Variant in HeaderCtaVariant]: (typeof headerCtas)[Variant]["href"] extends string
     ? Variant
     : never;

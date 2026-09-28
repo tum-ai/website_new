@@ -80,8 +80,7 @@ import {
 /*
  * Every export of src/components/ds appears on this page at least once, and
  * every variant a component offers is shown side by side. `MotionProvider`
- * and `useInertBackground` have no visuals: the site layout renders the
- * provider, and every <Dialog> below uses the hook.
+ * has no visuals: the site layout renders it.
  */
 
 const tones: { tone: Tone; name: string; hex: string }[] = [

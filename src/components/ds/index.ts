@@ -94,7 +94,6 @@ export {
   DialogTitle,
   type DialogTitleProps,
   DialogTrigger,
-  useInertBackground,
 } from "./dialog";
 export { EmptyState, type EmptyStateProps } from "./empty-state";
 export { FallbackImage, type FallbackImageProps } from "./fallback-image";
