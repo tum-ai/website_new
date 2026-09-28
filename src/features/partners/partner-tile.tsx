@@ -32,6 +32,10 @@ export function PartnerTile({
           : undefined
       }
       size={size}
+      // Serve the artwork as is: PartnerRotationGrid preloads `partner.image`
+      // before a swap, so the tile must render that exact URL (an optimizer
+      // URL would still be loading when the outgoing logo is removed).
+      unoptimized
       // The outgoing copy fills the slot over the incoming tile.
       className={transparent ? "h-full bg-transparent" : undefined}
     />
