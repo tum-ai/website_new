@@ -137,6 +137,11 @@ const hardcodedFacts: [RegExp, string][] = [
     "invoice email: legalEntity in config/organization.ts",
   ],
   [
+    // A figure next to "Makeathon" in the same sentence, either order.
+    /makeathon\b[^.\n]*?(\b\d{3,}\+?\s+(?:registrations|participants|hackers|attendees|signups))|(\b\d{3,}\+?\s+(?:registrations|participants|hackers|attendees|signups)\b)[^.\n]*?\bmakeathon/i,
+    "Makeathon size: config/community.ts",
+  ],
+  [
     /\b[a-z]+\.[a-z]+@tum-ai\.com\b/i,
     "personal emails: use a role address from config/contact.ts",
   ],
@@ -150,14 +155,15 @@ const hardcodedFacts: [RegExp, string][] = [
  */
 const allowlist: { file: string; fact: string; until: string }[] = [
   {
-    file: "features/e-lab/e-lab-page.tsx",
-    fact: "site URL: absoluteUrl() or siteConfig.url from config/site.ts",
-    until: "W2 E-Lab builds its JSON-LD URLs with absoluteUrl()",
-  },
-  {
     file: "features/partners/partnerships.ts",
     fact: "personal emails: use a role address from config/contact.ts",
     until: "W2 Partners routes partner mail through a role address",
+  },
+  {
+    file: "features/partners/data/partners.ts",
+    fact: "Makeathon size: config/community.ts",
+    until:
+      "Partners reads communityFacts.makeathonSize (handoff from W2 Apply+Community)",
   },
 ];
 

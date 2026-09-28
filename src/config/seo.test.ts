@@ -1,4 +1,6 @@
 import { expect, test } from "vitest";
+import { contactEmails } from "@/config/contact";
+import { eLabProgramSummary } from "@/config/e-lab";
 import {
   buildMetadata,
   getJsonLd,
@@ -66,6 +68,22 @@ test.each(keys)(
     }
   },
 );
+
+test("/e-lab adds the Venture Department as a TUM.ai sub-organization", () => {
+  const [organization, , eLab] = getJsonLd("entrepreneurship") as Record<
+    string,
+    unknown
+  >[];
+  expect(eLab).toMatchObject({
+    "@type": "Organization",
+    url: absoluteUrl("/e-lab"),
+    email: contactEmails.venture,
+    parentOrganization: { url: organization.url, name: organization.name },
+  });
+  expect(eLab.description).toContain(eLabProgramSummary);
+  // Only /e-lab carries the extra node.
+  expect(getJsonLd("events")).toHaveLength(2);
+});
 
 test("the root layout defaults come from the site config", () => {
   expect(rootMetadata.metadataBase.href).toBe(`${siteConfig.url}/`);

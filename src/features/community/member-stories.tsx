@@ -24,7 +24,7 @@ export function MemberStories({ stories }: MemberStoriesProps) {
       spacing="lg"
       id="memberStories"
       aria-labelledby="member-stories-title"
-      className="scroll-mt-[var(--header-height)]"
+      className="scroll-mt-header"
     >
       <Container>
         <SectionHeader
@@ -37,7 +37,7 @@ export function MemberStories({ stories }: MemberStoriesProps) {
             <Reveal as="li" key={story.name} delay={(index % 2) * 100}>
               <figure className="group/story flex h-full flex-col border-hairline-strong border-t pt-8 md:pt-10">
                 <svg
-                  aria-hidden
+                  aria-hidden="true"
                   viewBox="0 0 32 24"
                   className="h-5 w-7 text-highlight"
                   fill="currentColor"

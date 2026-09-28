@@ -18,10 +18,6 @@ const knownIssues: Record<
   string,
   Partial<Record<"axe" | "newTab" | "labelInName", string>>
 > = {
-  "/e-lab": {
-    labelInName:
-      "Home+E-Lab: the ApplicationCta links' aria-label (Apply for E-Lab 6.0) drops their visible label.",
-  },
   "/partners": {
     newTab:
       "Partners: partner logo tiles (Visit <partner>) open a new tab without saying so.",

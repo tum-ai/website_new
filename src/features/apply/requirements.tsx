@@ -1,18 +1,9 @@
-import type { LucideIcon } from "lucide-react";
 import { Container, Highlight, Section, SectionHeader } from "@/components/ds";
 import { Benefits } from "./benefits";
+import { requirements } from "./data/apply";
 
-interface Requirement {
-  icon: LucideIcon;
-  title: string;
-  text: string;
-}
-
-interface RequirementsProps {
-  requirementsWithIcons: Requirement[];
-}
-
-export function Requirements({ requirementsWithIcons }: RequirementsProps) {
+/** Paper band: the qualities we look for, as spotlight cards. */
+export function Requirements() {
   return (
     <Section
       tone="paper"
@@ -31,7 +22,7 @@ export function Requirements({ requirementsWithIcons }: RequirementsProps) {
           }
           lead="There is no secret to TUM.ai's fast-paced growth. Every semester, we have recruited amazing members who drive the initiative forward. If you can identify with the following qualities, you are the one that we are looking for!"
         />
-        <Benefits benefits={requirementsWithIcons} columns={4} />
+        <Benefits benefits={requirements} columns={4} />
       </Container>
     </Section>
   );

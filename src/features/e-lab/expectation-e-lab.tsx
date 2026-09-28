@@ -8,6 +8,7 @@ import {
 
 import {
   BrandMark,
+  BrandPanel,
   Container,
   FeatureCard,
   Reveal,
@@ -55,7 +56,7 @@ export function ExpectationELab() {
             eyebrow="Why E-Lab"
             index={1}
             title="What to expect"
-            lead="Built by founders, for founders - 3 month's optimized for speed, learning, and real traction."
+            lead="Built by founders, for founders - 3 months optimized for speed, learning, and real traction."
           />
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.15fr)] lg:grid-rows-2">
             {features.map((feature, index) => (
@@ -77,12 +78,7 @@ export function ExpectationELab() {
                 data-tone="ink"
                 className="relative isolate flex h-full flex-col justify-between gap-10 overflow-clip rounded-3xl p-8 md:p-10"
               >
-                <div aria-hidden className="grain -z-10" />
-                <div
-                  aria-hidden
-                  className="absolute -top-1/3 -left-1/4 -z-10 h-full w-full rounded-full bg-[radial-gradient(closest-side,rgb(154_100_217/0.4),transparent)]"
-                />
-                <BrandMark className="absolute -right-[18%] -bottom-[16%] -z-10 w-[80%] text-white/[0.05]" />
+                <BrandPanel className="-z-10" />
                 <p className="text-fg text-heading-lg">
                   Have an idea, a prototype, or just relentless drive, and are
                   ready to build?{" "}
