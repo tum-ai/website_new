@@ -83,47 +83,66 @@ export type LinkedHeaderCtaVariant = {
     : never;
 }[HeaderCtaVariant];
 
-/** Which call to action the header shows (outside route overrides). */
-export type HeaderCtaSetting<Variant extends string = LinkedHeaderCtaVariant> =
-  {
-    /**
-     * A fixed variant, or `"auto"`: `member` while membership applications
-     * are open (`membershipConfig.applicationsOpen`), `fallback` otherwise.
-     */
-    variant: Variant | "auto";
-    /** What `"auto"` shows while membership applications are closed. */
-    fallback: Variant;
-  };
+/** A table of CTA variants, for tests and future sources of the same shape. */
+export type HeaderCtaTable = Readonly<
+  Record<HeaderCtaVariant, HeaderCtaOption>
+>;
 
-/**
- * The header CTA. Change `fallback` to show a different call to action
- * between recruiting rounds, or pin `variant` to override the automatic rule.
- */
-export const headerCtaSetting: HeaderCtaSetting = {
-  variant: "auto",
-  fallback: "partner",
+/** The site's choice of header CTA (outside route overrides). */
+export type HeaderCtaSetting = {
+  /** What the header shows while membership applications are closed. */
+  fallback: LinkedHeaderCtaVariant;
+  /** Shows this variant regardless of the recruiting round. */
+  override?: LinkedHeaderCtaVariant;
 };
 
 /**
- * The CTA for `setting`: the wanted variant, falling back to `member` when
- * the wanted one has no href. Returns `null` only if neither has one.
+ * The header CTA: `member` while membership applications are open
+ * (`membershipConfig.applicationsOpen`), `fallback` otherwise. Change
+ * `fallback` for a different call to action between recruiting rounds, or
+ * set `override` to pin one.
+ */
+export const headerCtaSetting: HeaderCtaSetting = { fallback: "partner" };
+
+/**
+ * The plain input {@link selectHeaderCta} decides on. Kept free of config
+ * imports so another source (such as dated campaign windows from the CMS)
+ * can feed the same function later.
+ */
+export type HeaderCtaChoice = {
+  /** Membership applications are open. */
+  membershipOpen: boolean;
+  /** Shown while membership applications are closed. */
+  fallback: HeaderCtaVariant;
+  /** Shown regardless of `membershipOpen` when set. */
+  override?: HeaderCtaVariant;
+};
+
+/**
+ * Which CTA variant the header shows: `override` if set, else `member` while
+ * membership applications are open, else `fallback`. A variant without an
+ * href in `ctas` is skipped in favour of `member`; `null` means neither has
+ * one, so the header shows no CTA.
  */
 export function selectHeaderCta(
-  setting: HeaderCtaSetting<HeaderCtaVariant>,
-  membershipOpen: boolean,
-  ctas: Readonly<Record<HeaderCtaVariant, HeaderCtaOption>> = headerCtas,
-): NavLink | null {
-  const wanted =
-    setting.variant !== "auto"
-      ? setting.variant
-      : membershipOpen
-        ? "member"
-        : setting.fallback;
+  { membershipOpen, fallback, override }: HeaderCtaChoice,
+  ctas: HeaderCtaTable = headerCtas,
+): HeaderCtaVariant | null {
+  const wanted = override ?? (membershipOpen ? "member" : fallback);
   for (const variant of [wanted, "member"] as const) {
-    const { label, href } = ctas[variant];
-    if (href !== null) return { label, href };
+    if (ctas[variant].href !== null) return variant;
   }
   return null;
+}
+
+/** The link for a CTA variant, or `null` for none or one without a target. */
+export function headerCtaLink(
+  variant: HeaderCtaVariant | null,
+  ctas: HeaderCtaTable = headerCtas,
+): NavLink | null {
+  if (variant === null) return null;
+  const { label, href } = ctas[variant];
+  return href === null ? null : { label, href };
 }
 
 /** How the floating header looks and what it offers on a route. */
@@ -142,7 +161,12 @@ export type HeaderOptions = {
 
 const defaultHeaderOptions: HeaderOptions = {
   solid: false,
-  cta: selectHeaderCta(headerCtaSetting, membershipConfig.applicationsOpen),
+  cta: headerCtaLink(
+    selectHeaderCta({
+      ...headerCtaSetting,
+      membershipOpen: membershipConfig.applicationsOpen,
+    }),
+  ),
   hideLogoUntilScroll: false,
 };
 

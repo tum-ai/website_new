@@ -8,8 +8,9 @@ import {
   contributeLinks,
   getHeaderOptions,
   type HeaderCtaSetting,
-  type HeaderCtaVariant,
+  type HeaderCtaTable,
   headerConnectLinks,
+  headerCtaLink,
   headerCtaSetting,
   headerCtas,
   legalLinks,
@@ -49,9 +50,11 @@ test("the header's connect row is a subset of the footer's", () => {
 });
 
 /** The CTA every route without an override shows. */
-const defaultCta = selectHeaderCta(
-  headerCtaSetting,
-  membershipConfig.applicationsOpen,
+const defaultCta = headerCtaLink(
+  selectHeaderCta({
+    ...headerCtaSetting,
+    membershipOpen: membershipConfig.applicationsOpen,
+  }),
 );
 
 test("the header defaults to the configured CTA with a transparent pill", () => {
@@ -82,57 +85,80 @@ test("partners is solid and links to its own contact section", () => {
 });
 
 describe("header CTA selection", () => {
-  const link = (variant: HeaderCtaVariant) => {
-    const { label, href } = headerCtas[variant];
-    return { label, href };
-  };
-
-  test("auto shows member while membership applications are open", () => {
-    expect(
-      selectHeaderCta({ variant: "auto", fallback: "partner" }, true),
-    ).toStrictEqual(link("member"));
+  test("shows member while membership applications are open", () => {
+    expect(selectHeaderCta({ membershipOpen: true, fallback: "partner" })).toBe(
+      "member",
+    );
   });
 
-  test("auto shows the fallback while membership applications are closed", () => {
+  test("shows the fallback while membership applications are closed", () => {
     for (const fallback of ["member", "partner", "elab"] as const) {
-      expect(
-        selectHeaderCta({ variant: "auto", fallback }, false),
+      expect(selectHeaderCta({ membershipOpen: false, fallback })).toBe(
         fallback,
-      ).toStrictEqual(link(fallback));
+      );
     }
   });
 
-  test("a pinned variant wins over the recruiting round", () => {
-    for (const open of [true, false]) {
+  test("an override wins over the recruiting round", () => {
+    for (const membershipOpen of [true, false]) {
       expect(
-        selectHeaderCta({ variant: "elab", fallback: "partner" }, open),
-      ).toStrictEqual(link("elab"));
+        selectHeaderCta({
+          membershipOpen,
+          fallback: "partner",
+          override: "elab",
+        }),
+      ).toBe("elab");
     }
   });
 
   test("a variant without an href falls back to member", () => {
-    const notify: HeaderCtaSetting = {
-      // @ts-expect-error: the setting only accepts variants with an href.
-      variant: "notify",
-      fallback: "partner",
-    };
-    expect(selectHeaderCta(notify, false)).toStrictEqual(link("member"));
-    // The same holds for a table that drops a target later: no dead button.
-    const ctas = { ...headerCtas, partner: { label: "Partner", href: null } };
+    expect(headerCtas.notify.href).toBeNull();
+    expect(selectHeaderCta({ membershipOpen: false, fallback: "notify" })).toBe(
+      "member",
+    );
     expect(
-      selectHeaderCta({ variant: "auto", fallback: "partner" }, false, ctas),
-    ).toStrictEqual(link("member"));
+      selectHeaderCta({
+        membershipOpen: false,
+        fallback: "partner",
+        override: "notify",
+      }),
+    ).toBe("member");
+    // The same holds for a table that drops a target later: no dead button.
+    const ctas: HeaderCtaTable = {
+      ...headerCtas,
+      partner: { label: "Partner", href: null },
+    };
+    expect(
+      selectHeaderCta({ membershipOpen: false, fallback: "partner" }, ctas),
+    ).toBe("member");
+  });
+
+  test("the site setting accepts only variants with an href", () => {
+    // @ts-expect-error: `notify` has no target yet.
+    const setting: HeaderCtaSetting = { fallback: "notify" };
+    expect(setting.fallback).toBe("notify");
   });
 
   test("no CTA when neither the wanted variant nor member has an href", () => {
-    const ctas = {
+    const ctas: HeaderCtaTable = {
       ...headerCtas,
       member: { label: "Member", href: null },
       partner: { label: "Partner", href: null },
     };
-    expect(
-      selectHeaderCta({ variant: "auto", fallback: "partner" }, false, ctas),
-    ).toBeNull();
+    const variant = selectHeaderCta(
+      { membershipOpen: false, fallback: "partner" },
+      ctas,
+    );
+    expect(variant).toBeNull();
+    expect(headerCtaLink(variant, ctas)).toBeNull();
+  });
+
+  test("the link carries the variant's label and target", () => {
+    expect(headerCtaLink("partner")).toStrictEqual({
+      label: headerCtas.partner.label,
+      href: headerCtas.partner.href,
+    });
+    expect(headerCtaLink("notify")).toBeNull();
   });
 
   test("every CTA with a target points at an existing page", () => {
