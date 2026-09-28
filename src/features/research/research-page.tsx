@@ -4,65 +4,43 @@ import {
   Container,
   EmptyState,
   Eyebrow,
-  type LogoItem,
   LogoWall,
   PageHero,
   Reveal,
   Section,
   SectionHeader,
+  Steps,
   Tabs,
   TabsList,
   TabsPanel,
   TabsTab,
 } from "@/components/ds";
-import type { Partner, Research as ResearchProject } from "@/lib/types";
+import type { Partner, ResearchProject } from "@/lib/types";
+import { rexInstitutions, rexProcess } from "./data/rex";
+import {
+  formatCounter,
+  getCollaboratorLogos,
+  getLogoColumns,
+  getResearchProjectLists,
+} from "./research";
 import { ResearchCard } from "./research-card";
 
-/* The REX copy names these labs; the grid repeats them as typography. */
-const rexInstitutions = ["Harvard", "MIT", "Cambridge", "INRIA"];
+/* Long tab labels wrap on phones instead of overflowing the pill. */
+const tabClassName =
+  "max-sm:h-auto max-sm:min-h-10 max-sm:shrink max-sm:whitespace-normal max-sm:py-2 max-sm:leading-tight";
 
-/* One sentence of the REX copy, split at its commas into a visual process. */
-const rexProcess = [
-  "collect project proposals from our partners,",
-  "inform members about the requirements and usual processes,",
-  "preselect applicants based on prior relevant (research) experience,",
-  "recommend them to our partner labs,",
-  "and eventually support their journey abroad with alumni experience in visa processes, housing, etc.",
-];
-
-const pad = (value: number) => String(value).padStart(2, "0");
-
-function logoColumns(count: number) {
-  if (count >= 6) return 6;
-  if (count === 5) return 5;
-  if (count === 4) return 4;
-  return 3;
-}
-
+/** The /research page: CMS projects and collaborators, and the REX program. */
 export function ResearchPage({
-  initialProjects = [],
-  researchPartners = [],
+  projects,
+  researchPartners,
 }: {
-  initialProjects?: ResearchProject[];
-  researchPartners?: Partner[];
+  /** Research projects from the CMS, in CMS order. */
+  projects: ResearchProject[];
+  /** Partners in the "Research Partners" category. */
+  researchPartners: Partner[];
 }) {
-  // Projects without a status are intentionally not listed.
-  const ongoingProjects = initialProjects.filter(
-    (project) => project.status === "ongoing",
-  );
-  const pastProjects = initialProjects.filter(
-    (project) => project.status === "completed",
-  );
-  const collaborators: LogoItem[] = (
-    Array.isArray(researchPartners) ? researchPartners : []
-  )
-    .filter((partner) => partner.link && partner.image)
-    .map((partner) => ({
-      name: partner.name,
-      src: partner.image,
-      href: partner.link,
-      alt: partner.name,
-    }));
+  const { ongoing, past } = getResearchProjectLists(projects);
+  const collaborators = getCollaboratorLogos(researchPartners);
 
   return (
     <main>
@@ -72,16 +50,10 @@ export function ResearchPage({
           lead="Our research offerings - from projects to exchange programs"
         >
           <TabsList aria-label="Research tabs" activateOnFocus>
-            <TabsTab
-              value="projects"
-              className="max-sm:h-auto max-sm:min-h-10 max-sm:shrink max-sm:whitespace-normal max-sm:py-2 max-sm:leading-tight"
-            >
+            <TabsTab value="projects" className={tabClassName}>
               Projects
             </TabsTab>
-            <TabsTab
-              value="exchange"
-              className="max-sm:h-auto max-sm:min-h-10 max-sm:shrink max-sm:whitespace-normal max-sm:py-2 max-sm:leading-tight"
-            >
+            <TabsTab value="exchange" className={tabClassName}>
               Research Exchange Program
             </TabsTab>
           </TabsList>
@@ -100,23 +72,11 @@ export function ResearchPage({
                 index={1}
                 title="Ongoing Projects"
               />
-              {ongoingProjects.length > 0 ? (
+              {ongoing.length > 0 ? (
                 <ul className="grid gap-5 lg:grid-cols-3 xl:gap-6">
-                  {ongoingProjects.map((project, index) => (
-                    <Reveal
-                      as="li"
-                      key={project.id || project.title}
-                      delay={(index % 3) * 90}
-                    >
-                      <ResearchCard
-                        title={project.title}
-                        description={project.description}
-                        image={project.image}
-                        publication={project.publication}
-                        keywords={project.keywords}
-                        status={project.status}
-                        index={index}
-                      />
+                  {ongoing.map((project, index) => (
+                    <Reveal as="li" key={project.id} delay={(index % 3) * 90}>
+                      <ResearchCard project={project} index={index} />
                     </Reveal>
                   ))}
                 </ul>
@@ -126,7 +86,7 @@ export function ResearchPage({
             </Container>
           </Section>
 
-          {pastProjects.length > 0 ? (
+          {past.length > 0 ? (
             <Section
               tone="mist"
               spacing="lg"
@@ -140,21 +100,16 @@ export function ResearchPage({
                   title="Past Projects"
                 />
                 <ul className="border-hairline border-t">
-                  {pastProjects.map((project, index) => (
+                  {past.map((project, index) => (
                     <Reveal
                       as="li"
-                      key={project.id || project.title}
+                      key={project.id}
                       delay={Math.min(index, 4) * 60}
                       className="border-hairline border-b"
                     >
                       <ResearchCard
                         layout="row"
-                        title={project.title}
-                        description={project.description}
-                        image={project.image}
-                        publication={project.publication}
-                        keywords={project.keywords}
-                        status={project.status}
+                        project={project}
                         index={index}
                       />
                     </Reveal>
@@ -177,18 +132,14 @@ export function ResearchPage({
                 <SectionHeader
                   id="collaborators-title"
                   eyebrow="Research partners"
-                  index={pastProjects.length > 0 ? 3 : 2}
+                  index={past.length > 0 ? 3 : 2}
                   title="Collaborators"
                 />
                 <Reveal variant="fade" delay={120}>
                   <LogoWall
                     logos={collaborators}
-                    columns={logoColumns(collaborators.length)}
+                    columns={getLogoColumns(collaborators.length)}
                     size="lg"
-                    // Six logos: 3 + 3 on tablets instead of 4 + 2.
-                    className={
-                      collaborators.length === 6 ? "md:grid-cols-3" : undefined
-                    }
                   />
                 </Reveal>
               </Container>
@@ -199,37 +150,29 @@ export function ResearchPage({
         <TabsPanel value="exchange" keepMounted>
           <Section tone="paper" spacing="lg" aria-labelledby="rex-title">
             <Container>
-              {/* Split rhythm as in SectionHeader: title and lead share a
-                  bottom line. */}
-              <div className="grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-16">
-                <div className="lg:col-span-5">
-                  <Reveal>
-                    <Eyebrow index={1}>Research abroad</Eyebrow>
-                  </Reveal>
-                  <Reveal delay={60}>
-                    <h2 id="rex-title" className="mt-5 text-display-md text-fg">
-                      Research Exchange (REX) Program
-                    </h2>
-                  </Reveal>
-                </div>
-                <Reveal delay={140} className="lg:col-span-7">
-                  <p className="text-fg-muted text-lead">
+              <SectionHeader
+                id="rex-title"
+                eyebrow="Research abroad"
+                index={1}
+                title="Research Exchange (REX) Program"
+                classNames={{ aside: "lg:max-w-2xl" }}
+                lead={
+                  <>
                     Our Research Exchange (REX) Program provides TUM.ai members
                     with opportunities to conduct research abroad. Offers range
                     from final theses to research internships with leading labs
-                    at institutions like
+                    at institutions like{" "}
                     <span className="font-semibold text-fg">
-                      {" "}
                       Harvard, MIT, Cambridge,
                     </span>{" "}
                     or <span className="font-semibold text-fg">INRIA</span>.
-                  </p>
-                </Reveal>
-              </div>
+                  </>
+                }
+              />
 
               <ul
-                aria-hidden
-                className="mt-16 grid grid-cols-2 border-hairline-strong border-y md:mt-24 lg:grid-cols-4"
+                aria-hidden="true"
+                className="grid grid-cols-2 border-hairline-strong border-y lg:grid-cols-4"
               >
                 {rexInstitutions.map((name, index) => (
                   <Reveal
@@ -239,9 +182,9 @@ export function ResearchPage({
                     className="min-w-0 border-hairline py-7 max-lg:even:pl-5 max-lg:odd:border-r max-lg:odd:pr-5 md:py-9 lg:border-l lg:py-10 lg:pl-6 lg:first:border-l-0 lg:first:pl-0 max-lg:[&:nth-child(-n+2)]:border-b"
                   >
                     <span className="tabular text-fg-subtle text-meta">
-                      {pad(index + 1)}
+                      {formatCounter(index)}
                     </span>
-                    <span className="mt-8 block font-light text-[clamp(1.375rem,7vw,2rem)] text-fg sm:text-display-md lg:mt-14">
+                    <span className="mt-8 block font-light text-fg text-heading-lg sm:text-display-md lg:mt-14">
                       {name}
                     </span>
                   </Reveal>
@@ -253,36 +196,22 @@ export function ResearchPage({
           <Section as="div" tone="lavender" spacing="lg">
             <Container>
               <Reveal>
-                <Eyebrow as="h3" index={2} className="mb-10 md:mb-14">
+                <Eyebrow as="h3" index={2}>
                   How it works
                 </Eyebrow>
               </Reveal>
-              {/* "We" opens the sentence the list completes; its top lines up
-                  with the first clause (same padding as a list row). */}
-              <div className="grid gap-4 lg:grid-cols-12 lg:gap-16">
-                <div className="lg:col-span-4">
-                  <Reveal delay={60} className="lg:sticky lg:top-32 lg:pt-8">
-                    <p className="font-light text-display-xl text-fg">We</p>
-                  </Reveal>
-                </div>
-                <ol className="border-hairline-strong border-t lg:col-span-8">
-                  {rexProcess.map((step, index) => (
-                    <Reveal
-                      as="li"
-                      key={step}
-                      delay={index * 70}
-                      className="grid grid-cols-[2.75rem_minmax(0,1fr)] items-baseline gap-3 border-hairline-strong border-b py-6 md:grid-cols-[4.5rem_minmax(0,1fr)] md:py-8"
-                    >
-                      <span className="tabular font-semibold text-highlight text-meta">
-                        {pad(index + 1)}
-                      </span>
-                      <span className="font-normal text-fg text-heading-md md:font-light md:text-heading-lg">
-                        {step}
-                      </span>
-                    </Reveal>
-                  ))}
-                </ol>
-              </div>
+              {/* "We" opens the sentence the steps complete. */}
+              <Reveal delay={60}>
+                <p className="mt-10 font-light text-display-lg text-fg md:mt-14">
+                  We
+                </p>
+              </Reveal>
+              <Steps
+                items={rexProcess.map((clause) => ({ title: clause }))}
+                columns={5}
+                headingAs="h4"
+                className="mt-10 md:mt-14"
+              />
             </Container>
           </Section>
 

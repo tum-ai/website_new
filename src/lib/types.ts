@@ -35,16 +35,6 @@ export type ResearchProject = WithoutNulls<RESEARCH_QUERY_RESULT[number]>;
 /** "ongoing" | "completed". */
 export type ResearchStatus = NonNullable<ResearchProject["status"]>;
 
-/**
- * @deprecated Compatibility shape for the research page until its card takes
- * `ResearchProject` (keywords as an array): `keywords` is the list joined
- * with ", ", as the query returned it before. Produced by `joinKeywords` in
- * the /research route; remove both once the card reads the array.
- */
-export type Research = Omit<ResearchProject, "keywords"> & {
-  keywords?: string;
-};
-
 /** `/api/getNotes` item. Public contract: do not change the shape. */
 export type PublicEvent = PUBLIC_EVENTS_QUERY_RESULT[number];
 /** `/api/getPartners` item. Public contract: do not change the shape. */
