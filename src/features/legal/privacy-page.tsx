@@ -23,21 +23,15 @@ const sections = [
     title:
       "Erhebung und Speicherung personenbezogener Daten sowie Art und Zweck deren Verwendung",
   },
-  {
-    id: "anonymisierte-daten",
-    number: "3.",
-    title:
-      "Erhebung und Speicherung anonymisierter Daten sowie Art und Zweck deren Verwendung",
-  },
-  { id: "weitergabe-von-daten", number: "4.", title: "Weitergabe von Daten" },
-  { id: "drittanbieter", number: "5.", title: "Drittanbieter" },
-  { id: "cookies", number: "6.", title: "Cookies" },
-  { id: "betroffenenrechte", number: "7.", title: "Betroffenenrechte" },
-  { id: "widerspruchsrecht", number: "8.", title: "Widerspruchsrecht" },
-  { id: "datensicherheit", number: "9.", title: "Datensicherheit" },
+  { id: "weitergabe-von-daten", number: "3.", title: "Weitergabe von Daten" },
+  { id: "drittanbieter", number: "4.", title: "Drittanbieter" },
+  { id: "cookies", number: "5.", title: "Cookies" },
+  { id: "betroffenenrechte", number: "6.", title: "Betroffenenrechte" },
+  { id: "widerspruchsrecht", number: "7.", title: "Widerspruchsrecht" },
+  { id: "datensicherheit", number: "8.", title: "Datensicherheit" },
   {
     id: "aktualitaet",
-    number: "10.",
+    number: "9.",
     title: "Aktualität und Änderung dieser Datenschutzerklärung",
   },
 ] satisfies LegalTocItem[];
@@ -50,7 +44,6 @@ export function PrivacyPage() {
   const [
     verantwortlicher,
     personenbezogen,
-    anonymisiert,
     weitergabe,
     drittanbieter,
     cookies,
@@ -237,28 +230,6 @@ export function PrivacyPage() {
               </LegalSubsection>
             </LegalSection>
 
-            <LegalSection {...anonymisiert}>
-              <p>
-                Wir verwenden Google Analytics zur Analyse und statistischen
-                Auswertung der Nutzung der Website. Hierzu werden eingesetzt.
-                Die dadurch erhaltenen Informationen über die Websitenutzung
-                werden ausschließlich an unsere Server übertragen und in
-                pseudonymen Nutzungsprofilen zusammengefasst. Die Daten
-                verwenden wir zur Auswertung der Nutzung der Website. Eine
-                Weitergabe der erfassten Daten an Dritte erfolgt nicht.
-              </p>
-              <p>
-                Die IP-Adressen werden anonymisiert (IPMasking), sodass eine
-                Zuordnung zu einzelnen Nutzern nicht möglich ist.
-              </p>
-              <p>
-                Die Datenverarbeitung erfolgt auf Grundlage von Art. 6 Abs. 1 S.
-                1 lit. f) DSGVO. Wir verfolgen damit unser berechtigtes
-                Interesse an der Optimierung unserer Webseite für unsere
-                Außendarstellung.
-              </p>
-            </LegalSection>
-
             <LegalSection {...weitergabe}>
               <p>
                 Eine Übermittlung Ihrer persönlichen Daten an Dritte zu anderen
@@ -368,7 +339,7 @@ export function PrivacyPage() {
                 </p>
                 <p>
                   Das Ausfüllen von Online-Formularen erfolgt über den
-                  belgischen Anbieter Tally B.V. („Tally Forms) und unterliegt
+                  belgischen Anbieter Tally B.V. („Tally Forms") und unterliegt
                   der Europäischen Datenschutz-Grundverordnung (DSGVO).
                 </p>
                 <p>
@@ -383,7 +354,7 @@ export function PrivacyPage() {
               <LegalSubsection letter="c)" title="Für Nichtmitglieder">
                 <p>
                   Das Ausfüllen von Online-Formularen erfolgt über den
-                  belgischen Anbieter Tally B.V. („Tally Forms) und unterliegt
+                  belgischen Anbieter Tally B.V. („Tally Forms") und unterliegt
                   der Europäischen Datenschutz-Grundverordnung (DSGVO).
                   Grundlage der Datenverarbeitung ist einerseits Ihre
                   konkludente Einwilligung durch das Ausfüllen des Formulars
@@ -428,7 +399,7 @@ export function PrivacyPage() {
               <p>
                 Sie können dauerhaft installierte Cookies über die Einstellungen
                 Ihres Browsers löschen. Die meisten Browser akzeptieren Cookies
-                automatisch – falls Sie also den Einsatz von Cookies
+                automatisch - falls Sie also den Einsatz von Cookies
                 unterdrücken möchten, müssen Sie möglicherweise Cookies aktiv
                 löschen oder blockieren oder die Speicherung der Cookies durch
                 eine Einstellung Ihrer Browser-Software verhindern. Beachten Sie
@@ -554,7 +525,7 @@ export function PrivacyPage() {
                 Verschlüsselung unterstützt, greifen wir stattdessen auf 128 Bit
                 v3 Technologie zurück. Ob eine einzelne Seite unseres
                 Internetauftritts verschlüsselt übertragen wird, erkennen Sie an
-                der geschlossenen Darstellung des Schüssel- beziehungsweise
+                der geschlossenen Darstellung des Schlüssel- beziehungsweise
                 Schloss-Symbols in der Statusleiste Ihres Browsers.
               </p>
               <p>
