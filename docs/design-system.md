@@ -183,7 +183,7 @@ Content
 - `FallbackImage`: next/image that swaps to a fallback when it fails to load.
 - `QuoteCard` (`raised` or `glass`, with `context` and `footer` slots; `editorial` sets one quote in display type without a card) and `QuoteMark`.
 - `PersonCard`: portrait, name and `byline`; `image.position` keeps a face in frame, and `unoptimized` serves the portrait as is.
-- `LogoTile`, `LogoWall`: logos as tiles (`size` `sm` to `xl`, `responsive` for one step smaller on phones), `variant="chip"` (with `fixed` width so rows don't reflow), `variant="bare"` for artwork made for dark bands, links, or a `wordmark` lockup, with a name fallback when the artwork fails.
+- `LogoTile`, `LogoWall`: logos as tiles (`size` `sm` to `xl`, `responsive` for one step smaller on phones), `variant="chip"` (with `fixed` width so rows don't reflow), `variant="bare"` for artwork made for dark bands, `variant="mono"` for light-background artwork in greyscale on light bands, links, or a `wordmark` lockup, with a name fallback when the artwork fails. `LogoWall layout="strip"` sets `mono` logos in one wrapping row, each sized to the same area from its `aspectRatio`.
 - `BulletList`: a short list of points as raised rows with an accent dot (for example inside an FAQ answer).
 - `Pill`: outlined brand pill.
 - `Tag`: keyword chip.
@@ -559,7 +559,8 @@ No props of its own; see the source file for the root element or Base UI part it
 | `alt?` | `string` | Text alternative for the artwork. Default `name`. |
 | `wordmark?` | `ReactNode` | Name set beside a symbol-only logo, forming a wordmark lockup ("[symbol] Y Combinator"). The image then gets an empty `alt`, since the text names the organization. |
 | `unoptimized?` | `boolean` | Serve the artwork as is, skipping the image optimizer. Default: true for absolute http(s) URLs (CMS hosts are outside next.config's image patterns), false for local assets. |
-| `variant?` | `"tile" \| "chip" \| "bare"` | `tile`: a white card for logo grids. `chip`: a compact white chip that carries light-background artwork on dark bands (quote rows, meta lines). `bare`: no surface, for artwork made for dark bands (logo rails on ink); size it with `className`. |
+| `aspectRatio?` | `number` | The artwork's width divided by its height. A `strip` wall uses it to give every logo the same area, so wide wordmarks and square marks read at one visual weight. |
+| `variant?` | `"tile" \| "chip" \| "bare" \| "mono"` | `tile`: a white card for logo grids. `chip`: a compact white chip that carries light-background artwork on dark bands (quote rows, meta lines). `bare`: no surface, for artwork made for dark bands (logo rails on ink); size it with `className`. `mono`: no surface, light-background artwork in greyscale on light bands, in colour while hovered or focused; it fills its parent's `--logo-w` and `--logo-h` (a `strip` wall sets them). |
 | `size?` | `"sm" \| "md" \| "lg" \| "xl"` | Tile height and logo cap (the `tile` variant only), smallest to largest: `sm` 64px, `md` 96px, `lg` 112px, `xl` 128px. |
 | `responsive?` | `boolean` | One size step smaller below `md` (phones and small tablets), for `lg` and `xl` tiles in narrow grid cells. |
 | `fixed?` | `boolean` | Chip only: a fixed width (6.25rem, 7.75rem from `sm`) that reserves the artwork's box, so a wrapping row of chips doesn't reflow while the logos load. |
@@ -570,9 +571,10 @@ No props of its own; see the source file for the root element or Base UI part it
 
 | Prop | Type | Description |
 | --- | --- | --- |
-| `columns?` | `4 \| 3 \| 5 \| 6` | Columns on wide screens; phones always show two. |
+| `layout?` | `"grid" \| "strip"` | `grid`: white tiles in columns. `strip`: `mono` logos in one wrapping row, each sized to the same area from its `aspectRatio`. |
+| `columns?` | `4 \| 3 \| 5 \| 6` | Columns on wide screens (`grid` only); phones always show two. |
 | `logos` | `LogoItem[]` | The organizations; `name` must be unique (it is the list key). |
-| `size?` | `"sm" \| "md" \| "lg" \| "xl"` | Tile size for every logo. |
+| `size?` | `"sm" \| "md" \| "lg" \| "xl"` | Tile size for every logo (`grid` only). |
 | `label?` | `string` | Accessible name of the list, e.g. "Research collaborators". |
 | `className?` | `string` | Classes merged over the list. |
 

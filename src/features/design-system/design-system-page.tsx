@@ -948,7 +948,48 @@ export function DesignSystemPage() {
           ]}
           columns={6}
         />
-        <div className="mt-4 grid gap-3 sm:grid-cols-4">
+        <div className="mt-12">
+          <Label>LogoWall · strip, equal area from each aspect ratio</Label>
+          <LogoWall
+            layout="strip"
+            label="Logo strip"
+            logos={[
+              {
+                name: "NVIDIA",
+                src: "/assets/partners/logos/nvidia.webp",
+                aspectRatio: 204 / 150,
+              },
+              {
+                name: "Google",
+                src: "/assets/partners/logos/google.webp",
+                aspectRatio: 270 / 82,
+                href: "https://about.google",
+              },
+              {
+                name: "IBM",
+                src: "/assets/partners/logos/ibm.png",
+                aspectRatio: 500 / 200,
+              },
+              {
+                name: "Meta",
+                src: "/assets/partners/logos/meta.svg",
+                aspectRatio: 50 / 11,
+              },
+              {
+                name: "Databricks",
+                src: "/assets/partners/logos/databricks.svg",
+                aspectRatio: 712.77 / 112.97,
+              },
+              {
+                name: "BMW",
+                src: "/assets/partners/logos/bmw.svg",
+                aspectRatio: 1,
+              },
+              { name: "Helmholtz Munich" },
+            ]}
+          />
+        </div>
+        <div className="mt-12 grid gap-3 sm:grid-cols-4">
           <LogoTile
             name="Google"
             src="/assets/partners/logos/google.webp"
