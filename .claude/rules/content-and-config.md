@@ -10,10 +10,11 @@ Facts that change per semester, cohort or year live in exactly one `src/config` 
 FAQs and JSON-LD derive their copy from it. The `site-facts` skill maps each fact to its file.
 
 - **Where facts live:** `e-lab.ts` (cohort, application phase, deadline, program length, funding),
-  `membership.ts` (recruiting round), `organization.ts` (founding year, member counts),
-  `contact.ts` (role emails, social links, registered office), `seo.ts` (metadata, JSON-LD).
-  Coming in W1-Data: `site.ts` (URL, name, tagline, `absoluteUrl()`), `navigation.ts`, and legal
-  identity in `organization.ts`.
+  `membership.ts` (recruiting round), `organization.ts` (founding year, member counts, legal
+  entity, register number, representatives), `contact.ts` (role emails, `partnershipContact`,
+  social links, the Imprint address line), `community.ts` (Makeathon size,
+  `yearsSinceFounding()`), `site.ts` (URL, name, tagline, `absoluteUrl()`), `navigation.ts`
+  (links, `headerCtaSetting`, per-route header options), `seo.ts` (metadata, JSON-LD).
 - **Never type a fact into page code or `data/`:** import it and build the sentence with a
   template string. `test/content-facts.test.ts` fails on hard-coded fact patterns; extend its
   patterns when you centralize a new fact rather than silencing them.
@@ -26,7 +27,8 @@ FAQs and JSON-LD derive their copy from it. The `site-facts` skill maps each fac
   exist (`test/public-assets.test.ts`).
 - **Copy:** no em or en dashes in visible text (use a comma, colon, period or spaced hyphen). Fix
   unambiguous typos. Don't invent or change facts, figures, names or legal wording without a
-  source: flag them for a maintainer instead. No personal email addresses; role addresses come
-  from `contact.ts`.
-- **Verify:** `pnpm test` runs `content-facts` and `src/features/e-lab/e-lab-content.test.ts`.
+  source: keep the text, add `// TODO(content): <question>` and flag it in the PR. No personal
+  email addresses in pages; addresses come from `contact.ts`.
+- **Verify:** CI's unit job runs `test/content-facts.test.ts` and
+  `src/features/e-lab/e-lab-content.test.ts`; locally, `pnpm exec vitest run` on those files.
   Tests derive their expectations from config, so a documented config edit must not break them.

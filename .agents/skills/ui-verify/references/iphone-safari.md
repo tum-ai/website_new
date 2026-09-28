@@ -1,8 +1,8 @@
 # iPhone Safari checklist
 
 For a maintainer on a real iPhone with Safari 26, against the Vercel preview of the PR. The site
-has workarounds for Safari's tinted status bar and toolbar (comments tagged Safari in the code;
-`docs/browser-quirks.md` will collect them). Check each item on the routes the change touches, in
+has workarounds for Safari's tinted status bar and toolbar (`docs/browser-quirks.md`, and the
+comments tagged Safari in the code). Check each item on the routes the change touches, in
 portrait, and in landscape where noted.
 
 ## Page chrome

@@ -44,8 +44,8 @@ const baseURL = `http://localhost:${port}`;
 
 /**
  * "Now" for the mock CMS fixtures; keep in sync with `MOCK_CMS_NOW` in
- * e2e/fixtures.ts. The mock clock arrives with W1-Data; until then the server
- * ignores it and no spec depends on dates relative to it.
+ * e2e/fixtures.ts. The server dates the fixtures and the /events and /apply
+ * renders from it, and visual.spec.ts pins the browser clock to it.
  */
 const mockCmsNow = "2026-10-01T12:00:00Z";
 

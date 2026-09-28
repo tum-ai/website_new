@@ -6,8 +6,8 @@ paths:
 # Design system (`src/components/ds`)
 
 Every page is built from these components, so a change here changes the whole site. Usage, tokens
-and composition rules: `docs/design-system.md`. API conventions: the header of `index.ts` (being
-written in W1-DS); where it and this file disagree, the header wins.
+and composition rules: `docs/design-system.md` (with the props of every component). API
+conventions: the header of `index.ts`; where it and this file disagree, the header wins.
 
 - **Imports:** only sibling ds files and `@/lib/cn`. Never features, shell, config or other `lib`
   modules (Biome `noRestrictedImports` + `src/architecture.test.ts`). Data comes in through props.
@@ -15,7 +15,10 @@ written in W1-DS); where it and this file disagree, the header wins.
   import from `@/components/ds`, never from a file path.
 - **API shape:** cva for every variant prop. `as` picks the root element and `headingAs` the heading
   level. `tone` means band tone only; text colour is `emphasis`. Props extend `ComponentProps<...>`
-  (React 19 ref as prop), not `ComponentPropsWithoutRef`. TSDoc on every export and every prop.
+  (React 19 ref as prop), not `ComponentPropsWithoutRef`. `className` targets the root;
+  multi-part components take a `classNames` object. Avoid prop names that collide with HTML
+  attributes (`byline`, not `role`). Links go through `Anchor`. TSDoc on every export and prop;
+  a renamed prop keeps a `@deprecated` alias naming its replacement for one release.
 - **Tokens:** read semantic tokens (`bg-canvas`, `bg-raised`, `text-fg`, `text-fg-muted`,
   `border-hairline`, `text-highlight`, `bg-fg/[0.07]`) so the component works on every tone. No raw
   hex or `rgb()`, no stock palette, no arbitrary font sizes: use the type-scale utilities.
@@ -29,5 +32,5 @@ written in W1-DS); where it and this file disagree, the header wins.
 - **Every change** needs, in the same PR:
   - a colocated `<name>.test.tsx` for behaviour (Testing Library, user-event, `axe()`),
   - the showcase in `src/features/design-system/design-system-page.tsx` rendering each variant,
-  - the component list in `docs/design-system.md` updated.
+  - the component list and API reference in `docs/design-system.md` updated.
   The `ds-component` skill walks through it; run the `design-reviewer` subagent before the PR.

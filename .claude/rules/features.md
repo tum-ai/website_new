@@ -23,10 +23,13 @@ One folder per domain: `home`, `apply`, `community`, `events`, `e-lab`, `partner
   shape data on the server and pass plain props. No `new Date()` or locale formatting during a
   client render; compute dates on the server in Europe/Berlin (`@/lib/munich-time`, `@date-fns/tz`).
 - **Use the design system:** `PageHero`, `SectionHeader`, `Section`, `StatGrid`, `CtaBand`,
-  `FaqSection`, `Steps`, `Timeline`, `MediaCard`, `QuoteCard`, `PersonCard`, `LogoTile`,
-  `Actions`. If one lacks a variant you need, note it as a ds handoff rather than forking it.
+  `CtaPanel`, `FaqSection`, `Steps`, `Timeline`, `MediaCard` (with `CornerHint`), `QuoteCard`,
+  `PersonCard`, `LogoTile`, `BulletList`, `Actions`, and `Anchor` for links that bring their own
+  styling. `useBreakpoint` when an island must know the layout in JS. If one lacks a variant you
+  need, note it as a ds handoff rather than forking it.
 - **Tokens only:** no hex, `rgb()`, stock palette or arbitrary font sizes. Use the `zoom-media`
-  and `scroll-mt-header` utilities for hover zoom and anchor offsets (coming in W1-DS).
+  (with `group/zoom`) and `scroll-mt-header` utilities for hover zoom and anchor offsets.
 - **Copy and facts:** facts from `@/config/*`; copy in `data/`; no em or en dashes in visible text.
 - **Tests:** logic in `*.test.ts`; islands in `*.test.tsx` with Testing Library and `axe()`; the
-  route's E2E spec (coming in W1-E2E) covers the page.
+  E2E specs cover every route in `siteRoutes` (`e2e/fixtures.ts`). CI runs them; locally only
+  `pnpm exec vitest run` on the tests you touched.

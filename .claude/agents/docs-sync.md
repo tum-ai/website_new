@@ -38,13 +38,14 @@ Guidance files: `AGENTS.md`, `CLAUDE.md`, `README.md`, `docs/**/*.md`, `.claude/
          if (!fs.existsSync(path) && !/coming in/i.test(line)) console.log(`${file}:${i + 1}: ${p}`);
        }
      });
-   }' AGENTS.md CLAUDE.md README.md docs/*.md .claude/rules/*.md .claude/agents/*.md $(ls .agents/skills/*/SKILL.md .agents/skills/*/references/*.md)
+   }' AGENTS.md CLAUDE.md README.md docs/*.md docs/adr/*.md .claude/rules/*.md .claude/agents/*.md $(ls .agents/skills/*/SKILL.md .agents/skills/*/references/*.md)
    ```
-4. **Forward references:** lines saying "coming in W1-DS/W1-Data/W1-E2E" whose target now exists
-   should drop the marker.
+4. **Forward references:** lines saying "coming in ...", "will", "once ... lands" or naming a
+   future wave, whose target now exists, should drop the marker.
 5. **Missing guidance:** new conventions, commands, env vars or ds components that no guidance
-   mentions yet (for example a new script absent from the AGENTS.md command list, or a new ds
-   component missing from `docs/design-system.md`).
+   mentions yet (for example a new script absent from the AGENTS.md command list, a new ds
+   component missing from `docs/design-system.md`, or a ds prop added, renamed or removed without
+   a matching row in its "API reference" table).
 6. **Sync contract:** every `.agents/skills/<name>` has a `.claude/skills/<name>` relative symlink
    that resolves (`ls -L .claude/skills/*/SKILL.md`), and `CLAUDE.md` still starts with
    `@AGENTS.md`.
@@ -61,7 +62,7 @@ Guidance files: `AGENTS.md`, `CLAUDE.md`, `README.md`, `docs/**/*.md`, `.claude/
 - `AGENTS.md` (Commands): no mention of `pnpm <new script>`.
 
 ### Forward references now resolved
-- `.claude/rules/sanity.md:9`: `pnpm sanity:typegen` exists; drop "coming in W1-Data".
+- `.claude/rules/sanity.md:9`: `pnpm sanity:typegen` exists; drop "coming in <wave>".
 
 ### OK
 - <files checked with no findings>

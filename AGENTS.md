@@ -19,21 +19,32 @@ pnpm install              # also installs the lefthook git hooks (skipped when C
 pnpm dev                  # dev server, output in .next-dev
 USE_MOCK_CMS=1 pnpm dev   # local CMS fixtures, no Sanity credentials needed
 
-# Fast loop: run after every change (seconds)
+# Local loop for agents: run after every change (seconds)
 pnpm lint                 # Biome check; `pnpm lint:apply` applies safe fixes and formatting
 pnpm typecheck            # Next route typegen + tsc --noEmit
-pnpm test                 # Vitest, node + jsdom projects; test:watch, test:coverage
+pnpm exec vitest run <files>   # only the tests you wrote or touched
 
-# Full gate: before every PR
+# CI runs the rest on every PR push (people may run them locally)
+pnpm test                 # Vitest, node + jsdom projects; test:watch, test:coverage
 pnpm verify               # lint + typecheck + test + build + test:perf
-pnpm test:e2e             # Playwright, chromium + webkit (specs coming in W1-E2E)
+pnpm test:e2e             # Playwright E2E in chromium + webkit
+pnpm test:e2e:visual      # visual regression against the Linux baselines
 pnpm knip                 # unused files, exports and dependencies (advisory in CI)
 ```
 
-`pnpm build` writes `.next-prod`; `pnpm start` serves it. `test:perf` reads that build, so run
-`pnpm build` first. `pnpm sanity:typegen` (coming in W1-Data) regenerates the CMS types.
+**Where tests run.** Agents run only `pnpm lint`, `pnpm typecheck` and targeted
+`pnpm exec vitest run <files>` locally. The full unit suite, `pnpm build`, E2E and Visual run
+remotely in the PR's CI: push rarely, read failures with `gh run view --job <id> --log-failed`,
+batch the fixes into one push. Never close and reopen a PR to re-run CI. Details:
+`docs/testing.md`.
+
+`pnpm build` writes `.next-prod`; `pnpm start` serves it. `test:perf` reads that build.
+`pnpm sanity:typegen` regenerates `src/lib/sanity.types.generated.ts` after a schema or query
+change (CI fails when it's stale).
 
 ## Architecture
+
+Full description, data flow and rationale: `docs/architecture.md` and `docs/adr/`.
 
 ```
 src/app/(site)/<route>/page.tsx   thin route: metadata + JsonLd + the feature's page component
@@ -46,13 +57,13 @@ src/features/<domain>/            <domain>-page.tsx, sections, data/ (static cop
 src/components/ds/                design system (Base UI + tone tokens), barrel `@/components/ds`
 src/components/shell/             header, footer, skip link
 src/components/json-ld.tsx        JSON-LD script tag
-src/config/                       site facts and SEO (site.ts, navigation.ts coming in W1-Data)
+src/config/                       site facts, navigation (incl. header CTA) and SEO
 src/lib/                          cn, sanity client/queries/fetch, mock-cms, munich-time, security, redirects
-src/sanity/                       Studio config and schemas (TypeGen writes to src/lib, coming in W1-Data)
+src/sanity/                       Studio config and schemas (TypeGen writes src/lib/sanity.types.generated.ts)
 src/styles/index.css              tokens, tones, cascade layers, utilities
 src/proxy.ts                      host redirects (join.tum-ai.com to /apply)
 test/                             repo-wide fitness tests (content facts, assets, perf budget)
-e2e/                              Playwright specs and fixtures (coming in W1-E2E)
+e2e/                              Playwright specs, fixtures (siteRoutes) and Linux visual baselines
 ```
 
 Import rules. `src/architecture.test.ts` is authoritative; Biome `noRestrictedImports` repeats
@@ -92,15 +103,16 @@ index ships its islands and styles to every page importing that index.
 
 | Task | Where | Skill |
 |---|---|---|
-| Add a page | route + feature folder + `config/seo.ts` + nav + E2E route list | `add-page` |
-| Change a site fact | the matching file in `src/config/` | `site-facts` |
+| Add a page | route + feature folder + `config/seo.ts` + nav + `siteRoutes` in `e2e/fixtures.ts` | `add-page` |
+| Change a site fact | the matching file in `src/config/` (`e-lab`, `membership`, `organization`, `contact`, `community`, `site`) | `site-facts` |
 | Change static copy | `src/features/<domain>/data/` | |
 | Change a CMS type or field | `src/sanity/schemas/` then query, types, mock, UI | `cms-content-model` |
 | Add or change a ds component | `src/components/ds/` + showcase + docs table | `ds-component` |
-| Change navigation | `src/config/navigation.ts` (coming in W1-Data; today the arrays in `components/shell/header.tsx` and `footer.tsx`) | |
+| Change navigation or the header CTA | `src/config/navigation.ts` (links, `headerCtaSetting`, `getHeaderOptions`) | |
 | Change SEO or JSON-LD | `src/config/seo.ts` | |
 | Tokens, brand, logos, imagery | `src/styles/index.css`, ds components, `public/assets/` | `tumai-ci` |
 | Host redirects | `src/lib/redirects.ts`, `src/proxy.ts` | |
+| A Safari workaround | the code tagged Safari + `docs/browser-quirks.md` | `ui-verify` |
 
 ## Tests per change
 
@@ -109,18 +121,20 @@ index ships its islands and styles to every page importing that index.
 | Logic in `lib/`, `config/`, `features/**/*.ts` | unit test next to it (`*.test.ts`, node) |
 | Interactive UI (islands, ds behaviour) | component test (`*.test.tsx`: Testing Library, user-event, `axe()` from `@test/axe`) |
 | Site facts | `content-facts` and `e-lab-content` tests stay green; derive expectations from config |
-| New route or user flow | E2E spec and the E2E route list (coming in W1-E2E); axe runs on every route |
-| Visible UI change | Visual baselines regenerated in CI: add the `update-snapshots` label to the PR (the bot commits them; push again or reopen the PR to re-run CI), and list each intended diff in the PR |
-| Homepage markup or images | `pnpm build && pnpm test:perf` (preload and SSR budget) |
+| New route or user flow | the route in `siteRoutes` (`e2e/fixtures.ts`) and a spec for the flow; axe runs on every route |
+| Visible UI change | Visual baselines regenerated in CI: add the `update-snapshots` label to the PR. The bot commits only the changed PNG files and starts no CI; the next push runs it. Restore foreign PNG files in a `[skip ci]` commit, and list each intended diff in the PR's Visual changes table |
+| Homepage markup or images | the homepage budget (`test:perf`, CI's Build job) |
 | New folder or import path | `src/architecture.test.ts` passes without new exceptions |
 
 Test behaviour, not source text: no grepping source files and no change-detector literals.
+Layers, the visual baseline workflow and known flakes: `docs/testing.md`.
 
 ## Design and content rules
 
 Read `docs/design-system.md` before UI work. The ds API conventions (cva variants, `as` vs
 `headingAs`, `tone` vs `emphasis`, ref as prop, TSDoc) are in the header of
-`src/components/ds/index.ts` (coming in W1-DS). Hard rules:
+`src/components/ds/index.ts` and in `docs/design-system.md`, with the props of every component.
+Hard rules:
 
 - Pages are `PageHero` (the `h1`) followed by full-bleed `<Section tone>` bands; the last band is
   light or ink because the footer is night. Compose ds components before hand-rolling markup.
@@ -145,8 +159,9 @@ Read `docs/design-system.md` before UI work. The ds API conventions (cva variant
   into `chore/redesign-cleanup` (#264), which is stacked on `feat/site-redesign` (#262). Nothing
   merges into `feat/site-redesign` without the maintainer's OK.
 - lefthook pre-commit runs `biome check --write --staged` and `typos`. CI (`.github/workflows/ci.yml`)
-  runs Lint, Typecheck, Unit tests, Build (+ perf), E2E, Visual and Knip (advisory); `Verify` aggregates
-  them. Other workflows: `docs/github-actions.md`.
+  runs Lint, Typecheck (+ TypeGen freshness), Unit tests, Build (+ perf), E2E (3 shards, merged
+  report), Visual and Knip (advisory); `Verify` aggregates them. `[skip ci]` in a commit message
+  is only for screenshot restores and pure sync merges. Other workflows: `docs/github-actions.md`.
 - Never hand-edit `pnpm-lock.yaml` or `*.generated.ts`: run pnpm or the generator.
 
 ## Gotchas
@@ -154,16 +169,21 @@ Read `docs/design-system.md` before UI work. The ds API conventions (cva variant
 - **Dist dirs.** `pnpm dev` uses `.next-dev`, build/start/typecheck use `.next-prod`, Vercel uses its
   default. Don't run bare `next build`; `pnpm build` never deletes a running dev server's output.
 - **Mock CMS.** `USE_MOCK_CMS=1` serves `src/lib/mock-cms.ts` fixtures and is ignored on Vercel.
-  Set it for both build and start. Without Sanity env vars, CMS pages render empty lists.
-  `MOCK_CMS_NOW` for deterministic dates is coming in W1-Data.
+  It is read at **build** time (`next.config.ts` inlines it), so `USE_MOCK_CMS=1 pnpm build`;
+  setting it only for `pnpm start` does nothing. `MOCK_CMS_NOW` (ISO date, or date-time with an
+  offset) fixes the "now" the fixtures and the `/events` and `/apply` render dates use; E2E sets
+  `2026-10-01T12:00:00Z`. Without Sanity env vars, CMS pages render empty lists.
 - **Draft mode and Studio.** Presentation in `/studio` enables drafts via `/api/draft-mode/enable`,
-  which needs `SANITY_API_READ_TOKEN` (server only; never expose it to the browser). A disable
-  route is coming in W1-Data. `/studio` must never import the site shell or site CSS.
+  which needs `SANITY_API_READ_TOKEN` (server only; never expose it to the browser; 503 without
+  it). `/api/draft-mode/disable` leaves draft mode. `SANITY_API_BROWSER_TOKEN` is a separate,
+  optional token for live drafts outside Presentation. `/studio` must never import the site shell
+  or site CSS.
 - **Public API.** `/api/getNotes` returns events (legacy name). Keep all three response shapes stable.
 - **`/design-system`** renders only in development and on Vercel previews; production returns 404.
 - **Safari 26.** The root canvas is brand black because Safari tints its status bar and toolbar from
-  it; the header and dialogs have Safari-specific workarounds. See the comments tagged Safari
-  (`rg -n Safari src`) until `docs/browser-quirks.md` exists. Verify on a real iPhone (`ui-verify`).
+  it; the header and dialogs have Safari-specific workarounds. `docs/browser-quirks.md` lists
+  them and the code comments tagged Safari (`rg -n Safari src`). Verify on a real iPhone
+  (`ui-verify`).
 - **`server-only`** modules (`lib/sanity.ts`) are stubbed in Vitest; mock `next/headers` in tests.
 
 ## Agent setup
@@ -177,7 +197,16 @@ Read `docs/design-system.md` before UI work. The ds API conventions (cva variant
   `app-router.md` (`src/app/**`), `styles.md` (`src/styles/**`, `**/*.css`),
   `content-and-config.md` (`src/config/**`, `src/features/**/data/**`), `sanity.md`
   (`src/sanity/**`, `src/lib/sanity*`, `src/lib/mock-cms*`, `src/app/api/**`), `testing.md`
-  (`**/*.test.ts`, `**/*.test.tsx`, `e2e/**`; the `e2e/` folder is coming in W1-E2E).
+  (`**/*.test.ts`, `**/*.test.tsx`, `e2e/**`).
+- Code intelligence (Claude Code): `.claude/settings.json` enables the official
+  `typescript-lsp@claude-plugins-official` plugin, which gives the LSP tool go-to-definition,
+  find-references, hover and diagnostics. It runs `typescript-language-server` from `PATH`, which
+  is not a project dependency: install it once per machine with
+  `npm install -g typescript-language-server typescript`. If the LSP tool still reports no
+  server for `.ts` files, run `/plugin install typescript-lsp@claude-plugins-official` and start
+  a new session. OMP has a
+  built-in LSP tool (user setting `lsp.enabled`) that needs the same server on `PATH`. Codex has
+  no LSP tool; use `rg` and `pnpm typecheck` there.
 - Sync contract: this file and `.agents/skills/` own the prose. `CLAUDE.md` only imports this file
   and adds Claude-specific notes; `.claude/skills/<name>` are relative symlinks, never copies. When
   paths, commands or conventions change, update this file, the rules and the skills in the same PR

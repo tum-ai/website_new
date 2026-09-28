@@ -1,8 +1,8 @@
 # ds component template
 
 A sketch of the conventions, not a component to copy verbatim. The header of
-`src/components/ds/index.ts` is authoritative once W1-DS lands; align with it and with the
-closest existing component.
+`src/components/ds/index.ts` is authoritative; align with it and with the closest existing
+component.
 
 ```tsx
 import { cva, type VariantProps } from "class-variance-authority";

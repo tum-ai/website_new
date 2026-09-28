@@ -1,7 +1,8 @@
-# Interim Playwright sweep
+# Ad hoc Playwright sweep
 
-Use this until the E2E harness and `e2e/fixtures.ts` land (coming in W1-E2E); after that, prefer
-`pnpm test:e2e` and the fixtures' helpers.
+For screenshots at widths or states the E2E specs don't cover, run locally by a person (agents
+rely on CI; see the skill). Checks that should keep running belong in `e2e/` instead, using the
+helpers in `e2e/fixtures.ts`.
 
 Save the script as `test-results/ui-verify.mjs`. `test-results/` is gitignored, and a file inside
 the repo resolves `@playwright/test` from `node_modules`. With the production server from step 1

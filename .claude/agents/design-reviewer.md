@@ -17,7 +17,7 @@ The caller may give a base ref or a file list. Otherwise diff against the PR bas
 
 1. List the change: `git diff --stat <base>...HEAD`, then read the full diff of `src/**`.
 2. Read the rules you judge against: `docs/design-system.md`, the header of
-   `src/components/ds/index.ts` (ds API conventions, when present), `.claude/rules/features.md`,
+   `src/components/ds/index.ts` (ds API conventions), `.claude/rules/features.md`,
    `.claude/rules/design-system.md`, `.claude/rules/styles.md` and
    `.agents/skills/tumai-ci/references/brand-tokens.md`.
 3. Scan the added lines, then read the surrounding code for anything suspicious:
@@ -37,8 +37,9 @@ The caller may give a base ref or a file list. Otherwise diff against the PR bas
   `SectionHeader`, last band light or ink before the night footer. Text contrast relies on the
   band's tokens.
 - **ds reuse:** no hand-rolled versions of `PageHero`, `SectionHeader`, `StatGrid`, `CtaBand`,
-  `FaqSection`, `Steps`, `Timeline`, `QuoteCard`, `PersonCard`, `LogoTile`, `MediaCard`,
-  `Actions`, `Button`/`ButtonLink`. Imports come from `@/components/ds`.
+  `CtaPanel`, `FaqSection`, `Steps`, `Timeline`, `QuoteCard`, `PersonCard`, `LogoTile`,
+  `MediaCard`, `CornerHint`, `BulletList`, `Actions`, `Button`/`ButtonLink`; links with their own
+  styling use `Anchor`, not a raw `<a>` or next/link. Imports come from `@/components/ds`.
 - **ds API (ds changes):** cva variants, `as` vs `headingAs`, `tone` for bands only and
   `emphasis` for text colour, `ComponentProps` with ref as prop, exported `XProps`, TSDoc on
   every export and prop, showcase and docs row updated.
