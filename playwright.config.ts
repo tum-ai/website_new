@@ -176,6 +176,8 @@ export default defineConfig({
       caret: "hide",
       scale: "css",
       maxDiffPixelRatio: 0.001,
+      // Hides photos and film grain while capturing (see the file).
+      stylePath: "e2e/visual-screenshot.css",
     },
   },
   reporter: [["list"], ["html", { open: "never" }]],
