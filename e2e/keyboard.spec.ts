@@ -1,4 +1,5 @@
 import type { Locator, Page } from "@playwright/test";
+import { getHeaderOptions } from "@/config/navigation";
 import { expect, test } from "./fixtures";
 
 /*
@@ -212,6 +213,41 @@ test.describe("disclosure widgets", { tag: "@keyboard" }, () => {
     await expect(all).toHaveAttribute("aria-pressed", "true");
     await expect(all).toBeFocused();
   });
+});
+
+/*
+ * The header CTA per route, from `getHeaderOptions` (untagged: runs on the
+ * desktop and phone projects). A page CTA shows in the pill from `sm` and in
+ * the menu everywhere; an in-page anchor stays in the pill on phones too.
+ */
+test.describe("header call to action", () => {
+  for (const path of ["/events", "/partners"]) {
+    test(path, async ({ page }) => {
+      const { cta } = getHeaderOptions(path);
+      test.skip(!cta, "no CTA configured for this route");
+      if (!cta) return;
+      await page.goto(path);
+
+      const inPill = page.getByRole("banner").getByRole("link", {
+        name: cta.label,
+      });
+      const phone = (page.viewportSize()?.width ?? 0) < 640;
+      if (phone && !cta.href.startsWith("#")) {
+        await expect(inPill).toBeHidden();
+      } else {
+        await expect(inPill).toBeVisible();
+        await expect(inPill).toHaveAttribute("href", cta.href);
+      }
+
+      if (phone) {
+        await page.getByRole("button", { name: "Open menu" }).click();
+        const menuCta = page
+          .getByRole("dialog", { name: "Menu" })
+          .getByRole("link", { name: cta.label });
+        await expect(menuCta).toHaveAttribute("href", cta.href);
+      }
+    });
+  }
 });
 
 test.describe("header navigation", { tag: "@keyboard" }, () => {
