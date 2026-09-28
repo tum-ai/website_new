@@ -21,9 +21,8 @@ jobs:
           persist-credentials: false
       - name: Lint GitHub Actions workflows
         uses: raven-actions/actionlint@3d39aea434753780c3b3d4a1a31c854b4dbf49d7 # v2.2.0
-      - name: Audit workflows with zizmor (advisory)
-        # Advisory for now; promote to a hard gate once findings are triaged.
-        # continue-on-error (not `|| true`) keeps tool-crash failures visible
-        # in the step UI instead of silently swallowing them.
-        continue-on-error: true
-        run: pipx run zizmor --no-progress .github/workflows .github/actions
+      - name: Audit workflows with zizmor
+        # Workflows, actions and dependabot.yml, with the triage in
+        # .github/zizmor.yml. The version is pinned so a new zizmor release
+        # can't fail every workflow PR with new audits; bump it deliberately.
+        run: pipx run zizmor==1.30.1 --no-progress --config .github/zizmor.yml .github
