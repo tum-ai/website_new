@@ -11,7 +11,7 @@
     "dev": "NEXT_DIST_DIR=.next-dev next dev",
     "build": "node scripts/run-next-command.mjs build .next-prod",
     "start": "node scripts/run-next-command.mjs start .next-prod",
-    "lint": "biome check .",
+    "lint": "biome check --error-on-warnings .",
     "lint:apply": "biome check . --write",
     "format": "biome format .",
     "typecheck": "node scripts/run-next-command.mjs typegen .next-prod && tsc --noEmit",
