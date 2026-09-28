@@ -523,9 +523,10 @@ export async function expectContentVisible(page: Page): Promise<void> {
  * marquee rails (scroll position), the rotating partner logo grids, and
  * count-up figures. `toHaveScreenshot` paints them over with a solid box.
  *
- * The home hero mosaic is deliberately not masked: it is an `inset-0` layer
- * behind the whole hero (masking it would hide the logo, heading and CTAs),
- * and reduced motion, which the visual projects use, already holds it still.
+ * The home hero aperture is deliberately not masked: it sits behind the
+ * heading and CTAs (masking it would hide them), its photos are hidden while
+ * capturing like every image, and reduced motion, which the visual projects
+ * use, holds its crossfade still.
  */
 const visualMaskSelectors = [
   '[class~="group/marquee"]',

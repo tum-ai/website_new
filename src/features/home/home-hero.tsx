@@ -1,92 +1,97 @@
-import { ArrowDown } from "lucide-react";
-import Image from "next/image";
 import {
-  Aurora,
-  BrandMark,
+  Actions,
   ButtonLink,
   Container,
-  Highlight,
+  LogoTile,
   Section,
   SplitWords,
-  TopBlend,
 } from "@/components/ds";
-import { getPartnershipEmailUrl } from "@/features/partners";
-import { HeroMosaic } from "./hero-mosaic";
+import {
+  getHighlightedPartners,
+  getPartnerDirectory,
+  getPartnerKey,
+  marqueeLogos,
+} from "@/features/partners";
+import { heroLead, heroPhotos } from "./data/homepage";
+import { HeroAperture } from "./hero-aperture";
 
 /**
- * Home hero: full-height ink band with the logo, the tagline as the page's
- * `h1`, both calls to action and a scroll cue.
+ * Gold partners with artwork verified for dark bands, from the static
+ * defaults so the home page stays prerendered without a CMS request.
+ */
+const heroPartners = getHighlightedPartners(getPartnerDirectory([]))
+  .filter((partner) => partner.tier === "gold")
+  .map((partner) => {
+    const key = getPartnerKey(partner.name);
+    return { key, name: partner.name, image: marqueeLogos[key] };
+  })
+  .filter((partner) => partner.image);
+
+/**
+ * Home hero on night: the page's `h1` and both calls to action on the left,
+ * the logomark aperture (see HeroAperture) cropped off the right edge, and
+ * the gold partners along the bottom.
  *
- * Performance contract (test/homepage-performance.test.ts): the logo is the
- * page's only `priority` image, and the photo mosaic is client-only, so the
- * prerendered HTML preloads just `/assets/tum_ai_logo_new.svg`. Everything
- * above the fold animates with CSS, never with hydration-bound reveals.
+ * Everything above the fold animates with CSS, never with hydration-bound
+ * reveals; the header logo is the page's only image preload.
  */
 export function HomeHero() {
   return (
     <Section
-      tone="ink"
+      tone="night"
       spacing="none"
-      grain
       aria-labelledby="home-hero-title"
-      className="flex min-h-[100svh] flex-col overflow-clip pt-[calc(var(--header-height)+clamp(2.5rem,7vw,5rem))] pb-[clamp(3.5rem,8vw,6.5rem)]"
+      className="flex min-h-[100svh] flex-col overflow-clip pt-[calc(var(--header-height)+clamp(4rem,12vh,9rem))]"
     >
-      <Aurora intensity="vivid" />
-      <HeroMosaic />
-      <BrandMark
-        className="absolute -bottom-[22%] -left-[18%] -z-10 w-[min(62rem,120%)]"
-        intensity="subtle"
+      <HeroAperture
+        photos={heroPhotos}
+        className="home-aperture-frame absolute -z-10 aspect-[477/406] motion-safe:animate-[home-aperture-in_1.2s_var(--ease-brand)_both]"
       />
-      <TopBlend />
 
-      <Container className="flex flex-1 flex-col justify-end">
-        <Image
-          src="/assets/tum_ai_logo_new.svg"
-          alt="TUM.ai"
-          width={1640}
-          height={406}
-          sizes="15rem"
-          priority
-          className="h-auto w-[clamp(9.5rem,15vw,14rem)] motion-safe:animate-rise-sm"
-        />
-
-        <h1
-          id="home-hero-title"
-          className="mt-8 max-w-[11.5em] font-light text-display-2xl text-fg md:mt-10"
-        >
-          <SplitWords delay={140} step={60}>
-            Germany’s leading student initiative focused on{" "}
-            <Highlight variant="fade" className="font-medium">
-              Artificial
-            </Highlight>{" "}
-            <Highlight variant="fade" className="font-medium">
-              Intelligence.
-            </Highlight>
-          </SplitWords>
-        </h1>
-
-        {/* Calls to action and the scroll cue share one row and centre line. */}
-        <div className="mt-10 flex items-center justify-between gap-8 md:mt-12">
-          <div className="grid w-full gap-3 [animation-delay:760ms] motion-safe:animate-rise-sm sm:flex sm:w-auto sm:flex-wrap">
-            <ButtonLink href={getPartnershipEmailUrl()} size="lg">
+      <Container className="flex flex-1 flex-col">
+        <div>
+          <h1
+            id="home-hero-title"
+            className="max-w-[9.5em] text-display-xl text-highlight"
+          >
+            <SplitWords delay={160} step={70}>
+              Germany’s leading AI student initiative.
+            </SplitWords>
+          </h1>
+          <p className="mt-8 max-w-[34rem] text-fg-muted text-lead [animation-delay:620ms] motion-safe:animate-rise-sm md:mt-10">
+            {heroLead}
+          </p>
+          <Actions className="mt-10 [animation-delay:760ms] motion-safe:animate-rise-sm md:mt-12">
+            <ButtonLink href="/partners" size="lg">
               Become a Partner
             </ButtonLink>
-            <ButtonLink href="/apply" size="lg" variant="inverse" arrow>
+            <ButtonLink href="/apply" size="lg" variant="outline" arrow>
               Become a Member
             </ButtonLink>
+          </Actions>
+        </div>
+
+        <div className="mt-auto pt-16 pb-8 [animation-delay:1000ms] motion-safe:animate-fade md:pt-24 md:pb-10">
+          <div className="flex flex-col gap-6 border-hairline border-t pt-6 md:pt-8 lg:flex-row lg:items-center lg:gap-12">
+            <p className="shrink-0 text-fg-subtle text-meta">
+              Partners include
+            </p>
+            <ul className="grid grid-cols-4 items-center gap-x-6 gap-y-5 sm:gap-x-10 lg:flex lg:flex-1 lg:justify-between lg:gap-8">
+              {heroPartners.map((partner) => (
+                <li
+                  key={partner.key}
+                  className="flex h-7 items-center opacity-70 md:h-8"
+                >
+                  <LogoTile
+                    variant="bare"
+                    name={partner.name}
+                    src={partner.image}
+                    className="h-full w-full max-w-28 justify-start"
+                  />
+                </li>
+              ))}
+            </ul>
           </div>
-          <a
-            href="#about"
-            className="group/cue hidden shrink-0 items-center gap-3 rounded-full py-1 pl-4 font-medium text-fg-muted text-meta transition-colors duration-300 [animation-delay:1000ms] hover:text-fg motion-safe:animate-fade md:inline-flex"
-          >
-            Scroll<span className="sr-only"> to What is TUM.ai?</span>
-            <span
-              aria-hidden
-              className="grid size-13 place-items-center overflow-hidden rounded-full border border-hairline-strong transition-colors duration-300 group-hover/cue:border-fg/60"
-            >
-              <ArrowDown className="home-scroll-cue-arrow size-4" />
-            </span>
-          </a>
         </div>
       </Container>
     </Section>

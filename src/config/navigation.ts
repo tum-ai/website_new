@@ -155,7 +155,10 @@ export type HeaderOptions = {
    * it scrolls the current page instead of leaving it.
    */
   cta: NavLink | null;
-  /** Hide the logo until the hero scrolls away (the hero shows it large). */
+  /**
+   * Hide the logo until the hero scrolls away, for a hero that shows the logo
+   * large itself. No route does at the moment.
+   */
   hideLogoUntilScroll: boolean;
 };
 
@@ -172,7 +175,6 @@ const defaultHeaderOptions: HeaderOptions = {
 
 /** Per-route overrides, keyed by exact pathname. */
 const routeHeaderOptions: Readonly<Record<string, Partial<HeaderOptions>>> = {
-  "/": { hideLogoUntilScroll: true },
   // The partner page keeps the pill frosted and swaps the CTA for its
   // in-page contact anchor.
   "/partners": {

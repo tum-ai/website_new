@@ -32,8 +32,9 @@ for (const route of siteRoutes) {
   });
 }
 
+// The E-Lab testimonials are the ds Marquee's live use (the home page has none).
 test("marquees render one static, reachable list", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/e-lab");
   await loadLazyContent(page);
   const marquees = page.locator('[class~="group/marquee"]');
   expect(await marquees.count()).toBeGreaterThan(0);

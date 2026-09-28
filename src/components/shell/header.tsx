@@ -167,13 +167,8 @@ export const Header = () => {
                 showLogo ? "opacity-100" : "pointer-events-none opacity-0",
               )}
             >
-              {/* Same URL as the homepage hero logo: adds no extra preload. */}
-              <Image
-                {...logo}
-                alt=""
-                loading="eager"
-                className="h-6 w-auto md:h-7"
-              />
+              {/* The page's one image preload (test/perf/homepage.perf.ts). */}
+              <Image {...logo} alt="" priority className="h-6 w-auto md:h-7" />
             </Link>
 
             <nav

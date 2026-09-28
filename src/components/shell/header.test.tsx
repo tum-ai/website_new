@@ -1,5 +1,5 @@
 import { axe } from "@test/axe";
-import { act, render, screen, within } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { usePathname } from "next/navigation";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
@@ -9,7 +9,6 @@ import {
   mainNavigation,
 } from "@/config/navigation";
 import { Header } from "./header";
-import { logoRevealShare } from "./header-scroll";
 
 vi.mock("next/navigation", () => ({ usePathname: vi.fn(() => "/events") }));
 
@@ -21,15 +20,6 @@ function renderHeader(pathname: string) {
       <Header />
     </div>,
   );
-}
-
-async function scrollTo(y: number) {
-  await act(async () => {
-    window.scrollY = y;
-    window.dispatchEvent(new Event("scroll"));
-    // The header measures once per animation frame.
-    await new Promise((resolve) => requestAnimationFrame(resolve));
-  });
 }
 
 beforeEach(() => {
@@ -68,15 +58,9 @@ describe("logo", () => {
     expect(screen.getByRole("link", { name: "TUM.ai home" })).toBeVisible();
   });
 
-  test("home hides it over the hero and reveals it after scrolling", async () => {
-    const { container } = renderHeader("/");
-    const logo = () => container.querySelector('a[aria-label="TUM.ai home"]');
-    expect(logo()).toHaveAttribute("aria-hidden", "true");
-    expect(logo()).toHaveAttribute("tabindex", "-1");
-
-    await scrollTo(window.innerHeight * logoRevealShare.wide + 1);
-    expect(logo()).not.toHaveAttribute("aria-hidden");
-    expect(logo()).not.toHaveAttribute("tabindex");
+  test("home shows it from the start: the hero has no logo of its own", () => {
+    renderHeader("/");
+    expect(screen.getByRole("link", { name: "TUM.ai home" })).toBeVisible();
   });
 });
 

@@ -10,7 +10,7 @@
  *   `/` and `/partners` failed against baselines captured minutes earlier.
  * Image content comes from the CMS and assets, not from the code under test.
  * `visibility` (not a mask) keeps text layered over images visible, such as
- * the home hero over its photo mosaic.
+ * the home hero over its logomark aperture.
  */
 img,
 video,

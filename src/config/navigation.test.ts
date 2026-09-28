@@ -66,9 +66,9 @@ test("the header defaults to the configured CTA with a transparent pill", () => 
   });
 });
 
-test("home hides the logo until the hero scrolls away", () => {
+test("home shows the logo from the start, like every route", () => {
   expect(getHeaderOptions("/")).toStrictEqual({
-    hideLogoUntilScroll: true,
+    hideLogoUntilScroll: false,
     solid: false,
     cta: defaultCta,
   });

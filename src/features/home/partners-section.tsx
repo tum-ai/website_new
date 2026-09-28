@@ -1,121 +1,112 @@
-import Image from "next/image";
 import {
-  Aurora,
-  BrandMark,
   ButtonLink,
   Container,
-  Highlight,
-  LogoTile,
-  Marquee,
+  Ledger,
+  type LedgerItem,
+  LogoWall,
+  QuoteCard,
   Reveal,
   Section,
   SectionHeader,
 } from "@/components/ds";
+import { testimonialCards } from "@/features/e-lab";
 import {
   getHighlightedPartners,
   getPartnerDirectory,
-  getPartnerKey,
-  getPartnershipEmailUrl,
-  marqueeLogos,
+  partnerCaseStudies,
 } from "@/features/partners";
 
-/** Icon-only marks that need the partner name beside them to read. */
-const LOCKUP_KEYS = new Set(["mutagent", "dryft"]);
+/** Partners whose artwork is a symbol without the name. */
+const LOCKUP_NAMES = new Set(["Mutagent"]);
+
+/** The venture partner quoted for the partner audience. */
+const QUOTE_ID = "alexandra-reinert";
+
+const quote = testimonialCards.find((card) => card.id === QUOTE_ID);
 
 /**
- * Gold, silver and bronze partners in the partner page's order, paired with
- * the artwork verified for dark bands. Built from the static defaults, so the
- * home page stays prerendered without a CMS request.
+ * Gold, silver and bronze partners in the partner page's order, from the
+ * static defaults so the home page stays prerendered without a CMS request.
  */
 const partnerLogos = getHighlightedPartners(getPartnerDirectory([])).map(
-  (partner) => {
-    const key = getPartnerKey(partner.name);
-    return { key, name: partner.name, image: marqueeLogos[key] };
-  },
+  (partner) => ({
+    name: partner.name,
+    src: partner.image,
+    // Symbol-only artwork: set the name beside it.
+    wordmark: LOCKUP_NAMES.has(partner.name) ? partner.name : undefined,
+  }),
 );
 
+/** What partners got out of working with TUM.ai, as ledger rows. */
+const outcomes: LedgerItem[] = partnerCaseStudies.map((study) => ({
+  label: study.name,
+  value: study.metric,
+  note: study.summary,
+}));
+
 /**
- * Partner teaser on ink: the sponsorship pitch beside a photo, then a
- * full-bleed rail of partner logos.
+ * The partner case on mist: a venture investor's quote, three measured
+ * outcomes, then every current partner. Ends with the partner calls to
+ * action.
  */
 export function PartnersSection() {
   return (
     <Section
-      tone="ink"
-      spacing="lg"
-      grain
+      tone="mist"
+      spacing="xl"
       id="partners"
       aria-labelledby="partners-title"
-      className="overflow-clip"
     >
-      <Aurora intensity="subtle" />
-      <BrandMark
-        className="absolute -top-[12%] -right-[22%] -z-10 w-[min(60rem,95%)]"
-        intensity="faint"
-      />
-
-      <Container className="grid gap-12 lg:grid-cols-12 lg:items-center lg:gap-20">
+      <Container>
         <SectionHeader
           id="partners-title"
-          eyebrow="Partners"
-          index={3}
+          title="Partners who build with us"
+          size="lg"
           layout="stack"
-          className="lg:order-2 lg:col-span-6"
-          title={
-            <>
-              Join <Highlight variant="fade">TUM.ai</Highlight> as a sponsor or
-              cooperation partner.
-            </>
-          }
-          lead="Get access to our exclusive pre-selected talent pool of qualified Software/Data Engineers and AI Strategists."
+          lead="Research labs, scale-ups and global technology companies work with TUM.ai to meet talent, set real challenges and back new ventures."
           actions={
             <>
-              <ButtonLink href={getPartnershipEmailUrl()}>
+              <ButtonLink href="/partners#partner-contact">
                 Become a Partner
               </ButtonLink>
-              <ButtonLink href="/partners" variant="inverse" arrow>
-                View Our Partners
+              <ButtonLink href="/partners" variant="outline" arrow>
+                How partnerships work
               </ButtonLink>
             </>
           }
         />
-        <Reveal variant="scale" className="lg:order-1 lg:col-span-6">
-          <div className="group/zoom relative aspect-[3/2] overflow-hidden rounded-4xl bg-sunken">
-            <Image
-              src="/assets/partners_pic.webp"
-              alt="Presentation at a TUM.ai event"
-              fill
-              sizes="(min-width: 1280px) 38rem, (min-width: 1024px) 48vw, 100vw"
-              className="zoom-media object-cover"
-            />
-          </div>
+
+        <div className="grid gap-16 lg:grid-cols-12 lg:gap-12">
+          {quote ? (
+            <Reveal className="lg:col-span-7">
+              <QuoteCard
+                variant="editorial"
+                quote={quote.quote}
+                name={quote.name}
+                byline={quote.role}
+                portrait={{ src: quote.portraitSrc, alt: "" }}
+                logo={{
+                  src: quote.organizationLogoSrc,
+                  alt: quote.organizationLogoAlt,
+                }}
+                className="max-w-3xl"
+              />
+            </Reveal>
+          ) : null}
+          <Reveal delay={120} className="lg:col-span-4 lg:col-start-9">
+            <Ledger items={outcomes} />
+          </Reveal>
+        </div>
+
+        <Reveal className="mt-20 md:mt-28">
+          <LogoWall
+            logos={partnerLogos}
+            columns={6}
+            size="md"
+            label="TUM.ai partners"
+          />
         </Reveal>
       </Container>
-
-      <Container className="mt-20 border-hairline border-t md:mt-28" />
-      <Marquee
-        label="Partners"
-        duration={partnerLogos.length * 3.5}
-        gap={1}
-        className="mt-10 md:mt-12"
-      >
-        {partnerLogos.map((logo) => (
-          <div
-            key={logo.key}
-            className="flex h-12 w-36 items-center justify-center opacity-80 transition-opacity duration-300 hover:opacity-100 md:w-44"
-          >
-            <LogoTile
-              variant="bare"
-              name={logo.name}
-              src={logo.image}
-              wordmark={
-                logo.image && LOCKUP_KEYS.has(logo.key) ? logo.name : undefined
-              }
-              className="size-full"
-            />
-          </div>
-        ))}
-      </Marquee>
     </Section>
   );
 }
