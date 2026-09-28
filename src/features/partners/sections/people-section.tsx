@@ -38,6 +38,8 @@ export function PeopleSection() {
                 byline={profile.role}
                 image={{ src: profile.image }}
                 sizes="(min-width: 1024px) 25vw, 50vw"
+                // The portraits are lossless artwork; serve them as they are.
+                unoptimized
               >
                 {profile.detail || null}
               </PersonCard>
@@ -49,7 +51,10 @@ export function PeopleSection() {
               className="relative isolate flex h-full min-h-72 flex-col items-start overflow-clip rounded-3xl p-5 sm:p-7"
             >
               <Aurora intensity="subtle" />
-              <BrandMark className="absolute -right-[30%] -bottom-[18%] -z-10 w-[120%] text-white/[0.04]" />
+              <BrandMark
+                className="absolute -right-[30%] -bottom-[18%] -z-10 w-[120%]"
+                intensity="soft"
+              />
               <Globe2
                 aria-hidden
                 className="mb-auto size-8 text-highlight"
@@ -78,15 +83,14 @@ export function PeopleSection() {
           <h3 className="text-center text-eyebrow text-fg-muted uppercase">
             Where they go afterwards
           </h3>
-          {/* Fixed-width chips, so the rows don't reflow as the artwork loads. */}
           <ul className="mt-7 flex flex-wrap items-center justify-center gap-2.5 md:gap-4">
             {alumniDestinations.map((company) => (
-              <li key={company.name} className="flex w-25 sm:w-31">
+              <li key={company.name} className="flex">
                 <LogoTile
                   variant="chip"
+                  fixed
                   name={company.name}
                   src={company.image}
-                  className="w-full"
                 />
               </li>
             ))}

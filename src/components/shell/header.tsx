@@ -205,7 +205,7 @@ export const Header = () => {
                     {active ? (
                       <span
                         aria-hidden
-                        className="absolute bottom-0.5 left-1/2 size-1 -translate-x-1/2 rounded-full bg-violet-400"
+                        className="absolute bottom-0.5 left-1/2 size-1 -translate-x-1/2 rounded-full bg-indicator"
                       />
                     ) : null}
                   </Link>
@@ -245,7 +245,8 @@ export const Header = () => {
       >
         <BrandMark
           drift={false}
-          className="absolute right-[-18%] bottom-[18%] -z-10 w-[85%] text-white/[0.035]"
+          intensity="subtle"
+          className="absolute right-[-18%] bottom-[18%] -z-10 w-[85%]"
         />
         {/*
          * The panel extends under Safari's toolbars; its content fills the
@@ -291,7 +292,7 @@ export const Header = () => {
                         {active ? (
                           <span
                             aria-hidden
-                            className="size-1.5 rounded-full bg-violet-400"
+                            className="size-1.5 rounded-full bg-indicator"
                           />
                         ) : null}
                       </span>

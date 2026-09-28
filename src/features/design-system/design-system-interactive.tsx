@@ -19,14 +19,22 @@ import {
   Parallax,
   ScrollProgress,
   TextLink,
+  useBreakpoint,
 } from "@/components/ds";
 
 /** Stateful demos for the /design-system reference page. */
 export function DesignSystemInteractive() {
   const [category, setCategory] = useState("all");
+  const wide = useBreakpoint("md");
 
   return (
     <div className="grid gap-10 lg:grid-cols-2">
+      <p className="text-fg-muted text-small lg:col-span-2">
+        useBreakpoint(&quot;md&quot;):{" "}
+        <strong className="text-fg">
+          {wide ? "md and wider" : "narrower than md"}
+        </strong>
+      </p>
       <div>
         <p id="chip-label" className="text-eyebrow text-fg-subtle uppercase">
           Chip group
@@ -74,7 +82,8 @@ export function DesignSystemInteractive() {
           <DialogContent variant="fullscreen" tone="ink" className="max-w-md">
             <BrandMark
               drift={false}
-              className="absolute right-[-18%] bottom-[18%] -z-10 w-[85%] text-white/[0.035]"
+              intensity="subtle"
+              className="absolute right-[-18%] bottom-[18%] -z-10 w-[85%]"
             />
             <div className="flex min-h-lvh flex-col p-8">
               <div className="flex items-center justify-between">

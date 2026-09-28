@@ -28,13 +28,14 @@ const iconBadgeStyles = cva(
         circle: "rounded-full",
       },
       /**
-       * Tilts and fills with brand violet while an ancestor `group/card` is
-       * hovered (no tilt under reduced motion).
+       * Tilts and fills with brand violet while the enclosing card
+       * (`group/card`), link or button is hovered (the `card-hover:` variant;
+       * no tilt under reduced motion).
        */
       interactive: {
         true: [
           "transition-[background-color,color,rotate] duration-500 ease-brand motion-reduce:transition-none",
-          "group-hover/card:bg-violet-600 group-hover/card:text-white motion-safe:group-hover/card:-rotate-6",
+          "card-hover:bg-violet-600 card-hover:text-white motion-safe:card-hover:-rotate-6",
         ],
         false: "",
       },

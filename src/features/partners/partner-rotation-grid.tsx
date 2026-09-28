@@ -48,7 +48,7 @@ export function PartnerRotationGrid({
   capacity = 3,
   batchSize = 1,
   offset = 0,
-  size = "lg",
+  size = "xl",
   className,
 }: {
   partners: Partner[];

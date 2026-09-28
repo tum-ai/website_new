@@ -66,7 +66,7 @@ const statusBadgeStyles = cva(
        */
       size: {
         // 13px without text-meta's line height, like the small Button.
-        sm: "min-h-9 rounded-[1.125rem] py-1.5 pr-4 pl-3 text-[0.8125rem]",
+        sm: "min-h-9 rounded-[1.125rem] py-1.5 pr-4 pl-3 text-label-sm",
         md: "min-h-11 rounded-[1.375rem] py-2 pr-5 pl-4 text-label",
         lg: "min-h-13 rounded-[1.625rem] py-2.5 pr-6 pl-5 text-base",
       },
@@ -78,7 +78,7 @@ const statusBadgeStyles = cva(
 const dotStyles = cva("relative size-2 rounded-full", {
   variants: {
     status: {
-      live: "bg-violet-400",
+      live: "bg-indicator",
       idle: "bg-fg-subtle",
       closed: "border-[1.5px] border-fg-subtle",
     },
@@ -123,7 +123,7 @@ export function StatusBadge({
           className="relative mr-2.5 inline-flex size-2 align-middle"
         >
           {status === "live" ? (
-            <span className="absolute inset-0 rounded-full bg-violet-400 motion-safe:animate-pulse-ring" />
+            <span className="absolute inset-0 rounded-full bg-indicator motion-safe:animate-pulse-ring" />
           ) : null}
           <span className={dotStyles({ status })} />
         </span>

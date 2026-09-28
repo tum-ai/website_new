@@ -1,11 +1,10 @@
 import { cva, type VariantProps } from "class-variance-authority";
-import { ArrowUpRight } from "lucide-react";
-import Link from "next/link";
-import type { ReactNode } from "react";
+import { ArrowUpRight, Plus } from "lucide-react";
+import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/cn";
+import { Anchor } from "./anchor";
 import { BrandPanel } from "./brand-panel";
 import { FallbackImage } from "./fallback-image";
-import { isExternalHref } from "./internal";
 import type { HeadingLevel } from "./types";
 
 const mediaStyles = cva("relative isolate overflow-hidden bg-sunken", {
@@ -49,6 +48,69 @@ const scrimStyles = cva(
   },
 );
 
+const descriptionStyles = cva("", {
+  variants: {
+    /**
+     * Clamp the description to this many lines and, from `md` (grids of two
+     * or more columns), reserve their height, so the titles of a row share a
+     * baseline however long each description is.
+     */
+    descriptionLines: {
+      2: "line-clamp-2 md:min-h-[2lh]",
+      3: "line-clamp-3 md:min-h-[3lh]",
+    },
+  },
+});
+
+const cornerHintStyles = cva(
+  "grid size-10 shrink-0 place-items-center rounded-full transition-[rotate,background-color] duration-500 ease-brand motion-reduce:transition-none",
+  {
+    variants: {
+      /** What a click does: `arrow` goes somewhere, `open` opens a dialog. */
+      icon: {
+        arrow: "motion-safe:group-hover/zoom:rotate-45",
+        open: "motion-safe:group-hover/zoom:rotate-90",
+      },
+      /** `media`: a white disc over photos. `tonal`: on the card surface. */
+      variant: {
+        media:
+          "bg-white/90 text-violet-950 shadow-soft backdrop-blur group-hover/zoom:bg-white",
+        tonal: "bg-fg/[0.07] text-fg group-hover/zoom:bg-fg/[0.12]",
+      },
+    },
+    defaultVariants: { icon: "arrow", variant: "media" },
+  },
+);
+
+/** Props for {@link CornerHint}. */
+export type CornerHintProps = Omit<ComponentProps<"span">, "children"> &
+  VariantProps<typeof cornerHintStyles>;
+
+/**
+ * The disc in a card's corner that says what a click does: an arrow that
+ * turns on hover (a link) or a plus that turns into a cross (a dialog). It
+ * reacts to the nearest `group/zoom` and is decorative (hidden from AT).
+ * <MediaCard> shows one by default; place it yourself in other cards, sized
+ * with `className` (default `size-10`).
+ */
+export function CornerHint({
+  icon,
+  variant,
+  className,
+  ...props
+}: CornerHintProps) {
+  const Icon = icon === "open" ? Plus : ArrowUpRight;
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(cornerHintStyles({ icon, variant }), className)}
+      {...props}
+    >
+      <Icon className="size-4" />
+    </span>
+  );
+}
+
 /** The photo of a {@link MediaCard}. */
 export type MediaCardImage = {
   /** Image URL. Without one the card shows its `fallback`. */
@@ -59,13 +121,24 @@ export type MediaCardImage = {
 
 /** Props for {@link MediaCard}. */
 export type MediaCardProps = VariantProps<typeof mediaStyles> &
-  VariantProps<typeof scrimStyles> & {
+  VariantProps<typeof scrimStyles> &
+  VariantProps<typeof descriptionStyles> & {
     /** The photo. */
     image: MediaCardImage;
     /** The card title; with `href` it is the link's accessible name. */
     title: ReactNode;
+    /** id of the title heading, e.g. for an `action`'s `aria-labelledby`. */
+    titleId?: string;
     /** Makes the whole card a link (http(s) URLs open in a new tab). */
     href?: string;
+    /**
+     * Makes the whole card one control instead of a link: an interactive
+     * element, typically a Base UI trigger such as
+     * `<DialogTrigger aria-labelledby={titleId} />`, stretched over the card.
+     * Name it (e.g. by the title, through `titleId`); the card draws its
+     * focus ring. Use it instead of `href`, not with it.
+     */
+    action?: ReactNode;
     /** Small label above the title. */
     eyebrow?: ReactNode;
     /** A sentence under the title. */
@@ -78,9 +151,9 @@ export type MediaCardProps = VariantProps<typeof mediaStyles> &
      */
     fallback?: ReactNode;
     /**
-     * Top-right corner of the image (decorative). Default: an arrow that
-     * turns on hover when the card links; pass `null` for none, or e.g. a
-     * <Tag> or an icon.
+     * Top-right corner of the image (decorative). Default: a <CornerHint>
+     * arrow when the card links, a <CornerHint icon="open"> plus when it has
+     * an `action`; pass `null` for none, or e.g. a <Tag> or an icon.
      */
     cornerHint?: ReactNode;
     /** Heading level of the title. Default `h3`. */
@@ -95,26 +168,22 @@ export type MediaCardProps = VariantProps<typeof mediaStyles> &
     className?: string;
   };
 
-function DefaultCornerHint() {
-  return (
-    <span className="grid size-10 place-items-center rounded-full bg-white/90 text-violet-950 shadow-soft backdrop-blur transition-[rotate,background-color] duration-500 ease-brand group-hover/zoom:bg-white motion-safe:group-hover/zoom:rotate-45">
-      <ArrowUpRight className="size-4" />
-    </span>
-  );
-}
-
 /**
- * Photo-led card. The whole card is clickable through a stretched title link
- * (so the accessible name is the title) and shows its focus ring around the
- * card; the image eases into the house hover zoom (`zoom-media`) and the
- * corner arrow turns on hover.
+ * Photo-led card. The whole card is clickable, through a stretched title
+ * link (`href`, so the accessible name is the title) or a stretched `action`
+ * such as a dialog trigger, and shows its focus ring around the card. The
+ * image eases into the house hover zoom (`zoom-media`) and the corner hint
+ * turns on hover.
  */
 export function MediaCard({
   image,
   title,
+  titleId,
   href,
+  action,
   eyebrow,
   description,
+  descriptionLines,
   meta,
   fallback,
   cornerHint,
@@ -128,29 +197,33 @@ export function MediaCard({
   scrim,
   className,
 }: MediaCardProps) {
-  const stretchedLink =
-    "outline-none after:absolute after:inset-0 after:z-10 after:rounded-[inherit]";
   const titleNode = href ? (
-    isExternalHref(href) ? (
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={stretchedLink}
-      >
-        {title}
-        <span className="sr-only"> (opens in a new tab)</span>
-      </a>
-    ) : (
-      <Link href={href} className={stretchedLink}>
-        {title}
-      </Link>
-    )
+    <Anchor
+      href={href}
+      className="outline-none after:absolute after:inset-0 after:z-10 after:rounded-[inherit]"
+    >
+      {title}
+    </Anchor>
   ) : (
     title
   );
-  const hint =
-    cornerHint === undefined ? href ? <DefaultCornerHint /> : null : cornerHint;
+  const defaultHint = href ? (
+    <CornerHint />
+  ) : action ? (
+    <CornerHint icon="open" />
+  ) : null;
+  const hint = cornerHint === undefined ? defaultHint : cornerHint;
+  // The wrapper stretches the caller's control over the card; the card
+  // draws the focus ring, so the control's own (clipped) ring is dropped.
+  const stretchedAction = action ? (
+    <div
+      data-card-action=""
+      className="absolute inset-0 z-10 rounded-[inherit] *:absolute *:inset-0 *:rounded-[inherit] *:outline-none"
+    >
+      {action}
+    </div>
+  ) : null;
+  const descriptionClassName = descriptionStyles({ descriptionLines });
 
   const media = (
     <div className={cn(mediaStyles({ aspect, layout, fill }))}>
@@ -179,7 +252,10 @@ export function MediaCard({
     return (
       <article
         className={cn(
-          "group/zoom relative rounded-3xl has-[a:focus-visible]:outline-3 has-[a:focus-visible]:outline-violet-500 has-[a:focus-visible]:outline-offset-4",
+          "group/zoom relative rounded-3xl",
+          // The ring shows while the stretched title link or action has
+          // keyboard focus; the card draws it, since theirs would be clipped.
+          "has-[a:focus-visible,[data-card-action]>:focus-visible]:outline-3 has-[a:focus-visible,[data-card-action]>:focus-visible]:outline-violet-500 has-[a:focus-visible,[data-card-action]>:focus-visible]:outline-offset-4",
           fill && "h-full",
           className,
         )}
@@ -189,16 +265,24 @@ export function MediaCard({
           {eyebrow ? (
             <p className="text-eyebrow text-highlight uppercase">{eyebrow}</p>
           ) : null}
-          <HeadingTag className="mt-2 text-fg text-heading-md">
+          <HeadingTag id={titleId} className="mt-2 text-fg text-heading-md">
             {titleNode}
           </HeadingTag>
           {meta ? (
             <p className="mt-1 text-fg-subtle text-meta">{meta}</p>
           ) : null}
           {description ? (
-            <p className="mt-3 text-fg-muted text-small">{description}</p>
+            <p
+              className={cn(
+                "mt-3 text-fg-muted text-small",
+                descriptionClassName,
+              )}
+            >
+              {description}
+            </p>
           ) : null}
         </div>
+        {stretchedAction}
       </article>
     );
   }
@@ -208,7 +292,7 @@ export function MediaCard({
       data-tone="night"
       className={cn(
         "group/zoom relative isolate overflow-hidden rounded-4xl bg-transparent",
-        "has-[a:focus-visible]:outline-3 has-[a:focus-visible]:outline-violet-300 has-[a:focus-visible]:outline-offset-4",
+        "has-[a:focus-visible,[data-card-action]>:focus-visible]:outline-3 has-[a:focus-visible,[data-card-action]>:focus-visible]:outline-violet-300 has-[a:focus-visible,[data-card-action]>:focus-visible]:outline-offset-4",
         fill && "h-full",
         className,
       )}
@@ -218,16 +302,22 @@ export function MediaCard({
         {eyebrow ? (
           <p className="text-eyebrow text-violet-200 uppercase">{eyebrow}</p>
         ) : null}
-        <HeadingTag className="mt-2 text-heading-lg text-white">
+        <HeadingTag id={titleId} className="mt-2 text-heading-lg text-white">
           {titleNode}
         </HeadingTag>
         {meta ? <p className="mt-1.5 text-meta text-white/70">{meta}</p> : null}
         {description ? (
-          <p className="mt-3 max-w-md text-small text-white/80">
+          <p
+            className={cn(
+              "mt-3 max-w-md text-small text-white/80",
+              descriptionClassName,
+            )}
+          >
             {description}
           </p>
         ) : null}
       </div>
+      {stretchedAction}
     </article>
   );
 }

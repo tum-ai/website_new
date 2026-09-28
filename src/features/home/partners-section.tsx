@@ -5,6 +5,7 @@ import {
   ButtonLink,
   Container,
   Highlight,
+  LogoTile,
   Marquee,
   Reveal,
   Section,
@@ -48,7 +49,10 @@ export function PartnersSection() {
       className="overflow-clip"
     >
       <Aurora intensity="subtle" />
-      <BrandMark className="absolute -top-[12%] -right-[22%] -z-10 w-[min(60rem,95%)] text-white/[0.03]" />
+      <BrandMark
+        className="absolute -top-[12%] -right-[22%] -z-10 w-[min(60rem,95%)]"
+        intensity="faint"
+      />
 
       <Container className="grid gap-12 lg:grid-cols-12 lg:items-center lg:gap-20">
         <SectionHeader
@@ -100,28 +104,15 @@ export function PartnersSection() {
             key={logo.key}
             className="flex h-12 w-36 items-center justify-center opacity-80 transition-opacity duration-300 hover:opacity-100 md:w-44"
           >
-            {logo.image && LOCKUP_KEYS.has(logo.key) ? (
-              <span className="flex items-center gap-2.5 text-fg text-heading-sm">
-                <Image
-                  src={logo.image}
-                  alt=""
-                  width={32}
-                  height={32}
-                  className="size-8 object-contain"
-                />
-                {logo.name}
-              </span>
-            ) : logo.image ? (
-              <Image
-                src={logo.image}
-                alt={logo.name}
-                width={160}
-                height={40}
-                className="h-8 w-auto max-w-34 object-contain md:h-9 md:max-w-38"
-              />
-            ) : (
-              <span className="text-fg text-heading-sm">{logo.name}</span>
-            )}
+            <LogoTile
+              variant="bare"
+              name={logo.name}
+              src={logo.image}
+              wordmark={
+                logo.image && LOCKUP_KEYS.has(logo.key) ? logo.name : undefined
+              }
+              className="size-full"
+            />
           </div>
         ))}
       </Marquee>

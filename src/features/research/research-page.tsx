@@ -25,10 +25,6 @@ import {
 } from "./research";
 import { ResearchCard } from "./research-card";
 
-/* Long tab labels wrap on phones instead of overflowing the pill. */
-const tabClassName =
-  "max-sm:h-auto max-sm:min-h-10 max-sm:shrink max-sm:whitespace-normal max-sm:py-2 max-sm:leading-tight";
-
 /** The /research page: CMS projects and collaborators, and the REX program. */
 export function ResearchPage({
   projects,
@@ -50,12 +46,8 @@ export function ResearchPage({
           lead="Our research offerings - from projects to exchange programs"
         >
           <TabsList aria-label="Research tabs" activateOnFocus>
-            <TabsTab value="projects" className={tabClassName}>
-              Projects
-            </TabsTab>
-            <TabsTab value="exchange" className={tabClassName}>
-              Research Exchange Program
-            </TabsTab>
+            <TabsTab value="projects">Projects</TabsTab>
+            <TabsTab value="exchange">Research Exchange Program</TabsTab>
           </TabsList>
         </PageHero>
 
@@ -139,7 +131,7 @@ export function ResearchPage({
                   <LogoWall
                     logos={collaborators}
                     columns={getLogoColumns(collaborators.length)}
-                    size="lg"
+                    size="xl"
                   />
                 </Reveal>
               </Container>
@@ -223,7 +215,10 @@ export function ResearchPage({
             className="overflow-clip"
           >
             <Aurora intensity="subtle" />
-            <BrandMark className="absolute -right-[14%] -bottom-[38%] -z-10 w-[min(60rem,95%)] text-white/[0.035]" />
+            <BrandMark
+              className="absolute -right-[14%] -bottom-[38%] -z-10 w-[min(60rem,95%)]"
+              intensity="subtle"
+            />
             <Container>
               <Reveal>
                 <Eyebrow as="h3" index={3}>

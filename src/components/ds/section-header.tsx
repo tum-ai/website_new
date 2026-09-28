@@ -24,10 +24,14 @@ const headerStyles = cva("mb-12 md:mb-16", {
 
 const titleStyles = cva("text-fg", {
   variants: {
-    /** Display step of the title: `md` for sections, `lg` for key sections. */
+    /**
+     * Display step of the title: `md` for sections, `lg` for key sections,
+     * `xl` for a page's lead statement (the home "About" headline).
+     */
     size: {
       md: "text-display-md",
       lg: "text-display-lg",
+      xl: "text-display-xl",
     },
   },
   defaultVariants: { size: "md" },
@@ -59,6 +63,11 @@ export type SectionHeaderProps = VariantProps<typeof headerStyles> &
   VariantProps<typeof titleStyles> & {
     /** The section's headline. */
     title: ReactNode;
+    /**
+     * A count set small and top-aligned after the title, in parentheses:
+     * `count={4}` renders "Upcoming Events (4)".
+     */
+    count?: number;
     /** id for the heading, referenced by the section's `aria-labelledby`. */
     id?: string;
     /** Small label above the title. */
@@ -80,6 +89,7 @@ export type SectionHeaderProps = VariantProps<typeof headerStyles> &
 /** Standard section opening: eyebrow, headline, lead and optional actions. */
 export function SectionHeader({
   title,
+  count,
   id,
   eyebrow,
   index,
@@ -108,6 +118,14 @@ export function SectionHeader({
           )}
         >
           {title}
+          {count !== undefined ? (
+            <>
+              {" "}
+              <span className="tabular ml-1 align-top text-heading-sm text-highlight">
+                ({count})
+              </span>
+            </>
+          ) : null}
         </HeadingTag>
       </Reveal>
     </div>

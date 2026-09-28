@@ -71,7 +71,7 @@ export function AboutSection() {
             id="about-title"
             eyebrow="About"
             index={1}
-            size="lg"
+            size="xl"
             // The intro is a full paragraph with two actions, too long for
             // the split layout's default narrow aside.
             classNames={{ aside: "lg:max-w-xl" }}

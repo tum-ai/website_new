@@ -32,7 +32,10 @@ export function Footer() {
         intensity="subtle"
         className="[mask-image:linear-gradient(to_bottom,transparent,black_35%,black_60%,transparent)]"
       />
-      <BrandMark className="absolute -right-[6%] -bottom-[22%] -z-10 w-[min(46rem,90%)] text-white/[0.03]" />
+      <BrandMark
+        className="absolute -right-[6%] -bottom-[22%] -z-10 w-[min(46rem,90%)]"
+        intensity="faint"
+      />
       {/* The bottom edge settles into the root canvas that Safari shows under its toolbar. */}
       <TopBlend edge="bottom" />
       <Container className="pt-24 md:pt-32">

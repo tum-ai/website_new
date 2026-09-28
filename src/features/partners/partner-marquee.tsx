@@ -1,18 +1,9 @@
 import type { CSSProperties } from "react";
-import { ButtonLink, FallbackImage } from "@/components/ds";
+import { ButtonLink, LogoTile } from "@/components/ds";
 import type { Partner } from "@/lib/types";
 import { symbolOnlyLogos } from "./data/partner-logos";
 import { marqueeLogos } from "./data/partner-marquee-logos";
 import { getPartnerKey } from "./partner-directory";
-
-/** The partner name, set in place of (or beside) artwork on the dark hero. */
-function PartnerName({ name }: { name: string }) {
-  return (
-    <span className="text-center font-bold text-fg text-heading-sm">
-      {name}
-    </span>
-  );
-}
 
 /**
  * Highlighted-partner rail for the dark hero. Unlike the DS `Marquee` (which
@@ -48,37 +39,24 @@ export function PartnerMarquee({ partners }: { partners: Partner[] }) {
           {partners.map((partner, index) => {
             const key = getPartnerKey(partner.name);
             const image = marqueeLogos[key];
-            const lockup = image ? symbolOnlyLogos.has(image) : false;
             return (
               <li
                 key={key}
                 className="partner-marquee-item opacity-80 transition-opacity duration-300 ease-brand hover:opacity-100"
                 style={{ "--marquee-index": index } as CSSProperties}
               >
-                {lockup ? (
-                  <span className="flex items-center gap-2.5 font-semibold text-fg text-label">
-                    <FallbackImage
-                      src={image}
-                      alt=""
-                      width={72}
-                      height={72}
-                      loading="eager"
-                      className="size-9 object-contain"
-                      fallback={null}
-                    />
-                    {partner.name}
-                  </span>
-                ) : (
-                  <FallbackImage
-                    src={image}
-                    alt={partner.name}
-                    width={200}
-                    height={80}
-                    loading="eager"
-                    className="block h-full max-h-8 w-full object-contain md:max-h-10"
-                    fallback={<PartnerName name={partner.name} />}
-                  />
-                )}
+                <LogoTile
+                  variant="bare"
+                  eager
+                  name={partner.name}
+                  src={image}
+                  wordmark={
+                    image && symbolOnlyLogos.has(image)
+                      ? partner.name
+                      : undefined
+                  }
+                  className="size-full"
+                />
               </li>
             );
           })}

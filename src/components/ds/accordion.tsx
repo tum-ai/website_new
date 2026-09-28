@@ -137,6 +137,11 @@ export type FaqItem = {
 export type FaqListProps = {
   /** Questions and answers. Keep the data in the feature's data/ folder. */
   items: FaqItem[];
+  /**
+   * Questions whose answers start open, e.g. `[items[0].question]` to open
+   * the first. Each item's value is its question.
+   */
+  defaultValue?: string[];
   /** Heading level of each question. Default `h3`. */
   headingAs?: HeadingLevel;
   /** Classes merged over the accordion root. */
@@ -144,11 +149,16 @@ export type FaqListProps = {
 };
 
 /** A question and answer list rendered as an accordion. */
-export function FaqList({ items, headingAs, className }: FaqListProps) {
+export function FaqList({
+  items,
+  defaultValue,
+  headingAs,
+  className,
+}: FaqListProps) {
   return (
-    <Accordion className={className}>
+    <Accordion defaultValue={defaultValue} className={className}>
       {items.map((item) => (
-        <AccordionItem key={item.question}>
+        <AccordionItem key={item.question} value={item.question}>
           <AccordionTrigger headingAs={headingAs}>
             {item.question}
           </AccordionTrigger>

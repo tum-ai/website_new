@@ -85,17 +85,6 @@ const items: TimelineItem[] = steps.map((step) => ({
   ),
 }));
 
-/**
- * The ds Timeline lights each marker from an IntersectionObserver even under
- * reduced motion, so its static render depended on scroll timing (a flaky
- * visual baseline). Under `prefers-reduced-motion` every marker shows its
- * final, lit state instead.
- * TODO(W3): drop once the ds Timeline renders a static final state under
- * reduced motion (handoff in the Apply+Community PR).
- */
-const staticMarkers =
-  "motion-reduce:[&_[data-index]>span>span]:scale-100 motion-reduce:[&_[data-index]>span>span]:bg-violet-500 motion-reduce:[&_[data-index]>span]:border-violet-500 motion-reduce:[&_[data-index]>span]:shadow-halo";
-
 /** Sticky heading beside a timeline whose rail fills as the years scroll by. */
 export function Milestones() {
   return (
@@ -113,7 +102,7 @@ export function Milestones() {
           }
           className="mb-0 md:mb-0 lg:sticky lg:top-32 lg:self-start"
         />
-        <Timeline items={items} className={staticMarkers} />
+        <Timeline items={items} />
       </Container>
     </Section>
   );

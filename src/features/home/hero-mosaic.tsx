@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { type CSSProperties, useEffect, useRef, useState } from "react";
+import { type CSSProperties, useEffect, useRef } from "react";
+import { useBreakpoint } from "@/components/ds";
 import { pictures } from "./data/homepage";
 
 const COLUMN_COUNT = 4;
@@ -33,16 +34,8 @@ const columnMotion = [
  * while the hero is off screen and stays still under reduced motion.
  */
 export function HeroMosaic() {
-  const [enabled, setEnabled] = useState(false);
+  const enabled = useBreakpoint("md");
   const rootRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const query = window.matchMedia("(min-width: 768px)");
-    const update = () => setEnabled(query.matches);
-    update();
-    query.addEventListener("change", update);
-    return () => query.removeEventListener("change", update);
-  }, []);
 
   useEffect(() => {
     const node = rootRef.current;
