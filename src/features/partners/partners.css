@@ -142,6 +142,20 @@
       animation: partner-logo-exit 600ms var(--ease-brand)
         var(--partner-logo-delay, 0ms) both;
     }
+
+    /*
+     * Logo artwork also blurs through the swap, so the two logos never sit
+     * sharp on top of each other mid-dissolve. Only the image: name text
+     * (fallbacks, wordmarks) keeps the plain fade, per the no-filter-on-text
+     * rule. The incoming blur ends at `none`, releasing the filter.
+     */
+    .partner-rotation-enter > * > img {
+      animation-name: partner-logo-enter-image;
+    }
+
+    .partner-rotation-outgoing > * > img {
+      animation-name: partner-logo-exit-image;
+    }
   }
 
   @keyframes partner-logo-enter {
@@ -162,6 +176,32 @@
     }
     to {
       opacity: 0;
+      transform: scale(1.03);
+    }
+  }
+
+  @keyframes partner-logo-enter-image {
+    from {
+      opacity: 0;
+      filter: blur(5px);
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      filter: none;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes partner-logo-exit-image {
+    from {
+      opacity: 1;
+      filter: none;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      filter: blur(5px);
       transform: scale(1.03);
     }
   }
