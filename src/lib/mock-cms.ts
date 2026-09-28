@@ -140,62 +140,131 @@ export function getMockEvents(now: Date = new Date()): Event[] {
   ];
 }
 
+/**
+ * Mirrors the live research documents (2026-09), including their rough
+ * edges: several institutions or a person before the colon, a line break in
+ * a title, a missing image and mostly empty keywords. Images are local
+ * stand-ins for the CMS photos.
+ */
 export function getMockResearchProjects(): ResearchProject[] {
   return [
     {
-      id: "mock-research-robotics",
-      title: "TUM: Language-Conditioned Robotic Manipulation",
+      id: "mock-research-uav",
+      title:
+        "University of Cambridge, Prof. Olaf Wysocki: Aerial Visual Localization with Depth and Semantic 3D City Models",
       description:
-        "We study how vision-language models can ground natural-language instructions into robust manipulation policies, with a focus on generalization to unseen objects.",
+        "SemCity-LoC localizes UAV cameras in cities without GNSS or dense, textured 3D meshes. It aligns lightweight semantic 3D city models with image-inferred semantics and depth to estimate the camera pose end-to-end, for search-and-rescue, autonomous drone navigation and urban mapping.",
       status: "ongoing",
-      keywords: ["Robotics", "VLMs", "Imitation Learning"],
+      keywords: [],
       image: "/assets/innovation/robotics_arm.webp",
     },
     {
-      id: "mock-research-medical",
-      title: "LMU: Uncertainty-Aware Medical Imaging",
+      id: "mock-research-sycophancy",
+      title: "IBM Almaden: Sycophancy in LMs",
       description:
-        "Calibrated uncertainty estimates for segmentation models used in radiology workflows, developed together with clinicians.",
+        "We study sycophancy, the tendency of language models to echo a user's stated beliefs at the expense of truth, and build open datasets and a lean benchmark suite to detect, track and mitigate it without eroding helpfulness.",
       status: "ongoing",
-      keywords: ["Healthcare", "Computer Vision", "Uncertainty"],
-      image: "/assets/innovation/med_ai.webp",
-    },
-    {
-      id: "mock-research-accelerated",
-      title: "Helmholtz Munich: Efficient Protein Language Models",
-      description:
-        "Distillation and quantization strategies that make protein language models practical on a single GPU.",
-      status: "ongoing",
-      keywords: ["Biology", "Efficiency", "Transformers"],
+      keywords: [],
       image: "/assets/innovation/accelerated_computing.webp",
     },
     {
-      id: "mock-research-ibm",
-      title: "IBM: Foundation Models for Earth Observation",
+      id: "mock-research-tool-calling",
+      title: "IBM Almaden: Reinforcement Learning for Tool calling",
       description:
-        "Fine-tuning geospatial foundation models for flood and wildfire mapping from satellite imagery.",
-      status: "completed",
-      publication: "https://arxiv.org/abs/2310.18660",
-      keywords: ["Remote Sensing", "Foundation Models"],
+        "Reinforcement learning for reliable tool choice, argument filling and error recovery in tool-augmented LLMs that use the Model Context Protocol, rewarded by task success, latency and safety checks.",
+      status: "ongoing",
+      keywords: [],
       image: "/assets/innovation/robotics_discussion.webp",
     },
     {
-      id: "mock-research-mit",
-      title: "MIT, Evaluating Reasoning in Small Language Models",
+      id: "mock-research-cells",
+      title: "Helmholtz Zentrum: Cell Embeddings & Dendrite Segmentation",
       description:
-        "A benchmark suite and analysis of multi-step reasoning failures in sub-10B parameter models.",
-      status: "completed",
-      publication: "https://arxiv.org/abs/2305.10601",
-      keywords: ["NLP", "Evaluation", "Reasoning"],
+        "DINOv3-based cell embeddings with unsupervised subclusters; PSPA-based neuron and dendrite segmentation in brightfield confocal microscopy.",
+      status: "ongoing",
+      keywords: [
+        "Self-Supervised Learning",
+        "Cellular Representation",
+        "Neuronal Segmentation",
+        "Fate Prediction",
+      ],
+      image: "/assets/innovation/med_ai.webp",
     },
     {
-      id: "mock-research-cambridge",
-      title: "Cambridge: Causal Representation Learning",
+      id: "mock-research-surgical-video",
+      title: "TUM CAMP: Long-Form Surgical Video Understanding",
       description:
-        "Identifiability results and practical methods for learning causal variables from high-dimensional observations.",
+        "Working on long-form video understanding, reasoning over hours of surgical video.",
+      status: "ongoing",
+      keywords: [],
+    },
+    {
+      id: "mock-research-retro-rank",
+      title:
+        "MIT: Ranking-Based Approach for Inorganic Materials Synthesis Planning",
+      description:
+        "Retro-Rank-In: ranking framework for inorganic retrosynthesis with state-of-the-art generalization.",
       status: "completed",
-      keywords: ["Causality", "Representation Learning"],
+      publication: "https://arxiv.org/abs/2502.04289",
+      keywords: ["Retrosynthesis", "Inorganic Chemistry", "Reaction Ranking"],
       image: "/assets/innovation/robotics_writing.webp",
+    },
+    {
+      id: "mock-research-reaction-graphs",
+      title: "MIT: Reaction Graph Networks for Synthesis\nCondition Prediction",
+      description:
+        "Reaction Graph Network (RGN) for predicting solid-state synthesis conditions, accelerating materials discovery.",
+      status: "completed",
+      publication: "https://openreview.net/pdf?id=VGsXQOTs1E",
+      keywords: [
+        "Graph Neural Networks",
+        "Synthesis Prediction",
+        "Materials Science",
+      ],
+      image: "/assets/innovation/accelerated_computing.webp",
+    },
+    {
+      id: "mock-research-surgical-4d",
+      title:
+        "LMU Klinikum, TUM, CAMP: 4D Gaussians & Scene Graphs for Surgical Spatial Intelligence",
+      description:
+        "4D surgical video reconstruction with Gaussian Splatting and foundation model embeddings; enables spatial reasoning for autonomous surgery.",
+      status: "ongoing",
+      keywords: [
+        "4D Reconstruction",
+        "Surgical Scene Understanding",
+        "Scene Graphs",
+        "Representation Learning",
+      ],
+      image: "/assets/innovation/med_ai.webp",
+    },
+    {
+      id: "mock-research-synthesizability",
+      title:
+        " MIT: Neural Prediction of Synthesizability from Phase-Diagram Graphs ",
+      description:
+        "RetroSynth: graph-of-phases synthesizability prediction that models phase competition with context-aware message passing for higher PR-AUC and better-calibrated lab-ready candidates.",
+      status: "ongoing",
+      keywords: [
+        "Graph Neural Networks",
+        "Synthesis Prediction",
+        "Materials Science",
+      ],
+      image: "/assets/innovation/robotics_writing.webp",
+    },
+    {
+      id: "mock-research-number-tokens",
+      title: "IBM Research: Regression-like Loss on Number Tokens",
+      description:
+        "Number Token Loss (NTL): token-level regression for improved numerical reasoning in language models with zero runtime overhead.",
+      status: "completed",
+      publication: "https://tum-ai.github.io/number-token-loss/",
+      keywords: [
+        "Numerical Reasoning",
+        "Language Models",
+        "Token-Level Regression",
+      ],
+      image: "/assets/innovation/robotics_discussion.webp",
     },
   ];
 }
@@ -217,7 +286,7 @@ export function getMockPartners(): Partner[] {
     name,
     link,
     image: `/assets/partners/logos/${logo}`,
-    category: "Research Partners",
+    category: name === "IBM" ? "Research Partners" : "Technical Partners",
   }));
 }
 
