@@ -7,16 +7,20 @@ import {
   verticalGuides,
 } from "./logomark-construction";
 
-const guides = [...edgeGuides(), ...horizontalGuides(), ...verticalGuides()];
-
-/** Room around the viewBox for the mask; covers every guide's overshoot. */
-const OVERSHOOT_BOX = 120;
-
 /**
- * The fade ellipse: centred on the mark, reaching the guides' ends (90 units
- * past the viewBox), so every guide is solid over the mark and gone by its end.
+ * How far the guides reach past the mark (viewBox units) and the ellipse
+ * they fade out in, centred on the mark: solid over the mark, gone by the
+ * guides' ends. `short` suits a mark behind copy (phones); `long` runs out
+ * across a wide band like a full construction sheet.
  */
-const GUIDE_BOX = { cx: 238.5, cy: 203, rx: 330, ry: 295 };
+const REACH = {
+  short: { overshoot: 90, rx: 330, ry: 295, solidUntil: 0.62 },
+  long: { overshoot: 280, rx: 540, ry: 500, solidUntil: 0.42 },
+} as const;
+
+/** Centre of the mark's viewBox. */
+const CENTRE = { x: 238.5, y: 203 };
+
 const circles = constructionCircles();
 
 /**
@@ -29,9 +33,23 @@ const circles = constructionCircles();
  * with a hard edge wherever the mark is placed. Hairlines stay 1px at any
  * size. Decorative; colour it with a text colour.
  */
-export function ConstructionLines({ className }: { className?: string }) {
+export function ConstructionLines({
+  reach = "short",
+  className,
+}: {
+  /** How far the guides run past the mark; see REACH. */
+  reach?: keyof typeof REACH;
+  className?: string;
+}) {
   // Unique per instance: the hero and the join band each draw one.
   const id = useId().replace(/:/g, "");
+  const { overshoot, rx, ry, solidUntil } = REACH[reach];
+  const box = overshoot + 30;
+  const guides = [
+    ...edgeGuides(overshoot),
+    ...horizontalGuides(overshoot),
+    ...verticalGuides(overshoot),
+  ];
   return (
     <svg
       aria-hidden="true"
@@ -49,27 +67,27 @@ export function ConstructionLines({ className }: { className?: string }) {
         <radialGradient
           id={`${id}-fade`}
           gradientUnits="userSpaceOnUse"
-          cx={GUIDE_BOX.cx}
-          cy={GUIDE_BOX.cy}
-          r={GUIDE_BOX.rx}
-          gradientTransform={`translate(${GUIDE_BOX.cx} ${GUIDE_BOX.cy}) scale(1 ${GUIDE_BOX.ry / GUIDE_BOX.rx}) translate(${-GUIDE_BOX.cx} ${-GUIDE_BOX.cy})`}
+          cx={CENTRE.x}
+          cy={CENTRE.y}
+          r={rx}
+          gradientTransform={`translate(${CENTRE.x} ${CENTRE.y}) scale(1 ${ry / rx}) translate(${-CENTRE.x} ${-CENTRE.y})`}
         >
-          <stop offset="0.62" stopColor="white" />
+          <stop offset={solidUntil} stopColor="white" />
           <stop offset="1" stopColor="white" stopOpacity="0" />
         </radialGradient>
         <mask
           id={`${id}-mask`}
           maskUnits="userSpaceOnUse"
-          x={-OVERSHOOT_BOX}
-          y={-OVERSHOOT_BOX}
-          width={477 + 2 * OVERSHOOT_BOX}
-          height={406 + 2 * OVERSHOOT_BOX}
+          x={-box}
+          y={-box}
+          width={477 + 2 * box}
+          height={406 + 2 * box}
         >
           <rect
-            x={-OVERSHOOT_BOX}
-            y={-OVERSHOOT_BOX}
-            width={477 + 2 * OVERSHOOT_BOX}
-            height={406 + 2 * OVERSHOOT_BOX}
+            x={-box}
+            y={-box}
+            width={477 + 2 * box}
+            height={406 + 2 * box}
             fill={`url(#${id}-fade)`}
           />
         </mask>

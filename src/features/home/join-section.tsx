@@ -55,7 +55,10 @@ export function JoinSection() {
           intensity="medium"
           className="absolute inset-0 size-full"
         />
-        <ConstructionLines className="absolute inset-0 hidden size-full text-violet-300 lg:block" />
+        <ConstructionLines
+          reach="long"
+          className="absolute inset-0 hidden size-full text-violet-300 lg:block"
+        />
       </div>
 
       <Container>

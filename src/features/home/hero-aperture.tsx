@@ -75,7 +75,12 @@ export function HeroAperture({
       aria-hidden="true"
       className={cn("pointer-events-none select-none", className)}
     >
-      <ConstructionLines className="absolute inset-0 size-full text-violet-300" />
+      {/* Short guides where the mark sits behind the copy, long ones beside it. */}
+      <ConstructionLines className="absolute inset-0 size-full text-violet-300 lg:hidden" />
+      <ConstructionLines
+        reach="long"
+        className="absolute inset-0 hidden size-full text-violet-300 lg:block"
+      />
 
       <div className="home-aperture absolute inset-0 bg-violet-950">
         {mounted

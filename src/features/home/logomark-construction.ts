@@ -18,7 +18,7 @@ export type Circle = Point & { r: number };
 /** A line segment to draw. */
 export type Segment = { x1: number; y1: number; x2: number; y2: number };
 
-/** How far the guides run past the mark, in viewBox units. */
+/** Default distance the guides run past the mark, in viewBox units. */
 const OVERSHOOT = 90;
 const VIEWBOX = { width: 477, height: 406 };
 
@@ -73,10 +73,10 @@ export function edgeX(edge: Edge, y: number): number {
   return from.x + ((y - from.y) * (to.x - from.x)) / (to.y - from.y);
 }
 
-/** Every stroke edge, extended past the mark top and bottom. */
-export function edgeGuides(): Segment[] {
-  const top = -OVERSHOOT;
-  const bottom = VIEWBOX.height + OVERSHOOT;
+/** Every stroke edge, extended `overshoot` past the mark top and bottom. */
+export function edgeGuides(overshoot = OVERSHOOT): Segment[] {
+  const top = -overshoot;
+  const bottom = VIEWBOX.height + overshoot;
   return Object.values(strokeEdges).flatMap((stroke) =>
     [stroke.outer, stroke.inner].map((edge) => ({
       x1: edgeX(edge, top),
@@ -87,23 +87,23 @@ export function edgeGuides(): Segment[] {
   );
 }
 
-/** Horizontal guides across the mark and a little past it. */
-export function horizontalGuides(): Segment[] {
+/** Horizontal guides across the mark, `overshoot` past it on both sides. */
+export function horizontalGuides(overshoot = OVERSHOOT): Segment[] {
   return horizontals.map((y) => ({
-    x1: -OVERSHOOT,
+    x1: -overshoot,
     y1: y,
-    x2: VIEWBOX.width + OVERSHOOT,
+    x2: VIEWBOX.width + overshoot,
     y2: y,
   }));
 }
 
-/** Vertical guides through every circle centre. */
-export function verticalGuides(): Segment[] {
+/** Vertical guides through every circle centre, `overshoot` past the mark. */
+export function verticalGuides(overshoot = OVERSHOOT): Segment[] {
   return [...Object.values(capCircles), counterCircle].map(({ x }) => ({
     x1: x,
-    y1: -OVERSHOOT,
+    y1: -overshoot,
     x2: x,
-    y2: VIEWBOX.height + OVERSHOOT,
+    y2: VIEWBOX.height + overshoot,
   }));
 }
 
