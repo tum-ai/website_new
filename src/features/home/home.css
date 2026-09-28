@@ -49,8 +49,9 @@
   }
 
   /*
-   * The join band's logomark and its continuation in the footer. The mark
-   * runs --join-mark-bleed past the band's bottom edge (the band clips it);
+   * The join band's logomark and its continuation in the footer (phones and
+   * tablets). The mark runs --join-mark-bleed past the band's bottom edge
+   * (the band clips it);
    * the footer's own mark takes the same horizontal box and shows exactly
    * that overflow from its top edge, in the footer's fainter tone, so the
    * shape carries on across the seam a shade darker. Both boxes are sized in
@@ -70,11 +71,13 @@
     }
   }
 
+  /* From lg the mark is shown whole, lifted off the seam (a negative bleed),
+     so the footer's mark sits entirely above the footer and stays hidden. */
   @media (min-width: 64rem) {
     :root:has([data-footer-bleed]) {
       --join-mark-right: -7%;
       --join-mark-width: min(50%, 56rem);
-      --join-mark-bleed: 12rem;
+      --join-mark-bleed: -6rem;
     }
   }
 
