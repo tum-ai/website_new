@@ -8,7 +8,7 @@ import {
   type LivePerspective,
   resolvePerspectiveFromCookies,
 } from "next-sanity/live";
-import { getMockCmsNow } from "./mock-cms-env";
+import { getCmsNow } from "./mock-cms-env";
 import { omitNulls } from "./omit-nulls";
 import type {
   EVENTS_QUERY_RESULT,
@@ -150,6 +150,7 @@ async function fetchSanityList<T>(
  * helper) so a build-time replacement can fold it: with
  * `compiler.defineServer` setting it in next.config.ts, a build without
  * `USE_MOCK_CMS=1` drops the branch and emits no fixture chunk at all.
+ * `getCmsNow()` (mock-cms-env.ts) repeats the condition for the render clock.
  */
 function loadMockCms() {
   if (process.env.USE_MOCK_CMS === "1" && !process.env.VERCEL) {
@@ -160,7 +161,7 @@ function loadMockCms() {
 
 export async function getSanityEvents(): Promise<Event[]> {
   const mock = await loadMockCms();
-  if (mock) return mock.getMockEvents(getMockCmsNow(process.env));
+  if (mock) return mock.getMockEvents(getCmsNow());
 
   const events = await fetchSanityList<EVENTS_QUERY_RESULT[number]>(
     EVENTS_QUERY,

@@ -34,8 +34,9 @@ the real clock, so the upcoming/past split changed from day to day.
   `pnpm start` alone does nothing.
 - A value without an offset, or an unparsable one, throws instead of falling back to the real
   clock, so a typo fails the run.
-- The gate is repeated in the two routes that need a render clock (`getRenderNow()`); the
-  cleanup's lock-in stream plans to move it into `lib`.
+- The gate appears twice in `lib`: `lib/sanity.ts` loads the fixtures behind it, and
+  `getCmsNow()` in `lib/mock-cms-env.ts` is the render clock the `/events` and `/apply` routes
+  use. Both read `process.env.USE_MOCK_CMS` literally so the build-time inlining folds them.
 - Wrapping the inlined value in `JSON.stringify` once produced the string `"1"` with quotes, so
   the gate never matched; `test/next-config.test.ts` guards the raw value.
 

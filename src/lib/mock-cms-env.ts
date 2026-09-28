@@ -1,7 +1,8 @@
 /**
- * `MOCK_CMS_NOW` for the local mock CMS (src/lib/mock-cms.ts). The on/off
- * switch, `USE_MOCK_CMS=1`, is checked in `lib/sanity.ts`, where the fixtures
- * are imported on demand.
+ * The clock of the local mock CMS (src/lib/mock-cms.ts): `MOCK_CMS_NOW`, and
+ * `getCmsNow()`, the render time for pages that split or word content by
+ * date. The on/off switch, `USE_MOCK_CMS=1`, also gates the fixtures in
+ * `lib/sanity.ts`, where they are imported on demand.
  */
 type Env = Record<string, string | undefined>;
 
@@ -30,4 +31,21 @@ export function getMockCmsNow(env: Env, fallback: Date = new Date()): Date {
     );
   }
   return now;
+}
+
+/**
+ * "Now" for a server render that depends on the date (the upcoming/past
+ * split on /events, the initiative's age on /apply): `MOCK_CMS_NOW` under
+ * the mock CMS, so pages and fixtures share one clock and E2E and visual
+ * runs are deterministic; otherwise the current time.
+ *
+ * The gate is the one in `lib/sanity.ts`: `USE_MOCK_CMS === "1"` and never
+ * on Vercel. It reads `process.env.USE_MOCK_CMS` literally because
+ * next.config.ts inlines that expression at build time, so this clock
+ * follows the same build-time flag as the fixtures.
+ */
+export function getCmsNow(): Date {
+  return process.env.USE_MOCK_CMS === "1" && !process.env.VERCEL
+    ? getMockCmsNow(process.env)
+    : new Date();
 }
