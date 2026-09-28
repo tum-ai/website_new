@@ -13,6 +13,23 @@
   }
 
   /*
+   * The aperture enters once its first photo has loaded (HeroAperture sets
+   * data-ready), so the mark and the image arrive together. Only while
+   * scripts run: without them the mark shows at once.
+   */
+  @media (scripting: enabled) {
+    .home-aperture-frame[data-ready="false"] {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .home-aperture-frame[data-ready="true"] {
+      animation: home-aperture-in 1.2s var(--ease-brand) both;
+    }
+  }
+
+  /*
    * Where the mark sits. Phones and tablets: large and low behind the
    * copy, dimmed so the headline keeps its contrast. From lg: beside the
    * copy, cropped by the right edge like the brand guide's section slides.

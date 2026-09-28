@@ -1,4 +1,4 @@
-import { act, render } from "@testing-library/react";
+import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { renderToString } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { heroPhotos } from "./data/homepage";
@@ -53,9 +53,32 @@ function activeSrc(container: HTMLElement) {
 }
 
 describe("HeroAperture", () => {
-  test("server HTML carries no photo, so nothing competes with the logo preload", () => {
+  test("server HTML carries only the first photo, eager and preloaded", () => {
     const html = renderToString(<HeroAperture photos={heroPhotos} />);
-    expect(html).not.toContain("<img");
+    const images = html.match(/<img[^>]*>/g) ?? [];
+    const preloads = html.match(/<link rel="preload"[^>]*>/g) ?? [];
+    expect(images).toHaveLength(1);
+    expect(images[0]).toContain('loading="eager"');
+    expect(preloads).toHaveLength(1);
+    expect(preloads[0]).toContain(encodeURIComponent(heroPhotos[0]?.src ?? ""));
+  });
+
+  test("holds the entrance until the first photo has loaded", async () => {
+    const { container } = render(<HeroAperture photos={heroPhotos} />);
+    const root = container.firstElementChild;
+    expect(root).toHaveAttribute("data-ready", "false");
+    // next/image reports the load after the image decodes (a promise).
+    fireEvent.load(container.querySelector("img") as HTMLImageElement);
+    await waitFor(() => expect(root).toHaveAttribute("data-ready", "true"), {
+      timeout: 1000,
+    });
+  });
+
+  test("runs the entrance anyway when the first photo is slow", () => {
+    vi.useFakeTimers();
+    const { container } = render(<HeroAperture photos={heroPhotos} />);
+    act(() => vi.advanceTimersByTime(2500));
+    expect(container.firstElementChild).toHaveAttribute("data-ready", "true");
   });
 
   test("mounts the photos after hydration, hidden from assistive technology", () => {

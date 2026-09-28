@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { JSDOM } from "jsdom";
 import { describe, expect, test } from "vitest";
+import { heroPhotos } from "../../src/features/home/data/homepage.ts";
 
 /**
  * Homepage performance budget, checked against the production build that
@@ -45,14 +46,27 @@ function getHomepageCss() {
 }
 
 describe("homepage build output", () => {
-  test("limits above-the-fold image preloads to the hero logo", () => {
-    const imagePreloads = hrefs('link[rel="preload"][as="image"]');
-
-    expect(imagePreloads).toStrictEqual(["/assets/tum_ai_logo_new.svg"]);
-    expect(imagePreloads).not.toContain("/assets/open_ai_speaker_event.webp");
-    expect(imagePreloads).not.toContain(
-      "/assets/innovation/robotics_discussion.webp",
+  test("limits image preloads to the logo and the hero aperture's first photo", () => {
+    // Responsive preloads carry `imagesrcset` instead of `href`.
+    const imagePreloads = [
+      ...document.querySelectorAll('link[rel="preload"][as="image"]'),
+    ].map(
+      (link) =>
+        link.getAttribute("href") ?? link.getAttribute("imagesrcset") ?? "",
     );
+    const firstPhoto = encodeURIComponent(heroPhotos[0]?.src ?? "");
+
+    expect(imagePreloads).toHaveLength(2);
+    expect(imagePreloads).toContain("/assets/tum_ai_logo_new.svg");
+    expect(imagePreloads.some((preload) => preload.includes(firstPhoto))).toBe(
+      true,
+    );
+    for (const photo of heroPhotos.slice(1)) {
+      const encoded = encodeURIComponent(photo.src);
+      expect(imagePreloads.some((preload) => preload.includes(encoded))).toBe(
+        false,
+      );
+    }
   });
 
   test("hero background stays decorative without server-rendered media tiles", () => {

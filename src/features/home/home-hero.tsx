@@ -45,7 +45,7 @@ export function HomeHero() {
     >
       <HeroAperture
         photos={heroPhotos}
-        className="home-aperture-frame absolute -z-10 aspect-[477/406] motion-safe:animate-[home-aperture-in_1.2s_var(--ease-brand)_both]"
+        className="home-aperture-frame absolute -z-10 aspect-[477/406]"
       />
 
       <Container className="flex flex-1 flex-col">

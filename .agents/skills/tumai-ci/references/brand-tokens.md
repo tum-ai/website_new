@@ -77,7 +77,7 @@ from size and weight, not decoration.
 
 ## Logos
 
-- `public/assets/tum_ai_logo_new.svg`: the primary logo (the homepage's only preloaded image).
+- `public/assets/tum_ai_logo_new.svg`: the primary logo (preloaded on every page by the header).
 - `public/assets/logo_new_white_standard.png`: white logo, only on dark enough backgrounds.
 - `public/assets/favicon.svg`, `favicon-96.png`, `apple-touch-icon.png`, `src/app/icon.svg`: icons.
 - `BrandMark` (`src/components/ds/brand-mark.tsx`): the logomark geometry as a large tonal
