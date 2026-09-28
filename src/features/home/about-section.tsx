@@ -72,6 +72,9 @@ export function AboutSection() {
             eyebrow="About"
             index={1}
             size="lg"
+            // The intro is a full paragraph with two actions, too long for
+            // the split layout's default narrow aside.
+            classNames={{ aside: "lg:max-w-xl" }}
             title={
               <>
                 What is <Highlight>TUM.ai</Highlight>?
