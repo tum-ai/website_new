@@ -1,61 +1,32 @@
 "use client";
 
 import { SlidersHorizontal, X } from "lucide-react";
-import { useRef } from "react";
 import { Button, Card, ChipGroup } from "@/components/ds";
-import type { EventFilters } from "./events";
-
-export const DEFAULT_EVENT_FILTERS: EventFilters = {
-  category: "All Categories",
-  city: "All Cities",
-};
-
-export const eventCategories = ["All Categories", "Hackathon", "Speaker"];
-
-export const eventCities = ["All Cities", "Munich", "Online"];
-
-interface EventFiltersProps {
-  filters: EventFilters;
-  onFiltersChange: (filters: EventFilters) => void;
-  eventCount: number;
-  /** Optional per-option result counts, keyed by option value. */
-  categoryCounts?: Record<string, number>;
-  cityCounts?: Record<string, number>;
-}
+import { useEventsFilter } from "./events-browser";
+import {
+  categoryFilterValues,
+  cityFilterValues,
+  hasActiveFilters,
+  toCategoryFilter,
+  toCityFilter,
+} from "./filters";
 
 /**
  * Category and city filter chips with the live result count. Sits on a dark
- * band (the page hero), so it uses the glass card surface.
+ * band (the page hero), so it uses the glass card surface. Reads and sets
+ * the state of the surrounding `EventsFilterProvider`.
  */
-export function EventFiltersComponent({
-  filters,
-  onFiltersChange,
-  eventCount,
-  categoryCounts,
-  cityCounts,
-}: EventFiltersProps) {
-  const chipsRef = useRef<HTMLDivElement>(null);
-
-  const handleFilterChange = (key: keyof EventFilters, value: string) => {
-    onFiltersChange({
-      ...filters,
-      [key]: value,
-    });
-  };
-
-  const clearFilters = () => {
-    onFiltersChange(DEFAULT_EVENT_FILTERS);
-    // The Clear button unmounts; keep keyboard focus inside the panel.
-    requestAnimationFrame(() => {
-      chipsRef.current
-        ?.querySelector<HTMLElement>('[aria-pressed="true"]')
-        ?.focus();
-    });
-  };
-
-  const hasActiveFilters =
-    filters.category !== DEFAULT_EVENT_FILTERS.category ||
-    filters.city !== DEFAULT_EVENT_FILTERS.city;
+export function EventFiltersPanel() {
+  const {
+    filters,
+    setFilters,
+    clearFilters,
+    chipsRef,
+    counts,
+    upcomingCount,
+    pastCount,
+  } = useEventsFilter();
+  const eventCount = upcomingCount + pastCount;
 
   return (
     <Card
@@ -84,7 +55,7 @@ export function EventFiltersComponent({
             </p>
           </div>
         </div>
-        {hasActiveFilters ? (
+        {hasActiveFilters(filters) ? (
           <Button variant="ghost" size="sm" onClick={clearFilters}>
             <X aria-hidden className="size-3.5" />
             Clear
@@ -105,11 +76,13 @@ export function EventFiltersComponent({
             labelledBy="event-filter-category"
             className="mt-3"
             value={filters.category}
-            onValueChange={(value) => handleFilterChange("category", value)}
-            options={eventCategories.map((category) => ({
+            onValueChange={(value) =>
+              setFilters({ ...filters, category: toCategoryFilter(value) })
+            }
+            options={categoryFilterValues.map((category) => ({
               value: category,
               label: category,
-              count: categoryCounts?.[category],
+              count: counts.category[category],
             }))}
           />
         </div>
@@ -125,11 +98,13 @@ export function EventFiltersComponent({
             labelledBy="event-filter-city"
             className="mt-3"
             value={filters.city}
-            onValueChange={(value) => handleFilterChange("city", value)}
-            options={eventCities.map((city) => ({
+            onValueChange={(value) =>
+              setFilters({ ...filters, city: toCityFilter(value) })
+            }
+            options={cityFilterValues.map((city) => ({
               value: city,
               label: city,
-              count: cityCounts?.[city],
+              count: counts.city[city],
             }))}
           />
         </div>

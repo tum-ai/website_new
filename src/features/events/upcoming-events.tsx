@@ -1,122 +1,77 @@
-"use client";
-
-import { format } from "date-fns";
 import { CalendarDays, MapPin } from "lucide-react";
 import {
   Actions,
-  EmptyState,
-  Reveal,
+  BrandPanel,
+  FallbackImage,
   SpotlightCard,
   Tag,
 } from "@/components/ds";
 import type { Event } from "@/lib/types";
+import { EventDetailsDialog } from "./event-details";
 import {
-  EventDetailsDialog,
+  formatEventDate,
   formatEventLocation,
   hasLongDescription,
-  SignUpAction,
+  toEventDetails,
   truncateDescription,
-} from "./event-details";
-import { EventImage } from "./event-media";
-import { groupEventsByMonth } from "./events";
+} from "./events";
+import { SignUpAction } from "./sign-up-action";
 
 /**
- * Upcoming events, soonest first, grouped by month. On wide screens the
- * month label sticks beside its events while they scroll past.
+ * An upcoming event: the poster bleeding to the card edge with a date chip,
+ * then category, title, date, location, excerpt and the actions. A server
+ * component; the dialog and the spotlight are its only client parts.
  */
-export function UpcomingEvents({ events }: { events: Event[] }) {
-  // Sort a copy: `events` belongs to the parent.
-  const sortedEvents = [...events].sort(
-    (a, b) =>
-      new Date(a.event_date).getTime() - new Date(b.event_date).getTime(),
-  );
-  const groupedEvents = groupEventsByMonth(sortedEvents);
-
-  if (sortedEvents.length === 0) {
-    return (
-      <EmptyState title="No upcoming events at the moment. Check back soon!" />
-    );
-  }
-
-  return (
-    <div className="space-y-16 md:space-y-24">
-      {Object.entries(groupedEvents).map(([month, monthEvents]) => {
-        const splitAt = month.lastIndexOf(" ");
-        const monthName = month.slice(0, splitAt);
-        const year = month.slice(splitAt + 1);
-        return (
-          <div
-            key={month}
-            className="grid gap-6 md:gap-8 xl:grid-cols-[minmax(0,14rem)_minmax(0,1fr)] xl:gap-12 2xl:grid-cols-[minmax(0,16rem)_minmax(0,1fr)]"
-          >
-            <Reveal className="flex items-center gap-4 xl:sticky xl:top-[calc(var(--header-height)+2.5rem)] xl:block xl:self-start">
-              <h3 className="flex shrink-0 items-baseline gap-2 text-fg text-heading-lg xl:block">
-                <span className="xl:block xl:text-display-md">{monthName}</span>{" "}
-                <span className="tabular text-fg-subtle xl:mt-2 xl:block xl:text-heading-md">
-                  {year}
-                </span>
-              </h3>
-              <span
-                aria-hidden
-                className="h-px flex-1 bg-hairline-strong xl:mt-6 xl:block xl:w-12 xl:flex-none"
-              />
-              <p className="shrink-0 text-fg-subtle text-meta xl:mt-4">
-                {monthEvents.length}{" "}
-                {monthEvents.length === 1 ? "event" : "events"}
-              </p>
-            </Reveal>
-            <div className="space-y-6 md:space-y-8">
-              {monthEvents.map((event, index) => (
-                <Reveal key={event.id} delay={index * 80}>
-                  <UpcomingEventCard event={event} />
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function UpcomingEventCard({ event }: { event: Event }) {
-  const eventDate = new Date(event.event_date);
+export function UpcomingEventCard({
+  event,
+  seed = 0,
+}: {
+  /** The event. */
+  event: Event;
+  /** Picks the fallback panel's composition, e.g. the card's index. */
+  seed?: number;
+}) {
+  const date = formatEventDate(event.event_date);
   const location = formatEventLocation(event);
   const longDescription = hasLongDescription(event);
-  const day = format(eventDate, "dd");
-  const monthShort = format(eventDate, "MMM");
+  const signUp = event.sign_up ? (
+    <SignUpAction title={event.title} signUp={event.sign_up} />
+  ) : null;
 
   return (
     <article>
       <SpotlightCard
         variant="raised"
         padding="none"
-        className="group/event grid overflow-hidden rounded-4xl md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] lg:grid-cols-[minmax(0,19rem)_minmax(0,1fr)]"
+        className="group/zoom grid overflow-hidden rounded-4xl md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] lg:grid-cols-[minmax(0,19rem)_minmax(0,1fr)]"
       >
         {/*
          * The poster bleeds to the card edge; the card's own radius clips it,
          * so there are no rounded corners meeting straight dividers.
          */}
         <div className="relative aspect-[16/10] overflow-hidden bg-sunken md:aspect-auto md:min-h-72">
-          <EventImage
+          <FallbackImage
             src={event.poster}
             alt={event.title}
+            fill
+            unoptimized
             sizes="(min-width: 1024px) 19rem, (min-width: 768px) 15rem, 100vw"
-            className="transition-transform duration-[1.4s] ease-brand group-hover/event:scale-[1.045] motion-reduce:transition-none"
+            className="zoom-media object-cover"
+            fallback={<BrandPanel seed={seed} />}
           />
           {/* Date chip; the full date is in the meta list below. */}
           <div
             aria-hidden
             className="absolute top-4 left-4 flex min-w-16 flex-col items-center rounded-2xl bg-white/95 px-3 pt-2.5 pb-2 text-violet-950 shadow-soft backdrop-blur"
           >
-            <span className="font-semibold text-[0.6875rem] text-violet-700 uppercase tracking-[0.14em]">
-              {monthShort}
+            <span className="text-eyebrow text-violet-700 uppercase">
+              {date.monthShort}
             </span>
-            <span className="tabular mt-0.5 font-semibold text-[2rem] leading-none tracking-[-0.04em]">
-              {day}
+            <span className="tabular mt-0.5 font-semibold text-stat-sm">
+              {date.day}
             </span>
-            <span className="mt-1 font-medium text-[0.6875rem] text-ink-600">
-              {format(eventDate, "EEE")}
+            <span className="mt-1 font-medium text-ink-600 text-meta">
+              {date.weekday}
             </span>
           </div>
         </div>
@@ -130,17 +85,15 @@ function UpcomingEventCard({ event }: { event: Event }) {
             <li className="flex items-start gap-2.5">
               <CalendarDays
                 aria-hidden
-                className="mt-[0.2rem] size-4 shrink-0 text-highlight"
+                className="mt-1 size-4 shrink-0 text-highlight"
               />
-              <time dateTime={event.event_date}>
-                {format(eventDate, "PPP")}
-              </time>
+              <time dateTime={date.dateTime}>{date.long}</time>
             </li>
             {location ? (
               <li className="flex items-start gap-2.5">
                 <MapPin
                   aria-hidden
-                  className="mt-[0.2rem] size-4 shrink-0 text-highlight"
+                  className="mt-1 size-4 shrink-0 text-highlight"
                 />
                 {location}
               </li>
@@ -149,18 +102,26 @@ function UpcomingEventCard({ event }: { event: Event }) {
           <p className="mt-5 text-fg-muted text-small md:text-body">
             {truncateDescription(event.description)}
           </p>
-          {event.sign_up || longDescription ? (
+          {signUp || longDescription ? (
             <Actions className="mt-auto pt-7">
-              {event.sign_up ? <SignUpAction event={event} /> : null}
+              {signUp}
               {longDescription ? (
                 <EventDetailsDialog
-                  event={event}
-                  image={
+                  details={toEventDetails(
+                    event,
                     event.poster
                       ? { src: event.poster, alt: event.title }
-                      : undefined
+                      : undefined,
+                  )}
+                  action={
+                    event.sign_up ? (
+                      <SignUpAction
+                        title={event.title}
+                        signUp={event.sign_up}
+                        size="lg"
+                      />
+                    ) : null
                   }
-                  withSignUp
                 />
               ) : null}
             </Actions>
