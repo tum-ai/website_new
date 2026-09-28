@@ -182,6 +182,7 @@ Content
 - `CornerHint`: the corner disc that says what a click does (`icon` `arrow` or `open`), for cards that aren't `MediaCard`.
 - `FallbackImage`: next/image that swaps to a fallback when it fails to load.
 - `QuoteCard` (`raised` or `glass`, with `context` and `footer` slots; `editorial` sets one quote in display type without a card) and `QuoteMark`.
+- `Photo`: a documentary photo in the brand frame with a factual `caption` (a `figure`). `aspect` (`3/2` default, `4/3`, `16/10`, `4/5`, `1/1`), `shape` (`rounded` = `rounded-4xl`, or `bleed`), `position` for the crop, and `eager` for the LCP photo (high fetch priority, no preload tag). Use it instead of hand-rolled image frames; `MediaCard` is for linked cards with text on or under the photo.
 - `PersonCard`: portrait, name and `byline`; `image.position` keeps a face in frame, and `unoptimized` serves the portrait as is.
 - `LogoTile`, `LogoWall`: logos as tiles (`size` `sm` to `xl`, `responsive` for one step smaller on phones), `variant="chip"` (with `fixed` width so rows don't reflow), `variant="bare"` for artwork made for dark bands, links, or a `wordmark` lockup, with a name fallback when the artwork fails.
 - `BulletList`: a short list of points as raised rows with an accent dot (for example inside an FAQ answer).
@@ -673,6 +674,21 @@ No props of its own; see the source file for the root element or Base UI part it
 | `headingAs?` | `HeadingLevel` | Heading level of the name. Default `h3`. |
 | `sizes?` | `string` | next/image `sizes`. |
 | `unoptimized?` | `boolean` | Serve the portrait as is, skipping the image optimizer (CMS URLs outside next.config's image patterns, or artwork that must stay lossless). |
+| `className?` | `string` | Classes merged over the `figure`. |
+
+### `Photo`
+
+| Prop | Type | Description |
+| --- | --- | --- |
+| `src` | `string` | Image path under /public or an allowed remote URL. |
+| `alt` | `string` | What the photo shows, for screen readers. Required: photos carry content. |
+| `caption?` | `ReactNode` | A factual caption under the photo: what, where and when. Never a slogan; leave it out rather than guess. |
+| `aspect?` | `"3/2" \| "4/3" \| "16/10" \| "4/5" \| "1/1"` | Aspect ratio of the frame; the photo is cropped to fill it. Default `3/2`. |
+| `shape?` | `"rounded" \| "bleed"` | `rounded` is the brand's large photo radius; `bleed` has square corners for photos that run to the edge. Default `rounded`. |
+| `position?` | `string` | `object-position` of the crop, e.g. "50% 30%" to keep faces in frame. |
+| `sizes?` | `string` | Responsive `sizes` for next/image. Default: the full viewport width. |
+| `eager?` | `boolean` | Load immediately with high fetch priority, for a photo that is the largest element above the fold. It adds no preload tag. |
+| `classNames?` | `{ frame?: string; caption?: string }` | Class overrides for the frame and the caption. |
 | `className?` | `string` | Classes merged over the `figure`. |
 
 ### `Pill`
