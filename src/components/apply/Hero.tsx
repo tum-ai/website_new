@@ -20,17 +20,13 @@ export default function Hero() {
               tangible social change.
             </div>
             <div className="flex flex-col items-center md:items-start gap-4 mt-4">
-              <Button
-                asChild
-                variant="outline"
-                className="px-8 py-4 text-lg bg-dark-purple/40 text-minimal-gray/80 border border-dark-purple/50 cursor-not-allowed pointer-events-none hover:bg-dark-purple/40 hover:text-minimal-gray/80"
-              >
+              <Button asChild variant="primary" className="px-8 py-4 text-lg">
                 <a
-                  href="https://tally.so/r/OD0Vgg"
-                  target="blank"
+                  href="https://tally.so/r/BzWNEK"
+                  target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Applications Closed
+                  Apply now
                 </a>
               </Button>
             </div>
