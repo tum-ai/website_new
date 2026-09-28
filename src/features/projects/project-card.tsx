@@ -64,7 +64,11 @@ export function ProjectCard({
           fallback={<BrandPanel seed={index} />}
           eyebrow={<span aria-hidden="true">{number}</span>}
           title={<span id={titleId}>{name}</span>}
-          description={description}
+          description={
+            // Reserve three lines from `md` (two or more tiles per row), so
+            // titles share a baseline whatever the description's length.
+            <span className="line-clamp-3 md:min-h-[3lh]">{description}</span>
+          }
           cornerHint={<OpenHint />}
           sizes={sizes}
         />
