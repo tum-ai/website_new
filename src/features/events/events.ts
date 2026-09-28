@@ -132,12 +132,18 @@ export function formatEventLocation(event: Pick<Event, "location" | "city">) {
 /** A photo of an event. */
 export type EventPhoto = { src: string; alt: string };
 
-/** Photos first, then the poster; empty when there is neither. */
+/**
+ * Photos first, then the poster; empty when there is neither. Each URL
+ * appears once: `poster` and `img` may reference the same Sanity asset, and
+ * the carousel keys its slides by URL, so a repeat would both show the same
+ * photo twice and let React keep a stale slide after a live update.
+ */
 export function getEventPhotos(
   event: Pick<Event, "title" | "images" | "poster">,
 ): EventPhoto[] {
-  if (event.images && event.images.length > 0) {
-    return event.images.map((src, index) => ({
+  const images = [...new Set(event.images)];
+  if (images.length > 0) {
+    return images.map((src, index) => ({
       src,
       alt: `${event.title} Image ${index + 1}`,
     }));

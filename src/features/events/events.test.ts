@@ -181,4 +181,15 @@ describe("getEventPhotos", () => {
     ]);
     expect(getEventPhotos({ ...base, images: [] })).toEqual([]);
   });
+
+  test("lists an asset used as both poster and photo once", () => {
+    // The query returns [poster, img]; both may reference one asset.
+    expect(
+      getEventPhotos({
+        ...base,
+        images: ["/a.webp", "/a.webp"],
+        poster: "/a.webp",
+      }),
+    ).toEqual([{ src: "/a.webp", alt: "Makeathon Image 1" }]);
+  });
 });
