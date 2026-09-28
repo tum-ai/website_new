@@ -1,18 +1,9 @@
-import {
-  Building2,
-  Code,
-  Handshake,
-  type LucideIcon,
-  Megaphone,
-  Rocket,
-  Scale,
-  Users,
-} from "lucide-react";
 import Image from "next/image";
 import {
   Aurora,
   Container,
   FeatureCard,
+  IconBadge,
   Reveal,
   Section,
   SectionHeader,
@@ -20,17 +11,6 @@ import {
 } from "@/components/ds";
 import { cn } from "@/lib/cn";
 import { type Department, departments } from "./data/departments";
-
-/** Maps the icon names stored in data/departments.ts to Lucide icons. */
-const departmentIcons: Record<string, LucideIcon> = {
-  Building2,
-  Code,
-  Handshake,
-  Megaphone,
-  Rocket,
-  Scale,
-  Users,
-};
 
 type FeaturedMedia = {
   src: string;
@@ -91,13 +71,15 @@ function FeaturedDepartmentCard({
   index: number;
   media: FeaturedMedia;
 }) {
-  const Icon = departmentIcons[department.icon];
   const wide = wideClasses[media.wideFrom];
   return (
     <SpotlightCard
       variant="glass"
       padding="none"
-      className={cn("flex h-full flex-col overflow-hidden", wide.card)}
+      className={cn(
+        "group/zoom flex h-full flex-col overflow-hidden",
+        wide.card,
+      )}
     >
       <div
         className={cn(
@@ -110,19 +92,12 @@ function FeaturedDepartmentCard({
           alt={media.alt}
           fill
           sizes="(min-width: 1024px) 30vw, (min-width: 768px) 45vw, 92vw"
-          className={cn(
-            "object-cover transition-transform duration-[1.4s] ease-brand group-hover/card:scale-[1.04] motion-reduce:transition-none",
-            media.position,
-          )}
+          className={cn("zoom-media object-cover", media.position)}
         />
       </div>
       <div className="flex flex-1 flex-col p-7 md:p-9">
         <div className="flex items-start justify-between gap-4">
-          {Icon ? (
-            <span className="grid size-12 place-items-center rounded-2xl bg-violet-500/12 text-highlight ring-1 ring-violet-500/20 ring-inset transition-[background-color,color,rotate] duration-500 ease-brand group-hover/card:-rotate-6 group-hover/card:bg-violet-600 group-hover/card:text-white">
-              <Icon aria-hidden className="size-5" strokeWidth={1.75} />
-            </span>
-          ) : null}
+          <IconBadge icon={department.icon} interactive />
           <span className="tabular text-fg-subtle text-meta">
             {counter(index)}
           </span>
@@ -179,7 +154,7 @@ export function DepartmentsSection() {
                 ) : (
                   <FeatureCard
                     variant="glass"
-                    icon={departmentIcons[department.icon]}
+                    icon={department.icon}
                     title={department.name}
                     index={counter(index)}
                   >

@@ -1,12 +1,12 @@
 import {
   Container,
-  Eyebrow,
   Highlight,
-  Reveal,
   Section,
+  SectionHeader,
   Timeline,
   type TimelineItem,
 } from "@/components/ds";
+import { communityFacts } from "@/config/community";
 import { organizationFacts } from "@/config/organization";
 
 const steps = [
@@ -58,7 +58,7 @@ const steps = [
       "Launch of TUM.ai Expansion Berlin",
       "First ever event together with OpenAI after their office launch in Munich (1200+ signups)",
       "ICML main track paper, ICLR publication",
-      "Biggest Makeathon yet with 500+ registrations",
+      `Biggest Makeathon yet with ${communityFacts.makeathonSize}+ registrations`,
       "TUM.ai Hackathon Summer with AWS, Lovable, ElevenLabs, Google, Anthropic, etc.",
     ],
   },
@@ -75,7 +75,7 @@ const items: TimelineItem[] = steps.map((step) => ({
       {step.content.map((item) => (
         <li key={item} className="flex gap-4 py-3.5 text-body text-fg-muted">
           <span
-            aria-hidden
+            aria-hidden="true"
             className="mt-[0.7em] h-px w-3 shrink-0 bg-violet-500"
           />
           <span>{item}</span>
@@ -85,25 +85,35 @@ const items: TimelineItem[] = steps.map((step) => ({
   ),
 }));
 
+/**
+ * The ds Timeline lights each marker from an IntersectionObserver even under
+ * reduced motion, so its static render depended on scroll timing (a flaky
+ * visual baseline). Under `prefers-reduced-motion` every marker shows its
+ * final, lit state instead.
+ * TODO(W3): drop once the ds Timeline renders a static final state under
+ * reduced motion (handoff in the Apply+Community PR).
+ */
+const staticMarkers =
+  "motion-reduce:[&_[data-index]>span>span]:scale-100 motion-reduce:[&_[data-index]>span>span]:bg-violet-500 motion-reduce:[&_[data-index]>span]:border-violet-500 motion-reduce:[&_[data-index]>span]:shadow-halo";
+
 /** Sticky heading beside a timeline whose rail fills as the years scroll by. */
 export function Milestones() {
   return (
     <Section tone="paper" spacing="lg" aria-labelledby="apply-milestones-title">
       <Container className="grid gap-14 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)] lg:gap-20">
-        <div className="lg:sticky lg:top-32 lg:self-start">
-          <Reveal>
-            <Eyebrow index={3}>Since {organizationFacts.foundingYear}</Eyebrow>
-          </Reveal>
-          <Reveal delay={60}>
-            <h2
-              id="apply-milestones-title"
-              className="mt-5 text-display-md text-fg"
-            >
+        <SectionHeader
+          id="apply-milestones-title"
+          eyebrow={`Since ${organizationFacts.foundingYear}`}
+          index={3}
+          layout="stack"
+          title={
+            <>
               Our <Highlight>Milestones</Highlight>
-            </h2>
-          </Reveal>
-        </div>
-        <Timeline items={items} />
+            </>
+          }
+          className="mb-0 md:mb-0 lg:sticky lg:top-32 lg:self-start"
+        />
+        <Timeline items={items} className={staticMarkers} />
       </Container>
     </Section>
   );
