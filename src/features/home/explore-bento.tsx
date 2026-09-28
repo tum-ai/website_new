@@ -87,7 +87,7 @@ export function ExploreBento() {
           as="li"
           key={destination.href}
           delay={index * 90}
-          className={EXPLORE_CELLS[index]}
+          className={EXPLORE_CELLS[index]?.className}
         >
           <MediaCard
             href={destination.href}
@@ -101,7 +101,7 @@ export function ExploreBento() {
               // The full-width E-Lab banner keeps its copy left, so its scrim
               // runs sideways and leaves the right of the photo bright.
               index === 3 &&
-                "xl:after:pointer-events-none xl:after:absolute xl:after:inset-0 xl:after:bg-[linear-gradient(to_right,rgb(13_2_20/0.82)_0%,rgb(13_2_20/0.55)_40%,transparent_72%)]",
+                "xl:after:pointer-events-none xl:after:absolute xl:after:inset-0 xl:after:bg-[linear-gradient(to_right,--alpha(var(--color-ink-950)/82%)_0%,--alpha(var(--color-ink-950)/55%)_40%,transparent_72%)]",
             )}
             description={
               <>
