@@ -142,11 +142,6 @@ const hardcodedFacts: [RegExp, string][] = [
  */
 const allowlist: { file: string; fact: string; until: string }[] = [
   {
-    file: "app/(site)/layout.tsx",
-    fact: "site URL: absoluteUrl() or siteConfig.url from config/site.ts",
-    until: "the layout reads `rootMetadata` from config/seo.ts",
-  },
-  {
     file: "features/e-lab/e-lab-page.tsx",
     fact: "site URL: absoluteUrl() or siteConfig.url from config/site.ts",
     until: "W2 E-Lab builds its JSON-LD URLs with absoluteUrl()",

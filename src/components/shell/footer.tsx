@@ -1,75 +1,29 @@
-import Link from "next/link";
-import { Actions } from "@/components/ds/actions";
-import { Aurora } from "@/components/ds/aurora";
-import { BrandMark } from "@/components/ds/brand-mark";
-import { ButtonLink } from "@/components/ds/button";
-import { Container } from "@/components/ds/container";
-import { TopBlend } from "@/components/ds/top-blend";
-import { contactEmails, socialLinks } from "@/config/contact";
+import Image from "next/image";
+import {
+  Actions,
+  Aurora,
+  BrandMark,
+  ButtonLink,
+  Container,
+  TopBlend,
+} from "@/components/ds";
+import {
+  connectLinks,
+  contributeLinks,
+  legalLinks,
+  mainNavigation,
+  type NavLink,
+} from "@/config/navigation";
+import { NavAnchor } from "./nav-anchor";
 
-type FooterLink = { label: string; href: string };
-
-const columns: { title: string; links: FooterLink[] }[] = [
-  {
-    title: "Explore",
-    links: [
-      { label: "Events", href: "/events" },
-      { label: "Research", href: "/research" },
-      { label: "Projects", href: "/projects" },
-      { label: "Entrepreneurship", href: "/e-lab" },
-      { label: "Community", href: "/community" },
-      { label: "Partners", href: "/partners" },
-      { label: "Q&A", href: "/qanda" },
-    ],
-  },
-  {
-    title: "Connect",
-    links: [
-      { label: "LinkedIn", href: socialLinks.linkedin },
-      { label: "Instagram", href: socialLinks.instagram },
-      { label: "Slack", href: socialLinks.slack },
-      { label: "Email", href: `mailto:${contactEmails.general}` },
-    ],
-  },
-  {
-    title: "Legal",
-    links: [
-      { label: "Imprint", href: "/imprint" },
-      { label: "Data Privacy", href: "/data-privacy" },
-      { label: "Disclaimer", href: "/disclaimer" },
-    ],
-  },
-  {
-    title: "Contribute",
-    links: [{ label: "GitHub", href: socialLinks.github }],
-  },
+const columns: { title: string; links: readonly NavLink[] }[] = [
+  { title: "Explore", links: mainNavigation },
+  { title: "Connect", links: connectLinks },
+  { title: "Legal", links: legalLinks },
+  { title: "Contribute", links: contributeLinks },
 ];
 
-const linkClass =
-  "-my-1.5 inline-block py-1.5 text-small text-fg-muted transition-colors duration-300 hover:text-fg";
-
-function FooterAnchor({ label, href }: FooterLink) {
-  if (href.startsWith("/")) {
-    return (
-      <Link href={href} className={linkClass}>
-        {label}
-      </Link>
-    );
-  }
-  const external = href.startsWith("http");
-  return (
-    <a
-      href={href}
-      className={linkClass}
-      target={external ? "_blank" : undefined}
-      rel={external ? "noopener noreferrer" : undefined}
-    >
-      {label}
-      {external ? <span className="sr-only"> (opens in a new tab)</span> : null}
-    </a>
-  );
-}
-
+/** Site footer on every page: logo, tagline, both CTAs and the link columns. */
 export function Footer() {
   return (
     <footer data-tone="night" className="relative isolate overflow-clip">
@@ -84,12 +38,11 @@ export function Footer() {
       <Container className="pt-24 md:pt-32">
         <div className="grid gap-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-20">
           <div>
-            <img
+            <Image
               src="/assets/tum_ai_logo_new.svg"
               alt="TUM.ai"
               width={1640}
               height={406}
-              loading="lazy"
               className="h-8 w-auto"
             />
             <p className="mt-10 max-w-lg text-display-md text-fg">
@@ -121,7 +74,10 @@ export function Footer() {
                   <ul aria-labelledby={titleId} className="mt-5 space-y-3">
                     {column.links.map((link) => (
                       <li key={link.href}>
-                        <FooterAnchor {...link} />
+                        <NavAnchor
+                          {...link}
+                          className="-my-1.5 inline-block py-1.5 text-fg-muted text-small transition-colors duration-300 hover:text-fg"
+                        />
                       </li>
                     ))}
                   </ul>
