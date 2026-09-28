@@ -175,7 +175,11 @@ export default defineConfig({
       animations: "disabled",
       caret: "hide",
       scale: "css",
-      maxDiffPixelRatio: 0.001,
+      // An absolute budget, not a ratio of the page: 0.001 of a full-page
+      // screenshot let whole header changes through on long pages. Pixels
+      // within the default per-pixel `threshold` (0.2) don't count, so
+      // anti-aliasing noise (Chromium home-1440: ≤ 2/255) stays under it.
+      maxDiffPixels: 100,
       // Hides photos and film grain while capturing (see the file).
       stylePath: "e2e/visual-screenshot.css",
     },
