@@ -13,8 +13,8 @@ read them, so one edit updates the whole site, and tests fail if a page types a 
 | Fact | File and field |
 |---|---|
 | E-Lab cohort | `src/config/e-lab.ts` `currentIteration` (and `heroLogo` if the logo changes) |
-| E-Lab application form and deadline | `e-lab.ts` `applicationUrl`, `applicationDeadlineDate` ("26.09.2026"), `applicationDeadlineTime` ("23:59", Munich time) |
-| E-Lab open or closed | `e-lab.ts` `applicationsOpen` is the master switch; applications also close by themselves after the deadline minute |
+| E-Lab application form and deadline | `e-lab.ts` `applicationUrl`, `applicationDeadlineDate` ("27.09.2026"), `applicationDeadlineTime` ("22:00", Munich time) |
+| E-Lab open or closed | `e-lab.ts` `applicationsOpen` is the master switch; applications also close by themselves at exactly the deadline |
 | Next E-Lab window (shown while closed) | `e-lab.ts` `nextApplicationWindow` |
 | E-Lab length, money raised | `e-lab.ts` `programWeeks`, `ventureFundingMillions` |
 | Membership recruiting round | `src/config/membership.ts` `applicationsOpen`, `applicationUrl`, `timeline` |

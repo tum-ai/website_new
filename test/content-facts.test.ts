@@ -31,22 +31,32 @@ test("Munich wall-clock times resolve summer and winter time", () => {
   expect(() => parseMunichDateTime("2026-09-26", "23:59")).toThrow();
 });
 
-test("E-Lab applications close by themselves after the deadline minute", () => {
-  const deadline = parseMunichDateTime(
-    eLabConfig.applicationDeadlineDate,
-    eLabConfig.applicationDeadlineTime,
+test("E-Lab applications close exactly at the configured deadline", () => {
+  expect(eLabApplicationsCloseAt).toStrictEqual(
+    parseMunichDateTime(
+      eLabConfig.applicationDeadlineDate,
+      eLabConfig.applicationDeadlineTime,
+    ),
   );
-  expect(eLabApplicationsCloseAt.getTime()).toBe(deadline.getTime() + 60_000);
 
-  const at = (offsetMs: number) => ({
+  // The window model, pinned to the E-Lab 6.0 round (27.09.2026 at 22:00).
+  const closesAt = parseMunichDateTime("27.09.2026", "22:00");
+  const at = (iso: string) => ({
     switchedOn: true,
-    closesAt: eLabApplicationsCloseAt,
-    now: new Date(deadline.getTime() + offsetMs),
+    closesAt,
+    now: new Date(iso),
   });
-  expect(isApplicationWindowOpen(at(0))).toBe(true); // 23:59:00
-  expect(isApplicationWindowOpen(at(59_999))).toBe(true); // 23:59:59.999
-  expect(isApplicationWindowOpen(at(60_000))).toBe(false); // 00:00:00
-  expect(isApplicationWindowOpen({ ...at(0), switchedOn: false })).toBe(false);
+  expect(isApplicationWindowOpen(at("2026-09-27T21:59:59+02:00"))).toBe(true);
+  expect(isApplicationWindowOpen(at("2026-09-27T21:59:59.999+02:00"))).toBe(
+    true,
+  );
+  expect(isApplicationWindowOpen(at("2026-09-27T22:00:00+02:00"))).toBe(false);
+  expect(
+    isApplicationWindowOpen({
+      ...at("2026-09-27T21:00:00+02:00"),
+      switchedOn: false,
+    }),
+  ).toBe(false);
 });
 
 test("E-Lab teaser status has a variant for each phase", () => {

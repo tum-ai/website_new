@@ -1,15 +1,13 @@
 import { Container, Eyebrow, PageHero, Prose, Section } from "@/components/ds";
 import { contactEmails, registeredOfficeAddressLine } from "@/config/contact";
+import { legalEntity } from "@/config/organization";
 import { LegalNav, LegalSection, legalLinkClass } from "./legal-document";
 
 /** Organisation facts, shown as a definition list. Values are verbatim. */
 const organisation = [
   { term: "Vereinsregisternummer", value: "VR209059" },
   { term: "Adresse", value: registeredOfficeAddressLine },
-  {
-    term: "Vertreter",
-    value: "Sami Haddouti, Julian Sikora, William Homburg, Luca Fink",
-  },
+  { term: "Vertreter", value: legalEntity.representatives.join(", ") },
   {
     term: "Mail",
     value: contactEmails.general,

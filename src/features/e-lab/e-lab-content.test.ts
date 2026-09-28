@@ -2,7 +2,12 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { expect, test } from "vitest";
 
-import { eLabApplicationCopy, eLabConfig } from "@/config/e-lab";
+import {
+  eLabApplicationCopy,
+  eLabConfig,
+  eLabPhaseCopy,
+  isELabApplicationOpen,
+} from "@/config/e-lab";
 import { parseMunichDateTime } from "@/lib/munich-time";
 import { faq } from "./data/faq";
 import {
@@ -53,13 +58,31 @@ test("E-Lab deadline is centralized and used by the FAQ", () => {
   expect(() => parseMunichDateTime(date, time)).not.toThrow();
 
   expect(eLabApplicationCopy.deadline).toBe(`${date} at ${time}`);
+  expect(eLabApplicationCopy.deadlineLabel).toBe(
+    `${date} at ${time} (Munich time)`,
+  );
 
   const deadlineFaq = faq.find(
     (item) => item.question === "When is the application deadline?",
   );
   expect(deadlineFaq?.answer).toBe(
-    `The application phase closes on ${date} at ${time}.`,
+    `The application phase closes on ${date} at ${time} (Munich time).`,
   );
+});
+
+test("E-Lab applications are open until the deadline and closed from it", () => {
+  const closesAt = parseMunichDateTime(
+    eLabConfig.applicationDeadlineDate,
+    eLabConfig.applicationDeadlineTime,
+  ).getTime();
+  // For 22:00: still open at 21:59:59 (unless switched off), closed at 22:00:00.
+  expect(isELabApplicationOpen(new Date(closesAt - 1000))).toBe(
+    eLabConfig.applicationsOpen,
+  );
+  expect(isELabApplicationOpen(new Date(closesAt))).toBe(false);
+
+  expect(eLabPhaseCopy.open.cardCtaLabel).toBe("Apply Now!");
+  expect(eLabPhaseCopy.closed.cardCtaLabel).toBe("Applications Closed");
 });
 
 test("E-Lab testimonials include the requested people and exact quotes", () => {
