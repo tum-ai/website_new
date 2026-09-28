@@ -1,0 +1,166 @@
+# Testing
+
+The test layers, what each kind of change needs, where tests run, and how visual baselines are
+updated. The CI jobs themselves are described in [github-actions.md](github-actions.md); why the
+runners were chosen is in [ADR 0004](adr/0004-vitest-and-playwright.md).
+
+## Where tests run
+
+**CI on the pull request is the gate.** Every push to a PR runs lint, typecheck, unit tests with
+coverage, the production build with the homepage budget, three E2E shards and the visual
+comparison (see [github-actions.md](github-actions.md)).
+
+**Coding agents run only `pnpm lint`, `pnpm typecheck` and targeted Vitest locally**: while
+writing tests, `pnpm exec vitest run <files you touched>`. The full unit suite, `pnpm build`,
+`pnpm verify`, E2E and visual checks run remotely in the PR's CI. To fix a failure, read the
+failed job's log (`gh run view --job <id> --log-failed`), batch the fixes, and push once. Never
+close and reopen a PR to re-run CI.
+
+People can run any suite locally when it helps; the commands are below.
+
+## Layers
+
+| Layer | Files | Command | Environment |
+| --- | --- | --- | --- |
+| Unit | `src/**/*.test.ts`, `test/*.test.ts` | `pnpm test` | Vitest `node` project |
+| Component | `src/**/*.test.tsx`, `test/*.test.tsx` | `pnpm test` | Vitest `jsdom` project: Testing Library, user-event, jest-dom, axe |
+| Architecture | `src/architecture.test.ts` | `pnpm test` | parses the import graph |
+| Repo fitness | `test/content-facts.test.ts`, `public-assets`, `favicon`, `next-config`, `sanity-preview`, `workspace-scripts` | `pnpm test` | node |
+| Homepage budget | `test/perf/homepage.perf.ts` | `pnpm build && pnpm test:perf` | reads `.next-prod` |
+| E2E | `e2e/*.spec.ts` except `visual` | `pnpm test:e2e` | Playwright, chromium and webkit |
+| Visual | `e2e/visual.spec.ts` | `pnpm test:e2e:visual` | Playwright `visual-chromium`, `visual-webkit` |
+
+Coverage: `pnpm test:coverage` writes `coverage/` (v8; `src/**` without tests, `src/sanity/**` and
+`src/app/studio/**`). CI uploads it as an artifact. No thresholds are enforced yet.
+
+### Vitest
+
+`vitest.config.ts` defines two projects. `*.test.ts` runs in node, `*.test.tsx` in jsdom with
+`vitest.setup.ts` (jest-dom matchers and the axe matcher). The `@/` and `@test/` aliases work in
+both, and `server-only` is replaced by a stub, so `lib/sanity.ts` can be imported; mock
+`next/headers`, `next/navigation` and `next-sanity` with `vi.mock`.
+
+```tsx
+import { axe } from "@test/axe";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+
+const user = userEvent.setup();
+const { container } = render(<Thing />);
+await user.click(screen.getByRole("button", { name: "Open" }));
+expect(await axe(container)).toHaveNoViolations();
+```
+
+`@test/axe` wraps axe-core with a typed matcher (`vitest-axe` doesn't type-check with Vitest 5).
+jsdom can't compute contrast or regions, so `color-contrast` and `region` are off there;
+Playwright's axe run covers them on real pages.
+
+`pnpm test` never builds the app. Anything that needs build output goes in `test/perf/` and runs
+with `pnpm test:perf` after `pnpm build`.
+
+### Playwright
+
+`playwright.config.ts` builds and starts the production app with `USE_MOCK_CMS=1` and
+`MOCK_CMS_NOW=2026-10-01T12:00:00Z`, so CMS pages show the same fixtures and dates on every run.
+Locally it reuses a server already running on `PORT` (default 3000).
+
+| Project | Browser and viewport | Specs |
+| --- | --- | --- |
+| `chromium-desktop` | Chromium 1440×900 | routes, a11y, keyboard, partners, routing |
+| `chromium-laptop`, `chromium-tablet` | Chromium 1024×768, 768×1024 | layout and mobile-menu tags |
+| `chromium-small` | Chromium 320×640 | routes |
+| `chromium-phone` | Chromium 390×844, touch | routes, a11y, keyboard, partners |
+| `webkit-desktop` | WebKit 1440×900 | layout and keyboard tags |
+| `webkit-iphone` | WebKit iPhone 15 | local only; CI needs `E2E_WEBKIT_MOBILE=1` (see known flakes) |
+| `reduced-motion` | Chromium, reduced motion | motion |
+| `no-js` | Chromium, JavaScript off | no-js |
+| `visual-chromium`, `visual-webkit` | reduced motion, 390 and 1440 wide | visual (only with `E2E_VISUAL=1`) |
+
+What the specs check:
+
+- `routes`: one `h1` and one `main`, the title, no console errors, no horizontal overflow, no
+  broken images; `@layout` runs the overflow check at every width.
+- `a11y`: axe (WCAG 2 A/AA, serious and critical fail), new-tab links announce themselves, and
+  accessible names contain the visible label.
+- `keyboard`: skip link, mobile menu focus trap, Escape and focus return, dialogs, accordion,
+  tabs, filter chips, header CTA.
+- `motion`: under reduced motion nothing is pending or looping and marquees are one static list.
+- `no-js`: content is visible without JavaScript.
+- `partners`: anchors land below the header, the finder flow, the booking fallback.
+- `routing`: `/design-system` and unknown paths return 404 in production; `/studio` has no site
+  shell.
+- `visual`: a full-page screenshot per route at 390 and 1440 px.
+
+Use the helpers in `e2e/fixtures.ts` (route list, console and image collectors, lazy-content
+scrolling, axe, animation waits, visual masks) instead of writing new ones. `siteRoutes` there is
+the route list every spec loops over; a new page is added to it.
+
+Known failures are marked `test.fixme` with the owner in a comment, never deleted. `a11y.spec.ts`
+keeps them in `knownIssues`; the list is empty today.
+
+## What to test per change
+
+| Change | Test |
+| --- | --- |
+| Logic in `lib/`, `config/`, `features/**/*.ts` | unit test next to the file (`*.test.ts`) |
+| Interactive UI: islands, ds behaviour | component test (`*.test.tsx`) with role queries, user-event and `axe()` |
+| New or changed ds component or prop | colocated test, showcase entry (`showcase-coverage.test.ts` fails on a missing export), docs table |
+| Site facts | `content-facts` and `e-lab-content` stay green without editing them; expectations derive from config |
+| CMS schema or query | a groq-js case in `src/lib/sanity-queries.test.ts`, fixtures in `mock-cms.ts` |
+| New route or user flow | the route in `siteRoutes` (`e2e/fixtures.ts`), a spec for the flow, and a visual baseline |
+| Visible UI change | intended visual diffs accepted with the `update-snapshots` label (below) and listed in the PR |
+| Homepage markup or images | the homepage budget (`test:perf`) in CI's Build job |
+| New folder or import path | `src/architecture.test.ts` passes without new exceptions |
+
+Test behaviour, not source text: no reading source files to grep for strings, and no
+change-detector assertions on literals. A documented config edit (a new deadline, a new cohort)
+must keep every test green.
+
+## Visual baselines
+
+Baselines are Linux screenshots in `e2e/__screenshots__/linux/visual-{chromium,webkit}/`, one
+per route at 390 and 1440 px (48 PNG files). They are captured and compared only in the official
+Playwright image `mcr.microsoft.com/playwright:v1.63.0-noble`, so fonts and rendering match.
+Screenshots taken on macOS differ and are never committed (`e2e/.gitignore`).
+
+While capturing, `e2e/visual-screenshot.css` hides photos, video and the film grain but keeps
+their boxes, and the spec masks moving regions (marquees, rotating partner grids, count-ups).
+The screenshots test layout, not image content. The comparison allows
+`maxDiffPixelRatio: 0.001` of the full page.
+
+### Accepting an intended change
+
+1. Push the change. The Visual job fails on the routes whose layout moved.
+2. Check the diffs: download the `visual-report` artifact, or compare the baseline PNG files from git
+   (`git show "<ref>:e2e/__screenshots__/linux/<project>/<route>-<width>.png"`); the artifact is
+   large and can stall.
+3. Add the label: `gh pr edit <number> --add-label update-snapshots`. The `E2E snapshots`
+   workflow captures with `--update-snapshots=changed` (only failing baselines are rewritten),
+   commits them to the PR branch as `github-actions[bot]`, and removes the label. Adding the label
+   again runs it again.
+4. The bot's push doesn't start CI (pushes made with `GITHUB_TOKEN` never trigger workflows).
+   The next regular push runs CI against the new baselines.
+5. Check that the bot touched only the routes the PR changes. Restore any other PNG from the base
+   branch in a commit marked `[skip ci]`.
+6. List every intended diff in the PR's "Visual changes" table (route, what changed, cause).
+
+`workflow_dispatch` works only once `e2e-snapshots.yml` is on the default branch; until then the
+label is the only trigger.
+
+## Known flakes
+
+- **`webkit-iphone` in CI:** WebKit's iPhone emulation froze the page process on GitHub's Linux
+  runners, so the project runs only locally (or with `E2E_WEBKIT_MOBILE=1`). Phone widths are
+  covered in CI by `chromium-phone`; WebKit by `webkit-desktop` and `visual-webkit`.
+- **Chromium `home-1440`:** faint anti-aliasing noise (about 128 pixels, at most 2/255) stays
+  under the threshold. Leave it.
+- **Fixed:** the E-Lab and Apply timeline markers used to depend on scroll timing; the ds
+  `Timeline` is static under reduced motion now (#280). The partner rotation property test
+  collects failures and asserts once per run, so it no longer times out (#278).
+
+## Real Safari
+
+WebKit on Linux doesn't reproduce Safari 26's tinted status bar and toolbar. Changes to the
+header, footer, dialogs, page tops and bottoms, or the root background need the manual iPhone
+checklist in `.agents/skills/ui-verify/references/iphone-safari.md`. The workarounds are listed in
+[browser-quirks.md](browser-quirks.md).
