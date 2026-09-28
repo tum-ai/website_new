@@ -1,6 +1,6 @@
 ---
 name: add-page
-description: Step-by-step recipe for adding a new route or page to the TUM.ai website. Use whenever someone wants a new page, route, landing page or legal page, or wants to split a section into its own URL, even if they only say "we need a page for X". It covers the thin App Router route, the feature folder and page module, the SEO and JSON-LD entry, navigation, the E2E route list and the visual baseline, so the architecture test, SEO and CI all accept the new page.
+description: Step-by-step recipe for adding a new route or page to the TUM.ai website. Use whenever someone wants a new page, route, landing page or legal page, or wants to split a section into its own URL, even if they only say "we need a page for X". It covers the thin App Router route, the feature folder and page module, the SEO and JSON-LD entry, navigation, the E2E route list (siteRoutes) and the visual baseline, so the architecture test, SEO and CI all accept the new page.
 ---
 
 # Add a page
@@ -41,9 +41,9 @@ export function <Domain>Page() {
 
 ## 2. SEO entry
 
-Add a key to `pageSEOConfig` in `src/config/seo.ts` (title, description, canonical, jsonLd),
-copying a neighbouring entry. Once W1-Data lands, build URLs with `absoluteUrl()` from
-`src/config/site.ts` instead of URL literals.
+Add the page's key to `src/config/seo.ts` (title, description, canonical, JSON-LD), copying a
+neighbouring entry. Build URLs with `absoluteUrl()` from `src/config/site.ts`, never URL
+literals (`test/content-facts.test.ts` rejects them).
 
 ## 3. Route
 
@@ -71,23 +71,25 @@ and set `export const revalidate = <seconds>`.
 
 ## 4. Navigation
 
-If the page belongs in the header or footer, add it to `src/config/navigation.ts` (coming in
-W1-Data). Until that file exists, the link arrays live in `src/components/shell/header.tsx`
-(`links`) and `src/components/shell/footer.tsx` (`columns`).
+If the page belongs in the header or footer, add it to `src/config/navigation.ts`
+(`mainNavigation`, `connectLinks`, `legalLinks`, ...). If the header should behave differently on
+it (frosted from the start, another CTA), add an entry to the route overrides behind
+`getHeaderOptions` in the same file.
 
 ## 5. E2E and visual baseline
 
-Add the route to the E2E route list in `e2e/` (coming in W1-E2E) so it gets the per-route checks
-(one `h1`, one `main`, no console errors, no overflow, axe) and a visual snapshot at 390 and
-1440 px. Generate the new baseline through the CI update workflow, not locally.
+Add the route to `siteRoutes` in `e2e/fixtures.ts` (path and exact `<title>`, `cms: true` if it
+shows CMS data). Every spec that loops over it then covers the page: one `h1` and `main`, no
+console errors, no overflow or broken images, axe, no-JS, and a visual snapshot at 390 and
+1440 px. The new baselines come from CI: after the first push, add the `update-snapshots` label
+to the PR (see the `pr-ready` skill). Never commit screenshots taken locally.
 
 ## 6. Verify
 
 ```bash
-pnpm lint && pnpm typecheck && pnpm test   # architecture test checks the page module and imports
-pnpm build                                  # the route appears in the build output
-pnpm test:e2e                               # once the harness exists
+pnpm lint && pnpm typecheck
+pnpm exec vitest run src/architecture.test.ts   # the page module and its imports
 ```
 
-Then run the `ui-verify` skill for screenshots and the keyboard and reduced-motion pass, and
-`pr-ready` before opening the PR.
+CI builds the site and runs the E2E and visual specs on the PR. Then follow `ui-verify` for the
+visual diffs and screenshots, and `pr-ready` before marking the PR ready.

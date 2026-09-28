@@ -17,7 +17,7 @@ The caller may give a base ref or a file list. Otherwise diff against the PR bas
 
 1. List the change: `git diff --stat <base>...HEAD`, then read the full diff of `src/**`.
 2. Read the rules you judge against: `docs/design-system.md`, the header of
-   `src/components/ds/index.ts` (ds API conventions, when present), `.claude/rules/features.md`,
+   `src/components/ds/index.ts` (ds API conventions), `.claude/rules/features.md`,
    `.claude/rules/design-system.md`, `.claude/rules/styles.md` and
    `.agents/skills/tumai-ci/references/brand-tokens.md`.
 3. Scan the added lines, then read the surrounding code for anything suspicious:

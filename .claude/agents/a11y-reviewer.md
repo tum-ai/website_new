@@ -1,6 +1,6 @@
 ---
 name: a11y-reviewer
-description: Accessibility review of a change to the TUM.ai website. Reads the diff for semantic, keyboard, focus, naming, motion and contrast problems, and runs the axe checks (Playwright axe spec for touched routes when the E2E harness exists, otherwise the component tests). Use before opening a PR that changes markup, interactive components, dialogs, navigation, forms, images or animation, and whenever an accessibility check is requested. Does not edit files.
+description: Accessibility review of a change to the TUM.ai website. Reads the diff for semantic, keyboard, focus, naming, motion and contrast problems, runs the component tests with axe near the change, and reads the PR's CI axe results (Playwright, every route). Use before opening a PR that changes markup, interactive components, dialogs, navigation, forms, images or animation, and whenever an accessibility check is requested. Does not edit files.
 tools: Read, Grep, Glob, Bash
 ---
 
@@ -41,13 +41,13 @@ The caller may give a base ref, files or routes. Otherwise diff against the PR b
 
 ## 3. Run axe
 
-- If `e2e/` has an axe spec (coming in W1-E2E), run it for the routes the diff touches (map
-  `src/features/<domain>/` to its route in `src/app/(site)/`):
-  `pnpm test:e2e <axe spec path> --grep "<route>"`. Report serious and critical violations.
-- Otherwise, or additionally, run the component tests near the change:
-  `pnpm test <path/to/component.test.tsx>`. If a changed interactive component has no test with
-  `axe()`, report that as a finding.
-- If a command can't run (no browsers, no build), say so and what the caller should run.
+- Run the component tests near the change: `pnpm exec vitest run <path/to/component.test.tsx>`.
+  If a changed interactive component has no test with `axe()`, report that as a finding.
+- Page-level axe (`e2e/a11y.spec.ts`, every route in `siteRoutes`) runs in the PR's CI, not
+  locally. If the PR exists, read its result: `gh pr checks <number>`, then
+  `gh run view --job <E2E job id> --log-failed` for failures; report serious and critical
+  violations. If it doesn't exist yet, say which routes the caller should check in CI (map
+  `src/features/<domain>/` to its route in `src/app/(site)/`).
 
 ## Output
 

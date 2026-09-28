@@ -11,4 +11,12 @@
 - Hooks (`.claude/settings.json`): `format.sh` runs Biome on every file you edit and reports what it
   can't fix; fix those findings. `protect-generated.sh` blocks edits to `pnpm-lock.yaml` and
   `*.generated.ts`; run pnpm or the generator instead.
+- LSP: `.claude/settings.json` enables `typescript-lsp@claude-plugins-official`. Prefer the LSP
+  tool (definition, references, hover, diagnostics) over text search for TypeScript symbols. It
+  needs `typescript-language-server` on `PATH`
+  (`npm install -g typescript-language-server typescript`); if the tool says no server is
+  available for `.ts`/`.tsx`, run `/plugin install typescript-lsp@claude-plugins-official` and
+  start a new session.
+- Local checks are `pnpm lint`, `pnpm typecheck` and `pnpm exec vitest run <files>`; the rest runs
+  in the PR's CI (see "Where tests run" in `AGENTS.md`).
 - Personal settings go in `.claude/settings.local.json` (gitignored), not in the shared settings.

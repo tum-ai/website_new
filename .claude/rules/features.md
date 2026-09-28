@@ -26,7 +26,8 @@ One folder per domain: `home`, `apply`, `community`, `events`, `e-lab`, `partner
   `FaqSection`, `Steps`, `Timeline`, `MediaCard`, `QuoteCard`, `PersonCard`, `LogoTile`,
   `Actions`. If one lacks a variant you need, note it as a ds handoff rather than forking it.
 - **Tokens only:** no hex, `rgb()`, stock palette or arbitrary font sizes. Use the `zoom-media`
-  and `scroll-mt-header` utilities for hover zoom and anchor offsets (coming in W1-DS).
+  (with `group/zoom`) and `scroll-mt-header` utilities for hover zoom and anchor offsets.
 - **Copy and facts:** facts from `@/config/*`; copy in `data/`; no em or en dashes in visible text.
 - **Tests:** logic in `*.test.ts`; islands in `*.test.tsx` with Testing Library and `axe()`; the
-  route's E2E spec (coming in W1-E2E) covers the page.
+  E2E specs cover every route in `siteRoutes` (`e2e/fixtures.ts`). CI runs them; locally only
+  `pnpm exec vitest run` on the tests you touched.

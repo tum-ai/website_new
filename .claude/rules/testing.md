@@ -29,15 +29,18 @@ paths:
 - **Mocks:** `server-only` is stubbed by the config. Mock `next/headers`, `next/navigation` and
   `next-sanity` with `vi.mock`. Use `vi.useFakeTimers()`/`vi.setSystemTime()` for deadlines.
 - **Never build in `pnpm test`.** Build-output assertions go in `test/perf/*.perf.ts`.
-- **E2E** (`e2e/`, Playwright; the harness is coming in W1-E2E):
-  - use the shared helpers in `e2e/fixtures.ts`; the server runs a production build with
-    `USE_MOCK_CMS=1` and a fixed `MOCK_CMS_NOW`;
+- **Where tests run:** agents run only `pnpm lint`, `pnpm typecheck` and
+  `pnpm exec vitest run <files>` for the tests they touch. The full suite, build, E2E and Visual
+  run in the PR's CI; read failures with `gh run view --job <id> --log-failed`.
+- **E2E** (`e2e/`, Playwright; details in `docs/testing.md`):
+  - use the shared helpers in `e2e/fixtures.ts`; a new route goes into `siteRoutes` there; the
+    server runs a production build with `USE_MOCK_CMS=1` and a fixed `MOCK_CMS_NOW`;
   - every route runs in chromium and webkit; axe must report no serious or critical WCAG 2 A/AA
     violations;
   - prefer role and name locators; mask animated regions (marquee, mosaic, count-up) in
     `toHaveScreenshot`;
-  - visual baselines come only from the CI Playwright container (the update workflow), never from
-    a local macOS run;
+  - visual baselines come only from the CI Playwright container: add the `update-snapshots` label
+    to the PR (the bot commits only changed PNG files and starts no CI), never from a local run;
   - screenshots hide photos, videos and film grain (`e2e/visual-screenshot.css`): they test layout,
     not image content, and keep the baselines small and stable;
   - mark a known failure `test.fixme` with a comment naming the owner, never delete it.

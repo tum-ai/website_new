@@ -10,8 +10,8 @@ is done when the component, its test, its showcase entry and its docs row all ag
 
 ## 1. Check before building
 
-- Read `docs/design-system.md` and the conventions in the header of `src/components/ds/index.ts`
-  (being written in W1-DS; if the header and this skill disagree, the header wins).
+- Read `docs/design-system.md` (conventions and the API reference) and the header of
+  `src/components/ds/index.ts` (if the header and this skill disagree, the header wins).
 - Search for an existing component or variant first (`rg -n "export function" src/components/ds`).
   Prefer a new variant on an existing component to a near-duplicate component.
 
@@ -49,17 +49,20 @@ Colocate `src/components/ds/<name>.test.tsx` (jsdom project). Cover what could r
 ## 4. Showcase and docs
 
 - Render every variant in `src/features/design-system/design-system-page.tsx`, inside the fitting
-  `Block` (or a new one); interactive demos go in `design-system-interactive.tsx`. Check it at
-  `/design-system` with `pnpm dev`.
-- Update the component list and props in `docs/design-system.md` ("Components"), and the rules if
-  the component introduces one.
+  `Block` (or a new one); interactive demos go in `design-system-interactive.tsx`.
+  `showcase-coverage.test.ts` fails when a barrel export isn't used there. Check it at
+  `/design-system` with `pnpm dev` or on the PR's Vercel preview.
+- Update `docs/design-system.md`: the entry under "Components" and the component's table under
+  "API reference" (prop, type, TSDoc), and the rules if the component introduces one.
 
 ## 5. Verify
 
 ```bash
-pnpm lint && pnpm typecheck && pnpm test
+pnpm lint && pnpm typecheck
+pnpm exec vitest run src/components/ds/<name>.test.tsx src/features/design-system
 ```
 
-A change to an existing component can move pixels on every page: run the visual E2E specs
-(coming in W1-E2E) or the `ui-verify` skill on the pages that use it
-(`rg -l "<ComponentName>" src/features`), and run the `design-reviewer` subagent before the PR.
+A change to an existing component can move pixels on every page that uses it
+(`rg -l "<ComponentName>" src/features`). CI's Visual job shows which routes moved; follow the
+`ui-verify` skill to check and accept the diffs, and run the `design-reviewer` subagent before
+the PR.

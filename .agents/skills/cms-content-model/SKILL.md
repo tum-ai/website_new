@@ -21,23 +21,24 @@ readable (or alias it in the projection) until the content is migrated.
 ## 2. Query
 
 Update the projection in `src/lib/sanity-queries.ts`. Wrap queries in `defineQuery` so TypeGen can
-type them (coming in W1-Data). Project exactly what the UI needs, with stable aliases
+type them. Project exactly what the UI needs, with stable aliases
 (`"id": _id`), `coalesce` for optional text, and arrays kept as arrays (don't join to strings).
 Filter in GROQ, not in route code.
 
 ## 3. Types
 
-Run `pnpm sanity:typegen` (coming in W1-Data). It writes `src/lib/sanity.types.generated.ts`; never
-edit that file by hand (a hook blocks it). Until TypeGen lands, update the matching type in
-`src/lib/types.ts` by hand to mirror the projection.
+Run `pnpm sanity:typegen`. It writes `src/lib/sanity.types.generated.ts`; never edit that file by
+hand (a hook blocks it), and commit it with the change: CI's Typecheck job fails when it is stale
+(`pnpm sanity:typegen:check`). `src/lib/types.ts` derives the app types from the generated ones;
+adjust it only when the app shape itself changes.
 
 ## 4. Mock fixtures
 
 Update `src/lib/mock-cms.ts` so every fixture matches the new projection, including edge cases
 the UI must handle (missing image, long text, each enum value, past and upcoming dates relative
 to `now`). Fixtures use shipped `/assets/...` files, neutral links and no personal data.
-`USE_MOCK_CMS=1 pnpm dev` shows them; E2E runs on them with a fixed `MOCK_CMS_NOW` (coming in
-W1-Data).
+`USE_MOCK_CMS=1 pnpm dev` shows them; E2E runs on them with `MOCK_CMS_NOW=2026-10-01T12:00:00Z`
+(the fixtures' dates are relative to it, see `src/lib/mock-cms-env.ts`).
 
 ## 5. Tests
 
@@ -51,15 +52,18 @@ W1-Data).
 - Pages receive the data from the server route and pass plain props to islands. Handle the empty
   and missing-field cases visibly (for example `EmptyState` or a brand placeholder).
 - `/api/getNotes` (events), `/api/getPartners`, `/api/getResearch` are a public API used outside
-  this repo: additions are fine, but don't remove or rename response fields without a migration
-  note in the PR.
+  this repo, with their own frozen `PUBLIC_*` queries: additions are fine, but don't remove or
+  rename response fields without a migration note in the PR.
 
 ## 7. Verify
 
 ```bash
-pnpm lint && pnpm typecheck && pnpm test
-USE_MOCK_CMS=1 pnpm build && pnpm test:e2e   # routes that show the data
+pnpm lint && pnpm typecheck
+pnpm exec vitest run src/lib/sanity-queries.test.ts src/lib/mock-cms.test.ts <domain tests>
 ```
+
+CI runs the full suite, the TypeGen freshness check, the build and the E2E specs for the routes
+that show the data.
 
 Check the draft preview when the change affects what editors see: open `/studio`, use
 Presentation, edit a draft and confirm the page updates (needs `SANITY_API_READ_TOKEN`).
