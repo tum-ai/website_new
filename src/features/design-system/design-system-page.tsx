@@ -894,6 +894,21 @@ export function DesignSystemPage() {
           />
         </div>
         <div className="mt-24">
+          <Label>Steps · rows, for steps that are sentences</Label>
+          <p className="mb-6 font-light text-display-md text-fg">We</p>
+          <Steps
+            layout="rows"
+            items={[
+              { title: "collect project proposals from our partners," },
+              { title: "preselect applicants on their research experience," },
+              {
+                title: "and support their stay abroad.",
+                description: "An optional line under a step.",
+              },
+            ]}
+          />
+        </div>
+        <div className="mt-24">
           <Label>Steps · dot markers, no rail</Label>
           <Steps
             columns={3}

@@ -153,12 +153,12 @@ Layout
 - `SectionHeader`: `eyebrow`, `index`, `title`, `count` (a small "(4)" after the title), `lead`, `actions`, `layout` (`split` | `stack` | `center`), `size` (`md`, `lg`, or `xl` for a page's lead statement) and `headingAs`. Reveals on scroll.
 
 Page patterns
-- `PageHero`: every page starts with one (ink by default). It accepts `eyebrow`, `title` (strings rise in word by word, and `<Highlight>` parts work), `lead`, `actions`, an optional `media` column, `children` (for stats or filters under the headline) and `classNames` slots. `size="fit"` caps the title for long single words (the privacy page). It clears the fixed header.
+- `PageHero`: every page starts with one (ink by default, with an aurora and grain; `backdrop="quiet"` leaves the flat band when the page's own content is the hero's feature). It accepts `eyebrow`, `title` (strings rise in word by word, and `<Highlight>` parts work), `lead`, `actions`, an optional `media` column, `children` (for stats or filters under the headline) and `classNames` slots. `size="fit"` caps the title for long single words (the privacy page). It clears the fixed header.
 - `CtaBand`: closing call to action. `variant="panel"` is an inset ink panel; `variant="band"` is full bleed. Takes `children` and `classNames.footer`.
 - `CtaPanel`: the panel surface of `CtaBand` on its own (ink, aurora, grain, logomark), for places a whole band can't go, such as a bento cell.
 - `FaqSection`: sticky heading beside an accordion, with an eyebrow `index` and `defaultValue` (questions that start open). `FaqList` renders the accordion on its own and takes `defaultValue` too.
 - `Timeline`: a vertical rail that fills as you scroll (static under reduced motion). `alternate` zig-zags the items; `rail="dashed"`, `marker="number"` and `continuation` cover the E-Lab program.
-- `Steps`: a numbered process, with `rail` (`solid`, `dashed`, `none`), `marker` (`badge`, `dot`) and an optional per-step `number` (e.g. "02A").
+- `Steps`: a numbered process, with `rail` (`solid`, `dashed`, `none`), `marker` (`badge`, `dot`) and an optional per-step `number` (e.g. "02A"). `layout="rows"` sets each step as a hairline row with the number beside it, for steps that are sentences.
 - `StatGrid`: numeric values count up when they scroll into view (sizes `sm`–`xl` on the `text-stat-*` tokens); strings render as they are, or count with `count`.
 - `Ledger`: key figures as an annual-report ledger, one hairline row per figure with its label and a `note` on the left and the figure right-aligned (`size` `md` or `lg`). Same figure rules as `StatGrid`.
 - `IndexList`: a typographic index of destinations. Full-width link rows (large light title, one line of description, optional `detail`, an arrow); from `lg` a sticky photo beside the list follows the hovered or focused row and the other rows dim. Below `lg` each row shows its photo as a thumbnail.
@@ -639,6 +639,7 @@ No props of its own; see the source file for the root element or Base UI part it
 | `children?` | `ReactNode` | Content below the headline block (stats row, filters, tabs, a marquee). |
 | `splitTitle?` | `boolean` | Animate the title word by word (`<SplitWords>`). Set false when the title brings its own SplitWords, e.g. one per line with custom delays. |
 | `tone?` | `"ink" \| "night"` | Dark band tone. Default `ink`. |
+| `backdrop?` | `"aurora" \| "quiet"` | What sits behind the content. `aurora` (default): the drifting light field and film grain. `quiet`: the flat band tone alone, for pages whose own content is the hero's feature. |
 | `mark?` | `boolean` | Large drifting logomark in the background. Default true. |
 | `titleId?` | `string` | id of the `h1`, referenced by the section's `aria-labelledby`. |
 | `classNames?` | `PageHeroClassNames` | Class overrides for the inner parts. |
@@ -793,6 +794,7 @@ No props of its own; see the source file for the root element or Base UI part it
 | `marker?` | `"badge" \| "dot"` |  |
 | `rail?` | `"none" \| "solid" \| "dashed"` | The line that joins the markers on wide screens: `solid` hairline, `dashed` violet dashes (a path that runs on), or `none`. |
 | `items` | `StepItem[]` | The steps, in order. |
+| `layout?` | `"columns" \| "rows"` | `columns` (default): markers on a rail, one column per step on wide screens. `rows`: one hairline row per step with the number beside it, for steps that are sentences rather than short labels. `rows` ignores `columns`, `rail`, `marker` and icons. |
 | `headingAs?` | `HeadingLevel` | Heading level of each step title. Default `h3`. |
 | `className?` | `string` | Classes merged over the wrapper. |
 

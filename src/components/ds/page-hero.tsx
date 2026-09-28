@@ -66,6 +66,12 @@ export type PageHeroProps = VariantProps<typeof titleStyles> & {
   splitTitle?: boolean;
   /** Dark band tone. Default `ink`. */
   tone?: Extract<Tone, "ink" | "night">;
+  /**
+   * What sits behind the content. `aurora` (default): the drifting light
+   * field and film grain. `quiet`: the flat band tone alone, for pages whose
+   * own content is the hero's feature.
+   */
+  backdrop?: "aurora" | "quiet";
   /** Large drifting logomark in the background. Default true. */
   mark?: boolean;
   /** id of the `h1`, referenced by the section's `aria-labelledby`. */
@@ -77,8 +83,8 @@ export type PageHeroProps = VariantProps<typeof titleStyles> & {
 };
 
 /**
- * Opening band for every page: dark tone, aurora light field, drifting
- * logomark, word-by-word headline. Everything above the fold animates with
+ * Opening band for every page: dark tone, an aurora light field (or a quiet
+ * flat band), drifting logomark, word-by-word headline. Everything above the fold animates with
  * CSS only, so it starts before hydration and doesn't hold back LCP. Top
  * padding clears the fixed header.
  */
@@ -90,6 +96,7 @@ export function PageHero({
   media,
   children,
   size,
+  backdrop = "aurora",
   splitTitle = true,
   tone = "ink",
   mark = true,
@@ -101,14 +108,14 @@ export function PageHero({
     <Section
       tone={tone}
       spacing="none"
-      grain
+      grain={backdrop !== "quiet"}
       aria-labelledby={titleId}
       className={cn(
         "overflow-clip pt-[calc(var(--header-height)+clamp(3rem,7vw,6rem))] pb-[clamp(3.5rem,7vw,6rem)]",
         className,
       )}
     >
-      <Aurora />
+      {backdrop === "quiet" ? null : <Aurora />}
       {mark ? (
         <BrandMark
           className="absolute top-[6%] -right-[12%] -z-10 w-[min(64rem,78%)]"
