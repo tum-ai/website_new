@@ -5,6 +5,8 @@
  * route's call to action is one edit here.
  */
 import { contactEmails, socialLinks } from "./contact";
+import { eLabApplicationCopy } from "./e-lab";
+import { membershipConfig } from "./membership";
 
 export type NavLink = {
   label: string;
@@ -55,27 +57,100 @@ export const contributeLinks = [
   { label: "GitHub", href: socialLinks.github },
 ] as const satisfies readonly NavLink[];
 
+/** A header call to action: `href` is `null` while it has nowhere to go yet. */
+export type HeaderCtaOption = { label: string; href: string | null };
+
+/**
+ * The calls to action the header can show, by variant. {@link headerCtaSetting}
+ * picks one.
+ */
+export const headerCtas = {
+  member: { label: "Become a Member", href: "/apply" },
+  partner: { label: "Become a Partner", href: "/partners" },
+  elab: { label: `Explore ${eLabApplicationCopy.cohortName}`, href: "/e-lab" },
+  // TODO(content): notify target. There is no signup list for recruiting
+  // news yet; until it has an href, `notify` cannot be selected.
+  notify: { label: "Get Notified", href: null },
+} as const satisfies Record<string, HeaderCtaOption>;
+
+/** Every header CTA variant, including ones without a target yet. */
+export type HeaderCtaVariant = keyof typeof headerCtas;
+
+/** The variants that have an href: the only ones the setting accepts. */
+export type LinkedHeaderCtaVariant = {
+  [Variant in HeaderCtaVariant]: (typeof headerCtas)[Variant]["href"] extends string
+    ? Variant
+    : never;
+}[HeaderCtaVariant];
+
+/** Which call to action the header shows (outside route overrides). */
+export type HeaderCtaSetting<Variant extends string = LinkedHeaderCtaVariant> =
+  {
+    /**
+     * A fixed variant, or `"auto"`: `member` while membership applications
+     * are open (`membershipConfig.applicationsOpen`), `fallback` otherwise.
+     */
+    variant: Variant | "auto";
+    /** What `"auto"` shows while membership applications are closed. */
+    fallback: Variant;
+  };
+
+/**
+ * The header CTA. Change `fallback` to show a different call to action
+ * between recruiting rounds, or pin `variant` to override the automatic rule.
+ */
+export const headerCtaSetting: HeaderCtaSetting = {
+  variant: "auto",
+  fallback: "partner",
+};
+
+/**
+ * The CTA for `setting`: the wanted variant, falling back to `member` when
+ * the wanted one has no href. Returns `null` only if neither has one.
+ */
+export function selectHeaderCta(
+  setting: HeaderCtaSetting<HeaderCtaVariant>,
+  membershipOpen: boolean,
+  ctas: Readonly<Record<HeaderCtaVariant, HeaderCtaOption>> = headerCtas,
+): NavLink | null {
+  const wanted =
+    setting.variant !== "auto"
+      ? setting.variant
+      : membershipOpen
+        ? "member"
+        : setting.fallback;
+  for (const variant of [wanted, "member"] as const) {
+    const { label, href } = ctas[variant];
+    if (href !== null) return { label, href };
+  }
+  return null;
+}
+
 /** How the floating header looks and what it offers on a route. */
 export type HeaderOptions = {
   /** Frosted from the start instead of only after the page scrolls. */
   solid: boolean;
-  /** The primary button at the end of the header. */
-  cta: NavLink;
+  /**
+   * The primary button at the end of the header, or `null` for none. An
+   * in-page anchor (`#…`) stays visible on phones and has no arrow, because
+   * it scrolls the current page instead of leaving it.
+   */
+  cta: NavLink | null;
   /** Hide the logo until the hero scrolls away (the hero shows it large). */
   hideLogoUntilScroll: boolean;
 };
 
 const defaultHeaderOptions: HeaderOptions = {
   solid: false,
-  cta: { label: "Become a Member", href: "/apply" },
+  cta: selectHeaderCta(headerCtaSetting, membershipConfig.applicationsOpen),
   hideLogoUntilScroll: false,
 };
 
 /** Per-route overrides, keyed by exact pathname. */
 const routeHeaderOptions: Readonly<Record<string, Partial<HeaderOptions>>> = {
   "/": { hideLogoUntilScroll: true },
-  // The partner page keeps the pill frosted and swaps the membership CTA for
-  // its in-page contact anchor.
+  // The partner page keeps the pill frosted and swaps the CTA for its
+  // in-page contact anchor.
   "/partners": {
     solid: true,
     cta: { label: "Become a partner", href: "#partner-contact" },
@@ -84,8 +159,7 @@ const routeHeaderOptions: Readonly<Record<string, Partial<HeaderOptions>>> = {
 
 /**
  * The header options for `pathname`: the defaults plus the route's overrides.
- * Matching is exact, so `/partners/x` gets the defaults, as the header does
- * today.
+ * Matching is exact, so `/partners/x` gets the defaults.
  */
 export function getHeaderOptions(pathname: string): HeaderOptions {
   return { ...defaultHeaderOptions, ...routeHeaderOptions[pathname] };

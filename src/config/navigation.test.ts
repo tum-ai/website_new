@@ -1,13 +1,20 @@
 import { globSync } from "node:fs";
 import { dirname, relative, sep } from "node:path";
-import { expect, test } from "vitest";
+import { describe, expect, test } from "vitest";
+import { eLabConfig } from "@/config/e-lab";
+import { membershipConfig } from "@/config/membership";
 import {
   connectLinks,
   contributeLinks,
   getHeaderOptions,
+  type HeaderCtaSetting,
+  type HeaderCtaVariant,
   headerConnectLinks,
+  headerCtaSetting,
+  headerCtas,
   legalLinks,
   mainNavigation,
+  selectHeaderCta,
 } from "@/config/navigation";
 
 const siteDir = new URL("../app/(site)/", import.meta.url).pathname;
@@ -41,18 +48,26 @@ test("the header's connect row is a subset of the footer's", () => {
   }
 });
 
-test("the header defaults to the membership CTA with a transparent pill", () => {
+/** The CTA every route without an override shows. */
+const defaultCta = selectHeaderCta(
+  headerCtaSetting,
+  membershipConfig.applicationsOpen,
+);
+
+test("the header defaults to the configured CTA with a transparent pill", () => {
+  expect(defaultCta).not.toBeNull();
   expect(getHeaderOptions("/events")).toStrictEqual({
     solid: false,
-    cta: { label: "Become a Member", href: "/apply" },
+    cta: defaultCta,
     hideLogoUntilScroll: false,
   });
 });
 
 test("home hides the logo until the hero scrolls away", () => {
-  expect(getHeaderOptions("/")).toMatchObject({
+  expect(getHeaderOptions("/")).toStrictEqual({
     hideLogoUntilScroll: true,
     solid: false,
+    cta: defaultCta,
   });
 });
 
@@ -64,4 +79,71 @@ test("partners is solid and links to its own contact section", () => {
   });
   // Exact match only: sub-paths get the defaults.
   expect(getHeaderOptions("/partners/x").solid).toBe(false);
+});
+
+describe("header CTA selection", () => {
+  const link = (variant: HeaderCtaVariant) => {
+    const { label, href } = headerCtas[variant];
+    return { label, href };
+  };
+
+  test("auto shows member while membership applications are open", () => {
+    expect(
+      selectHeaderCta({ variant: "auto", fallback: "partner" }, true),
+    ).toStrictEqual(link("member"));
+  });
+
+  test("auto shows the fallback while membership applications are closed", () => {
+    for (const fallback of ["member", "partner", "elab"] as const) {
+      expect(
+        selectHeaderCta({ variant: "auto", fallback }, false),
+        fallback,
+      ).toStrictEqual(link(fallback));
+    }
+  });
+
+  test("a pinned variant wins over the recruiting round", () => {
+    for (const open of [true, false]) {
+      expect(
+        selectHeaderCta({ variant: "elab", fallback: "partner" }, open),
+      ).toStrictEqual(link("elab"));
+    }
+  });
+
+  test("a variant without an href falls back to member", () => {
+    const notify: HeaderCtaSetting = {
+      // @ts-expect-error: the setting only accepts variants with an href.
+      variant: "notify",
+      fallback: "partner",
+    };
+    expect(selectHeaderCta(notify, false)).toStrictEqual(link("member"));
+    // The same holds for a table that drops a target later: no dead button.
+    const ctas = { ...headerCtas, partner: { label: "Partner", href: null } };
+    expect(
+      selectHeaderCta({ variant: "auto", fallback: "partner" }, false, ctas),
+    ).toStrictEqual(link("member"));
+  });
+
+  test("no CTA when neither the wanted variant nor member has an href", () => {
+    const ctas = {
+      ...headerCtas,
+      member: { label: "Member", href: null },
+      partner: { label: "Partner", href: null },
+    };
+    expect(
+      selectHeaderCta({ variant: "auto", fallback: "partner" }, false, ctas),
+    ).toBeNull();
+  });
+
+  test("every CTA with a target points at an existing page", () => {
+    for (const [variant, cta] of Object.entries(headerCtas)) {
+      if (cta.href !== null) {
+        expect(sitePaths.has(cta.href), variant).toBe(true);
+      }
+    }
+  });
+
+  test("the E-Lab CTA names the current cohort", () => {
+    expect(headerCtas.elab.label).toContain(eLabConfig.currentIteration);
+  });
 });
