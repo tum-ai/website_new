@@ -1,12 +1,5 @@
-import type { Organization, WithContext } from "schema-dts";
 import { CtaBand, FaqSection } from "@/components/ds";
-import { JsonLd } from "@/components/json-ld";
-import { contactEmails } from "@/config/contact";
-import {
-  eLabApplicationCopy,
-  eLabPhaseCopy,
-  eLabProgramSummary,
-} from "@/config/e-lab";
+import { eLabApplicationCopy, eLabPhaseCopy } from "@/config/e-lab";
 import { ELabApplicationCta, ELabApplicationStatus } from "./application-cta";
 import { faq } from "./data/faq";
 import { ELabPhase } from "./e-lab-phase";
@@ -34,46 +27,12 @@ function KeepCohortTogether({ text }: { text: string }) {
  * /e-lab: ink hero with the cohort lockup and live application status, what
  * to expect with proof points, community voices, the program timeline,
  * alumni ventures, FAQ and the closing application call to action. All cohort
- * copy and state comes from src/config/e-lab.ts.
+ * copy and state comes from src/config/e-lab.ts; the route renders the
+ * JSON-LD from src/config/seo.ts.
  */
 export function ELabPage() {
-  const jsonLd: WithContext<Organization> = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "Venture Department",
-    alternateName: [
-      "AI Entrepreneurship Lab",
-      "E-Lab",
-      "E-Lab by TUM.ai",
-      "AI Entrepreneurship Lab by TUM.ai",
-    ],
-    description: `The Venture Department is the entrepreneurial arm of TUM.ai and organizes the AI Entrepreneurship Lab, a ${eLabProgramSummary}.`,
-    url: "https://www.tum-ai.com/e-lab",
-    email: contactEmails.venture,
-    sameAs: [
-      "https://www.startbase.de/organization/ai-e-lab/",
-      "https://www.startup-insider.com/investor/ai-e-lab-by-tum-ai",
-      "https://www.munich-startup.de/startups/tum-ai-entrepreneurship-lab/",
-    ],
-    parentOrganization: {
-      "@type": "Organization",
-      name: "TUM.ai",
-      legalName: "TUM.ai e.V.",
-      alternateName: "TUM.ai Student Initiative",
-      url: "https://www.tum-ai.com",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/a/a2/TUM.ai_Logo_Blue_%26_Violet.svg",
-      email: contactEmails.general,
-    },
-    contactPoint: {
-      "@type": "ContactPoint",
-      email: contactEmails.venture,
-      contactType: "Venture Department",
-    },
-  };
-
   return (
     <main>
-      <JsonLd data={jsonLd} />
       <Hero />
 
       <ExpectationELab />

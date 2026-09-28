@@ -129,6 +129,11 @@ const hardcodedFacts: [RegExp, string][] = [
   ],
   [/\bVR ?\d{5,6}\b/, "register number: config/organization.ts"],
   [
+    // A figure next to "Makeathon" in the same sentence, either order.
+    /makeathon\b[^.\n]*?(\b\d{3,}\+?\s+(?:registrations|participants|hackers|attendees|signups))|(\b\d{3,}\+?\s+(?:registrations|participants|hackers|attendees|signups)\b)[^.\n]*?\bmakeathon/i,
+    "Makeathon size: config/community.ts",
+  ],
+  [
     /\b[a-z]+\.[a-z]+@tum-ai\.com\b/i,
     "personal emails: use a role address from config/contact.ts",
   ],
@@ -141,11 +146,6 @@ const hardcodedFacts: [RegExp, string][] = [
  * on entries that no longer match, so the list can only shrink.
  */
 const allowlist: { file: string; fact: string; until: string }[] = [
-  {
-    file: "features/e-lab/e-lab-page.tsx",
-    fact: "site URL: absoluteUrl() or siteConfig.url from config/site.ts",
-    until: "W2 E-Lab builds its JSON-LD URLs with absoluteUrl()",
-  },
   {
     file: "features/legal/privacy-page.tsx",
     fact: "site URL: absoluteUrl() or siteConfig.url from config/site.ts",

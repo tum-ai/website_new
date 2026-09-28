@@ -1,12 +1,6 @@
-import type { LucideIcon } from "lucide-react";
 import { FeatureCard, Reveal } from "@/components/ds";
 import { cn } from "@/lib/cn";
-
-interface Benefit {
-  icon: LucideIcon;
-  text: string;
-  title: string;
-}
+import type { IconItem } from "./data/apply";
 
 const gridColumns = {
   2: "md:grid-cols-2",
@@ -14,7 +8,7 @@ const gridColumns = {
 } as const;
 
 interface Props {
-  benefits: Benefit[];
+  benefits: IconItem[];
   columns?: keyof typeof gridColumns;
   /** `glass` on dark bands, `raised` on light ones. */
   variant?: "raised" | "glass";

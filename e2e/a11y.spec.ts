@@ -17,12 +17,7 @@ import {
 const knownIssues: Record<
   string,
   Partial<Record<"axe" | "newTab" | "labelInName", string>>
-> = {
-  "/e-lab": {
-    labelInName:
-      "Home+E-Lab: the ApplicationCta links' aria-label (Apply for E-Lab 6.0) drops their visible label.",
-  },
-};
+> = {};
 
 /*
  * axe-core (WCAG 2 A/AA) on every route, desktop Chromium and iPhone WebKit.

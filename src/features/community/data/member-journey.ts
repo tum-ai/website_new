@@ -8,10 +8,12 @@ import {
   Rocket,
 } from "lucide-react";
 
+/** One step of the member journey. */
 export type JourneyStep = {
-  /** Visible stage number, e.g. "01" or "02A". Also used for the anchor id. */
+  /** Visible step number, e.g. "01" or "02A". Also used for the anchor id. */
   step: string;
   name: string;
+  /** One or two sentences. */
   description: string;
   icon: LucideIcon;
 };
@@ -25,9 +27,10 @@ export type JourneyStage =
   | { kind: "fork"; steps: [JourneyStep, JourneyStep] };
 
 /**
- * The member journey as shown on /community. The copy is page-specific.
+ * The TUM.ai member journey, the single source for every page that describes
+ * it: /community draws it as a forked path, /apply lists it as steps.
  */
-export const journeyStages: JourneyStage[] = [
+export const memberJourney: JourneyStage[] = [
   {
     kind: "single",
     step: {
@@ -72,6 +75,8 @@ export const journeyStages: JourneyStage[] = [
     step: {
       step: "04",
       name: "Research Exchange (REX) Program",
+      // TODO(content): REX partner school, Berkeley or Cambridge? The Apply
+      // page used to name Berkeley; this copy (now on both pages) says Cambridge.
       description:
         "After one semester, you can join the REX Program - conduct research at top institutions like MIT, Harvard, or Cambridge. With our alumni network, we guide you in finding a topic, navigating applications, and contributing to cutting-edge research.",
       icon: Globe,
@@ -89,4 +94,15 @@ export const journeyStages: JourneyStage[] = [
   },
 ];
 
+/** The steps of a stage, in order. */
+export const stageSteps = (stage: JourneyStage): JourneyStep[] =>
+  stage.kind === "single" ? [stage.step] : stage.steps;
+
+/** Every step in journey order, with the index of the stage it belongs to. */
+export const journeySteps: (JourneyStep & { stageIndex: number })[] =
+  memberJourney.flatMap((stage, stageIndex) =>
+    stageSteps(stage).map((step) => ({ ...step, stageIndex })),
+  );
+
+/** Anchor id of a step on /community, e.g. "journey-02a". */
 export const stepAnchor = (step: string) => `journey-${step.toLowerCase()}`;

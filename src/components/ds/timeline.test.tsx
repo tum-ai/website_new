@@ -62,6 +62,16 @@ describe("Timeline", () => {
     expect(marker).toHaveTextContent("01");
   });
 
+  test("lights every marker under reduced motion, whatever the scroll", () => {
+    stubMatchMedia({ reducedMotion: true });
+    const { container } = render(<Timeline items={items} />);
+    const markers = container.querySelectorAll("li > [aria-hidden]");
+    expect(markers).toHaveLength(2);
+    for (const marker of markers) {
+      expect(marker).toHaveClass("border-violet-500");
+    }
+  });
+
   test("has no axe violations", async () => {
     const { container } = render(
       <Timeline items={items} alternate continuation="And beyond" />,

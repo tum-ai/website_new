@@ -81,20 +81,23 @@ export function HeroMosaic() {
                     } as CSSProperties
                   }
                 >
-                  {[...tiles, ...tiles].map((picture, tileIndex) => (
-                    <div
-                      key={tileIndex}
-                      className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-white/5"
-                    >
-                      <Image
-                        src={picture.src}
-                        alt=""
-                        fill
-                        sizes="(min-width: 1024px) 15vw, 22vw"
-                        className="object-cover grayscale"
-                      />
-                    </div>
-                  ))}
+                  {/* Two copies, so the loop wraps without a seam. */}
+                  {["a", "b"].flatMap((copy) =>
+                    tiles.map((picture) => (
+                      <div
+                        key={`${copy}:${picture.src}`}
+                        className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-white/5"
+                      >
+                        <Image
+                          src={picture.src}
+                          alt=""
+                          fill
+                          sizes="(min-width: 1024px) 15vw, 22vw"
+                          className="object-cover grayscale"
+                        />
+                      </div>
+                    )),
+                  )}
                 </div>
               </div>
             );
@@ -104,7 +107,7 @@ export function HeroMosaic() {
       {/* Duotone: a violet wash over the grayscale photos, then a veil that is
           solid ink under the copy and fades toward the photos. */}
       <div className="absolute inset-0 bg-violet-800/35" />
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,var(--tone-canvas)_12%,rgb(27_0_73/0.82)_44%,rgb(27_0_73/0.28)_78%,rgb(27_0_73/0.1))]" />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,var(--tone-canvas)_12%,--alpha(var(--color-violet-950)/82%)_44%,--alpha(var(--color-violet-950)/28%)_78%,--alpha(var(--color-violet-950)/10%))]" />
       <div className="absolute inset-x-0 top-0 h-2/5 bg-gradient-to-b from-canvas/85 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-canvas via-canvas/70 to-transparent" />
     </div>

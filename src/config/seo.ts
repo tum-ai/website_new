@@ -9,6 +9,7 @@
  */
 import type { Metadata } from "next";
 import { contactEmails, socialLinks } from "./contact";
+import { eLabProgramSummary } from "./e-lab";
 import {
   legalEntity,
   organizationFacts,
@@ -85,6 +86,46 @@ type PageSeo = {
     /** Repeat the Organization node as `publisher` (every page but /projects). */
     publisher?: false;
   };
+  /** Further JSON-LD nodes after the page node (e.g. the E-Lab organization). */
+  extra?: readonly object[];
+};
+
+/**
+ * The Venture Department (E-Lab) as its own Organization, a sub-organization
+ * of TUM.ai, on /e-lab.
+ */
+const eLabJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Venture Department",
+  alternateName: [
+    "AI Entrepreneurship Lab",
+    "E-Lab",
+    "E-Lab by TUM.ai",
+    "AI Entrepreneurship Lab by TUM.ai",
+  ],
+  description: `The Venture Department is the entrepreneurial arm of TUM.ai and organizes the AI Entrepreneurship Lab, a ${eLabProgramSummary}.`,
+  url: absoluteUrl("/e-lab"),
+  email: contactEmails.venture,
+  sameAs: [
+    "https://www.startbase.de/organization/ai-e-lab/",
+    "https://www.startup-insider.com/investor/ai-e-lab-by-tum-ai",
+    "https://www.munich-startup.de/startups/tum-ai-entrepreneurship-lab/",
+  ],
+  parentOrganization: {
+    "@type": "Organization",
+    name: organizationJsonLd.name,
+    legalName: organizationJsonLd.legalName,
+    alternateName: organizationJsonLd.alternateName,
+    url: organizationJsonLd.url,
+    logo: organizationJsonLd.logo,
+    email: organizationJsonLd.email,
+  },
+  contactPoint: {
+    "@type": "ContactPoint",
+    email: contactEmails.venture,
+    contactType: "Venture Department",
+  },
 };
 
 const pages = {
@@ -133,6 +174,7 @@ const pages = {
       name: "TUM.ai Entrepreneurship",
       description: "Startup Incubator by TUM.ai",
     },
+    extra: [eLabJsonLd],
   },
   community: {
     path: "/community",
@@ -259,7 +301,10 @@ export function buildMetadata(key: SEOPageKey): Metadata {
   };
 }
 
-/** The JSON-LD nodes for a page: the Organization, then the page itself. */
+/**
+ * The JSON-LD nodes for a page: the Organization, the page itself, then any
+ * page-specific nodes.
+ */
 export function getJsonLd(key: SEOPageKey): object[] {
   if (key === "home") {
     return [
@@ -273,7 +318,7 @@ export function getJsonLd(key: SEOPageKey): object[] {
     ];
   }
 
-  const { path, page } = pages[key] as PageSeo;
+  const { path, page, extra = [] } = pages[key] as PageSeo;
   return [
     organizationJsonLd,
     {
@@ -284,6 +329,7 @@ export function getJsonLd(key: SEOPageKey): object[] {
       url: absoluteUrl(path),
       ...(page.publisher === false ? {} : { publisher: organizationJsonLd }),
     },
+    ...extra,
   ];
 }
 

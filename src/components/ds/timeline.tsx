@@ -3,7 +3,7 @@
 import { cva } from "class-variance-authority";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
-import { counter, textKey } from "./internal";
+import { counter, prefersReducedMotion, textKey } from "./internal";
 import { ScrollProgress } from "./parallax";
 import { Reveal } from "./reveal";
 import type { HeadingLevel } from "./types";
@@ -79,7 +79,8 @@ export type TimelineProps = {
 /**
  * Vertical timeline as an ordered list. Each marker lights up when it crosses
  * the middle of the viewport; with the `progress` rail the line fills as you
- * scroll (fully filled on the server and under reduced motion).
+ * scroll (fully filled on the server and under reduced motion). Under reduced
+ * motion every marker is lit and nothing follows the scroll position.
  */
 export function Timeline({
   items,
@@ -99,6 +100,12 @@ export function Timeline({
     const nodes = Array.from(
       list.querySelectorAll<HTMLElement>("[data-index]"),
     );
+    // Reduced motion shows one static final state: every marker lit, with
+    // nothing that depends on the scroll position.
+    if (prefersReducedMotion()) {
+      setActive(new Set(nodes.map((_, index) => index)));
+      return;
+    }
     const observer = new IntersectionObserver(
       (entries) => {
         setActive((previous) => {

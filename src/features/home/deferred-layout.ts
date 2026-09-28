@@ -19,11 +19,28 @@ export const EXPLORE_GRID =
 
 /**
  * Grid placement and card height per destination, in render order: a tall
- * feature tile, two stacked tiles beside it and a full-width banner.
+ * feature tile, two stacked tiles beside it and a full-width banner. `id`
+ * keys the loading skeleton's boxes.
  */
 export const EXPLORE_CELLS = [
-  "aspect-[4/5] sm:aspect-[4/3] md:col-span-2 md:aspect-[16/10] lg:aspect-[16/8] xl:col-span-7 xl:row-span-2 xl:aspect-auto",
-  "aspect-[4/5] sm:aspect-[4/3] md:aspect-[4/5] lg:aspect-[4/3] xl:col-span-5 xl:aspect-auto",
-  "aspect-[4/5] sm:aspect-[4/3] md:aspect-[4/5] lg:aspect-[4/3] xl:col-span-5 xl:aspect-auto",
-  "aspect-[4/5] sm:aspect-[4/3] md:col-span-2 md:aspect-[16/9] lg:aspect-[16/7] xl:col-span-12 xl:aspect-auto",
+  {
+    id: "events",
+    className:
+      "aspect-[4/5] sm:aspect-[4/3] md:col-span-2 md:aspect-[16/10] lg:aspect-[16/8] xl:col-span-7 xl:row-span-2 xl:aspect-auto",
+  },
+  {
+    id: "research",
+    className:
+      "aspect-[4/5] sm:aspect-[4/3] md:aspect-[4/5] lg:aspect-[4/3] xl:col-span-5 xl:aspect-auto",
+  },
+  {
+    id: "projects",
+    className:
+      "aspect-[4/5] sm:aspect-[4/3] md:aspect-[4/5] lg:aspect-[4/3] xl:col-span-5 xl:aspect-auto",
+  },
+  {
+    id: "e-lab",
+    className:
+      "aspect-[4/5] sm:aspect-[4/3] md:col-span-2 md:aspect-[16/9] lg:aspect-[16/7] xl:col-span-12 xl:aspect-auto",
+  },
 ] as const;

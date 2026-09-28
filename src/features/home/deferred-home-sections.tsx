@@ -16,15 +16,18 @@ import {
  * doesn't shift the layout.
  */
 
+/** Enough placeholder photos to fill the widest rail. */
+const PHOTO_RAIL_SLOTS = ["1", "2", "3", "4", "5", "6"];
+
 function PhotoRailSkeleton() {
   return (
     <div
       aria-hidden
       className="mask-fade-x flex gap-5 overflow-hidden motion-reduce:[mask-image:none]"
     >
-      {Array.from({ length: 6 }, (_, index) => (
+      {PHOTO_RAIL_SLOTS.map((slot) => (
         <div
-          key={index}
+          key={slot}
           className={cn("shrink-0 rounded-3xl bg-sunken", PHOTO_RAIL_ITEM)}
         />
       ))}
@@ -35,8 +38,11 @@ function PhotoRailSkeleton() {
 function ExploreBentoSkeleton() {
   return (
     <div aria-hidden className={EXPLORE_GRID}>
-      {EXPLORE_CELLS.map((cell, index) => (
-        <div key={index} className={cn("rounded-4xl bg-sunken", cell)} />
+      {EXPLORE_CELLS.map((cell) => (
+        <div
+          key={cell.id}
+          className={cn("rounded-4xl bg-sunken", cell.className)}
+        />
       ))}
     </div>
   );

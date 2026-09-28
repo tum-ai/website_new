@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Highlight, PageHero } from "@/components/ds";
 import { eLabConfig } from "@/config/e-lab";
 import { ELabApplicationCta, ELabApplicationStatus } from "./application-cta";
@@ -12,17 +13,17 @@ const HERO_TITLE_ID = "elab-hero-title";
 function LogoLockup() {
   return (
     <span className="flex flex-wrap items-end gap-x-4 gap-y-3 pb-3 md:pb-5">
-      <img
+      <Image
         src={eLabConfig.heroLogo.src}
         alt={eLabConfig.heroLogo.alt}
         width={287}
         height={56}
-        fetchPriority="high"
+        priority
         className="-ml-[1.17rem] h-10 w-auto md:-ml-[1.64rem] md:h-14"
       />
       <span className="flex items-center gap-3 pb-0.5 md:pb-1">
         <span className="text-fg-subtle">by</span>
-        <img
+        <Image
           src="/assets/tum_ai_logo_new.svg"
           alt="TUM.ai Logo"
           width={100}
@@ -63,7 +64,8 @@ function Promises() {
   );
 }
 
-export const Hero = () => {
+/** E-Lab hero: cohort lockup, headline, promises and the live application CTA. */
+export function Hero() {
   return (
     <PageHero
       titleId={HERO_TITLE_ID}
@@ -82,4 +84,4 @@ export const Hero = () => {
       }
     />
   );
-};
+}

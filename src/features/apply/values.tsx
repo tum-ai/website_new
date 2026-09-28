@@ -1,4 +1,3 @@
-import type { LucideIcon } from "lucide-react";
 import {
   Aurora,
   BrandMark,
@@ -8,19 +7,10 @@ import {
   SectionHeader,
 } from "@/components/ds";
 import { Benefits } from "./benefits";
-
-interface Value {
-  icon: LucideIcon;
-  title: string;
-  text: string;
-}
-
-interface ValuesProps {
-  valuesWithIcons: Value[];
-}
+import { values } from "./data/apply";
 
 /** Ink feature band: the four values as glass spotlight cards. */
-export function Values({ valuesWithIcons }: ValuesProps) {
+export function Values() {
   return (
     <Section
       tone="ink"
@@ -43,7 +33,7 @@ export function Values({ valuesWithIcons }: ValuesProps) {
             </>
           }
         />
-        <Benefits benefits={valuesWithIcons} columns={2} variant="glass" />
+        <Benefits benefits={values} columns={2} variant="glass" />
       </Container>
     </Section>
   );

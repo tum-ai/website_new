@@ -4,13 +4,22 @@ import {
   Flame,
   Globe,
   Handshake,
+  type LucideIcon,
   MessageCircle,
   Rocket,
   Zap,
 } from "lucide-react";
 import { organizationFacts } from "@/config/organization";
 
-export const requirements = [
+/** An icon-led card: icon, title and a paragraph of copy. */
+export type IconItem = {
+  icon: LucideIcon;
+  title: string;
+  text: string;
+};
+
+/** "Is TUM.ai the right choice for me?": what we look for in applicants. */
+export const requirements: IconItem[] = [
   {
     icon: Flame,
     title: "Passion for AI",
@@ -33,7 +42,8 @@ export const requirements = [
   },
 ];
 
-export const values = [
+/** "Our Values". */
+export const values: IconItem[] = [
   {
     icon: Rocket,
     title: "Action, Ambition & Leadership",
@@ -47,7 +57,7 @@ export const values = [
   {
     icon: Book,
     title: "Learn & Grow",
-    text: "We're committed to ongoing learning and staying current with AI advancements. Embracing our diversity, we collaborate to deepen our understanding and maximize AI's potential across all domains. Therefore, we send 10-15 people per semester to institutions such as MIT, Harvard, Standford, and Berkeley to do research, exchange semesters, and their bachelor's / master's thesis.",
+    text: "We're committed to ongoing learning and staying current with AI advancements. Embracing our diversity, we collaborate to deepen our understanding and maximize AI's potential across all domains. Therefore, we send 10-15 people per semester to institutions such as MIT, Harvard, Stanford, and Berkeley to do research, exchange semesters, and their bachelor's / master's thesis.",
   },
   {
     icon: Handshake,
