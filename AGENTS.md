@@ -20,16 +20,16 @@ pnpm dev                  # dev server, output in .next-dev
 USE_MOCK_CMS=1 pnpm dev   # local CMS fixtures, no Sanity credentials needed
 
 # Local loop for agents: run after every change (seconds)
-pnpm lint                 # Biome check; `pnpm lint:apply` applies safe fixes and formatting
+pnpm lint                 # Biome check, warnings fail; `pnpm lint:apply` applies safe fixes
 pnpm typecheck            # Next route typegen + tsc --noEmit
 pnpm exec vitest run <files>   # only the tests you wrote or touched
 
 # CI runs the rest on every PR push (people may run them locally)
-pnpm test                 # Vitest, node + jsdom projects; test:watch, test:coverage
+pnpm test                 # Vitest, node + jsdom; test:watch; test:coverage (thresholds)
 pnpm verify               # lint + typecheck + test + build + test:perf
 pnpm test:e2e             # Playwright E2E in chromium + webkit
 pnpm test:e2e:visual      # visual regression against the Linux baselines
-pnpm knip                 # unused files, exports and dependencies (advisory in CI)
+pnpm knip                 # unused files, exports and dependencies (a CI gate)
 ```
 
 **Where tests run.** Agents run only `pnpm lint`, `pnpm typecheck` and targeted
@@ -71,13 +71,17 @@ the rules it can express.
 
 | Module | May import |
 |---|---|
-| `app` | `features/<x>/<x>-page.tsx` and page CSS only, plus components, config, lib, sanity, styles |
+| `app` | one `features/<x>/<x>-page.tsx` and that feature's CSS only, plus components, config, lib, styles |
 | `app/studio` | sanity, lib |
 | `features/<x>` | own files, `features/<y>` via its `index.ts`, ds, shell, `components/json-ld`, config, lib |
 | `components/ds` | own files, `lib/cn` |
 | `components/shell` | own files, ds, config, lib |
 | `components/*.tsx` | ds, config, lib |
 | `config` / `lib` / `sanity` | config and lib / lib / sanity and lib |
+| `src/proxy.ts` | config, lib |
+
+Outside the design system, import it through its barrel `@/components/ds`. The test has no
+exceptions.
 
 Every feature folder has a `<name>-page.tsx`, and routes import exactly that module. A feature
 `index.ts` never re-exports a page, and features never import CSS (the route imports page CSS).
@@ -97,7 +101,7 @@ index ships its islands and styles to every page importing that index.
   (`test/content-facts.test.ts` enforces this).
 - TSDoc on exported APIs and non-obvious contracts; no comments that restate the code.
 - Tests live next to the code (`x.test.ts`, `x.test.tsx`); `test/` is for repo-wide checks only.
-- Don't add Biome warnings. Rules with existing violations start at `warn` and become errors later.
+- Every Biome rule is an error (`--error-on-warnings`); a `biome-ignore` needs a reason.
 
 ## Where to change X
 
@@ -159,9 +163,10 @@ Hard rules:
   into `chore/redesign-cleanup` (#264), which is stacked on `feat/site-redesign` (#262). Nothing
   merges into `feat/site-redesign` without the maintainer's OK.
 - lefthook pre-commit runs `biome check --write --staged` and `typos`. CI (`.github/workflows/ci.yml`)
-  runs Lint, Typecheck (+ TypeGen freshness), Unit tests, Build (+ perf), E2E (3 shards, merged
-  report), Visual and Knip (advisory); `Verify` aggregates them. `[skip ci]` in a commit message
-  is only for screenshot restores and pure sync merges. Other workflows: `docs/github-actions.md`.
+  runs Lint, Typecheck (+ TypeGen freshness), Unit tests (+ coverage thresholds), Build (+ perf),
+  E2E (4 shards, merged report), Visual (2 shards) and Knip; `Verify` aggregates them. `[skip ci]`
+  in a commit message is only for screenshot restores and pure sync merges. Other workflows:
+  `docs/github-actions.md`.
 - Never hand-edit `pnpm-lock.yaml` or `*.generated.ts`: run pnpm or the generator.
 
 ## Gotchas

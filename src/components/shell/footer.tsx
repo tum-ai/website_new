@@ -36,7 +36,7 @@ export function Footer() {
         className="absolute -right-[6%] -bottom-[22%] -z-10 w-[min(46rem,90%)]"
         intensity="faint"
       />
-      {/* The bottom edge settles into the root canvas that Safari shows under its toolbar. */}
+      {/* The bottom edge settles into the root canvas that Safari shows under its toolbar (docs/browser-quirks.md). */}
       <TopBlend edge="bottom" />
       <Container className="pt-24 md:pt-32">
         <div className="grid gap-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-20">

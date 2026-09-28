@@ -14,35 +14,39 @@ running one; pushes to `main` are never cancelled.
 
 | Job | What it runs | Gates `Verify` |
 | --- | --- | --- |
-| Lint | `biome ci .` | yes |
+| Lint | `biome ci --error-on-warnings .` (every rule is an error) | yes |
 | Typecheck | `pnpm typecheck`, then `pnpm sanity:typegen:check` (fails if the generated Sanity types are stale) | yes |
-| Unit tests | `pnpm test:coverage`; uploads `coverage` | yes |
+| Unit tests | `pnpm test:coverage`, which fails below the coverage thresholds in `vitest.config.ts`; uploads `coverage` | yes |
 | Build | `pnpm build`, then `pnpm test:perf` (homepage budget) | yes |
-| E2E (1/3, 2/3, 3/3) | `pnpm test:e2e --shard=N/3` in the Playwright container with `USE_MOCK_CMS=1`; uploads a blob report per shard | yes (every shard) |
+| E2E (1/4 to 4/4) | `pnpm test:e2e --shard=N/4` in the Playwright container with `USE_MOCK_CMS=1`; uploads a blob report per shard | yes (every shard) |
 | E2E report | merges the shards' blob reports into one HTML report with traces (`playwright-report` artifact) | no |
-| Visual | `pnpm test:e2e:visual` in the Playwright container; uploads `visual-report` | yes |
-| Knip (advisory) | `pnpm knip`, with step-level `continue-on-error` | no |
+| Visual (1/2, 2/2) | `pnpm test:e2e:visual --shard=N/2` in the Playwright container; uploads `visual-report-N` | yes (both shards) |
+| Knip | `pnpm knip` (unused files, exports and dependencies; configured in `knip.json`) | yes |
 | Verify | fails unless every gating job succeeded | the required check |
 
 Notes:
 
-- **Sharding.** E2E is split across three runners, and each shard builds the site itself. A shared
-  build job would put its whole runtime on the critical path, and runner minutes are free for this
-  public repository. The shards run in `mcr.microsoft.com/playwright:v1.63.0-noble`, so browsers
-  are preinstalled.
+- **Sharding.** E2E is split across four runners and Visual across two, and each shard builds the
+  site itself. A shared build job would put its whole runtime on the critical path, and runner
+  minutes are free for this public repository. The shards run in
+  `mcr.microsoft.com/playwright:v1.63.0-noble`, so browsers are preinstalled.
 - **Visual** compares every route at 390 and 1440 px against the committed baselines in
-  `e2e/__screenshots__/linux/`, in the same image the baselines are captured in. The image tag
-  appears in `ci.yml` and `e2e-snapshots.yml`; keep both in step with `@playwright/test`
-  (`e2e-snapshots.yml` fails when they drift).
-- **Knip** is advisory: the step can fail while the job stays green, so it doesn't block
-  Dependabot auto-merge, which requires every check to pass.
+  `e2e/__screenshots__/linux/`, in the same image the baselines are captured in.
+- **Playwright image.** The tag appears in `ci.yml` (E2E, Visual) and `e2e-snapshots.yml` and must
+  match `@playwright/test`. Each of those jobs runs `.github/actions/check-playwright-image`, which
+  fails when the image lacks the browser builds the installed package expects, and names the tag
+  to set. A Dependabot Playwright update therefore fails until the tags are bumped in the same PR.
+- **Knip** gates `Verify`. Its ignores (generated Sanity types, the design system's exported prop
+  types, dependencies that are open questions) are listed with reasons in `knip.json`. Before it
+  became a gate it ran with step-level `continue-on-error`, which kept the job green but still
+  left a "Process completed with exit code 1" annotation on the run.
 - **Verify** runs even when a dependency failed (`if: always()`), so it fails instead of being
   skipped; a skipped check would count as passing.
 
 Reading a failure: `gh pr checks <number>` lists the jobs, and
 `gh run view --job <job id> --log-failed` prints the failing step's log. Artifacts:
-`gh run download <run id> -n <name>` (`visual-report` is large; comparing baseline PNG files from git is
-often quicker, see [testing.md](testing.md)).
+`gh run download <run id> -n <name>` (`visual-report-1` and `-2` are large; comparing baseline PNG
+files from git is often quicker, see [testing.md](testing.md)).
 
 ## Visual baselines (`e2e-snapshots.yml`)
 
@@ -80,14 +84,18 @@ sync merge of the base branch into a PR that was already green. Code changes alw
   vulnerabilities of moderate severity or higher.
 - `codeql.yml` (**CodeQL**): code scanning for JavaScript and TypeScript on PRs, pushes to `main`
   and weekly.
-- `workflow-lint.yml` (**Workflow Lint**): only when workflows or actions change; actionlint, plus
-  zizmor as an advisory step.
+- `workflow-lint.yml` (**Workflow Lint**): only when workflows or actions change; actionlint and
+  zizmor (pinned version) over `.github/`, including `dependabot.yml`. Both fail the check. zizmor's
+  triage lives in `.github/zizmor.yml`: the `self-repository` audit is off because actionlint
+  doesn't parse the `uses: $/...` syntax it suggests yet.
 
 ## Dependabot
 
 `.github/dependabot.yml` checks npm packages and GitHub Actions (including `.github/actions/*`)
 daily. Minor and patch updates are grouped (`vitest`, `playwright`, `npm-dev`, `npm-prod`,
-`github-actions`), and security updates get their own groups. Playwright updates land on their own
+`github-actions`), and security updates get their own groups. A 7-day `cooldown` holds back new
+releases for a week (security updates are exempt), so a compromised version is usually yanked
+before it is proposed. Playwright updates land on their own
 because they change the browsers and therefore the visual baselines.
 
 - `dependabot-triage.yml`: labels Dependabot PRs and approves safe ones. It runs on
