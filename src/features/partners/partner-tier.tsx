@@ -5,10 +5,13 @@ import type { PartnerTileSize } from "./partner-tile";
 
 const labels = { gold: "Gold", silver: "Silver", bronze: "Bronze" };
 
-/* Narrower rows and smaller tiles carry the tier hierarchy from `md` up. */
+/*
+ * Narrower rows (from `md` up) and smaller tiles carry the tier hierarchy:
+ * gold `xl`, silver `lg`, bronze `md`; the supporters below use `sm`.
+ */
 const rows: { width: string; size: PartnerTileSize }[] = [
-  { width: "md:w-full", size: "lg" },
-  { width: "md:w-5/6", size: "md" },
+  { width: "md:w-full", size: "xl" },
+  { width: "md:w-5/6", size: "lg" },
   { width: "md:w-3/4", size: "md" },
 ];
 

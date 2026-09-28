@@ -53,8 +53,7 @@ function FinderOption({
       size={null}
       onClick={onSelect}
       className={cn(
-        // `group/card` drives the IconBadge's hover tilt.
-        "group/card w-full justify-start gap-3 whitespace-normal rounded-2xl border border-hairline bg-raised p-3.5 text-left font-normal text-fg tracking-normal hover:border-violet-500/50 hover:bg-violet-50 sm:gap-4 sm:p-4 md:px-5",
+        "w-full justify-start gap-3 whitespace-normal rounded-2xl border border-hairline bg-raised p-3.5 text-left font-normal text-fg tracking-normal hover:border-violet-500/50 hover:bg-violet-50 sm:gap-4 sm:p-4 md:px-5",
         className,
       )}
     >

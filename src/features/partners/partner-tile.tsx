@@ -14,7 +14,7 @@ export type PartnerTileSize = NonNullable<LogoTileProps["size"]>;
  */
 export function PartnerTile({
   partner,
-  size = "lg",
+  size = "xl",
   transparent = false,
 }: {
   partner: Partner;

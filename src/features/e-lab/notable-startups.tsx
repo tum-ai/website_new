@@ -31,7 +31,8 @@ export function NotableStartups() {
               className="flex min-w-0 basis-[calc((100%-0.75rem)/2)] sm:basis-[calc((100%-1.5rem)/3)] lg:basis-[calc((100%-2.25rem)/4)]"
             >
               <LogoTile
-                size="lg"
+                size="xl"
+                responsive
                 name={startup.name}
                 src={startup.logoSrc}
                 href={startup.href}

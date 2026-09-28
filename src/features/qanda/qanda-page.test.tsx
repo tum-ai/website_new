@@ -36,7 +36,7 @@ function faqRegion() {
 }
 
 describe("QandAPage", () => {
-  test("sets the mission apart and lists every other question in the FAQ", () => {
+  test("sets the mission apart and lists every other question in the FAQ, the first open", () => {
     render(<QandAPage />);
     expect(
       screen.getByRole("heading", { level: 2, name: MISSION_QUESTION }),
@@ -48,9 +48,17 @@ describe("QandAPage", () => {
         .map((faq) => faq.question)
         .filter((question) => question !== MISSION_QUESTION),
     );
-    for (const trigger of triggers) {
+    const [first, ...rest] = triggers;
+    expect(first).toHaveAttribute("aria-expanded", "true");
+    for (const trigger of rest) {
       expect(trigger).toHaveAttribute("aria-expanded", "false");
     }
+  });
+
+  test("numbers the mission and the FAQ in their eyebrows", () => {
+    render(<QandAPage />);
+    expect(screen.getByText("01")).toBeInTheDocument();
+    expect(within(faqRegion()).getByText("02")).toBeInTheDocument();
   });
 
   test("opens and closes an answer with the keyboard", async () => {
@@ -77,9 +85,12 @@ describe("QandAPage", () => {
       .map((line) => line.replace(/\s+/g, " ").trim())
       .filter(Boolean);
 
-    await user.click(
-      within(faqRegion()).getByRole("button", { name: multiLine.question }),
-    );
+    const trigger = within(faqRegion()).getByRole("button", {
+      name: multiLine.question,
+    });
+    if (trigger.getAttribute("aria-expanded") === "false") {
+      await user.click(trigger);
+    }
     const panel = screen.getByText(intro).parentElement;
     if (!panel) throw new Error("expected the answer's content box");
     expect(
@@ -90,9 +101,11 @@ describe("QandAPage", () => {
   });
 
   test("has no axe violations with an answer open", async () => {
-    const user = userEvent.setup();
     const { container } = render(<QandAPage />);
-    await user.click(within(faqRegion()).getAllByRole("button")[0]);
+    expect(within(faqRegion()).getAllByRole("button")[0]).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    );
     expect(await axe(container)).toHaveNoViolations();
   });
 });

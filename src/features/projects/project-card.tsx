@@ -1,4 +1,3 @@
-import { Plus } from "lucide-react";
 import {
   BrandPanel,
   Dialog,
@@ -23,19 +22,12 @@ type ProjectCardProps = {
   sizes?: string;
 };
 
-function OpenHint() {
-  return (
-    <span className="grid size-10 place-items-center rounded-full bg-white/90 text-violet-950 shadow-soft backdrop-blur transition-[rotate,background-color] duration-500 ease-brand group-hover/zoom:bg-white motion-safe:group-hover/zoom:rotate-90 motion-reduce:transition-none">
-      <Plus className="size-4" />
-    </span>
-  );
-}
-
 /**
  * Task force tile: a MediaCard (photo, or a brand panel without one) with the
- * name on a scrim. The whole tile is one dialog trigger, labelled by the
- * name, that opens the detailed description. A server component: the ds
- * Dialog and the image fallback are the only client parts.
+ * name on a scrim. The whole tile is one dialog trigger (the card's
+ * `action`), labelled by the name, that opens the detailed description. A
+ * server component: the ds Dialog and the image fallback are the only client
+ * parts.
  */
 export function ProjectCard({
   project,
@@ -50,33 +42,19 @@ export function ProjectCard({
 
   return (
     <Dialog>
-      {/* The trigger covers the card, so this wrapper (not the card) is what
-          the pointer hovers: it carries the zoom group. */}
-      <div
-        className={cn(
-          "group/zoom relative isolate aspect-4/5 rounded-4xl",
-          className,
-        )}
-      >
-        <MediaCard
-          fill
-          image={{ src: image, alt }}
-          fallback={<BrandPanel seed={index} />}
-          eyebrow={<span aria-hidden="true">{number}</span>}
-          title={<span id={titleId}>{name}</span>}
-          description={
-            // Reserve three lines from `md` (two or more tiles per row), so
-            // titles share a baseline whatever the description's length.
-            <span className="line-clamp-3 md:min-h-[3lh]">{description}</span>
-          }
-          cornerHint={<OpenHint />}
-          sizes={sizes}
-        />
-        <DialogTrigger
-          aria-labelledby={titleId}
-          className="absolute inset-0 z-10 rounded-[inherit]"
-        />
-      </div>
+      <MediaCard
+        fill
+        className={cn("aspect-4/5", className)}
+        image={{ src: image, alt }}
+        fallback={<BrandPanel seed={index} />}
+        eyebrow={<span aria-hidden="true">{number}</span>}
+        title={name}
+        titleId={titleId}
+        description={description}
+        descriptionLines={3}
+        action={<DialogTrigger aria-labelledby={titleId} />}
+        sizes={sizes}
+      />
 
       <DialogContent size="lg">
         <div

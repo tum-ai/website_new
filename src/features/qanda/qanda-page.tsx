@@ -1,4 +1,5 @@
 import {
+  BulletList,
   ButtonLink,
   Container,
   CtaBand,
@@ -47,16 +48,7 @@ function Answer({ text }: { text: string }) {
   return (
     <>
       <p>{first}</p>
-      <ul className="mt-5 space-y-3">
-        {rest.map((line) => (
-          <li
-            key={line}
-            className="relative rounded-2xl bg-raised py-4 pr-5 pl-9 ring-1 ring-hairline ring-inset before:absolute before:top-[1.6rem] before:left-4 before:size-1.5 before:rounded-full before:bg-highlight"
-          >
-            {line}
-          </li>
-        ))}
-      </ul>
+      <BulletList items={rest} className="mt-5" />
     </>
   );
 }
@@ -81,6 +73,7 @@ function MissionStatement({ answer }: { answer: string }) {
         <SectionHeader
           id="mission-title"
           eyebrow="Mission"
+          index={1}
           title={MISSION_QUESTION}
           layout="stack"
           className="mb-0 md:mb-0 lg:col-span-4"
@@ -128,8 +121,10 @@ export function QandAPage() {
 
       <FaqSection
         tone="lavender"
+        index={mission ? 2 : 1}
         title="Questions & answers"
         items={questions}
+        defaultValue={questions[0] ? [questions[0].question] : undefined}
       />
 
       <CtaBand

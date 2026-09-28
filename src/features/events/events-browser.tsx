@@ -173,8 +173,8 @@ export function EventTotals() {
             <span className="flex items-center gap-2 font-medium text-fg-muted text-small">
               {item.live && item.value > 0 ? (
                 <span aria-hidden className="relative flex size-2">
-                  <span className="absolute inset-0 rounded-full bg-violet-400 motion-safe:animate-pulse-ring" />
-                  <span className="relative size-2 rounded-full bg-violet-400" />
+                  <span className="absolute inset-0 rounded-full bg-indicator motion-safe:animate-pulse-ring" />
+                  <span className="relative size-2 rounded-full bg-indicator" />
                 </span>
               ) : null}
               {item.label}
@@ -207,15 +207,6 @@ export function EventTotals() {
         );
       })}
     </div>
-  );
-}
-
-/** "(4)" set small and top-aligned after a section title. */
-function SectionCount({ value }: { value: number }) {
-  return (
-    <span className="tabular ml-1 align-top text-heading-sm text-highlight">
-      ({value})
-    </span>
   );
 }
 
@@ -335,11 +326,8 @@ export function EventListings() {
               eyebrow="Calendar"
               index={1}
               layout="stack"
-              title={
-                <>
-                  Upcoming Events <SectionCount value={upcomingCount} />
-                </>
-              }
+              title="Upcoming Events"
+              count={upcomingCount}
             />
             <UpcomingMonths months={upcoming} />
           </Container>
@@ -359,11 +347,8 @@ export function EventListings() {
               eyebrow="Archive"
               index={upcomingCount > 0 ? 2 : 1}
               layout="stack"
-              title={
-                <>
-                  Past Events <SectionCount value={pastCount} />
-                </>
-              }
+              title="Past Events"
+              count={pastCount}
             />
             <PastMonths months={past} />
           </Container>

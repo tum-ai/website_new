@@ -152,8 +152,8 @@ test.describe("disclosure widgets", { tag: "@keyboard" }, () => {
     const first = triggers.first();
     const second = triggers.nth(1);
 
-    // Every answer starts closed (ds FaqSection).
-    await expect(first).toHaveAttribute("aria-expanded", "false");
+    // The first answer starts open (FaqSection `defaultValue`), the rest closed.
+    await expect(first).toHaveAttribute("aria-expanded", "true");
     await expect(second).toHaveAttribute("aria-expanded", "false");
 
     await second.focus();

@@ -20,7 +20,10 @@ export function Values() {
       className="overflow-clip"
     >
       <Aurora intensity="subtle" />
-      <BrandMark className="absolute -bottom-[18%] -left-[14%] -z-10 w-[min(52rem,90%)] text-white/[0.03]" />
+      <BrandMark
+        className="absolute -bottom-[18%] -left-[14%] -z-10 w-[min(52rem,90%)]"
+        intensity="faint"
+      />
       <Container>
         <SectionHeader
           id="apply-values-title"

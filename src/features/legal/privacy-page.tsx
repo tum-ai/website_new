@@ -36,10 +36,6 @@ const sections = [
   },
 ] satisfies LegalTocItem[];
 
-/** Caps the h1's font size so its longest word fits a phone column. */
-const titleFitClass =
-  "[font-size:min(var(--text-display-lg),calc((100vw-2*var(--gutter))/10))]!";
-
 const siteUrl = absoluteUrl();
 const applyUrl = absoluteUrl("/apply");
 const privacyUrl = absoluteUrl("/data-privacy");
@@ -60,18 +56,12 @@ export function PrivacyPage() {
   return (
     <main lang="de">
       <PageHero
-        size="md"
+        // "Datenschutzerklärung" is ~9.7em wide and must not hyphenate (a lone
+        // "rung" would strand on phones), so the title eases down just enough
+        // to fit the column (plain display-lg from ~430px up).
+        size="fit"
         title="Datenschutzerklärung TUM.ai e.V."
         actions={<LegalNav current="/data-privacy" />}
-        // "Datenschutzerklärung" is ~9.7em wide. SplitWords renders each word
-        // as an inline-block, so it must not hyphenate (a lone "rung" would
-        // strand on phones); instead the size eases down just enough for the
-        // word to fit the column (plain display-lg from ~430px up). Only the
-        // font size changes: a `text-*` class would make cn() drop
-        // `text-display-lg` and with it the display weight, tracking and
-        // line height, so this is a plain font-size property, marked
-        // important to win over the token's own font-size.
-        classNames={{ title: titleFitClass }}
       />
 
       <Section as="div" tone="paper" spacing="lg">
