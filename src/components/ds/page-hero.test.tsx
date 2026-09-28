@@ -32,12 +32,9 @@ describe("PageHero", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
-  test("is a flat band unless the aurora is opted into", () => {
-    const { container, rerender } = render(<PageHero title="Community" />);
+  test("is a flat band, with no film grain", () => {
+    const { container } = render(<PageHero title="Community" />);
     expect(container.querySelector(".grain")).toBeNull();
-
-    rerender(<PageHero title="Community" aurora />);
-    expect(container.querySelector(".grain")).not.toBeNull();
   });
 
   test("sets the whole title in the tone's accent with emphasis highlight", () => {

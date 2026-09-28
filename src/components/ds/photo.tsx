@@ -31,7 +31,11 @@ export type PhotoProps = Omit<ComponentProps<"figure">, "children"> &
   VariantProps<typeof photoFrameStyles> & {
     /** Image path under /public or an allowed remote URL. */
     src: string;
-    /** What the photo shows, for screen readers. Required: photos carry content. */
+    /**
+     * What the photo shows, for screen readers. Required: photos carry
+     * content. Screen readers read it before the caption, so describe what
+     * the caption leaves out rather than repeating it.
+     */
     alt: string;
     /**
      * A factual caption under the photo: what, where and when. Never a

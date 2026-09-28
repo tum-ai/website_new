@@ -494,7 +494,7 @@ export function DesignSystemPage() {
           ))}
         </div>
         <div className="mt-12 grid items-start gap-6 md:grid-cols-3">
-          <Label>Photo · rounded 3/2, 4/5, bleed 16/10</Label>
+          <Label>Photo · rounded 3/2, 4/5, 4/3, 1/1, bleed 16/10</Label>
           <Photo
             className="md:col-start-1"
             src="/assets/homepage/Onboarding25.webp"
@@ -515,6 +515,18 @@ export function DesignSystemPage() {
             aspect="16/10"
             src="/assets/homepage/IBM_visit.webp"
             alt="Members on a company visit to IBM"
+            sizes="(min-width: 768px) 30vw, 100vw"
+          />
+          <Photo
+            aspect="4/3"
+            src="/assets/homepage/Makeathon.webp"
+            alt="The Makeathon team on stage"
+            sizes="(min-width: 768px) 30vw, 100vw"
+          />
+          <Photo
+            aspect="1/1"
+            src="/assets/homepage/getaway24.webp"
+            alt="Members at a long table in a vaulted restaurant"
             sizes="(min-width: 768px) 30vw, 100vw"
           />
         </div>

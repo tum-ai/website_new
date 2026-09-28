@@ -2,7 +2,6 @@ import { cva, type VariantProps } from "class-variance-authority";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import { Actions } from "./actions";
-import { Aurora } from "./aurora";
 import { BrandMark } from "./brand-mark";
 import { Container } from "./container";
 import { Section, type Tone } from "./section";
@@ -77,14 +76,6 @@ export type PageHeroProps = VariantProps<typeof titleStyles> & {
   tone?: Extract<Tone, "ink" | "night">;
   /** Large drifting logomark in the background. Default true. */
   mark?: boolean;
-  /**
-   * Aurora light field and film grain behind the headline. Default false:
-   * heroes are flat tone bands.
-   *
-   * @deprecated The flat band is the house style; this opt-in is kept for
-   * one release and will be removed.
-   */
-  aurora?: boolean;
   /** id of the `h1`, referenced by the section's `aria-labelledby`. */
   titleId?: string;
   /** Class overrides for the inner parts. */
@@ -111,7 +102,6 @@ export function PageHero({
   splitTitle = true,
   tone = "ink",
   mark = true,
-  aurora = false,
   titleId,
   classNames,
   className,
@@ -120,14 +110,12 @@ export function PageHero({
     <Section
       tone={tone}
       spacing="none"
-      grain={aurora}
       aria-labelledby={titleId}
       className={cn(
         "overflow-clip pt-[calc(var(--header-height)+clamp(3rem,7vw,6rem))] pb-[clamp(3.5rem,7vw,6rem)]",
         className,
       )}
     >
-      {aurora ? <Aurora /> : null}
       {mark ? (
         <BrandMark
           className="absolute top-[6%] -right-[12%] -z-10 w-[min(64rem,78%)]"

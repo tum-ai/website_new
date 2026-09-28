@@ -153,7 +153,7 @@ Layout
 - `SectionHeader`: `eyebrow`, `index`, `title`, `count` (a small "(4)" after the title), `lead`, `actions`, `layout` (`split` | `stack` | `center`), `size` (`md`, `lg`, or `xl` for a page's lead statement) and `headingAs`. Reveals on scroll.
 
 Page patterns
-- `PageHero`: every page starts with one: a flat ink band by default (no aurora or grain; `aurora` is a deprecated opt-in). It accepts `eyebrow`, `title` (strings rise in word by word, and `<Highlight>` parts work), `lead`, `actions`, an optional `media` column, `children` (for stats or filters under the headline) and `classNames` slots. `emphasis="highlight"` sets the whole title in the tone's accent, as on the brand guide's section slides; keep the default when the title marks words with `<Highlight>`. `size="fit"` caps the title for long single words (the privacy page). It clears the fixed header.
+- `PageHero`: every page starts with one: a flat ink band (no aurora or grain). It accepts `eyebrow`, `title` (strings rise in word by word, and `<Highlight>` parts work), `lead`, `actions`, an optional `media` column, `children` (for stats or filters under the headline) and `classNames` slots. `emphasis="highlight"` sets the whole title in the tone's accent, as on the brand guide's section slides; keep the default when the title marks words with `<Highlight>`. `size="fit"` caps the title for long single words (the privacy page). It clears the fixed header.
 - `CtaBand`: closing call to action. `variant="panel"` is an inset ink panel; `variant="band"` is full bleed. Takes `children` and `classNames.footer`.
 - `CtaPanel`: the panel surface of `CtaBand` on its own (ink, aurora, grain, logomark), for places a whole band can't go, such as a bento cell.
 - `FaqSection`: sticky heading beside an accordion, with an eyebrow `index` and `defaultValue` (questions that start open). `FaqList` renders the accordion on its own and takes `defaultValue` too.
@@ -642,7 +642,6 @@ No props of its own; see the source file for the root element or Base UI part it
 | `splitTitle?` | `boolean` | Animate the title word by word (`<SplitWords>`). Set false when the title brings its own SplitWords, e.g. one per line with custom delays. |
 | `tone?` | `"ink" \| "night"` | Dark band tone. Default `ink`. |
 | `mark?` | `boolean` | Large drifting logomark in the background. Default true. |
-| `aurora?` | `boolean` | **Deprecated.** Aurora light field and film grain behind the headline. Default false: heroes are flat tone bands. Kept for one release. |
 | `titleId?` | `string` | id of the `h1`, referenced by the section's `aria-labelledby`. |
 | `classNames?` | `PageHeroClassNames` | Class overrides for the inner parts. |
 | `className?` | `string` | Classes merged over the section (e.g. its top and bottom padding). |
@@ -681,7 +680,7 @@ No props of its own; see the source file for the root element or Base UI part it
 | Prop | Type | Description |
 | --- | --- | --- |
 | `src` | `string` | Image path under /public or an allowed remote URL. |
-| `alt` | `string` | What the photo shows, for screen readers. Required: photos carry content. |
+| `alt` | `string` | What the photo shows, for screen readers. Required: photos carry content. Screen readers read it before the caption, so describe what the caption leaves out rather than repeating it. |
 | `caption?` | `ReactNode` | A factual caption under the photo: what, where and when. Never a slogan; leave it out rather than guess. |
 | `aspect?` | `"3/2" \| "4/3" \| "16/10" \| "4/5" \| "1/1"` | Aspect ratio of the frame; the photo is cropped to fill it. Default `3/2`. |
 | `shape?` | `"rounded" \| "bleed"` | `rounded` is the brand's large photo radius; `bleed` has square corners for photos that run to the edge. Default `rounded`. |
