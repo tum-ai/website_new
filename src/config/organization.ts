@@ -50,15 +50,8 @@ export const legalEntity = {
   /**
    * Board members authorised to represent the association (Imprint
    * "Vertreter"), as the Imprint lists them.
-   *
-   * TODO(content): confirm this is the current board.
    */
-  representatives: [
-    "Sami Haddouti",
-    "Julian Sikora",
-    "William Homburg",
-    "Luca Fink",
-  ],
+  representatives: ["Julius Riel", "Elena Rostomashvili", "Nico Kirchner"],
 } as const satisfies {
   legalName: string;
   alternateNames: readonly string[];

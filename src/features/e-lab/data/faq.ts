@@ -39,7 +39,7 @@ export const faq = [
 
   {
     question: "When is the application deadline?",
-    answer: `The application phase closes on ${eLabApplicationCopy.deadline}.`,
+    answer: `The application phase closes on ${eLabApplicationCopy.deadlineLabel}.`,
   },
   {
     question: "Can I apply with a team?",

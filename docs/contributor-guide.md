@@ -61,7 +61,7 @@ Facts that change every semester or cohort live in one file each under `src/conf
 
 | Update | Edit |
 |---|---|
-| E-Lab application round: form link and deadline | `src/config/e-lab.ts`: `applicationUrl`, `applicationDeadlineDate`, `applicationDeadlineTime` (Munich time, as shown on the site). Applications close by themselves after the deadline minute: the E-Lab page, its buttons and badge, and the landing card switch live, and `/e-lab` regenerates every 5 minutes. `applicationsOpen` is the master switch for closing early or while no round is announced. |
+| E-Lab application round: form link and deadline | `src/config/e-lab.ts`: `applicationUrl`, `applicationDeadlineDate`, `applicationDeadlineTime` (Munich time, as shown on the site). Applications close by themselves at exactly the deadline (for "22:00": open at 21:59:59, closed at 22:00:00): the E-Lab page, its buttons and badge, and the landing card switch live, and `/e-lab` regenerates every 5 minutes. `applicationsOpen` is the master switch for closing early or while no round is announced. |
 | When the next E-Lab application phase opens (shown while closed) | `src/config/e-lab.ts`: `nextApplicationWindow` |
 | New E-Lab cohort | `src/config/e-lab.ts`: `currentIteration` (and `heroLogo.src` if the logo changes). The completed-iterations metric follows. |
 | E-Lab length or money raised | `src/config/e-lab.ts`: `programWeeks`, `ventureFundingMillions` |

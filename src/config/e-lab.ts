@@ -11,12 +11,16 @@ export type ELabConfig = {
   currentIteration: string;
   /**
    * Master switch for the application phase. Applications also close by
-   * themselves at the end of the deadline minute; set this to `false` to
-   * close early or while no round is announced.
+   * themselves at the deadline instant; set this to `false` to close early or
+   * while no round is announced.
    */
   applicationsOpen: boolean;
   applicationUrl: string;
-  /** Munich time, written as shown on the site: "26.09.2026" and "23:59". */
+  /**
+   * Munich time, written as shown on the site: "27.09.2026" and "22:00".
+   * Applications close at exactly this instant: open at 21:59:59, closed at
+   * 22:00:00.
+   */
   applicationDeadlineDate: string;
   applicationDeadlineTime: string;
   /** When the next application phase opens; shown while applications are closed. */
@@ -40,8 +44,8 @@ export const eLabConfig: ELabConfig = {
   currentIteration,
   applicationsOpen: true,
   applicationUrl: "https://tally.so/r/xXBkW9",
-  applicationDeadlineDate: "26.09.2026",
-  applicationDeadlineTime: "23:59",
+  applicationDeadlineDate: "27.09.2026",
+  applicationDeadlineTime: "22:00",
   nextApplicationWindow: "August",
   programWeeks: 14,
   ventureFundingMillions: 8,
@@ -51,12 +55,10 @@ export const eLabConfig: ELabConfig = {
   },
 };
 
-/** The first instant after the deadline minute (Munich time). */
-export const eLabApplicationsCloseAt = new Date(
-  parseMunichDateTime(
-    eLabConfig.applicationDeadlineDate,
-    eLabConfig.applicationDeadlineTime,
-  ).getTime() + 60_000,
+/** The instant applications close: the deadline itself, in Munich time. */
+export const eLabApplicationsCloseAt = parseMunichDateTime(
+  eLabConfig.applicationDeadlineDate,
+  eLabConfig.applicationDeadlineTime,
 );
 
 /** Whether an application window is open at `now`. */
@@ -94,10 +96,15 @@ export const eLabCompletedIterations =
 
 const cohortName = `E-Lab ${eLabConfig.currentIteration}`;
 
+const deadline = `${eLabConfig.applicationDeadlineDate} at ${eLabConfig.applicationDeadlineTime}`;
+
 /** Copy that is the same in every phase. */
 export const eLabApplicationCopy = {
   cohortName,
-  deadline: `${eLabConfig.applicationDeadlineDate} at ${eLabConfig.applicationDeadlineTime}`,
+  /** "27.09.2026 at 22:00", for tight UI such as the status badge. */
+  deadline,
+  /** "27.09.2026 at 22:00 (Munich time)", for prose such as the FAQ. */
+  deadlineLabel: `${deadline} (Munich time)`,
 } as const;
 
 function phaseCopy(open: boolean) {
