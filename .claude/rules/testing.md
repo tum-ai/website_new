@@ -38,4 +38,6 @@ paths:
     `toHaveScreenshot`;
   - visual baselines come only from the CI Playwright container (the update workflow), never from
     a local macOS run;
+  - screenshots hide photos, videos and film grain (`e2e/visual-screenshot.css`): they test layout,
+    not image content, and keep the baselines small and stable;
   - mark a known failure `test.fixme` with a comment naming the owner, never delete it.

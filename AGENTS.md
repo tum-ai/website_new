@@ -110,7 +110,7 @@ index ships its islands and styles to every page importing that index.
 | Interactive UI (islands, ds behaviour) | component test (`*.test.tsx`: Testing Library, user-event, `axe()` from `@test/axe`) |
 | Site facts | `content-facts` and `e-lab-content` tests stay green; derive expectations from config |
 | New route or user flow | E2E spec and the E2E route list (coming in W1-E2E); axe runs on every route |
-| Visible UI change | E2E visual baselines updated through CI (coming in W1-E2E), and screenshots at 390 and 1440 px in the PR |
+| Visible UI change | Visual baselines regenerated in CI: add the `update-snapshots` label to the PR (the bot commits them; push again or reopen the PR to re-run CI), and list each intended diff in the PR |
 | Homepage markup or images | `pnpm build && pnpm test:perf` (preload and SSR budget) |
 | New folder or import path | `src/architecture.test.ts` passes without new exceptions |
 
@@ -145,7 +145,7 @@ Read `docs/design-system.md` before UI work. The ds API conventions (cva variant
   into `chore/redesign-cleanup` (#264), which is stacked on `feat/site-redesign` (#262). Nothing
   merges into `feat/site-redesign` without the maintainer's OK.
 - lefthook pre-commit runs `biome check --write --staged` and `typos`. CI (`.github/workflows/ci.yml`)
-  runs Lint, Typecheck, Unit tests, Build (+ perf), E2E and Knip (advisory); `Verify` aggregates
+  runs Lint, Typecheck, Unit tests, Build (+ perf), E2E, Visual and Knip (advisory); `Verify` aggregates
   them. Other workflows: `docs/github-actions.md`.
 - Never hand-edit `pnpm-lock.yaml` or `*.generated.ts`: run pnpm or the generator.
 

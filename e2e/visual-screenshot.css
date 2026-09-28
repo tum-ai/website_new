@@ -1,0 +1,25 @@
+/*
+ * Applied only while `toHaveScreenshot` captures (playwright.config.ts
+ * `expect.toHaveScreenshot.stylePath`), in the visual spec only.
+ *
+ * Photos, videos and the film-grain texture are hidden but keep their boxes,
+ * so layout, size and position changes still show. Two reasons:
+ * - Size: noisy pixels barely compress in PNG. With them, the 48 baselines
+ *   were 90 MB (grain sits on the footer of every page and on dark bands).
+ * - Stability: WebKit decoded the same photos differently between runs, so
+ *   `/` and `/partners` failed against baselines captured minutes earlier.
+ * Image content comes from the CMS and assets, not from the code under test.
+ * `visibility` (not a mask) keeps text layered over images visible, such as
+ * the home hero over its photo mosaic.
+ */
+img,
+video,
+picture {
+  /* biome-ignore lint/complexity/noImportantStyles: must beat utility classes and inline styles while capturing */
+  visibility: hidden !important;
+}
+
+.grain {
+  /* biome-ignore lint/complexity/noImportantStyles: must beat the grain utility while capturing */
+  background-image: none !important;
+}
