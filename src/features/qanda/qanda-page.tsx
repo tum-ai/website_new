@@ -1,16 +1,14 @@
 import {
-  Accordion,
-  AccordionItem,
-  AccordionPanel,
-  AccordionTrigger,
   ButtonLink,
   Container,
   CtaBand,
-  Eyebrow,
+  type FaqItem,
+  FaqSection,
   Highlight,
   PageHero,
   Reveal,
   Section,
+  SectionHeader,
 } from "@/components/ds";
 import { contactEmails } from "@/config/contact";
 import { faqs } from "./data/qanda";
@@ -18,11 +16,10 @@ import { faqs } from "./data/qanda";
 /**
  * The homepage's "More on our Mission" link lands here, so the mission answer
  * opens the page as an editorial statement; every other question stays in the
- * accordion. Falls back to a plain accordion if the entry is ever renamed.
+ * FAQ. Falls back to a plain FAQ if the entry is ever renamed.
  */
 const MISSION_QUESTION = "What is TUM.ai's Mission?";
 const mission = faqs.find((faq) => faq.question === MISSION_QUESTION);
-const questions = faqs.filter((faq) => faq !== mission);
 
 /** Collapses the indentation of multi-line template-literal answers. */
 function answerLines(answer: string) {
@@ -40,10 +37,13 @@ function sentences(text: string) {
     .split(/(?<=\.)\s+(?=[A-Z])/);
 }
 
+/**
+ * One answer. A multi-line answer ("Members can join one of two tracks:")
+ * introduces its remaining lines as a list.
+ */
 function Answer({ text }: { text: string }) {
   const [first, ...rest] = answerLines(text);
   if (rest.length === 0) return <p>{first}</p>;
-  // "Members can join one of two tracks:" introduces the tracks as a list.
   return (
     <>
       <p>{first}</p>
@@ -51,7 +51,7 @@ function Answer({ text }: { text: string }) {
         {rest.map((line) => (
           <li
             key={line}
-            className="relative rounded-2xl bg-raised py-4 pr-5 pl-9 shadow-[inset_0_0_0_1px_var(--tone-hairline)] before:absolute before:top-[1.6rem] before:left-4 before:size-1.5 before:rounded-full before:bg-highlight"
+            className="relative rounded-2xl bg-raised py-4 pr-5 pl-9 ring-1 ring-hairline ring-inset before:absolute before:top-[1.6rem] before:left-4 before:size-1.5 before:rounded-full before:bg-highlight"
           >
             {line}
           </li>
@@ -60,6 +60,13 @@ function Answer({ text }: { text: string }) {
     </>
   );
 }
+
+const questions: FaqItem[] = faqs
+  .filter((faq) => faq !== mission)
+  .map((faq) => ({
+    question: faq.question,
+    answer: <Answer text={faq.answer} />,
+  }));
 
 function MissionStatement({ answer }: { answer: string }) {
   const [lead, ...rest] = sentences(answer);
@@ -71,16 +78,13 @@ function MissionStatement({ answer }: { answer: string }) {
       aria-labelledby="mission-title"
     >
       <Container className="grid gap-10 lg:grid-cols-12 lg:gap-16">
-        <div className="lg:col-span-4">
-          <Reveal>
-            <Eyebrow index="01">Mission</Eyebrow>
-          </Reveal>
-          <Reveal delay={60}>
-            <h2 id="mission-title" className="mt-5 text-display-md text-fg">
-              {MISSION_QUESTION}
-            </h2>
-          </Reveal>
-        </div>
+        <SectionHeader
+          id="mission-title"
+          eyebrow="Mission"
+          title={MISSION_QUESTION}
+          layout="stack"
+          className="mb-0 md:mb-0 lg:col-span-4"
+        />
         <div className="lg:col-span-8 lg:pt-10">
           <Reveal delay={120}>
             <p className="font-medium text-fg text-heading-lg">{lead}</p>
@@ -108,7 +112,6 @@ function MissionStatement({ answer }: { answer: string }) {
 }
 
 export function QandAPage() {
-  const faqIndex = mission ? "02" : "01";
   return (
     <main>
       <PageHero
@@ -123,50 +126,11 @@ export function QandAPage() {
 
       {mission ? <MissionStatement answer={mission.answer} /> : null}
 
-      <Section
+      <FaqSection
         tone="lavender"
-        spacing="lg"
-        id="faq"
-        aria-labelledby="faq-title"
-      >
-        <Container className="grid gap-12 lg:grid-cols-12 lg:gap-16">
-          <div className="lg:sticky lg:top-32 lg:col-span-4 lg:self-start">
-            <Reveal>
-              <Eyebrow index={faqIndex}>FAQ</Eyebrow>
-            </Reveal>
-            <Reveal delay={60}>
-              <h2 id="faq-title" className="mt-5 text-display-md text-fg">
-                Questions &amp; answers
-              </h2>
-            </Reveal>
-          </div>
-          {/* Fade only: the default up+blur reveal would blur this whole, very
-              tall accordion at once, which is heavy in Safari and clipped to
-              the element's box there. */}
-          <Reveal delay={120} variant="fade" className="lg:col-span-8">
-            <Accordion defaultValue={[questions[0]?.question]}>
-              {questions.map((faq, index) => (
-                <AccordionItem key={faq.question} value={faq.question}>
-                  <AccordionTrigger>
-                    <span className="flex items-baseline gap-4 md:gap-6">
-                      <span
-                        aria-hidden
-                        className="tabular w-6 shrink-0 font-semibold text-fg-subtle text-meta"
-                      >
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-                      <span>{faq.question}</span>
-                    </span>
-                  </AccordionTrigger>
-                  <AccordionPanel className="pr-0 pl-10 md:pr-14 md:pl-12">
-                    <Answer text={faq.answer} />
-                  </AccordionPanel>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </Reveal>
-        </Container>
-      </Section>
+        title="Questions & answers"
+        items={questions}
+      />
 
       <CtaBand
         titleId="qanda-contact-title"
