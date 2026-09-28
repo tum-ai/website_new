@@ -1,3 +1,4 @@
+import type { LogoItem } from "@/components/ds";
 import { getSafeExternalUrl } from "@/lib/security";
 import type { Partner, ResearchProject, ResearchStatus } from "@/lib/types";
 
@@ -42,8 +43,6 @@ export type ResearchEntry = {
 export type ResearchIndex = {
   /** Institutions named on projects; `ProjectAffiliation.index` points here. */
   affiliations: string[];
-  /** Research partners that no project names yet, in CMS order. Not numbered. */
-  otherPartners: string[];
   ongoing: ResearchEntry[];
   completed: ResearchEntry[];
 };
@@ -125,13 +124,12 @@ function hasStatus(
 }
 
 /**
- * Builds the /research index from the CMS: the numbered affiliations, the
- * research partners no project names yet, and the ongoing and completed
- * projects in CMS order. Projects without a status are not listed.
+ * Builds the /research index from the CMS: the numbered affiliations and
+ * the ongoing and completed projects in CMS order. Projects without a
+ * status are not listed.
  */
 export function getResearchIndex(
   projects: readonly ResearchProject[],
-  researchPartners: readonly Partner[],
 ): ResearchIndex {
   const listed = projects.filter(hasStatus);
   const ordered = [
@@ -161,20 +159,36 @@ export function getResearchIndex(
     };
   });
 
-  const otherPartners: string[] = [];
-  for (const { name } of researchPartners) {
-    const partner = name?.trim();
-    if (!partner) continue;
-    const named = [...affiliations, ...otherPartners].some(
-      (known) => sameName(known, partner) || isPartOf(known, partner),
-    );
-    if (!named) otherPartners.push(partner);
-  }
-
   return {
     affiliations,
-    otherPartners,
     ongoing: entries.filter((entry) => entry.status === "ongoing"),
     completed: entries.filter((entry) => entry.status === "completed"),
   };
+}
+
+/* Sanity asset file names end in "-<width>x<height>.<ext>". */
+const sanityDimensions = /-(\d+)x(\d+)\.[a-z0-9]+(?:\?.*)?$/i;
+
+/**
+ * The research partners for the logo strip, in CMS order: those with
+ * artwork, linked when their link is a safe http(s) URL. The aspect ratio
+ * comes from the Sanity asset's file name, so every logo can be sized to
+ * the same area; other URLs leave it unknown.
+ */
+export function getPartnerLogos(partners: readonly Partner[]): LogoItem[] {
+  return partners.flatMap(({ name, image, link }) => {
+    const label = name?.trim();
+    if (!label || !image) return [];
+    const match = sanityDimensions.exec(image);
+    const width = Number(match?.[1]);
+    const height = Number(match?.[2]);
+    return [
+      {
+        name: label,
+        src: image,
+        href: getSafeExternalUrl(link) ?? undefined,
+        aspectRatio: width > 0 && height > 0 ? width / height : undefined,
+      },
+    ];
+  });
 }

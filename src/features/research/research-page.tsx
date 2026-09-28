@@ -4,6 +4,7 @@ import {
   Container,
   Display,
   EmptyState,
+  LogoWall,
   PageHero,
   Reveal,
   Section,
@@ -22,7 +23,7 @@ import {
 } from "./data/research-copy";
 import { rexInstitutions, rexLead, rexOrigin, rexProcess } from "./data/rex";
 import { ProjectList, ReferenceList } from "./project-list";
-import { getResearchIndex } from "./research";
+import { getPartnerLogos, getResearchIndex } from "./research";
 
 /**
  * The /research page, set like a paper's first page. The hero is the title
@@ -40,10 +41,8 @@ export function ResearchPage({
   /** Partners in the "Research Partners" category. */
   researchPartners: Partner[];
 }) {
-  const { affiliations, otherPartners, ongoing, completed } = getResearchIndex(
-    projects,
-    researchPartners,
-  );
+  const { affiliations, ongoing, completed } = getResearchIndex(projects);
+  const partnerLogos = getPartnerLogos(researchPartners);
 
   return (
     <main>
@@ -71,7 +70,6 @@ export function ResearchPage({
             id="hero-affiliations"
             label="Affiliations"
             affiliations={affiliations}
-            otherPartners={otherPartners}
             className="border-hairline border-t pt-8 md:pt-10"
           />
         ) : null}
@@ -83,6 +81,22 @@ export function ResearchPage({
         id="abstract"
         aria-labelledby="abstract-title"
       >
+        {partnerLogos.length > 0 ? (
+          <Container className="mb-24 md:mb-32">
+            {/* The list below carries the same name for assistive tech. */}
+            <p aria-hidden="true" className="text-fg-subtle text-meta">
+              Research partners
+            </p>
+            <Reveal variant="fade">
+              <LogoWall
+                layout="strip"
+                logos={partnerLogos}
+                label="Research partners"
+                className="mt-8 border-hairline border-b pb-16 md:pb-20"
+              />
+            </Reveal>
+          </Container>
+        ) : null}
         <Container className="grid gap-14 lg:grid-cols-12 lg:gap-12">
           <div className="lg:col-span-6">
             <h2 id="abstract-title" className="text-fg-subtle text-meta">

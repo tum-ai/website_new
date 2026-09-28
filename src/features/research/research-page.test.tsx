@@ -33,10 +33,16 @@ afterEach(() => {
 
 const projects = getMockResearchProjects();
 const partners: Partner[] = [
-  { id: "ibm", name: "IBM", category: "Research Partners" },
+  {
+    id: "ibm",
+    name: "IBM",
+    image: "/assets/partners/logos/ibm.png",
+    link: "https://www.ibm.com/",
+    category: "Research Partners",
+  },
   { id: "hms", name: "Harvard Medical School", category: "Research Partners" },
 ];
-const index = getResearchIndex(projects, partners);
+const index = getResearchIndex(projects);
 
 function renderPage() {
   return render(
@@ -62,7 +68,7 @@ describe("ResearchPage", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
-  test("opens on the affiliation index and closes on it with an open slot", () => {
+  test("opens on the affiliation index, closes on it with an open slot", () => {
     renderPage();
     const [opening, closingList] = screen.getAllByRole("list", {
       name: "Affiliations",
@@ -76,9 +82,15 @@ describe("ResearchPage", () => {
     expect(
       within(closingList).getAllByRole("listitem").at(-1),
     ).toHaveTextContent(`${index.affiliations.length + 1}${closing.openSlot}`);
+    // Only partners with artwork make the strip; each links to its lab.
     expect(
-      screen.getByText(/Also working with Harvard Medical School\./),
-    ).toBeInTheDocument();
+      within(
+        screen.getByRole("list", { name: "Research partners" }),
+      ).getAllByRole("link"),
+    ).toHaveLength(1);
+    expect(
+      screen.getByRole("link", { name: /^IBM\s?\(opens in a new tab\)$/ }),
+    ).toHaveAttribute("href", "https://www.ibm.com/");
   });
 
   test("lists every project once and links each paper by its host", () => {
