@@ -51,7 +51,7 @@ export const departments: Department[] = [
   {
     name: "Marketing",
     // TODO(content): the two sentences are alternative drafts (they were
-    // joined by a stray "oder"); keep one?
+    // joined by a stray German "or"); keep one?
     icon: Megaphone,
     description:
       "The Marketing Department shapes TUM.ai’s public image by driving strategic communication, creating impactful designs, and promoting our vision and events to the broader community. The Marketing Department at TUM.ai gives our vision a voice and a look, translating ideas into designs and stories that resonate across our students and professional network.",
