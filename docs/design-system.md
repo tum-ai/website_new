@@ -153,7 +153,7 @@ Layout
 - `SectionHeader`: `eyebrow`, `index`, `title`, `count` (a small "(4)" after the title), `lead`, `actions`, `layout` (`split` | `stack` | `center`), `size` (`md`, `lg`, or `xl` for a page's lead statement) and `headingAs`. Reveals on scroll.
 
 Page patterns
-- `PageHero`: every page starts with one (ink by default). It accepts `eyebrow`, `title` (strings rise in word by word, and `<Highlight>` parts work), `lead`, `actions`, an optional `media` column, `children` (for stats or filters under the headline) and `classNames` slots. `size="fit"` caps the title for long single words (the privacy page). It clears the fixed header.
+- `PageHero`: every page starts with one: a flat ink band by default (no aurora or grain; `aurora` is a deprecated opt-in). It accepts `eyebrow`, `title` (strings rise in word by word, and `<Highlight>` parts work), `lead`, `actions`, an optional `media` column, `children` (for stats or filters under the headline) and `classNames` slots. `emphasis="highlight"` sets the whole title in the tone's accent, as on the brand guide's section slides; keep the default when the title marks words with `<Highlight>`. `size="fit"` caps the title for long single words (the privacy page). It clears the fixed header.
 - `CtaBand`: closing call to action. `variant="panel"` is an inset ink panel; `variant="band"` is full bleed. Takes `children` and `classNames.footer`.
 - `CtaPanel`: the panel surface of `CtaBand` on its own (ink, aurora, grain, logomark), for places a whole band can't go, such as a bento cell.
 - `FaqSection`: sticky heading beside an accordion, with an eyebrow `index` and `defaultValue` (questions that start open). `FaqList` renders the accordion on its own and takes `defaultValue` too.
@@ -631,6 +631,7 @@ No props of its own; see the source file for the root element or Base UI part it
 | Prop | Type | Description |
 | --- | --- | --- |
 | `size?` | `"md" \| "lg" \| "xl" \| "fit"` | Display step of the headline. `fit` is `md` capped so a single word of about ten em (a German compound such as "Datenschutzerklärung") still fits a phone column: word-by-word titles can't hyphenate. |
+| `emphasis?` | `"default" \| "highlight"` | Title colour. `highlight` sets the whole headline in the tone's accent (Electric Lavender on the dark bands), as the brand guide's section slides do; keep `default` when the title marks words with `<Highlight>`. |
 | `title` | `ReactNode` | The page's `h1`. |
 | `eyebrow?` | `ReactNode` | Small label above the title. |
 | `lead?` | `ReactNode` | One or two sentences under the title. |
@@ -640,6 +641,7 @@ No props of its own; see the source file for the root element or Base UI part it
 | `splitTitle?` | `boolean` | Animate the title word by word (`<SplitWords>`). Set false when the title brings its own SplitWords, e.g. one per line with custom delays. |
 | `tone?` | `"ink" \| "night"` | Dark band tone. Default `ink`. |
 | `mark?` | `boolean` | Large drifting logomark in the background. Default true. |
+| `aurora?` | `boolean` | **Deprecated.** Aurora light field and film grain behind the headline. Default false: heroes are flat tone bands. Kept for one release. |
 | `titleId?` | `string` | id of the `h1`, referenced by the section's `aria-labelledby`. |
 | `classNames?` | `PageHeroClassNames` | Class overrides for the inner parts. |
 | `className?` | `string` | Classes merged over the section (e.g. its top and bottom padding). |

@@ -161,11 +161,8 @@ export function DesignSystemPage() {
       <PageHero
         titleId="ds-hero-title"
         eyebrow="Living reference"
-        title={
-          <>
-            Precise, calm, <Highlight>alive.</Highlight>
-          </>
-        }
+        title="Precise, calm, alive."
+        emphasis="highlight"
         lead="Every component on this page is the one used on the site. Tones, type, motion and interaction live in src/components/ds and src/styles/index.css."
         actions={
           <>

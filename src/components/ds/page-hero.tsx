@@ -10,7 +10,7 @@ import { SplitWords } from "./split-words";
 import { TopBlend } from "./top-blend";
 import { Eyebrow } from "./typography";
 
-const titleStyles = cva("text-fg", {
+const titleStyles = cva("", {
   variants: {
     /**
      * Display step of the headline. `fit` is `md` capped so a single word of
@@ -23,8 +23,17 @@ const titleStyles = cva("text-fg", {
       lg: "text-display-xl",
       xl: "text-display-2xl",
     },
+    /**
+     * Title colour. `highlight` sets the whole headline in the tone's accent
+     * (Electric Lavender on the dark bands), as the brand guide's section
+     * slides do; keep `default` when the title marks words with <Highlight>.
+     */
+    emphasis: {
+      default: "text-fg",
+      highlight: "text-highlight",
+    },
   },
-  defaultVariants: { size: "lg" },
+  defaultVariants: { size: "lg", emphasis: "default" },
 });
 
 /** Class overrides for a page hero's inner parts (merged over the defaults). */
@@ -68,6 +77,14 @@ export type PageHeroProps = VariantProps<typeof titleStyles> & {
   tone?: Extract<Tone, "ink" | "night">;
   /** Large drifting logomark in the background. Default true. */
   mark?: boolean;
+  /**
+   * Aurora light field and film grain behind the headline. Default false:
+   * heroes are flat tone bands.
+   *
+   * @deprecated The flat band is the house style; this opt-in is kept for
+   * one release and will be removed.
+   */
+  aurora?: boolean;
   /** id of the `h1`, referenced by the section's `aria-labelledby`. */
   titleId?: string;
   /** Class overrides for the inner parts. */
@@ -77,8 +94,8 @@ export type PageHeroProps = VariantProps<typeof titleStyles> & {
 };
 
 /**
- * Opening band for every page: dark tone, aurora light field, drifting
- * logomark, word-by-word headline. Everything above the fold animates with
+ * Opening band for every page: a flat dark tone, a drifting logomark and a
+ * word-by-word headline. Everything above the fold animates with
  * CSS only, so it starts before hydration and doesn't hold back LCP. Top
  * padding clears the fixed header.
  */
@@ -90,9 +107,11 @@ export function PageHero({
   media,
   children,
   size,
+  emphasis,
   splitTitle = true,
   tone = "ink",
   mark = true,
+  aurora = false,
   titleId,
   classNames,
   className,
@@ -101,14 +120,14 @@ export function PageHero({
     <Section
       tone={tone}
       spacing="none"
-      grain
+      grain={aurora}
       aria-labelledby={titleId}
       className={cn(
         "overflow-clip pt-[calc(var(--header-height)+clamp(3rem,7vw,6rem))] pb-[clamp(3.5rem,7vw,6rem)]",
         className,
       )}
     >
-      <Aurora />
+      {aurora ? <Aurora /> : null}
       {mark ? (
         <BrandMark
           className="absolute top-[6%] -right-[12%] -z-10 w-[min(64rem,78%)]"
@@ -133,7 +152,7 @@ export function PageHero({
             <h1
               id={titleId}
               className={cn(
-                titleStyles({ size }),
+                titleStyles({ size, emphasis }),
                 eyebrow && "mt-6",
                 classNames?.title,
               )}
