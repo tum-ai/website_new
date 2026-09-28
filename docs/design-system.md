@@ -88,11 +88,15 @@ Use Manrope only. Pick a visual size independently of the heading level.
 | `text-lead` | up to 21px | Intros under headlines |
 | `text-label` / `text-label-sm` | 15 / 13px | UI labels: md (and sm) buttons and badges, logo lockups and chips |
 | `text-body` / `text-small` / `text-meta` | 16 / 14 / 13px | Copy, card copy, metadata |
-| `text-eyebrow` | 12px uppercase | Labels above headlines |
-| `text-stat-sm` … `text-stat-xl` | 40 to 88px | Figures in `StatGrid` |
+| `text-eyebrow` | 14px, sentence case | Labels above headlines |
+| `text-stat-sm` … `text-stat-xl` | 40 to 88px | Figures in `StatGrid` and `Ledger` |
+
+Weights follow the brand guide: display sizes and figures are Light (300),
+`display-md` is Regular (400), headings are Medium (500), labels Semibold.
+Labels are never set in capitals.
 
 Components: `Display`, `Heading`, `Text`, `Eyebrow` (with an optional
-`index` counter), `Highlight` (`accent` or `fade`), and `Prose` (long-form
+`index` counter, only for sections that form a sequence), `Highlight` (`accent` or `fade`), and `Prose` (long-form
 text such as the legal pages).
 
 ## API conventions
@@ -156,11 +160,13 @@ Page patterns
 - `Timeline`: a vertical rail that fills as you scroll (static under reduced motion). `alternate` zig-zags the items; `rail="dashed"`, `marker="number"` and `continuation` cover the E-Lab program.
 - `Steps`: a numbered process, with `rail` (`solid`, `dashed`, `none`), `marker` (`badge`, `dot`) and an optional per-step `number` (e.g. "02A").
 - `StatGrid`: numeric values count up when they scroll into view (sizes `sm`–`xl` on the `text-stat-*` tokens); strings render as they are, or count with `count`.
+- `Ledger`: key figures as an annual-report ledger, one hairline row per figure with its label and a `note` on the left and the figure right-aligned (`size` `md` or `lg`). Same figure rules as `StatGrid`.
+- `IndexList`: a typographic index of destinations. Full-width link rows (large light title, one line of description, optional `detail`, an arrow); from `lg` a sticky photo beside the list follows the hovered or focused row and the other rows dim. Below `lg` each row shows its photo as a thumbnail.
 - `BrandPanel`: the branded placeholder for a missing image.
 - `TopBlend`: eases a dark band's edge into the root canvas (see [browser-quirks.md](browser-quirks.md)).
 
 Actions
-- `ButtonLink`: for navigation. Uses next/link internally; external links open in a new tab and say so. Variants: `primary`, `secondary`, `outline`, `ghost`, `inverse` (white on dark), `link`. Sizes: `sm`, `md`, `lg`. `arrow` takes `true`, `"external"` or `"down"`.
+- `ButtonLink`: for navigation. Uses next/link internally; external links open in a new tab and say so. Variants: `primary` (a flat violet-600 fill with a hairline highlight, no glow), `secondary`, `outline`, `ghost`, `inverse` (white on dark), `link`. Sizes: `sm`, `md`, `lg`. `arrow` takes `true`, `"external"` or `"down"`.
 - `Button`: for actions (Base UI). Compose it into triggers with `render={<Button variant="outline" />}`.
 - `Actions`: the row for two or more buttons or badges (`align`: `start` | `center`). On one line each item keeps its width; once the row wraps on a phone, every item grows to the row width, so stacked actions share one width. `PageHero`, `CtaBand` and `SectionHeader` use it for their `actions`.
 - `IconButton`: requires `aria-label`.
@@ -175,7 +181,7 @@ Content
 - `MediaCard`: photo card. `layout="overlay"` puts text on a scrim, `"stacked"` puts it below. Supports `href`, `aspect`, a `fallback` for a missing or broken image (default `BrandPanel`), a `cornerHint` slot, an `action` slot (for example a dialog trigger instead of a link), `titleId`, and `descriptionLines` (clamp and reserve 2 or 3 lines so titles in a row align). It passes `unoptimized` to next/image for CMS URLs.
 - `CornerHint`: the corner disc that says what a click does (`icon` `arrow` or `open`), for cards that aren't `MediaCard`.
 - `FallbackImage`: next/image that swaps to a fallback when it fails to load.
-- `QuoteCard` (`raised` or `glass`, with `context` and `footer` slots) and `QuoteMark`.
+- `QuoteCard` (`raised` or `glass`, with `context` and `footer` slots; `editorial` sets one quote in display type without a card) and `QuoteMark`.
 - `PersonCard`: portrait, name and `byline`; `image.position` keeps a face in frame, and `unoptimized` serves the portrait as is.
 - `LogoTile`, `LogoWall`: logos as tiles (`size` `sm` to `xl`, `responsive` for one step smaller on phones), `variant="chip"` (with `fixed` width so rows don't reflow), `variant="bare"` for artwork made for dark bands, links, or a `wordmark` lockup, with a name fallback when the artwork fails.
 - `BulletList`: a short list of points as raised rows with an accent dot (for example inside an FAQ answer).
@@ -247,7 +253,7 @@ Pages end on light or ink bands, because the footer is night.
 ## Constraints
 
 - **Homepage budget** (`test/perf/homepage.perf.ts`, run by `pnpm test:perf` against the Turbopack output of `pnpm build`, in CI's Build job):
-  - The only image preload may be `/assets/tum_ai_logo_new.svg`, which is the hero's `priority` image. All other homepage images must be lazy.
+  - The only image preload may be `/assets/tum_ai_logo_new.svg`, the header logo (`priority`). All other homepage images must be lazy; the hero aperture's photos mount only after hydration.
   - `brand-grid-tile` and `mix-blend-overlay` must not appear in server-rendered HTML.
   - The CSS the homepage links must contain the utilities it uses.
 - **Facts and content:** dates, counts, emails and links come from `src/config/`, never from components or page code. Changing them there is the intended way to update the site (see "Updating site facts" in [contributor-guide.md](contributor-guide.md)); the content tests derive their expectations from config, so they stay green. Don't hard-code a fact to make a layout work, and don't loosen a guard pattern.
@@ -689,7 +695,7 @@ No props of its own; see the source file for the root element or Base UI part it
 
 | Prop | Type | Description |
 | --- | --- | --- |
-| `variant?` | `"raised" \| "glass"` | `raised` for light bands; `glass` is the frosted panel for dark bands. |
+| `variant?` | `"raised" \| "glass" \| "editorial"` | `raised` for light bands; `glass` is the frosted panel for dark bands; `editorial` drops the card and sets the quote as a large light statement, for one quote that carries a section. |
 | `quote` | `ReactNode` | The quotation, without quote marks. |
 | `name` | `string` | Who said it. |
 | `byline?` | `ReactNode` | Line under the name: role and affiliation. (Not `role`, which stays the figure's ARIA role.) |
@@ -698,6 +704,22 @@ No props of its own; see the source file for the root element or Base UI part it
 | `context?` | `ReactNode` | Short context beside the quote mark (e.g. a `<Tag>` with the cohort). |
 | `footer?` | `ReactNode` | Row under the person (e.g. the organization on a logo chip). |
 | `eager?` | `boolean` | Load the images eagerly, e.g. inside a moving marquee. |
+
+### `IndexList`
+
+| Prop | Type | Description |
+| --- | --- | --- |
+| `items` | `IndexListItem[]` | The destinations, in reading order. |
+| `headingAs?` | `HeadingLevel` | Heading level of each title. Default `h3`. |
+| `className?` | `string` | Classes merged over the wrapper. |
+
+### `Ledger`
+
+| Prop | Type | Description |
+| --- | --- | --- |
+| `size?` | `"md" \| "lg"` | Figure size: `md` (the stat-md step) for a ledger beside a headline, `lg` (stat-lg) when the ledger is the section's main content. |
+| `items` | `LedgerItem[]` | The rows, in reading order. |
+| `className?` | `string` | Classes merged over the `dl`. |
 
 ### `QuoteMark`
 
@@ -725,7 +747,7 @@ No props of its own; see the source file for the root element or Base UI part it
 | Prop | Type | Description |
 | --- | --- | --- |
 | `layout?` | `"center" \| "split" \| "stack"` | `split`: title left, lead bottom-right (partner page rhythm). `stack`: lead under the title. `center`: centered stack. |
-| `size?` | `"md" \| "lg" \| "xl"` | Display step of the title: `md` for sections, `lg` for key sections, `xl` for a page's lead statement (the home "About" headline). |
+| `size?` | `"md" \| "lg" \| "xl"` | Display step of the title: `md` for sections, `lg` for key sections, `xl` for a page's lead statement. |
 | `title` | `ReactNode` | The section's headline. |
 | `count?` | `number` | A count set small and top-aligned after the title, in parentheses: `count={4}` renders "Upcoming Events (4)". |
 | `id?` | `string` | id for the heading, referenced by the section's `aria-labelledby`. |

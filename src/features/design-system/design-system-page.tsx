@@ -37,6 +37,8 @@ import {
   Heading,
   Highlight,
   IconBadge,
+  IndexList,
+  Ledger,
   LogoTile,
   LogoWall,
   Marquee,
@@ -148,11 +150,9 @@ function Block({
   );
 }
 
-/** Small uppercase caption above a demo. */
+/** Small caption above a demo. */
 function Label({ children }: { children: ReactNode }) {
-  return (
-    <p className="mb-4 text-eyebrow text-fg-subtle uppercase">{children}</p>
-  );
+  return <p className="mb-4 text-eyebrow text-fg-subtle">{children}</p>;
 }
 
 export function DesignSystemPage() {
@@ -697,7 +697,7 @@ export function DesignSystemPage() {
       <Block
         id="figures"
         title="Figures"
-        lead="StatGrid sizes (sm to xl) and CountUp parsing copy figures."
+        lead="StatGrid sizes (sm to xl), the Ledger (md and lg) and CountUp parsing copy figures."
       >
         <div className="grid gap-6">
           <StatGrid
@@ -717,6 +717,36 @@ export function DesignSystemPage() {
               { value: 40, suffix: "+", label: "Nationalities" },
             ]}
           />
+          <div className="grid gap-10 lg:grid-cols-2">
+            <Ledger
+              items={[
+                {
+                  label: "Founded",
+                  value: String(organizationFacts.foundingYear),
+                  note: "Ledger md: a string figure",
+                },
+                {
+                  label: "Nationalities",
+                  value: organizationFacts.nationalities,
+                  suffix: "+",
+                  note: "Counted up on scroll",
+                },
+              ]}
+            />
+            <Ledger
+              size="lg"
+              items={[
+                {
+                  label: "Raised",
+                  value: eLabConfig.ventureFundingMillions,
+                  prefix: "€",
+                  suffix: "M+",
+                  note: "Ledger lg",
+                },
+                { label: "Without a note", value: "48h" },
+              ]}
+            />
+          </div>
           <dl className="grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
             {figures.map((figure) => (
               <div key={figure} className="rounded-2xl bg-sunken p-4">
@@ -729,6 +759,48 @@ export function DesignSystemPage() {
               </div>
             ))}
           </dl>
+        </div>
+      </Block>
+
+      <Block
+        id="index"
+        title="Index and editorial quote"
+        lead="IndexList: hover or focus a row to swap the preview (from lg). QuoteCard editorial: one quote that carries a section."
+      >
+        <div className="grid gap-16">
+          <IndexList
+            items={[
+              {
+                id: "research",
+                title: "Research",
+                description: "Projects with universities and labs.",
+                href: "/research",
+                image: { src: "/assets/innovation/robotics_discussion.webp" },
+              },
+              {
+                id: "events",
+                title: "Events",
+                description: "Talks, workshops and hackathons.",
+                detail: "With a detail",
+                href: "/events",
+                image: { src: "/assets/open_ai_speaker_event.webp" },
+              },
+              {
+                id: "no-image",
+                title: "Without a photo",
+                description: "Rows without a photo leave the preview empty.",
+                href: "/qanda",
+              },
+            ]}
+          />
+          <QuoteCard
+            variant="editorial"
+            quote="The density of real builders at the Final Pitch is what pre-seed funds look for."
+            name="Editorial variant"
+            byline="Role @ Organization"
+            portrait={{ src: "/assets/partners/people/leonie.webp" }}
+            className="max-w-3xl"
+          />
         </div>
       </Block>
 

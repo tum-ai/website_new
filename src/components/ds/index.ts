@@ -102,6 +102,12 @@ export { FeatureCard, type FeatureCardProps } from "./feature-card";
 export { formatFigure, type ParsedFigure, parseFigure } from "./figure";
 export { IconBadge, type IconBadgeProps } from "./icon-badge";
 export {
+  IndexList,
+  type IndexListItem,
+  type IndexListProps,
+} from "./index-list";
+export { Ledger, type LedgerItem, type LedgerProps } from "./ledger";
+export {
   type LogoItem,
   LogoTile,
   type LogoTileProps,
