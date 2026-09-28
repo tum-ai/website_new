@@ -47,4 +47,58 @@
       url("/assets/brand/logomark-mask.svg") center / 100% 100% no-repeat;
     mask: url("/assets/brand/logomark-mask.svg") center / 100% 100% no-repeat;
   }
+
+  /*
+   * The join band's logomark and its continuation in the footer. The mark
+   * runs --join-mark-bleed past the band's bottom edge (the band clips it);
+   * the footer's own mark takes the same horizontal box and shows exactly
+   * that overflow from its top edge, in the footer's fainter tone, so the
+   * shape carries on across the seam a shade darker. Both boxes are sized in
+   * % of full-width containers, so they line up at every width.
+   */
+  :root:has([data-footer-bleed]) {
+    --join-mark-right: -40%;
+    --join-mark-width: 140%;
+    --join-mark-bleed: 12rem;
+  }
+
+  @media (min-width: 40rem) {
+    :root:has([data-footer-bleed]) {
+      --join-mark-right: -24%;
+      --join-mark-width: 85%;
+      --join-mark-bleed: 14rem;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    :root:has([data-footer-bleed]) {
+      --join-mark-right: -7%;
+      --join-mark-width: min(50%, 56rem);
+      --join-mark-bleed: 12rem;
+    }
+  }
+
+  .home-join-mark {
+    right: var(--join-mark-right);
+    bottom: calc(-1 * var(--join-mark-bleed));
+    width: var(--join-mark-width);
+  }
+}
+
+/*
+ * The footer is shared by every page and styles its mark with utilities, so
+ * the override lives in the utilities layer; the :has() guard limits it to a
+ * page that carries the join band's mark.
+ */
+@layer utilities {
+  :root:has([data-footer-bleed]) [data-footer-mark] {
+    top: var(--join-mark-bleed);
+    right: var(--join-mark-right);
+    bottom: auto;
+    width: var(--join-mark-width);
+    height: auto;
+    aspect-ratio: 477 / 406;
+    translate: 0 -100%;
+    animation: none;
+  }
 }

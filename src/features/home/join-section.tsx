@@ -28,7 +28,8 @@ const quoted = memberStories.find((story) => story.name === memberQuote.name);
 
 /**
  * The member call to action on ink, the page's bookend to the hero: the
- * logomark's construction sheet in the background, a large invitation, a
+ * logomark and its construction sheet in the background, running on into
+ * the footer, a large invitation, a
  * member's own words and the faces of the people who run TUM.ai, beside the
  * steps of a recruiting round. The apply button follows
  * `membershipConfig.applicationsOpen`.
@@ -42,9 +43,12 @@ export function JoinSection() {
       aria-labelledby="join-title"
       className="overflow-clip"
     >
+      {/* Runs past the band's bottom edge; the footer's mark continues it
+          (home.css, `data-footer-bleed`). */}
       <div
         aria-hidden="true"
-        className="absolute -right-[40%] -bottom-[8%] -z-10 aspect-[477/406] w-[140%] opacity-60 sm:-right-[24%] sm:w-[85%] lg:top-1/2 lg:-right-[7%] lg:bottom-auto lg:w-[min(50vw,56rem)] lg:-translate-y-1/2 lg:opacity-100"
+        data-footer-bleed=""
+        className="home-join-mark absolute -z-10 aspect-[477/406] opacity-60 lg:opacity-100"
       >
         <BrandMark
           drift={false}

@@ -32,7 +32,10 @@ export function Footer() {
         intensity="subtle"
         className="[mask-image:linear-gradient(to_bottom,transparent,black_35%,black_60%,transparent)]"
       />
+      {/* `data-footer-mark`: a page can re-place it to continue its own mark
+          across the seam (the home page does, see features/home/home.css). */}
       <BrandMark
+        data-footer-mark=""
         className="absolute -right-[6%] -bottom-[22%] -z-10 w-[min(46rem,90%)]"
         intensity="faint"
       />

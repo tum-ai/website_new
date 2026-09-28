@@ -118,21 +118,24 @@ export function IndexList({
 
       {withMedia ? (
         <div aria-hidden="true" className="hidden lg:col-span-5 lg:block">
-          <div className="sticky top-[var(--header-offset)] aspect-[4/5] overflow-hidden rounded-4xl bg-sunken">
-            {items.map((item) =>
-              item.image ? (
-                <Image
-                  key={item.id}
-                  src={item.image.src}
-                  alt=""
-                  fill
-                  sizes="(min-width: 1280px) 30rem, 38vw"
-                  data-active={item.id === active}
-                  className="scale-[1.03] object-cover opacity-0 transition-[opacity,scale] duration-700 ease-brand data-[active=true]:scale-100 data-[active=true]:opacity-100 motion-reduce:transition-none"
-                  style={{ objectPosition: item.image.position }}
-                />
-              ) : null,
-            )}
+          <div className="sticky top-[var(--header-offset)]">
+            {/* next/image `fill` needs a positioned (not sticky) parent. */}
+            <div className="relative aspect-[4/5] overflow-hidden rounded-4xl bg-sunken">
+              {items.map((item) =>
+                item.image ? (
+                  <Image
+                    key={item.id}
+                    src={item.image.src}
+                    alt=""
+                    fill
+                    sizes="(min-width: 1280px) 30rem, 38vw"
+                    data-active={item.id === active}
+                    className="scale-[1.03] object-cover opacity-0 transition-[opacity,scale] duration-700 ease-brand data-[active=true]:scale-100 data-[active=true]:opacity-100 motion-reduce:transition-none"
+                    style={{ objectPosition: item.image.position }}
+                  />
+                ) : null,
+              )}
+            </div>
           </div>
         </div>
       ) : null}
