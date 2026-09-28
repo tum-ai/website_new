@@ -33,7 +33,10 @@ export function HomeHero() {
     >
       <Aurora intensity="vivid" />
       <HeroMosaic />
-      <BrandMark className="absolute -bottom-[22%] -left-[18%] -z-10 w-[min(62rem,120%)] text-white/[0.035]" />
+      <BrandMark
+        className="absolute -bottom-[22%] -left-[18%] -z-10 w-[min(62rem,120%)]"
+        intensity="subtle"
+      />
       <TopBlend />
 
       <Container className="flex flex-1 flex-col justify-end">

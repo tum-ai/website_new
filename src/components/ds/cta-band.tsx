@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import { Actions } from "./actions";
 import { Aurora } from "./aurora";
@@ -8,6 +8,34 @@ import { Reveal } from "./reveal";
 import { Section, type Tone } from "./section";
 import type { HeadingLevel } from "./types";
 import { Eyebrow } from "./typography";
+
+/** Props for {@link CtaPanel}: a div's props. */
+export type CtaPanelProps = ComponentProps<"div">;
+
+/**
+ * The inset ink surface of <CtaBand variant="panel">, on its own: brand ink,
+ * aurora light, film grain and the drifting logomark, clipped to
+ * `rounded-5xl`. It is only the surface, so it fits where a whole band
+ * can't, such as a bento cell; pad it and set a radius that matches its
+ * neighbours with `className`. The content reads the ink tone.
+ */
+export function CtaPanel({ className, children, ...props }: CtaPanelProps) {
+  return (
+    <div
+      data-tone="ink"
+      className={cn("relative isolate overflow-clip rounded-5xl", className)}
+      {...props}
+    >
+      <div aria-hidden className="grain -z-10" />
+      <Aurora />
+      <BrandMark
+        intensity="soft"
+        className="absolute -right-[8%] -bottom-[35%] -z-10 w-[min(44rem,80%)]"
+      />
+      {children}
+    </div>
+  );
+}
 
 /** Class overrides for a CTA band's inner parts (merged over the defaults). */
 export type CtaBandClassNames = {
@@ -47,7 +75,7 @@ export type CtaBandProps = {
   /** Anchor id for the section (e.g. "contact"). */
   id?: string;
   /**
-   * `panel`: rounded ink panel inset in a light band (default).
+   * `panel`: rounded ink panel (<CtaPanel>) inset in a light band (default).
    * `band`: full-bleed dark band.
    */
   variant?: "panel" | "band";
@@ -141,7 +169,10 @@ export function CtaBand({
         className={cn("overflow-clip", className)}
       >
         <Aurora />
-        <BrandMark className="absolute -bottom-[30%] left-1/2 -z-10 w-[min(70rem,110%)] -translate-x-1/2 text-white/[0.035]" />
+        <BrandMark
+          className="absolute -bottom-[30%] left-1/2 -z-10 w-[min(70rem,110%)] -translate-x-1/2"
+          intensity="subtle"
+        />
         <Container>{inner}</Container>
       </Section>
     );
@@ -157,15 +188,7 @@ export function CtaBand({
     >
       <Container>
         <Reveal variant="scale">
-          <div
-            data-tone="ink"
-            className="relative isolate overflow-clip rounded-5xl px-6 py-20 md:px-16 md:py-28"
-          >
-            <div aria-hidden className="grain -z-10" />
-            <Aurora />
-            <BrandMark className="absolute -right-[8%] -bottom-[35%] -z-10 w-[min(44rem,80%)] text-white/[0.04]" />
-            {inner}
-          </div>
+          <CtaPanel className="px-6 py-20 md:px-16 md:py-28">{inner}</CtaPanel>
         </Reveal>
       </Container>
     </Section>

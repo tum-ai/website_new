@@ -1,8 +1,10 @@
 import { axe } from "@test/axe";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, test } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { FaqList } from "./accordion";
+import { FaqSection } from "./faq-section";
+import { stubMatchMedia, stubObservers } from "./testing";
 
 const items = [
   { question: "Who can apply?", answer: "Every student in Munich." },
@@ -19,6 +21,17 @@ describe("FaqList", () => {
     const trigger = screen.getByRole("button", { name: "Who can apply?" });
     expect(heading).toContainElement(trigger);
     expect(trigger).toHaveAttribute("aria-expanded", "false");
+  });
+
+  test("opens the answers named in defaultValue", () => {
+    render(<FaqList items={items} defaultValue={[items[1].question]} />);
+    expect(
+      screen.getByRole("button", { name: "Who can apply?" }),
+    ).toHaveAttribute("aria-expanded", "false");
+    expect(
+      screen.getByRole("button", { name: "Does it cost anything?" }),
+    ).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByText("No, membership is free.")).toBeVisible();
   });
 
   test("keeps closed answers in the DOM as hidden until found", () => {
@@ -74,6 +87,31 @@ describe("FaqList", () => {
 
   test("has no axe violations", async () => {
     const { container } = render(<FaqList items={items} />);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe("FaqSection", () => {
+  beforeEach(() => {
+    stubMatchMedia({ reducedMotion: true });
+    stubObservers();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  test("numbers its eyebrow and opens the default answers", async () => {
+    const { container } = render(
+      <FaqSection items={items} index={2} defaultValue={[items[0].question]} />,
+    );
+    const section = screen.getByRole("region", {
+      name: "Frequently asked questions",
+    });
+    expect(section).toHaveTextContent(/^02/);
+    expect(
+      screen.getByRole("button", { name: "Who can apply?" }),
+    ).toHaveAttribute("aria-expanded", "true");
     expect(await axe(container)).toHaveNoViolations();
   });
 });

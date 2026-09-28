@@ -45,6 +45,36 @@ describe("LogoTile", () => {
     );
   });
 
+  test("sets artwork for dark bands without a white surface", () => {
+    render(
+      <LogoTile
+        variant="bare"
+        name="NVIDIA"
+        src="/assets/partners/logos/nvidia.webp"
+        href="https://nvidia.com"
+      />,
+    );
+    const link = screen.getByRole("link", {
+      name: /^NVIDIA\s?\(opens in a new tab\)$/,
+    });
+    expect(link).not.toHaveClass("bg-white");
+    expect(screen.getByRole("img", { name: "NVIDIA" })).not.toHaveClass(
+      "mix-blend-multiply",
+    );
+  });
+
+  test("reserves a fixed width for chips in wrapping rows", () => {
+    const { container } = render(
+      <LogoTile variant="chip" fixed name="Google" src="/missing.png" />,
+    );
+    expect(container.firstElementChild).toHaveClass("w-25");
+  });
+
+  test("steps a large tile down one size below md when responsive", () => {
+    const { container } = render(<LogoTile size="xl" responsive name="Lab" />);
+    expect(container.firstElementChild).toHaveClass("h-32", "max-md:h-28");
+  });
+
   test("serves remote CMS artwork without the optimizer", () => {
     render(<LogoTile name="Lab" src="https://cdn.sanity.io/images/lab.png" />);
     expect(screen.getByRole("img", { name: "Lab" })).toHaveAttribute(

@@ -1,7 +1,9 @@
 import { axe } from "@test/axe";
 import { fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, test } from "vitest";
-import { MediaCard } from "./media-card";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./dialog";
+import { CornerHint, MediaCard } from "./media-card";
 
 describe("MediaCard", () => {
   test("the title link names the whole card", () => {
@@ -79,6 +81,50 @@ describe("MediaCard", () => {
     expect(screen.queryByTestId("hint")).toBeNull();
   });
 
+  test("an action makes the whole card one control named by its title", async () => {
+    const user = userEvent.setup();
+    const { container } = render(
+      <div id="app-root">
+        <Dialog>
+          <MediaCard
+            image={{ alt: "" }}
+            title="quanTUM.ai"
+            titleId="task-force-title"
+            action={<DialogTrigger aria-labelledby="task-force-title" />}
+          />
+          <DialogContent>
+            <DialogTitle>quanTUM.ai details</DialogTitle>
+          </DialogContent>
+        </Dialog>
+      </div>,
+    );
+    expect(screen.getByRole("heading", { level: 3 })).toHaveAttribute(
+      "id",
+      "task-force-title",
+    );
+    expect(screen.queryByRole("link")).toBeNull();
+    // Without `href`, an action gets the "open" hint by default.
+    expect(container.querySelector("[aria-hidden] svg")).not.toBeNull();
+    expect(await axe(container)).toHaveNoViolations();
+
+    await user.click(screen.getByRole("button", { name: "quanTUM.ai" }));
+    expect(
+      await screen.findByRole("dialog", { name: "quanTUM.ai details" }),
+    ).toBeInTheDocument();
+  });
+
+  test("clamps the description to the requested lines", () => {
+    render(
+      <MediaCard
+        image={{ alt: "" }}
+        title="Workshop"
+        description="A long description."
+        descriptionLines={3}
+      />,
+    );
+    expect(screen.getByText("A long description.")).toHaveClass("line-clamp-3");
+  });
+
   test("announces external links as opening a new tab", async () => {
     const { container } = render(
       <MediaCard
@@ -94,5 +140,12 @@ describe("MediaCard", () => {
       }),
     ).toHaveAttribute("target", "_blank");
     expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe("CornerHint", () => {
+  test("is decorative", () => {
+    const { container } = render(<CornerHint icon="open" variant="tonal" />);
+    expect(container.firstElementChild).toHaveAttribute("aria-hidden", "true");
   });
 });

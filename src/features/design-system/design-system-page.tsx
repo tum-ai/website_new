@@ -6,17 +6,26 @@ import {
   AccordionPanel,
   AccordionTrigger,
   Actions,
+  Anchor,
   Aurora,
   BrandMark,
   BrandPanel,
+  BulletList,
   ButtonLink,
   buttonStyles,
   Card,
   Carousel,
   Container,
+  CornerHint,
   CountUp,
   CtaBand,
+  CtaPanel,
   cardStyles,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
   Display,
   EmptyState,
   Eyebrow,
@@ -269,6 +278,9 @@ export function DesignSystemPage() {
               Meta, subtle emphasis.
             </Text>
             <p className="text-fg text-label">Label (15px UI text)</p>
+            <p className="text-fg text-label-sm">
+              Label sm (13px: sm buttons and badges, logo chips)
+            </p>
             <Display as="p" size="md">
               Accent <Highlight>highlight</Highlight> and{" "}
               <Highlight variant="fade">Electric Fade</Highlight>
@@ -295,7 +307,34 @@ export function DesignSystemPage() {
               <TextLink href={socialLinks.github} arrow>
                 External text link
               </TextLink>
+              <Anchor
+                href={socialLinks.github}
+                className="text-fg text-small underline underline-offset-4"
+              >
+                Anchor: unstyled, route-aware
+              </Anchor>
             </div>
+            <SectionHeader
+              headingAs="h3"
+              layout="stack"
+              title="SectionHeader with a count"
+              count={4}
+              className="mb-0 md:mb-0"
+            />
+            <SectionHeader
+              headingAs="h3"
+              layout="stack"
+              size="xl"
+              title="SectionHeader xl"
+              className="mb-0 md:mb-0"
+            />
+            <BulletList
+              className="max-w-2xl"
+              items={[
+                "BulletList: raised rows with an accent dot.",
+                "For the options an answer introduces.",
+              ]}
+            />
             <Prose className="max-w-2xl">
               <h3>Prose</h3>
               <p>
@@ -321,13 +360,17 @@ export function DesignSystemPage() {
         aria-labelledby="buttons-title"
       >
         <Aurora intensity="subtle" />
+        <BrandMark
+          intensity="subtle"
+          className="absolute -right-[12%] -bottom-[40%] -z-10 w-[min(50rem,80%)]"
+        />
         <Container>
           <SectionHeader
             id="buttons-title"
             eyebrow="Actions"
             index={3}
             title="Buttons on dark"
-            lead="Aurora (subtle) and grain behind; Actions lays out the rows."
+            lead="Aurora (subtle), grain and a BrandMark (intensity subtle) behind; Actions lays out the rows."
           />
           <Actions>
             <ButtonLink href="#buttons" arrow>
@@ -425,7 +468,20 @@ export function DesignSystemPage() {
             <IconBadge icon={Sparkles} size="lg" />
             <IconBadge icon={Inbox} variant="soft" shape="circle" size="lg" />
             <IconBadge icon={Brain} variant="outline" shape="circle" />
+            <a
+              href="#cards"
+              className="inline-flex items-center gap-3 font-semibold text-fg text-small"
+            >
+              <IconBadge icon={Rocket} size="sm" interactive />
+              Interactive: tilts while the link is hovered
+            </a>
           </div>
+        </div>
+        <div className="group/zoom mt-10 flex flex-wrap items-center gap-4">
+          <Label>CornerHint · arrow, open, tonal (hover the row)</Label>
+          <CornerHint />
+          <CornerHint icon="open" />
+          <CornerHint icon="open" variant="tonal" className="size-9" />
         </div>
         <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {photos.map((photo, index) => (
@@ -465,6 +521,40 @@ export function DesignSystemPage() {
             description="Image on top, text on the band."
           />
         </div>
+        <div className="mt-4 grid gap-4 md:grid-cols-3">
+          <Dialog>
+            <MediaCard
+              aspect="4/5"
+              image={{
+                src: "/assets/innovation/robotics_writing.webp",
+                alt: "",
+              }}
+              eyebrow="01"
+              title="Action: opens a dialog"
+              titleId="ds-media-action-title"
+              description="The whole card is one DialogTrigger, named by the title. descriptionLines={3} clamps this and reserves three lines from md, so titles in a row line up."
+              descriptionLines={3}
+              action={<DialogTrigger aria-labelledby="ds-media-action-title" />}
+            />
+            <DialogContent size="md">
+              <div className="p-8 md:p-10">
+                <DialogTitle>MediaCard action</DialogTitle>
+                <DialogDescription className="mt-3">
+                  Opened from the card&apos;s stretched trigger.
+                </DialogDescription>
+              </div>
+            </DialogContent>
+          </Dialog>
+          <CtaPanel className="flex flex-col justify-between gap-8 rounded-3xl p-8 md:col-span-2">
+            <p className="text-fg text-heading-lg">
+              CtaPanel: the CtaBand panel surface on its own,{" "}
+              <span className="text-highlight">for a bento cell.</span>
+            </p>
+            <p className="border-hairline border-t pt-6 text-fg-muted text-small">
+              Pad it and match its neighbours&apos; radius with className.
+            </p>
+          </CtaPanel>
+        </div>
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           <QuoteCard
             quote="Truly impressive what the team has built. We’re just getting started."
@@ -477,8 +567,12 @@ export function DesignSystemPage() {
           />
           <PersonCard
             name="Leonie Freisinger"
-            byline="Co-Founder & CTO"
-            image={{ src: "/assets/partners/people/leonie-portrait.webp" }}
+            byline="Co-Founder & CTO · unoptimized, object position"
+            image={{
+              src: "/assets/partners/people/leonie-portrait.webp",
+              position: "50% 20%",
+            }}
+            unoptimized
           />
           <div className="grid gap-4">
             <Label>BrandPanel · three compositions</Label>
@@ -510,7 +604,7 @@ export function DesignSystemPage() {
             id="glass-title"
             eyebrow="On dark"
             title="Glass quotes and logo chips"
-            lead="BrandMark (gradient variant) in the corner."
+            lead="BrandMark (gradient variant) in the corner; fixed-width chips and bare logos for dark bands."
           />
           <div className="grid gap-6 md:grid-cols-2">
             <QuoteCard
@@ -539,6 +633,7 @@ export function DesignSystemPage() {
               <div className="flex flex-wrap gap-3">
                 <LogoTile
                   variant="chip"
+                  fixed
                   name="Google"
                   src="/assets/partners/logos/google.webp"
                 />
@@ -547,6 +642,20 @@ export function DesignSystemPage() {
                   name="NVIDIA"
                   src="/assets/partners/logos/nvidia.webp"
                   href="https://www.nvidia.com"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <LogoTile
+                  variant="bare"
+                  name="Bare: the name on a dark band"
+                  className="h-12"
+                />
+                <LogoTile
+                  variant="bare"
+                  name="TUM.ai"
+                  src="/assets/favicon.svg"
+                  wordmark="TUM.ai"
+                  className="h-12"
                 />
               </div>
             </div>
@@ -646,7 +755,11 @@ export function DesignSystemPage() {
             </TabsPanel>
           </Tabs>
         </div>
-        <FaqList className="mt-16" items={faqs.slice(0, 3)} />
+        <FaqList
+          className="mt-16"
+          items={faqs.slice(0, 3)}
+          defaultValue={faqs[0] ? [faqs[0].question] : undefined}
+        />
         <Accordion className="mt-10">
           <AccordionItem value="parts">
             <AccordionTrigger headingAs="h4">
@@ -749,11 +862,17 @@ export function DesignSystemPage() {
           ]}
           columns={6}
         />
-        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+        <div className="mt-4 grid gap-3 sm:grid-cols-4">
           <LogoTile
             name="Google"
             src="/assets/partners/logos/google.webp"
             href="https://about.google"
+            size="xl"
+            responsive
+          />
+          <LogoTile
+            name="NVIDIA"
+            src="/assets/partners/logos/nvidia.webp"
             size="lg"
           />
           <LogoTile name="Missing artwork" src="/missing/logo.png" />
@@ -849,8 +968,10 @@ export function DesignSystemPage() {
       <FaqSection
         id="ds-faq"
         tone="mist"
+        index={9}
         items={faqs.slice(3, 6)}
-        lead="FaqSection: sticky heading column beside the accordion."
+        defaultValue={faqs[3] ? [faqs[3].question] : undefined}
+        lead="FaqSection: sticky heading column beside the accordion; an eyebrow index and the first answer open."
       />
 
       <CtaBand

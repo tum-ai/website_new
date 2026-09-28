@@ -93,16 +93,6 @@ export type CarouselProps = {
   slideLabel?: (position: number, total: number) => string;
   /** Class overrides for the inner parts. */
   classNames?: CarouselClassNames;
-  /**
-   * Width classes for each slide.
-   * @deprecated Use `classNames.slide`. Removed in W3.
-   */
-  slideClassName?: string;
-  /**
-   * Classes for the clipping viewport.
-   * @deprecated Use `classNames.viewport`. Removed in W3.
-   */
-  viewportClassName?: string;
   /** Classes merged over the root region. */
   className?: string;
 };
@@ -128,8 +118,6 @@ export function Carousel({
   controls = true,
   slideLabel = defaultSlideLabel,
   classNames,
-  slideClassName,
-  viewportClassName,
   className,
 }: CarouselProps) {
   const [viewportRef, api] = useEmblaCarousel({
@@ -198,11 +186,7 @@ export function Carousel({
     >
       <div
         ref={viewportRef}
-        className={cn(
-          viewportStyles({ variant }),
-          viewportClassName,
-          classNames?.viewport,
-        )}
+        className={cn(viewportStyles({ variant }), classNames?.viewport)}
       >
         <ul
           className={cn(trackStyles, classNames?.track)}
@@ -215,9 +199,7 @@ export function Carousel({
               aria-label={slideLabel(index + 1, slides.length)}
               className={cn(
                 "min-w-0 shrink-0 grow-0",
-                classNames?.slide ??
-                  slideClassName ??
-                  "basis-[85%] sm:basis-1/2 lg:basis-1/3",
+                classNames?.slide ?? "basis-[85%] sm:basis-1/2 lg:basis-1/3",
               )}
             >
               {node}

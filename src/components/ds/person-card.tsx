@@ -9,14 +9,22 @@ export type PersonCardProps = {
   name: string;
   /** Line under the name: role or affiliation. */
   byline?: ReactNode;
-  /** Portrait, cropped to 4:5. */
-  image: { src: string; alt?: string };
+  /**
+   * Portrait, cropped to 4:5. `position` is a CSS `object-position` (for
+   * example "50% 20%") that keeps the face in frame when the crop cuts it.
+   */
+  image: { src: string; alt?: string; position?: string };
   /** A short bio or links under the byline. */
   children?: ReactNode;
   /** Heading level of the name. Default `h3`. */
   headingAs?: HeadingLevel;
   /** next/image `sizes`. */
   sizes?: string;
+  /**
+   * Serve the portrait as is, skipping the image optimizer (CMS URLs outside
+   * next.config's image patterns, or artwork that must stay lossless).
+   */
+  unoptimized?: boolean;
   /** Classes merged over the `figure`. */
   className?: string;
 };
@@ -29,6 +37,7 @@ export function PersonCard({
   children,
   headingAs: HeadingTag = "h3",
   sizes = "(min-width: 1024px) 25vw, (min-width: 640px) 45vw, 90vw",
+  unoptimized,
   className,
 }: PersonCardProps) {
   return (
@@ -39,6 +48,10 @@ export function PersonCard({
           alt={image.alt ?? name}
           fill
           sizes={sizes}
+          unoptimized={unoptimized}
+          style={
+            image.position ? { objectPosition: image.position } : undefined
+          }
           className="zoom-media object-cover"
         />
       </div>

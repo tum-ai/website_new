@@ -8,8 +8,8 @@ import {
 
 import {
   BrandMark,
-  BrandPanel,
   Container,
+  CtaPanel,
   FeatureCard,
   Reveal,
   Section,
@@ -74,11 +74,7 @@ export function ExpectationELab() {
               delay={200}
               className="md:col-span-2 lg:col-span-1 lg:col-start-3 lg:row-span-2 lg:row-start-1"
             >
-              <div
-                data-tone="ink"
-                className="relative isolate flex h-full flex-col justify-between gap-10 overflow-clip rounded-3xl p-8 md:p-10"
-              >
-                <BrandPanel className="-z-10" />
+              <CtaPanel className="flex h-full flex-col justify-between gap-10 rounded-3xl p-8 md:p-10">
                 <p className="text-fg text-heading-lg">
                   Have an idea, a prototype, or just relentless drive, and are
                   ready to build?{" "}
@@ -89,7 +85,7 @@ export function ExpectationELab() {
                 <p className="border-hairline border-t pt-6 font-medium text-fg-muted text-small">
                   Backed by TUM.ai and supported by leading VCs.
                 </p>
-              </div>
+              </CtaPanel>
             </Reveal>
           </div>
         </Container>
@@ -101,7 +97,10 @@ export function ExpectationELab() {
         aria-labelledby="elab-numbers-title"
         className="overflow-clip"
       >
-        <BrandMark className="absolute -right-[4%] -bottom-[55%] -z-10 w-[min(40rem,70%)] text-white/[0.1]" />
+        <BrandMark
+          className="absolute -right-[4%] -bottom-[55%] -z-10 w-[min(40rem,70%)]"
+          intensity="strong"
+        />
         <Container className="grid gap-8 lg:grid-cols-[minmax(0,0.55fr)_minmax(0,1.45fr)] lg:items-end lg:gap-16">
           <Reveal className="lg:pb-8">
             <h2

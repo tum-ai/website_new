@@ -17,6 +17,7 @@ describe("cn", () => {
     expect(cn("text-fg-muted", "text-stat-lg")).toBe(
       "text-fg-muted text-stat-lg",
     );
+    expect(cn("text-white", "text-label-sm")).toBe("text-white text-label-sm");
   });
 
   test.each([
@@ -24,6 +25,8 @@ describe("cn", () => {
     ["text-small", "text-label"],
     ["text-stat-md", "text-stat-xl"],
     ["text-[0.9375rem]", "text-label"],
+    ["text-label", "text-label-sm"],
+    ["text-display-lg", "text-display-fit"],
     ["text-base", "text-eyebrow"],
   ])("resolves the text sizes %s and %s", (first, second) => {
     expect(cn(first, second)).toBe(second);

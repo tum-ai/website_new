@@ -1,7 +1,8 @@
-import { FileText, Plus } from "lucide-react";
+import { FileText } from "lucide-react";
 import {
   BrandPanel,
   ButtonLink,
+  CornerHint,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -69,33 +70,6 @@ function PublicationHint() {
     <span className="inline-flex items-center gap-1.5 font-medium text-fg-subtle text-meta">
       <FileText aria-hidden="true" className="size-3.5" strokeWidth={1.75} />
       Publication
-    </span>
-  );
-}
-
-/**
- * The dialog-opening affordance: a disc whose plus turns on hover. `media`
- * is the white disc for photos; `tonal` sits on the card surface.
- */
-function OpenHint({
-  variant = "media",
-  className,
-}: {
-  variant?: "media" | "tonal";
-  className?: string;
-}) {
-  return (
-    <span
-      aria-hidden="true"
-      className={cn(
-        "grid shrink-0 place-items-center rounded-full transition-[rotate,background-color] duration-500 ease-brand motion-safe:group-hover/zoom:rotate-90 motion-reduce:transition-none",
-        variant === "media"
-          ? "bg-white/90 text-violet-950 shadow-soft backdrop-blur group-hover/zoom:bg-white"
-          : "bg-fg/[0.07] text-fg group-hover/zoom:bg-fg/[0.12]",
-        className,
-      )}
-    >
-      <Plus className="size-4" />
     </span>
   );
 }
@@ -207,7 +181,7 @@ export function ResearchCard({
             sizes="(min-width: 1024px) 17rem, (min-width: 640px) 10rem, 6.5rem"
             artClassName="hidden text-heading-lg md:block"
           />
-          <OpenHint className="absolute top-2 right-2 size-8" />
+          <CornerHint icon="open" className="absolute top-2 right-2 size-8" />
         </div>
         <KeywordTags
           keywords={project.keywords}
@@ -258,7 +232,7 @@ export function ResearchCard({
                 <StatusLine project={project} />
                 {publicationUrl ? <PublicationHint /> : null}
               </div>
-              <OpenHint variant="tonal" className="size-9" />
+              <CornerHint icon="open" variant="tonal" className="size-9" />
             </div>
           </div>
         </div>

@@ -1,10 +1,9 @@
 import { Button as BaseButton } from "@base-ui/react/button";
 import { cva, type VariantProps } from "class-variance-authority";
 import { ArrowDown, ArrowRight, ArrowUpRight } from "lucide-react";
-import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/cn";
-import { isExternalHref, isNonRouteHref } from "./internal";
+import { Anchor } from "./anchor";
 
 /**
  * Button styles, shared by <Button> (actions) and <ButtonLink> (navigation).
@@ -46,7 +45,7 @@ export const buttonStyles = cva(
       /** Height step; `icon` and `icon-sm` are square. */
       size: {
         // 13px without text-meta's line height, so text-height links keep their box.
-        sm: "h-9 px-4 text-[0.8125rem]",
+        sm: "h-9 px-4 text-label-sm",
         md: "h-11 px-5.5 text-label",
         lg: "h-13 px-7 text-base",
         icon: "size-11",
@@ -149,8 +148,9 @@ export type ButtonLinkProps = Omit<ComponentProps<"a">, "href"> &
   };
 
 /**
- * Link styled as a button. Internal routes use next/link; external links open
- * in a new tab with `rel="noopener noreferrer"` and an announced hint.
+ * Link styled as a button. It links through <Anchor>: internal routes use
+ * next/link; external links open in a new tab with `rel="noopener noreferrer"`
+ * and an announced hint.
  */
 export function ButtonLink({
   href,
@@ -162,36 +162,16 @@ export function ButtonLink({
   children,
   ...props
 }: ButtonLinkProps) {
-  const opensNewTab = external ?? isExternalHref(href);
-  const classes = cn(buttonStyles({ variant, size }), className);
-  const content = (
-    <>
-      {children}
-      {opensNewTab ? (
-        <span className="sr-only"> (opens in a new tab)</span>
-      ) : null}
-      {arrow ? <ButtonArrow kind={arrow} /> : null}
-    </>
-  );
-
-  if (isNonRouteHref(href) || opensNewTab) {
-    return (
-      <a
-        href={href}
-        className={classes}
-        target={opensNewTab ? "_blank" : undefined}
-        rel={opensNewTab ? "noopener noreferrer" : undefined}
-        {...props}
-      >
-        {content}
-      </a>
-    );
-  }
-
   return (
-    <Link href={href} className={classes} {...props}>
-      {content}
-    </Link>
+    <Anchor
+      href={href}
+      external={external}
+      className={cn(buttonStyles({ variant, size }), className)}
+      {...props}
+    >
+      {children}
+      {arrow ? <ButtonArrow kind={arrow} /> : null}
+    </Anchor>
   );
 }
 

@@ -16,15 +16,16 @@
  *   plain prop (React 19); every component exports its `XProps` type.
  * - Styling hooks: `className` targets the root; components with several
  *   parts take a `classNames` object of per-part overrides.
- * - Every export and prop has TSDoc. Deprecated aliases say what replaces
- *   them and are removed in W3.
+ * - Every export and prop has TSDoc. A renamed prop keeps a `@deprecated`
+ *   alias that names its replacement for one release, then goes.
  * - "use client" only where the component itself uses state, effects or
  *   event handlers; Base UI parts are client components already.
  * - Motion: house easing (`ease-brand`), at most 1.2s outside ambient loops,
  *   and nothing moves under `prefers-reduced-motion` (use `motion-safe:` or
  *   `motion-reduce:`).
- * - Links: http(s) opens a new tab with `rel="noopener noreferrer"` and a
- *   screen-reader hint; routes use next/link. Images use next/image.
+ * - Links go through <Anchor>: http(s) opens a new tab with
+ *   `rel="noopener noreferrer"` and a screen-reader hint; routes use
+ *   next/link. Images use next/image.
  */
 
 export {
@@ -41,9 +42,11 @@ export {
   type FaqListProps,
 } from "./accordion";
 export { Actions, type ActionsProps } from "./actions";
+export { Anchor, type AnchorProps } from "./anchor";
 export { Aurora, type AuroraProps } from "./aurora";
 export { BrandMark, type BrandMarkProps } from "./brand-mark";
 export { BrandPanel, type BrandPanelProps } from "./brand-panel";
+export { BulletList, type BulletListProps } from "./bullet-list";
 export {
   Button,
   type ButtonArrowKind,
@@ -77,6 +80,8 @@ export {
   CtaBand,
   type CtaBandClassNames,
   type CtaBandProps,
+  CtaPanel,
+  type CtaPanelProps,
 } from "./cta-band";
 export {
   Dialog,
@@ -106,6 +111,8 @@ export {
 } from "./logo-wall";
 export { Marquee, type MarqueeProps } from "./marquee";
 export {
+  CornerHint,
+  type CornerHintProps,
   MediaCard,
   type MediaCardImage,
   type MediaCardProps,
@@ -194,3 +201,4 @@ export {
   type TextEmphasis,
   type TextProps,
 } from "./typography";
+export { type Breakpoint, useBreakpoint } from "./use-breakpoint";
