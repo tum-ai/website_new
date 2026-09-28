@@ -2,10 +2,11 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity/visual-editing";
-import { MotionProvider } from "@/components/ds/motion-provider";
+import { MotionProvider } from "@/components/ds";
 import { Footer } from "@/components/shell/footer";
 import { Header } from "@/components/shell/header";
 import { SkipLink } from "@/components/shell/skip-link";
+import { rootMetadata } from "@/config/seo";
 import { isSanityConfigured, SanityLive } from "@/lib/sanity";
 import "@/styles/index.css";
 
@@ -16,13 +17,7 @@ const manrope = localFont({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.tum-ai.com"),
-  title: {
-    default: "TUM.ai - Germany's Leading AI Student Initiative",
-    template: "%s | TUM.ai",
-  },
-  description:
-    "TUM.ai is Germany's leading AI student initiative, connecting students, research, and industry.",
+  ...rootMetadata,
   icons: {
     icon: [
       {
@@ -47,7 +42,8 @@ export const metadata: Metadata = {
 
 /**
  * Browser chrome that still reads theme-color (e.g. Chrome on Android) uses the
- * same brand black as the root canvas, the hero tops and the footer.
+ * same brand black as the root canvas, the hero tops and the footer
+ * (`--color-black` in src/styles/index.css; metadata needs a literal color).
  */
 export const viewport: Viewport = {
   themeColor: "#0d0214",
