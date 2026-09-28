@@ -51,7 +51,7 @@ export function JoinSection() {
           intensity="medium"
           className="absolute inset-0 size-full"
         />
-        <ConstructionLines className="absolute inset-0 size-full text-violet-300" />
+        <ConstructionLines className="absolute inset-0 hidden size-full text-violet-300 lg:block" />
       </div>
 
       <Container>
@@ -94,16 +94,20 @@ export function JoinSection() {
               {recruitingSteps.map((step, index) => (
                 <li
                   key={step.title}
-                  className="border-hairline border-b py-6 sm:border-b-0 sm:py-8 sm:pr-8"
+                  className="grid grid-cols-[3rem_minmax(0,1fr)] items-baseline border-hairline border-b py-5 last:border-b-0 sm:block sm:border-b-0 sm:py-8 sm:pr-8"
                 >
                   <span
                     aria-hidden="true"
-                    className="tabular block text-highlight text-stat-md"
+                    className="tabular block text-heading-lg text-highlight sm:text-stat-md"
                   >
                     {String(index + 1).padStart(2, "0")}
                   </span>
-                  <p className="mt-4 text-fg text-heading-md">{step.title}</p>
-                  <p className="mt-1 text-fg-muted text-small">{step.dates}</p>
+                  <div className="sm:mt-4">
+                    <p className="text-fg text-heading-md">{step.title}</p>
+                    <p className="mt-1 text-fg-muted text-small">
+                      {step.dates}
+                    </p>
+                  </div>
                 </li>
               ))}
             </ol>
@@ -112,7 +116,7 @@ export function JoinSection() {
           {quoted ? (
             <Reveal delay={160}>
               <figure className="mt-12 max-w-xl border-hairline border-t pt-8 md:mt-16">
-                <blockquote className="text-fg text-heading-md">
+                <blockquote className="text-fg text-heading-sm sm:text-heading-md">
                   “{memberQuote.excerpt}”
                 </blockquote>
                 <figcaption className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-4">
@@ -124,7 +128,7 @@ export function JoinSection() {
                         alt=""
                         width={48}
                         height={48}
-                        className="size-11 rounded-full object-cover ring-2 ring-canvas"
+                        className="size-9 rounded-full object-cover ring-2 ring-canvas sm:size-11"
                       />
                     ))}
                   </div>
