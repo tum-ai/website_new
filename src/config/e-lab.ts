@@ -50,6 +50,8 @@ export const eLabConfig: ELabConfig = {
   programWeeks: 14,
   ventureFundingMillions: 8,
   heroLogo: {
+    // TODO(content): E-Lab 6.0 still shows the E-Lab 5 artwork. Is there an
+    // E-Lab 6 logo, or is the 5.0 lockup intended for this cohort?
     src: "/assets/e-lab/E-Lab5Logo.svg",
     alt: `E-LAB ${currentIteration}`,
   },
@@ -123,9 +125,6 @@ function phaseCopy(open: boolean) {
       ? "Secure your spot in one of Europe’s leading AI incubators and join a network of top founders, mentors, and investors."
       : "Applications for this cohort are now closed. Follow TUM.ai for the next intake and upcoming founder opportunities.",
     cardCtaLabel: open ? "Apply Now!" : "Applications Closed",
-    ariaLabel: open
-      ? `Apply for ${cohortName}`
-      : `${cohortName} applications are closed`,
   } as const;
 }
 

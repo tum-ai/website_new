@@ -1,9 +1,9 @@
-import Image from "next/image";
-
 import {
   Aurora,
   Container,
+  LogoTile,
   Marquee,
+  QuoteCard,
   Section,
   SectionHeader,
   Tag,
@@ -35,28 +35,24 @@ const organizationDisplay: Record<
 
 function OrganizationRow({ testimonial }: { testimonial: TestimonialCard }) {
   const display = organizationDisplay[testimonial.id];
-  const logoSrc = display?.logoSrc ?? testimonial.organizationLogoSrc;
   const qualifier = display ? display.qualifier : testimonial.organizationLabel;
+  const standsAlone = display && !display.lockupName && !qualifier;
 
   return (
     <div className="mt-6 flex items-center gap-3 border-hairline border-t pt-5">
-      <span className="inline-flex h-9 shrink-0 items-center gap-2 rounded-xl bg-white px-3">
-        <img
-          src={logoSrc}
-          alt={
-            display && !display.lockupName && !qualifier
-              ? testimonial.organizationLabel
-              : testimonial.organizationLogoAlt
-          }
-          decoding="async"
-          className="max-h-5 w-auto max-w-28 object-contain"
-        />
-        {display?.lockupName ? (
-          <span className="font-semibold text-[0.8125rem] text-violet-950 tracking-[-0.01em]">
-            {display.lockupName}
-          </span>
-        ) : null}
-      </span>
+      <LogoTile
+        variant="chip"
+        eager
+        name={testimonial.organizationLabel}
+        src={display?.logoSrc ?? testimonial.organizationLogoSrc}
+        alt={
+          standsAlone
+            ? testimonial.organizationLabel
+            : testimonial.organizationLogoAlt
+        }
+        wordmark={display?.lockupName}
+        className="shrink-0"
+      />
       {qualifier ? (
         <span className="font-medium text-fg-subtle text-meta">
           {qualifier}
@@ -67,52 +63,29 @@ function OrganizationRow({ testimonial }: { testimonial: TestimonialCard }) {
 }
 
 /**
- * Glass testimonial for dark bands. Follows the DS QuoteCard, plus the cohort
- * context tag and an organization row (logo on a white chip, since the logo
- * artwork is made for light backgrounds). Images load eagerly:
+ * Glass testimonial for dark bands: the DS QuoteCard with the cohort as its
+ * context tag and the organization row as its footer. Images load eagerly:
  * lazy images in a moving, clipped rail only start loading once they slide
  * into view, which shows as pop-in.
  */
 function CommunityQuote({ testimonial }: { testimonial: TestimonialCard }) {
   return (
-    <figure className="flex h-full w-[min(20.5rem,calc(100vw-3rem))] flex-col rounded-3xl border border-white/10 bg-white/[0.045] p-7 shadow-inset-hairline md:w-[25rem] md:p-8">
-      <div className="flex min-h-7 items-center justify-between gap-4">
-        <svg
-          aria-hidden
-          viewBox="0 0 34 24"
-          className="h-6 w-8 shrink-0 text-highlight"
-          fill="currentColor"
-        >
-          <path d="M0 24V14.4C0 6.24 4.32 1.44 12.96 0l1.44 3.36C9.6 4.8 7.2 7.68 7.2 12H13.2V24H0Zm18.8 0V14.4C18.8 6.24 23.12 1.44 31.76 0l1.44 3.36C28.4 4.8 26 7.68 26 12H32V24H18.8Z" />
-        </svg>
-        {testimonial.context ? <Tag>{testimonial.context}</Tag> : null}
-      </div>
-      <blockquote className="mt-6 flex-1 text-fg text-lead">
-        {testimonial.quote}
-      </blockquote>
-      <figcaption className="mt-8">
-        <div className="flex items-center gap-4">
-          <Image
-            src={testimonial.portraitSrc}
-            alt={testimonial.portraitAlt}
-            width={52}
-            height={52}
-            loading="eager"
-            className="size-13 shrink-0 rounded-full object-cover ring-2 ring-white/15"
-          />
-          <div className="min-w-0">
-            <p className="text-fg text-heading-sm">{testimonial.name}</p>
-            <p className="text-fg-muted text-meta">{testimonial.role}</p>
-          </div>
-        </div>
-        <OrganizationRow testimonial={testimonial} />
-      </figcaption>
-    </figure>
+    <QuoteCard
+      variant="glass"
+      eager
+      quote={testimonial.quote}
+      name={testimonial.name}
+      byline={testimonial.role}
+      portrait={{ src: testimonial.portraitSrc, alt: testimonial.portraitAlt }}
+      context={testimonial.context ? <Tag>{testimonial.context}</Tag> : null}
+      footer={<OrganizationRow testimonial={testimonial} />}
+      className="w-82 max-w-[calc(100vw-3rem)] md:w-100"
+    />
   );
 }
 
 /** "Our Community": glass quote cards on a slow marquee over the ink band. */
-export const Testimonials = () => {
+export function Testimonials() {
   return (
     <Section
       tone="ink"
@@ -143,4 +116,4 @@ export const Testimonials = () => {
       </Marquee>
     </Section>
   );
-};
+}

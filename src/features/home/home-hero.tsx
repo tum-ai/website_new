@@ -49,7 +49,7 @@ export function HomeHero() {
 
         <h1
           id="home-hero-title"
-          className="mt-8 max-w-[11.5em] font-light text-display-2xl text-fg max-sm:text-[clamp(2.3rem,11.4vw,3.25rem)] md:mt-10"
+          className="mt-8 max-w-[11.5em] font-light text-display-2xl text-fg md:mt-10"
         >
           <SplitWords delay={140} step={60}>
             Germany’s leading student initiative focused on{" "}
