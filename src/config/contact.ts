@@ -13,6 +13,22 @@ export const contactEmails = {
   recruitment: "recruitment@tum-ai.com",
 } as const;
 
+/**
+ * Who handles partnership requests from /partners. The finder's email goes to
+ * `contactEmails.partners` with `cc` copied in, and "Book a call" embeds the
+ * `bookingUrl` Cal.eu page, introduced as a chat with `bookingHost`. All three
+ * change together when the partnership leads hand over.
+ *
+ * TODO(content): `cc`, `bookingUrl` and `bookingHost` name people, not roles.
+ * Does partners@ reach the leads on its own (then drop `cc`), and is there a
+ * shared Cal.eu team page to use instead of a personal one?
+ */
+export const partnershipContact = {
+  cc: ["silas.zamzow@tum-ai.com", "kim.schlemmer@tum-ai.com"],
+  bookingUrl: "https://cal.eu/silaszamzow/tumai-quick-chat",
+  bookingHost: "Silas",
+} as const;
+
 export const socialLinks = {
   linkedin: "https://www.linkedin.com/company/tum-ai",
   instagram: "https://www.instagram.com/tum.ai_official/",

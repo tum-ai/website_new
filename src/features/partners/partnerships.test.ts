@@ -1,5 +1,6 @@
 import { existsSync } from "node:fs";
 import { expect, test } from "vitest";
+import { contactEmails, partnershipContact } from "@/config/contact";
 import { alumniDestinations, featuredPartners } from "./data/partner-logos";
 import { marqueeLogos } from "./data/partner-marquee-logos";
 import {
@@ -79,7 +80,7 @@ test("email and booking carry readable, encoded intent, timeframe, and recommend
   const selection = { intent: "hackathon", duration: "ongoing" } as const;
   const email = new URL(getPartnershipEmailUrl(selection));
   expect(email.protocol).toBe("mailto:");
-  expect(email.pathname).toBe("partners@tum-ai.com");
+  expect(email.pathname).toBe(contactEmails.partners);
   expect(email.searchParams.get("subject")).toBe(
     "Partnership request: Hackathon challenge",
   );
@@ -90,18 +91,19 @@ test("email and booking carry readable, encoded intent, timeframe, and recommend
     /Long-Term Partnership \(with first-choice hackathons\)/,
   );
   const booking = new URL(getPartnershipBookingUrl(selection));
-  expect(booking.origin).toBe("https://cal.eu");
-  expect(booking.pathname).toBe("/silaszamzow/tumai-quick-chat");
+  const configured = new URL(partnershipContact.bookingUrl);
+  expect(booking.origin).toBe(configured.origin);
+  expect(booking.pathname).toBe(configured.pathname);
   expect(booking.searchParams.getAll("guest")).toStrictEqual([
-    "partners@tum-ai.com",
+    contactEmails.partners,
   ]);
   expect(booking.searchParams.get("notes") ?? "").toMatch(
     /Hackathon|hackathon/,
   );
   const defaultEmail = new URL(getPartnershipEmailUrl());
-  expect(defaultEmail.pathname).toBe("partners@tum-ai.com");
+  expect(defaultEmail.pathname).toBe(contactEmails.partners);
   expect(defaultEmail.searchParams.get("cc")).toBe(
-    "silas.zamzow@tum-ai.com,kim.schlemmer@tum-ai.com",
+    partnershipContact.cc.join(","),
   );
   expect(defaultEmail.searchParams.getAll("cc").length).toBe(1);
   expect(defaultEmail.searchParams.get("subject") ?? "").toMatch(
@@ -211,16 +213,14 @@ test("CMS overrides defaults, aliases consolidate, and unclassified legacy entri
   expect(result.find((p) => p.name === "New partner")?.link).toBeUndefined();
 });
 
-test("email CCs reach both partnership contacts with and without finder context", () => {
+test("email CCs reach the configured partnership contacts with and without finder context", () => {
   for (const selection of [
     initialFunnelState,
     { intent: "hackathon", duration: "ongoing" } as const,
   ]) {
     const email = new URL(getPartnershipEmailUrl(selection));
-    expect(email.pathname).toBe("partners@tum-ai.com");
-    expect(email.searchParams.get("cc")).toBe(
-      "silas.zamzow@tum-ai.com,kim.schlemmer@tum-ai.com",
-    );
+    expect(email.pathname).toBe(contactEmails.partners);
+    expect(email.searchParams.get("cc")).toBe(partnershipContact.cc.join(","));
     expect(email.searchParams.getAll("cc").length).toBe(1);
     expect(email.searchParams.get("subject") ?? "").toMatch(
       /^Partnership request/,

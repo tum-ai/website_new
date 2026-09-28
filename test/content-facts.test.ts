@@ -162,11 +162,6 @@ const allowlist: { file: string; fact: string; until: string }[] = [
     until:
       "Justin confirms the register number (TODO(content) in config/organization.ts)",
   },
-  {
-    file: "features/partners/partnerships.ts",
-    fact: "personal emails: use a role address from config/contact.ts",
-    until: "W2 Partners routes partner mail through a role address",
-  },
 ];
 
 const srcDir = join(import.meta.dirname, "..", "src");
