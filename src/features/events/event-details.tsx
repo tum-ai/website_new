@@ -1,167 +1,93 @@
 "use client";
 
-import { format } from "date-fns";
 import { MapPin } from "lucide-react";
+import type { ReactNode } from "react";
 import {
+  BrandPanel,
   Button,
-  ButtonLink,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogTitle,
   DialogTrigger,
+  FallbackImage,
   Tag,
 } from "@/components/ds";
-import { getSafeExternalUrl } from "@/lib/security";
-import type { Event } from "@/lib/types";
-import { EventArtwork, EventImage } from "./event-media";
+import type { EventDetails } from "./events";
 
-/** Cards show this many characters; longer descriptions get "Read More". */
-const DESCRIPTION_LIMIT = 300;
-
-export function hasLongDescription(event: Event) {
-  return event.description.length > DESCRIPTION_LIMIT;
-}
-
-export function truncateDescription(description: string) {
-  return description.length > DESCRIPTION_LIMIT
-    ? `${description.slice(0, DESCRIPTION_LIMIT)}...`
-    : description;
-}
-
-/** "Location, City", skipping whichever part is missing. */
-export function formatEventLocation(event: Event) {
-  return [event.location, event.city].filter(Boolean).join(", ");
-}
-
-type ButtonSize = "sm" | "md" | "lg";
-
-/**
- * Sign-up call to action. Only http(s) URLs pass `getSafeExternalUrl`; they
- * open in a new tab (noopener, announced by ButtonLink). Anything else shows
- * the disabled "Applications Closed" state. Render it only when the event has
- * a `sign_up` value.
- */
-export function SignUpAction({
-  event,
-  size = "md",
-  className,
-}: {
-  event: Event;
-  size?: ButtonSize;
-  className?: string;
-}) {
-  const signUpUrl = getSafeExternalUrl(event.sign_up);
-
-  if (!signUpUrl) {
-    return (
-      <Button variant="secondary" size={size} disabled className={className}>
-        Applications Closed
-      </Button>
-    );
-  }
-
-  return (
-    <ButtonLink
-      href={signUpUrl}
-      external
-      arrow="external"
-      size={size}
-      className={className}
-    >
-      Apply Now!
-      <span className="sr-only"> for {event.title}</span>
-    </ButtonLink>
-  );
-}
+const imageSizes = "(min-width: 768px) 40vw, 100vw";
 
 /**
  * "Read More" trigger and the event detail dialog: image, date, title,
- * location, category, the full description and, for upcoming events, the
- * sign-up action.
+ * location, category, the full description and an optional action (the
+ * sign-up for upcoming events). Takes plain, pre-formatted props from the
+ * server (`toEventDetails`), so it never formats a date in the browser.
  */
 export function EventDetailsDialog({
-  event,
-  image,
-  withSignUp = false,
+  details,
+  action,
   triggerVariant = "outline",
-  triggerSize = "md",
-  triggerClassName,
 }: {
-  event: Event;
-  image?: { src: string; alt: string };
-  withSignUp?: boolean;
-  triggerVariant?: "primary" | "outline" | "secondary" | "link";
-  triggerSize?: ButtonSize;
-  triggerClassName?: string;
+  /** What the dialog shows. */
+  details: EventDetails;
+  /** Rendered under the description, e.g. the sign-up button. */
+  action?: ReactNode;
+  /** Look of the "Read More" trigger. */
+  triggerVariant?: "outline" | "link";
 }) {
-  const eventDate = new Date(event.event_date);
-  const location = formatEventLocation(event);
+  const { title, date, location, category, description, image } = details;
 
   return (
     <Dialog>
-      <DialogTrigger
-        render={
-          <Button
-            variant={triggerVariant}
-            size={triggerSize}
-            arrow
-            className={triggerClassName}
-          />
-        }
-      >
+      <DialogTrigger render={<Button variant={triggerVariant} arrow />}>
         Read More
-        <span className="sr-only"> about {event.title}</span>
+        <span className="sr-only"> about {title}</span>
       </DialogTrigger>
       <DialogContent size="xl">
         <div className="grid md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
-          <div className="relative aspect-[4/3] overflow-hidden bg-sunken md:aspect-auto md:min-h-[32rem]">
+          <div className="relative aspect-[4/3] overflow-hidden bg-sunken md:aspect-auto md:min-h-128">
             {image ? (
-              <>
-                <EventImage
-                  src={image.src}
-                  alt=""
-                  sizes="(min-width: 768px) 40vw, 100vw"
-                  className="scale-110 opacity-60 blur-2xl"
-                />
-                <EventImage
-                  src={image.src}
-                  alt={image.alt}
-                  sizes="(min-width: 768px) 40vw, 100vw"
-                  className="object-contain"
-                />
-              </>
-            ) : (
-              <EventArtwork />
-            )}
+              <FallbackImage
+                src={image.src}
+                alt=""
+                fill
+                unoptimized
+                sizes={imageSizes}
+                className="scale-110 object-cover opacity-60 blur-2xl"
+                fallback={null}
+              />
+            ) : null}
+            <FallbackImage
+              src={image?.src}
+              alt={image?.alt ?? ""}
+              fill
+              unoptimized
+              sizes={imageSizes}
+              className="object-contain"
+              fallback={<BrandPanel />}
+            />
           </div>
           <div className="flex min-w-0 flex-col px-6 py-8 sm:px-10 sm:py-10 md:pt-14">
             <p className="text-eyebrow text-highlight uppercase">
-              <time dateTime={event.event_date}>
-                {format(eventDate, "PPP")}
-              </time>
+              <time dateTime={date.dateTime}>{date.long}</time>
             </p>
-            <DialogTitle className="mt-4 md:pr-8">{event.title}</DialogTitle>
+            <DialogTitle className="mt-4 md:pr-8">{title}</DialogTitle>
             {location ? (
               <DialogDescription className="mt-3 flex items-start gap-2 text-small">
                 <MapPin
                   aria-hidden
-                  className="mt-[0.2rem] size-4 shrink-0 text-highlight"
+                  className="mt-1 size-4 shrink-0 text-highlight"
                 />
                 {location}
               </DialogDescription>
             ) : null}
-            {event.category ? (
-              <Tag className="mt-5 self-start">{event.category}</Tag>
+            {category ? (
+              <Tag className="mt-5 self-start">{category}</Tag>
             ) : null}
             <p className="mt-7 whitespace-pre-line border-hairline border-t pt-7 text-body text-fg-muted">
-              {event.description}
+              {description}
             </p>
-            {withSignUp && event.sign_up ? (
-              <div className="mt-9 flex">
-                <SignUpAction event={event} size="lg" />
-              </div>
-            ) : null}
+            {action ? <div className="mt-9 flex">{action}</div> : null}
           </div>
         </div>
       </DialogContent>
