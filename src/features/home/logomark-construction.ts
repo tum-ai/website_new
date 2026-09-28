@@ -8,7 +8,7 @@
  * stroke edges.
  */
 
-export type Point = { x: number; y: number };
+type Point = { x: number; y: number };
 
 /** A straight edge of a stroke, as two points taken from the path. */
 export type Edge = { from: Point; to: Point };
@@ -65,7 +65,7 @@ export const counterCircle = {
 } as const satisfies Circle;
 
 /** Top of the caps, their centre lines, and the baseline. */
-export const horizontals = [0, 39.4, 366.5, 405.9] as const;
+const horizontals = [0, 39.4, 366.5, 405.9] as const;
 
 /** The x of an edge's line at height y. */
 export function edgeX(edge: Edge, y: number): number {
