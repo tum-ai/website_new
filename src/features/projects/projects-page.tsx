@@ -17,8 +17,8 @@ function tileLayout(index: number, count: number) {
       lastOdd && "md:col-span-2 xl:col-span-2",
     ),
     tile: cn(
-      featured && "xl:aspect-[4/3]",
-      lastOdd && "md:aspect-[16/9] xl:aspect-[4/5]",
+      featured && "xl:aspect-4/3",
+      lastOdd && "md:aspect-video xl:aspect-4/5",
     ),
     sizes: featured
       ? "(min-width: 1280px) 50vw, (min-width: 768px) 50vw, 100vw"
@@ -28,6 +28,7 @@ function tileLayout(index: number, count: number) {
   };
 }
 
+/** The /projects page: the task forces as a bento grid. */
 export function ProjectsPage() {
   const count = projects.length;
   return (
@@ -55,7 +56,7 @@ export function ProjectsPage() {
                   className={layout.item}
                 >
                   <ProjectCard
-                    {...project}
+                    project={project}
                     index={index}
                     className={layout.tile}
                     sizes={layout.sizes}
