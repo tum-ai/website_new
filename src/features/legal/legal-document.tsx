@@ -44,10 +44,7 @@ export function LegalNav({ current }: { current: LegalHref }) {
 
 /** Link style for legal links outside `Prose` (address cards, fact lists). */
 export const legalLinkClass =
-  "font-semibold text-highlight underline decoration-1 underline-offset-4 transition-colors duration-300 [overflow-wrap:anywhere] hover:text-fg hover:decoration-2";
-
-/** Scroll offset so anchored headings clear the fixed header. */
-const legalAnchorOffset = "scroll-mt-[calc(var(--header-height)+2.5rem)]";
+  "font-semibold text-highlight underline decoration-1 underline-offset-4 transition-colors duration-300 wrap-anywhere hover:text-fg hover:decoration-2";
 
 /**
  * One titled part of a legal document. `number` renders the existing
@@ -72,8 +69,7 @@ export function LegalSection({
       id={id}
       aria-labelledby={titleId}
       className={cn(
-        legalAnchorOffset,
-        "not-first:mt-10 border-hairline not-first:border-t not-first:pt-10 md:not-first:mt-12 md:not-first:pt-12",
+        "not-first:mt-10 scroll-mt-header border-hairline not-first:border-t not-first:pt-10 md:not-first:mt-12 md:not-first:pt-12",
         className,
       )}
     >

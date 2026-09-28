@@ -126,31 +126,30 @@ export function LegalToc({
     </ol>
   );
 
+  // One landmark: the disclosure below `lg`, the sticky list from `lg` up.
   return (
-    <>
-      <nav aria-label={label} className="lg:hidden">
-        <Collapsible className="rounded-3xl bg-sunken">
-          <CollapsibleTrigger className="flex w-full items-center justify-between gap-4 rounded-3xl px-6 py-4 text-left text-fg text-heading-sm">
-            <span>{label}</span>
-            <ChevronDown
-              aria-hidden
-              className="size-5 shrink-0 text-fg-muted transition-transform duration-500 ease-brand group-data-[panel-open]/collapsible:rotate-180 motion-reduce:transition-none"
-            />
-          </CollapsibleTrigger>
-          <CollapsiblePanel>
-            <div className="px-2 pb-2">{list}</div>
-          </CollapsiblePanel>
-        </Collapsible>
-      </nav>
-      <nav
-        aria-label={label}
-        className="hidden lg:sticky lg:top-28 lg:-ml-4 lg:block lg:max-h-[calc(100dvh-8rem)] lg:self-start lg:overflow-y-auto"
-      >
+    <nav
+      aria-label={label}
+      className="lg:sticky lg:top-(--header-offset) lg:-ml-4 lg:max-h-[calc(100dvh-8rem)] lg:self-start lg:overflow-y-auto"
+    >
+      <Collapsible className="rounded-3xl bg-sunken lg:hidden">
+        <CollapsibleTrigger className="flex w-full items-center justify-between gap-4 rounded-3xl px-6 py-4 text-left text-fg text-heading-sm">
+          <span>{label}</span>
+          <ChevronDown
+            aria-hidden
+            className="size-5 shrink-0 text-fg-muted transition-transform duration-500 ease-brand group-data-[panel-open]/collapsible:rotate-180 motion-reduce:transition-none"
+          />
+        </CollapsibleTrigger>
+        <CollapsiblePanel>
+          <div className="px-2 pb-2">{list}</div>
+        </CollapsiblePanel>
+      </Collapsible>
+      <div className="hidden lg:block">
         <p className="mb-4 pl-4 text-eyebrow text-fg-subtle uppercase">
           {label}
         </p>
         {list}
-      </nav>
-    </>
+      </div>
+    </nav>
   );
 }

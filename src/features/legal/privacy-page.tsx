@@ -1,4 +1,6 @@
 import { Container, PageHero, Prose, Section } from "@/components/ds";
+import { legalEntity, registeredOfficeLinesDe } from "@/config/organization";
+import { absoluteUrl } from "@/config/site";
 import {
   AddressCard,
   LegalNav,
@@ -21,30 +23,31 @@ const sections = [
     title:
       "Erhebung und Speicherung personenbezogener Daten sowie Art und Zweck deren Verwendung",
   },
-  {
-    id: "anonymisierte-daten",
-    number: "3.",
-    title:
-      "Erhebung und Speicherung anonymisierter Daten sowie Art und Zweck deren Verwendung",
-  },
-  { id: "weitergabe-von-daten", number: "4.", title: "Weitergabe von Daten" },
-  { id: "drittanbieter", number: "5.", title: "Drittanbieter" },
-  { id: "cookies", number: "6.", title: "Cookies" },
-  { id: "betroffenenrechte", number: "7.", title: "Betroffenenrechte" },
-  { id: "widerspruchsrecht", number: "8.", title: "Widerspruchsrecht" },
-  { id: "datensicherheit", number: "9.", title: "Datensicherheit" },
+  { id: "weitergabe-von-daten", number: "3.", title: "Weitergabe von Daten" },
+  { id: "drittanbieter", number: "4.", title: "Drittanbieter" },
+  { id: "cookies", number: "5.", title: "Cookies" },
+  { id: "betroffenenrechte", number: "6.", title: "Betroffenenrechte" },
+  { id: "widerspruchsrecht", number: "7.", title: "Widerspruchsrecht" },
+  { id: "datensicherheit", number: "8.", title: "Datensicherheit" },
   {
     id: "aktualitaet",
-    number: "10.",
+    number: "9.",
     title: "Aktualität und Änderung dieser Datenschutzerklärung",
   },
 ] satisfies LegalTocItem[];
+
+/** Caps the h1's font size so its longest word fits a phone column. */
+const titleFitClass =
+  "[font-size:min(var(--text-display-lg),calc((100vw-2*var(--gutter))/10))]!";
+
+const siteUrl = absoluteUrl();
+const applyUrl = absoluteUrl("/apply");
+const privacyUrl = absoluteUrl("/data-privacy");
 
 export function PrivacyPage() {
   const [
     verantwortlicher,
     personenbezogen,
-    anonymisiert,
     weitergabe,
     drittanbieter,
     cookies,
@@ -61,33 +64,40 @@ export function PrivacyPage() {
         title="Datenschutzerklärung TUM.ai e.V."
         actions={<LegalNav current="/data-privacy" />}
         // "Datenschutzerklärung" is ~9.7em wide. SplitWords renders each word
-        // as an inline-block, so hyphenating it strands a lone syllable
-        // ("rung") on phones; instead the size eases down just enough for the
-        // word to fit the column (plain display-lg from ~430px up).
-        // `hyphens-auto` stays only as an overflow guard.
-        className="[&_h1]:hyphens-auto [&_h1]:text-[length:min(var(--text-display-lg),calc((100vw-2*var(--gutter))/10))]"
+        // as an inline-block, so it must not hyphenate (a lone "rung" would
+        // strand on phones); instead the size eases down just enough for the
+        // word to fit the column (plain display-lg from ~430px up). Only the
+        // font size changes: a `text-*` class would make cn() drop
+        // `text-display-lg` and with it the display weight, tracking and
+        // line height, so this is a plain font-size property, marked
+        // important to win over the token's own font-size.
+        classNames={{ title: titleFitClass }}
       />
 
       <Section as="div" tone="paper" spacing="lg">
         <Container className="grid gap-10 lg:grid-cols-[minmax(0,16.5rem)_minmax(0,46rem)] lg:gap-[clamp(3.5rem,7vw,7rem)]">
           <LegalToc items={sections} label="Inhalt" />
 
-          <Prose className="[overflow-wrap:break-word]">
+          <Prose className="wrap-break-word">
             <LegalSection {...verantwortlicher}>
               <p>
                 Diese Datenschutz-Information gilt für die Datenverarbeitung
                 durch die
               </p>
+              {/* TODO(content): the controller is named "TUM e.V." here, while
+                  the Imprint names TUM.ai e.V. (legalEntity.legalName). Which
+                  is right? Legal wording, so it stays until confirmed. */}
               <AddressCard title="TUM e.V." className="sm:max-w-sm">
-                <p>Arcistrasse 21</p>
-                <p>80333 München</p>
+                {registeredOfficeLinesDe.map((line) => (
+                  <p key={line}>{line}</p>
+                ))}
                 <p>
                   E-Mail:{" "}
                   <a
-                    href="mailto:invoice@tum-ai.com"
+                    href={`mailto:${legalEntity.invoiceEmail}`}
                     className={legalLinkClass}
                   >
-                    invoice@tum-ai.com
+                    {legalEntity.invoiceEmail}
                   </a>
                 </p>
               </AddressCard>
@@ -96,8 +106,7 @@ export function PrivacyPage() {
             <LegalSection {...personenbezogen}>
               <LegalSubsection letter="a)" title="Beim Besuch der Website">
                 <p>
-                  Beim Aufrufen der Website{" "}
-                  <a href="https://www.tum-ai.com/">https://www.tum-ai.com/</a>{" "}
+                  Beim Aufrufen der Website <a href={siteUrl}>{siteUrl}</a>{" "}
                   (kurz: "TUM.ai Website") werden durch den auf Ihrem Endgerät
                   zum Einsatz kommenden Browser automatisch Informationen an den
                   Server unserer Website gesendet. Diese Informationen werden
@@ -149,10 +158,7 @@ export function PrivacyPage() {
                 <p>
                   Für die Bewerbung auf eine Mitgliedschaft ist das Ausfüllen
                   eines Kontaktformulars notwendig,{" "}
-                  <a href="https://www.tum-ai.com/apply">
-                    https://www.tum-ai.com/apply
-                  </a>
-                  .
+                  <a href={applyUrl}>{applyUrl}</a>.
                 </p>
                 <p>
                   Dabei ist die Angabe Ihres Namens und einer gültigen
@@ -229,28 +235,6 @@ export function PrivacyPage() {
               </LegalSubsection>
             </LegalSection>
 
-            <LegalSection {...anonymisiert}>
-              <p>
-                Wir verwenden Google Analytics zur Analyse und statistischen
-                Auswertung der Nutzung der Website. Hierzu werden eingesetzt.
-                Die dadurch erhaltenen Informationen über die Websitenutzung
-                werden ausschließlich an unsere Server übertragen und in
-                pseudonymen Nutzungsprofilen zusammengefasst. Die Daten
-                verwenden wir zur Auswertung der Nutzung der Website. Eine
-                Weitergabe der erfassten Daten an Dritte erfolgt nicht.
-              </p>
-              <p>
-                Die IP-Adressen werden anonymisiert (IPMasking), sodass eine
-                Zuordnung zu einzelnen Nutzern nicht möglich ist.
-              </p>
-              <p>
-                Die Datenverarbeitung erfolgt auf Grundlage von Art. 6 Abs. 1 S.
-                1 lit. f) DSGVO. Wir verfolgen damit unser berechtigtes
-                Interesse an der Optimierung unserer Webseite für unsere
-                Außendarstellung.
-              </p>
-            </LegalSection>
-
             <LegalSection {...weitergabe}>
               <p>
                 Eine Übermittlung Ihrer persönlichen Daten an Dritte zu anderen
@@ -284,6 +268,9 @@ export function PrivacyPage() {
             </LegalSection>
 
             <LegalSection {...drittanbieter}>
+              {/* TODO(content): the partner booking dialog embeds a Cal.eu
+                  calendar, which this section does not disclose yet. A
+                  maintainer adds the legal wording. */}
               <LegalSubsection letter="a)" title="Social Media Buttons">
                 <p>
                   Auf unserer Website befinden sich Schaltflächen mit Links zu
@@ -357,7 +344,7 @@ export function PrivacyPage() {
                 </p>
                 <p>
                   Das Ausfüllen von Online-Formularen erfolgt über den
-                  belgischen Anbieter Tally B.V. („Tally Forms) und unterliegt
+                  belgischen Anbieter Tally B.V. („Tally Forms") und unterliegt
                   der Europäischen Datenschutz-Grundverordnung (DSGVO).
                 </p>
                 <p>
@@ -372,7 +359,7 @@ export function PrivacyPage() {
               <LegalSubsection letter="c)" title="Für Nichtmitglieder">
                 <p>
                   Das Ausfüllen von Online-Formularen erfolgt über den
-                  belgischen Anbieter Tally B.V. („Tally Forms) und unterliegt
+                  belgischen Anbieter Tally B.V. („Tally Forms") und unterliegt
                   der Europäischen Datenschutz-Grundverordnung (DSGVO).
                   Grundlage der Datenverarbeitung ist einerseits Ihre
                   konkludente Einwilligung durch das Ausfüllen des Formulars
@@ -417,7 +404,7 @@ export function PrivacyPage() {
               <p>
                 Sie können dauerhaft installierte Cookies über die Einstellungen
                 Ihres Browsers löschen. Die meisten Browser akzeptieren Cookies
-                automatisch – falls Sie also den Einsatz von Cookies
+                automatisch - falls Sie also den Einsatz von Cookies
                 unterdrücken möchten, müssen Sie möglicherweise Cookies aktiv
                 löschen oder blockieren oder die Speicherung der Cookies durch
                 eine Einstellung Ihrer Browser-Software verhindern. Beachten Sie
@@ -527,7 +514,9 @@ export function PrivacyPage() {
               <p>
                 Möchten Sie von Ihrem Widerrufs- oder Widerspruchsrecht Gebrauch
                 machen, genügt eine E-Mail an{" "}
-                <a href="mailto:invoice@tum-ai.com">invoice@tum-ai.com</a>
+                <a href={`mailto:${legalEntity.invoiceEmail}`}>
+                  {legalEntity.invoiceEmail}
+                </a>
               </p>
             </LegalSection>
 
@@ -541,7 +530,7 @@ export function PrivacyPage() {
                 Verschlüsselung unterstützt, greifen wir stattdessen auf 128 Bit
                 v3 Technologie zurück. Ob eine einzelne Seite unseres
                 Internetauftritts verschlüsselt übertragen wird, erkennen Sie an
-                der geschlossenen Darstellung des Schüssel- beziehungsweise
+                der geschlossenen Darstellung des Schlüssel- beziehungsweise
                 Schloss-Symbols in der Statusleiste Ihres Browsers.
               </p>
               <p>
@@ -556,6 +545,9 @@ export function PrivacyPage() {
             </LegalSection>
 
             <LegalSection {...aktualitaet}>
+              {/* TODO(content): the "Stand" date predates the removal of the
+                  Google Analytics section. Should it move to the date that
+                  change goes live? */}
               <p>
                 Diese Datenschutzerklärung ist aktuell gültig und hat den Stand
                 August 2024.
@@ -566,10 +558,8 @@ export function PrivacyPage() {
                 behördlicher Vorgaben kann es notwendig werden, diese
                 Datenschutzerklärung zu ändern. Die jeweils aktuelle
                 Datenschutzerklärung kann jederzeit auf unserer Website unter{" "}
-                <a href="https://www.tum-ai.com/data-privacy">
-                  https://www.tum-ai.com/data-privacy
-                </a>{" "}
-                von Ihnen abgerufen und ausgedruckt werden.
+                <a href={privacyUrl}>{privacyUrl}</a> von Ihnen abgerufen und
+                ausgedruckt werden.
               </p>
             </LegalSection>
           </Prose>
