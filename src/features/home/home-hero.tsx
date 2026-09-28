@@ -72,7 +72,7 @@ export function HomeHero() {
         </div>
 
         <div className="mt-auto pt-16 pb-8 [animation-delay:1000ms] motion-safe:animate-fade md:pt-24 md:pb-10">
-          <div className="flex flex-col gap-6 border-hairline border-t pt-6 md:pt-8 lg:flex-row lg:items-center lg:gap-12">
+          <div className="flex flex-col gap-6 border-hairline md:border-t md:pt-8 lg:flex-row lg:items-center lg:gap-12">
             <p className="shrink-0 text-fg-subtle text-meta">
               Partners include
             </p>
