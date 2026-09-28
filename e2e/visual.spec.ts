@@ -1,6 +1,7 @@
 import {
   expect,
   loadLazyContent,
+  MOCK_CMS_NOW,
   routeSlug,
   siteRoutes,
   test,
@@ -29,6 +30,8 @@ for (const viewport of widths) {
 
     for (const route of siteRoutes) {
       test(route.path, async ({ page }) => {
+        // The server renders dates from MOCK_CMS_NOW; the browser agrees.
+        await page.clock.setFixedTime(MOCK_CMS_NOW);
         await page.goto(route.path);
         await loadLazyContent(page);
         await waitForAnimations(page);
