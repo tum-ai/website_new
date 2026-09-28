@@ -12,8 +12,13 @@ import { Eyebrow } from "./typography";
 
 const titleStyles = cva("text-fg", {
   variants: {
-    /** Display step of the headline. */
+    /**
+     * Display step of the headline. `fit` is `md` capped so a single word of
+     * about ten em (a German compound such as "Datenschutzerklärung") still
+     * fits a phone column: word-by-word titles can't hyphenate.
+     */
     size: {
+      fit: "text-display-fit",
       md: "text-display-lg",
       lg: "text-display-xl",
       xl: "text-display-2xl",
@@ -105,7 +110,10 @@ export function PageHero({
     >
       <Aurora />
       {mark ? (
-        <BrandMark className="absolute top-[6%] -right-[12%] -z-10 w-[min(64rem,78%)] text-white/[0.035]" />
+        <BrandMark
+          className="absolute top-[6%] -right-[12%] -z-10 w-[min(64rem,78%)]"
+          intensity="subtle"
+        />
       ) : null}
       <TopBlend />
       <Container>

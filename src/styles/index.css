@@ -47,6 +47,11 @@
   --color-ink-600: #655b71;
   --color-ink-950: #0d0214;
 
+  /* Live and active indicator dots (StatusBadge `live`, the active nav item,
+     the live event count). One step lighter than the brand violet, so the dot
+     reads on dark bands as well as on light ones. */
+  --color-indicator: var(--color-violet-400);
+
   /* --- Typography --- */
   --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
 
@@ -63,6 +68,15 @@
   --text-display-lg--line-height: 1.03;
   --text-display-lg--letter-spacing: -0.045em;
   --text-display-lg--font-weight: 500;
+  /* display-lg, capped so a word of ~10em (a long German compound such as
+     "Datenschutzerklärung") still fits the column between the gutters. */
+  --text-display-fit: min(
+    var(--text-display-lg),
+    calc((100vw - 2 * var(--gutter)) / 10)
+  );
+  --text-display-fit--line-height: 1.03;
+  --text-display-fit--letter-spacing: -0.045em;
+  --text-display-fit--font-weight: 500;
   --text-display-md: clamp(2rem, 1.4rem + 1.9vw, 3.35rem);
   --text-display-md--line-height: 1.08;
   --text-display-md--letter-spacing: -0.04em;
@@ -95,6 +109,9 @@
   /* UI labels: md buttons and badges, logo lockups (15px). Size only, so it
      keeps the surrounding line height like the arbitrary size it replaces. */
   --text-label: 0.9375rem;
+  /* Small UI labels: sm buttons and badges, logo chips (13px). Size only, like
+     `text-label`; `text-meta` is the same size with its own line height. */
+  --text-label-sm: 0.8125rem;
 
   /* Big figures (StatGrid, counters): tight, medium weight, one line high. */
   --text-stat-sm: clamp(2rem, 1.75rem + 0.8vw, 2.5rem);
@@ -643,6 +660,20 @@
       :where(.group\/zoom):hover & {
         scale: 1.04;
       }
+    }
+  }
+}
+
+/*
+ * `card-hover:` applies while the enclosing card (`group/card`), link or
+ * button is hovered, on devices that can hover. Used by <IconBadge
+ * interactive>, so a badge reacts inside any clickable surface without the
+ * caller adding a group name.
+ */
+@custom-variant card-hover {
+  @media (hover: hover) {
+    :where(.group\/card, a, button):hover & {
+      @slot;
     }
   }
 }

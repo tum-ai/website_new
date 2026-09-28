@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
-import { type FaqItem, FaqList } from "./accordion";
+import { type FaqItem, FaqList, type FaqListProps } from "./accordion";
 import { Container } from "./container";
 import { Reveal } from "./reveal";
 import { Section, type Tone } from "./section";
@@ -14,6 +14,10 @@ export type FaqSectionProps = {
   title?: ReactNode;
   /** Label above the title. Default "FAQ". */
   eyebrow?: ReactNode;
+  /** Editorial counter in the eyebrow, e.g. 2 → "02". */
+  index?: string | number;
+  /** Questions whose answers start open (see {@link FaqListProps}). */
+  defaultValue?: FaqListProps["defaultValue"];
   /** A sentence under the title. */
   lead?: ReactNode;
   /** Extra content under the lead (e.g. a contact link). */
@@ -31,6 +35,8 @@ export function FaqSection({
   items,
   title = "Frequently asked questions",
   eyebrow = "FAQ",
+  index,
+  defaultValue,
   lead,
   aside,
   id = "faq",
@@ -49,7 +55,7 @@ export function FaqSection({
       <Container className="grid gap-12 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.4fr)] lg:gap-20">
         <div className="lg:sticky lg:top-(--header-offset) lg:self-start">
           <Reveal>
-            <Eyebrow>{eyebrow}</Eyebrow>
+            <Eyebrow index={index}>{eyebrow}</Eyebrow>
             <h2 id={titleId} className="mt-5 text-display-md text-fg">
               {title}
             </h2>
@@ -60,7 +66,7 @@ export function FaqSection({
           </Reveal>
         </div>
         <Reveal delay={120}>
-          <FaqList items={items} />
+          <FaqList items={items} defaultValue={defaultValue} />
         </Reveal>
       </Container>
     </Section>

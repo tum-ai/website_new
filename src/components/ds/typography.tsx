@@ -98,13 +98,7 @@ export type TextEmphasis = NonNullable<
 /** Props for {@link Text}. */
 export type TextProps<T extends TextElement = "p"> = PolymorphicProps<
   T,
-  VariantProps<typeof textStyles> & {
-    /**
-     * Text color.
-     * @deprecated Use `emphasis`; `tone` is reserved for band tones. Removed in W3.
-     */
-    tone?: TextEmphasis;
-  }
+  VariantProps<typeof textStyles>
 >;
 
 /** Running text. Muted body copy in a `p` by default. */
@@ -112,17 +106,13 @@ export function Text<T extends TextElement = "p">({
   as,
   size,
   emphasis,
-  tone,
   className,
   ...props
 }: TextProps<T>) {
   const Component = (as ?? "p") as ElementType;
   return (
     <Component
-      className={cn(
-        textStyles({ size, emphasis: emphasis ?? tone }),
-        className,
-      )}
+      className={cn(textStyles({ size, emphasis }), className)}
       {...props}
     />
   );

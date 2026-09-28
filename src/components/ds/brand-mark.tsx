@@ -1,4 +1,4 @@
-import { cva } from "class-variance-authority";
+import { cva, type VariantProps } from "class-variance-authority";
 import { type ComponentProps, useId } from "react";
 import { cn } from "@/lib/cn";
 
@@ -7,6 +7,19 @@ const brandMarkStyles = cva("pointer-events-none select-none", {
     drift: {
       true: "motion-safe:animate-drift",
       false: "",
+    },
+    /**
+     * White at a low opacity, for dark bands: `faint` 3% (footer, quiet
+     * teasers), `subtle` 3.5% (heroes, menus, full-bleed CTAs), `soft` 4%
+     * (inset panels), `medium` 7% (photo stand-ins), `strong` 10% (the violet
+     * band). Leave it unset to color the mark with a text color instead.
+     */
+    intensity: {
+      faint: "text-white/[0.03]",
+      subtle: "text-white/[0.035]",
+      soft: "text-white/[0.04]",
+      medium: "text-white/[0.07]",
+      strong: "text-white/[0.1]",
     },
   },
   defaultVariants: { drift: true },
@@ -21,6 +34,8 @@ export type BrandMarkProps = Omit<
   variant?: "tonal" | "gradient";
   /** Slow ambient drift (still under reduced motion). Default true. */
   drift?: boolean;
+  /** How much the white mark shows on a dark band; see the cva variant. */
+  intensity?: VariantProps<typeof brandMarkStyles>["intensity"];
 };
 
 /**
@@ -29,12 +44,14 @@ export type BrandMarkProps = Omit<
  * exactly as the 2026 brand guide does on its section slides. It is
  * decoration only (hidden from assistive technology): never recolor it into
  * a logo substitute or place it where the real logo belongs. Size and place
- * it with `className`, and color it with a text color.
+ * it with `className`; set `intensity` on dark bands, or color it with a text
+ * color.
  */
 export function BrandMark({
   className,
   variant = "tonal",
   drift,
+  intensity,
   ...props
 }: BrandMarkProps) {
   // Unique per instance: a shared id breaks when the first instance is hidden.
@@ -44,7 +61,7 @@ export function BrandMark({
       aria-hidden="true"
       focusable="false"
       viewBox="0 0 477 406"
-      className={cn(brandMarkStyles({ drift }), className)}
+      className={cn(brandMarkStyles({ drift, intensity }), className)}
       fill="currentColor"
       {...props}
     >

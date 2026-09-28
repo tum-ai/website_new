@@ -18,7 +18,7 @@ const glowStyles = cva("absolute inset-0 -z-10", {
   },
 });
 
-const markStyles = cva("zoom-media absolute -z-10 text-white/[0.07]", {
+const markStyles = cva("zoom-media absolute -z-10", {
   variants: {
     composition: {
       0: "-right-[30%] -bottom-[16%] w-[112%]",
@@ -65,7 +65,11 @@ export function BrandPanel({
       {...props}
     >
       <div className={glowStyles({ composition })} />
-      <BrandMark drift={false} className={markStyles({ composition })} />
+      <BrandMark
+        drift={false}
+        intensity="medium"
+        className={markStyles({ composition })}
+      />
       <div className="grain -z-10" />
       {children}
     </div>
