@@ -142,6 +142,10 @@ const hardcodedFacts: [RegExp, string][] = [
     "Makeathon size: config/community.ts",
   ],
   [
+    /\b\d+\+?\s+(?:publications|papers)\b|\b\d{3,}\+?\s+hackers\b/i,
+    "research output and hackathon reach: config/impact.ts",
+  ],
+  [
     /\b[a-z]+\.[a-z]+@tum-ai\.com\b/i,
     "personal emails: use a role address from config/contact.ts",
   ],

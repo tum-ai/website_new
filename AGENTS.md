@@ -108,7 +108,7 @@ index ships its islands and styles to every page importing that index.
 | Task | Where | Skill |
 |---|---|---|
 | Add a page | route + feature folder + `config/seo.ts` + nav + `siteRoutes` in `e2e/fixtures.ts` | `add-page` |
-| Change a site fact | the matching file in `src/config/` (`e-lab`, `membership`, `organization`, `contact`, `community`, `site`) | `site-facts` |
+| Change a site fact | the matching file in `src/config/` (`e-lab`, `membership`, `organization`, `contact`, `community`, `impact`, `site`) | `site-facts` |
 | Change static copy | `src/features/<domain>/data/` | |
 | Change a CMS type or field | `src/sanity/schemas/` then query, types, mock, UI | `cms-content-model` |
 | Add or change a ds component | `src/components/ds/` + showcase + docs table | `ds-component` |

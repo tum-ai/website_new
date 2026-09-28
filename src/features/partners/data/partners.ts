@@ -1,5 +1,6 @@
 import { communityFacts } from "@/config/community";
 import { eLabConfig } from "@/config/e-lab";
+import { impactFacts } from "@/config/impact";
 import { officialMembers, organizationFacts } from "@/config/organization";
 
 export const partnershipIntents = [
@@ -112,7 +113,7 @@ export const partnerStats = [
 export const partnerPillars = [
   {
     title: "Research",
-    metric: "5+",
+    metric: `${impactFacts.publications}+`,
     metricLabel: "Publications",
     description:
       "At top-tier conferences (MIT, Cambridge, Harvard, IBM Research). Collabs with frontier AI labs, path to NeurIPS, ICML and ICLR papers, partners shape the research agenda directly.",
@@ -132,7 +133,7 @@ export const partnerPillars = [
   },
   {
     title: "Hackathons",
-    metric: "2500+",
+    metric: `${impactFacts.hackathonParticipants}+`,
     metricLabel: "Hackers",
     description: `Over all our hackathons (OpenAI, AWS, Anthropic, Google). ${communityFacts.makeathonSize}+ hackers at our signature Makeathon, European Hackathon League across 4 cities (Munich, Berlin, Zurich, Paris), partners host challenges, booths and company pitches.`,
     image: "/assets/homepage/Makeathon.webp",
@@ -170,6 +171,7 @@ export const partnerCaseStudies = [
     name: "QuantCo",
     metric: "75%",
     label: "From collaboration to colleagues",
+    summary: "3 of 4 project members hired full-time",
     copy: "From one joint project, 3 out of 4 members joined QuantCo full-time. A 75% conversion from collaboration to permanent hires.",
     image: "/assets/partners/cases/quantco.webp",
     alt: "Participants listening to a hackathon presentation",
@@ -179,6 +181,7 @@ export const partnerCaseStudies = [
     name: "BMW",
     metric: "48h",
     label: "Real challenges. Tangible results.",
+    summary: "40 AI engineers, tangible results in 48 hours",
     copy: '"40 of Munich\'s best AI engineers. Some really tangible results. In just 48 hours."',
     attribution: "Manuel, Head of Innovation, BMW Group",
     image: "/assets/partners/cases/bmw.webp",
@@ -189,6 +192,7 @@ export const partnerCaseStudies = [
     name: "Osapiens",
     metric: "20+",
     label: "Applications into the hiring pipeline",
+    summary: "Applications from a single hackathon",
     copy: "One hackathon. 40 competing teams. 20+ applications straight into the hiring pipeline.",
     image: "/assets/partners/cases/osapiens.webp",
     alt: "Hackathon participants collaborating on their laptops",

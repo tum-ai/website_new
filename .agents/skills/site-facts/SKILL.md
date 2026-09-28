@@ -22,6 +22,7 @@ read them, so one edit updates the whole site, and tests fail if a page types a 
 | Role emails, social links, the Imprint's address line | `src/config/contact.ts` (`contactEmails`, `socialLinks`, `registeredOfficeAddressLine`) |
 | Who handles partnership requests: finder CC addresses, the "Book a call" Cal.eu page and its host | `src/config/contact.ts` `partnershipContact` |
 | Community figures quoted in copy (Makeathon size) | `src/config/community.ts` `communityFacts` (the initiative's age comes from `yearsSinceFounding()`) |
+| Research output and hackathon reach (publications, venues, hackathon participants) | `src/config/impact.ts` `impactFacts` |
 | Page titles, descriptions, canonical URLs, JSON-LD | `src/config/seo.ts` |
 | Site URL, name, tagline, `absoluteUrl()` | `src/config/site.ts` `siteConfig` |
 | Legal identity, registered office, register number, representatives | `src/config/organization.ts` `legalEntity` |
