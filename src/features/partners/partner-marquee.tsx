@@ -8,7 +8,7 @@ import { getPartnerKey } from "./partner-directory";
 /** The partner name, set in place of (or beside) artwork on the dark hero. */
 function PartnerName({ name }: { name: string }) {
   return (
-    <span className="text-center font-bold text-heading-sm text-violet-50">
+    <span className="text-center font-bold text-fg text-heading-sm">
       {name}
     </span>
   );
@@ -56,7 +56,7 @@ export function PartnerMarquee({ partners }: { partners: Partner[] }) {
                 style={{ "--marquee-index": index } as CSSProperties}
               >
                 {lockup ? (
-                  <span className="flex items-center gap-2.5 font-semibold text-label text-violet-50">
+                  <span className="flex items-center gap-2.5 font-semibold text-fg text-label">
                     <FallbackImage
                       src={image}
                       alt=""
