@@ -17,8 +17,8 @@ conventions: the header of `index.ts`; where it and this file disagree, the head
   level. `tone` means band tone only; text colour is `emphasis`. Props extend `ComponentProps<...>`
   (React 19 ref as prop), not `ComponentPropsWithoutRef`. `className` targets the root;
   multi-part components take a `classNames` object. Avoid prop names that collide with HTML
-  attributes (`byline`, not `role`). TSDoc on every export and every prop; deprecated aliases
-  say what replaces them.
+  attributes (`byline`, not `role`). Links go through `Anchor`. TSDoc on every export and prop;
+  a renamed prop keeps a `@deprecated` alias naming its replacement for one release.
 - **Tokens:** read semantic tokens (`bg-canvas`, `bg-raised`, `text-fg`, `text-fg-muted`,
   `border-hairline`, `text-highlight`, `bg-fg/[0.07]`) so the component works on every tone. No raw
   hex or `rgb()`, no stock palette, no arbitrary font sizes: use the type-scale utilities.

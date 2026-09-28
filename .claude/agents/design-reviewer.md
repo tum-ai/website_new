@@ -37,8 +37,9 @@ The caller may give a base ref or a file list. Otherwise diff against the PR bas
   `SectionHeader`, last band light or ink before the night footer. Text contrast relies on the
   band's tokens.
 - **ds reuse:** no hand-rolled versions of `PageHero`, `SectionHeader`, `StatGrid`, `CtaBand`,
-  `FaqSection`, `Steps`, `Timeline`, `QuoteCard`, `PersonCard`, `LogoTile`, `MediaCard`,
-  `Actions`, `Button`/`ButtonLink`. Imports come from `@/components/ds`.
+  `CtaPanel`, `FaqSection`, `Steps`, `Timeline`, `QuoteCard`, `PersonCard`, `LogoTile`,
+  `MediaCard`, `CornerHint`, `BulletList`, `Actions`, `Button`/`ButtonLink`; links with their own
+  styling use `Anchor`, not a raw `<a>` or next/link. Imports come from `@/components/ds`.
 - **ds API (ds changes):** cva variants, `as` vs `headingAs`, `tone` for bands only and
   `emphasis` for text colour, `ComponentProps` with ref as prop, exported `XProps`, TSDoc on
   every export and prop, showcase and docs row updated.

@@ -59,12 +59,19 @@ Semantic utilities (resolve per tone):
 
 Raw scales exist for rare cases: `violet-50…950` (500 = #9A64D9,
 800 = #523573, 950 = #1B0049) and `ink-50…950` (violet-tinted neutrals).
+`bg-indicator` (`--color-indicator`, violet-400) is the live and active dot:
+`StatusBadge` `live`, the active nav item, the live event count. It reads on
+dark and light bands alike.
 
 Custom utilities (`@utility` in `index.css`): `grain` (film grain on dark
 bands), `zoom-media` (the one hover zoom for card media; put `group/zoom` on the
 element whose hover starts it), `scroll-mt-header` (anchor targets land below
 the fixed header), `tabular`, `mask-fade-x`, `rounded-signature`,
 `text-gradient-brand`.
+
+Custom variant: `card-hover:` applies while the enclosing card (`group/card`),
+link or button is hovered, on devices that can hover. `IconBadge interactive`
+uses it, so a badge reacts inside any clickable surface without a group name.
 
 ## Typography
 
@@ -77,8 +84,9 @@ Use Manrope only. Pick a visual size independently of the heading level.
 | `text-display-lg` | up to 72px | Big section statements, CTAs |
 | `text-display-md` | up to 54px | Section titles (default `SectionHeader`) |
 | `text-heading-lg` / `-md` / `-sm` | 34 / 23 / 17px | Card and sub-section titles |
+| `text-display-fit` | up to 72px | `PageHero size="fit"`: display-lg capped so a ~10em German compound fits a phone column |
 | `text-lead` | up to 21px | Intros under headlines |
-| `text-label` | 15px | UI labels: md buttons and badges, logo lockups |
+| `text-label` / `text-label-sm` | 15 / 13px | UI labels: md (and sm) buttons and badges, logo lockups and chips |
 | `text-body` / `text-small` / `text-meta` | 16 / 14 / 13px | Copy, card copy, metadata |
 | `text-eyebrow` | 12px uppercase | Labels above headlines |
 | `text-stat-sm` … `text-stat-xl` | 40 to 88px | Figures in `StatGrid` |
@@ -112,16 +120,20 @@ the top of `src/components/ds/index.ts`, which wins if the two disagree.
 - **Names that collide with HTML attributes are avoided.** The line under a
   name on `QuoteCard` and `PersonCard` is `byline` (it used to be `role`, which
   clashed with the root's ARIA `role`).
-- **TSDoc** on every export and every prop. Deprecated aliases say what
-  replaces them and are removed in the cleanup's W3 wave.
+- **TSDoc** on every export and every prop. A renamed prop keeps a
+  `@deprecated` alias that names its replacement for one release, then goes.
+  (The W1 aliases, `Text`/`TextLink` `tone` and `Carousel`
+  `slideClassName`/`viewportClassName`, are gone.)
 - **`"use client"`** only where the component itself uses state, effects or
   event handlers; Base UI parts are client components already.
 - **Motion:** house easing (`ease-brand`), at most 1.2s outside ambient loops,
   and nothing moves under `prefers-reduced-motion` (`motion-safe:` or
   `motion-reduce:`).
-- **Links:** http(s) opens a new tab with `rel="noopener noreferrer"` and a
-  screen-reader hint; routes use next/link. **Images** use next/image; remote
-  CMS URLs pass `unoptimized`.
+- **Links go through `Anchor`:** routes use next/link; http(s) opens a new
+  tab with `rel="noopener noreferrer"` and a screen-reader hint; mailto:, tel:
+  and in-page anchors stay plain `<a>`. `ButtonLink`, `TextLink`, `MediaCard`
+  and `LogoTile` link through it. **Images** use next/image; remote CMS URLs
+  pass `unoptimized`.
 - **Imports:** ds files import only sibling ds files and `@/lib/cn`.
 
 A change to a component is done when the component, its colocated test, its
@@ -134,12 +146,13 @@ walks through it.
 Layout
 - `Container`: sizes `default` (80rem), `wide`, `narrow`, `prose`. Gutters match `/partners`.
 - `Section`: props `tone`, `spacing` (`sm`–`xl`), `grain` (dark bands). Give it an `id` and `aria-labelledby`.
-- `SectionHeader`: `eyebrow`, `index`, `title`, `lead`, `actions`, `layout` (`split` | `stack` | `center`), `size` and `headingAs`. Reveals on scroll.
+- `SectionHeader`: `eyebrow`, `index`, `title`, `count` (a small "(4)" after the title), `lead`, `actions`, `layout` (`split` | `stack` | `center`), `size` (`md`, `lg`, or `xl` for a page's lead statement) and `headingAs`. Reveals on scroll.
 
 Page patterns
-- `PageHero`: every page starts with one (ink by default). It accepts `eyebrow`, `title` (strings rise in word by word, and `<Highlight>` parts work), `lead`, `actions`, an optional `media` column, `children` (for stats or filters under the headline) and `classNames` slots. It clears the fixed header.
+- `PageHero`: every page starts with one (ink by default). It accepts `eyebrow`, `title` (strings rise in word by word, and `<Highlight>` parts work), `lead`, `actions`, an optional `media` column, `children` (for stats or filters under the headline) and `classNames` slots. `size="fit"` caps the title for long single words (the privacy page). It clears the fixed header.
 - `CtaBand`: closing call to action. `variant="panel"` is an inset ink panel; `variant="band"` is full bleed. Takes `children` and `classNames.footer`.
-- `FaqSection`: sticky heading beside an accordion. `FaqList` renders the accordion on its own.
+- `CtaPanel`: the panel surface of `CtaBand` on its own (ink, aurora, grain, logomark), for places a whole band can't go, such as a bento cell.
+- `FaqSection`: sticky heading beside an accordion, with an eyebrow `index` and `defaultValue` (questions that start open). `FaqList` renders the accordion on its own and takes `defaultValue` too.
 - `Timeline`: a vertical rail that fills as you scroll (static under reduced motion). `alternate` zig-zags the items; `rail="dashed"`, `marker="number"` and `continuation` cover the E-Lab program.
 - `Steps`: a numbered process, with `rail` (`solid`, `dashed`, `none`), `marker` (`badge`, `dot`) and an optional per-step `number` (e.g. "02A").
 - `StatGrid`: numeric values count up when they scroll into view (sizes `sm`–`xl` on the `text-stat-*` tokens); strings render as they are, or count with `count`.
@@ -152,17 +165,20 @@ Actions
 - `Actions`: the row for two or more buttons or badges (`align`: `start` | `center`). On one line each item keeps its width; once the row wraps on a phone, every item grows to the row width, so stacked actions share one width. `PageHero`, `CtaBand` and `SectionHeader` use it for their `actions`.
 - `IconButton`: requires `aria-label`.
 - `TextLink`: inline link with an underline that draws in on hover.
+- `Anchor`: the unstyled, route-aware link every ds link builds on; use it directly for links that bring their own styling (navigation lists, the footer).
 
 Content
 - `Card`: variants `raised`, `outline`, `glass`, `plain`; set `interactive` when the card is a link.
 - `SpotlightCard`: a card whose light follows the pointer.
 - `FeatureCard`: icon, title and copy on a spotlight surface.
-- `IconBadge`: an icon in a tinted brand-violet tile (decorative).
-- `MediaCard`: photo card. `layout="overlay"` puts text on a scrim, `"stacked"` puts it below. Supports `href`, `aspect`, a `fallback` for a missing or broken image (default `BrandPanel`) and a `cornerHint` slot, and passes `unoptimized` to next/image for CMS URLs.
+- `IconBadge`: an icon in a tinted brand-violet tile (decorative). `interactive` reacts to the enclosing card, link or button (`card-hover:`).
+- `MediaCard`: photo card. `layout="overlay"` puts text on a scrim, `"stacked"` puts it below. Supports `href`, `aspect`, a `fallback` for a missing or broken image (default `BrandPanel`), a `cornerHint` slot, an `action` slot (for example a dialog trigger instead of a link), `titleId`, and `descriptionLines` (clamp and reserve 2 or 3 lines so titles in a row align). It passes `unoptimized` to next/image for CMS URLs.
+- `CornerHint`: the corner disc that says what a click does (`icon` `arrow` or `open`), for cards that aren't `MediaCard`.
 - `FallbackImage`: next/image that swaps to a fallback when it fails to load.
 - `QuoteCard` (`raised` or `glass`, with `context` and `footer` slots) and `QuoteMark`.
-- `PersonCard`: portrait, name and `byline`.
-- `LogoTile`, `LogoWall`: logos as plain tiles, links, `variant="chip"` or a `wordmark` lockup, with a name fallback when the artwork fails.
+- `PersonCard`: portrait, name and `byline`; `image.position` keeps a face in frame, and `unoptimized` serves the portrait as is.
+- `LogoTile`, `LogoWall`: logos as tiles (`size` `sm` to `xl`, `responsive` for one step smaller on phones), `variant="chip"` (with `fixed` width so rows don't reflow), `variant="bare"` for artwork made for dark bands, links, or a `wordmark` lockup, with a name fallback when the artwork fails.
+- `BulletList`: a short list of points as raised rows with an accent dot (for example inside an FAQ answer).
 - `Pill`: outlined brand pill.
 - `Tag`: keyword chip.
 - `StatusBadge`: `live` (pulsing dot), `idle` or `closed`. Its `size` (`sm`, `md`, `lg`) matches button heights; always pair it at the same size as the button beside it. A label too long for a narrow phone wraps into a rounded rectangle, centred, with the dot on its first line.
@@ -170,7 +186,7 @@ Content
 
 Interactive (Base UI)
 - `Accordion` / `FaqList`: panels use `hidden="until-found"` so find-in-page still works.
-- `Tabs`, `TabsList`, `TabsTab`, `TabsPanel`: the active pill slides between tabs.
+- `Tabs`, `TabsList`, `TabsTab`, `TabsPanel`: the active pill slides between tabs; on phones long labels wrap.
 - `Dialog`, `DialogTrigger`, `DialogContent` (`variant` `modal` or `fullscreen`, `size` `md`, `lg` or `xl`, `tone`), `DialogTitle`, `DialogDescription`, `DialogClose`. An open dialog makes the page inert (`useInertBackground`).
 - `Collapsible`, `CollapsibleTrigger`, `CollapsiblePanel`.
 - `ChipGroup`: single-select filter chips, with optional counts.
@@ -181,9 +197,12 @@ Motion
 - `SplitWords`: headline words rise in on load; animated with CSS only.
 - `CountUp` (parses formatted strings such as "1.2M+"; `parseFigure` and `formatFigure` are the server-safe helpers), `Parallax`, `ScrollProgress`.
 - `MotionProvider`: framer-motion's `LazyMotion strict`, provided once by the site layout.
-- `BrandMark`: the logomark as a tonal background shape. Use it as decoration only, never as a logo substitute.
+- `BrandMark`: the logomark as a tonal background shape, with an `intensity` step for dark bands. Use it as decoration only, never as a logo substitute.
 - `Aurora`: slow light field for dark bands.
 - `Marquee`: infinite rail. Pauses on hover and focus, and becomes a static, horizontally scrollable row under reduced motion.
+
+Hooks
+- `useBreakpoint("md")`: whether the viewport is at least a Tailwind breakpoint wide, for islands that must know the layout in JavaScript. It is `false` on the server and during hydration, so render the narrow layout first.
 
 ## Motion rules
 
@@ -212,7 +231,7 @@ These come from design review. Treat them as hard rules.
 - One `<main>` per page. It is the page module's root element, and the layout provides the skip link target.
 - Heading order: the `PageHero` is the `h1`, section titles are `h2`, card titles are `h3`.
 - Use Base UI components for anything interactive. Never make a `<div>` clickable.
-- Images need meaningful `alt` text; decorative images get `alt=""`. Links that open a new tab announce it; `ButtonLink`, `TextLink`, `MediaCard` and `LogoTile` do this for you.
+- Images need meaningful `alt` text; decorative images get `alt=""`. Links that open a new tab announce it; `Anchor`, and everything built on it (`ButtonLink`, `TextLink`, `MediaCard`, `LogoTile`), does this for you.
 - Focus rings are global (3px violet with an offset). Don't remove them.
 
 ## Page anatomy
@@ -273,6 +292,7 @@ prop. When this table and the source disagree, the source wins: update the table
 | Prop | Type | Description |
 | --- | --- | --- |
 | `items` | `FaqItem[]` | Questions and answers. Keep the data in the feature's data/ folder. |
+| `defaultValue?` | `string[]` | Questions whose answers start open, e.g. `[items[0].question]` to open the first. Each item's value is its question. |
 | `headingAs?` | `HeadingLevel` | Heading level of each question. Default `h3`. |
 | `className?` | `string` | Classes merged over the accordion root. |
 
@@ -281,6 +301,14 @@ prop. When this table and the source disagree, the source wins: update the table
 | Prop | Type | Description |
 | --- | --- | --- |
 | `align?` | `"center" \| "start"` | Horizontal alignment of the row. |
+
+### `Anchor`
+
+| Prop | Type | Description |
+| --- | --- | --- |
+| `children?` | `ReactNode` | The link content; it names the link. |
+| `href` | `string` | Route, in-page anchor, http(s), mailto: or tel: URL. |
+| `external?` | `boolean` | Force new-tab behavior; defaults to true for http(s) URLs. |
 
 ### `Aurora`
 
@@ -295,12 +323,19 @@ prop. When this table and the source disagree, the source wins: update the table
 | --- | --- | --- |
 | `variant?` | `"tonal" \| "gradient"` | `tonal`: one currentColor fill. `gradient`: violet fade on the center stroke. |
 | `drift?` | `boolean` | Slow ambient drift (still under reduced motion). Default true. |
+| `intensity?` | `"strong" \| "subtle" \| "faint" \| "soft" \| "medium"` | How much the white mark shows on a dark band; see the cva variant. |
 
 ### `BrandPanel`
 
 | Prop | Type | Description |
 | --- | --- | --- |
 | `seed?` | `number` | Picks one of three compositions, e.g. the item's index in a grid, so neighbours differ. Any integer works. |
+
+### `BulletList`
+
+| Prop | Type | Description |
+| --- | --- | --- |
+| `items` | `ReactNode[]` | The points, in order. Text items are keyed by their text, so keep them unique; give elements their own `key`. |
 
 ### `ButtonLink`
 
@@ -352,8 +387,6 @@ prop. When this table and the source disagree, the source wins: update the table
 | `controls?` | `boolean` | Show the arrows and progress line when the slides overflow. Default true. |
 | `slideLabel?` | `((position: number, total: number) => string)` | Screen-reader label for each slide. Default "2 of 5". |
 | `classNames?` | `CarouselClassNames` | Class overrides for the inner parts. |
-| `slideClassName?` | `string` | **Deprecated.** Use `classNames.slide`. Removed in W3. Width classes for each slide. |
-| `viewportClassName?` | `string` | **Deprecated.** Use `classNames.viewport`. Removed in W3. Classes for the clipping viewport. |
 | `className?` | `string` | Classes merged over the root region. |
 
 ### `ChipGroup`
@@ -417,10 +450,14 @@ prop. When this table and the source disagree, the source wins: update the table
 | `titleId?` | `string` | id of the heading, referenced by the section's `aria-labelledby`. |
 | `headingAs?` | `HeadingLevel` | Heading level of the title. Default `h2`. |
 | `id?` | `string` | Anchor id for the section (e.g. "contact"). |
-| `variant?` | `"panel" \| "band"` | `panel`: rounded ink panel inset in a light band (default). `band`: full-bleed dark band. |
+| `variant?` | `"panel" \| "band"` | `panel`: rounded ink panel (`<CtaPanel>`) inset in a light band (default). `band`: full-bleed dark band. |
 | `tone?` | `Tone` | Surrounding band tone for the `panel` variant. Default `paper`. |
 | `classNames?` | `CtaBandClassNames` | Class overrides for the inner parts. |
 | `className?` | `string` | Classes merged over the section. |
+
+### `CtaPanel`
+
+No props of its own; see the source file for the root element or Base UI part it forwards to.
 
 ### `DialogContent`
 
@@ -475,6 +512,8 @@ No props of its own; see the source file for the root element or Base UI part it
 | `items` | `FaqItem[]` | Questions and answers. Keep the data in the feature's data/ folder. |
 | `title?` | `ReactNode` | Section title (an `h2`). Default "Frequently asked questions". |
 | `eyebrow?` | `ReactNode` | Label above the title. Default "FAQ". |
+| `index?` | `string \| number` | Editorial counter in the eyebrow, e.g. 2 → "02". |
+| `defaultValue?` | `string[]` | Questions whose answers start open (see `FaqListProps`). |
 | `lead?` | `ReactNode` | A sentence under the title. |
 | `aside?` | `ReactNode` | Extra content under the lead (e.g. a contact link). |
 | `id?` | `string` | Anchor id of the section; the title gets `${id}-title`. Default "faq". |
@@ -497,9 +536,9 @@ No props of its own; see the source file for the root element or Base UI part it
 
 | Prop | Type | Description |
 | --- | --- | --- |
-| `variant?` | `"outline" \| "tint" \| "soft"` | Surface behind the icon. |
+| `variant?` | `"soft" \| "outline" \| "tint"` | Surface behind the icon. |
 | `size?` | `"sm" \| "md" \| "lg"` | Box size; the icon scales with it. |
-| `interactive?` | `boolean` | Tilts and fills with brand violet while an ancestor `group/card` is hovered (no tilt under reduced motion). |
+| `interactive?` | `boolean` | Tilts and fills with brand violet while the enclosing card (`group/card`), link or button is hovered (the `card-hover:` variant; no tilt under reduced motion). |
 | `shape?` | `"circle" \| "square"` | `square` has rounded corners, `circle` is round. |
 | `icon` | `LucideIcon` | The Lucide icon. It is decorative; name the thing in adjacent text. |
 | `strokeWidth?` | `number` | Stroke width of the icon. Default 1.75, the house weight. |
@@ -514,9 +553,10 @@ No props of its own; see the source file for the root element or Base UI part it
 | `alt?` | `string` | Text alternative for the artwork. Default `name`. |
 | `wordmark?` | `ReactNode` | Name set beside a symbol-only logo, forming a wordmark lockup ("[symbol] Y Combinator"). The image then gets an empty `alt`, since the text names the organization. |
 | `unoptimized?` | `boolean` | Serve the artwork as is, skipping the image optimizer. Default: true for absolute http(s) URLs (CMS hosts are outside next.config's image patterns), false for local assets. |
-| `variant?` | `"tile" \| "chip"` | `tile`: a white card for logo grids. `chip`: a compact white chip that carries light-background artwork on dark bands (quote rows, meta lines). |
-| `size?` | `"sm" \| "md" \| "lg"` | Tile height and logo cap (the `tile` variant only). |
-| `linked?` | `boolean` | Hover tint and violet ring; set for tiles that link. |
+| `variant?` | `"tile" \| "chip" \| "bare"` | `tile`: a white card for logo grids. `chip`: a compact white chip that carries light-background artwork on dark bands (quote rows, meta lines). `bare`: no surface, for artwork made for dark bands (logo rails on ink); size it with `className`. |
+| `size?` | `"sm" \| "md" \| "lg" \| "xl"` | Tile height and logo cap (the `tile` variant only), smallest to largest: `sm` 64px, `md` 96px, `lg` 112px, `xl` 128px. |
+| `responsive?` | `boolean` | One size step smaller below `md` (phones and small tablets), for `lg` and `xl` tiles in narrow grid cells. |
+| `fixed?` | `boolean` | Chip only: a fixed width (6.25rem, 7.75rem from `sm`) that reserves the artwork's box, so a wrapping row of chips doesn't reflow while the logos load. |
 | `eager?` | `boolean` | Load the artwork eagerly, e.g. inside a moving marquee. |
 | `className?` | `string` | Classes merged over the tile. |
 
@@ -526,7 +566,7 @@ No props of its own; see the source file for the root element or Base UI part it
 | --- | --- | --- |
 | `columns?` | `4 \| 3 \| 5 \| 6` | Columns on wide screens; phones always show two. |
 | `logos` | `LogoItem[]` | The organizations; `name` must be unique (it is the list key). |
-| `size?` | `"sm" \| "md" \| "lg"` | Tile size for every logo. |
+| `size?` | `"sm" \| "md" \| "lg" \| "xl"` | Tile size for every logo. |
 | `label?` | `string` | Accessible name of the list, e.g. "Research collaborators". |
 | `className?` | `string` | Classes merged over the list. |
 
@@ -542,6 +582,13 @@ No props of its own; see the source file for the root element or Base UI part it
 | `className?` | `string` | Classes merged over the clipping root. |
 | `itemClassName?` | `string` | Classes for every item's `li`. |
 
+### `CornerHint`
+
+| Prop | Type | Description |
+| --- | --- | --- |
+| `variant?` | `"media" \| "tonal"` | `media`: a white disc over photos. `tonal`: on the card surface. |
+| `icon?` | `"arrow" \| "open"` | What a click does: `arrow` goes somewhere, `open` opens a dialog. |
+
 ### `MediaCard`
 
 | Prop | Type | Description |
@@ -550,14 +597,17 @@ No props of its own; see the source file for the root element or Base UI part it
 | `layout?` | `"overlay" \| "stacked"` | `overlay`: text on a scrim over the image. `stacked`: text below. |
 | `aspect?` | `"4/5" \| "3/4" \| "1/1" \| "4/3" \| "16/10" \| "16/9"` | Image frame ratio (ignored with `fill`). |
 | `scrim?` | `"strong" \| "default"` | Overlay scrim: `strong` keeps copy legible on bright photos. |
+| `descriptionLines?` | `2 \| 3` | Clamp the description to this many lines and, from `md` (grids of two or more columns), reserve their height, so the titles of a row share a baseline however long each description is. |
 | `image` | `MediaCardImage` | The photo. |
 | `title` | `ReactNode` | The card title; with `href` it is the link's accessible name. |
+| `titleId?` | `string` | id of the title heading, e.g. for an `action`'s `aria-labelledby`. |
 | `href?` | `string` | Makes the whole card a link (http(s) URLs open in a new tab). |
+| `action?` | `ReactNode` | Makes the whole card one control instead of a link: an interactive element, typically a Base UI trigger such as `<DialogTrigger aria-labelledby={titleId} />`, stretched over the card. Name it (e.g. by the title, through `titleId`); the card draws its focus ring. Use it instead of `href`, not with it. |
 | `eyebrow?` | `ReactNode` | Small label above the title. |
 | `description?` | `ReactNode` | A sentence under the title. |
 | `meta?` | `ReactNode` | Small line under the title (date, metric, location). |
 | `fallback?` | `ReactNode` | Shown in the image frame when there is no `image.src` or the image fails to load. Default: a `<BrandPanel>`. |
-| `cornerHint?` | `ReactNode` | Top-right corner of the image (decorative). Default: an arrow that turns on hover when the card links; pass `null` for none, or e.g. a `<Tag>` or an icon. |
+| `cornerHint?` | `ReactNode` | Top-right corner of the image (decorative). Default: a `<CornerHint>` arrow when the card links, a <CornerHint icon="open"> plus when it has an `action`; pass `null` for none, or e.g. a `<Tag>` or an icon. |
 | `headingAs?` | `HeadingLevel` | Heading level of the title. Default `h3`. |
 | `sizes?` | `string` | next/image `sizes`. |
 | `unoptimized?` | `boolean` | For CMS URLs outside next.config image patterns. |
@@ -574,7 +624,7 @@ No props of its own; see the source file for the root element or Base UI part it
 
 | Prop | Type | Description |
 | --- | --- | --- |
-| `size?` | `"md" \| "lg" \| "xl"` | Display step of the headline. |
+| `size?` | `"md" \| "lg" \| "xl" \| "fit"` | Display step of the headline. `fit` is `md` capped so a single word of about ten em (a German compound such as "Datenschutzerklärung") still fits a phone column: word-by-word titles can't hyphenate. |
 | `title` | `ReactNode` | The page's `h1`. |
 | `eyebrow?` | `ReactNode` | Small label above the title. |
 | `lead?` | `ReactNode` | One or two sentences under the title. |
@@ -610,10 +660,11 @@ No props of its own; see the source file for the root element or Base UI part it
 | --- | --- | --- |
 | `name` | `string` | The person's name (also the default `alt`). |
 | `byline?` | `ReactNode` | Line under the name: role or affiliation. |
-| `image` | `{ src: string; alt?: string \| undefined; }` | Portrait, cropped to 4:5. |
+| `image` | `{ src: string; alt?: string \| undefined; position?: string \| undefined; }` | Portrait, cropped to 4:5. `position` is a CSS `object-position` (for example "50% 20%") that keeps the face in frame when the crop cuts it. |
 | `children?` | `ReactNode` | A short bio or links under the byline. |
 | `headingAs?` | `HeadingLevel` | Heading level of the name. Default `h3`. |
 | `sizes?` | `string` | next/image `sizes`. |
+| `unoptimized?` | `boolean` | Serve the portrait as is, skipping the image optimizer (CMS URLs outside next.config's image patterns, or artwork that must stay lossless). |
 | `className?` | `string` | Classes merged over the `figure`. |
 
 ### `Pill`
@@ -674,8 +725,9 @@ No props of its own; see the source file for the root element or Base UI part it
 | Prop | Type | Description |
 | --- | --- | --- |
 | `layout?` | `"center" \| "split" \| "stack"` | `split`: title left, lead bottom-right (partner page rhythm). `stack`: lead under the title. `center`: centered stack. |
-| `size?` | `"md" \| "lg"` | Display step of the title: `md` for sections, `lg` for key sections. |
+| `size?` | `"md" \| "lg" \| "xl"` | Display step of the title: `md` for sections, `lg` for key sections, `xl` for a page's lead statement (the home "About" headline). |
 | `title` | `ReactNode` | The section's headline. |
+| `count?` | `number` | A count set small and top-aligned after the title, in parentheses: `count={4}` renders "Upcoming Events (4)". |
 | `id?` | `string` | id for the heading, referenced by the section's `aria-labelledby`. |
 | `eyebrow?` | `ReactNode` | Small label above the title. |
 | `index?` | `string \| number` | Editorial counter in the eyebrow, e.g. 1 → "01". |
@@ -755,7 +807,6 @@ No props of its own; see the source file for the root element or Base UI part it
 | `href` | `string` | Route, in-page anchor, http(s), mailto: or tel: URL. |
 | `arrow?` | `boolean` | Trailing arrow (up and out for external links). |
 | `external?` | `boolean` | Force new-tab behavior; defaults to true for http(s) URLs. |
-| `tone?` | `TextLinkEmphasis` | **Deprecated.** Use `emphasis`; `tone` is reserved for band tones. Removed in W3. Link color. |
 
 ### `Timeline`
 
@@ -814,6 +865,5 @@ No props of its own; see the source file for the root element or Base UI part it
 | --- | --- | --- |
 | `size?` | `"body" \| "meta" \| "small" \| "lead"` | Body step from the type scale. |
 | `emphasis?` | `"subtle" \| "default" \| "muted"` | Text color within the band's tone. |
-| `tone?` | `TextEmphasis` | **Deprecated.** Use `emphasis`; `tone` is reserved for band tones. Removed in W3. Text color. |
 | `as?` | `T` | Root element to render. |
 
