@@ -1,31 +1,36 @@
+import Image from "next/image";
 import {
-  Aurora,
-  BrandMark,
+  ButtonLink,
   Container,
+  Display,
   EmptyState,
-  Eyebrow,
-  LogoWall,
   PageHero,
   Reveal,
   Section,
   SectionHeader,
   Steps,
-  Tabs,
-  TabsList,
-  TabsPanel,
-  TabsTab,
+  Text,
 } from "@/components/ds";
 import type { Partner, ResearchProject } from "@/lib/types";
-import { rexInstitutions, rexProcess } from "./data/rex";
+import { AffiliationIndex } from "./affiliations";
 import {
-  formatCounter,
-  getCollaboratorLogos,
-  getLogoColumns,
-  getResearchProjectLists,
-} from "./research";
-import { ResearchCard } from "./research-card";
+  abstractFigure,
+  abstractStatement,
+  closing,
+  getAbstractBody,
+  heroLead,
+} from "./data/research-copy";
+import { rexInstitutions, rexLead, rexOrigin, rexProcess } from "./data/rex";
+import { ProjectList, ReferenceList } from "./project-list";
+import { getResearchIndex } from "./research";
 
-/** The /research page: CMS projects and collaborators, and the REX program. */
+/**
+ * The /research page, set like a paper's first page. The hero is the title
+ * block: every institution named on a CMS project, numbered, and each
+ * project below cites them by number. Completed projects form the
+ * references list, REX follows on lavender, and the closing band repeats the
+ * affiliation line with one open slot for the next lab.
+ */
 export function ResearchPage({
   projects,
   researchPartners,
@@ -35,215 +40,227 @@ export function ResearchPage({
   /** Partners in the "Research Partners" category. */
   researchPartners: Partner[];
 }) {
-  const { ongoing, past } = getResearchProjectLists(projects);
-  const collaborators = getCollaboratorLogos(researchPartners);
+  const { affiliations, otherPartners, ongoing, completed } = getResearchIndex(
+    projects,
+    researchPartners,
+  );
 
   return (
     <main>
-      <Tabs defaultValue="projects">
-        <PageHero
-          title="Research"
-          lead="Our research offerings - from projects to exchange programs"
-        >
-          <TabsList aria-label="Research tabs" activateOnFocus>
-            <TabsTab value="projects">Projects</TabsTab>
-            <TabsTab value="exchange">Research Exchange Program</TabsTab>
-          </TabsList>
-        </PageHero>
+      <PageHero
+        tone="night"
+        backdrop="quiet"
+        mark={false}
+        titleId="research-title"
+        title="Research"
+        lead={heroLead}
+        actions={
+          <>
+            <ButtonLink href="/partners#partner-contact" size="lg">
+              Become a Partner
+            </ButtonLink>
+            <ButtonLink href="/apply" size="lg" variant="outline" arrow>
+              Become a Member
+            </ButtonLink>
+          </>
+        }
+        classNames={{ title: "text-highlight" }}
+      >
+        {affiliations.length > 0 ? (
+          <AffiliationIndex
+            id="hero-affiliations"
+            label="Affiliations"
+            affiliations={affiliations}
+            otherPartners={otherPartners}
+            className="border-hairline border-t pt-8 md:pt-10"
+          />
+        ) : null}
+      </PageHero>
 
-        <TabsPanel value="projects" keepMounted>
-          <Section
-            tone="paper"
-            spacing="lg"
-            aria-labelledby="ongoing-projects-title"
-          >
-            <Container>
-              <SectionHeader
-                id="ongoing-projects-title"
-                eyebrow="Current work"
-                index={1}
-                title="Ongoing Projects"
-              />
-              {ongoing.length > 0 ? (
-                <ul className="grid gap-5 lg:grid-cols-3 xl:gap-6">
-                  {ongoing.map((project, index) => (
-                    <Reveal as="li" key={project.id} delay={(index % 3) * 90}>
-                      <ResearchCard project={project} index={index} />
-                    </Reveal>
-                  ))}
-                </ul>
-              ) : (
-                <EmptyState title="No ongoing projects" />
-              )}
-            </Container>
-          </Section>
-
-          {past.length > 0 ? (
-            <Section
-              tone="mist"
-              spacing="lg"
-              aria-labelledby="past-projects-title"
-            >
-              <Container>
-                <SectionHeader
-                  id="past-projects-title"
-                  eyebrow="Archive"
-                  index={2}
-                  title="Past Projects"
-                />
-                <ul className="border-hairline border-t">
-                  {past.map((project, index) => (
-                    <Reveal
-                      as="li"
-                      key={project.id}
-                      delay={Math.min(index, 4) * 60}
-                      className="border-hairline border-b"
-                    >
-                      <ResearchCard
-                        layout="row"
-                        project={project}
-                        index={index}
-                      />
-                    </Reveal>
-                  ))}
-                </ul>
-              </Container>
-            </Section>
-          ) : null}
-
-          {collaborators.length > 0 ? (
-            <Section
-              tone="ink"
-              spacing="lg"
-              grain
-              aria-labelledby="collaborators-title"
-              className="overflow-clip"
-            >
-              <Aurora intensity="subtle" />
-              <Container>
-                <SectionHeader
-                  id="collaborators-title"
-                  eyebrow="Research partners"
-                  index={past.length > 0 ? 3 : 2}
-                  title="Collaborators"
-                />
-                <Reveal variant="fade" delay={120}>
-                  <LogoWall
-                    logos={collaborators}
-                    columns={getLogoColumns(collaborators.length)}
-                    size="xl"
-                  />
-                </Reveal>
-              </Container>
-            </Section>
-          ) : null}
-        </TabsPanel>
-
-        <TabsPanel value="exchange" keepMounted>
-          <Section tone="paper" spacing="lg" aria-labelledby="rex-title">
-            <Container>
-              <SectionHeader
-                id="rex-title"
-                eyebrow="Research abroad"
-                index={1}
-                title="Research Exchange (REX) Program"
-                classNames={{ aside: "lg:max-w-2xl" }}
-                lead={
-                  <>
-                    Our Research Exchange (REX) Program provides TUM.ai members
-                    with opportunities to conduct research abroad. Offers range
-                    from final theses to research internships with leading labs
-                    at institutions like{" "}
-                    <span className="font-semibold text-fg">
-                      Harvard, MIT, Cambridge,
-                    </span>{" "}
-                    or <span className="font-semibold text-fg">INRIA</span>.
-                  </>
-                }
-              />
-
-              <ul
-                aria-hidden="true"
-                className="grid grid-cols-2 border-hairline-strong border-y lg:grid-cols-4"
-              >
-                {rexInstitutions.map((name, index) => (
-                  <Reveal
-                    as="li"
-                    key={name}
-                    delay={index * 90}
-                    className="min-w-0 border-hairline py-7 max-lg:even:pl-5 max-lg:odd:border-r max-lg:odd:pr-5 md:py-9 lg:border-l lg:py-10 lg:pl-6 lg:first:border-l-0 lg:first:pl-0 max-lg:[&:nth-child(-n+2)]:border-b"
-                  >
-                    <span className="tabular text-fg-subtle text-meta">
-                      {formatCounter(index)}
-                    </span>
-                    <span className="mt-8 block font-light text-fg text-heading-lg sm:text-display-md lg:mt-14">
-                      {name}
-                    </span>
-                  </Reveal>
-                ))}
-              </ul>
-            </Container>
-          </Section>
-
-          <Section as="div" tone="lavender" spacing="lg">
-            <Container>
-              <Reveal>
-                <Eyebrow as="h3" index={2}>
-                  How it works
-                </Eyebrow>
-              </Reveal>
-              {/* "We" opens the sentence the steps complete. */}
-              <Reveal delay={60}>
-                <p className="mt-10 font-light text-display-lg text-fg md:mt-14">
-                  We
-                </p>
-              </Reveal>
-              <Steps
-                items={rexProcess.map((clause) => ({ title: clause }))}
-                columns={5}
-                headingAs="h4"
-                className="mt-10 md:mt-14"
-              />
-            </Container>
-          </Section>
-
-          <Section
-            as="div"
-            tone="ink"
-            spacing="xl"
-            grain
-            className="overflow-clip"
-          >
-            <Aurora intensity="subtle" />
-            <BrandMark
-              className="absolute -right-[14%] -bottom-[38%] -z-10 w-[min(60rem,95%)]"
-              intensity="subtle"
+      <Section
+        tone="paper"
+        spacing="xl"
+        id="abstract"
+        aria-labelledby="abstract-title"
+      >
+        <Container className="grid gap-14 lg:grid-cols-12 lg:gap-12">
+          <div className="lg:col-span-6">
+            <h2 id="abstract-title" className="text-fg-subtle text-meta">
+              Abstract
+            </h2>
+            <Display as="p" size="md" className="mt-6 max-w-[16em]">
+              {abstractStatement}
+            </Display>
+            <Text size="lead" className="mt-8 max-w-xl">
+              {getAbstractBody(ongoing.length)}
+            </Text>
+          </div>
+          <Reveal as="figure" className="lg:col-span-5 lg:col-start-8">
+            <Image
+              src={abstractFigure.src}
+              width={abstractFigure.width}
+              height={abstractFigure.height}
+              alt={abstractFigure.alt}
+              sizes="(min-width: 1024px) 36vw, 100vw"
+              className="aspect-[4/3] w-full rounded-4xl object-cover"
             />
-            <Container>
-              <Reveal>
-                <Eyebrow as="h3" index={3}>
-                  Origin
-                </Eyebrow>
-              </Reveal>
-              <Reveal delay={60}>
-                <p className="mt-8 max-w-4xl font-light text-display-md text-fg">
-                  REX was launched based on the observation that members were
-                  already conducting research abroad and recommending others to
-                  follow in their footsteps.
+            <figcaption className="mt-4 text-fg-muted text-small">
+              <span className="font-semibold text-fg">Figure 1.</span>{" "}
+              {abstractFigure.caption}
+            </figcaption>
+          </Reveal>
+        </Container>
+      </Section>
+
+      <Section
+        tone="paper"
+        spacing="none"
+        id="projects"
+        aria-labelledby="projects-title"
+        className="scroll-mt-header pb-28 md:pb-40"
+      >
+        <Container>
+          <SectionHeader
+            id="projects-title"
+            title="In progress"
+            count={ongoing.length}
+            layout="stack"
+          />
+          {ongoing.length > 0 ? (
+            <ProjectList projects={ongoing} />
+          ) : (
+            <EmptyState title="No ongoing projects" />
+          )}
+        </Container>
+      </Section>
+
+      {completed.length > 0 ? (
+        <Section
+          tone="mist"
+          spacing="xl"
+          id="publications"
+          aria-labelledby="publications-title"
+          className="scroll-mt-header"
+        >
+          <Container>
+            <SectionHeader
+              id="publications-title"
+              title="Completed"
+              count={completed.length}
+              layout="stack"
+              lead="Finished projects and the papers that came out of them."
+            />
+            <ReferenceList projects={completed} />
+          </Container>
+        </Section>
+      ) : null}
+
+      <Section
+        tone="lavender"
+        spacing="xl"
+        id="rex"
+        aria-labelledby="rex-title"
+        className="scroll-mt-header"
+      >
+        <Container>
+          <SectionHeader
+            id="rex-title"
+            title="Research abroad"
+            layout="stack"
+            lead={rexLead}
+          />
+          <AffiliationIndex
+            id="rex-institutions"
+            numbered={false}
+            label="Offers from labs at institutions like"
+            affiliations={rexInstitutions}
+          />
+
+          <div className="mt-20 grid gap-14 md:mt-28 lg:grid-cols-12 lg:gap-12">
+            <div className="lg:col-span-8">
+              <h3 className="text-fg-subtle text-meta">How REX works</h3>
+              {/* "We" opens the sentence the steps complete. */}
+              <p className="mt-6 font-light text-display-md text-fg">We</p>
+              <Steps
+                layout="rows"
+                headingAs="h4"
+                className="mt-6"
+                items={rexProcess.map((clause) => ({ title: clause }))}
+              />
+            </div>
+            <Reveal className="lg:col-span-3 lg:col-start-10 lg:pt-12">
+              <Text className="max-w-md">{rexOrigin}</Text>
+              <ButtonLink
+                href="/apply"
+                className="mt-8"
+                variant="outline"
+                arrow
+              >
+                Become a Member
+              </ButtonLink>
+            </Reveal>
+          </div>
+        </Container>
+      </Section>
+
+      <Section
+        tone="ink"
+        spacing="xl"
+        aria-labelledby="closing-title"
+        className="overflow-clip"
+      >
+        <Container>
+          <Reveal>
+            <h2
+              id="closing-title"
+              className="max-w-[12em] text-display-lg text-highlight"
+            >
+              {closing.title}
+            </h2>
+          </Reveal>
+          <Reveal delay={80}>
+            <AffiliationIndex
+              id="closing-affiliations"
+              label="Affiliations"
+              affiliations={affiliations}
+              openSlot={closing.openSlot}
+              className="mt-12 border-hairline border-t pt-8 md:mt-16"
+            />
+          </Reveal>
+          <div className="mt-16 grid border-hairline-strong border-t md:mt-24 md:grid-cols-2">
+            {[
+              {
+                ...closing.partner,
+                action: (
+                  <ButtonLink href="/partners#partner-contact">
+                    Become a Partner
+                  </ButtonLink>
+                ),
+              },
+              {
+                ...closing.student,
+                action: (
+                  <ButtonLink href="/apply" variant="outline" arrow>
+                    Become a Member
+                  </ButtonLink>
+                ),
+              },
+            ].map((fork, position) => (
+              <Reveal
+                key={fork.audience}
+                delay={position * 100}
+                className="border-hairline py-8 max-md:not-last:border-b md:py-10 md:even:border-l md:even:pl-12 md:odd:pr-12"
+              >
+                <p className="text-fg-subtle text-meta">{fork.audience}</p>
+                <p className="mt-3 max-w-md text-fg text-heading-md">
+                  {fork.text}
                 </p>
+                <div className="mt-8">{fork.action}</div>
               </Reveal>
-              <Reveal delay={140}>
-                <p className="mt-10 max-w-2xl text-fg-muted text-lead">
-                  It is therefore a testament to our tight-knit community that
-                  we could build a network of great researchers who eagerly
-                  introduce our members to their respective fields and trust
-                  TUM.ai to provide curious minds.
-                </p>
-              </Reveal>
-            </Container>
-          </Section>
-        </TabsPanel>
-      </Tabs>
+            ))}
+          </div>
+        </Container>
+      </Section>
     </main>
   );
 }

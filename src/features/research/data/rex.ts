@@ -1,6 +1,10 @@
-/** Copy for the Research Exchange (REX) tab on /research. */
+/** Copy for the Research Exchange (REX) band on /research. */
 
-/** The labs the REX lead names; the tab repeats them as typography. */
+/** The REX lead. It names the institutions `rexInstitutions` repeats. */
+export const rexLead =
+  "Our Research Exchange (REX) Program gives TUM.ai members the chance to do research abroad. Offers range from final theses to research internships with leading labs.";
+
+/** Institutions the REX offers come from, as the lead's examples. */
 export const rexInstitutions = ["Harvard", "MIT", "Cambridge", "INRIA"];
 
 /**
@@ -14,3 +18,7 @@ export const rexProcess = [
   "recommend them to our partner labs,",
   "and eventually support their journey abroad with alumni experience in visa processes, housing, etc.",
 ];
+
+/** Why REX exists, in the program's own words. */
+export const rexOrigin =
+  "REX started because members were already doing research abroad and recommending others to follow. It works because researchers in our network trust TUM.ai to send them curious minds, and introduce our members to their fields.";
