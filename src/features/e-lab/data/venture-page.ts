@@ -186,6 +186,8 @@ export const programSteps = [
   {
     id: "final-pitch",
     title: "Final Pitch / Demo Day",
+    // TODO(content): is Demo Day still in July for E-Lab 6.0, whose
+    // applications close in late September?
     description: "Investor Pitch & Graduation (July)",
   },
 ] satisfies readonly ProgramStep[];
