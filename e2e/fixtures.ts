@@ -544,17 +544,11 @@ export const visualMaskSelectors = [
 /**
  * Per-route CSS that visual.spec.ts injects before screenshotting
  * for content that depends on the current date rather than on the code.
- *
- * `/events` splits its fixtures into upcoming and past with `new Date()`,
- * both on the server (ISR render) and in the browser (hydration). Pinning
- * only the browser clock would cause a hydration mismatch, and the server
- * `now` is not pinnable yet (handoff to W2-Events), so both date-dependent
- * sections are removed from the layout: a mask alone would still let the
- * page height change as events move from upcoming to past.
+ * Prefer pinning the date instead: the server reads `MOCK_CMS_NOW` and
+ * visual.spec.ts fixes the browser clock to it, which is how `/events` (its
+ * upcoming/past split) stays stable. Empty while nothing needs hiding.
  */
-export const visualDateDependentStyles: Readonly<Record<string, string>> = {
-  "/events": "#upcoming-events, #past-events { display: none !important; }",
-};
+export const visualDateDependentStyles: Readonly<Record<string, string>> = {};
 
 /** Locators for `toHaveScreenshot({ mask })`, see `visualMaskSelectors`. */
 export function visualMasks(page: Page): Locator[] {
