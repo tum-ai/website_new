@@ -3,6 +3,8 @@ import { getMockResearchProjects } from "@/lib/mock-cms";
 import type { Partner, ResearchProject } from "@/lib/types";
 import {
   cleanKeywords,
+  distanceKm,
+  getLabSites,
   getPartnerLogos,
   getResearchIndex,
   splitResearchTitle,
@@ -185,4 +187,83 @@ describe("getPartnerLogos", () => {
       },
     ]);
   });
+});
+
+describe("getLabSites", () => {
+  // The institutions the live CMS, partners and REX copy name (2026-09).
+  const liveNames = [
+    "University of Cambridge",
+    "IBM Almaden",
+    "Helmholtz Zentrum",
+    "TUM CAMP",
+    "LMU Klinikum",
+    "MIT",
+    "IBM Research",
+    "Klinikum rechts der Isar",
+    "IBM",
+    "LMU",
+    "flowerlabs",
+    "Helmholtz",
+    "Harvard Medical School",
+    "MI4People",
+    "Harvard University",
+    "University of Cambridge",
+    "Inria",
+  ];
+
+  test("places every live institution but the ambiguous and unknown ones", () => {
+    const { sites, unplaced } = getLabSites(liveNames);
+    expect(unplaced).toEqual(["IBM", "flowerlabs"]);
+    expect(sites.map(({ id }) => id)).toEqual([
+      "munich",
+      "boston",
+      "cambridge",
+      "san-jose",
+      "zurich",
+      "paris",
+    ]);
+    expect(sites.find(({ id }) => id === "boston")?.institutions).toEqual([
+      "MIT",
+      "Harvard Medical School",
+      "Harvard University",
+    ]);
+  });
+
+  test("always includes home, where the arcs start", () => {
+    const { sites } = getLabSites(["mit"]);
+    expect(sites.map(({ id, home }) => [id, Boolean(home)])).toEqual([
+      ["munich", true],
+      ["boston", false],
+    ]);
+    expect(sites[0]?.institutions).toEqual([]);
+  });
+
+  test("every site sits on the globe", () => {
+    for (const { location } of getLabSites(liveNames).sites) {
+      const [latitude, longitude] = location;
+      expect(Math.abs(latitude)).toBeLessThanOrEqual(90);
+      expect(Math.abs(longitude)).toBeLessThanOrEqual(180);
+    }
+  });
+});
+
+test("distanceKm measures great circles", () => {
+  // Munich to MIT is about 6,183 km; a point to itself is 0.
+  expect(distanceKm([48.1497, 11.5679], [42.3601, -71.0942])).toBeCloseTo(
+    6183,
+    0,
+  );
+  expect(distanceKm([10, 20], [10, 20])).toBe(0);
+});
+
+test("each site knows how far its nearest neighbour is", () => {
+  const { sites } = getLabSites(["MIT", "IBM Research"]);
+  const km = Object.fromEntries(
+    sites.map(({ id, nearestKm }) => [id, Math.round(nearestKm)]),
+  );
+  // Munich and Zurich are each other's nearest; Boston's is Zurich.
+  expect(km.munich).toBe(km.zurich);
+  expect(km.munich).toBeLessThan(300);
+  expect(km.boston).toBeGreaterThan(5000);
+  expect(getLabSites([]).sites[0]?.nearestKm).toBe(Number.POSITIVE_INFINITY);
 });

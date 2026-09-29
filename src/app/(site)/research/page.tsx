@@ -1,6 +1,7 @@
 import { JsonLd } from "@/components/json-ld";
 import { buildMetadata, getJsonLd } from "@/config/seo";
 import { ResearchPage } from "@/features/research/research-page";
+import "@/features/research/research.css";
 import {
   getSanityResearchPartners,
   getSanityResearchProjects,
