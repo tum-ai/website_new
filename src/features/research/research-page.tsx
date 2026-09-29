@@ -54,7 +54,6 @@ export function ResearchPage({
     <main>
       <PageHero
         tone="night"
-        backdrop="quiet"
         mark={false}
         titleId="research-title"
         title="Research"

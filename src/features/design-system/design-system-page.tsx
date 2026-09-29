@@ -45,6 +45,7 @@ import {
   MediaCard,
   PageHero,
   PersonCard,
+  Photo,
   Pill,
   Prose,
   parseFigure,
@@ -161,11 +162,8 @@ export function DesignSystemPage() {
       <PageHero
         titleId="ds-hero-title"
         eyebrow="Living reference"
-        title={
-          <>
-            Precise, calm, <Highlight>alive.</Highlight>
-          </>
-        }
+        title="Precise, calm, alive."
+        emphasis="highlight"
         lead="Every component on this page is the one used on the site. Tones, type, motion and interaction live in src/components/ds and src/styles/index.css."
         actions={
           <>
@@ -494,6 +492,43 @@ export function DesignSystemPage() {
               scrim={index % 2 === 1 ? "strong" : "default"}
             />
           ))}
+        </div>
+        <div className="mt-12 grid items-start gap-6 md:grid-cols-3">
+          <Label>Photo · rounded 3/2, 4/5, 4/3, 1/1, bleed 16/10</Label>
+          <Photo
+            className="md:col-start-1"
+            src="/assets/homepage/Onboarding25.webp"
+            alt="A new TUM.ai batch in matching black T-shirts"
+            caption="Caption: what, where and when"
+            sizes="(min-width: 768px) 30vw, 100vw"
+          />
+          <Photo
+            aspect="4/5"
+            src="/assets/homepage/venture_onboarding25.webp"
+            alt="The venture team around a meeting table"
+            caption="aspect 4/5, position 50% 60%"
+            position="50% 60%"
+            sizes="(min-width: 768px) 30vw, 100vw"
+          />
+          <Photo
+            shape="bleed"
+            aspect="16/10"
+            src="/assets/homepage/IBM_visit.webp"
+            alt="Members on a company visit to IBM"
+            sizes="(min-width: 768px) 30vw, 100vw"
+          />
+          <Photo
+            aspect="4/3"
+            src="/assets/homepage/Makeathon.webp"
+            alt="The Makeathon team on stage"
+            sizes="(min-width: 768px) 30vw, 100vw"
+          />
+          <Photo
+            aspect="1/1"
+            src="/assets/homepage/getaway24.webp"
+            alt="Members at a long table in a vaulted restaurant"
+            sizes="(min-width: 768px) 30vw, 100vw"
+          />
         </div>
         <div className="mt-4 grid items-start gap-4 md:grid-cols-3">
           <MediaCard

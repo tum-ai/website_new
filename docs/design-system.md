@@ -153,7 +153,7 @@ Layout
 - `SectionHeader`: `eyebrow`, `index`, `title`, `count` (a small "(4)" after the title), `lead`, `actions`, `layout` (`split` | `stack` | `center`), `size` (`md`, `lg`, or `xl` for a page's lead statement) and `headingAs`. Reveals on scroll.
 
 Page patterns
-- `PageHero`: every page starts with one (ink by default, with an aurora and grain; `backdrop="quiet"` leaves the flat band when the page's own content is the hero's feature). It accepts `eyebrow`, `title` (strings rise in word by word, and `<Highlight>` parts work), `lead`, `actions`, an optional `media` column, `children` (for stats or filters under the headline) and `classNames` slots. `size="fit"` caps the title for long single words (the privacy page). It clears the fixed header.
+- `PageHero`: every page starts with one: a flat ink band (no aurora or grain). It accepts `eyebrow`, `title` (strings rise in word by word, and `<Highlight>` parts work), `lead`, `actions`, an optional `media` column, `children` (for stats or filters under the headline) and `classNames` slots. `emphasis="highlight"` sets the whole title in the tone's accent, as on the brand guide's section slides; keep the default when the title marks words with `<Highlight>`. `size="fit"` caps the title for long single words (the privacy page). It clears the fixed header.
 - `CtaBand`: closing call to action. `variant="panel"` is an inset ink panel; `variant="band"` is full bleed. Takes `children` and `classNames.footer`.
 - `CtaPanel`: the panel surface of `CtaBand` on its own (ink, aurora, grain, logomark), for places a whole band can't go, such as a bento cell.
 - `FaqSection`: sticky heading beside an accordion, with an eyebrow `index` and `defaultValue` (questions that start open). `FaqList` renders the accordion on its own and takes `defaultValue` too.
@@ -182,6 +182,7 @@ Content
 - `CornerHint`: the corner disc that says what a click does (`icon` `arrow` or `open`), for cards that aren't `MediaCard`.
 - `FallbackImage`: next/image that swaps to a fallback when it fails to load.
 - `QuoteCard` (`raised` or `glass`, with `context` and `footer` slots; `editorial` sets one quote in display type without a card) and `QuoteMark`.
+- `Photo`: a documentary photo in the brand frame with a factual `caption` (a `figure`). `aspect` (`3/2` default, `4/3`, `16/10`, `4/5`, `1/1`), `shape` (`rounded` = `rounded-4xl`, or `bleed`), `position` for the crop, and `eager` for the LCP photo (high fetch priority, no preload tag). Use it instead of hand-rolled image frames; `MediaCard` is for linked cards with text on or under the photo.
 - `PersonCard`: portrait, name and `byline`; `image.position` keeps a face in frame, and `unoptimized` serves the portrait as is.
 - `LogoTile`, `LogoWall`: logos as tiles (`size` `sm` to `xl`, `responsive` for one step smaller on phones), `variant="chip"` (with `fixed` width so rows don't reflow), `variant="bare"` for artwork made for dark bands, `variant="mono"` for light-background artwork in greyscale on light bands, links, or a `wordmark` lockup, with a name fallback when the artwork fails. `LogoWall layout="strip"` sets `mono` logos in one wrapping row, each sized to the same area from its `aspectRatio`.
 - `BulletList`: a short list of points as raised rows with an accent dot (for example inside an FAQ answer).
@@ -633,6 +634,7 @@ No props of its own; see the source file for the root element or Base UI part it
 | Prop | Type | Description |
 | --- | --- | --- |
 | `size?` | `"md" \| "lg" \| "xl" \| "fit"` | Display step of the headline. `fit` is `md` capped so a single word of about ten em (a German compound such as "Datenschutzerklärung") still fits a phone column: word-by-word titles can't hyphenate. |
+| `emphasis?` | `"default" \| "highlight"` | Title colour. `highlight` sets the whole headline in the tone's accent (Electric Lavender on the dark bands), as the brand guide's section slides do; keep `default` when the title marks words with `<Highlight>`. |
 | `title` | `ReactNode` | The page's `h1`. |
 | `eyebrow?` | `ReactNode` | Small label above the title. |
 | `lead?` | `ReactNode` | One or two sentences under the title. |
@@ -641,7 +643,6 @@ No props of its own; see the source file for the root element or Base UI part it
 | `children?` | `ReactNode` | Content below the headline block (stats row, filters, tabs, a marquee). |
 | `splitTitle?` | `boolean` | Animate the title word by word (`<SplitWords>`). Set false when the title brings its own SplitWords, e.g. one per line with custom delays. |
 | `tone?` | `"ink" \| "night"` | Dark band tone. Default `ink`. |
-| `backdrop?` | `"aurora" \| "quiet"` | What sits behind the content. `aurora` (default): the drifting light field and film grain. `quiet`: the flat band tone alone, for pages whose own content is the hero's feature. |
 | `mark?` | `boolean` | Large drifting logomark in the background. Default true. |
 | `titleId?` | `string` | id of the `h1`, referenced by the section's `aria-labelledby`. |
 | `classNames?` | `PageHeroClassNames` | Class overrides for the inner parts. |
@@ -674,6 +675,21 @@ No props of its own; see the source file for the root element or Base UI part it
 | `headingAs?` | `HeadingLevel` | Heading level of the name. Default `h3`. |
 | `sizes?` | `string` | next/image `sizes`. |
 | `unoptimized?` | `boolean` | Serve the portrait as is, skipping the image optimizer (CMS URLs outside next.config's image patterns, or artwork that must stay lossless). |
+| `className?` | `string` | Classes merged over the `figure`. |
+
+### `Photo`
+
+| Prop | Type | Description |
+| --- | --- | --- |
+| `src` | `string` | Image path under /public or an allowed remote URL. |
+| `alt` | `string` | What the photo shows, for screen readers. Required: photos carry content. Screen readers read it before the caption, so describe what the caption leaves out rather than repeating it. |
+| `caption?` | `ReactNode` | A factual caption under the photo: what, where and when. Never a slogan; leave it out rather than guess. |
+| `aspect?` | `"3/2" \| "4/3" \| "16/10" \| "4/5" \| "1/1"` | Aspect ratio of the frame; the photo is cropped to fill it. Default `3/2`. |
+| `shape?` | `"rounded" \| "bleed"` | `rounded` is the brand's large photo radius; `bleed` has square corners for photos that run to the edge. Default `rounded`. |
+| `position?` | `string` | `object-position` of the crop, e.g. "50% 30%" to keep faces in frame. |
+| `sizes?` | `string` | Responsive `sizes` for next/image. Default: the full viewport width. |
+| `eager?` | `boolean` | Load immediately with high fetch priority, for a photo that is the largest element above the fold. It adds no preload tag. |
+| `classNames?` | `{ frame?: string; caption?: string }` | Class overrides for the frame and the caption. |
 | `className?` | `string` | Classes merged over the `figure`. |
 
 ### `Pill`
