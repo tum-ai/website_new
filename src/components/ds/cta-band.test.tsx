@@ -28,4 +28,22 @@ describe("CtaBand", () => {
     ).toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
   });
+
+  test("draws flat ink without grain, and the mark only when asked", () => {
+    const { container, rerender } = render(
+      <CtaBand variant="band" titleId="band-title" title="Let's talk." />,
+    );
+    expect(container.querySelector(".grain")).toBeNull();
+    expect(container.querySelector("svg")).not.toBeNull();
+
+    rerender(
+      <CtaBand
+        variant="band"
+        titleId="band-title"
+        title="Let's talk."
+        mark={false}
+      />,
+    );
+    expect(container.querySelector("svg")).toBeNull();
+  });
 });

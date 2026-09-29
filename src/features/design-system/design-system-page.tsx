@@ -1002,6 +1002,7 @@ export function DesignSystemPage() {
 
       <CtaBand
         variant="band"
+        mark={false}
         titleId="ds-cta-band"
         visual={
           <span aria-hidden="true" className="inline-block text-highlight">
@@ -1009,7 +1010,7 @@ export function DesignSystemPage() {
           </span>
         }
         title="Band variant with a visual."
-        lead="Full-bleed dark band; `children` brings its own layout."
+        lead="Full-bleed flat ink; `mark={false}` leaves the visual as the only artwork, and `children` brings its own layout."
       >
         <Actions align="center">
           <ButtonLink href="/partners" variant="inverse">
