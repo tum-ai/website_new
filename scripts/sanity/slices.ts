@@ -1,7 +1,13 @@
 import { buildScheduleBackfill } from "@/config/schedule-content";
 import { buildSiteSettingsBackfill } from "@/config/site-settings-content";
 import { buildApplyBackfill } from "@/features/apply/content";
+import { buildMemberStoriesBackfill } from "@/features/community/people-content";
 import { buildELabBackfill } from "@/features/e-lab/content";
+import { buildVentureBackfill } from "@/features/e-lab/venture-content";
+import { buildEventHostBackfill } from "@/features/events/host-content";
+import { buildPartnersBackfill } from "@/features/partners/content";
+import { buildOrganizationBackfill } from "@/features/partners/organization-content";
+import { buildRexBackfill } from "@/features/research/rex-content";
 import type { BackfillDocument } from "@/lib/cms-backfill";
 
 /**
@@ -25,6 +31,18 @@ export const backfillSlices: readonly {
   { slice: "config/schedule-content.ts", build: buildScheduleBackfill },
 
   // Phase 3: organizations (logos) and people
+  {
+    slice: "features/partners/organization-content.ts",
+    build: buildOrganizationBackfill,
+  },
+  { slice: "features/partners/content.ts", build: buildPartnersBackfill },
+  { slice: "features/e-lab/venture-content.ts", build: buildVentureBackfill },
+  { slice: "features/events/host-content.ts", build: buildEventHostBackfill },
+  { slice: "features/research/rex-content.ts", build: buildRexBackfill },
+  {
+    slice: "features/community/people-content.ts",
+    build: buildMemberStoriesBackfill,
+  },
 
   // Phase 4: page copy
 ];

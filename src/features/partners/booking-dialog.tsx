@@ -11,6 +11,10 @@ import {
 } from "@/components/ds";
 import { partnershipContact } from "@/config/contact";
 import {
+  type PartnershipFinderCopy,
+  partnershipFinderCopy,
+} from "./data/partnership-finder";
+import {
   getPartnershipBookingUrl,
   getPartnershipContext,
   getPartnershipEmailUrl,
@@ -35,11 +39,14 @@ export function BookingDialog({
   open,
   onOpenChange,
   selection,
+  copy = partnershipFinderCopy,
   finalFocus,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   selection: PartnershipSelection;
+  /** The finder's wording, for the booking notes and the email. */
+  copy?: PartnershipFinderCopy;
   finalFocus: RefObject<HTMLElement | null>;
 }) {
   return (
@@ -57,12 +64,12 @@ export function BookingDialog({
               from TUM.ai.
             </DialogDescription>
           </div>
-          <BookingCalendar selection={selection} />
+          <BookingCalendar selection={selection} copy={copy} />
           <div className="flex flex-wrap justify-between gap-x-6 gap-y-3 border-hairline border-t pt-4 text-small">
-            <TextLink href={getPartnershipBookingUrl(selection)} arrow>
+            <TextLink href={getPartnershipBookingUrl(selection, copy)} arrow>
               Open booking page
             </TextLink>
-            <TextLink href={getPartnershipEmailUrl(selection)}>
+            <TextLink href={getPartnershipEmailUrl(selection, copy)}>
               Email us instead
             </TextLink>
           </div>
@@ -72,18 +79,24 @@ export function BookingDialog({
   );
 }
 
-function BookingCalendar({ selection }: { selection: PartnershipSelection }) {
+function BookingCalendar({
+  selection,
+  copy,
+}: {
+  selection: PartnershipSelection;
+  copy: PartnershipFinderCopy;
+}) {
   const [status, setStatus] = useState<"loading" | "ready" | "failed">(
     "loading",
   );
   const config = useMemo(
     () => ({
-      notes: getPartnershipContext(selection),
+      notes: getPartnershipContext(selection, copy),
       guests: [PARTNER_EMAIL],
       layout: "month_view" as const,
       theme: "light" as const,
     }),
-    [selection],
+    [selection, copy],
   );
 
   useEffect(() => {

@@ -11,11 +11,17 @@ import {
   SectionHeader,
 } from "@/components/ds";
 import { officialMembers, organizationFacts } from "@/config/organization";
-import { alumniDestinations } from "../data/partner-logos";
-import { partnerProfiles } from "../data/partners";
+import type { AlumniDestination } from "../data/partner-logos";
+import type { PartnerProfile } from "../data/partners";
 
 /** The members: three profiles, the member count and where alumni go. */
-export function PeopleSection() {
+export function PeopleSection({
+  profiles,
+  alumniDestinations,
+}: {
+  profiles: readonly PartnerProfile[];
+  alumniDestinations: readonly AlumniDestination[];
+}) {
   return (
     <Section tone="lavender" aria-labelledby="partner-people-title">
       <Container>
@@ -31,7 +37,7 @@ export function PeopleSection() {
           }
         />
         <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:gap-x-6 lg:grid-cols-4">
-          {partnerProfiles.map((profile, index) => (
+          {profiles.map((profile, index) => (
             <Reveal key={profile.name} delay={index * 90}>
               <PersonCard
                 name={profile.name}
@@ -45,7 +51,7 @@ export function PeopleSection() {
               </PersonCard>
             </Reveal>
           ))}
-          <Reveal delay={partnerProfiles.length * 90} className="h-full">
+          <Reveal delay={profiles.length * 90} className="h-full">
             <div
               data-tone="ink"
               className="relative isolate flex h-full min-h-72 flex-col items-start overflow-clip rounded-3xl p-5 sm:p-7"

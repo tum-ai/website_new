@@ -218,6 +218,232 @@ export type Slug = {
   source?: string;
 };
 
+export type PartnersCopy = {
+  _id: string;
+  _type: "partnersCopy";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  pitch?: string;
+  intents?: {
+    talent?: {
+      label?: string;
+      shortLabel?: string;
+      detail?: string;
+    };
+    hackathon?: {
+      label?: string;
+      shortLabel?: string;
+      detail?: string;
+    };
+    brand?: {
+      label?: string;
+      shortLabel?: string;
+      detail?: string;
+    };
+    research?: {
+      label?: string;
+      shortLabel?: string;
+      detail?: string;
+    };
+  };
+  durations?: {
+    oneOff?: {
+      label?: string;
+      detail?: string;
+    };
+    ongoing?: {
+      label?: string;
+      detail?: string;
+    };
+  };
+  recommendations?: {
+    longTerm?: {
+      name?: string;
+      description?: string;
+    };
+    hackathon?: {
+      name?: string;
+      description?: string;
+    };
+    talent?: {
+      name?: string;
+      description?: string;
+    };
+    brand?: {
+      name?: string;
+      description?: string;
+    };
+    research?: {
+      name?: string;
+      description?: string;
+    };
+  };
+  reasons?: Array<{
+    icon: "users" | "briefcase" | "network";
+    name?: string;
+    title?: string;
+    description?: string;
+    _type: "reason";
+    _key: string;
+  }>;
+  stats?: Array<{
+    value: string;
+    label?: string;
+    detail?: string;
+    _type: "stat";
+    _key: string;
+  }>;
+  pillars?: Array<{
+    key: "research" | "venture" | "hackathons";
+    title?: string;
+    metricLabel?: string;
+    description?: string;
+    image: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt: string;
+      _type: "image";
+    };
+    href?: string;
+    _type: "pillar";
+    _key: string;
+  }>;
+};
+
+export type OrganizationReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "organization";
+};
+
+export type PersonReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "person";
+};
+
+export type VentureTrace = {
+  _id: string;
+  _type: "ventureTrace";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  venture: OrganizationReference;
+  person: PersonReference;
+  cohort: string;
+  now?: string;
+  milestones: Array<{
+    text: string;
+    source: string;
+    _type: "milestone";
+    _key: string;
+  }>;
+};
+
+export type CaseStudy = {
+  _id: string;
+  _type: "caseStudy";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  organization: OrganizationReference;
+  order: number;
+  metric: string;
+  label: string;
+  summary: string;
+  copy: string;
+  attribution?: string;
+  image: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt: string;
+    _type: "image";
+  };
+};
+
+export type Person = {
+  _id: string;
+  _type: "person";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  placement: "member-story" | "partner-profile" | "e-lab-testimonial";
+  key: string;
+  order: number;
+  name: string;
+  role: string;
+  context?: string;
+  quote?: string;
+  story?: string;
+  portrait: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  organization?: OrganizationReference;
+};
+
+export type LogoList = {
+  _id: string;
+  _type: "logoList";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  surface:
+    | "alumni-destinations"
+    | "partner-marquee"
+    | "e-lab-ventures"
+    | "event-hosts"
+    | "rex-institutions";
+  organizations: Array<
+    {
+      _key: string;
+    } & OrganizationReference
+  >;
+};
+
+export type Organization = {
+  _id: string;
+  _type: "organization";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name: string;
+  key: string;
+  shortName?: string;
+  href?: string;
+  logo?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt: string;
+    symbolOnly?: boolean;
+    aspectRatio?: number;
+    _type: "image";
+  };
+  logoOnDark?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt: string;
+    symbolOnly?: boolean;
+    aspectRatio?: number;
+    _type: "image";
+  };
+};
+
 export type Campaign = {
   _id: string;
   _type: "campaign";
@@ -364,6 +590,14 @@ export type AllSanitySchemaTypes =
   | SanityImageAsset
   | Geopoint
   | Slug
+  | PartnersCopy
+  | OrganizationReference
+  | PersonReference
+  | VentureTrace
+  | CaseStudy
+  | Person
+  | LogoList
+  | Organization
   | Campaign
   | ApplicationWindow
   | SiteSettings
@@ -473,12 +707,246 @@ export type SITE_SETTINGS_QUERY_RESULT = {
   headerCtaFallback: "elab" | "member" | "partner";
 } | null;
 
+// Source: ../features/e-lab/venture-content.ts
+// Variable: VENTURE_TRACE_QUERY
+// Query: *[_id == "ventureTrace"][0]{  "startupId": venture->key,  "testimonialId": person->key,  cohort,  now,  "after": milestones[]{ text, source }}
+export type VENTURE_TRACE_QUERY_RESULT =
+  | {
+      startupId: string;
+      testimonialId: string;
+      cohort: string;
+      now: string | null;
+      after: Array<{
+        text: string;
+        source: string;
+      }>;
+    }
+  | {
+      startupId: null;
+      testimonialId: null;
+      cohort: null;
+      now: null;
+      after: null;
+    }
+  | {
+      startupId: null;
+      testimonialId: null;
+      cohort: null;
+      now: null;
+      after: Array<{
+        text: null;
+        source: null;
+      }> | null;
+    }
+  | null;
+
+// Source: ../features/partners/content.ts
+// Variable: PARTNERS_COPY_QUERY
+// Query: *[_id == "partnersCopy"][0]{  pitch,  intents{    talent{ label, shortLabel, detail },    hackathon{ label, shortLabel, detail },    brand{ label, shortLabel, detail },    research{ label, shortLabel, detail }  },  durations{    oneOff{ label, detail },    ongoing{ label, detail }  },  recommendations{    longTerm{ name, description },    hackathon{ name, description },    talent{ name, description },    brand{ name, description },    research{ name, description }  },  reasons[]{ icon, name, title, description },  stats[]{ value, label, detail },  pillars[]{    key,    title,    metricLabel,    description,    "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }},    href  }}
+export type PARTNERS_COPY_QUERY_RESULT =
+  | {
+      pitch: null;
+      intents: null;
+      durations: null;
+      recommendations: null;
+      reasons: null;
+      stats: null;
+      pillars: null;
+    }
+  | {
+      pitch: string | null;
+      intents: {
+        talent: {
+          label: string | null;
+          shortLabel: string | null;
+          detail: string | null;
+        } | null;
+        hackathon: {
+          label: string | null;
+          shortLabel: string | null;
+          detail: string | null;
+        } | null;
+        brand: {
+          label: string | null;
+          shortLabel: string | null;
+          detail: string | null;
+        } | null;
+        research: {
+          label: string | null;
+          shortLabel: string | null;
+          detail: string | null;
+        } | null;
+      } | null;
+      durations: {
+        oneOff: {
+          label: string | null;
+          detail: string | null;
+        } | null;
+        ongoing: {
+          label: string | null;
+          detail: string | null;
+        } | null;
+      } | null;
+      recommendations: {
+        longTerm: {
+          name: string | null;
+          description: string | null;
+        } | null;
+        hackathon: {
+          name: string | null;
+          description: string | null;
+        } | null;
+        talent: {
+          name: string | null;
+          description: string | null;
+        } | null;
+        brand: {
+          name: string | null;
+          description: string | null;
+        } | null;
+        research: {
+          name: string | null;
+          description: string | null;
+        } | null;
+      } | null;
+      reasons: Array<{
+        icon: "briefcase" | "network" | "users";
+        name: string | null;
+        title: string | null;
+        description: string | null;
+      }> | null;
+      stats: Array<{
+        value: string;
+        label: string | null;
+        detail: string | null;
+      }> | null;
+      pillars: Array<{
+        key: "hackathons" | "research" | "venture";
+        title: string | null;
+        metricLabel: string | null;
+        description: string | null;
+        image: {
+          src: string | null;
+          width: number | null;
+          height: number | null;
+          alt: string;
+          hotspot: {
+            x: number;
+            y: number;
+          } | null;
+        };
+        href: string | null;
+      }> | null;
+    }
+  | null;
+
+// Source: ../features/partners/content.ts
+// Variable: PARTNER_CASE_STUDIES_QUERY
+// Query: *[_type == "caseStudy"] | order(order asc){  "organization": organization->key,  "name": organization->name,  metric,  label,  summary,  copy,  attribution,  "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}}
+export type PARTNER_CASE_STUDIES_QUERY_RESULT = Array<{
+  organization: string;
+  name: string;
+  metric: string;
+  label: string;
+  summary: string;
+  copy: string;
+  attribution: string | null;
+  image: {
+    src: string | null;
+    width: number | null;
+    height: number | null;
+    alt: string;
+    hotspot: {
+      x: number;
+      y: number;
+    } | null;
+  };
+}>;
+
 // Source: ../lib/faq-content.ts
 // Variable: FAQ_QUERY
 // Query: *[_type == "faq" && collection == $collection] | order(order asc){  question,  answer}
 export type FAQ_QUERY_RESULT = Array<{
   question: string;
   answer: string;
+}>;
+
+// Source: ../lib/organization-content.ts
+// Variable: LOGO_LISTS_QUERY
+// Query: *[_type == "logoList" && _id in $ids]{  surface,  "organizations": organizations[]->{  key,  name,  shortName,  href,  "logo": logo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }},  "logoSymbolOnly": logo.symbolOnly,  "logoAspectRatio": logo.aspectRatio,  "logoOnDark": logoOnDark{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }},  "logoOnDarkSymbolOnly": logoOnDark.symbolOnly,  "logoOnDarkAspectRatio": logoOnDark.aspectRatio}}
+export type LOGO_LISTS_QUERY_RESULT = Array<{
+  surface:
+    | "alumni-destinations"
+    | "e-lab-ventures"
+    | "event-hosts"
+    | "partner-marquee"
+    | "rex-institutions";
+  organizations: Array<{
+    key: string;
+    name: string;
+    shortName: string | null;
+    href: string | null;
+    logo: {
+      src: string | null;
+      width: number | null;
+      height: number | null;
+      alt: string;
+      hotspot: {
+        x: number;
+        y: number;
+      } | null;
+    } | null;
+    logoSymbolOnly: boolean | null;
+    logoAspectRatio: number | null;
+    logoOnDark: {
+      src: string | null;
+      width: number | null;
+      height: number | null;
+      alt: string;
+      hotspot: {
+        x: number;
+        y: number;
+      } | null;
+    } | null;
+    logoOnDarkSymbolOnly: boolean | null;
+    logoOnDarkAspectRatio: number | null;
+  }>;
+}>;
+
+// Source: ../lib/person-content.ts
+// Variable: PEOPLE_QUERY
+// Query: *[_type == "person" && placement == $placement] | order(order asc){  key,  name,  role,  context,  quote,  story,  "portrait": portrait{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }},  "organization": organization->{    key,    name,    "logo": logo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}  }}
+export type PEOPLE_QUERY_RESULT = Array<{
+  key: string;
+  name: string;
+  role: string;
+  context: string | null;
+  quote: string | null;
+  story: string | null;
+  portrait: {
+    src: string | null;
+    width: number | null;
+    height: number | null;
+    alt: string | null;
+    hotspot: {
+      x: number;
+      y: number;
+    } | null;
+  };
+  organization: {
+    key: string;
+    name: string;
+    logo: {
+      src: string | null;
+      width: number | null;
+      height: number | null;
+      alt: string;
+      hotspot: {
+        x: number;
+        y: number;
+      } | null;
+    } | null;
+  } | null;
 }>;
 
 // Source: ../lib/sanity-queries.ts

@@ -1,8 +1,6 @@
 import type { CSSProperties } from "react";
 import { ButtonLink, LogoTile } from "@/components/ds";
 import type { Partner } from "@/lib/types";
-import { symbolOnlyLogos } from "./data/partner-logos";
-import { marqueeLogos } from "./data/partner-marquee-logos";
 import { getPartnerKey } from "./partner-directory";
 
 /**
@@ -10,10 +8,19 @@ import { getPartnerKey } from "./partner-directory";
  * (no duplicated list for a seamless loop) and moves at an equal rate,
  * wrapping outside the clipped window; mechanics live in partners.css. Under
  * reduced motion the rail stands still as a wrapped row of logos.
- * Only artwork verified on dark bands is shown (`marqueeLogos`); everything
- * else, and artwork that fails to load, falls back to the name.
+ * Only artwork verified on dark bands is shown (`marqueeLogos`, by partner
+ * key); everything else, and artwork that fails to load, falls back to the
+ * name. Symbol-only artwork gets the name beside it.
  */
-export function PartnerMarquee({ partners }: { partners: Partner[] }) {
+export function PartnerMarquee({
+  partners,
+  marqueeLogos,
+  symbolOnlyLogos,
+}: {
+  partners: Partner[];
+  marqueeLogos: Readonly<Record<string, string | undefined>>;
+  symbolOnlyLogos: ReadonlySet<string>;
+}) {
   if (!partners.length) return null;
   const animated = partners.length > 3;
   return (

@@ -11,6 +11,10 @@ import {
   useState,
 } from "react";
 import {
+  type PartnershipFinderCopy,
+  partnershipFinderCopy,
+} from "./data/partnership-finder";
+import {
   initialFunnelState,
   type PartnershipFunnelAction,
   type PartnershipFunnelState,
@@ -27,15 +31,24 @@ const PartnershipContext = createContext<{
   selection: PartnershipFunnelState;
   dispatch: Dispatch<PartnershipFunnelAction>;
   openBooking: () => void;
+  /** The finder's answers and formats, as the page serves them. */
+  copy: PartnershipFinderCopy;
 } | null>(null);
 
 /**
  * Holds the partnership finder's answers and the booking dialog for the whole
  * page, so every contact action (hero, rows, finder, closing band) sends the
  * same context. The dialog's code loads on the first "Book a call", and
- * closing it returns focus to the control that opened it.
+ * closing it returns focus to the control that opened it. `copy` is the
+ * finder's wording from the page's content slice (code copy by default).
  */
-export function PartnershipProvider({ children }: { children: ReactNode }) {
+export function PartnershipProvider({
+  children,
+  copy = partnershipFinderCopy,
+}: {
+  children: ReactNode;
+  copy?: PartnershipFinderCopy;
+}) {
   const [selection, dispatch] = useReducer(
     partnershipFunnelReducer,
     initialFunnelState,
@@ -54,6 +67,7 @@ export function PartnershipProvider({ children }: { children: ReactNode }) {
           setBookingRequested(true);
           setBookingOpen(true);
         },
+        copy,
       }}
     >
       {children}
@@ -62,6 +76,7 @@ export function PartnershipProvider({ children }: { children: ReactNode }) {
           open={bookingOpen}
           onOpenChange={setBookingOpen}
           selection={selection}
+          copy={copy}
           finalFocus={bookingTrigger}
         />
       ) : null}
@@ -69,7 +84,7 @@ export function PartnershipProvider({ children }: { children: ReactNode }) {
   );
 }
 
-/** The finder state, its dispatch and `openBooking`; throws outside the provider. */
+/** The finder state, its dispatch, `openBooking` and the finder copy; throws outside the provider. */
 export function usePartnership() {
   const context = useContext(PartnershipContext);
   if (!context)

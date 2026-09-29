@@ -1,5 +1,10 @@
 import type { DocumentActionComponent, Template } from "sanity";
-import type { StructureResolver } from "sanity/structure";
+import type { StructureBuilder, StructureResolver } from "sanity/structure";
+import {
+  logoListDocumentId,
+  logoListSurfaces,
+  personPlacements,
+} from "../lib/people-and-logos";
 import { contentSingletons } from "./schemas/content";
 import { applicationPrograms } from "./schemas/content/application-window";
 import { faqCollections } from "./schemas/content/faq";
@@ -7,8 +12,8 @@ import { faqCollections } from "./schemas/content/faq";
 const singletonTypes = new Set(contentSingletons.map(({ type }) => type));
 
 /**
- * The documents the structure opens by id: the singletons (id = type) and
- * each program's application window. The backfill must create exactly
+ * The documents the structure opens by id: the singletons (id = type),
+ * each program's application window and each section's logo list. The backfill must create exactly
  * these ids (`test/cms-backfill.test.ts`), or editors would edit an empty
  * document beside the imported one.
  */
@@ -18,17 +23,32 @@ export const pinnedDocuments: readonly { id: string; type: string }[] = [
     id: documentId,
     type: "applicationWindow",
   })),
+  ...logoListSurfaces.map(({ value }) => ({
+    id: logoListDocumentId(value),
+    type: "logoList",
+  })),
 ];
 
 /**
- * Types whose documents are fixed: singletons, and the application windows
- * (one pinned document per program). Editors change them in place; they
+ * Types whose documents are fixed: singletons, the application windows
+ * (one pinned document per program) and the logo lists (one per section). Editors change them in place; they
  * cannot create, duplicate or delete them.
  */
-const fixedTypes = new Set([...singletonTypes, "applicationWindow"]);
+const fixedTypes = new Set([
+  ...singletonTypes,
+  "applicationWindow",
+  "logoList",
+]);
 
 /** Types with their own entry in the structure, left out of the plain lists. */
-const structuredTypes = new Set([...fixedTypes, "faq", "campaign"]);
+const structuredTypes = new Set([
+  ...fixedTypes,
+  "faq",
+  "campaign",
+  "organization",
+  "person",
+  "caseStudy",
+]);
 
 /** The one template that creates a FAQ entry in a given page's collection. */
 const faqInCollectionTemplate: Template = {
@@ -116,6 +136,7 @@ export const contentStructure: StructureResolver = (S) =>
               ),
             ),
         ),
+      ...logosAndPeopleItems(S),
       ...S.documentTypeListItems().filter((item) => {
         const id = item.getId();
         return !(id && structuredTypes.has(id));
@@ -127,6 +148,7 @@ export function contentTemplates(templates: Template[]): Template[] {
   return [
     ...templates.filter(({ schemaType }) => !fixedTypes.has(schemaType)),
     faqInCollectionTemplate,
+    personInPlacementTemplate,
   ];
 }
 
@@ -140,4 +162,106 @@ export function contentDocumentActions(
   return fixedTypes.has(schemaType)
     ? actions.filter(({ action }) => action && singletonActions.has(action))
     : actions;
+}
+
+// Phase 3: logos and people (stream B). Organisations, the per-section logo
+// lists (fixed ids, like singletons), people by page and the partner case
+// studies, grouped under one entry. Everything this phase adds to the
+// structure is in this block and the four hooks above.
+
+/** The one template that creates a person on a given page. */
+const personInPlacementTemplate: Template = {
+  id: "person-in-placement",
+  title: "Person on a page",
+  schemaType: "person",
+  parameters: [{ name: "placement", type: "string" }],
+  value: ({ placement }: { placement: string }) => ({ placement }),
+};
+
+/** "Logos and people": organisations, logo lists, people and case studies. */
+function logosAndPeopleItems(S: StructureBuilder) {
+  return [
+    S.listItem()
+      .id("logos-and-people")
+      .title("Logos and people")
+      .child(
+        S.list()
+          .title("Logos and people")
+          .items([
+            S.listItem()
+              .id("organization")
+              .title("Organisations")
+              .schemaType("organization")
+              .child(
+                S.documentTypeList("organization")
+                  .title("Organisations")
+                  .defaultOrdering([{ field: "name", direction: "asc" }]),
+              ),
+            S.listItem()
+              .id("logoList")
+              .title("Logo lists")
+              .schemaType("logoList")
+              .child(
+                S.list()
+                  .title("Logo lists by section")
+                  .items(
+                    logoListSurfaces.map(({ value, title }) =>
+                      S.listItem()
+                        .id(logoListDocumentId(value))
+                        .title(title)
+                        .child(
+                          S.document()
+                            .schemaType("logoList")
+                            .documentId(logoListDocumentId(value))
+                            .title(title),
+                        ),
+                    ),
+                  ),
+              ),
+            S.listItem()
+              .id("person")
+              .title("People")
+              .schemaType("person")
+              .child(
+                S.list()
+                  .title("People by page")
+                  .items(
+                    personPlacements.map(({ value, title }) =>
+                      S.listItem()
+                        .id(`person-${value}`)
+                        .title(title)
+                        .child(
+                          S.documentList()
+                            .id(`person-${value}-list`)
+                            .title(title)
+                            .schemaType("person")
+                            .filter(
+                              '_type == "person" && placement == $placement',
+                            )
+                            .params({ placement: value })
+                            .defaultOrdering([
+                              { field: "order", direction: "asc" },
+                            ])
+                            .initialValueTemplates([
+                              S.initialValueTemplateItem(
+                                personInPlacementTemplate.id,
+                                { placement: value },
+                              ),
+                            ]),
+                        ),
+                    ),
+                  ),
+              ),
+            S.listItem()
+              .id("caseStudy")
+              .title("Partner case studies")
+              .schemaType("caseStudy")
+              .child(
+                S.documentTypeList("caseStudy")
+                  .title("Partner case studies")
+                  .defaultOrdering([{ field: "order", direction: "asc" }]),
+              ),
+          ]),
+      ),
+  ];
 }

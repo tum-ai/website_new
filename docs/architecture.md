@@ -84,10 +84,14 @@ src/features/<domain>/
 ```
 
 Feature indexes exist today for `community` (`departments`, `memberJourney`, `memberStories`,
-`MembershipApplyButton`), `e-lab` (`testimonialCards`), `partners` (`marqueeLogos`,
-`partnerCaseStudies`, `partnerPitch`, `symbolOnlyLogos` and the directory helpers
-`getHighlightedPartners`, `getPartnerDirectory`, `getPartnerKey`), `qanda` (`faqs`) and
-`research` (`rexInstitutions`).
+`MembershipApplyButton`), `e-lab` (`testimonialCards`, `getTestimonialCards`), `partners`
+(`marqueeLogos`, `partnerPitch`, `symbolOnlyLogos`, the directory helpers
+`getHighlightedPartners`, `getPartnerDirectory`, `getPartnerKey`, the organisation table's
+`organizationByKey` and `buildOrganizationBackfill`, and the content getters
+`getPartnerCaseStudies`, `getPartnersCopy`, `getPartnerLogos`), `qanda` (`faqs`) and
+`research` (`rexInstitutions`). The `e-lab` and `partners` indexes export server-only getters,
+so only server modules may import them; the `community` and `research` indexes are reachable
+from a homepage client island and export no getters.
 
 ## Import rules
 
@@ -228,6 +232,8 @@ Facts that change per semester, cohort or year live once in `src/config/`
 | `cms-backfill.ts` | backfill document ids and `_sanityAsset` images (Node only) |
 | `content-tokens.ts` | `{{placeholder}}` names and filling |
 | `faq-content.ts` | the `faq` type shared by several pages: query, getter, backfill |
+| `people-and-logos.ts` | `Organization`, `LogoArtwork`, logo-list sections and person placements (isomorphic) |
+| `organization-content.ts`, `person-content.ts` | the `organization`/`logoList` and `person` types shared by several pages: queries, getters, backfill builders (server only) |
 | `munich-time.ts`, `words.ts` | Munich wall-clock parsing and CMS date conversion, lists and small numbers in running copy |
 | `clock-window.ts` | `ClockWindow`: a dated on/off window as epoch milliseconds, the props shape for phase islands |
 | `use-clock-switch.ts`, `use-media-query.ts` | client hooks (`useClockState`, `useClockSwitch`, `useClockWindow`) |

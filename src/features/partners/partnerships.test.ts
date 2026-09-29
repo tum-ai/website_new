@@ -5,7 +5,7 @@ import { alumniDestinations, featuredPartners } from "./data/partner-logos";
 import { marqueeLogos } from "./data/partner-marquee-logos";
 import {
   partnerCaseStudies,
-  partnerPillars,
+  partnerPillarTemplates,
   partnerProfiles,
 } from "./data/partners";
 import {
@@ -166,7 +166,7 @@ test("every curated logo, portrait, and case-study image ships with the page", (
     ...featuredPartners,
     ...alumniDestinations,
     ...partnerProfiles,
-    ...partnerPillars,
+    ...partnerPillarTemplates.map(({ image }) => ({ image: image.src })),
     ...partnerCaseStudies,
   ]) {
     expect(item.image, "Missing curated partner image").toBeTruthy();

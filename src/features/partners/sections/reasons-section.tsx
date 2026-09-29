@@ -1,4 +1,9 @@
-import { BriefcaseBusiness, Network, Users } from "lucide-react";
+import {
+  BriefcaseBusiness,
+  type LucideIcon,
+  Network,
+  Users,
+} from "lucide-react";
 import {
   Container,
   IconBadge,
@@ -7,13 +12,21 @@ import {
   SectionHeader,
   SpotlightCard,
 } from "@/components/ds";
-import { partnerReasons } from "../data/partners";
+import type { PartnerReason, PartnerReasonIcon } from "../data/partners";
 import { ContactRow } from "./contact-row";
 
-const reasonIcons = [Users, BriefcaseBusiness, Network];
+const reasonIcons: Record<PartnerReasonIcon, LucideIcon> = {
+  users: Users,
+  briefcase: BriefcaseBusiness,
+  network: Network,
+};
 
 /** Why partner: talent, decision makers and reach, then a contact row. */
-export function ReasonsSection() {
+export function ReasonsSection({
+  reasons,
+}: {
+  reasons: readonly PartnerReason[];
+}) {
   return (
     <Section tone="night" grain aria-labelledby="partner-reasons-title">
       <Container>
@@ -29,7 +42,7 @@ export function ReasonsSection() {
           lead="Exceptional talent. Tomorrow’s decision makers. A community moving AI forward."
         />
         <div className="grid gap-4 lg:grid-cols-3 lg:gap-5">
-          {partnerReasons.map((reason, index) => (
+          {reasons.map((reason, index) => (
             <Reveal
               as="article"
               key={reason.name}
@@ -41,7 +54,7 @@ export function ReasonsSection() {
                 className="flex h-full flex-col md:max-lg:grid md:max-lg:grid-cols-[12rem_minmax(0,1fr)] md:max-lg:gap-x-10"
               >
                 <div className="flex items-center gap-3 self-start font-semibold text-highlight text-small">
-                  <IconBadge icon={reasonIcons[index]} interactive />
+                  <IconBadge icon={reasonIcons[reason.icon]} interactive />
                   <span>{reason.name}</span>
                 </div>
                 <div className="mt-10 md:max-lg:mt-0 lg:mt-14">

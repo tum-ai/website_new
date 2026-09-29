@@ -18,7 +18,7 @@ import {
 import { faq as applyFaq } from "../src/features/apply/data/faq.ts";
 import { faq as eLabFaq } from "../src/features/e-lab/data/faq.ts";
 import { testimonialCards } from "../src/features/e-lab/data/venture-page.ts";
-import { partnerStats } from "../src/features/partners/data/partners.ts";
+import { getPartnersCopy } from "../src/features/partners/content.ts";
 import { faqs as qandaFaqs } from "../src/features/qanda/data/qanda.ts";
 import { parseMunichDateTime } from "../src/lib/munich-time.ts";
 
@@ -101,13 +101,13 @@ test("E-Lab counts only the cohorts that have finished", () => {
   );
 });
 
-test("member figures add up and feed the partner stats", () => {
+test("member figures add up and feed the partner stats", async () => {
   expect(officialMembers).toBe(
     organizationFacts.activeMembers + organizationFacts.alumni,
   );
-  const members = partnerStats.find(
-    (stat) => stat.label === "Official members",
-  );
+  // The figures /partners renders from its code copy.
+  const { stats } = await getPartnersCopy();
+  const members = stats.find((stat) => stat.label === "Official members");
   expect(members?.value).toBe(`${officialMembers}+`);
 });
 

@@ -1,7 +1,13 @@
 import { applicationWindowType } from "./application-window";
 import { campaignType } from "./campaign";
+import { caseStudyType } from "./case-study";
 import { faqType } from "./faq";
+import { logoListType } from "./logo-list";
+import { organizationType } from "./organization";
+import { partnersCopyType } from "./partners-copy";
+import { personType } from "./person";
 import { siteSettingsType } from "./site-settings";
+import { ventureTraceType } from "./venture-trace";
 
 /**
  * The document types of the `content` workspace (the content dataset; see
@@ -17,7 +23,12 @@ export const contentSchemaTypes = [
   campaignType,
 
   // Phase 3: organizations (logos) and people
-
+  organizationType,
+  logoListType,
+  personType,
+  caseStudyType,
+  ventureTraceType,
+  partnersCopyType,
   // Phase 4: page copy
 ];
 
@@ -30,4 +41,7 @@ export const contentSchemaTypes = [
 export const contentSingletons: readonly { type: string; title: string }[] = [
   // Phases 1 and 2
   { type: "siteSettings", title: "Site settings" },
+  // Phase 3: organizations (logos) and people
+  { type: "partnersCopy", title: "Partners page copy" },
+  { type: "ventureTrace", title: "E-Lab traced venture" },
 ];

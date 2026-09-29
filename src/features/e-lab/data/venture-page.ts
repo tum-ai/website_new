@@ -1,3 +1,13 @@
+import { organizationByKey } from "@/features/partners";
+import type { LogoLists, Organization } from "@/lib/people-and-logos";
+
+/**
+ * The /e-lab venture content: the code source of the E-Lab testimonials
+ * (`person`, placement `e-lab-testimonial`), the ventures logo list and the
+ * `ventureTrace` singleton (`features/e-lab/venture-content.ts`). Logos come
+ * from the organisation table (`organizationByKey` in @/features/partners).
+ */
+
 /**
  * A community quote and the local imagery used to attribute it. The portrait
  * is decorative (`alt=""`): it always sits beside the person's name.
@@ -23,7 +33,32 @@ export interface NotableStartup {
   wordmarkLabel?: string;
 }
 
-export const testimonialCards = [
+/**
+ * A testimonial as code writes it: the organisation the person speaks for
+ * by key, whose light logo attributes the quote.
+ */
+export type Testimonial = Omit<
+  TestimonialCard,
+  "organizationLogoSrc" | "organizationLogoAlt"
+> & { organization: string };
+
+/**
+ * A testimonial with its organisation's logo, or `null` when the
+ * organisation has no light logo.
+ */
+function testimonialCardOf(
+  { organization: _, ...testimonial }: Testimonial,
+  organization: Pick<Organization, "logo">,
+): TestimonialCard | null {
+  if (!organization.logo) return null;
+  return {
+    ...testimonial,
+    organizationLogoSrc: organization.logo.src,
+    organizationLogoAlt: organization.logo.alt,
+  };
+}
+
+export const testimonials = [
   {
     id: "leon-hergert",
     name: "Leon Hergert",
@@ -32,8 +67,7 @@ export const testimonialCards = [
     quote:
       "The E-Lab gave us the foundation to build Spherecast from idea to YC. The community and mentorship were game-changing.",
     portraitSrc: "/assets/e-lab/testimonials/leon_hergert.png",
-    organizationLogoSrc: "/assets/e-lab/partners/y-combinator.webp",
-    organizationLogoAlt: "Y Combinator logo",
+    organization: "y-combinator",
   },
   {
     id: "benedikt-wieser",
@@ -43,8 +77,7 @@ export const testimonialCards = [
     quote:
       "The E-Lab is probably the best program for creating top-end entrepreneurs out there. It's simply incredible.",
     portraitSrc: "/assets/e-lab/testimonials/benedikt_wieser.png",
-    organizationLogoSrc: "/assets/e-lab/partners/cdtm.webp",
-    organizationLogoAlt: "CDTM logo",
+    organization: "cdtm",
   },
   {
     id: "leonardo-benini",
@@ -54,8 +87,7 @@ export const testimonialCards = [
     quote:
       "Structured, fast, and insanely effective. Every founder should experience this.",
     portraitSrc: "/assets/e-lab/testimonials/leonardo_benini.png",
-    organizationLogoSrc: "/assets/e-lab/partners/ewor.webp",
-    organizationLogoAlt: "EWOR logo",
+    organization: "ewor",
   },
   {
     id: "oliver-schoppe",
@@ -65,8 +97,7 @@ export const testimonialCards = [
     quote:
       "The quality of founders coming out of E-Lab is exceptional. We're proud to be part of this community.",
     portraitSrc: "/assets/e-lab/testimonials/oliver_schoppe.png",
-    organizationLogoSrc: "/assets/e-lab/partners/uvc-partners.webp",
-    organizationLogoAlt: "UVC Partners logo",
+    organization: "uvc-partners",
   },
   {
     id: "viktor-shen",
@@ -76,8 +107,7 @@ export const testimonialCards = [
     quote:
       "We went from zero to being a funded startup - the E-Lab accelerated our journey far beyond what we thought was possible.",
     portraitSrc: "/assets/e-lab/testimonials/viktor_shen.jpeg",
-    organizationLogoSrc: "/assets/e-lab/startups/Tenmin.svg",
-    organizationLogoAlt: "Tenmin AI logo",
+    organization: "tenmin",
   },
   {
     id: "axel-taeubert",
@@ -86,8 +116,7 @@ export const testimonialCards = [
     quote:
       "Truly impressive what the team has built. 🚀 We’re just getting started",
     portraitSrc: "/assets/e-lab/testimonials/axel_taeubert.webp",
-    organizationLogoSrc: "/assets/e-lab/partners/google.svg",
-    organizationLogoAlt: "Google logo",
+    organization: "google-cloud",
   },
   {
     id: "alexandra-reinert",
@@ -96,10 +125,17 @@ export const testimonialCards = [
     quote:
       "The density of real builders at the E-Lab Final Pitch is exactly what Tier-1 venture funds look for at the pre-seed stage",
     portraitSrc: "/assets/e-lab/testimonials/alexandra_reinert.webp",
-    organizationLogoSrc: "/assets/e-lab/partners/accel.svg",
-    organizationLogoAlt: "Accel logo",
+    organization: "accel",
   },
-] satisfies readonly TestimonialCard[];
+] satisfies readonly Testimonial[];
+
+export const testimonialCards: TestimonialCard[] = testimonials.flatMap(
+  (testimonial) =>
+    testimonialCardOf(
+      testimonial,
+      organizationByKey(testimonial.organization),
+    ) ?? [],
+);
 
 /** The quotes of the /e-lab voices band, by `testimonialCards` id. */
 export const eLabVoices = {
@@ -107,59 +143,43 @@ export const eLabVoices = {
   investors: ["alexandra-reinert", "oliver-schoppe", "axel-taeubert"],
 } as const;
 
-export const notableStartups = [
-  {
-    id: "tenmin",
-    name: "Tenmin",
-    href: "https://tenmin.ai/",
-    logoSrc: "/assets/e-lab/startups/Tenmin.svg",
-    logoAlt: "Tenmin logo",
-  },
-  {
-    id: "explaino",
-    name: "Explaino",
-    href: "https://explaino.ai/",
-    logoSrc: "/assets/e-lab/startups/LogoExplaino.svg",
-    logoAlt: "Explaino logo",
-  },
-  {
-    id: "spherecast",
-    name: "Spherecast",
-    href: "https://www.spherecast.ai/",
-    logoSrc: "/assets/e-lab/startups/Spherecast.webp",
-    logoAlt: "Spherecast logo",
-  },
-  {
-    id: "get-ikigai",
-    name: "Get Ikigai",
-    href: "https://www.get-ikigai.com/",
-    logoSrc: "/assets/e-lab/startups/get-ilkigai.svg",
-    logoAlt: "Get Ikigai logo",
-  },
-  {
-    id: "tau-robotics",
-    name: "Tau Robotics",
-    href: "https://www.tau-robotics.com/",
-    logoSrc: "/assets/e-lab/startups/TauRobotics.svg",
-    logoAlt: "Tau Robotics logo",
-    wordmarkLabel: "Tau Robotics",
-  },
-  {
-    id: "helmit",
-    name: "Helmit",
-    href: "https://www.helmit.org/",
-    logoSrc: "/assets/e-lab/startups/helmit.svg",
-    logoAlt: "Helmit logo",
-  },
-  {
-    id: "invertix",
-    name: "Invertix",
-    href: "https://www.invertix.ai/",
-    logoSrc: "/assets/e-lab/startups/invertix.webp",
-    logoAlt: "Invertix logo",
-    wordmarkLabel: "Invertix",
-  },
-] satisfies readonly NotableStartup[];
+/** The E-Lab ventures logo list, in the order the lit dots take them. */
+export const eLabLogoLists: LogoLists<"e-lab-ventures"> = {
+  "e-lab-ventures": [
+    "tenmin",
+    "explaino",
+    "spherecast",
+    "get-ikigai",
+    "tau-robotics",
+    "helmit",
+    "invertix",
+  ].map(organizationByKey),
+};
+
+/**
+ * An organisation as a venture: its key is the id, and symbol-only artwork
+ * gets the name set beside it.
+ */
+export function notableStartupOf({
+  key,
+  name,
+  href,
+  logo,
+}: Organization): NotableStartup | null {
+  if (!href || !logo) return null;
+  return {
+    id: key,
+    name,
+    href,
+    logoSrc: logo.src,
+    logoAlt: logo.alt,
+    ...(logo.symbolOnly ? { wordmarkLabel: name } : {}),
+  };
+}
+
+export const notableStartups: NotableStartup[] = eLabLogoLists[
+  "e-lab-ventures"
+].flatMap((organization) => notableStartupOf(organization) ?? []);
 
 /** A milestone of the traced venture after the E-Lab, with its source. */
 export interface VentureMilestone {
@@ -168,13 +188,23 @@ export interface VentureMilestone {
   source: string;
 }
 
+/** The traced venture: ids into the ventures and testimonials, and its path. */
+export type TracedVenture = {
+  startupId: string;
+  testimonialId: string;
+  cohort: string;
+  /** What the company does today, completing "... and now ...". */
+  now?: string;
+  after: VentureMilestone[];
+};
+
 /**
  * The venture /e-lab follows through the gates: an alumni startup, the
  * founder quote that tells its story, the cohort it came from, and what it
  * did after the E-Lab, each milestone from a source the company or YC
  * publishes itself. Ids point into `notableStartups` and `testimonialCards`.
  */
-export const tracedVenture = {
+export const tracedVenture: TracedVenture = {
   startupId: "spherecast",
   testimonialId: "leon-hergert",
   // TUM.ai's own post: "one of our earliest startups, originating from AI
@@ -184,7 +214,6 @@ export const tracedVenture = {
   // TODO(content): E-Lab 1.0 may not have had every gate the current program
   // has (Midterm Pitch, Selection Day). Confirm before tracing all of them.
   cohort: "E-Lab 1.0",
-  /** What the company does today, completing "... and now ...". */
   // Spherecast's site: Agnes, "an AI supply chain manager for consumer
   // goods brands" (the second milestone below).
   now: "plans supply chains for consumer brands",
@@ -208,12 +237,6 @@ export const tracedVenture = {
       source: "https://www.spherecast.ai/sphereworld",
     },
   ],
-} satisfies {
-  startupId: string;
-  testimonialId: string;
-  cohort: string;
-  now?: string;
-  after: VentureMilestone[];
 };
 
 /**

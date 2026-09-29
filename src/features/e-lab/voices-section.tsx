@@ -5,15 +5,13 @@ import {
   Section,
   SectionHeader,
 } from "@/components/ds";
-import {
-  eLabVoices,
-  type TestimonialCard,
-  testimonialCards,
-} from "./data/venture-page";
+import { eLabVoices, type TestimonialCard } from "./data/venture-page";
+import { getTestimonialCards } from "./venture-content";
 
-const pick = (ids: readonly string[]) =>
+/** The testimonials with `ids`, in that order; unknown ids are skipped. */
+const pick = (cards: readonly TestimonialCard[], ids: readonly string[]) =>
   ids.flatMap((id) => {
-    const card = testimonialCards.find((entry) => entry.id === id);
+    const card = cards.find((entry) => entry.id === id);
     return card ? [card] : [];
   });
 
@@ -56,9 +54,11 @@ function VoiceColumn({
 
 /**
  * Founders from earlier cohorts beside the investors and partners who work
- * with them, as two columns of ruled quotes.
+ * with them, as two columns of ruled quotes. The quotes come from the
+ * venture slice (the CMS or the code), picked by id (`eLabVoices`).
  */
-export function VoicesSection() {
+export async function VoicesSection() {
+  const cards = await getTestimonialCards();
   return (
     <Section tone="mist" spacing="lg" aria-labelledby="voices-title">
       <Container>
@@ -72,12 +72,12 @@ export function VoicesSection() {
         <div className="grid gap-16 lg:grid-cols-2 lg:gap-24">
           <VoiceColumn
             label="Founders"
-            voices={pick(eLabVoices.founders)}
+            voices={pick(cards, eLabVoices.founders)}
             delay={0}
           />
           <VoiceColumn
             label="Investors and partners"
-            voices={pick(eLabVoices.investors)}
+            voices={pick(cards, eLabVoices.investors)}
             delay={100}
           />
         </div>

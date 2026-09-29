@@ -1,8 +1,8 @@
 import { Container, Reveal, Section, StatGrid } from "@/components/ds";
-import { partnerStats } from "../data/partners";
+import type { PartnerStat } from "../data/partners";
 
 /** The selectivity figures on violet; copy figures count up to their exact text. */
-export function ProofSection() {
+export function ProofSection({ stats }: { stats: readonly PartnerStat[] }) {
   return (
     <Section tone="violet" spacing="sm" aria-labelledby="partner-proof-title">
       <Container>
@@ -14,11 +14,11 @@ export function ProofSection() {
         <Reveal delay={100}>
           <StatGrid
             className="mt-8 md:mt-10"
-            items={partnerStats.map((stat) => ({
+            items={stats.map((stat) => ({
               value: stat.value,
               count: true,
               label: stat.label,
-              description: "detail" in stat ? stat.detail : undefined,
+              description: stat.detail,
             }))}
           />
         </Reveal>

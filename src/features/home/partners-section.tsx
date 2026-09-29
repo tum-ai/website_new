@@ -9,16 +9,14 @@ import {
   Section,
   SectionHeader,
 } from "@/components/ds";
-import { testimonialCards } from "@/features/e-lab";
+import { getTestimonialCards } from "@/features/e-lab";
 import {
   getHighlightedPartners,
+  getPartnerCaseStudies,
   getPartnerDirectory,
-  partnerCaseStudies,
   symbolOnlyLogos,
 } from "@/features/partners";
 import { partnerQuoteId } from "./data/homepage";
-
-const quote = testimonialCards.find((card) => card.id === partnerQuoteId);
 
 /**
  * Gold, silver and bronze partners in the partner page's order, from the
@@ -36,19 +34,24 @@ const partnerLogos = getHighlightedPartners(getPartnerDirectory([])).map(
   }),
 );
 
-/** What partners got out of working with TUM.ai, as ledger rows. */
-const outcomes: LedgerItem[] = partnerCaseStudies.map((study) => ({
-  label: study.name,
-  value: study.metric,
-  note: study.summary,
-}));
-
 /**
  * The partner case on mist: a venture investor's quote, three measured
  * outcomes, then every current partner. Ends with the partner calls to
- * action.
+ * action. The quote and the outcomes come from the E-Lab and partners
+ * content slices (the CMS or the code).
  */
-export function PartnersSection() {
+export async function PartnersSection() {
+  const [cards, caseStudies] = await Promise.all([
+    getTestimonialCards(),
+    getPartnerCaseStudies(),
+  ]);
+  const quote = cards.find((card) => card.id === partnerQuoteId);
+  /** What partners got out of working with TUM.ai, as ledger rows. */
+  const outcomes: LedgerItem[] = caseStudies.map((study) => ({
+    label: study.name,
+    value: study.metric,
+    note: study.summary,
+  }));
   return (
     <Section
       tone="mist"
