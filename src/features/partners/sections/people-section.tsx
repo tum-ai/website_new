@@ -11,7 +11,8 @@ import {
   SectionHeader,
 } from "@/components/ds";
 import type { AlumniDestination } from "../data/partner-logos";
-import type { PartnerProfile } from "../data/partners";
+import type { PartnerProfile, PartnersSections } from "../data/partners";
+import { Lines } from "./lines";
 
 /**
  * The members: three profiles, the member count and where alumni go.
@@ -21,8 +22,10 @@ export function PeopleSection({
   profiles,
   alumniDestinations,
   members,
+  copy,
 }: {
   profiles: readonly PartnerProfile[];
+  copy: PartnersSections["people"];
   alumniDestinations: readonly AlumniDestination[];
   members: { official: number; majors: number; universities: number };
 }) {
@@ -31,14 +34,8 @@ export function PeopleSection({
       <Container>
         <SectionHeader
           id="partner-people-title"
-          title="The cracked 2%."
-          lead={
-            <>
-              Meet the people who turn
-              <br />
-              “what if” into what’s next.
-            </>
-          }
+          title={copy.title}
+          lead={<Lines lines={copy.lead} />}
         />
         <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:gap-x-6 lg:grid-cols-4">
           {profiles.map((profile, index) => (
@@ -74,7 +71,7 @@ export function PeopleSection({
                 <CountUp value={`+${members.official}`} />
               </strong>
               <h3 className="mt-2.5 text-fg text-heading-sm">
-                top tier individuals
+                {copy.statLabel}
               </h3>
               <p className="mt-6 text-fg-muted text-small">
                 {members.majors}+ majors
@@ -82,16 +79,14 @@ export function PeopleSection({
                 {members.universities}+ universities
               </p>
               <span className="mt-6 text-fg-subtle text-meta">
-                Different backgrounds.
-                <br />
-                Shared ambition.
+                <Lines lines={copy.tagline} />
               </span>
             </div>
           </Reveal>
         </div>
         <Reveal className="mt-16 border-hairline border-t pt-8 md:mt-20 md:pt-10">
           <h3 className="text-center text-eyebrow text-fg-muted">
-            Where they go afterwards
+            {copy.alumniTitle}
           </h3>
           <ul className="mt-7 flex flex-wrap items-center justify-center gap-2.5 md:gap-4">
             {alumniDestinations.map((company) => (

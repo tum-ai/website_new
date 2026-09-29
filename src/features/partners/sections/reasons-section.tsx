@@ -12,8 +12,13 @@ import {
   SectionHeader,
   SpotlightCard,
 } from "@/components/ds";
-import type { PartnerReason, PartnerReasonIcon } from "../data/partners";
+import type {
+  PartnerReason,
+  PartnerReasonIcon,
+  PartnersSections,
+} from "../data/partners";
 import { ContactRow } from "./contact-row";
+import { Lines } from "./lines";
 
 const reasonIcons: Record<PartnerReasonIcon, LucideIcon> = {
   users: Users,
@@ -24,22 +29,18 @@ const reasonIcons: Record<PartnerReasonIcon, LucideIcon> = {
 /** Why partner: talent, decision makers and reach, then a contact row. */
 export function ReasonsSection({
   reasons,
+  copy,
 }: {
   reasons: readonly PartnerReason[];
+  copy: PartnersSections["reasons"];
 }) {
   return (
     <Section tone="night" grain aria-labelledby="partner-reasons-title">
       <Container>
         <SectionHeader
           id="partner-reasons-title"
-          title={
-            <>
-              Your next advantage
-              <br />
-              is already here.
-            </>
-          }
-          lead="Exceptional talent. Tomorrow’s decision makers. A community moving AI forward."
+          title={<Lines lines={copy.title} />}
+          lead={copy.lead}
         />
         <div className="grid gap-4 lg:grid-cols-3 lg:gap-5">
           {reasons.map((reason, index) => (
@@ -69,7 +70,7 @@ export function ReasonsSection({
             </Reveal>
           ))}
         </div>
-        <ContactRow title="Let’s talk." />
+        <ContactRow title={copy.contact} />
       </Container>
     </Section>
   );

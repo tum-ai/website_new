@@ -43,6 +43,7 @@ import {
   partnerProfiles,
   partnerReasons,
   partnerStatTemplates,
+  partnersSections,
 } from "./data/partners";
 import {
   type PartnershipDurationCopy,
@@ -51,13 +52,14 @@ import {
   type PartnershipRecommendations,
   partnershipDurations,
   partnershipIntents,
+  partnershipPrompts,
   recommendations,
 } from "./data/partnership-finder";
 import { buildOrganizationBackfill } from "./organization-content";
 
 /**
  * The /partners content slice: the `partnersCopy` singleton (finder, reasons,
- * figures, pillars, pitch), the `caseStudy` documents and the partner
+ * figures, pillars, pitch, finder prompts, section headings), the `caseStudy` documents and the partner
  * profiles (`person`, placement `partner-profile`). Code fallbacks:
  * `data/partners.ts` and `data/partnership-finder.ts`. The logos are the
  * organisation slice (`organization-content.ts`).
@@ -91,6 +93,27 @@ export const PARTNERS_COPY_QUERY = defineQuery(`*[_id == "partnersCopy"][0]{
     description,
     "image": image${CONTENT_IMAGE_PROJECTION},
     href
+  },
+  prompts{
+    intentQuestion,
+    durationQuestion,
+    resultQuestion,
+    firstChoice,
+    bookingTitle,
+    bookingLead,
+    bookingSlow
+  },
+  sections{
+    hero{ eyebrow, title, lead, contactLabel, fitLabel, caption },
+    marquee{ label, link },
+    finder{ eyebrow, title, lead, note },
+    reasons{ title, lead, contact },
+    proof{ title },
+    pillars{ title, lead },
+    people{ title, lead, statLabel, tagline, alumniTitle },
+    directory{ title, lead, supportersTitle },
+    cases{ title, lead, contact },
+    contact{ title, lead, emailLabel }
   }
 }`);
 
@@ -140,7 +163,32 @@ function codeCopySource(
     reasons: partnerReasons,
     stats: fillPartnerStats(partnerStatTemplates, tokens),
     pillars: fillPartnerPillars(partnerPillarTemplates, tokens, metrics),
+    prompts: partnershipPrompts,
+    sections: partnersSections,
   };
+}
+
+/**
+ * The CMS section copy with blank lines dropped from every line list, so a
+ * heading whose lines are all blank keeps the code lines (an empty list is
+ * unset for `mergeOverFallback`).
+ */
+function selectSections(sections: CopyResult["sections"]): unknown {
+  const clean = (value: unknown): unknown => {
+    if (Array.isArray(value)) {
+      return value.filter(
+        (line): line is string =>
+          typeof line === "string" && line.trim() !== "",
+      );
+    }
+    if (value && typeof value === "object") {
+      return Object.fromEntries(
+        Object.entries(value).map(([key, item]) => [key, clean(item)]),
+      );
+    }
+    return value;
+  };
+  return clean(sections);
 }
 
 const reasonIcons: readonly PartnerReasonIcon[] = [
@@ -242,6 +290,8 @@ export async function getPartnersCopy(): Promise<PartnersCopy> {
         ),
         stats: selectStats(result.stats, tokens),
         pillars: selectPillars(result.pillars, tokens, metrics),
+        prompts: result.prompts,
+        sections: selectSections(result.sections),
       },
   });
   return {
@@ -356,6 +406,8 @@ function partnersCopyDocument(): BackfillDocument {
         objectPosition: image.objectPosition,
       }),
     })),
+    prompts: partnershipPrompts,
+    sections: partnersSections,
   };
 }
 

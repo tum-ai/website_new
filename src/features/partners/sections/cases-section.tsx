@@ -6,34 +6,25 @@ import {
   Section,
   SectionHeader,
 } from "@/components/ds";
-import type { PartnerCaseStudy } from "../data/partners";
+import type { PartnerCaseStudy, PartnersSections } from "../data/partners";
 import { ContactRow } from "./contact-row";
+import { Lines } from "./lines";
 
 /** Partner testimonials: one outcome figure and quote per case, then a booking row. */
 export function CasesSection({
   caseStudies,
+  copy,
 }: {
   caseStudies: readonly PartnerCaseStudy[];
+  copy: PartnersSections["cases"];
 }) {
   return (
     <Section tone="paper" aria-labelledby="partner-cases-title">
       <Container>
         <SectionHeader
           id="partner-cases-title"
-          title={
-            <>
-              Real partnerships.
-              <br />
-              Real outcomes.
-            </>
-          }
-          lead={
-            <>
-              Good conversations are a start.
-              <br />
-              Here’s what comes after.
-            </>
-          }
+          title={<Lines lines={copy.title} />}
+          lead={<Lines lines={copy.lead} />}
         />
         <div className="grid gap-5 lg:grid-cols-3 lg:gap-6">
           {caseStudies.map((study, index) => (
@@ -74,7 +65,7 @@ export function CasesSection({
             </Reveal>
           ))}
         </div>
-        <ContactRow title="Get the same results: book a call." bookingFirst />
+        <ContactRow title={copy.contact} bookingFirst />
       </Container>
     </Section>
   );

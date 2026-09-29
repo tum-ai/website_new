@@ -280,10 +280,122 @@ export const partnerCaseStudies: readonly PartnerCaseStudy[] = [
   },
 ];
 
+/**
+ * A heading or lead set on fixed lines: each item is one line, joined with
+ * line breaks (the hero title animates line by line).
+ */
+type Lines = readonly string[];
+
+/**
+ * The /partners sections' headings, leads and labels, band by band. The
+ * figures in the people band and the buttons' interface labels stay in
+ * code; the hero photo keeps its art-directed crop in code.
+ */
+export type PartnersSections = {
+  hero: {
+    eyebrow: string;
+    /** Up to three short lines; each animates in on its own. */
+    title: Lines;
+    lead: string;
+    /** The first button, an email to the partners address. */
+    contactLabel: string;
+    /** The second button, down to the finder. */
+    fitLabel: string;
+    /** Over the hero photo. */
+    caption: Lines;
+  };
+  /** The partner rail under the hero. */
+  marquee: { label: string; link: string };
+  finder: { eyebrow: string; title: Lines; lead: string; note: string };
+  reasons: {
+    title: Lines;
+    lead: string;
+    /** The contact row under the cards. */
+    contact: string;
+  };
+  proof: { title: string };
+  pillars: { title: Lines; lead: string };
+  people: {
+    title: string;
+    lead: Lines;
+    /** Under the member count. */
+    statLabel: string;
+    tagline: Lines;
+    alumniTitle: string;
+  };
+  directory: {
+    title: Lines;
+    lead: Lines;
+    /** Over the supporters' board. */
+    supportersTitle: string;
+  };
+  cases: {
+    title: Lines;
+    lead: Lines;
+    /** The contact row under the cases. */
+    contact: string;
+  };
+  contact: { title: Lines; lead: Lines; emailLabel: string };
+};
+
+export const partnersSections: PartnersSections = {
+  hero: {
+    eyebrow: "The next generation doesn’t wait.",
+    title: ["Meet the", "cracked &", "the curious"],
+    lead: "Germany’s largest AI student initiative. Partner with the people building Europe’s next AI companies.",
+    contactLabel: "Get in touch",
+    fitLabel: "Find your fit",
+    caption: ["Ideas become companies.", "People make it happen."],
+  },
+  marquee: { label: "In good company.", link: "Meet our partners" },
+  finder: {
+    eyebrow: "Your way in",
+    title: ["Big ambitions.", "The right partnership."],
+    lead: "Tell us what you have in mind. We’ll find your place in the ecosystem.",
+    note: "Two quick questions. No forms. Just a starting point.",
+  },
+  reasons: {
+    title: ["Your next advantage", "is already here."],
+    lead: "Exceptional talent. Tomorrow’s decision makers. A community moving AI forward.",
+    contact: "Let’s talk.",
+  },
+  proof: { title: "Small acceptance rate. Outsized potential." },
+  pillars: {
+    title: ["Three pillars.", "One ecosystem."],
+    lead: "From the first research question to the next venture. Find your place at every stage.",
+  },
+  people: {
+    title: "The cracked 2%.",
+    lead: ["Meet the people who turn", "“what if” into what’s next."],
+    statLabel: "top tier individuals",
+    tagline: ["Different backgrounds.", "Shared ambition."],
+    alumniTitle: "Where they go afterwards",
+  },
+  directory: {
+    title: ["The company", "we keep."],
+    lead: ["Meet the partners helping", "the next generation build."],
+    supportersTitle: "Supporters of the vision",
+  },
+  cases: {
+    title: ["Real partnerships.", "Real outcomes."],
+    lead: ["Good conversations are a start.", "Here’s what comes after."],
+    contact: "Get the same results: book a call.",
+  },
+  contact: {
+    title: ["Let's build", "something big!"],
+    lead: [
+      "The next chapter of AI starts with the right people.",
+      "Let’s bring yours and ours together.",
+    ],
+    emailLabel: "Email us",
+  },
+};
+
 /** The /partners copy as the page renders it, from code or the CMS. */
 export type PartnersCopy = PartnershipFinderCopy & {
   pitch: string;
   reasons: readonly PartnerReason[];
   stats: readonly PartnerStat[];
   pillars: readonly PartnerPillar[];
+  sections: PartnersSections;
 };

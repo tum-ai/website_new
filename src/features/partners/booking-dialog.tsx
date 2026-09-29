@@ -9,6 +9,7 @@ import {
   DialogTitle,
   TextLink,
 } from "@/components/ds";
+import { fillPageTokens } from "@/lib/content-copy";
 import {
   type PartnershipFinderCopy,
   partnershipFinderCopy,
@@ -67,10 +68,11 @@ export function BookingDialog({
       >
         <div className="flex h-full flex-col gap-5 p-5 sm:p-7">
           <div className="pr-12">
-            <DialogTitle>Let’s talk about your partnership.</DialogTitle>
+            <DialogTitle>{copy.prompts.bookingTitle}</DialogTitle>
             <DialogDescription className="mt-2">
-              Pick a time for a quick chat with {contact.bookingHost} from
-              TUM.ai.
+              {fillPageTokens(copy.prompts.bookingLead, {
+                host: contact.bookingHost,
+              })}
             </DialogDescription>
           </div>
           <BookingCalendar
@@ -174,7 +176,7 @@ function BookingCalendar({
         {status === "loading"
           ? "Loading available times…"
           : status === "failed"
-            ? "Calendar taking a while? Open the booking page below, or email us."
+            ? copy.prompts.bookingSlow
             : "Calendar ready."}
       </p>
       <Cal

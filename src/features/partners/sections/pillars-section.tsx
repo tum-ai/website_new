@@ -8,27 +8,24 @@ import {
   Section,
   SectionHeader,
 } from "@/components/ds";
-import type { PartnerPillar } from "../data/partners";
+import type { PartnerPillar, PartnersSections } from "../data/partners";
+import { Lines } from "./lines";
 
 /** Research, venture and hackathons: one linked card per pillar with its headline figure. */
 export function PillarsSection({
   pillars,
+  copy,
 }: {
   pillars: readonly PartnerPillar[];
+  copy: PartnersSections["pillars"];
 }) {
   return (
     <Section tone="paper" aria-labelledby="partner-pillars-title">
       <Container>
         <SectionHeader
           id="partner-pillars-title"
-          title={
-            <>
-              Three pillars.
-              <br />
-              One ecosystem.
-            </>
-          }
-          lead="From the first research question to the next venture. Find your place at every stage."
+          title={<Lines lines={copy.title} />}
+          lead={copy.lead}
         />
         <div className="grid gap-5 lg:grid-cols-3 lg:gap-6">
           {pillars.map((pillar, index) => (

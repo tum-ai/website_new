@@ -1,41 +1,51 @@
 import Image from "next/image";
+import { Fragment } from "react";
 import { ButtonLink, PageHero, SplitWords } from "@/components/ds";
 import type { Partner } from "@/lib/types";
 import { HeroContact } from "../contact-actions";
+import type { PartnersSections } from "../data/partners";
 import type { PartnerLogos } from "../organization-content";
 import { getHighlightedPartners } from "../partner-directory";
 import { PartnerMarquee } from "../partner-marquee";
+import { Lines } from "./lines";
 
 /* Large hero buttons step down to the md size on phones so both fit one row. */
 const heroActionSize = "max-sm:h-11 max-sm:px-5 max-sm:text-label";
+
+/** The hero title's lines animate in one after another. */
+const TITLE_DELAY = 80;
+const TITLE_STEP = 140;
 
 /** Opening band: the pitch and contact actions beside a photo, then the partner rail. */
 export function PartnersHero({
   partners,
   logos,
+  copy,
+  marquee,
 }: {
   partners: Partner[];
   /** The dark-band artwork and symbol-only files for the rail. */
   logos: Pick<PartnerLogos, "marqueeLogos" | "symbolOnlyLogos">;
+  copy: PartnersSections["hero"];
+  marquee: PartnersSections["marquee"];
 }) {
   return (
     <PageHero
       titleId="partner-hero-title"
-      eyebrow="The next generation doesn’t wait."
+      eyebrow={copy.eyebrow}
       splitTitle={false}
-      title={
-        <>
-          <SplitWords delay={80}>Meet the</SplitWords>
-          <br />
-          <SplitWords delay={220}>cracked &amp;</SplitWords>
-          <br />
-          <SplitWords delay={360}>the curious</SplitWords>
-        </>
-      }
-      lead="Germany’s largest AI student initiative. Partner with the people building Europe’s next AI companies."
+      title={copy.title.map((line, index) => (
+        <Fragment key={line}>
+          {index > 0 ? <br /> : null}
+          <SplitWords delay={TITLE_DELAY + index * TITLE_STEP}>
+            {line}
+          </SplitWords>
+        </Fragment>
+      ))}
+      lead={copy.lead}
       actions={
         <>
-          <HeroContact className={heroActionSize} />
+          <HeroContact label={copy.contactLabel} className={heroActionSize} />
           <ButtonLink
             href="#find-your-fit"
             variant="outline"
@@ -43,7 +53,7 @@ export function PartnersHero({
             arrow="down"
             className={heroActionSize}
           >
-            Find your fit
+            {copy.fitLabel}
           </ButtonLink>
         </>
       }
@@ -63,9 +73,7 @@ export function PartnersHero({
           />
           <figcaption className="absolute inset-x-6 bottom-6 z-1 flex items-end justify-between gap-3 font-medium text-body text-white md:inset-x-7 md:bottom-7 lg:text-lead">
             <span>
-              Ideas become companies.
-              <br />
-              People make it happen.
+              <Lines lines={copy.caption} />
             </span>
             <span className="hidden text-meta text-white/75 lg:inline">
               TUM.ai
@@ -79,6 +87,7 @@ export function PartnersHero({
         partners={getHighlightedPartners(partners)}
         marqueeLogos={logos.marqueeLogos}
         symbolOnlyLogos={logos.symbolOnlyLogos}
+        copy={marquee}
       />
     </PageHero>
   );

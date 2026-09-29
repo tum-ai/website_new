@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import {
   partnershipDurations,
+  partnershipFinderCopy,
   partnershipIntents,
   recommendations,
 } from "./data/partnership-finder";
@@ -132,4 +133,34 @@ test("Back returns to the previous question and Start again clears the answers",
   expect(heading()).toHaveTextContent("What matters most to you right now?");
   expect(heading()).toHaveFocus();
   expect(screen.queryByRole("link", { name: "Request via email" })).toBeNull();
+});
+
+test("asks the questions the page's copy passes in", async () => {
+  const user = userEvent.setup();
+  render(
+    <PartnershipProvider
+      copy={{
+        ...partnershipFinderCopy,
+        prompts: {
+          ...partnershipFinderCopy.prompts,
+          intentQuestion: "What brings you here?",
+          resultQuestion: "Try {{format}} first.",
+        },
+      }}
+    >
+      <PartnershipFinder />
+    </PartnershipProvider>,
+  );
+  expect(screen.getByRole("heading", { level: 3 })).toHaveTextContent(
+    "What brings you here?",
+  );
+  await user.click(
+    screen.getByRole("button", { name: new RegExp(talent.label) }),
+  );
+  await user.click(
+    screen.getByRole("button", { name: new RegExp(oneOff.label) }),
+  );
+  const result = screen.getByRole("heading", { level: 3 });
+  expect(result).toHaveTextContent(`Try ${recommendations.talent.name} first.`);
+  expect(within(result).getByText(recommendations.talent.name)).toBeVisible();
 });

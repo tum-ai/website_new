@@ -73,6 +73,22 @@ function FinderOption({
 }
 
 /**
+ * The result question with `{{format}}` replaced by `format` (the
+ * highlighted format name); without the token, the text alone.
+ */
+function withFormat(template: string, format: ReactNode): ReactNode {
+  const [before, ...rest] = template.split("{{format}}");
+  if (rest.length === 0) return template;
+  return (
+    <>
+      {before}
+      {format}
+      {rest.join("")}
+    </>
+  );
+}
+
+/**
  * The partnership finder's panel: two questions (goal, then timeframe) lead
  * to a recommended format with the contact actions, which carry the answers
  * into the email and the booking notes. Each step moves focus to its heading
@@ -170,7 +186,7 @@ export function PartnershipFinder() {
         {step === "intent" ? (
           <>
             <h3 ref={heading} tabIndex={-1} className={stepHeading}>
-              What matters most to you right now?
+              {copy.prompts.intentQuestion}
             </h3>
             <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
               {copy.intents.map((item) => (
@@ -188,8 +204,7 @@ export function PartnershipFinder() {
           <>
             <p className={cn(stepLabel, "mb-3")}>{selectedIntent?.label}</p>
             <h3 ref={heading} tabIndex={-1} className={stepHeading}>
-              Are you looking for a one-off activation or an ongoing
-              relationship?
+              {copy.prompts.durationQuestion}
             </h3>
             <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
               {copy.durations.map((item) => (
@@ -212,13 +227,15 @@ export function PartnershipFinder() {
               {selectedIntent?.label}
             </span>
             <h3 ref={heading} tabIndex={-1} className={stepHeading}>
-              Sounds like a <Highlight>{recommendation.name}</Highlight> is a
-              good fit.
+              {withFormat(
+                copy.prompts.resultQuestion,
+                <Highlight>{recommendation.name}</Highlight>,
+              )}
             </h3>
             <Text className="mt-5">{recommendation.description}</Text>
             {intent === "hackathon" && selection.duration === "ongoing" ? (
               <p className="mt-4 font-semibold text-body text-highlight">
-                With first choice on hackathon slots.
+                {copy.prompts.firstChoice}
               </p>
             ) : null}
             <ContactActions className="mt-7 max-sm:w-full max-sm:flex-col max-sm:items-stretch" />

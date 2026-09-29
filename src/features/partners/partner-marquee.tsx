@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import { ButtonLink, LogoTile } from "@/components/ds";
 import type { Partner } from "@/lib/types";
+import type { PartnersSections } from "./data/partners";
 import { getPartnerKey } from "./partner-directory";
 
 /**
@@ -16,10 +17,13 @@ export function PartnerMarquee({
   partners,
   marqueeLogos,
   symbolOnlyLogos,
+  copy,
 }: {
   partners: Partner[];
   marqueeLogos: Readonly<Record<string, string | undefined>>;
   symbolOnlyLogos: ReadonlySet<string>;
+  /** The rail's label and its link down to the directory. */
+  copy: PartnersSections["marquee"];
 }) {
   if (!partners.length) return null;
   const animated = partners.length > 3;
@@ -35,11 +39,9 @@ export function PartnerMarquee({
       }
     >
       <div className="mb-4 flex items-center justify-between gap-4 md:mb-6">
-        <p className="font-semibold text-fg-muted text-meta">
-          In good company.
-        </p>
+        <p className="font-semibold text-fg-muted text-meta">{copy.label}</p>
         <ButtonLink href="#our-partners" variant="link" size="sm" arrow="down">
-          Meet our partners
+          {copy.link}
         </ButtonLink>
       </div>
       <div className="partner-marquee-window motion-safe:mask-fade-x">

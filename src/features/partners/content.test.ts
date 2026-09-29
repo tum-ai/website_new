@@ -24,6 +24,7 @@ import {
   partnerProfiles,
   partnerReasons,
   partnerStatTemplates,
+  partnersSections,
 } from "./data/partners";
 import { partnershipFinderCopy } from "./data/partnership-finder";
 import { buildOrganizationBackfill } from "./organization-content";
@@ -71,6 +72,7 @@ const codeCopy = {
     contentTokens,
     partnerPillarMetricsOf(siteFactsFallback),
   ),
+  sections: partnersSections,
 };
 
 const mockDocuments = () => [
@@ -226,6 +228,58 @@ describe("incomplete CMS copy", () => {
         href: "/e-lab",
       },
     ]);
+  });
+
+  test("section headings: edited lines show, blank lines drop, empty lists keep the code lines", async () => {
+    useSource("sanity");
+    override.result = {
+      pitch: null,
+      intents: null,
+      durations: null,
+      recommendations: null,
+      reasons: null,
+      stats: null,
+      pillars: null,
+      prompts: {
+        intentQuestion: "What do you need?",
+        durationQuestion: null,
+        resultQuestion: null,
+        firstChoice: null,
+        bookingTitle: null,
+        bookingLead: null,
+        bookingSlow: null,
+      },
+      sections: {
+        hero: {
+          eyebrow: null,
+          title: ["Meet", " ", "the builders"],
+          lead: null,
+          fitLabel: null,
+          caption: ["", "  "],
+        },
+        marquee: null,
+        finder: null,
+        reasons: null,
+        proof: { title: "Few get in." },
+        pillars: null,
+        people: null,
+        directory: null,
+        cases: null,
+        contact: null,
+      },
+    };
+
+    const copy = await getPartnersCopy();
+    expect(copy.sections.hero).toStrictEqual({
+      ...partnersSections.hero,
+      title: ["Meet", "the builders"],
+    });
+    expect(copy.sections.proof.title).toBe("Few get in.");
+    expect(copy.sections.contact).toStrictEqual(partnersSections.contact);
+    expect(copy.prompts).toStrictEqual({
+      ...partnershipFinderCopy.prompts,
+      intentQuestion: "What do you need?",
+    });
   });
 
   test("no singleton yet: the code copy", async () => {

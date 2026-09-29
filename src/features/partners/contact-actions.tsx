@@ -49,7 +49,14 @@ export function ContactActions({
   );
 }
 
-export function HeroContact({ className }: { className?: string }) {
+/** The hero's email action; `label` comes from the page copy. */
+export function HeroContact({
+  label,
+  className,
+}: {
+  label: string;
+  className?: string;
+}) {
   const { selection, copy, contact } = usePartnership();
   return (
     <ButtonLink
@@ -58,7 +65,7 @@ export function HeroContact({ className }: { className?: string }) {
       arrow="external"
       className={className}
     >
-      Get in touch
+      {label}
     </ButtonLink>
   );
 }

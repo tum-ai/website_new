@@ -103,14 +103,49 @@ export type PartnershipRecommendations = Record<
 >;
 
 /**
- * What the finder's client islands need: the answers and the formats. The
- * page passes it from the server (`PartnershipProvider`'s `copy`), so CMS
- * wording reaches the finder, the email and the booking notes.
+ * The finder's questions and the booking dialog's words. Interface labels
+ * (the step names, "Back", "Book a call") and the mail templates stay in
+ * code.
+ */
+export type PartnershipPrompts = {
+  /** The first question, over the goals. */
+  intentQuestion: string;
+  /** The second question, over the timeframes. */
+  durationQuestion: string;
+  /** The result; `{{format}}` becomes the recommended format, highlighted. */
+  resultQuestion: string;
+  /** Under the hackathon format for an ongoing relationship. */
+  firstChoice: string;
+  bookingTitle: string;
+  /** `{{host}}` becomes who the booking page books (site settings). */
+  bookingLead: string;
+  /** Shown while the calendar embed has not loaded after 15 seconds. */
+  bookingSlow: string;
+};
+
+export const partnershipPrompts: PartnershipPrompts = {
+  intentQuestion: "What matters most to you right now?",
+  durationQuestion:
+    "Are you looking for a one-off activation or an ongoing relationship?",
+  resultQuestion: "Sounds like a {{format}} is a good fit.",
+  firstChoice: "With first choice on hackathon slots.",
+  bookingTitle: "Let’s talk about your partnership.",
+  bookingLead: "Pick a time for a quick chat with {{host}} from TUM.ai.",
+  bookingSlow:
+    "Calendar taking a while? Open the booking page below, or email us.",
+};
+
+/**
+ * What the finder's client islands need: the answers, the formats and the
+ * prompts. The page passes it from the server (`PartnershipProvider`'s
+ * `copy`), so CMS wording reaches the finder, the booking dialog, the email
+ * and the booking notes.
  */
 export type PartnershipFinderCopy = {
   intents: readonly PartnershipIntentCopy[];
   durations: readonly PartnershipDurationCopy[];
   recommendations: PartnershipRecommendations;
+  prompts: PartnershipPrompts;
 };
 
 /** The finder's code copy. */
@@ -118,4 +153,5 @@ export const partnershipFinderCopy: PartnershipFinderCopy = {
   intents: partnershipIntents,
   durations: partnershipDurations,
   recommendations,
+  prompts: partnershipPrompts,
 };

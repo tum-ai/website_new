@@ -853,6 +853,69 @@ export type PartnersCopy = {
     _type: "pillar";
     _key: string;
   }>;
+  prompts?: {
+    intentQuestion?: string;
+    durationQuestion?: string;
+    resultQuestion?: string;
+    firstChoice?: string;
+    bookingTitle?: string;
+    bookingLead?: string;
+    bookingSlow?: string;
+  };
+  sections?: {
+    hero?: {
+      eyebrow?: string;
+      title?: Array<string>;
+      lead?: string;
+      contactLabel?: string;
+      fitLabel?: string;
+      caption?: Array<string>;
+    };
+    marquee?: {
+      label?: string;
+      link?: string;
+    };
+    finder?: {
+      eyebrow?: string;
+      title?: Array<string>;
+      lead?: string;
+      note?: string;
+    };
+    reasons?: {
+      title?: Array<string>;
+      lead?: string;
+      contact?: string;
+    };
+    proof?: {
+      title?: string;
+    };
+    pillars?: {
+      title?: Array<string>;
+      lead?: string;
+    };
+    people?: {
+      title?: string;
+      lead?: Array<string>;
+      statLabel?: string;
+      tagline?: Array<string>;
+      alumniTitle?: string;
+    };
+    directory?: {
+      title?: Array<string>;
+      lead?: Array<string>;
+      supportersTitle?: string;
+    };
+    cases?: {
+      title?: Array<string>;
+      lead?: Array<string>;
+      contact?: string;
+    };
+    contact?: {
+      title?: Array<string>;
+      lead?: Array<string>;
+      emailLabel?: string;
+    };
+  };
 };
 
 export type OrganizationReference = {
@@ -1939,7 +2002,7 @@ export type HOME_COPY_QUERY_RESULT =
 
 // Source: ../features/partners/content.ts
 // Variable: PARTNERS_COPY_QUERY
-// Query: *[_id == "partnersCopy"][0]{  pitch,  intents{    talent{ label, shortLabel, detail },    hackathon{ label, shortLabel, detail },    brand{ label, shortLabel, detail },    research{ label, shortLabel, detail }  },  durations{    oneOff{ label, detail },    ongoing{ label, detail }  },  recommendations{    longTerm{ name, description },    hackathon{ name, description },    talent{ name, description },    brand{ name, description },    research{ name, description }  },  reasons[]{ icon, name, title, description },  stats[]{ value, label, detail },  pillars[]{    key,    title,    metricLabel,    description,    "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }},    href  }}
+// Query: *[_id == "partnersCopy"][0]{  pitch,  intents{    talent{ label, shortLabel, detail },    hackathon{ label, shortLabel, detail },    brand{ label, shortLabel, detail },    research{ label, shortLabel, detail }  },  durations{    oneOff{ label, detail },    ongoing{ label, detail }  },  recommendations{    longTerm{ name, description },    hackathon{ name, description },    talent{ name, description },    brand{ name, description },    research{ name, description }  },  reasons[]{ icon, name, title, description },  stats[]{ value, label, detail },  pillars[]{    key,    title,    metricLabel,    description,    "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }},    href  },  prompts{    intentQuestion,    durationQuestion,    resultQuestion,    firstChoice,    bookingTitle,    bookingLead,    bookingSlow  },  sections{    hero{ eyebrow, title, lead, contactLabel, fitLabel, caption },    marquee{ label, link },    finder{ eyebrow, title, lead, note },    reasons{ title, lead, contact },    proof{ title },    pillars{ title, lead },    people{ title, lead, statLabel, tagline, alumniTitle },    directory{ title, lead, supportersTitle },    cases{ title, lead, contact },    contact{ title, lead, emailLabel }  }}
 export type PARTNERS_COPY_QUERY_RESULT =
   | {
       pitch: null;
@@ -1949,6 +2012,8 @@ export type PARTNERS_COPY_QUERY_RESULT =
       reasons: null;
       stats: null;
       pillars: null;
+      prompts: null;
+      sections: null;
     }
   | {
       pitch: string | null;
@@ -2034,6 +2099,69 @@ export type PARTNERS_COPY_QUERY_RESULT =
         };
         href: string | null;
       }> | null;
+      prompts: {
+        intentQuestion: string | null;
+        durationQuestion: string | null;
+        resultQuestion: string | null;
+        firstChoice: string | null;
+        bookingTitle: string | null;
+        bookingLead: string | null;
+        bookingSlow: string | null;
+      } | null;
+      sections: {
+        hero: {
+          eyebrow: string | null;
+          title: Array<string> | null;
+          lead: string | null;
+          contactLabel: string | null;
+          fitLabel: string | null;
+          caption: Array<string> | null;
+        } | null;
+        marquee: {
+          label: string | null;
+          link: string | null;
+        } | null;
+        finder: {
+          eyebrow: string | null;
+          title: Array<string> | null;
+          lead: string | null;
+          note: string | null;
+        } | null;
+        reasons: {
+          title: Array<string> | null;
+          lead: string | null;
+          contact: string | null;
+        } | null;
+        proof: {
+          title: string | null;
+        } | null;
+        pillars: {
+          title: Array<string> | null;
+          lead: string | null;
+        } | null;
+        people: {
+          title: string | null;
+          lead: Array<string> | null;
+          statLabel: string | null;
+          tagline: Array<string> | null;
+          alumniTitle: string | null;
+        } | null;
+        directory: {
+          title: Array<string> | null;
+          lead: Array<string> | null;
+          supportersTitle: string | null;
+        } | null;
+        cases: {
+          title: Array<string> | null;
+          lead: Array<string> | null;
+          contact: string | null;
+        } | null;
+        contact: {
+          title: Array<string> | null;
+          lead: Array<string> | null;
+          emailLabel: string | null;
+        } | null;
+      } | null;
     }
   | null;
 

@@ -1,14 +1,20 @@
 import { Container, Reveal, Section, StatGrid } from "@/components/ds";
-import type { PartnerStat } from "../data/partners";
+import type { PartnerStat, PartnersSections } from "../data/partners";
 
 /** The selectivity figures on violet; copy figures count up to their exact text. */
-export function ProofSection({ stats }: { stats: readonly PartnerStat[] }) {
+export function ProofSection({
+  stats,
+  copy,
+}: {
+  stats: readonly PartnerStat[];
+  copy: PartnersSections["proof"];
+}) {
   return (
     <Section tone="violet" spacing="sm" aria-labelledby="partner-proof-title">
       <Container>
         <Reveal>
           <h2 id="partner-proof-title" className="text-fg text-heading-md">
-            Small acceptance rate. Outsized potential.
+            {copy.title}
           </h2>
         </Reveal>
         <Reveal delay={100}>

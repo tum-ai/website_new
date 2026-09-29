@@ -41,10 +41,10 @@ export async function PartnersPage({
     getPartnerCaseStudies(),
     getSiteFacts(),
   ]);
-  const { intents, durations, recommendations } = copy;
+  const { intents, durations, recommendations, prompts, sections } = copy;
   return (
     <PartnershipProvider
-      copy={{ intents, durations, recommendations }}
+      copy={{ intents, durations, recommendations, prompts }}
       contact={{
         email: facts.contactEmails.partners,
         bookingUrl: facts.partnershipBooking.bookingUrl,
@@ -52,11 +52,16 @@ export async function PartnersPage({
       }}
     >
       <main>
-        <PartnersHero partners={partners} logos={logos} />
-        <FinderSection />
-        <ReasonsSection reasons={copy.reasons} />
-        <ProofSection stats={copy.stats} />
-        <PillarsSection pillars={copy.pillars} />
+        <PartnersHero
+          partners={partners}
+          logos={logos}
+          copy={sections.hero}
+          marquee={sections.marquee}
+        />
+        <FinderSection copy={sections.finder} />
+        <ReasonsSection reasons={copy.reasons} copy={sections.reasons} />
+        <ProofSection stats={copy.stats} copy={sections.proof} />
+        <PillarsSection pillars={copy.pillars} copy={sections.pillars} />
         <PeopleSection
           profiles={profiles}
           alumniDestinations={logos.alumniDestinations}
@@ -65,10 +70,11 @@ export async function PartnersPage({
             majors: facts.organization.majors,
             universities: facts.organization.universities,
           }}
+          copy={sections.people}
         />
-        <DirectorySection partners={partners} />
-        <CasesSection caseStudies={caseStudies} />
-        <ContactSection />
+        <DirectorySection partners={partners} copy={sections.directory} />
+        <CasesSection caseStudies={caseStudies} copy={sections.cases} />
+        <ContactSection copy={sections.contact} />
       </main>
     </PartnershipProvider>
   );
