@@ -1,7 +1,8 @@
 /*
  * /partners mechanics that Tailwind and the design system can't express: the
- * single-instance marquee, the rotation dissolve and the supporter board's
- * pre-hydration row limit. Everything visual lives in the components.
+ * single-instance marquee, the rotation dissolve, the supporter board's
+ * pre-hydration row limit and the selection field's entrance. Everything
+ * visual lives in the components.
  * Breakpoints are Tailwind's `sm` (40rem), `md` (48rem) and `lg` (64rem).
  */
 
@@ -253,6 +254,37 @@
 
     .partner-supporter-grid[data-rotating="true"] > :nth-child(-n + 18) {
       display: revert;
+    }
+  }
+
+  /*
+   * Selection field (ProofSection): while its Reveal waits below the fold,
+   * the round rests unlit; on entry the marks settle in and the admitted
+   * light up one by one in the order the sequence placed them, so the lit
+   * marks appear scattered across the field. Without motion, or without
+   * JS, the finished field shows at once.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    .selection-field-rest {
+      transition: opacity 900ms var(--ease-brand);
+    }
+
+    .selection-field-lit {
+      transform-box: fill-box;
+      transform-origin: center;
+      transition:
+        opacity 600ms var(--ease-brand),
+        scale 600ms var(--ease-brand);
+      transition-delay: calc(400ms + var(--lit-order, 0) * 20ms);
+    }
+
+    [data-reveal="pending"] .selection-field-rest {
+      opacity: 0.4;
+    }
+
+    [data-reveal="pending"] .selection-field-lit {
+      opacity: 0;
+      scale: 0.2;
     }
   }
 }

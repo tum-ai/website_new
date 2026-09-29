@@ -1,3 +1,4 @@
+import { admittedPerBatchOf } from "@/config/community";
 import { deriveSiteFacts } from "@/config/site-facts";
 import { getSiteFacts } from "@/config/site-settings-content";
 import type { Partner } from "@/lib/types";
@@ -60,7 +61,15 @@ export async function PartnersPage({
         />
         <FinderSection copy={sections.finder} />
         <ReasonsSection reasons={copy.reasons} copy={sections.reasons} />
-        <ProofSection stats={copy.stats} copy={sections.proof} />
+        <ProofSection
+          stats={copy.stats}
+          selection={{
+            startedApplications: facts.community.startedApplicationsPerBatch,
+            acceptanceRatePercent: facts.community.acceptanceRatePercent,
+            admitted: admittedPerBatchOf(facts.community),
+          }}
+          copy={sections.proof}
+        />
         <PillarsSection pillars={copy.pillars} copy={sections.pillars} />
         <PeopleSection
           profiles={profiles}
