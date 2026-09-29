@@ -104,6 +104,11 @@ type GlobeControls = {
   zoomTo: (zoom: number) => void;
 };
 
+/** Whether two site lists hold the same sites (a refresh's equal copy). */
+function sameSites(a: readonly LocatedSite[], b: readonly LocatedSite[]) {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
+
 /**
  * The hero globe: every city TUM.ai does research with, an arc from home
  * (Munich) to each. It draws only when someone moves it, and nothing moves
@@ -143,7 +148,15 @@ export function ResearchGlobe({
     Math.round((home?.location[1] ?? 0) + OPEN_WEST),
   );
 
+  // Kept by value: a live content refresh hands over an equal but new
+  // array, which must not rebuild the globe and lose the reader's view.
+  const [globeSites, setGlobeSites] = useState(sites);
+  if (globeSites !== sites && !sameSites(globeSites, sites)) {
+    setGlobeSites(sites);
+  }
+
   useEffect(() => {
+    const sites = globeSites;
     const slider = sliderRef.current;
     const host = hostRef.current;
     const home = sites.find((site) => site.home) ?? sites[0];
@@ -308,6 +321,9 @@ export function ResearchGlobe({
       .catch(() => {});
 
     const onDown = (event: PointerEvent) => {
+      // Only the primary button drags: a secondary click opens the context
+      // menu, which swallows the pointerup and would leave the drag on.
+      if (event.button !== 0) return;
       cancelAnimationFrame(glide);
       glide = 0;
       drag = { x: event.clientX, y: event.clientY, t: event.timeStamp };
@@ -365,6 +381,7 @@ export function ResearchGlobe({
     canvas.addEventListener("pointermove", onMove);
     canvas.addEventListener("pointerup", onUp);
     canvas.addEventListener("pointercancel", onUp);
+    canvas.addEventListener("lostpointercapture", onUp);
     slider.addEventListener("wheel", onWheel, { passive: false });
 
     const resize = new (window.ResizeObserver ?? NoResizeObserver)(() => {
@@ -383,10 +400,15 @@ export function ResearchGlobe({
       slider.removeEventListener("wheel", onWheel);
       globe?.destroy();
       controls.current = { turn() {}, zoomTo() {} };
+      // The next run starts a fresh globe at the opening view: the state
+      // the controls and labels read starts there too.
+      setReady(false);
+      setZoom(ZOOM_MIN);
+      setLongitude(Math.round(home.location[1] + OPEN_WEST));
       // cobe wraps the canvas in its own element inside the host.
       host.replaceChildren();
     };
-  }, [sites]);
+  }, [globeSites]);
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     const turns: Record<string, [number, number]> = {

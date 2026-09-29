@@ -1,5 +1,5 @@
 import { axe } from "@test/axe";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { labSites } from "./data/lab-sites";
@@ -57,4 +57,49 @@ describe("ResearchGlobe", () => {
     expect(screen.getByRole("button", { name: "Zoom in" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Zoom out" })).toBeDisabled();
   });
+});
+
+describe("ResearchGlobe dragging", () => {
+  /** The globe's canvas, with pointer capture (missing in jsdom) stubbed. */
+  function canvasOf(container: HTMLElement) {
+    const canvas = container.querySelector("canvas");
+    if (!canvas) throw new Error("no canvas");
+    canvas.setPointerCapture = vi.fn();
+    return canvas;
+  }
+
+  /** Whether an arrow key still reports the new centre (no drag holds it). */
+  async function reportsTurns() {
+    const globe = screen.getByRole("slider");
+    const before = globe.getAttribute("aria-valuenow");
+    globe.focus();
+    await userEvent.setup().keyboard("{ArrowRight}");
+    return globe.getAttribute("aria-valuenow") !== before;
+  }
+
+  test("a secondary click does not start a drag", async () => {
+    const { container } = render(<ResearchGlobe sites={sites} />);
+    fireEvent.pointerDown(canvasOf(container), { button: 2, pointerId: 1 });
+    expect(await reportsTurns()).toBe(true);
+  });
+
+  test("a drag ends when the pointer capture is lost", async () => {
+    const { container } = render(<ResearchGlobe sites={sites} />);
+    const canvas = canvasOf(container);
+    fireEvent.pointerDown(canvas, { button: 0, pointerId: 1 });
+    expect(await reportsTurns()).toBe(false);
+    fireEvent(canvas, new Event("lostpointercapture"));
+    expect(await reportsTurns()).toBe(true);
+  });
+});
+
+test("keeps the reader's view when a refresh hands over the same sites", async () => {
+  const { rerender } = render(<ResearchGlobe sites={sites} />);
+  const globe = screen.getByRole("slider");
+  globe.focus();
+  await userEvent.setup().keyboard("{ArrowRight}");
+  const turned = globe.getAttribute("aria-valuenow");
+
+  rerender(<ResearchGlobe sites={structuredClone(sites)} />);
+  expect(screen.getByRole("slider")).toHaveAttribute("aria-valuenow", turned);
 });
