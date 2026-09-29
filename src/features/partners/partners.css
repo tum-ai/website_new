@@ -40,23 +40,27 @@
     justify-content: center;
   }
 
-  .partner-marquee[data-animated="true"] .partner-marquee-set {
-    position: relative;
-    height: calc(var(--spacing) * 16);
-  }
+  /* The loop runs only with motion allowed; otherwise the set stays the
+     wrapped, centred row above. */
+  @media (prefers-reduced-motion: no-preference) {
+    .partner-marquee[data-animated="true"] .partner-marquee-set {
+      position: relative;
+      height: calc(var(--spacing) * 16);
+    }
 
-  .partner-marquee[data-animated="true"] .partner-marquee-item {
-    position: absolute;
-    left: 0;
-    top: calc(var(--spacing) * 2);
-    animation: partner-marquee-scroll var(--marquee-duration) linear infinite;
-    animation-delay: calc(
-      -1 *
-      var(--marquee-duration) +
-      (var(--marquee-index) + 1) *
-      var(--marquee-duration) /
-      var(--marquee-count)
-    );
+    .partner-marquee[data-animated="true"] .partner-marquee-item {
+      position: absolute;
+      left: 0;
+      top: calc(var(--spacing) * 2);
+      animation: partner-marquee-scroll var(--marquee-duration) linear infinite;
+      animation-delay: calc(
+        -1 *
+        var(--marquee-duration) +
+        (var(--marquee-index) + 1) *
+        var(--marquee-duration) /
+        var(--marquee-count)
+      );
+    }
   }
 
   .partner-marquee:focus-within .partner-marquee-item {
