@@ -1,9 +1,9 @@
 import type { Gate } from "./selection";
 
-/** One team application in the hero's field, at its grid cell. */
+/** One team application in the hero's field, in grid units from its centre. */
 export type FieldDot = {
-  column: number;
-  row: number;
+  x: number;
+  y: number;
 };
 
 /**
@@ -15,12 +15,15 @@ export type FieldGroup = {
   dots: FieldDot[];
 };
 
-/** The field's grid: one cell per application, filled row by row. */
-export type FieldGrid = {
-  columns: number;
-  rows: number;
+/** The field: its dots by gate, and the radius that contains them all. */
+export type Field = {
+  /** Distance of the outermost dot's centre from the field's centre. */
+  radius: number;
   groups: FieldGroup[];
 };
+
+/** Row spacing of a hexagonal lattice with a pitch of 1. */
+const ROW_HEIGHT = Math.sqrt(3) / 2;
 
 /** Mulberry32: a small seeded PRNG, so the field is the same on every render. */
 function seededRandom(seed: number) {
@@ -35,28 +38,49 @@ function seededRandom(seed: number) {
 }
 
 /**
- * Lays out one dot per application of the first gate in a grid of
- * `columns`, and assigns each dot the last gate its team reached: exactly
+ * The `count` points of a hexagonal lattice (pitch 1, every other row offset
+ * by half a pitch) that lie closest to the origin: a round field of evenly
+ * spaced points. Ties at the rim are broken by angle, so the set is exact.
+ */
+function latticeDisc(count: number): FieldDot[] {
+  const reach = Math.ceil(Math.sqrt((count * ROW_HEIGHT) / Math.PI)) + 2;
+  const rows = Math.ceil(reach / ROW_HEIGHT);
+  const points: FieldDot[] = [];
+  for (let row = -rows; row <= rows; row++) {
+    const offset = Math.abs(row) % 2 === 1 ? 0.5 : 0;
+    for (let column = -reach; column <= reach; column++) {
+      points.push({ x: column + offset, y: row * ROW_HEIGHT });
+    }
+  }
+  const distance = (point: FieldDot) => Math.hypot(point.x, point.y);
+  return points
+    .sort(
+      (a, b) =>
+        distance(a) - distance(b) ||
+        Math.atan2(a.y, a.x) - Math.atan2(b.y, b.x),
+    )
+    .slice(0, count);
+}
+
+/**
+ * One dot per application of the first gate, as a round field, with each
+ * dot assigned the last gate its team reached: exactly
  * `gates[i].teams - gates[i + 1].teams` dots stop at gate i, and
- * `gates.at(-1).teams` dots reach the last one. Which cells go where is a
+ * `gates.at(-1).teams` dots reach the last one. Which dots go where is a
  * seeded shuffle, so the pattern looks scattered but never changes between
  * renders (no hydration or visual-test drift).
  */
 export function applicationField(
   gates: Pick<Gate, "teams">[],
-  columns: number,
   seed = 6,
-): FieldGrid {
-  const total = gates[0]?.teams ?? 0;
-  const cells = Array.from({ length: total }, (_, index) => ({
-    column: index % columns,
-    row: Math.floor(index / columns),
-  }));
+): Field {
+  const dots = latticeDisc(gates[0]?.teams ?? 0);
+  const radius = Math.max(0, ...dots.map((dot) => Math.hypot(dot.x, dot.y)));
 
   const random = seededRandom(seed);
-  for (let index = cells.length - 1; index > 0; index--) {
+  for (let index = dots.length - 1; index > 0; index--) {
     const swap = Math.floor(random() * (index + 1));
-    [cells[index], cells[swap]] = [cells[swap], cells[index]] as [
+    [dots[index], dots[swap]] = [dots[swap], dots[index]] as [
       FieldDot,
       FieldDot,
     ];
@@ -66,10 +90,10 @@ export function applicationField(
   const groups = gates.map((gate, gateIndex) => {
     const next = gates[gateIndex + 1]?.teams ?? 0;
     const size = gate.teams - next;
-    const dots = cells.slice(taken, taken + size);
+    const group = { gateIndex, dots: dots.slice(taken, taken + size) };
     taken += size;
-    return { gateIndex, dots };
+    return group;
   });
 
-  return { columns, rows: Math.ceil(total / columns), groups };
+  return { radius, groups };
 }
