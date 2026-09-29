@@ -3,12 +3,15 @@ import "server-only";
 import { defineQuery } from "next-sanity";
 import { getContentTokens } from "@/config/content-tokens";
 import { departments } from "@/features/community";
+import { buildMemberStoriesBackfill } from "@/features/community/server";
+import { buildVentureBackfill } from "@/features/e-lab/server";
 import type { BackfillDocument } from "@/lib/cms-backfill";
 import { loadContent } from "@/lib/cms-content";
 import { CONTENT_IMAGE_PROJECTION } from "@/lib/cms-content-model";
 import { getDepartments } from "@/lib/community-content";
 import { backfillContentImage, keyedItems } from "@/lib/content-backfill";
 import { fillCmsCopy, fillCodeCopy } from "@/lib/content-copy";
+import { personId, personKey } from "@/lib/person-content";
 import type { HOME_COPY_QUERY_RESULT } from "@/lib/sanity.types.generated";
 import {
   type HomeCopy,
@@ -20,9 +23,10 @@ import {
 
 /**
  * The homepage content slice: the `homeCopy` singleton (hero, mission,
- * ledger labels, programs, room photos, join band). The ledger figures stay
- * in code (`home-view.ts`); the department count comes from the shared
- * department list (`lib/community-content.ts`). The code fallback is
+ * ledger labels, programs, room photos, join band, partner band). The
+ * ledger figures are the site facts (`home-view.ts`); the department count
+ * comes from the shared department list (`lib/community-content.ts`); the
+ * quotes reference `person` documents. The code fallback is
  * `data/homepage.ts`.
  */
 
@@ -56,8 +60,9 @@ export const HOME_COPY_QUERY = defineQuery(`*[_id == "homeCopy"][0]{
     lead,
     stepsTitle,
     steps[]{ title, dates },
-    quote{ name, excerpt }
-  }
+    quote{ "name": person->name, excerpt }
+  },
+  partners{ title, lead, moreLabel, "quote": quote->key }
 }`);
 
 /** Everything the homepage renders from the slice. */
@@ -120,9 +125,14 @@ export async function getHomeContent(): Promise<HomeContent> {
     loadContent<HomeCopy, HOME_COPY_QUERY_RESULT>({
       fallback: fillCodeCopy(homeCopyTemplate, tokens, homePageTokens),
       query: HOME_COPY_QUERY,
-      tags: ["content:homeCopy"],
+      tags: ["content:homeCopy", "content:person"],
       label: "the homepage copy",
-      mockDocuments: buildHomeBackfill,
+      // The quotes reference people from the member stories and E-Lab slices.
+      mockDocuments: () => [
+        ...buildHomeBackfill(),
+        ...buildMemberStoriesBackfill(),
+        ...buildVentureBackfill(),
+      ],
       select: (result) =>
         selectCopy(
           fillCmsCopy(
@@ -138,9 +148,19 @@ export async function getHomeContent(): Promise<HomeContent> {
   return { copy, departmentCount: teams.length };
 }
 
-/** The homepage copy as a document for `pnpm sanity:backfill`. */
+/** A strong reference to a person document of the backfill. */
+const personReference = (...id: Parameters<typeof personId>) => ({
+  _type: "reference",
+  _ref: personId(...id),
+});
+
+/**
+ * The homepage copy as a document for `pnpm sanity:backfill`. Its quotes
+ * reference the people the member stories and E-Lab slices backfill.
+ */
 export function buildHomeBackfill(): BackfillDocument[] {
-  const { hero, ledger, programs, room, join, ...copy } = homeCopyTemplate;
+  const { hero, ledger, programs, room, join, partners, ...copy } =
+    homeCopyTemplate;
   return [
     {
       _id: "homeCopy",
@@ -179,6 +199,14 @@ export function buildHomeBackfill(): BackfillDocument[] {
       join: {
         ...join,
         steps: keyedItems("recruitingStep", join.steps),
+        quote: {
+          person: personReference("member-story", personKey(join.quote.name)),
+          excerpt: join.quote.excerpt,
+        },
+      },
+      partners: {
+        ...partners,
+        quote: personReference("e-lab-testimonial", partners.quote),
       },
     },
   ];

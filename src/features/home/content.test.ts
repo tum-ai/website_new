@@ -1,6 +1,8 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { contentTokens } from "@/config/content-tokens";
 import { departments } from "@/features/community";
+import { buildMemberStoriesBackfill } from "@/features/community/server";
+import { buildVentureBackfill } from "@/features/e-lab/server";
 import { fetchContent } from "@/lib/cms-content";
 import { fillCodeCopy } from "@/lib/content-copy";
 import type { HOME_COPY_QUERY_RESULT } from "@/lib/sanity.types.generated";
@@ -46,6 +48,22 @@ describe("the homepage content slice", () => {
     expect(result?.programs?.items?.map(({ id }) => id)).toStrictEqual(
       homeCopyTemplate.programs.items.map(({ id }) => id),
     );
+  });
+
+  test("the quotes resolve their person references", async () => {
+    useSource("sanity");
+    const result = await fetchContent<HOME_COPY_QUERY_RESULT>({
+      query: HOME_COPY_QUERY,
+      tags: [],
+      mockDocuments: () => [
+        ...buildHomeBackfill(),
+        ...buildMemberStoriesBackfill(),
+        ...buildVentureBackfill(),
+      ],
+      label: "parity",
+    });
+    expect(result?.join?.quote?.name).toBe(homeCopyTemplate.join.quote.name);
+    expect(result?.partners?.quote).toBe(homeCopyTemplate.partners.quote);
   });
 
   test("sanity source over the backfill: the same copy and count", async () => {

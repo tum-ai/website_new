@@ -6,26 +6,30 @@ import {
   Section,
   SplitWords,
 } from "@/components/ds";
+import { callToActionLabels } from "@/config/calls-to-action";
 import {
   getHighlightedPartners,
   getPartnerDirectory,
   getPartnerKey,
-  marqueeLogos,
 } from "@/features/partners";
 import type { HomeCopy } from "./data/homepage";
 import { HeroAperture } from "./hero-aperture";
 
 /**
- * Gold partners with artwork verified for dark bands, from the static
- * defaults so the home page stays prerendered without a CMS request.
+ * Gold partners with artwork verified for dark bands: the partners from the
+ * static defaults, so the home page stays prerendered without a live-dataset
+ * request, and their artwork from the partner marquee's logo list.
  */
-const heroPartners = getHighlightedPartners(getPartnerDirectory([]))
-  .filter((partner) => partner.tier === "gold")
-  .map((partner) => {
-    const key = getPartnerKey(partner.name);
-    return { key, name: partner.name, image: marqueeLogos[key] };
-  })
-  .filter((partner) => partner.image);
+const heroPartnersOf = (
+  marqueeLogos: Readonly<Record<string, string | undefined>>,
+) =>
+  getHighlightedPartners(getPartnerDirectory([]))
+    .filter((partner) => partner.tier === "gold")
+    .map((partner) => {
+      const key = getPartnerKey(partner.name);
+      return { key, name: partner.name, image: marqueeLogos[key] };
+    })
+    .filter((partner) => partner.image);
 
 /**
  * Home hero on night: the page's `h1` and both calls to action on the left,
@@ -36,7 +40,15 @@ const heroPartners = getHighlightedPartners(getPartnerDirectory([]))
  * reveals. The page preloads two images: the header logo and the aperture's
  * first photo (test/perf/homepage.perf.ts).
  */
-export function HomeHero({ hero }: { hero: HomeCopy["hero"] }) {
+export function HomeHero({
+  hero,
+  marqueeLogos,
+}: {
+  hero: HomeCopy["hero"];
+  /** Dark-band artwork by partner key (`getPartnerLogos()`). */
+  marqueeLogos: Readonly<Record<string, string | undefined>>;
+}) {
+  const heroPartners = heroPartnersOf(marqueeLogos);
   return (
     <Section
       tone="night"
@@ -64,10 +76,10 @@ export function HomeHero({ hero }: { hero: HomeCopy["hero"] }) {
           </p>
           <Actions className="mt-10 [animation-delay:760ms] motion-safe:animate-rise-sm md:mt-12">
             <ButtonLink href="/partners" size="lg">
-              Become a Partner
+              {callToActionLabels.partner}
             </ButtonLink>
             <ButtonLink href="/apply" size="lg" variant="outline" arrow>
-              Become a Member
+              {callToActionLabels.member}
             </ButtonLink>
           </Actions>
         </div>

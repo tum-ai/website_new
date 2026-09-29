@@ -8,7 +8,9 @@ import {
   Section,
   TextLink,
 } from "@/components/ds";
-import { MembershipApplyButton, memberStories } from "@/features/community";
+import { callToActionLabels } from "@/config/calls-to-action";
+import type { MemberStory } from "@/features/community";
+import { MembershipApplyButton } from "@/features/community/server";
 import { ConstructionLines } from "./construction-lines";
 import type { HomeCopy } from "./data/homepage";
 
@@ -20,11 +22,18 @@ import type { HomeCopy } from "./data/homepage";
  * steps of a recruiting round (a real sequence, so these are the page's
  * only numbered items; their dates are the membership config's, through the
  * copy's placeholders). The apply button follows the dated application
- * window (`MembershipApplyButton`).
+ * window (`MembershipApplyButton`). `stories` are the member stories
+ * (`getMemberStories()`): the quote's name picks its author.
  */
-export function JoinSection({ join }: { join: HomeCopy["join"] }) {
+export function JoinSection({
+  join,
+  stories,
+}: {
+  join: HomeCopy["join"];
+  stories: readonly MemberStory[];
+}) {
   const { quote } = join;
-  const quoted = memberStories.find((story) => story.name === quote.name);
+  const quoted = stories.find((story) => story.name === quote.name);
   return (
     <Section
       tone="ink"
@@ -67,7 +76,7 @@ export function JoinSection({ join }: { join: HomeCopy["join"] }) {
             <Actions className="mt-10 md:mt-12">
               <MembershipApplyButton />
               <ButtonLink href="/qanda" size="lg" variant="outline">
-                Questions and answers
+                {callToActionLabels.questions}
               </ButtonLink>
             </Actions>
           </Reveal>
@@ -107,7 +116,7 @@ export function JoinSection({ join }: { join: HomeCopy["join"] }) {
                 </blockquote>
                 <figcaption className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-4">
                   <div className="flex -space-x-3">
-                    {memberStories.map((story) => (
+                    {stories.map((story) => (
                       <Image
                         key={story.name}
                         src={story.image}

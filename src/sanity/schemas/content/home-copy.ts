@@ -20,8 +20,8 @@ const programTokens = {
 
 /**
  * The homepage's copy (one document, `_id` `homeCopy`). The figures in the
- * ledger come from the site settings; the partners band and its quote are
- * partner content. Read by `features/home/content.ts`, over the code copy
+ * ledger come from the site settings; the quotes reference people, and the
+ * partner band's outcomes and logos are partner content. Read by `features/home/content.ts`, over the code copy
  * in `features/home/data/homepage.ts`.
  */
 export const homeCopyType = defineType({
@@ -274,14 +274,44 @@ export const homeCopyType = defineType({
           description:
             "A sentence from a member's story on the community page; the story supplies the name, role and portrait.",
           fields: [
-            copyString({
-              name: "name",
+            defineField({
+              name: "person",
               title: "Member",
-              description: "Exactly as in their member story.",
-              max: 60,
+              type: "reference",
+              to: [{ type: "person" }],
+              options: { filter: 'placement == "member-story"' },
+              description: "One of the member stories.",
+              validation: (Rule) => Rule.required(),
             }),
             copyText({ name: "excerpt", title: "Quote", max: 200, rows: 2 }),
           ],
+        }),
+      ],
+    }),
+    defineField({
+      name: "partners",
+      title: "Partners band",
+      type: "object",
+      description:
+        "The case for partners: a partner's quote, the case-study outcomes and every current partner's logo (partner content).",
+      fields: [
+        copyString({ name: "title", title: "Title", max: 60 }),
+        copyText({ name: "lead", title: "Lead", max: 200, rows: 2 }),
+        copyString({
+          name: "moreLabel",
+          title: "Second button",
+          description: "Beside “Become a Partner”; leads to the partners page.",
+          max: 30,
+        }),
+        defineField({
+          name: "quote",
+          title: "Partner quote",
+          type: "reference",
+          to: [{ type: "person" }],
+          options: { filter: 'placement == "e-lab-testimonial"' },
+          description:
+            "An E-Lab testimonial by an investor or partner; it supplies the quote, name, portrait and logo.",
+          validation: (Rule) => Rule.required(),
         }),
       ],
     }),

@@ -1,3 +1,7 @@
+import { getSiteFacts } from "@/config/site-settings-content";
+import { getMemberStories } from "@/features/community/server";
+import { getPartnerLogos } from "@/features/partners/server";
+import { getRexInstitutions } from "@/features/research/server";
 import { getHomeContent } from "./content";
 import { HomeHero } from "./home-hero";
 import { homeView } from "./home-view";
@@ -13,14 +17,32 @@ import { RoomSection } from "./room-section";
  * program index (paper), event photography (night), the partner case (mist)
  * and the member call to action (ink). Must stay statically prerendered; see
  * HeroAperture for the image-preload contract. The copy comes from the
- * content slice (`content.ts`: the CMS or the code copy).
+ * content slice (`content.ts`), the figures from the site facts, and the
+ * member stories, REX institutions and partner artwork from their slices
+ * (each the CMS or the code).
  */
 export async function HomePage() {
-  const { copy, departmentCount } = await getHomeContent();
-  const { ledger, programs } = homeView(copy, departmentCount);
+  const [
+    { copy, departmentCount },
+    facts,
+    rexInstitutions,
+    stories,
+    { marqueeLogos },
+  ] = await Promise.all([
+    getHomeContent(),
+    getSiteFacts(),
+    getRexInstitutions(),
+    getMemberStories(),
+    getPartnerLogos(),
+  ]);
+  const { ledger, programs } = homeView(copy, {
+    facts,
+    departmentCount,
+    rexInstitutions,
+  });
   return (
     <main>
-      <HomeHero hero={copy.hero} />
+      <HomeHero hero={copy.hero} marqueeLogos={marqueeLogos} />
       <MissionSection mission={copy.mission} ledger={ledger} />
       <ProgramsSection
         title={copy.programs.title}
@@ -28,8 +50,8 @@ export async function HomePage() {
         items={programs}
       />
       <RoomSection room={copy.room} />
-      <PartnersSection />
-      <JoinSection join={copy.join} />
+      <PartnersSection copy={copy.partners} />
+      <JoinSection join={copy.join} stories={stories} />
     </main>
   );
 }

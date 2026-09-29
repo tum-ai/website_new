@@ -1,45 +1,55 @@
 import type { IndexListItem, LedgerItem } from "@/components/ds";
-import { communityFacts } from "@/config/community";
-import { eLabConfig } from "@/config/e-lab";
-import { impactFacts } from "@/config/impact";
-import { officialMembers, organizationFacts } from "@/config/organization";
-import { rexInstitutions } from "@/features/research";
+import { deriveSiteFacts, type SiteFacts } from "@/config/site-facts";
 import { fillPageTokens } from "@/lib/content-copy";
 import { formatList, spellCount } from "@/lib/words";
 import type { HomeCopy, LedgerKey } from "./data/homepage";
 
 /**
- * The ledger's figures: facts from the config, so a config edit updates the
- * homepage whatever its copy says. The copy picks and labels them.
+ * The ledger's figures: the render's site facts, so a fact edit updates
+ * the homepage whatever its copy says. The copy picks and labels them.
  */
-const ledgerFigures: Record<
-  LedgerKey,
-  Pick<LedgerItem, "value" | "prefix" | "suffix">
-> = {
-  founded: { value: String(organizationFacts.foundingYear) },
-  members: { value: officialMembers, suffix: "+" },
-  nationalities: { value: organizationFacts.nationalities, suffix: "+" },
-  funding: {
-    value: eLabConfig.ventureFundingMillions,
-    prefix: "€",
-    suffix: "M",
-  },
-  makeathon: { value: communityFacts.makeathonSize, suffix: "+" },
-  publications: { value: impactFacts.publications, suffix: "+" },
+function ledgerFiguresOf(
+  facts: SiteFacts,
+): Record<LedgerKey, Pick<LedgerItem, "value" | "prefix" | "suffix">> {
+  return {
+    founded: { value: String(facts.organization.foundingYear) },
+    members: { value: deriveSiteFacts(facts).officialMembers, suffix: "+" },
+    nationalities: { value: facts.organization.nationalities, suffix: "+" },
+    funding: {
+      value: facts.eLab.ventureFundingMillions,
+      prefix: "€",
+      suffix: "M",
+    },
+    makeathon: { value: facts.community.makeathonSize, suffix: "+" },
+    publications: { value: facts.impact.publications, suffix: "+" },
+  };
+}
+
+/** What the homepage's figures and page tokens come from, per render. */
+export type HomeViewSources = {
+  /** `await getSiteFacts()`. */
+  facts: SiteFacts;
+  /** How many departments /community lists. */
+  departmentCount: number;
+  /** The REX institutions, in order (`getRexInstitutions()`). */
+  rexInstitutions: readonly { shortName: string }[];
 };
 
 /**
  * What the homepage renders from its copy: the ledger with its figures, and
- * the programs with their page tokens filled (`departmentCount` is how many
- * departments /community lists).
+ * the programs with their page tokens filled.
  */
-export function homeView(copy: HomeCopy, departmentCount: number) {
+export function homeView(
+  copy: HomeCopy,
+  { facts, departmentCount, rexInstitutions }: HomeViewSources,
+) {
   const tokens = {
     rexInstitutions: formatList(
       rexInstitutions.map((institution) => institution.shortName),
     ),
     departments: spellCount(departmentCount),
   };
+  const ledgerFigures = ledgerFiguresOf(facts);
   const ledger: LedgerItem[] = copy.ledger.map(({ key, label, note }) => ({
     label,
     ...ledgerFigures[key],

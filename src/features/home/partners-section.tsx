@@ -9,21 +9,25 @@ import {
   Section,
   SectionHeader,
 } from "@/components/ds";
-import { getTestimonialCards } from "@/features/e-lab";
+import { callToActionLabels } from "@/config/calls-to-action";
+import { getTestimonialCards } from "@/features/e-lab/server";
 import {
   getHighlightedPartners,
-  getPartnerCaseStudies,
   getPartnerDirectory,
-  symbolOnlyLogos,
 } from "@/features/partners";
-import { partnerQuoteId } from "./data/homepage";
+import {
+  getPartnerCaseStudies,
+  getPartnerLogos,
+} from "@/features/partners/server";
+import type { HomeCopy } from "./data/homepage";
 
 /**
  * Gold, silver and bronze partners in the partner page's order, from the
- * static defaults so the home page stays prerendered without a CMS request.
+ * static defaults so the home page stays prerendered without a live-dataset
+ * request. `symbolOnlyLogos` is the logo slice's set of symbol-only artwork.
  */
-const partnerLogos = getHighlightedPartners(getPartnerDirectory([])).map(
-  (partner) => ({
+const partnerLogosOf = (symbolOnlyLogos: ReadonlySet<string>) =>
+  getHighlightedPartners(getPartnerDirectory([])).map((partner) => ({
     name: partner.name,
     src: partner.image,
     // Symbol-only artwork: set the name beside it.
@@ -31,21 +35,26 @@ const partnerLogos = getHighlightedPartners(getPartnerDirectory([])).map(
       partner.image && symbolOnlyLogos.has(partner.image)
         ? partner.name
         : undefined,
-  }),
-);
+  }));
 
 /**
  * The partner case on mist: a venture investor's quote, three measured
  * outcomes, then every current partner. Ends with the partner calls to
- * action. The quote and the outcomes come from the E-Lab and partners
- * content slices (the CMS or the code).
+ * action. The copy picks the quote; the quote and the outcomes come from the
+ * E-Lab and partners content slices (the CMS or the code).
  */
-export async function PartnersSection() {
-  const [cards, caseStudies] = await Promise.all([
+export async function PartnersSection({
+  copy,
+}: {
+  copy: HomeCopy["partners"];
+}) {
+  const [cards, caseStudies, { symbolOnlyLogos }] = await Promise.all([
     getTestimonialCards(),
     getPartnerCaseStudies(),
+    getPartnerLogos(),
   ]);
-  const quote = cards.find((card) => card.id === partnerQuoteId);
+  const partnerLogos = partnerLogosOf(symbolOnlyLogos);
+  const quote = cards.find((card) => card.id === copy.quote);
   /** What partners got out of working with TUM.ai, as ledger rows. */
   const outcomes: LedgerItem[] = caseStudies.map((study) => ({
     label: study.name,
@@ -62,17 +71,17 @@ export async function PartnersSection() {
       <Container>
         <SectionHeader
           id="partners-title"
-          title="Partners who build with us"
+          title={copy.title}
           size="lg"
           layout="stack"
-          lead="Research labs, scale-ups and global technology companies work with TUM.ai to meet talent, set real challenges and back new ventures."
+          lead={copy.lead}
           actions={
             <>
               <ButtonLink href="/partners#partner-contact">
-                Become a Partner
+                {callToActionLabels.partner}
               </ButtonLink>
               <ButtonLink href="/partners" variant="outline" arrow>
-                How partnerships work
+                {copy.moreLabel}
               </ButtonLink>
             </>
           }

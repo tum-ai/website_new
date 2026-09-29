@@ -4,8 +4,9 @@ import type { ContentImage } from "@/lib/cms-content-model";
  * The homepage's copy as code writes it: the code fallback of the `homeCopy`
  * singleton (see `../content.ts`). Text may hold `{{name}}` placeholders for
  * site facts, filled on the server, and page tokens (`homePageTokens`) the
- * page fills from other content. The ledger's figures, and the partner
- * quote, stay in code (`../home-view.ts`, `partnerQuoteId`).
+ * page fills from other content. The ledger's figures are the site facts
+ * (`../home-view.ts`); the quotes pick a person by key or name, and the
+ * person supplies the rest.
  */
 
 /** A photo with its intrinsic size (for next/image) and a crop focus. */
@@ -61,10 +62,22 @@ export type HomeCopy = {
     steps: { title: string; dates: string }[];
     /**
      * The member quoted in the join band: a sentence from their story on
-     * /community (`memberStories` in @/features/community), which supplies
-     * the name, role and portrait.
+     * /community (the member stories), which supplies the name, role and
+     * portrait. In the CMS, `name` is a reference to that story's person.
      */
     quote: { name: string; excerpt: string };
+  };
+  /** The partner band: the case for partners, their quote, the partner wall. */
+  partners: {
+    title: string;
+    lead: string;
+    /** The second button's label, to /partners. */
+    moreLabel: string;
+    /**
+     * The venture partner quoted for the partner audience: the key of an
+     * E-Lab testimonial (a `person` reference in the CMS).
+     */
+    quote: string;
   };
 };
 
@@ -284,7 +297,10 @@ export const homeCopyTemplate: HomeCopy = {
         "The breadth of responsibilities and leadership opportunities here is truly unmatched.",
     },
   },
+  partners: {
+    title: "Partners who build with us",
+    lead: "Research labs, scale-ups and global technology companies work with TUM.ai to meet talent, set real challenges and back new ventures.",
+    moreLabel: "How partnerships work",
+    quote: "alexandra-reinert",
+  },
 };
-
-/** The venture partner quoted for the partner audience (a `testimonialCards` id from @/features/e-lab). */
-export const partnerQuoteId = "alexandra-reinert";
