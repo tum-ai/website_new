@@ -39,6 +39,20 @@ function minimumSize(minWidth: number, minHeight: number, advice: string) {
   };
 }
 
+/**
+ * Required alt text, but only once a file is uploaded: an image field left
+ * empty (an optional logo) can still hold an object without an asset, and
+ * its alt text must not block publishing.
+ */
+export function validateRequiredAlt(
+  value: string | undefined,
+  context: { parent?: unknown },
+): true | string {
+  const parent = context.parent as { asset?: unknown } | undefined;
+  if (!parent?.asset || value?.trim()) return true;
+  return "Describe the image for screen readers, for example “Accel logo”.";
+}
+
 const altField = (description: string, required: boolean) =>
   defineField({
     name: "alt",
@@ -46,10 +60,7 @@ const altField = (description: string, required: boolean) =>
     type: "string",
     description,
     validation: required
-      ? (Rule) =>
-          Rule.required().error(
-            "Describe the image for screen readers, for example “Accel logo”.",
-          )
+      ? (Rule) => Rule.custom(validateRequiredAlt)
       : undefined,
   });
 
@@ -76,7 +87,8 @@ export function logoArtworkField(options: {
         type: "boolean",
         description:
           "Tick when the artwork is a symbol without the name (an app icon, a monogram). Pages then set the name beside it.",
-        initialValue: false,
+        // No initialValue: it would create the image object on every new
+        // document, so an empty optional logo would still ask for alt text.
       }),
       defineField({
         name: "aspectRatio",
