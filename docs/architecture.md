@@ -13,7 +13,7 @@ the test wins. Decisions behind the layout are recorded in [`docs/adr/`](adr/REA
 ├── test/                   repo-wide fitness tests (content facts, assets, favicon, perf budget)
 ├── public/assets/          shipped images, logos, video and the Manrope font
 ├── docs/                   contributor docs, ADRs and brand source files
-├── scripts/                dist-dir helpers used by the package scripts
+├── scripts/                dist-dir helpers; sanity/: backfill script, slice registry, TypeGen schema merge
 ├── .github/                CI workflows, the shared setup action, Dependabot, PR template
 ├── .agents/ .claude/       agent skills, rules, subagents and hooks (see AGENTS.md)
 ├── next.config.ts          Next.js config (mock-CMS inlining, global 404, dist dir)
@@ -41,8 +41,9 @@ src/
 │   ├── shell/                     header, footer, skip link, header scroll logic
 │   └── json-ld.tsx                the JSON-LD script tag
 ├── config/                        site facts, navigation and SEO
-├── lib/                           cn, Sanity fetch layer and queries, mock CMS, time, security, redirects
-├── sanity/                        Studio config, CLI config and schemas
+├── lib/                           cn, Sanity config, fetch layers and queries, content source, mock CMS,
+│                                  time, security, redirects
+├── sanity/                        Studio config (live + content workspaces), CLI config, schemas
 ├── styles/index.css               tokens, tones, cascade layers, utilities
 ├── proxy.ts                       host redirects (Next 16's replacement for middleware)
 └── architecture.test.ts           the import-rule fitness test
@@ -56,17 +57,17 @@ its feature folder:
 | Route | Page module | Data |
 | --- | --- | --- |
 | `/` | `features/home/home-page.tsx` (+ `home.css`) | static |
-| `/apply` | `features/apply/apply-page.tsx` | static, ISR 1 h (render date) |
+| `/apply` | `features/apply/apply-page.tsx` | static + content slice (FAQ), ISR 1 h (render date) |
 | `/community` | `features/community/community-page.tsx` | static |
 | `/events` | `features/events/events-page.tsx` (+ `events.css`) | Sanity, ISR 5 min |
-| `/e-lab` | `features/e-lab/e-lab-page.tsx` (+ `e-lab.css`) | static, ISR 5 min (application phase) |
+| `/e-lab` | `features/e-lab/e-lab-page.tsx` (+ `e-lab.css`) | static + content slice (FAQ), ISR 5 min (application phase) |
 | `/partners` | `features/partners/partners-page.tsx` (+ `partners.css`) | Sanity, ISR 15 min |
 | `/projects` | `features/projects/projects-page.tsx` (+ `projects.css`) | static |
 | `/qanda` | `features/qanda/qanda-page.tsx` | static |
 | `/research` | `features/research/research-page.tsx` (+ `research.css`) | Sanity, ISR 15 min |
 | `/imprint`, `/data-privacy`, `/disclaimer` | `features/legal/*-page.tsx` | static |
 | `/design-system` | `features/design-system/design-system-page.tsx` | dev and Vercel previews only; 404 in production |
-| `/studio` | `app/studio/[[...tool]]/page.tsx` | the embedded Studio |
+| `/studio` | `app/studio/[[...tool]]/page.tsx` | the embedded Studio: `/studio/live`, `/studio/content` |
 
 A feature folder holds everything that belongs to one page domain:
 
@@ -74,7 +75,8 @@ A feature folder holds everything that belongs to one page domain:
 src/features/<domain>/
 ├── <domain>-page.tsx      the page component the route renders (one <main>)
 ├── *.tsx | sections/      sections and small "use client" islands
-├── data/                  static copy for this domain (.ts, no JSX)
+├── data/                  static copy for this domain (.ts, no JSX); the code fallback of a slice
+├── content.ts             optional content slice: CMS or code content for this page (server only)
 ├── *.ts                   domain logic (for example partners/partnerships.ts)
 ├── *.test.ts(x)           colocated unit and component tests
 ├── <domain>.css           page CSS, only when unavoidable; imported by the route
@@ -126,8 +128,12 @@ The site and the Studio are separate root layouts:
 
 ## Data flow
 
-Events, research projects and partners come from Sanity. Everything else is static in Git:
-facts in `src/config/`, copy in `src/features/<domain>/data/`.
+Events, research projects and partners come from Sanity's live dataset. Page content is moving
+from Git to a second, content dataset, one content slice at a time (below and
+[ADR 0009](adr/0009-cms-content-source.md)); until a slice exists and the source is switched, it
+is static in Git: facts in `src/config/`, copy in `src/features/<domain>/data/`.
+
+### The live dataset (events, research, partners)
 
 1. **Schemas** in `src/sanity/schemas/` define the documents.
 2. **Queries** in `src/lib/sanity-queries.ts` are wrapped in `defineQuery`. `pnpm sanity:typegen`
@@ -142,12 +148,38 @@ facts in `src/config/`, copy in `src/features/<domain>/data/`.
 5. **Live updates:** `<SanityLive>` in the site layout refreshes rendered pages when content
    changes.
 
+### The content dataset (content slices)
+
+1. **Config:** `lib/sanity-config.ts` names both datasets: `NEXT_PUBLIC_SANITY_DATASET` (live)
+   and `NEXT_PUBLIC_SANITY_CONTENT_DATASET` (content, defaults to the live one).
+2. **Schemas** in `src/sanity/schemas/content/`, registered only in the Studio's `content`
+   workspace (`/studio/content`).
+3. **Slices:** `features/<x>/content.ts` (server only) exports getters such as `getApplyFaqs()`
+   and a `build<X>Backfill()`. A getter calls `loadContent` (`lib/cms-content.ts`): with
+   `CMS_CONTENT_SOURCE=code` (the default) it returns the code fallback and makes no request;
+   with `sanity` it runs the slice's `defineQuery` against the content dataset (published, CDN)
+   and merges the result over the fallback (`mergeOverFallback` in `lib/cms-content-model.ts`),
+   so a missing or empty value renders the code content. Facts inside copy are
+   `{{placeholders}}` (`lib/content-tokens.ts`) filled from `config/content-tokens.ts`.
+4. **Pages** await the getters in their server page component and pass plain props down.
+5. **Backfill:** `pnpm sanity:backfill` turns every registered slice
+   (`scripts/sanity/slices.ts`) into NDJSON for `sanity dataset import`; images point at the
+   shipped files (`_sanityAsset`).
+6. **Mock:** under `USE_MOCK_CMS=1` the `sanity` source queries the backfill documents with
+   groq-js (`lib/cms-content-mock.ts`), and each slice's parity test checks that this renders
+   exactly the code content.
+
+No drafts, Presentation or `<SanityLive>` for this dataset yet: edits show when a page
+revalidates.
+
+### Mock CMS and previews
+
 **Mock CMS.** With `USE_MOCK_CMS=1` at build time the getters serve fixtures from
 `src/lib/mock-cms.ts`, dated relative to `MOCK_CMS_NOW` when it is set. `next.config.ts` inlines
 the flag into server code, so a build without it contains no fixture code, and the gate is off on
 Vercel regardless ([ADR 0005](adr/0005-mock-cms.md)).
 
-**Draft preview.** Presentation in `/studio` calls `/api/draft-mode/enable`, which needs
+**Draft preview.** Presentation in `/studio/live` calls `/api/draft-mode/enable`, which needs
 `SANITY_API_READ_TOKEN` on the server (503 without it). The token never reaches the browser; an
 optional, separate `SANITY_API_BROWSER_TOKEN` can enable live draft updates outside Presentation.
 `/api/draft-mode/disable` leaves draft mode and redirects to same-origin paths only.
@@ -172,8 +204,30 @@ Facts that change per semester, cohort or year live once in `src/config/`
 | `membership.ts` | recruiting: open flag, form URL and the current `round` (Munich dates), plus the schedule helpers (`roundSchedule`, `isMembershipApplicationOpen`, `applicationProgress`, `recruitingTimeline`) |
 | `navigation.ts` | header, footer and legal links, `headerCtaSetting`, per-route header options |
 | `seo.ts` | per-page metadata and JSON-LD, `rootMetadata` |
+| `content-tokens.ts` | the values of the `{{placeholders}}` in editable copy, from the facts above |
 
 `test/content-facts.test.ts` fails when page code types one of these facts in directly.
+
+## Library modules
+
+`src/lib` is the bottom layer (it imports only `lib`):
+
+| Module | Holds |
+| --- | --- |
+| `cn.ts` | class-name merging for Tailwind |
+| `sanity-config.ts` | project, live and content dataset, API version, Studio paths (browser-safe) |
+| `sanity.ts`, `sanity-queries.ts`, `types.ts`, `omit-nulls.ts` | the live dataset: client, Sanity Live, page and public-API getters, queries, app types |
+| `sanity.types.generated.ts` | TypeGen output for both workspaces (never edit) |
+| `mock-cms.ts`, `mock-cms-env.ts` | live-dataset fixtures and the mock clock (`getCmsNow`) |
+| `cms-content.ts` | the content source gate, content-dataset client, `fetchContent`, `loadContent` (server only) |
+| `cms-content-model.ts` | `ContentImage`, the image projection, `toContentImage`, `mergeOverFallback` |
+| `cms-content-mock.ts` | the content dataset under the mock CMS (groq-js over backfill documents) |
+| `cms-backfill.ts` | backfill document ids and `_sanityAsset` images (Node only) |
+| `content-tokens.ts` | `{{placeholder}}` names and filling |
+| `faq-content.ts` | the `faq` type shared by several pages: query, getter, backfill |
+| `munich-time.ts`, `words.ts` | Munich wall-clock parsing, lists and small numbers in running copy |
+| `use-clock-switch.ts`, `use-media-query.ts` | client hooks |
+| `security.ts`, `redirects.ts`, `public-api.ts` | safe external URLs, host redirects, public API responses |
 
 ## Styling
 
@@ -184,6 +238,10 @@ cascade layer or an `@utility`, so utilities always win without `!important`
 [design-system.md](design-system.md).
 
 ## Build output and scripts
+
+`scripts/sanity/` holds the CMS tooling: `backfill.ts` (`pnpm sanity:backfill`, run with tsx and
+a tsconfig that stubs `server-only`), `slices.ts` (the backfill registry) and `merge-schemas.mjs`
+(joins the two workspaces' schema extracts for TypeGen).
 
 `pnpm dev` writes `.next-dev`; `pnpm build`, `pnpm start` and `pnpm typecheck` use `.next-prod`
 through `scripts/run-next-command.mjs`, which leaves `NEXT_DIST_DIR` unset on Vercel. Before a

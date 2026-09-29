@@ -1,9 +1,16 @@
 ---
 name: cms-content-model
-description: End-to-end recipe for changing the Sanity content model of the TUM.ai website (events, research projects, partners, or a new document type). Use whenever a task adds, renames or removes a CMS field or type, changes a GROQ query or projection, touches Sanity TypeGen output, the mock CMS fixtures, or the public /api/getNotes, getPartners or getResearch responses, even if it looks like "just show one more field on the events page".
+description: End-to-end recipe for changing the Sanity content model of the TUM.ai website (events, research projects, partners, a content-dataset type such as faq, or a new document type), and for moving hard-coded content into the CMS as a content slice. Use whenever a task adds, renames or removes a CMS field or type, changes a GROQ query or projection, touches Sanity TypeGen output, the mock CMS fixtures, a content slice (`content.ts`, `build*Backfill`, `scripts/sanity/slices.ts`), or the public /api/getNotes, getPartners or getResearch responses, even if it looks like "just show one more field on the events page".
 ---
 
 # Change the CMS content model
+
+Two datasets, two recipes (docs/adr/0009-cms-content-source.md):
+
+- **Live dataset** (`event`, `partner`, `research`; the old site on `main` reads it too): steps 1
+  to 7 below. Never add a type to it.
+- **Content dataset** (page content moving out of code: FAQs, campaigns, logos, people, copy):
+  the "Content slices" section at the end.
 
 Sanity data crosses five layers, and each one fails differently when it drifts: the Studio schema,
 the GROQ query, the generated types, the mock fixtures used for local work and E2E, and the UI.
@@ -11,9 +18,11 @@ Change them in this order and keep each step green.
 
 ## 1. Schema
 
-Edit or add a type in `src/sanity/schemas/` (`defineType`, `defineField`) and register new types in
-`src/sanity/schemas/index.ts`. Enumerated fields use `options.list` so TypeGen emits a union.
-Check it in the Studio: `pnpm dev`, then `/studio` (needs the Sanity env vars from Vercel).
+Edit a live type in `src/sanity/schemas/` (`defineType`, `defineField`; registered in
+`src/sanity/schemas/index.ts`, the `live` workspace). New document types go into the content
+dataset instead (see "Content slices"). Enumerated fields use `options.list` so TypeGen emits a
+union. Check it in the Studio: `pnpm dev`, then `/studio/live` (needs the Sanity env vars from
+Vercel).
 
 Removing or renaming a field breaks existing documents and the public API: keep the old field
 readable (or alias it in the projection) until the content is migrated.
@@ -65,5 +74,81 @@ pnpm exec vitest run src/lib/sanity-queries.test.ts src/lib/mock-cms.test.ts <do
 CI runs the full suite, the TypeGen freshness check, the build and the E2E specs for the routes
 that show the data.
 
-Check the draft preview when the change affects what editors see: open `/studio`, use
+Check the draft preview when the change affects what editors see: open `/studio/live`, use
 Presentation, edit a draft and confirm the page updates (needs `SANITY_API_READ_TOKEN`).
+
+## Content slices (moving hard-coded content into the content dataset)
+
+A slice is one `content.ts` module that serves a domain's content from code or from the content
+dataset. The reference is the FAQ slice: `src/features/apply/content.ts`,
+`src/features/apply/data/faq.ts`, `src/lib/faq-content.ts`,
+`src/sanity/schemas/content/faq.ts`, `src/features/apply/content.test.ts`. The APIs are in
+`src/lib/cms-content.ts` (`loadContent`, `fetchContent`, `getContentSource`),
+`src/lib/cms-content-model.ts` (`ContentImage`, `CONTENT_IMAGE_PROJECTION`, `toContentImage`,
+`mergeOverFallback`), `src/lib/cms-backfill.ts` (`backfillId`, `backfillImage`) and
+`src/lib/content-tokens.ts` (`{{placeholders}}`). What moves, and who owns it:
+`docs/cms-content-inventory.md`.
+
+Nothing a visitor sees may change: `CMS_CONTENT_SOURCE` defaults to `code`, and the parity test
+proves the CMS path renders the same.
+
+1. **Code fallback.** Keep the content in `src/features/<x>/data/` (copy) or `src/config/`
+   (facts), shaped exactly as the page renders it: images as `ContentImage` (`src`, intrinsic
+   `width`/`height` of the file, `alt`, optional `objectPosition` as `"<x>% <y>%"`), icons as a
+   string key mapped to a Lucide component in the component, facts in copy as `{{name}}`
+   placeholders filled with `fillCodeTemplate(template, contentTokens)`. A new placeholder goes
+   into `contentTokenNames` (`lib/content-tokens.ts`) and `contentTokens`
+   (`config/content-tokens.ts`) together; never rename one.
+2. **Schema.** `src/sanity/schemas/content/<type>.ts` with `defineType`/`defineField`;
+   `Rule.required()` on what the page cannot do without; enums with `options.list`; images with
+   `contentImageField` and text with facts with `validatePlaceholders` + `placeholderHelp`
+   (`./fields.ts`); an `order` number for editor-sorted lists. Register it in
+   `schemas/content/index.ts` (singletons also in `contentSingletons`: one document whose `_id`
+   is the type name). Never in `schemas/index.ts`: that is the live dataset. References to live
+   documents (an event) are `_id` strings: no cross-dataset references on the free plan.
+3. **Slice.** `src/features/<x>/content.ts` (a second slice in the same feature:
+   `<topic>-content.ts`; facts: `src/config/<x>-content.ts`), starting with
+   `import "server-only"`:
+   - the query with `defineQuery`, filtered and ordered in GROQ, images as
+     `` "logo": logo${CONTENT_IMAGE_PROJECTION} ``;
+   - a getter per thing the page needs, via
+     `loadContent({ fallback, query, params, tags: ["content:<type>"], label, mockDocuments: build<X>Backfill, select })`,
+     where `select` shapes the result like the fallback (drop empty items, `toContentImage`,
+     `fillTemplate` for placeholders) and leaves anything it cannot use empty so the fallback
+     wins;
+   - one `build<X>Backfill(): BackfillDocument[]` for everything the slice owns, from the code
+     fallback: `_id` from `backfillId(type, stable key)` (only `[a-z0-9-]`; a `.` makes the
+     document private), images with `backfillImage("/assets/...", { alt, objectPosition })`,
+     placeholders kept as `{{name}}`.
+   A type used by several features keeps its shared part in `lib` with the fallback passed in
+   (`lib/faq-content.ts`); the per-feature `content.ts` stays a thin wrapper. The server-only
+   slice is also imported by `pnpm sanity:backfill` (tsx stubs `server-only`), so keep its
+   top-level code free of request-time APIs.
+4. **Types.** `pnpm sanity:typegen` (TypeGen scans `lib`, `features/**/content.ts` and
+   `config/*-content.ts`); commit `src/lib/sanity.types.generated.ts`.
+5. **Registry.** Append `{ slice, build }` to `scripts/sanity/slices.ts`, and the schema to
+   `contentSchemaTypes`, each under its phase's comment, so parallel work doesn't touch the same
+   lines. After merging two slices, rerun `pnpm sanity:typegen` rather than resolving conflicts
+   in the generated file.
+6. **Page.** The server page component awaits the getter (it may become `async`; routes may not
+   import feature modules other than the page) and passes plain props to sections and islands.
+   Client components never import `content.ts` or `lib/cms-content`.
+7. **Tests.** Copy `src/features/apply/content.test.ts`: the `code` source returns the fallback;
+   under `USE_MOCK_CMS=1` with `CMS_CONTENT_SOURCE=sanity` the getter returns exactly the same
+   value (`toStrictEqual`), and `fetchContent` over the backfill is not empty (so the parity is
+   not vacuous). Keep the existing data and content-facts tests green.
+8. **Verify.**
+
+   ```bash
+   pnpm lint && pnpm typecheck && pnpm sanity:typegen:check && CI=1 pnpm knip
+   pnpm exec vitest run <slice tests> test/cms-backfill.test.ts test/content-facts.test.ts
+   pnpm sanity:backfill        # dry run: check the per-type counts
+   ```
+
+   Never run `--apply`, `sanity dataset create` or `sanity dataset import`: importing is a launch
+   step for a maintainer (the runbook in ADR 0009).
+
+Gotchas: images in the mock are sized from the file header like Sanity does, so the code
+`ContentImage` must state the file's intrinsic size or parity fails; lists replace wholesale
+(no per-item merge); the CMS cannot clear a value the fallback sets; content edits show after
+revalidation (no drafts or `SanityLive` for the content dataset yet).

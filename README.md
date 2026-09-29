@@ -8,7 +8,8 @@ startup incubator, partners, community, apply, Q&A and the legal pages.
 
 - Next.js 16 (App Router) and React 19, TypeScript
 - Tailwind CSS v4, configured in CSS, with a Base UI design system in `src/components/ds`
-- Sanity CMS for events, research projects and partners, with the Studio embedded at `/studio`
+- Sanity CMS for events, research projects and partners (and, step by step, page content), with
+  the Studio embedded at `/studio` (`/studio/live`, `/studio/content`)
 - Biome (lint and format), Vitest and Testing Library, Playwright with axe
 - pnpm 10, Node 24, deployed on Vercel
 
@@ -82,8 +83,8 @@ The import rules between these layers are enforced by `src/architecture.test.ts`
 | To change | Edit |
 | --- | --- |
 | A deadline, cohort, recruiting round, member count or contact | `src/config/` ([contributor guide](docs/contributor-guide.md#updating-site-facts)) |
-| Page copy | `src/features/<domain>/data/` |
-| Events, research or partners content | `/studio` (locally or on a preview deployment) |
+| Page copy | `src/features/<domain>/data/` (content moving to the CMS: [docs/cms-content-inventory.md](docs/cms-content-inventory.md)) |
+| Events, research or partners content | `/studio/live` (locally or on a preview deployment) |
 | Navigation or the header call to action | `src/config/navigation.ts` |
 | SEO or JSON-LD | `src/config/seo.ts` |
 | A shared component or token | `src/components/ds/`, `src/styles/index.css` |
@@ -91,7 +92,7 @@ The import rules between these layers are enforced by `src/architecture.test.ts`
 ## Draft preview
 
 Vercel preview deployments are the staging environment for CMS changes. With
-`SANITY_API_READ_TOKEN` set there, open `/studio` on the preview, use the Presentation tool, and
+`SANITY_API_READ_TOKEN` set there, open `/studio/live` on the preview, use the Presentation tool, and
 the page shows drafts live. The token stays on the server. Details:
 [docs/architecture.md](docs/architecture.md#data-flow).
 

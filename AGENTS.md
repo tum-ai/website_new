@@ -40,7 +40,10 @@ batch the fixes into one push. Never close and reopen a PR to re-run CI. Details
 
 `pnpm build` writes `.next-prod`; `pnpm start` serves it. `test:perf` reads that build.
 `pnpm sanity:typegen` regenerates `src/lib/sanity.types.generated.ts` after a schema or query
-change (CI fails when it's stale).
+change (CI fails when it's stale; `pnpm sanity:typegen:check` shows it locally).
+`pnpm sanity:backfill [--dataset redesign]` writes the content slices' documents to
+`.sanity-backfill/<dataset>.ndjson` (a dry run); its `--apply` imports them into Sanity and is a
+maintainer's launch step, never part of a change (docs/adr/0009-cms-content-source.md).
 
 ## Architecture
 
@@ -49,18 +52,23 @@ Full description, data flow and rationale: `docs/architecture.md` and `docs/adr/
 ```
 src/app/(site)/<route>/page.tsx   thin route: metadata + JsonLd + the feature's page component
 src/app/(site)/layout.tsx         site root layout: skip link, header, #main-content, footer, SanityLive
-src/app/studio/[[...tool]]/       Sanity Studio, a separate root layout with no site shell or CSS
+src/app/studio/[[...tool]]/       Sanity Studio (workspaces /studio/live, /studio/content), own root layout
 src/app/global-not-found.tsx      404 for unmatched URLs (there are two root layouts)
 src/app/api/                      getNotes | getPartners | getResearch (public JSON API), draft-mode
 src/features/<domain>/            <domain>-page.tsx, sections, data/ (static copy), logic, tests,
-                                  optional index.ts (the only entry for other features)
+                                  content.ts (CMS content slice, server only), optional index.ts
+                                  (the only entry for other features)
 src/components/ds/                design system (Base UI + tone tokens), barrel `@/components/ds`
 src/components/shell/             header, footer, skip link
 src/components/json-ld.tsx        JSON-LD script tag
 src/config/                       site facts, navigation (incl. header CTA) and SEO
-src/lib/                          cn, sanity client/queries/fetch, mock-cms, munich-time, words, use-clock-switch,
-                                  use-media-query, security, redirects
-src/sanity/                       Studio config and schemas (TypeGen writes src/lib/sanity.types.generated.ts)
+src/lib/                          cn, sanity-config, sanity client/queries/fetch, mock-cms, cms-content
+                                  (+ -model, -mock), cms-backfill, content-tokens, faq-content,
+                                  munich-time, words, use-clock-switch, use-media-query, security,
+                                  redirects
+src/sanity/                       Studio config (live + content workspaces) and schemas (TypeGen
+                                  writes src/lib/sanity.types.generated.ts)
+scripts/sanity/                   backfill script and slice registry, schema merge for TypeGen
 src/styles/index.css              tokens, tones, cascade layers, utilities
 src/proxy.ts                      host redirects (join.tum-ai.com to /apply)
 test/                             repo-wide fitness tests (content facts, assets, perf budget)
@@ -110,8 +118,9 @@ index ships its islands and styles to every page importing that index.
 |---|---|---|
 | Add a page | route + feature folder + `config/seo.ts` + nav + `siteRoutes` in `e2e/fixtures.ts` | `add-page` |
 | Change a site fact | the matching file in `src/config/` (`e-lab`, `membership`, `organization`, `contact`, `community`, `impact`, `site`) | `site-facts` |
-| Change static copy | `src/features/<domain>/data/` | |
+| Change static copy | `src/features/<domain>/data/` (the code fallback when a `content.ts` slice serves it) | |
 | Change a CMS type or field | `src/sanity/schemas/` then query, types, mock, UI | `cms-content-model` |
+| Move hard-coded content to the CMS | a content slice: schema in `src/sanity/schemas/content/`, `features/<x>/content.ts`, `scripts/sanity/slices.ts`, parity test; owners in `docs/cms-content-inventory.md` | `cms-content-model` |
 | Add or change a ds component | `src/components/ds/` + showcase + docs table | `ds-component` |
 | Change navigation or the header CTA | `src/config/navigation.ts` (links, `headerCtaSetting`, `getHeaderOptions`) | |
 | Change SEO or JSON-LD | `src/config/seo.ts` | |
@@ -179,7 +188,12 @@ Hard rules:
   setting it only for `pnpm start` does nothing. `MOCK_CMS_NOW` (ISO date, or date-time with an
   offset) fixes the "now" the fixtures and the `/events` and `/apply` render dates use; E2E sets
   `2026-10-01T12:00:00Z`. Without Sanity env vars, CMS pages render empty lists.
-- **Draft mode and Studio.** Presentation in `/studio` enables drafts via `/api/draft-mode/enable`,
+- **CMS content source.** `CMS_CONTENT_SOURCE` (server only) is `code` by default: content slices
+  return their code fallbacks and make no request. `sanity` reads the content dataset
+  (`NEXT_PUBLIC_SANITY_CONTENT_DATASET`, default: the live dataset) and merges it over the
+  fallbacks; with `USE_MOCK_CMS=1` it queries the backfill documents locally. Drafts and
+  `SanityLive` cover the live dataset only.
+- **Draft mode and Studio.** Presentation in `/studio/live` enables drafts via `/api/draft-mode/enable`,
   which needs `SANITY_API_READ_TOKEN` (server only; never expose it to the browser; 503 without
   it). `/api/draft-mode/disable` leaves draft mode. `SANITY_API_BROWSER_TOKEN` is a separate,
   optional token for live drafts outside Presentation. `/studio` must never import the site shell
@@ -202,7 +216,8 @@ Hard rules:
   before editing: `design-system.md` (`src/components/ds/**`), `features.md` (`src/features/**`),
   `app-router.md` (`src/app/**`), `styles.md` (`src/styles/**`, `**/*.css`),
   `content-and-config.md` (`src/config/**`, `src/features/**/data/**`), `sanity.md`
-  (`src/sanity/**`, `src/lib/sanity*`, `src/lib/mock-cms*`, `src/app/api/**`), `testing.md`
+  (`src/sanity/**`, `src/lib/sanity*`, `src/lib/mock-cms*`, `src/lib/cms-*`, content slices,
+  `scripts/sanity/**`, `src/app/api/**`), `testing.md`
   (`**/*.test.ts`, `**/*.test.tsx`, `e2e/**`).
 - Code intelligence (Claude Code): `.claude/settings.json` enables the official
   `typescript-lsp@claude-plugins-official` plugin, which gives the LSP tool go-to-definition,

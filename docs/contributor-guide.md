@@ -114,6 +114,27 @@ change the base fact, not the derived one. The `site-facts` skill lists the guar
 Legal facts and figures without a source are not changed on a guess: keep the current text, add
 `// TODO(content): <question>` and flag it in the PR.
 
+### Who owns content: editors or code
+
+Content is moving from the repository into Sanity, one content slice at a time
+([ADR 0009](adr/0009-cms-content-source.md); the plan and owners are in
+[cms-content-inventory.md](cms-content-inventory.md)). Until launch, and for anything not moved
+yet, the repository is the source:
+
+| Content | Edited by | Where |
+| --- | --- | --- |
+| Events, research projects, partners | editors | `/studio/live` (the live dataset, shared with the old site) |
+| Content served by a slice (today: the /apply and /e-lab FAQs) | editors once `CMS_CONTENT_SOURCE=sanity`; code until then | `/studio/content` (the content dataset); the code copy in `data/` stays as the fallback |
+| Everything else: copy, logos, people, campaigns, site facts | code | `src/features/<domain>/data/`, `src/config/` |
+| Legal pages, `legalEntity`, the site URL, SEO structure, navigation structure, layout geometry | code, always | `src/features/legal/`, `src/config/` |
+
+With `CMS_CONTENT_SOURCE=code` (the default) a slice renders its code content and never calls
+Sanity. With `sanity` it renders the CMS content and falls back to the code content for anything
+empty or missing, so a page never breaks on an unfinished document. Dates, deadlines and role
+emails inside editable text are placeholders such as `{{eLab.deadline}}`: editors keep them, the
+config fills them. CMS content edits show when the page revalidates (at most an hour on `/apply`,
+five minutes on `/e-lab`); there is no draft preview for the content dataset yet.
+
 ### Change static copy
 
 Copy lives in `src/features/<domain>/data/*.ts`, for example:
@@ -125,11 +146,21 @@ Copy lives in `src/features/<domain>/data/*.ts`, for example:
   `member-stories.ts`
 
 No em or en dashes in visible copy (use a comma, colon, period or spaced hyphen), and fix only
-unambiguous typos. The German legal pages are excluded from the spell check.
+unambiguous typos. The German legal pages are excluded from the spell check. When a slice serves
+the copy (a `content.ts` next to `data/`), the code copy is the fallback and the backfill source:
+keep it current until the CMS content is reviewed.
+
+### Move content into the CMS
+
+Follow the "Content slices" section of the `cms-content-model` skill: schema in
+`src/sanity/schemas/content/`, a `content.ts` slice next to the data, the builder registered in
+`scripts/sanity/slices.ts`, a parity test, `pnpm sanity:typegen`, and a dry run of
+`pnpm sanity:backfill`. Importing into a dataset (`--apply`) is a launch step for a maintainer
+(runbook in ADR 0009), never part of a change.
 
 ### Change events, research or partners data
 
-Content is edited in `/studio` (locally or on a preview deployment). To change the shape of the
+Content is edited in `/studio/live` (locally or on a preview deployment). To change the shape of the
 data, follow the order in the `cms-content-model` skill:
 
 1. schema in `src/sanity/schemas/`;
@@ -179,7 +210,7 @@ Today every path on `join.tum-ai.com` redirects to `/apply`.
 Use a Vercel preview deployment as staging for CMS changes. With `SANITY_API_READ_TOKEN` set for
 Preview and Development:
 
-1. Open `/studio` on the preview deployment.
+1. Open `/studio/live` on the preview deployment.
 2. Use the Presentation tool. It calls `/api/draft-mode/enable` and loads the page in an iframe.
 3. The site reads Sanity's draft perspective, and `<SanityLive>` refreshes it as you edit.
 

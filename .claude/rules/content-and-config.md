@@ -21,6 +21,11 @@ FAQs and JSON-LD derive their copy from it. The `site-facts` skill maps each fac
   patterns when you centralize a new fact rather than silencing them.
 - **Derive, don't duplicate:** compute values such as `officialMembers` or
   `eLabProgramSummary` from the base facts.
+- **CMS fallbacks:** content served by a content slice (`content.ts`, see the `cms-content-model`
+  skill) keeps its code version here as the fallback and backfill source. Keep its shape exactly
+  what the page renders; facts inside such copy are `{{placeholders}}` filled with
+  `fillCodeTemplate(template, contentTokens)` (`lib/content-tokens.ts`,
+  `config/content-tokens.ts`), so CMS text stays derived too.
 - **Time:** deadlines are Munich wall-clock strings parsed with `parseMunichDateTime`
   (`@/lib/munich-time`); never `new Date("...")` on local time.
 - **Imports:** `config` may import only `config` and `lib`.
