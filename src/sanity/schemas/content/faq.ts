@@ -128,7 +128,7 @@ export const faqType = defineType({
             Rule.custom((value) => validatePlaceholders(value)),
         },
       ],
-      description: `Q&A only: points listed after the answer's first sentence. ${placeholderHelp}`,
+      description: `Q&A only: points listed after the answer's first sentence. The member-journey answer (anchor member-journey) lists the journey's two tracks by itself, from their steps: points set there are not shown. ${placeholderHelp}`,
       hidden: unlessQanda,
     }),
     defineField({

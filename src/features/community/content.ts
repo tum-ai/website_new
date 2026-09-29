@@ -14,6 +14,7 @@ import {
 import type { Department, JourneyStage } from "@/lib/community-model";
 import { backfillContentImage } from "@/lib/content-backfill";
 import { fillCmsCopy, fillCodeCopy } from "@/lib/content-copy";
+import type { ContentTokens } from "@/lib/content-tokens";
 import type { COMMUNITY_COPY_QUERY_RESULT } from "@/lib/sanity.types.generated";
 import { type CommunityCopy, communityCopyTemplate } from "./data/copy";
 import { departments as departmentTemplates } from "./data/departments";
@@ -43,6 +44,19 @@ export type CommunityContent = {
   departments: Department[];
 };
 
+/**
+ * The member journey alone, as /community renders it (the CMS steps or the
+ * code journey), for other pages: /qanda lists the fork's tracks.
+ */
+export function getJourneyStages(
+  tokens: ContentTokens,
+): Promise<JourneyStage[]> {
+  return getMemberJourney(memberJourney, tokens, {
+    people: buildMemberStoriesBackfill,
+    storyKey: memberStoryKey,
+  });
+}
+
 /** The /community copy, journey and departments: the CMS over the code copy. */
 export async function getCommunityContent(): Promise<CommunityContent> {
   const tokens = await getContentTokens();
@@ -55,10 +69,7 @@ export async function getCommunityContent(): Promise<CommunityContent> {
       mockDocuments: buildCommunityBackfill,
       select: (result) => fillCmsCopy(result, tokens, "the /community copy"),
     }),
-    getMemberJourney(memberJourney, tokens, {
-      people: buildMemberStoriesBackfill,
-      storyKey: memberStoryKey,
-    }),
+    getJourneyStages(tokens),
     getDepartments(departmentTemplates, tokens),
   ]);
   return { copy, journey, departments };

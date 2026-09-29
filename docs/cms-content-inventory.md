@@ -102,7 +102,7 @@ fields, and each owner defines its own schema file.
 | Event host logos | `events/data/host-logos.ts` (17 keys, dynamic `/assets/events/hosts/`, `/assets/partners/`) | `events/hero.tsx` | **done**: `organization` (`roles: eventHost`, `key` = the normalised host name) | B |
 | Events hero lockup and reel | inline in `events/hero.tsx`, `hero-reel.tsx`, `lockup.tsx` (lead "Hackathons, talks and pitch nights…", generated summary) | /events | **done**: logos from `organization`; the lead without events in `eventsCopy.hero.emptyLead` (integration); the counted lead stays built in code | B |
 | REX institutions | `research/data/rex.ts`: `rexInstitutions` (4), `rexLead`, `rexProcess`, `rexOrigin` | `research/research-page.tsx`, home `programs` text | **done**: `organization` in the `rex-institutions` logo list; the REX lead, process and origin in `researchCopy.rex` (integration) | B |
-| Member stories | `community/data/member-stories.ts`: `stories` (6) | `community-page.tsx`, `member-stories.tsx`, `semester-plan.tsx`, apply `tracks.tsx`, home `join-section.tsx` | **done**: `person` (`placements: memberStory`); journey excerpts must stay verbatim substrings | B |
+| Member stories | `community/data/member-stories.ts`: `stories` (6) | `community-page.tsx`, `member-stories.tsx`, `semester-plan.tsx`, apply `tracks.tsx`, home `join-section.tsx` | **done**: `person` (`placements: memberStory`); the journey and homepage excerpts must stay verbatim substrings (Studio validation, `lib/quote-excerpt.ts`) | B |
 
 ## Phase 4: page copy (C)
 
@@ -110,7 +110,7 @@ fields, and each owner defines its own schema file.
 | --- | --- | --- | --- | --- |
 | Apply FAQ | `apply/data/faq.ts` | `apply-page.tsx` via `apply/content.ts` | **done**: `faq` (`apply`) | – |
 | E-Lab FAQ | `e-lab/data/faq.ts` | `e-lab-page.tsx` via `e-lab/content.ts` | **done**: `faq` (`e-lab`) | – |
-| Q&A entries | `qanda/data/qanda.ts`: `faqs` (7; `spans`, `points`, `evidence` with facts) | `qanda-page.tsx` (+ FAQPage JSON-LD), `mission-section.tsx`, design system | **done**: `faq` (`qanda`; `anchor` = today's `id`; evidence text with `{{org.*}}`, `{{impact.*}}`, `{{eLab.*}}`); `spans` stay exact substrings of the passage | C |
+| Q&A entries | `qanda/data/qanda.ts`: `faqs` (7; `spans`, `points`, `evidence` with facts) | `qanda-page.tsx` (+ FAQPage JSON-LD), `mission-section.tsx`, design system | **done**: `faq` (`qanda`; `anchor` = today's `id`; evidence text with `{{org.*}}`, `{{impact.*}}`, `{{eLab.*}}`); `spans` stay exact substrings of the passage; the `member-journey` answer's points are the journey fork's tracks, derived at render (`qanda/journey-tracks.ts`), not stored | C |
 | Mission passage | `qanda/data/qanda.ts`: `missionQuestion`, `missionPassage` | qanda page | **done**: `qandaCopy` (edit together with the spans; the span test must run on CMS data) | C |
 | Q&A forks and closing | `qanda/data/qanda.ts`: `forks`; inline in `qanda-page.tsx`, `mission-section.tsx`, `mission-answers.tsx`, `closing-section.tsx` | qanda | **done**: `qandaCopy` (the companies fork is `partnerPitch`) | C |
 | Apply page copy | `apply/data/apply.ts`: `heroLead`, `tracksLead`, `selectionStages`, `qualities`, `notRequired`, `values`, `offerings`; inline in `selection.tsx`, `since-founding.tsx`, `tracks.tsx`, `who-should-apply.tsx` (titles, photo alts) | apply | **done**: `applyCopy` (`{{org.majors}}` etc. for facts; stage `when` keys stay code) | C |

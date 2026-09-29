@@ -114,6 +114,23 @@ describe("the /qanda content slice", () => {
     );
   });
 
+  test("the member-journey answer lists the CMS journey's tracks, not the entry's own points", async () => {
+    useSource("sanity");
+    tamper.edit = (document) =>
+      document.anchor === "member-journey"
+        ? { ...document, points: ["A point the entry still holds."] }
+        : document._type === "journeyStep" && document.number === "02B"
+          ? { ...document, description: "Run a department. Then more." }
+          : document;
+    const { faqs: served } = await getQandaContent();
+    const answer = served.find(({ id }) => id === "member-journey");
+    expect(answer?.points).toHaveLength(2);
+    expect(answer?.points).toContain(
+      "In the initiative track you will run a department.",
+    );
+    expect(answer?.points).not.toContain("A point the entry still holds.");
+  });
+
   test("the backfill holds the copy singleton and one entry per question", () => {
     const documents = buildQandaBackfill();
     expect(documents.filter(({ _type }) => _type === "qandaCopy")).toHaveLength(

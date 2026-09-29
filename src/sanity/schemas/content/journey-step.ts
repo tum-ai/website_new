@@ -59,7 +59,7 @@ export const journeyStepType = defineType({
       name: "description",
       title: "Description",
       description:
-        "One or two sentences. On a fork's tracks, the Q&A page's member-journey answer quotes the first sentence: keep them in step.",
+        "One or two sentences. On a fork's tracks, the Q&A page's member-journey answer lists the first sentence as “In the <name in lower case> you will …”, so start it with a verb (“Join …”).",
       max: 400,
       rows: 4,
     }),
