@@ -123,3 +123,10 @@ test("Every E-Lab content image references an existing local asset", () => {
     ).toBe(true);
   }
 });
+
+test("every milestone of the traced venture names its source", () => {
+  expect(tracedVenture.after.length).toBeGreaterThan(0);
+  for (const milestone of tracedVenture.after) {
+    expect(milestone.source, milestone.text).toMatch(/^https:\/\//);
+  }
+});

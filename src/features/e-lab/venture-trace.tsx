@@ -40,10 +40,10 @@ export function VentureTrace() {
           title="One team, all the way through."
           size="lg"
           layout="stack"
-          lead={`${venture.name} came out of ${tracedVenture.cohort} and went on to ${tracedVenture.next}.`}
+          lead={`${venture.name} came out of ${tracedVenture.cohort}, went on to ${tracedVenture.after[0]?.text ?? ""}, and now plans supply chains for consumer brands.`}
         />
         <div className="grid gap-14 lg:grid-cols-12 lg:gap-12">
-          <Reveal className="lg:col-span-7">
+          <Reveal className="lg:col-span-7 lg:self-start">
             <QuoteCard
               variant="editorial"
               quote={founder.quote}
@@ -87,8 +87,8 @@ export function VentureTrace() {
 }
 
 /**
- * The team's way through the gates, on a rail: every gate it passed, then
- * where it went after the Final Pitch. Local rather than ds `Steps`, whose
+ * The team's way through the gates, on a rail: every gate it passed (filled
+ * markers), then what it did after the E-Lab (open markers). Local rather than ds `Steps`, whose
  * rail is horizontal and whose `rows` layout has no markers; a vertical
  * dot-rail variant of `Steps` is a ds handoff.
  */
@@ -111,18 +111,27 @@ function Trail() {
           <li key={gate.id} className="relative text-body text-fg-muted">
             <span
               aria-hidden="true"
-              className="absolute top-1/2 -left-7 size-3 -translate-y-1/2 rounded-full bg-highlight ring-4 ring-canvas"
+              className="absolute top-3.5 -left-7 size-3 -translate-y-1/2 rounded-full bg-highlight ring-4 ring-canvas"
             />
             {gate.name}
           </li>
         ))}
-        <li className="relative mt-8! text-fg text-heading-md">
-          <span
-            aria-hidden="true"
-            className="absolute top-1/2 -left-7 size-3 -translate-y-1/2 rounded-full border-2 border-highlight bg-canvas"
-          />
-          {tracedVenture.next}
-        </li>
+        {tracedVenture.after.map((milestone, index) => (
+          <li
+            key={milestone.text}
+            className={
+              index === 0
+                ? "relative mt-8! text-fg text-heading-md"
+                : "relative text-body text-fg"
+            }
+          >
+            <span
+              aria-hidden="true"
+              className="absolute top-3.5 -left-7 size-3 -translate-y-1/2 rounded-full border-2 border-highlight bg-canvas"
+            />
+            {milestone.text}
+          </li>
+        ))}
       </ol>
     </div>
   );

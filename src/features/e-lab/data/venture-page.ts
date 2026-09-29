@@ -168,16 +168,50 @@ export const notableStartups = [
   },
 ] satisfies readonly NotableStartup[];
 
+/** A milestone of the traced venture after the E-Lab, with its source. */
+export interface VentureMilestone {
+  text: string;
+  /** Where the fact is stated; kept for maintainers, not rendered. */
+  source: string;
+}
+
 /**
  * The venture /e-lab follows through the gates: an alumni startup, the
- * founder quote that tells its story, the cohort it came from and where it
- * went next. Ids point into `notableStartups` and `testimonialCards`.
+ * founder quote that tells its story, the cohort it came from, and what it
+ * did after the E-Lab, each milestone from a source the company or YC
+ * publishes itself. Ids point into `notableStartups` and `testimonialCards`.
  */
 export const tracedVenture = {
   startupId: "spherecast",
   testimonialId: "leon-hergert",
+  // TUM.ai's own post: "one of our earliest startups, originating from AI
+  // E-Lab 1.0 ... made it all the way from our E-Lab to the Y Combinator S24
+  // Batch" (linkedin.com/posts/tum-ai_tumai-ai-e-lab-graduates-spherecast-
+  // activity-7367523700532817920-p2Ff).
+  // TODO(content): E-Lab 1.0 may not have had every gate the current program
+  // has (Midterm Pitch, Selection Day). Confirm before tracing all of them.
   cohort: "E-Lab 1.0",
-  // TODO(content): confirm Spherecast went through every gate of its cohort,
-  // including the Final Pitch (E-Lab 1.0 may have been structured differently).
-  next: "Y Combinator, Summer 2024 batch",
-} as const;
+  after: [
+    {
+      text: "Y Combinator, Summer 2024 batch",
+      source: "https://www.ycombinator.com/companies/spherecast",
+    },
+    {
+      text: "Agnes, an AI supply chain manager for consumer goods brands such as AG1",
+      source: "https://www.spherecast.ai/",
+    },
+    {
+      text: "Offices in Munich and San Francisco",
+      source: "https://www.spherecast.ai/",
+    },
+    {
+      text: "Sphereworld, its own conference in New York, September 2026",
+      source: "https://www.spherecast.ai/sphereworld",
+    },
+  ],
+} satisfies {
+  startupId: string;
+  testimonialId: string;
+  cohort: string;
+  after: VentureMilestone[];
+};
