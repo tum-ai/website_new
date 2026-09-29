@@ -2,28 +2,34 @@ import {
   Actions,
   ButtonLink,
   Container,
-  DayRuler,
   Reveal,
   Section,
   TextLink,
 } from "@/components/ds";
 import { callToActionLabels } from "@/config/calls-to-action";
+import type { MembershipConfig } from "@/config/membership";
+import { isCmsClockFixed } from "@/lib/mock-cms-env";
 import { LiveApplyAction, LiveCallPhase } from "./apply-action";
 import type { ApplyCopy } from "./data/apply";
+import { LiveClosingRuler } from "./live-call-dates";
 import { closingLead, closingTitle, type RecruitingCall } from "./round";
 
 /**
  * The call's submission box, on ink: the hero's register reduced to the one
  * date that matters, over the same day ruler at full width, with the apply
  * action. Beside it, the partners' way to meet the members
- * (`partnerPitch`, from the partners copy).
+ * (`partnerPitch`, from the partners copy). The ruler and the phase's words
+ * stay current in the browser (`membership` is the window `call` was
+ * computed from).
  */
 export function ClosingSection({
   call,
+  membership,
   copy,
   partnerPitch,
 }: {
   call: RecruitingCall;
+  membership: MembershipConfig;
   copy: ApplyCopy["closing"];
   partnerPitch: string;
 }) {
@@ -42,14 +48,10 @@ export function ClosingSection({
           </h2>
         </Reveal>
         <Reveal variant="fade" delay={100}>
-          <DayRuler
-            className="mt-12 md:mt-16"
-            size="lg"
-            days={call.progress.totalDays}
-            elapsed={call.progress.elapsedDays}
-            startLabel={`${call.phase === "upcoming" ? "Opens" : "Opened"} ${call.short.opens}`}
-            endLabel={`Deadline ${call.short.deadline}`}
-            markLabel={call.daysLeftLabel || undefined}
+          <LiveClosingRuler
+            call={call}
+            config={membership}
+            live={!isCmsClockFixed()}
           />
         </Reveal>
         <div className="mt-12 grid gap-16 md:mt-16 lg:grid-cols-12 lg:gap-12">

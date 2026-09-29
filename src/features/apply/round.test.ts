@@ -4,7 +4,9 @@ import {
   callInPhase,
   closingLead,
   closingTitle,
+  type RecruitingCall,
   recruitingCall,
+  recruitingCallBoundaries,
 } from "./round";
 
 const config: MembershipConfig = {
@@ -131,5 +133,51 @@ describe("recruitingCall", () => {
       closingLead(openingDay),
     );
     expect(callInPhase(openingDay, "closed").daysLeftLabel).toBe("");
+  });
+});
+
+describe("recruitingCallBoundaries", () => {
+  /**
+   * What the page shows of a call that depends on the day (the register, the
+   * phase and the ruler); `progress.daysLeft` keeps counting after the
+   * deadline, where nothing shows it.
+   */
+  const shown = (call: RecruitingCall) => ({
+    phase: call.phase,
+    keyDates: call.keyDates,
+    daysLeftLabel: call.daysLeftLabel,
+    elapsedDays: call.progress.elapsedDays,
+  });
+
+  test("lists the opening, the deadline minute and each Munich midnight to the day after the round", () => {
+    const boundaries = recruitingCallBoundaries(
+      new Date("2026-09-20T12:00:00Z"),
+      config,
+    ).map((instant) => instant.toISOString());
+    expect(boundaries[0]).toBe("2026-09-20T22:00:00.000Z");
+    expect(boundaries).toContain("2026-09-27T22:00:00.000Z");
+    expect(boundaries).toContain("2026-10-27T22:59:00.000Z");
+    // Winter time from 25 October: midnight is 23:00Z.
+    expect(boundaries).toContain("2026-10-25T23:00:00.000Z");
+    expect(boundaries.at(-1)).toBe("2026-11-16T23:00:00.000Z");
+    expect(new Set(boundaries).size).toBe(boundaries.length);
+  });
+
+  test("starts at the instant given", () => {
+    const from = new Date("2026-10-27T12:00:00Z");
+    const boundaries = recruitingCallBoundaries(from, config);
+    expect(boundaries[0].toISOString()).toBe("2026-10-27T22:59:00.000Z");
+    expect(boundaries.every((instant) => instant >= from)).toBe(true);
+  });
+
+  test("the call reads the same from one boundary to just before the next", () => {
+    const from = new Date("2026-09-20T12:00:00Z");
+    const spans = [from, ...recruitingCallBoundaries(from, config)];
+    spans.forEach((start, index) => {
+      const end = spans[index + 1] ?? new Date("2027-03-01T12:00:00Z");
+      expect(
+        shown(recruitingCall(new Date(end.getTime() - 1), config)),
+      ).toEqual(shown(recruitingCall(start, config)));
+    });
   });
 });

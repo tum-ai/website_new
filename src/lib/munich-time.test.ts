@@ -5,6 +5,7 @@ import {
   munichDateFromIsoDay,
   munichDayNumber,
   munichIsoDate,
+  munichMidnights,
   nextMunichDate,
   parseMunichDateTime,
 } from "./munich-time";
@@ -131,5 +132,57 @@ describe("CMS dates", () => {
     expect(isMunichTime("23:59")).toBe(true);
     expect(isMunichTime("24:00")).toBe(false);
     expect(isMunichTime("9:30")).toBe(false);
+  });
+});
+
+describe("munichMidnights", () => {
+  const iso = (from: string, to: string) =>
+    munichMidnights(new Date(from), new Date(to)).map((midnight) =>
+      midnight.toISOString(),
+    );
+
+  test("lists the midnights across the autumn change, 25 hours apart once", () => {
+    // Summer time (UTC+2) until 25 October 2026, winter time (UTC+1) after.
+    expect(iso("2026-10-23T12:00:00Z", "2026-10-27T12:00:00Z")).toEqual([
+      "2026-10-23T22:00:00.000Z",
+      "2026-10-24T22:00:00.000Z",
+      "2026-10-25T23:00:00.000Z",
+      "2026-10-26T23:00:00.000Z",
+    ]);
+  });
+
+  test("lists the midnights across the spring change, 23 hours apart once", () => {
+    expect(iso("2026-03-28T12:00:00Z", "2026-03-30T12:00:00Z")).toEqual([
+      "2026-03-28T23:00:00.000Z",
+      "2026-03-29T22:00:00.000Z",
+    ]);
+  });
+
+  test("includes midnights on either end and nothing outside", () => {
+    expect(iso("2026-09-27T22:00:00Z", "2026-09-28T22:00:00Z")).toEqual([
+      "2026-09-27T22:00:00.000Z",
+      "2026-09-28T22:00:00.000Z",
+    ]);
+    expect(iso("2026-09-27T22:00:01Z", "2026-09-28T21:59:59Z")).toEqual([]);
+  });
+
+  test("is empty for a reversed range", () => {
+    expect(iso("2026-10-27T12:00:00Z", "2026-10-20T12:00:00Z")).toEqual([]);
+  });
+
+  test("gives each midnight as 00:00 on consecutive Munich days", () => {
+    const midnights = munichMidnights(
+      new Date("2026-09-27T12:00:00Z"),
+      new Date("2026-11-17T12:00:00Z"),
+    );
+    expect(midnights).toHaveLength(51);
+    midnights.forEach((midnight, index) => {
+      expect(munichDayNumber(midnight)).toBe(
+        munichDayNumber(midnights[0]) + index,
+      );
+      expect(munichDayNumber(new Date(midnight.getTime() - 1))).toBe(
+        munichDayNumber(midnight) - 1,
+      );
+    });
   });
 });

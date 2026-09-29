@@ -13,13 +13,24 @@ import {
   type ClockWindow,
   clockWindowPhase,
 } from "@/lib/clock-window";
-import { munichDayNumber, munichIsoDate } from "@/lib/munich-time";
+import {
+  munichDayNumber,
+  munichIsoDate,
+  munichMidnights,
+  nextMunichDate,
+  parseMunichDateTime,
+} from "@/lib/munich-time";
 
 /** Where the call stands: not yet open, taking applications, or closed. */
 export type CallPhase = ClockPhase;
 
 /** Everything /apply shows about the recruiting round at one instant. */
 export type RecruitingCall = {
+  /**
+   * The instant the call describes (epoch ms), so a client island can list
+   * the day boundaries still ahead of it ({@link recruitingCallBoundaries}).
+   */
+  at: number;
   phase: CallPhase;
   /**
    * The application window as instants, for the islands that switch live
@@ -108,9 +119,10 @@ function startsIn(count: number): string {
 /**
  * The recruiting round at `now`: its phase, the register rows with each
  * date's state, and the progress of the application window, all on the
- * Munich calendar. Server only: pass the render's "now" (`getCmsNow()`) and
+ * Munich calendar. The server passes the render's "now" (`getCmsNow()`) and
  * the window resolved for the render (`await getMembershipWindow()`); the
- * default is the code window.
+ * default is the code window. Isomorphic: the apply page's date islands
+ * (`live-call-dates.tsx`) recompute it in the browser with the same window.
  */
 export function recruitingCall(
   now: Date,
@@ -189,6 +201,7 @@ export function recruitingCall(
   );
 
   return {
+    at: now.getTime(),
     phase,
     clock,
     name: config.round.name,
@@ -208,6 +221,38 @@ export function recruitingCall(
     },
     daysLeftLabel,
   };
+}
+
+/**
+ * The instants from `from` on at which {@link recruitingCall} for `config`
+ * can read differently: the opening, the deadline minute, and every Munich
+ * midnight up to the one after the round's last date, when every register
+ * row has passed. Nothing changes after that.
+ */
+export function recruitingCallBoundaries(
+  from: Date,
+  config: MembershipConfig = membershipConfig,
+): Date[] {
+  const { round } = config;
+  const { opensAt, closesAt } = roundSchedule(round);
+  const lastDate = [
+    round.deadlineDate,
+    round.interviews.to,
+    round.onboarding.to,
+  ]
+    .map((date) => ({
+      date,
+      day: munichDayNumber(parseMunichDateTime(date, "00:00")),
+    }))
+    .reduce((latest, date) => (date.day > latest.day ? date : latest)).date;
+  const end = parseMunichDateTime(nextMunichDate(lastDate), "00:00");
+  const instants = new Set(
+    [opensAt, closesAt]
+      .filter((instant) => instant >= from)
+      .concat(munichMidnights(from, end))
+      .map((instant) => instant.getTime()),
+  );
+  return [...instants].sort((a, b) => a - b).map((at) => new Date(at));
 }
 
 /**

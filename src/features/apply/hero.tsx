@@ -1,20 +1,27 @@
-import { ButtonLink, DayRuler, KeyDates, PageHero } from "@/components/ds";
+import { ButtonLink, PageHero } from "@/components/ds";
+import type { MembershipConfig } from "@/config/membership";
 import { fillPageTokens } from "@/lib/content-copy";
+import { isCmsClockFixed } from "@/lib/mock-cms-env";
 import { LiveApplyAction, LiveCallPhase } from "./apply-action";
 import type { ApplyCopy } from "./data/apply";
+import { LiveHeroDates } from "./live-call-dates";
 import { callStatus, type RecruitingCall } from "./round";
 
 /**
  * The call for members: the title and status on the left, and the page's
  * bold element on the right, the round's important dates with passed dates
  * struck through, over a ruler of the application window's days. The words
- * come from the page copy; the status and dates from the round.
+ * come from the page copy; the status and dates from the round, both kept
+ * current in the browser (`membership` is the window `call` was computed
+ * from).
  */
 export function Hero({
   call,
+  membership,
   copy,
 }: {
   call: RecruitingCall;
+  membership: MembershipConfig;
   copy: Pick<ApplyCopy, "heroTitle" | "heroLead" | "faqLabel" | "datesTitle">;
 }) {
   return (
@@ -53,20 +60,11 @@ export function Hero({
               round: call.name.toLowerCase(),
             })}
           </p>
-          <KeyDates
-            items={call.keyDates}
-            aria-labelledby="apply-dates-title"
-            drawIn
-            className="mt-4"
-          />
-          <DayRuler
-            className="mt-8"
-            days={call.progress.totalDays}
-            elapsed={call.progress.elapsedDays}
-            startLabel={`${call.phase === "upcoming" ? "Opens" : "Opened"} ${call.short.opens}`}
-            endLabel={`Deadline ${call.short.deadline}`}
-            markLabel={call.phase === "open" ? "Today" : undefined}
-            drawIn
+          <LiveHeroDates
+            call={call}
+            config={membership}
+            live={!isCmsClockFixed()}
+            labelledBy="apply-dates-title"
           />
         </div>
       }

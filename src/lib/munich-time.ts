@@ -149,3 +149,23 @@ export function nextMunichDate(date: string): string {
   const next = new Date(Date.UTC(year, month - 1, day + 1));
   return `${twoDigits(next.getUTCDate())}.${twoDigits(next.getUTCMonth() + 1)}.${next.getUTCFullYear()}`;
 }
+
+/**
+ * Every Munich midnight (00:00 in Europe/Berlin) from `from` to `to`, both
+ * inclusive, as instants in order: the moments a Munich calendar day turns
+ * over, e.g. for a clock island's re-render boundaries. On the days the
+ * clocks change the gap between two midnights is 23 or 25 hours, not 24.
+ * Empty when `to` is before `from`.
+ */
+export function munichMidnights(from: Date, to: Date): Date[] {
+  const midnights: Date[] = [];
+  for (let day = munichDayNumber(from); ; day++) {
+    const date = new Date(day * DAY_MS);
+    const midnight = parseMunichDateTime(
+      `${twoDigits(date.getUTCDate())}.${twoDigits(date.getUTCMonth() + 1)}.${date.getUTCFullYear()}`,
+      "00:00",
+    );
+    if (midnight > to) return midnights;
+    if (midnight >= from) midnights.push(midnight);
+  }
+}

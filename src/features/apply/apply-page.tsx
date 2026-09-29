@@ -47,13 +47,18 @@ export async function ApplyPage({ now }: ApplyPageProps) {
   const call = recruitingCall(now, membership);
   return (
     <main>
-      <Hero call={call} copy={copy} />
+      <Hero call={call} membership={membership} copy={copy} />
       <WhoShouldApply copy={copy.scope} mission={facts.brandMission} />
       <Tracks copy={copy.tracks} journey={journey} stories={stories} />
       <Selection copy={copy.selection} call={call} />
       <SinceFounding copy={copy.history} milestones={milestones} />
       <FaqSection id="apply-faq" tone="mist" items={faq} />
-      <ClosingSection call={call} copy={copy.closing} partnerPitch={pitch} />
+      <ClosingSection
+        call={call}
+        membership={membership}
+        copy={copy.closing}
+        partnerPitch={pitch}
+      />
     </main>
   );
 }
