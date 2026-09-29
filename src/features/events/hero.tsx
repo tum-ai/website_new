@@ -39,7 +39,7 @@ export async function EventsHero({
   ]);
   return (
     <HeroReel
-      count={hosts.length}
+      names={hosts.map((host) => host.name)}
       aria-labelledby="events-hero-title"
       className="events-hero"
       data-roll={rolls ? "" : undefined}

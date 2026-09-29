@@ -75,18 +75,22 @@ const WHEEL_REST_MS = 140;
  *
  * The markup comes from the server; this writes the position as `--roll`
  * (rows within one turn, so the reel's three copies wrap without a seam),
- * marks the panel of the name in the slot, and moves only a transform. It
- * does nothing under reduced motion, where the hero is a static index (see
- * events.css), and follows the setting when it changes.
+ * marks the panel of the name in the slot, and moves only a transform. The
+ * panels are decorative (`aria-hidden`), so a polite live region, added
+ * with the reel, announces the name in the slot whenever the reel comes to
+ * rest after a turn. It does nothing under reduced motion, where the hero
+ * is a static index (see events.css), and follows the setting when it
+ * changes.
  */
 export function HeroReel({
-  count,
+  names,
   style,
   ...props
 }: Omit<ComponentProps<typeof Section>, "tone" | "spacing"> & {
-  /** How many names the reel holds. */
-  count: number;
+  /** The names the reel holds, in order: the co-hosts. */
+  names: readonly string[];
 }) {
+  const count = names.length;
   const ref = useRef<HTMLElement>(null);
   // The same condition as the reel layout in events.css.
   const reelMode = useMediaQuery("(prefers-reduced-motion: no-preference)");
@@ -109,6 +113,21 @@ export function HeroReel({
     let active = 0;
     let wheelRest = 0;
 
+    // Rendered by the effect, like the reel itself: the static index needs
+    // no announcements.
+    const live = document.createElement("p");
+    live.className = "sr-only";
+    live.setAttribute("aria-live", "polite");
+    live.setAttribute("aria-atomic", "true");
+    band.append(live);
+    let announced = -1;
+    /** Says the name in the slot once the reel rests on a new one. */
+    const announce = () => {
+      if (active === announced) return;
+      announced = active;
+      live.textContent = `${names[active]} in the slot`;
+    };
+
     const render = () => {
       const turn = ((current % count) + count) % count;
       band.style.setProperty("--roll", turn.toFixed(4));
@@ -128,7 +147,10 @@ export function HeroReel({
       if (Math.abs(target - current) < 0.001) current = target;
       render();
       if (current !== target) frame = requestAnimationFrame(tick);
-      else last = 0;
+      else {
+        last = 0;
+        announce();
+      }
     };
     const glide = () => {
       if (!frame) frame = requestAnimationFrame(tick);
@@ -239,8 +261,9 @@ export function HeroReel({
       region.removeEventListener("pointercancel", onPointerUp);
       region.removeEventListener("keydown", onKeyDown);
       band.style.removeProperty("--roll");
+      live.remove();
     };
-  }, [count, reelMode]);
+  }, [count, names, reelMode]);
 
   return (
     <Section
