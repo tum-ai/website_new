@@ -1,4 +1,6 @@
+import type { Organization } from "@/lib/people-and-logos";
 import type { Partner } from "@/lib/types";
+import { partnerLogoLists } from "./organizations";
 
 // These brief-approved defaults also keep the core wall available before CMS backfill.
 export const featuredPartners: Partner[] = [
@@ -130,25 +132,39 @@ export const featuredPartners: Partner[] = [
   },
 ];
 
-/**
- * Symbol-only artwork that doesn't name its company: tiles and the hero
- * marquee set the partner name beside it as a wordmark lockup.
- */
-export const symbolOnlyLogos: ReadonlySet<string> = new Set([
-  "/assets/partners/logos/mutagent.svg",
-  "/assets/partners/marquee/dryft.png",
-]);
+/** A company in "Where they go afterwards": its name and light logo. */
+export type AlumniDestination = { name: string; image?: string };
 
-export const alumniDestinations = [
-  { name: "OpenAI", image: "/assets/partners/logos/openai-wordmark.webp" },
-  { name: "Google", image: "/assets/partners/logos/google.webp" },
-  { name: "NVIDIA", image: "/assets/partners/logos/nvidia.webp" },
-  { name: "AWS", image: "/assets/partners/logos/aws.svg" },
-  { name: "Cohere", image: "/assets/partners/logos/cohere.svg" },
-  { name: "McKinsey & Company", image: "/assets/partners/logos/mckinsey.svg" },
-  { name: "Anthropic", image: "/assets/partners/logos/anthropic.webp" },
-  { name: "Databricks", image: "/assets/partners/logos/databricks.svg" },
-  { name: "Meta", image: "/assets/partners/logos/meta.svg" },
-  { name: "Y Combinator", image: "/assets/e-lab/partners/y-combinator.webp" },
-  { name: "JetBrains", image: "/assets/partners/logos/jetbrains.svg" },
-] as const;
+/** The alumni-destination chips of a logo list. */
+export function alumniDestinationsOf(
+  list: readonly Organization[],
+): AlumniDestination[] {
+  return list.map(({ name, logo }) =>
+    logo ? { name, image: logo.src } : { name },
+  );
+}
+
+/**
+ * The symbol-only artwork among `lists` (light and dark logos): artwork that
+ * doesn't name its company, so tiles and the hero marquee set the partner
+ * name beside it as a wordmark lockup. Matched by file, so it covers the
+ * launch defaults above as long as they use the same files.
+ */
+export function symbolOnlyLogosOf(
+  lists: readonly (readonly Organization[])[],
+): ReadonlySet<string> {
+  return new Set(
+    lists
+      .flat()
+      .flatMap(({ logo, logoOnDark }) => [logo, logoOnDark])
+      .flatMap((artwork) => (artwork?.symbolOnly ? [artwork.src] : [])),
+  );
+}
+
+export const symbolOnlyLogos = symbolOnlyLogosOf(
+  Object.values(partnerLogoLists),
+);
+
+export const alumniDestinations = alumniDestinationsOf(
+  partnerLogoLists["alumni-destinations"],
+);
