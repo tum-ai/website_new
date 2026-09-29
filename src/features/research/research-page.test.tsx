@@ -1,9 +1,18 @@
 import { axe } from "@test/axe";
 import { render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { contentTokens } from "@/config/content-tokens";
+import { fillCodeCopy } from "@/lib/content-copy";
 import { getMockResearchProjects } from "@/lib/mock-cms";
 import type { Partner } from "@/lib/types";
-import { closing } from "./data/research-copy";
+import { researchCopyTemplate, researchPageTokens } from "./data/research-copy";
+
+const researchCopy = fillCodeCopy(
+  researchCopyTemplate,
+  contentTokens,
+  researchPageTokens,
+);
+
 import { getResearchIndex } from "./research";
 import { ResearchPage } from "./research-page";
 
@@ -44,15 +53,15 @@ const partners: Partner[] = [
 ];
 const index = getResearchIndex(projects);
 
-function renderPage() {
-  return render(
-    <ResearchPage projects={projects} researchPartners={partners} />,
-  );
+const { closing } = researchCopy;
+
+async function renderPage() {
+  return render(await ResearchPage({ projects, researchPartners: partners }));
 }
 
 describe("ResearchPage", () => {
   test("has one h1 and a section heading per band", async () => {
-    const { container } = renderPage();
+    const { container } = await renderPage();
     expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
     expect(
       screen
@@ -68,8 +77,8 @@ describe("ResearchPage", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
-  test("opens on the affiliation index, closes on it with an open slot", () => {
-    renderPage();
+  test("opens on the affiliation index, closes on it with an open slot", async () => {
+    await renderPage();
     const [opening, closingList] = screen.getAllByRole("list", {
       name: "Affiliations",
     });
@@ -93,8 +102,8 @@ describe("ResearchPage", () => {
     ).toHaveAttribute("href", "https://www.ibm.com/");
   });
 
-  test("lists every project once and links each paper by its host", () => {
-    renderPage();
+  test("lists every project once and links each paper by its host", async () => {
+    await renderPage();
     for (const entry of [...index.ongoing, ...index.completed]) {
       expect(
         screen.getByRole("article", { name: entry.title }),

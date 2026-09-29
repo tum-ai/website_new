@@ -12,7 +12,7 @@ import {
   getPartnerKey,
   marqueeLogos,
 } from "@/features/partners";
-import { heroLead, heroPhotos } from "./data/homepage";
+import type { HomeCopy } from "./data/homepage";
 import { HeroAperture } from "./hero-aperture";
 
 /**
@@ -36,7 +36,7 @@ const heroPartners = getHighlightedPartners(getPartnerDirectory([]))
  * reveals. The page preloads two images: the header logo and the aperture's
  * first photo (test/perf/homepage.perf.ts).
  */
-export function HomeHero() {
+export function HomeHero({ hero }: { hero: HomeCopy["hero"] }) {
   return (
     <Section
       tone="night"
@@ -45,7 +45,7 @@ export function HomeHero() {
       className="flex min-h-[100svh] flex-col overflow-clip pt-[calc(var(--header-height)+clamp(4rem,12vh,9rem))]"
     >
       <HeroAperture
-        photos={heroPhotos}
+        photos={hero.photos}
         className="home-aperture-frame absolute -z-10 aspect-[477/406]"
       />
 
@@ -56,11 +56,11 @@ export function HomeHero() {
             className="max-w-[9.5em] text-display-xl text-highlight"
           >
             <SplitWords delay={160} step={70}>
-              Germany’s leading AI student initiative.
+              {hero.title}
             </SplitWords>
           </h1>
           <p className="mt-8 max-w-[34rem] text-fg-muted text-lead [animation-delay:620ms] motion-safe:animate-rise-sm md:mt-10">
-            {heroLead}
+            {hero.lead}
           </p>
           <Actions className="mt-10 [animation-delay:760ms] motion-safe:animate-rise-sm md:mt-12">
             <ButtonLink href="/partners" size="lg">
@@ -75,7 +75,7 @@ export function HomeHero() {
         <div className="mt-auto pt-16 pb-8 [animation-delay:1000ms] motion-safe:animate-fade md:pt-24 md:pb-10">
           <div className="flex flex-col gap-6 border-hairline md:border-t md:pt-8 lg:flex-row lg:items-center lg:gap-12">
             <p className="shrink-0 text-fg-subtle text-meta">
-              Partners include
+              {hero.partnersLabel}
             </p>
             <ul className="grid grid-cols-4 items-center gap-x-6 gap-y-5 sm:gap-x-10 lg:flex lg:flex-1 lg:justify-between lg:gap-8">
               {heroPartners.map((partner) => (

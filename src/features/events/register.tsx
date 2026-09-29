@@ -1,6 +1,8 @@
 import { Plus } from "lucide-react";
 import { Container, Section, SectionHeader } from "@/components/ds";
+import { fillPageTokens } from "@/lib/content-copy";
 import type { Event } from "@/lib/types";
+import { getEventsCopy } from "./content";
 import { EventDetailsDialog } from "./event-details";
 import {
   formatEventDate,
@@ -18,9 +20,9 @@ import { RegisterFilter, type RegisterSemester } from "./register-filter";
  * The archive as a register: every past event as one hairline row (date,
  * lockup title, venue and co-hosts, format), grouped by TUM semester, newest
  * first. The rows are rendered here on the server; the client island only
- * filters them by category.
+ * filters them by category. Reads its copy from the content slice itself.
  */
-export function Register({
+export async function Register({
   events,
   since,
 }: {
@@ -29,6 +31,7 @@ export function Register({
   /** "March 2025", the month of the first event. */
   since?: string;
 }) {
+  const { past } = await getEventsCopy();
   const semesters: RegisterSemester[] = groupEventsBySemester(events).map(
     ({ key, label, events: semesterEvents }) => ({
       key,
@@ -52,12 +55,8 @@ export function Register({
         <SectionHeader
           id="past-events-title"
           layout="stack"
-          title="Past events"
-          lead={
-            since
-              ? `Everything we have run since ${since}, by semester.`
-              : undefined
-          }
+          title={past.title}
+          lead={since ? fillPageTokens(past.lead, { since }) : undefined}
         />
         <RegisterFilter semesters={semesters} />
       </Container>

@@ -8,33 +8,23 @@ import {
   Section,
   TextLink,
 } from "@/components/ds";
-import { recruitingTimeline } from "@/config/membership";
-import { organizationFacts } from "@/config/organization";
 import { MembershipApplyButton, memberStories } from "@/features/community";
 import { ConstructionLines } from "./construction-lines";
-import { memberQuote } from "./data/homepage";
-
-/**
- * The recruiting round from the membership config, in order. A real
- * sequence, so these are the page's only numbered items.
- */
-const recruitingSteps = [
-  { title: "Apply", dates: recruitingTimeline.application },
-  { title: "Interview", dates: recruitingTimeline.interview },
-  { title: "Onboarding", dates: recruitingTimeline.onboarding },
-];
-
-const quoted = memberStories.find((story) => story.name === memberQuote.name);
+import type { HomeCopy } from "./data/homepage";
 
 /**
  * The member call to action on ink, the page's bookend to the hero: the
  * logomark and its construction sheet in the background, running on into
  * the footer, a large invitation, a
  * member's own words and the faces of the people who run TUM.ai, beside the
- * steps of a recruiting round. The apply button follows the dated
- * application window (`MembershipApplyButton`).
+ * steps of a recruiting round (a real sequence, so these are the page's
+ * only numbered items; their dates are the membership config's, through the
+ * copy's placeholders). The apply button follows the dated application
+ * window (`MembershipApplyButton`).
  */
-export function JoinSection() {
+export function JoinSection({ join }: { join: HomeCopy["join"] }) {
+  const { quote } = join;
+  const quoted = memberStories.find((story) => story.name === quote.name);
   return (
     <Section
       tone="ink"
@@ -67,14 +57,12 @@ export function JoinSection() {
               id="join-title"
               className="max-w-[9em] text-display-xl text-highlight"
             >
-              Build the future of AI with us.
+              {join.title}
             </h2>
           </Reveal>
           <Reveal delay={100}>
             <p className="mt-8 max-w-xl text-fg-muted text-lead md:mt-10">
-              We recruit new members every semester, from every major. Join{" "}
-              {organizationFacts.activeMembers}+ students who run research,
-              startups and hackathons themselves.
+              {join.lead}
             </p>
             <Actions className="mt-10 md:mt-12">
               <MembershipApplyButton />
@@ -86,10 +74,10 @@ export function JoinSection() {
 
           <Reveal delay={140}>
             <p className="mt-16 text-fg-muted text-meta md:mt-20">
-              How a recruiting round runs
+              {join.stepsTitle}
             </p>
             <ol className="mt-5 grid border-hairline-strong border-t sm:grid-cols-3">
-              {recruitingSteps.map((step, index) => (
+              {join.steps.map((step, index) => (
                 <li
                   key={step.title}
                   className="grid grid-cols-[3rem_minmax(0,1fr)] items-baseline border-hairline border-b py-5 last:border-b-0 sm:block sm:border-b-0 sm:py-8 sm:pr-8"
@@ -115,7 +103,7 @@ export function JoinSection() {
             <Reveal delay={160}>
               <figure className="mt-12 max-w-xl border-hairline border-t pt-8 md:mt-16">
                 <blockquote className="text-fg text-heading-sm sm:text-heading-md">
-                  “{memberQuote.excerpt}”
+                  “{quote.excerpt}”
                 </blockquote>
                 <figcaption className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-4">
                   <div className="flex -space-x-3">

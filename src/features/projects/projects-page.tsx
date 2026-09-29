@@ -1,8 +1,8 @@
 import { Container, PageHero, Section } from "@/components/ds";
 import { ClosingSection } from "./closing-section";
-import { figureSeats, hero } from "./data/copy";
-import { taskForces } from "./data/projects";
+import { getProjectsContent } from "./content";
 import { OverlapsFigure } from "./overlaps-figure";
+import { projectsView } from "./projects-view";
 import { TaskForceChapter } from "./task-force-chapter";
 
 /**
@@ -10,9 +10,12 @@ import { TaskForceChapter } from "./task-force-chapter";
  * the hero: AI in the middle and one circle per field around it, where each
  * overlap is a task force and links to its chapter. The chapters follow the
  * figure clockwise, and the close returns to it with the open circle, the
- * next task force, drawn solid.
+ * next task force, drawn solid. The copy and task forces come from the
+ * content slice (`content.ts`: the CMS or the code copy).
  */
-export function ProjectsPage() {
+export async function ProjectsPage() {
+  const { copy, taskForces } = await getProjectsContent();
+  const { hero, figureSeats, closing } = projectsView(copy, taskForces);
   return (
     <main>
       <PageHero
@@ -49,7 +52,7 @@ export function ProjectsPage() {
         </Container>
       </Section>
 
-      <ClosingSection />
+      <ClosingSection closing={closing} figureSeats={figureSeats} />
     </main>
   );
 }

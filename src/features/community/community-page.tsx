@@ -1,27 +1,28 @@
 import { ButtonLink, PageHero, Photo } from "@/components/ds";
-import { organizationFacts } from "@/config/organization";
 import { ClosingSection } from "./closing-section";
+import { getCommunityContent } from "./content";
 import { stories } from "./data/member-stories";
 import { DepartmentsSection } from "./departments-section";
 import { MemberStories } from "./member-stories";
 import { SemesterPlan } from "./semester-plan";
 
-const { activeMembers, majors, nationalities } = organizationFacts;
-
 /**
  * /community, for prospective members first and partners second: who runs
  * TUM.ai, then the membership as a semester timetable (the page's one bold
  * element), the departments behind the initiative track, the members' own
- * stories, and a close that returns to semester zero.
+ * stories, and a close that returns to semester zero. The copy, journey and
+ * departments come from the content slice (`content.ts`: the CMS or code).
  */
-export function CommunityPage() {
+export async function CommunityPage() {
+  const { copy, journey, departments } = await getCommunityContent();
+  const { photo } = copy.hero;
   return (
     <main>
       <PageHero
         titleId="community-hero-title"
-        title="The people who run TUM.ai."
+        title={copy.hero.title}
         emphasis="highlight"
-        lead={`${activeMembers}+ active members from ${majors}+ majors and ${nationalities}+ nationalities organize our research, events and startup program themselves. This page shows what membership looks like, from the first weekend to the alumni network.`}
+        lead={copy.hero.lead}
         actions={
           <>
             <ButtonLink href="/apply" size="lg" arrow>
@@ -34,20 +35,19 @@ export function CommunityPage() {
         }
         media={
           <Photo
-            src="/assets/homepage/Onboarding25.webp"
-            alt="A new TUM.ai batch in matching black T-shirts gathered for a group photo at the kickoff"
-            // TODO(content): confirm this is the kickoff of a new batch; the
-            // date is the one on the projector in the photo.
-            caption="Kickoff, May 16, 2025"
+            src={photo.src}
+            alt={photo.alt}
+            position={photo.objectPosition}
+            caption={copy.hero.photoCaption}
             eager
             sizes="(min-width: 1280px) 36rem, (min-width: 1024px) 44vw, 92vw"
           />
         }
       />
-      <SemesterPlan />
-      <DepartmentsSection />
+      <SemesterPlan copy={copy.journey} journey={journey} />
+      <DepartmentsSection copy={copy.departments} departments={departments} />
       <MemberStories stories={stories} />
-      <ClosingSection />
+      <ClosingSection copy={copy.closing} />
     </main>
   );
 }

@@ -7,12 +7,13 @@ import {
 } from "@/components/ds";
 import { eLabConfig } from "@/config/e-lab";
 import { cn } from "@/lib/cn";
+import type { ELabCopy } from "./data/copy";
 import {
   type Gate,
-  gates,
+  gatesOf,
   type Phase,
+  type SelectionStage,
   scaleTicks,
-  selectionStages,
 } from "./data/selection";
 
 /** Tick spacing of the scale, in teams. */
@@ -45,7 +46,15 @@ const AXIS_LEFT = `calc((100% - 11 * ${GAP}) / 3 + 4 * ${GAP})`;
  * program phases sit between the gates. Server markup only: the bars draw
  * in once with `Reveal`.
  */
-export function SelectionGates() {
+export function SelectionGates({
+  copy,
+  stages,
+}: {
+  copy: Pick<ELabCopy["gates"], "title" | "lead" | "scaleLabel">;
+  /** The cohort as drawn (`buildStages`). */
+  stages: readonly SelectionStage[];
+}) {
+  const gates = gatesOf(stages);
   return (
     <Section
       tone="paper"
@@ -57,12 +66,12 @@ export function SelectionGates() {
       <Container>
         <SectionHeader
           id="gates-title"
-          title="Every team passes the same gates."
+          title={copy.title}
           size="lg"
           layout="stack"
-          lead="Each bar is drawn to scale: the teams that reach a gate, out of every team that applied. Between the gates, you build."
+          lead={copy.lead}
         />
-        <Scale />
+        <Scale label={copy.scaleLabel} />
         <div className="relative">
           <span
             aria-hidden="true"
@@ -70,7 +79,7 @@ export function SelectionGates() {
             style={{ left: AXIS_LEFT }}
           />
           <ol>
-            {selectionStages.map((stage) =>
+            {stages.map((stage) =>
               stage.kind === "gate" ? (
                 <GateRow
                   key={stage.id}
@@ -89,7 +98,7 @@ export function SelectionGates() {
 }
 
 /** The tick scale over the bars, in teams. Decorative: each gate states its figure. */
-function Scale() {
+function Scale({ label }: { label: string }) {
   const ticks = scaleTicks(eLabConfig.selection.applications, TICK_STEP);
   return (
     <div aria-hidden="true" className={cn("pb-3", ROW_GRID)}>
@@ -99,7 +108,7 @@ function Scale() {
           WORDS,
         )}
       >
-        Teams
+        {label}
       </p>
       <div className={cn("relative h-6", SCALE)}>
         {ticks.map((tick, index) => (
@@ -207,8 +216,8 @@ function PhaseRow({ phase }: { phase: Phase }) {
           <Photo
             src={phase.photo.src}
             alt={phase.photo.alt}
-            caption={phase.photo.caption}
-            position="50% 40%"
+            caption={phase.photoCaption}
+            position={phase.photo.objectPosition}
             aspect="3/2"
             sizes="(min-width: 1280px) 18rem, (min-width: 1024px) 40vw, 90vw"
             className="mt-6 max-w-sm xl:mt-0"

@@ -6,20 +6,21 @@ import {
   SectionHeader,
 } from "@/components/ds";
 import { brandMission } from "@/config/organization";
-import { notRequired, qualities, values } from "./data/apply";
+import type { ApplyCopy } from "./data/apply";
 
 /**
  * The call's scope, as a call for papers states it: what is in scope (the
  * four qualities, set large) beside what is not required, then how members
  * work together in one line per value, and a batch photo.
  */
-export function WhoShouldApply() {
+export function WhoShouldApply({ copy }: { copy: ApplyCopy["scope"] }) {
+  const { qualities, notRequired, values, photo } = copy;
   return (
     <Section tone="paper" spacing="lg" aria-labelledby="apply-scope-title">
       <Container>
         <SectionHeader
           id="apply-scope-title"
-          title="Who should apply"
+          title={copy.title}
           size="lg"
           layout="stack"
           lead={brandMission}
@@ -31,7 +32,7 @@ export function WhoShouldApply() {
               id="apply-in-scope"
               className="font-medium text-fg-muted text-small"
             >
-              In scope
+              {copy.inScopeTitle}
             </h3>
             <dl
               aria-labelledby="apply-in-scope"
@@ -56,7 +57,7 @@ export function WhoShouldApply() {
               id="apply-not-required"
               className="font-medium text-fg-muted text-small"
             >
-              Not required
+              {copy.notRequiredTitle}
             </h3>
             <dl
               aria-labelledby="apply-not-required"
@@ -84,7 +85,7 @@ export function WhoShouldApply() {
             id="apply-values"
             className="font-medium text-fg-muted text-small"
           >
-            How we work together
+            {copy.valuesTitle}
           </h3>
           <dl
             aria-labelledby="apply-values"
@@ -102,11 +103,9 @@ export function WhoShouldApply() {
         <Reveal variant="fade" className="mt-16 md:mt-24">
           <Photo
             aspect="panorama"
-            src="/assets/apply/new_section_photo_1.webp"
-            alt="A large group of TUM.ai members in winter jackets, gathered in front of a baroque building"
-            // TODO(content): caption. Which batch or event is this, where,
-            // and when?
-            position="50% 45%"
+            src={photo.src}
+            alt={photo.alt}
+            position={photo.objectPosition}
             sizes="(min-width: 80rem) 80rem, 100vw"
           />
         </Reveal>

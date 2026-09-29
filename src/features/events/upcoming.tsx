@@ -1,3 +1,4 @@
+import { Fragment, type ReactNode } from "react";
 import {
   Actions,
   BrandPanel,
@@ -10,6 +11,7 @@ import {
 } from "@/components/ds";
 import { socialLinks } from "@/config/contact";
 import type { Event } from "@/lib/types";
+import { getEventsCopy } from "./content";
 import { EventDetailsDialog } from "./event-details";
 import {
   excerpt,
@@ -28,8 +30,10 @@ import { SignUpAction } from "./sign-up-action";
  * figures, the lockup title, venue and co-hosts, an excerpt, the sign-up and
  * the poster. When nothing is scheduled, the section says so and points to
  * where new dates are announced; most of the year that is the normal state.
+ * Reads its copy from the content slice itself: the page passes none.
  */
-export function Upcoming({ events }: { events: Event[] }) {
+export async function Upcoming({ events }: { events: Event[] }) {
+  const { upcoming } = await getEventsCopy();
   return (
     <Section
       tone="paper"
@@ -41,7 +45,7 @@ export function Upcoming({ events }: { events: Event[] }) {
         <SectionHeader
           id="upcoming-events-title"
           layout="stack"
-          title="Upcoming"
+          title={upcoming.title}
           count={events.length > 0 ? events.length : undefined}
         />
         {events.length > 0 ? (
@@ -56,17 +60,40 @@ export function Upcoming({ events }: { events: Event[] }) {
           </ol>
         ) : (
           <Reveal>
-            {/* TODO(content): confirm Instagram and LinkedIn are where new event dates go out first. */}
             <p className="max-w-2xl border-hairline-strong border-t pt-8 text-fg text-lead">
-              Nothing is scheduled right now. We announce new dates on{" "}
-              <TextLink href={socialLinks.instagram}>Instagram</TextLink> and{" "}
-              <TextLink href={socialLinks.linkedin}>LinkedIn</TextLink>.
+              {withLinks(upcoming.empty, {
+                instagram: (
+                  <TextLink href={socialLinks.instagram}>Instagram</TextLink>
+                ),
+                linkedin: (
+                  <TextLink href={socialLinks.linkedin}>LinkedIn</TextLink>
+                ),
+              })}
             </p>
           </Reveal>
         )}
       </Container>
     </Section>
   );
+}
+
+/**
+ * `template` with each `{{name}}` in `links` replaced by its element (the
+ * rest stays text), in order, for a sentence with inline links.
+ */
+function withLinks(
+  template: string,
+  links: Readonly<Record<string, ReactNode>>,
+): ReactNode[] {
+  return template
+    .split(/(\{\{\s*[\w.-]+\s*\}\})/)
+    .flatMap<ReactNode>((part) => {
+      const name = /^\{\{\s*([\w.-]+)\s*\}\}$/.exec(part)?.[1];
+      if (name && links[name]) {
+        return [<Fragment key={name}>{links[name]}</Fragment>];
+      }
+      return part ? [part] : [];
+    });
 }
 
 function UpcomingEvent({ event }: { event: Event }) {

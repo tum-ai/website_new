@@ -1,18 +1,56 @@
-import { eLabCompletedIterations, eLabProgramSummary } from "@/config/e-lab";
-import { impactFacts, publicationVenuesText } from "@/config/impact";
-import { organizationFacts } from "@/config/organization";
-import { partnerPitch } from "@/features/partners";
-
-/** The question the mission passage answers. */
-export const missionQuestion = "What is TUM.ai's mission?";
+import { contentTokens } from "@/config/content-tokens";
+import { fillCodeCopy } from "@/lib/content-copy";
 
 /**
- * The long mission paragraph: the context passage every other answer is
- * marked in. Change it together with the `spans` below;
- * `mission-spans.test.ts` fails when a span no longer matches.
+ * The /qanda copy as code writes it: the code fallback of the `qandaCopy`
+ * singleton and of the `qanda` FAQ collection (see `../content.ts`). Text may
+ * hold `{{name}}` placeholders for site facts (`lib/content-tokens.ts`),
+ * filled when the page renders; the backfill copies them as they are.
  */
-export const missionPassage =
-  "Together with our highly-talented members, we conduct cutting-edge research projects, develop AI-powered solutions with industry partners, incubate innovative startups, and organize workshops that bridge academic knowledge with real-world applications. Through strategic partnerships and connections with leading AI tech and industry companies, we create unique opportunities for collaboration, mentorship, and career development. We aim to lower the entry barriers to AI creation and usage for people from every domain by establishing a platform for practical experience through diverse applied AI projects, research initiatives, and entrepreneurial opportunities.";
+
+/** The page's own copy (`qandaCopy`). */
+export type QandaCopy = {
+  heroTitle: string;
+  /** The question the mission passage answers. */
+  missionQuestion: string;
+  missionLead: string;
+  /**
+   * The long mission paragraph: the context passage every other answer is
+   * marked in. Change it together with the answers' `spans`; the tests (and
+   * the Studio) fail when a span no longer matches.
+   */
+  missionPassage: string;
+  closing: { title: string; lead: string; action: string };
+  /** Each reader's next step; the companies' text is `partnerPitch`. */
+  forks: {
+    students: { reader: string; text: string };
+    companies: { reader: string };
+  };
+};
+
+export const qandaCopyTemplate: QandaCopy = {
+  heroTitle: "Questions and answers.",
+  missionQuestion: "What is TUM.ai's mission?",
+  missionLead:
+    "The short answer is above. The long one covers most of what people ask us: open a question and the words that answer it are marked.",
+  missionPassage:
+    "Together with our highly-talented members, we conduct cutting-edge research projects, develop AI-powered solutions with industry partners, incubate innovative startups, and organize workshops that bridge academic knowledge with real-world applications. Through strategic partnerships and connections with leading AI tech and industry companies, we create unique opportunities for collaboration, mentorship, and career development. We aim to lower the entry barriers to AI creation and usage for people from every domain by establishing a platform for practical experience through diverse applied AI projects, research initiatives, and entrepreneurial opportunities.",
+  closing: {
+    title: "Not in the paragraph? Ask us.",
+    lead: "Write to us with anything this page leaves open.",
+    action: "Ask your question",
+  },
+  forks: {
+    students: {
+      reader: "For students",
+      text: "Membership starts with a recruiting round. The apply page has the dates and the steps.",
+    },
+    companies: { reader: "For companies" },
+  },
+};
+
+/** The page copy as rendered without the CMS. */
+export const qandaCopy = fillCodeCopy(qandaCopyTemplate, contentTokens);
 
 /** One question on /qanda. */
 export type QandaEntry = {
@@ -24,16 +62,22 @@ export type QandaEntry = {
   /** Points the answer lists after its opening sentence. */
   points?: readonly string[];
   /**
-   * The phrases of {@link missionPassage} that answer the question, each an
+   * The phrases of the mission passage that answer the question, each an
    * exact substring that occurs once. Omit when the passage doesn't cover it.
    */
   spans?: readonly string[];
-  /** A fact from the site config that shows the answer, and where to see it. */
+  /**
+   * A fact that shows the answer (placeholders for the figures), and where
+   * to see it.
+   */
   evidence?: { text?: string; label: string; href: string };
 };
 
-/** The questions, in the order their spans appear in the passage. */
-export const faqs: QandaEntry[] = [
+/**
+ * The questions (the `qanda` FAQ collection; `id` is the entry's anchor), in
+ * the order their spans appear in the passage.
+ */
+export const faqTemplates: readonly QandaEntry[] = [
   {
     id: "activities",
     question: "What types of activities do your members engage in?",
@@ -44,7 +88,7 @@ export const faqs: QandaEntry[] = [
       "organize workshops that bridge academic knowledge with real-world applications",
     ],
     evidence: {
-      text: `Members have published ${impactFacts.publications}+ peer-reviewed papers at ${publicationVenuesText}.`,
+      text: "Members have published {{impact.publications}}+ peer-reviewed papers at {{impact.publicationVenues}}.",
       label: "See our research",
       href: "/research",
     },
@@ -64,7 +108,7 @@ export const faqs: QandaEntry[] = [
       "Startups are a key part of our ecosystem. We provide support for early-stage ideas, help founders validate their concepts, and connect them with resources to scale innovative AI products.",
     spans: ["incubate innovative startups"],
     evidence: {
-      text: `The E-Lab, our ${eLabProgramSummary}, has run ${eLabCompletedIterations} cohorts.`,
+      text: "The E-Lab, our {{eLab.programSummary}}, has run {{eLab.completedCohorts}} cohorts.",
       label: "Meet the E-Lab",
       href: "/e-lab",
     },
@@ -89,7 +133,7 @@ export const faqs: QandaEntry[] = [
       "lower the entry barriers to AI creation and usage for people from every domain",
     ],
     evidence: {
-      text: `Our ${organizationFacts.activeMembers}+ active members come from ${organizationFacts.majors}+ majors and ${organizationFacts.nationalities}+ nationalities.`,
+      text: "Our {{org.activeMembers}}+ active members come from {{org.majors}}+ majors and {{org.nationalities}}+ nationalities.",
       label: "Meet the community",
       href: "/community",
     },
@@ -103,7 +147,7 @@ export const faqs: QandaEntry[] = [
       "establishing a platform for practical experience through diverse applied AI projects, research initiatives, and entrepreneurial opportunities",
     ],
     evidence: {
-      text: `${impactFacts.hackathonParticipants.toLocaleString("en")}+ people have taken part in our hackathons.`,
+      text: "{{impact.hackathonParticipants}}+ people have taken part in our hackathons.",
       label: "See our events",
       href: "/events",
     },
@@ -123,18 +167,8 @@ export const faqs: QandaEntry[] = [
   },
 ];
 
-/** The two readers' next steps, beside the inbox in the page's close. */
-export const forks = [
-  {
-    reader: "For students",
-    text: "Membership starts with a recruiting round. The apply page has the dates and the steps.",
-    label: "Become a Member",
-    href: "/apply",
-  },
-  {
-    reader: "For companies",
-    text: partnerPitch,
-    label: "Become a Partner",
-    href: "/partners",
-  },
-] as const;
+/** The questions as rendered without the CMS: placeholders filled. */
+export const faqs: QandaEntry[] = fillCodeCopy(
+  [...faqTemplates],
+  contentTokens,
+);

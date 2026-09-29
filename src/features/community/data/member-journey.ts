@@ -7,42 +7,30 @@ import {
   type LucideIcon,
   Rocket,
 } from "lucide-react";
+import {
+  type JourneyIconKey,
+  type JourneyStage,
+  type JourneyStep,
+  stageSteps,
+} from "@/lib/community-model";
 
-/** One step of the member journey. */
-export type JourneyStep = {
-  /** Visible step number, e.g. "01" or "02A". Also used for the anchor id. */
-  step: string;
-  name: string;
-  /** One or two sentences. */
-  description: string;
-  icon: LucideIcon;
-  /**
-   * The semester from which the step is open to a member: 0 is the
-   * recruiting round that ends with onboarding, 1 the first semester. Taken
-   * from the step's own copy ("after your first semester" is 2, "two or
-   * more semesters" is 3).
-   */
-  fromSemester: number;
-  /** `event` happens once (onboarding); `ongoing` stays open from then on. */
-  span: "event" | "ongoing";
-  /**
-   * A member who took this step, in their own words: a verbatim sentence
-   * from their story in `member-stories.ts` (a test checks it is).
-   */
-  evidence?: { name: string; excerpt: string };
+export type { JourneyStage, JourneyStep };
+export { stageSteps };
+
+/** The Lucide icon of each step icon key (the CMS stores the key). */
+export const journeyIcons: Record<JourneyIconKey, LucideIcon> = {
+  rocket: Rocket,
+  brain: Brain,
+  handshake: Handshake,
+  chart: ChartNoAxesColumn,
+  globe: Globe,
+  "graduation-cap": GraduationCap,
 };
 
 /**
- * One stop on the member journey: a single step, or a fork where members
- * choose one of two parallel tracks.
- */
-export type JourneyStage =
-  | { kind: "single"; step: JourneyStep }
-  | { kind: "fork"; steps: [JourneyStep, JourneyStep] };
-
-/**
  * The TUM.ai member journey, the single source for every page that describes
- * it: /community draws it as a forked path, /apply lists it as steps.
+ * it: /community draws it as a forked path, /apply lists it as steps. The
+ * code fallback of the `journeyStep` documents (`lib/community-content.ts`).
  */
 export const memberJourney: JourneyStage[] = [
   {
@@ -52,7 +40,7 @@ export const memberJourney: JourneyStage[] = [
       name: "Batch Introduction",
       description:
         "Kick off your journey at the onboarding weekend! Meet members, join social events, and deepen connections on our getaway.",
-      icon: Rocket,
+      iconKey: "rocket",
       fromSemester: 0,
       span: "event",
     },
@@ -65,7 +53,7 @@ export const memberJourney: JourneyStage[] = [
         name: "Research Track",
         description:
           "Join a team on an Impact Project applying AI to real-world challenges. Contribute to research, academic publications, or open-source work, and engage with the TUM.ai community through update sessions.",
-        icon: Brain,
+        iconKey: "brain",
         fromSemester: 1,
         span: "ongoing",
         evidence: {
@@ -79,7 +67,7 @@ export const memberJourney: JourneyStage[] = [
         name: "Initiative Track",
         description:
           "Join one of our core departments and become a driving force behind everything that makes TUM.ai stand out. Shape the future of TUM.ai and develop your skills while engaging in trips, events, and learning opportunities.",
-        icon: Handshake,
+        iconKey: "handshake",
         fromSemester: 1,
         span: "ongoing",
         evidence: {
@@ -97,7 +85,7 @@ export const memberJourney: JourneyStage[] = [
       name: "Growth Opportunities",
       description:
         "After your first semester, expand your impact: join new teams, lead a task force, or take on a Team Lead role.",
-      icon: ChartNoAxesColumn,
+      iconKey: "chart",
       fromSemester: 2,
       span: "ongoing",
       evidence: {
@@ -116,7 +104,7 @@ export const memberJourney: JourneyStage[] = [
       // page used to name Berkeley; this copy (now on both pages) says Cambridge.
       description:
         "After one semester, you can join the REX Program and conduct research at top institutions like MIT, Harvard, or Cambridge. With our alumni network, we guide you in finding a topic, navigating applications, and contributing to cutting-edge research.",
-      icon: Globe,
+      iconKey: "globe",
       fromSemester: 2,
       span: "ongoing",
     },
@@ -128,16 +116,12 @@ export const memberJourney: JourneyStage[] = [
       name: "Alumni Program",
       description:
         "Having been with TUM.ai for two or more semesters, you can join the Alumni Program, opening up opportunities for continued networking and collaboration.",
-      icon: GraduationCap,
+      iconKey: "graduation-cap",
       fromSemester: 3,
       span: "ongoing",
     },
   },
 ];
-
-/** The steps of a stage, in order. */
-export const stageSteps = (stage: JourneyStage): JourneyStep[] =>
-  stage.kind === "single" ? [stage.step] : stage.steps;
 
 /** Every step in journey order, with the index of the stage it belongs to. */
 export const journeySteps: (JourneyStep & { stageIndex: number })[] =
@@ -148,14 +132,16 @@ export const journeySteps: (JourneyStep & { stageIndex: number })[] =
 /** Anchor id of a step on /community, e.g. "journey-02a". */
 export const stepAnchor = (step: string) => `journey-${step.toLowerCase()}`;
 
-const lastSemester = Math.max(...journeySteps.map((step) => step.fromSemester));
-
 /**
- * The columns of the membership timetable on /community: the recruiting
- * round (0), then semesters 1 and 2, and "3+" for everything after, which is
- * the latest semester any step opens in.
+ * The columns of a journey's membership timetable on /community: the
+ * recruiting round (0), then one per semester up to the latest one any step
+ * opens in, which is open-ended ("3+").
  */
-export const semesterColumns: string[] = Array.from(
-  { length: lastSemester + 1 },
-  (_, semester) => (semester === lastSemester ? `${semester}+` : `${semester}`),
-);
+export function semesterColumnsOf(journey: readonly JourneyStage[]): string[] {
+  const last = Math.max(
+    ...journey.flatMap(stageSteps).map((step) => step.fromSemester),
+  );
+  return Array.from({ length: last + 1 }, (_, semester) =>
+    semester === last ? `${semester}+` : `${semester}`,
+  );
+}

@@ -7,16 +7,9 @@ import {
   SectionHeader,
   TextLink,
 } from "@/components/ds";
-import {
-  type JourneyStep,
-  memberJourney,
-  memberStories,
-} from "@/features/community";
-import { offerings, tracksLead } from "./data/apply";
-
-/** The fork of the member journey: the two tracks a new member picks from. */
-const tracks: JourneyStep[] =
-  memberJourney.find((stage) => stage.kind === "fork")?.steps ?? [];
+import { type JourneyStep, memberStories } from "@/features/community";
+import type { JourneyStage } from "@/lib/community-model";
+import type { ApplyCopy } from "./data/apply";
 
 /** One track: what it is, and a member who took it, in their own words. */
 function Track({ step }: { step: JourneyStep }) {
@@ -58,16 +51,25 @@ function Track({ step }: { step: JourneyStep }) {
  * single source, each with a member's own words, then what every member can
  * join besides, and the hackathon photo.
  */
-export function Tracks() {
+export function Tracks({
+  copy,
+  journey,
+}: {
+  copy: ApplyCopy["tracks"];
+  journey: readonly JourneyStage[];
+}) {
+  /** The fork of the member journey: the two tracks a new member picks from. */
+  const tracks: JourneyStep[] =
+    journey.find((stage) => stage.kind === "fork")?.steps ?? [];
   return (
     <Section tone="mist" spacing="lg" aria-labelledby="apply-tracks-title">
       <Container>
         <SectionHeader
           id="apply-tracks-title"
-          title="What you'll work on"
+          title={copy.title}
           size="lg"
           layout="stack"
-          lead={tracksLead}
+          lead={copy.lead}
         />
         <div className="grid gap-14 md:grid-cols-2 md:gap-10 lg:gap-16">
           {tracks.map((step, index) => (
@@ -79,10 +81,10 @@ export function Tracks() {
 
         <Reveal className="mt-20 grid gap-8 md:mt-28 lg:grid-cols-12 lg:gap-16">
           <h3 className="font-medium text-fg-muted text-small lg:col-span-4">
-            On either track, you can also join
+            {copy.offeringsTitle}
           </h3>
           <dl className="grid gap-x-10 gap-y-8 sm:grid-cols-3 lg:col-span-8">
-            {offerings.map((offering) => (
+            {copy.offerings.map((offering) => (
               <div
                 key={offering.title}
                 className="border-hairline-strong border-t pt-5"
@@ -99,16 +101,15 @@ export function Tracks() {
         <Reveal variant="fade" className="mt-16 md:mt-24">
           <Photo
             aspect="panorama"
-            src="/assets/apply/new_section_photo_4.webp"
-            alt="A packed lecture hall applauding as a team presents an AppliedAI challenge on the big screen"
-            // TODO(content): caption. Which hackathon is this, and when?
-            position="55% 50%"
+            src={copy.photo.src}
+            alt={copy.photo.alt}
+            position={copy.photo.objectPosition}
             sizes="(min-width: 80rem) 80rem, 100vw"
           />
         </Reveal>
         <p className="mt-10">
           <TextLink href="/community#journey" arrow>
-            The full member journey, semester by semester
+            {copy.journeyLink}
           </TextLink>
         </p>
       </Container>

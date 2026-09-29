@@ -7,6 +7,8 @@ import {
   TextLink,
 } from "@/components/ds";
 import type { Event } from "@/lib/types";
+import { getEventsCopy } from "./content";
+import type { EventsCopy } from "./data/copy";
 import { formatEventDate } from "./events";
 import { Lockup } from "./lockup";
 import { SignUpAction } from "./sign-up-action";
@@ -14,9 +16,11 @@ import { SignUpAction } from "./sign-up-action";
 /**
  * The page's close on ink: the hero's lockup, completed with the reader's
  * own team, for partners; beside it, the student's way in, which is the next
- * event's sign-up when there is one and membership otherwise.
+ * event's sign-up when there is one and membership otherwise. Reads its
+ * copy from the content slice itself.
  */
-export function ClosingSection({ next }: { next?: Event }) {
+export async function ClosingSection({ next }: { next?: Event }) {
+  const { closing } = await getEventsCopy();
   return (
     <Section tone="ink" spacing="xl" aria-labelledby="events-close-title">
       <Container>
@@ -27,13 +31,12 @@ export function ClosingSection({ next }: { next?: Event }) {
                 id="events-close-title"
                 className="max-w-[11em] text-display-xl text-fg"
               >
-                <Lockup title="TUM.ai x your team." />
+                <Lockup title={closing.title} />
               </h2>
             </Reveal>
             <Reveal delay={100}>
               <p className="mt-8 max-w-xl text-fg-muted text-lead md:mt-10">
-                Bring a challenge to one of our hackathons, give a talk for our
-                members, or host an evening at your office. We plan it with you.
+                {closing.lead}
               </p>
               <Actions className="mt-10 md:mt-12">
                 <ButtonLink href="/partners#partner-contact" size="lg" arrow>
@@ -46,8 +49,14 @@ export function ClosingSection({ next }: { next?: Event }) {
             delay={160}
             className="border-hairline-strong border-t pt-8 lg:col-span-4 lg:self-end"
           >
-            <p className="font-medium text-fg text-small">For students</p>
-            {next ? <NextEvent event={next} /> : <Membership />}
+            <p className="font-medium text-fg text-small">
+              {closing.studentsReader}
+            </p>
+            {next ? (
+              <NextEvent event={next} label={closing.nextUp} />
+            ) : (
+              <Membership text={closing.membership} />
+            )}
           </Reveal>
         </div>
       </Container>
@@ -55,13 +64,13 @@ export function ClosingSection({ next }: { next?: Event }) {
   );
 }
 
-function NextEvent({ event }: { event: Event }) {
+function NextEvent({ event, label }: { event: Event; label: string }) {
   const date = formatEventDate(event.event_date);
   const title = event.title.trim();
   return (
     <>
       <p className="mt-3 text-body text-fg-muted">
-        Next up:{" "}
+        {label}{" "}
         <span className="text-fg">
           <Lockup title={title} />
         </span>
@@ -82,13 +91,10 @@ function NextEvent({ event }: { event: Event }) {
   );
 }
 
-function Membership() {
+function Membership({ text }: { text: EventsCopy["closing"]["membership"] }) {
   return (
     <>
-      <p className="mt-3 text-body text-fg-muted">
-        Members plan and run these events themselves, from the first poster to
-        the last pitch.
-      </p>
+      <p className="mt-3 text-body text-fg-muted">{text}</p>
       <p className="mt-5">
         <TextLink href="/apply" arrow className="text-small">
           Become a Member

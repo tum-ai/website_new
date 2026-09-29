@@ -1,8 +1,9 @@
 import { expect, test } from "vitest";
 import {
+  journeyIcons,
   journeySteps,
   memberJourney,
-  semesterColumns,
+  semesterColumnsOf,
   stageSteps,
 } from "./member-journey";
 import { stories } from "./member-stories";
@@ -24,7 +25,7 @@ test("every step has a unique number, a name, a description and an icon", () => 
   for (const step of journeySteps) {
     expect(step.name.trim()).not.toBe("");
     expect(step.description.trim()).not.toBe("");
-    expect(step.icon).toBeTruthy();
+    expect(journeyIcons[step.iconKey]).toBeTruthy();
   }
 });
 
@@ -46,6 +47,7 @@ test("the journey opens at the recruiting round and never goes back in time", ()
 
 test("the timetable has one column per semester up to the last opening, the last open-ended", () => {
   const last = Math.max(...journeySteps.map((step) => step.fromSemester));
+  const semesterColumns = semesterColumnsOf(memberJourney);
   expect(semesterColumns).toHaveLength(last + 1);
   expect(semesterColumns.at(-1)).toBe(`${last}+`);
   for (const step of journeySteps) {

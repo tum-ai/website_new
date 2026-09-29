@@ -4,8 +4,10 @@ import {
   milestoneKinds,
   milestones,
   milestonesIn,
-  milestoneYears,
+  milestoneYearsOf,
 } from "./milestones";
+
+const milestoneYears = milestoneYearsOf(milestones);
 
 test("the matrix spans every year from the founding, without gaps", () => {
   expect(milestoneYears[0]).toBe(organizationFacts.foundingYear);
@@ -17,7 +19,7 @@ test("the matrix spans every year from the founding, without gaps", () => {
 
 test("every milestone sits in exactly one cell, once", () => {
   const placed = milestoneKinds.flatMap((kind) =>
-    milestoneYears.flatMap((year) => milestonesIn(kind.id, year)),
+    milestoneYears.flatMap((year) => milestonesIn(milestones, kind.id, year)),
   );
   expect(placed).toHaveLength(milestones.length);
   expect(new Set(placed).size).toBe(milestones.length);

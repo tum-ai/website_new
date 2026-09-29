@@ -1,12 +1,18 @@
 import { buildScheduleBackfill } from "@/config/schedule-content";
 import { buildSiteSettingsBackfill } from "@/config/site-settings-content";
 import { buildApplyBackfill } from "@/features/apply/content";
+import { buildCommunityBackfill } from "@/features/community/content";
 import { buildMemberStoriesBackfill } from "@/features/community/people-content";
 import { buildELabBackfill } from "@/features/e-lab/content";
 import { buildVentureBackfill } from "@/features/e-lab/venture-content";
+import { buildEventsBackfill } from "@/features/events/content";
 import { buildEventHostBackfill } from "@/features/events/host-content";
+import { buildHomeBackfill } from "@/features/home/content";
 import { buildPartnersBackfill } from "@/features/partners/content";
 import { buildOrganizationBackfill } from "@/features/partners/organization-content";
+import { buildProjectsBackfill } from "@/features/projects/content";
+import { buildQandaBackfill } from "@/features/qanda/content";
+import { buildResearchBackfill } from "@/features/research/content";
 import { buildRexBackfill } from "@/features/research/rex-content";
 import type { BackfillDocument } from "@/lib/cms-backfill";
 
@@ -45,6 +51,12 @@ export const backfillSlices: readonly {
   },
 
   // Phase 4: page copy
+  { slice: "features/qanda/content.ts", build: buildQandaBackfill },
+  { slice: "features/community/content.ts", build: buildCommunityBackfill },
+  { slice: "features/projects/content.ts", build: buildProjectsBackfill },
+  { slice: "features/research/content.ts", build: buildResearchBackfill },
+  { slice: "features/home/content.ts", build: buildHomeBackfill },
+  { slice: "features/events/content.ts", build: buildEventsBackfill },
 ];
 
 /** The documents of every slice, in registry order. */

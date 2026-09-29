@@ -1,9 +1,21 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
+import { contentTokens } from "@/config/content-tokens";
 import { fetchContent } from "@/lib/cms-content";
+import { fillCodeCopy } from "@/lib/content-copy";
 import { FAQ_QUERY } from "@/lib/faq-content";
-import type { FAQ_QUERY_RESULT } from "@/lib/sanity.types.generated";
-import { buildELabBackfill, getELabFaqs } from "./content";
+import type {
+  ELAB_COPY_QUERY_RESULT,
+  FAQ_QUERY_RESULT,
+} from "@/lib/sanity.types.generated";
+import {
+  buildELabBackfill,
+  ELAB_COPY_QUERY,
+  getELabCopy,
+  getELabFaqs,
+} from "./content";
+import { eLabCopyTemplate } from "./data/copy";
 import { faq } from "./data/faq";
+import { buildStages, selectionStages } from "./data/selection";
 
 /**
  * Parity: the backfill documents, read back through the real GROQ query
@@ -45,12 +57,43 @@ describe("the /e-lab content slice", () => {
   });
 
   test("the backfill holds one e-lab FAQ document per question", () => {
-    const documents = buildELabBackfill();
+    const documents = buildELabBackfill().filter(
+      ({ _type }) => _type === "faq",
+    );
     expect(documents.map(({ question }) => question)).toStrictEqual(
       faq.map(({ question }) => question),
     );
     expect(
       new Set(documents.map(({ collection }) => collection)),
     ).toStrictEqual(new Set(["e-lab"]));
+  });
+});
+
+describe("the /e-lab copy", () => {
+  const code = fillCodeCopy(eLabCopyTemplate, contentTokens);
+
+  test("code source: the code copy, whose stages draw the code cohort", async () => {
+    useSource("code");
+    const copy = await getELabCopy();
+    expect(copy).toStrictEqual(code);
+    expect(buildStages(copy.gates.stages)).toStrictEqual(selectionStages);
+  });
+
+  test("the mock serves the backfill through the real query", async () => {
+    useSource("sanity");
+    const result = await fetchContent<ELAB_COPY_QUERY_RESULT>({
+      query: ELAB_COPY_QUERY,
+      tags: [],
+      mockDocuments: buildELabBackfill,
+      label: "parity",
+    });
+    expect(result?.gates?.stages).toHaveLength(
+      eLabCopyTemplate.gates.stages.length,
+    );
+  });
+
+  test("sanity source over the backfill: the same copy", async () => {
+    useSource("sanity");
+    await expect(getELabCopy()).resolves.toStrictEqual(code);
   });
 });

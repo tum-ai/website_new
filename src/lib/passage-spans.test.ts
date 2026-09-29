@@ -1,6 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { faqs, missionPassage } from "./data/qanda";
-import { segmentPassage } from "./mission-spans";
+import { segmentPassage, spanProblems } from "./passage-spans";
 
 const passage = "We build, we teach, and we found.";
 
@@ -51,34 +50,27 @@ describe("segmentPassage", () => {
   });
 });
 
-describe("the /qanda mission passage", () => {
-  const spans = faqs.flatMap((faq) =>
-    (faq.spans ?? []).map((text) => ({ id: faq.id, text })),
-  );
-
-  test("marks every span of every answer, once and without overlaps", () => {
-    const marked = segmentPassage(missionPassage, spans).filter(
-      (segment) => segment.id,
-    );
-    expect(marked).toHaveLength(spans.length);
+describe("spanProblems", () => {
+  test("accepts spans that occur once and don't overlap", () => {
+    expect(
+      spanProblems(passage, [
+        { id: "build", text: "We build" },
+        { id: "found", text: "we found" },
+      ]),
+    ).toStrictEqual([]);
   });
 
-  test("lists the questions in the order their answers appear", () => {
-    const firstMark = (id: string) =>
-      Math.min(
-        ...spans
-          .filter((span) => span.id === id)
-          .map((span) => missionPassage.indexOf(span.text)),
-      );
-    const marked = faqs.filter((faq) => faq.spans?.length);
-    const byPassage = [...marked].sort(
-      (a, b) => firstMark(a.id) - firstMark(b.id),
-    );
-    expect(marked.map((faq) => faq.id)).toEqual(byPassage.map((faq) => faq.id));
-  });
-
-  test("gives every question a unique anchor id", () => {
-    const ids = faqs.map((faq) => faq.id);
-    expect(new Set(ids).size).toBe(ids.length);
+  test("reports every span that can't be marked, with the reason", () => {
+    const problems = spanProblems(passage, [
+      { id: "missing", text: "we research" },
+      { id: "twice", text: "we" },
+      { id: "a", text: "we teach, and" },
+      { id: "b", text: "and we found" },
+    ]);
+    expect(problems.map(({ span, problem }) => [span.id, problem])).toEqual([
+      ["missing", expect.stringMatching(/not in the passage/)],
+      ["twice", expect.stringMatching(/more than once/)],
+      ["b", expect.stringMatching(/overlap/)],
+    ]);
   });
 });

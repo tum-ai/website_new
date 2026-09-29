@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { cn } from "@/lib/cn";
-import { roomPhotos } from "./data/homepage";
+import type { RoomPhoto } from "./data/homepage";
 import { ROOM_CELLS, ROOM_GRID } from "./room-layout";
 
 /**
@@ -8,10 +8,10 @@ import { ROOM_CELLS, ROOM_GRID } from "./room-layout";
  * each with a factual caption. Loaded after hydration (see
  * DeferredRoomSpread).
  */
-export function RoomSpread() {
+export function RoomSpread({ photos }: { photos: readonly RoomPhoto[] }) {
   return (
     <div className={ROOM_GRID}>
-      {roomPhotos.map((photo, index) => {
+      {photos.map((photo, index) => {
         const layout = ROOM_CELLS[index];
         return (
           <figure key={photo.src} className={cn("flex flex-col", layout?.cell)}>
@@ -31,7 +31,7 @@ export function RoomSpread() {
                     : "(min-width: 768px) 60vw, 100vw"
                 }
                 className="zoom-media object-cover"
-                style={{ objectPosition: photo.position }}
+                style={{ objectPosition: photo.objectPosition }}
               />
             </div>
             <figcaption className="mt-4 text-fg-subtle text-meta">

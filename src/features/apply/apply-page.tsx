@@ -1,6 +1,6 @@
 import { FaqSection } from "@/components/ds";
 import { ClosingSection } from "./closing-section";
-import { getApplyFaqs } from "./content";
+import { getApplyContent, getApplyFaqs } from "./content";
 import { Hero } from "./hero";
 import { recruitingCall } from "./round";
 import { Selection } from "./selection";
@@ -19,19 +19,22 @@ type ApplyPageProps = {
  * should apply (paper), what you'll work on (mist), how selection works
  * (paper), what members started since the founding (lavender), the FAQ
  * (mist), and the submission box (ink). Every date and the open state come
- * from `membershipConfig` at `now`; the FAQ comes from the content slice
- * (`content.ts`: the CMS or the code list).
+ * from `membershipConfig` at `now`; the copy, milestones, journey and FAQ
+ * come from the content slice (`content.ts`: the CMS or the code copy).
  */
 export async function ApplyPage({ now }: ApplyPageProps) {
   const call = recruitingCall(now);
-  const faq = await getApplyFaqs();
+  const [faq, { copy, milestones, journey }] = await Promise.all([
+    getApplyFaqs(),
+    getApplyContent(),
+  ]);
   return (
     <main>
       <Hero call={call} />
-      <WhoShouldApply />
-      <Tracks />
-      <Selection call={call} />
-      <SinceFounding />
+      <WhoShouldApply copy={copy.scope} />
+      <Tracks copy={copy.tracks} journey={journey} />
+      <Selection copy={copy.selection} call={call} />
+      <SinceFounding copy={copy.history} milestones={milestones} />
       <FaqSection id="apply-faq" tone="mist" items={faq} />
       <ClosingSection call={call} />
     </main>

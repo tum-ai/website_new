@@ -111,7 +111,7 @@ export function HeroAperture({
               onLoad={photoIndex === 0 ? () => setReady(true) : undefined}
               data-active={photoIndex === index}
               className="object-cover opacity-0 transition-opacity duration-1200 ease-in-out-soft data-[active=true]:opacity-100 motion-reduce:transition-none"
-              style={{ objectPosition: photo.position }}
+              style={{ objectPosition: photo.objectPosition }}
             />
           ) : null,
         )}

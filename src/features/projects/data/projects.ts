@@ -1,11 +1,4 @@
-/** A photo of a task force's own people or work, with a factual caption. */
-interface TaskForcePhoto {
-  src: string;
-  alt: string;
-  caption: string;
-  /** `object-position` that keeps the people in the crop. */
-  position?: string;
-}
+import type { ContentImage } from "@/lib/cms-content-model";
 
 /** Named work a task force does with a partner, listed under its chapter. */
 interface TaskForceWork {
@@ -18,7 +11,8 @@ interface TaskForceWork {
 /**
  * A task force on /projects: a small team of TUM.ai members that takes AI
  * into one other field. The page draws each one as the overlap of an AI
- * circle and its field's circle, in the order of this list.
+ * circle and its field's circle, in the order of this list. The code
+ * fallback of the `taskForce` documents (`../content.ts`).
  */
 export type TaskForce = {
   /** Anchor of the task force's chapter (`/projects#med-ai`). */
@@ -31,7 +25,10 @@ export type TaskForce = {
   /** The longer paragraph under it. */
   detailedDescription: string;
   work?: TaskForceWork;
-  photo?: TaskForcePhoto;
+  /** A photo of the task force's own people or work. */
+  photo?: ContentImage;
+  /** A factual caption for the photo: what, where, when. */
+  photoCaption?: string;
 };
 
 // TODO(content): confirm the field labels, one per task force.
@@ -56,11 +53,13 @@ export const taskForces: TaskForce[] = [
     },
     photo: {
       src: "/assets/innovation/med_ai.webp",
+      width: 1920,
+      height: 1440,
       alt: "About a dozen people, several in TUM.ai shirts, posing in front of a projected slide",
-      // TODO(content): confirm the event and add its date.
-      caption: "Medicine Meets AI, a med.AI event",
-      position: "50% 45%",
+      objectPosition: "50% 45%",
     },
+    // TODO(content): confirm the event and add its date.
+    photoCaption: "Medicine Meets AI, a med.AI event",
   },
   {
     slug: "quantum-ai",
@@ -90,11 +89,13 @@ export const taskForces: TaskForce[] = [
       "Women@TUM.ai builds a space where female students in AI, business, and tech can connect, grow, and take initiative. The task force focuses on empowerment, leadership, mentorship, workshops, networking, and industry collaboration.",
     photo: {
       src: "/assets/innovation/women_at_tumai.jpg",
+      width: 2430,
+      height: 1620,
       alt: "Ten people standing in front of two whiteboards covered in sticky notes, headed Problems and Solutions",
-      // TODO(content): confirm what the session was and when it took place.
-      caption: "Women@TUM.ai at a problems and solutions session",
-      position: "50% 40%",
+      objectPosition: "50% 40%",
     },
+    // TODO(content): confirm what the session was and when it took place.
+    photoCaption: "Women@TUM.ai at a problems and solutions session",
   },
   {
     slug: "global-affairs",
@@ -108,12 +109,7 @@ export const taskForces: TaskForce[] = [
 ];
 
 /**
- * Members found task forces: the page keeps one circle open for the next
- * one, and its close invites members to start it (confirmed by the
- * maintainers, 2026-09-29).
+ * The anchor of the open circle, the page's close (`/projects#your-field`).
+ * Its labels are copy (`openSeat` in `copy.ts`).
  */
-export const openSeat = {
-  slug: "your-field",
-  name: "Your field",
-  field: "The next task force",
-} as const;
+export const openSeatSlug = "your-field";

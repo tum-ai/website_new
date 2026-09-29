@@ -2,18 +2,26 @@ import {
   Container,
   Display,
   Ledger,
+  type LedgerItem,
   Reveal,
   Section,
   Text,
   TextLink,
 } from "@/components/ds";
-import { ledgerFacts } from "./data/homepage";
+import type { HomeCopy } from "./data/homepage";
 
 /**
  * What TUM.ai is, for a first-time visitor: the mission as a statement on
  * the left, the key figures as a ledger on the right.
  */
-export function MissionSection() {
+export function MissionSection({
+  mission,
+  ledger,
+}: {
+  mission: HomeCopy["mission"];
+  /** The ledger rows with their figures (`homeView`). */
+  ledger: LedgerItem[];
+}) {
   return (
     <Section
       tone="paper"
@@ -25,13 +33,10 @@ export function MissionSection() {
       <Container className="grid gap-16 lg:grid-cols-12 lg:gap-12">
         <div className="lg:col-span-6">
           <Display id="about-title" size="lg" className="max-w-[13em]">
-            We close the gap between AI research and the things people build.
+            {mission.statement}
           </Display>
           <Text size="lead" className="mt-8 max-w-xl md:mt-10">
-            TUM.ai is a non-profit student initiative at the Technical
-            University of Munich. Our members run research projects with
-            universities and labs, build AI products with industry partners,
-            incubate startups, and host hackathons, talks and workshops.
+            {mission.body}
           </Text>
           <div className="mt-10 flex flex-wrap gap-x-8 gap-y-4">
             <TextLink href="/community#memberStories" arrow>
@@ -43,7 +48,7 @@ export function MissionSection() {
           </div>
         </div>
         <Reveal className="lg:col-span-5 lg:col-start-8">
-          <Ledger items={ledgerFacts} />
+          <Ledger items={ledger} />
         </Reveal>
       </Container>
     </Section>

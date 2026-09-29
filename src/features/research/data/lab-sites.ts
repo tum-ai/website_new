@@ -2,7 +2,8 @@
  * Where the institutions on /research are, for the hero globe. One site per
  * city: labs a few kilometres apart would draw one marker anyway. The
  * `institutions` lists hold every name the CMS, the partners and the REX
- * copy use for a lab in that city.
+ * copy use for a lab in that city. The code fallback of the `labSite`
+ * documents (`../content.ts`).
  */
 
 /** A city on the globe and the institutions TUM.ai works with there. */

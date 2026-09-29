@@ -102,21 +102,21 @@ fields, and each owner defines its own schema file.
 | --- | --- | --- | --- | --- |
 | Apply FAQ | `apply/data/faq.ts` | `apply-page.tsx` via `apply/content.ts` | **done**: `faq` (`apply`) | – |
 | E-Lab FAQ | `e-lab/data/faq.ts` | `e-lab-page.tsx` via `e-lab/content.ts` | **done**: `faq` (`e-lab`) | – |
-| Q&A entries | `qanda/data/qanda.ts`: `faqs` (7; `spans`, `points`, `evidence` with facts) | `qanda-page.tsx` (+ FAQPage JSON-LD), `mission-section.tsx`, design system | `faq` (`qanda`; `anchor` = today's `id`; evidence text with `{{org.*}}`, `{{impact.*}}`, `{{eLab.*}}`); `spans` stay exact substrings of the passage | C |
-| Mission passage | `qanda/data/qanda.ts`: `missionQuestion`, `missionPassage` | qanda page | `qandaCopy` (edit together with the spans; the span test must run on CMS data) | C |
-| Q&A forks and closing | `qanda/data/qanda.ts`: `forks`; inline in `qanda-page.tsx`, `mission-section.tsx`, `mission-answers.tsx`, `closing-section.tsx` | qanda | `qandaCopy` (the companies fork is `partnerPitch`) | C |
-| Apply page copy | `apply/data/apply.ts`: `heroLead`, `tracksLead`, `selectionStages`, `qualities`, `notRequired`, `values`, `offerings`; inline in `selection.tsx`, `since-founding.tsx`, `tracks.tsx`, `who-should-apply.tsx` (titles, photo alts) | apply | `applyCopy` (`{{org.majors}}` etc. for facts; stage `when` keys stay code) | C |
-| Apply milestones | `apply/data/milestones.ts`: `milestones` (22), `milestoneKinds` | `since-founding.tsx` | `milestone` (kinds stay code) | C |
-| Departments | `community/data/departments.ts` (7, 4 photos) | `departments-section.tsx`, home `programs` (count) | `department` | C |
-| Member journey | `community/data/member-journey.ts`: `memberJourney` (Lucide icons) | `semester-plan.tsx`, apply `tracks.tsx` | `journeyStep` (`iconKey`); `semesterColumns`, `stepAnchor` stay code | C |
-| Community page copy | inline in `community-page.tsx`, `closing-section.tsx`, `departments-section.tsx`, `member-stories.tsx` (section title), `semester-plan.tsx` | community | `communityCopy` (recruiting dates as `{{recruiting.*}}`) | C |
-| Home copy | `home/data/homepage.ts`: `heroLead`, `ledgerFacts`, `programs`, `roomPhotos`, `heroPhotos`, `memberQuote`, `partnerQuoteId`; inline in `home-hero.tsx`, `join-section.tsx`, `mission-section.tsx`, `partners-section.tsx` (see B), `programs-section.tsx`, `room-section.tsx` | home | `homeCopy` (ledger values stay derived facts; photos as `ContentImage`; quotes reference `person`) | C |
-| Projects copy | `projects/data/copy.ts`: `hero`, `figureSeats`, `closing` | `projects-page.tsx`, `closing-section.tsx` | `projectsCopy` | C |
-| Task forces | `projects/data/projects.ts`: `taskForces` (5), `openSeat` | projects page, `copy.ts` | `taskForce` (`openSeat` into `projectsCopy`) | C |
-| Research copy | `research/data/research-copy.ts`: `heroLead`, `abstractStatement`, `getAbstractBody`, `figurePanels`, `closing`; inline in `research-page.tsx` (~15 strings), `research-figure.tsx`, `project-list.tsx`, `research-globe.tsx` (aria) | research | `researchCopy` (the body stays a template with the live project count) | C |
-| Lab sites | `research/data/lab-sites.ts`: `labSites` (6) | `research/research.ts` → globe, affiliations | `labSite` | C |
-| E-Lab selection copy | `e-lab/data/selection.ts`: `selectionStages` (gates and phases; team counts from config); inline in `selection-gates.tsx`, `hero.tsx` | e-lab | `eLabCopy` (gate counts stay facts) | C |
-| Events copy | inline in `events/closing-section.tsx`, `upcoming.tsx`, `register.tsx`, `register-filter.tsx`, `poster-wall.tsx`, `sign-up-action.tsx`, `host-line.tsx`; labels in `events/filters.ts` (`categoryNames`), `events/events.ts` (semester labels) | events | `eventsCopy` for titles, leads and the closing; category and semester labels stay in code (they map schema enums) | C |
+| Q&A entries | `qanda/data/qanda.ts`: `faqs` (7; `spans`, `points`, `evidence` with facts) | `qanda-page.tsx` (+ FAQPage JSON-LD), `mission-section.tsx`, design system | **done**: `faq` (`qanda`; `anchor` = today's `id`; evidence text with `{{org.*}}`, `{{impact.*}}`, `{{eLab.*}}`); `spans` stay exact substrings of the passage | C |
+| Mission passage | `qanda/data/qanda.ts`: `missionQuestion`, `missionPassage` | qanda page | **done**: `qandaCopy` (edit together with the spans; the span test must run on CMS data) | C |
+| Q&A forks and closing | `qanda/data/qanda.ts`: `forks`; inline in `qanda-page.tsx`, `mission-section.tsx`, `mission-answers.tsx`, `closing-section.tsx` | qanda | **done**: `qandaCopy` (the companies fork is `partnerPitch`) | C |
+| Apply page copy | `apply/data/apply.ts`: `heroLead`, `tracksLead`, `selectionStages`, `qualities`, `notRequired`, `values`, `offerings`; inline in `selection.tsx`, `since-founding.tsx`, `tracks.tsx`, `who-should-apply.tsx` (titles, photo alts) | apply | **done** (the hero lead renders in A's `hero.tsx`, see integration points): `applyCopy` (`{{org.majors}}` etc. for facts; stage `when` keys stay code) | C |
+| Apply milestones | `apply/data/milestones.ts`: `milestones` (22), `milestoneKinds` | `since-founding.tsx` | **done**: `milestone` (kinds stay code) | C |
+| Departments | `community/data/departments.ts` (7, 4 photos) | `departments-section.tsx`, home `programs` (count) | **done**: `department` | C |
+| Member journey | `community/data/member-journey.ts`: `memberJourney` (Lucide icons) | `semester-plan.tsx`, apply `tracks.tsx` | **done**: `journeyStep` (`iconKey`); `semesterColumns`, `stepAnchor` stay code | C |
+| Community page copy | inline in `community-page.tsx`, `closing-section.tsx`, `departments-section.tsx`, `member-stories.tsx` (section title), `semester-plan.tsx` | community | **done**: `communityCopy` (recruiting dates as `{{recruiting.*}}`) | C |
+| Home copy | `home/data/homepage.ts`: `heroLead`, `ledgerFacts`, `programs`, `roomPhotos`, `heroPhotos`, `memberQuote`, `partnerQuoteId`; inline in `home-hero.tsx`, `join-section.tsx`, `mission-section.tsx`, `partners-section.tsx` (see B), `programs-section.tsx`, `room-section.tsx` | home | **done**: `homeCopy` (ledger values stay derived facts; photos as `ContentImage`; quotes reference `person`) | C |
+| Projects copy | `projects/data/copy.ts`: `hero`, `figureSeats`, `closing` | `projects-page.tsx`, `closing-section.tsx` | **done**: `projectsCopy` | C |
+| Task forces | `projects/data/projects.ts`: `taskForces` (5), `openSeat` | projects page, `copy.ts` | **done**: `taskForce` (`openSeat` into `projectsCopy`) | C |
+| Research copy | `research/data/research-copy.ts`: `heroLead`, `abstractStatement`, `getAbstractBody`, `figurePanels`, `closing`; inline in `research-page.tsx` (~15 strings), `research-figure.tsx`, `project-list.tsx`, `research-globe.tsx` (aria) | research | **done**: `researchCopy` (the body stays a template with the live project count) | C |
+| Lab sites | `research/data/lab-sites.ts`: `labSites` (6) | `research/research.ts` → globe, affiliations | **done** as a slice (`getLabSiteList`); not rendered until `research.ts` takes the list, see integration points: `labSite` | C |
+| E-Lab selection copy | `e-lab/data/selection.ts`: `selectionStages` (gates and phases; team counts from config); inline in `selection-gates.tsx`, `hero.tsx` | e-lab | **done**: `eLabCopy` (gate counts stay facts) | C |
+| Events copy | inline in `events/closing-section.tsx`, `upcoming.tsx`, `register.tsx`, `register-filter.tsx`, `poster-wall.tsx`, `sign-up-action.tsx`, `host-line.tsx`; labels in `events/filters.ts` (`categoryNames`), `events/events.ts` (semester labels) | events | **done** (each section awaits the getter; `events-page.tsx` is untouched): `eventsCopy` for titles, leads and the closing; category and semester labels stay in code (they map schema enums) | C |
 | Page titles and descriptions | `config/seo.ts` | metadata | **keep**: SEO structure | – |
 
 ## Kept in code
@@ -217,6 +217,11 @@ there yet:
   values on the server, and client islands that import config facts (`components/shell/header.tsx`,
   `e-lab/e-lab-phase-switch.tsx`, `community/membership-phase-switch.tsx`) need them as props.
 - Header CTA labels repeated inline ("Become a Partner", "Become a Member") across B and C files.
+- Lab sites (C) in `research/research.ts` (nobody's file): `getLabSites` reads the code
+  `labSites`; give it the list as a parameter and pass `getLabSiteList()` from
+  `research-page.tsx`.
+- The /apply hero lead (C, `applyCopy.heroLead`) in `apply/hero.tsx` (A): pass it from
+  `ApplyPage` instead of importing `heroLead` from `data/apply.ts`.
 
 Rules that keep the streams independent: keep the exported shape of code data that other files
 import; await a getter in the server section that renders the content (sections are server

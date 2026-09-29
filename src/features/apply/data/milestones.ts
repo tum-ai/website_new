@@ -1,5 +1,3 @@
-import { communityFacts } from "@/config/community";
-
 /** The rows of the programme matrix: what kind of thing members started. */
 export const milestoneKinds = [
   { id: "research", label: "Research" },
@@ -20,7 +18,11 @@ export type Milestone = {
   detail?: string;
 };
 
-/** TUM.ai's milestones since its founding, oldest first. */
+/**
+ * TUM.ai's milestones since its founding, oldest first: the code fallback of
+ * the `milestone` documents (`../content.ts`). Details may hold
+ * `{{placeholders}}` for site facts, filled on the server.
+ */
 export const milestones: Milestone[] = [
   {
     year: 2020,
@@ -101,7 +103,7 @@ export const milestones: Milestone[] = [
     year: 2025,
     kind: "events",
     title: "Biggest Makeathon yet",
-    detail: `${communityFacts.makeathonSize}+ registrations`,
+    detail: "{{community.makeathonSize}}+ registrations",
   },
   {
     year: 2025,
@@ -117,18 +119,22 @@ export const milestones: Milestone[] = [
   },
 ];
 
-/** The years the matrix spans, oldest first, with no gaps. */
-export const milestoneYears: number[] = (() => {
-  const years = milestones.map((milestone) => milestone.year);
+/** The years a matrix of `list` spans, oldest first, with no gaps. */
+export function milestoneYearsOf(list: readonly Milestone[]): number[] {
+  const years = list.map((milestone) => milestone.year);
   const first = Math.min(...years);
   return Array.from(
     { length: Math.max(...years) - first + 1 },
     (_, index) => first + index,
   );
-})();
+}
 
-/** The milestones of one matrix cell, in list order. */
-export const milestonesIn = (kind: MilestoneKind, year: number) =>
-  milestones.filter(
+/** The milestones of `list` in one matrix cell, in list order. */
+export const milestonesIn = (
+  list: readonly Milestone[],
+  kind: MilestoneKind,
+  year: number,
+) =>
+  list.filter(
     (milestone) => milestone.kind === kind && milestone.year === year,
   );
