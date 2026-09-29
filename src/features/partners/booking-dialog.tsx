@@ -10,6 +10,7 @@ import {
   TextLink,
 } from "@/components/ds";
 import { fillPageTokens } from "@/lib/content-copy";
+import { type CalBooking, getCalBooking } from "@/lib/security";
 import {
   type PartnershipFinderCopy,
   partnershipFinderCopy,
@@ -24,23 +25,15 @@ import {
 
 const namespace = "tumai-partners";
 
-/** The Cal.eu page and its embed script, from the booking URL. */
-function calOf(bookingUrl: string) {
-  const url = new URL(bookingUrl);
-  return {
-    calLink: url.pathname.slice(1),
-    calOrigin: url.origin,
-    embedJsUrl: `${url.origin}/embed.js`,
-  };
-}
-
 /**
  * Booking dialog (Base UI). The popup content, and with it the Cal.eu embed,
  * mounts only while open; closing returns focus to `finalFocus`, the control
  * that opened it. On phones the popup fills the dialog viewport (dynamic
  * viewport height) and the calendar takes the remaining space, so the title,
  * close button and fallback links stay on screen and the embed is the only
- * scroller.
+ * scroller. The calendar embeds only a Cal booking page (`getCalBooking`),
+ * because the embed script loads from the booking URL's origin; any other
+ * URL leaves just the links.
  */
 export function BookingDialog({
   open,
@@ -59,6 +52,7 @@ export function BookingDialog({
   contact: PartnershipContact;
   finalFocus: RefObject<HTMLElement | null>;
 }) {
+  const cal = getCalBooking(contact.bookingUrl);
   return (
     <Dialog open={open} onOpenChange={(next) => onOpenChange(next)}>
       <DialogContent
@@ -75,11 +69,14 @@ export function BookingDialog({
               })}
             </DialogDescription>
           </div>
-          <BookingCalendar
-            selection={selection}
-            copy={copy}
-            contact={contact}
-          />
+          {cal ? (
+            <BookingCalendar
+              cal={cal}
+              selection={selection}
+              copy={copy}
+              contact={contact}
+            />
+          ) : null}
           <div className="flex flex-wrap justify-between gap-x-6 gap-y-3 border-hairline border-t pt-4 text-small">
             <TextLink
               href={getPartnershipBookingUrl(selection, copy, contact)}
@@ -98,15 +95,16 @@ export function BookingDialog({
 }
 
 function BookingCalendar({
+  cal: { calLink, calOrigin, embedJsUrl },
   selection,
   copy,
   contact,
 }: {
+  cal: CalBooking;
   selection: PartnershipSelection;
   copy: PartnershipFinderCopy;
   contact: PartnershipContact;
 }) {
-  const { calLink, calOrigin, embedJsUrl } = calOf(contact.bookingUrl);
   const [status, setStatus] = useState<"loading" | "ready" | "failed">(
     "loading",
   );

@@ -20,7 +20,7 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-function useSource(source: "code" | "sanity") {
+function setSource(source: "code" | "sanity") {
   vi.stubEnv("CMS_CONTENT_SOURCE", source);
   vi.stubEnv("USE_MOCK_CMS", "1");
   vi.stubEnv("VERCEL", "");
@@ -36,12 +36,12 @@ const readBack = () =>
 
 describe("the site settings slice", () => {
   test("code source: the config facts", async () => {
-    useSource("code");
+    setSource("code");
     await expect(getSiteFacts()).resolves.toStrictEqual(siteFactsFallback);
   });
 
   test("the mock serves the backfill through the real query", async () => {
-    useSource("sanity");
+    setSource("sanity");
     const result = await readBack();
     expect(result?.organization.activeMembers).toBe(
       siteFactsFallback.organization.activeMembers,
@@ -55,7 +55,7 @@ describe("the site settings slice", () => {
   });
 
   test("sanity source over the backfill: the same facts", async () => {
-    useSource("sanity");
+    setSource("sanity");
     await expect(getSiteFacts()).resolves.toStrictEqual(siteFactsFallback);
   });
 
@@ -70,7 +70,7 @@ describe("CMS values over the code facts", () => {
   const edited = async (
     edit: (result: NonNullable<SITE_SETTINGS_QUERY_RESULT>) => void,
   ) => {
-    useSource("sanity");
+    setSource("sanity");
     const result = await readBack();
     if (!result) throw new Error("expected the backfill");
     edit(result);
@@ -109,6 +109,38 @@ describe("CMS values over the code facts", () => {
       siteFactsFallback.eLab.selection,
     );
     expect(facts.headerCtaFallback).toBe(siteFactsFallback.headerCtaFallback);
+  });
+
+  test("the booking page and its host change only together, and only to a Cal page", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    const booking = (bookingUrl: string, bookingHost = "Ada") =>
+      edited((result) => {
+        result.partnershipBooking = { bookingUrl, bookingHost };
+      }).then((facts) => facts.partnershipBooking);
+
+    await expect(booking("https://cal.com/ada/intro")).resolves.toStrictEqual({
+      bookingUrl: "https://cal.com/ada/intro",
+      bookingHost: "Ada",
+    });
+    for (const url of [
+      "https://evil.example/ada/intro",
+      "https://cal.eu.evil.example/ada",
+      "http://cal.eu/ada/intro",
+      "https://cal.eu:8443/ada/intro",
+      "https://cal.eu/",
+    ]) {
+      await expect(booking(url), url).resolves.toStrictEqual(
+        siteFactsFallback.partnershipBooking,
+      );
+    }
+    // A host without a usable page keeps the code pair, not a mixed one.
+    await expect(
+      booking("https://evil.example/x", "Ada"),
+    ).resolves.toStrictEqual(siteFactsFallback.partnershipBooking);
+    await expect(
+      booking("https://cal.eu/ada/intro", " "),
+    ).resolves.toStrictEqual(siteFactsFallback.partnershipBooking);
+    vi.restoreAllMocks();
   });
 
   test("no document: the code facts", async () => {

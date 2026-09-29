@@ -1,4 +1,5 @@
 import { defineField, defineType } from "sanity";
+import { getCalBooking } from "../../../lib/security";
 import { contentImageField } from "./fields";
 
 /**
@@ -70,6 +71,17 @@ export function validateFunnel(value: unknown): true | string {
     }
   }
   return true;
+}
+
+/**
+ * The booking page must be on cal.eu or cal.com: the site loads the booking
+ * embed's script from that host (`getCalBooking` in `lib/security.ts`).
+ */
+export function validateBookingUrl(value: unknown): true | string {
+  if (typeof value !== "string" || value === "") return true;
+  return getCalBooking(value)
+    ? true
+    : "Use a booking page on cal.eu or cal.com, such as https://cal.eu/<name>/<event>.";
 }
 
 /** The header CTAs editors can pick as the default (each has a page to link to). */
@@ -236,11 +248,17 @@ export const siteSettingsType = defineType({
         "The booking page behind “Book a call” on /partners. Change both fields together when the partnership leads hand over.",
       validation: (Rule) => Rule.required(),
       fields: [
-        httpsLink(
-          "bookingUrl",
-          "Booking page",
-          "The Cal.eu page the dialog embeds.",
-        ),
+        defineField({
+          name: "bookingUrl",
+          title: "Booking page",
+          type: "url",
+          description:
+            "The Cal.eu (or Cal.com) page the dialog embeds, such as https://cal.eu/<name>/<event>.",
+          validation: (Rule) =>
+            Rule.required()
+              .uri({ scheme: ["https"] })
+              .custom((value) => validateBookingUrl(value)),
+        }),
         defineField({
           name: "bookingHost",
           title: "Host's first name",

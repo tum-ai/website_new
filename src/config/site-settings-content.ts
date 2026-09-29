@@ -9,6 +9,7 @@ import {
   toContentImage,
 } from "@/lib/cms-content-model";
 import type { SITE_SETTINGS_QUERY_RESULT } from "@/lib/sanity.types.generated";
+import { getCalBooking } from "@/lib/security";
 import type { LinkedHeaderCtaVariant } from "./navigation";
 import { type SiteFacts, siteFactsFallback } from "./site-facts";
 
@@ -71,6 +72,25 @@ function fields<K extends string, V>(
 const keysOf = <T extends object>(object: T) =>
   Object.keys(object) as (keyof T & string)[];
 
+/**
+ * The booking page and its host as one pair: a Cal page (`getCalBooking`)
+ * and a name, or nothing, so the dialog never introduces one person's page
+ * as a chat with another.
+ */
+function partnershipBooking(
+  value: NonNullable<SITE_SETTINGS_QUERY_RESULT>["partnershipBooking"],
+) {
+  if (!value) return undefined;
+  const bookingHost = value.bookingHost?.trim();
+  if (getCalBooking(value.bookingUrl) && bookingHost) {
+    return { bookingUrl: value.bookingUrl, bookingHost };
+  }
+  console.warn(
+    "[cms-content] The partnership booking needs a cal.eu or cal.com booking page and its host's name; rendering the code booking.",
+  );
+  return undefined;
+}
+
 /** The funnel only as a whole, and only when each gate is at most the one before. */
 function selection(value: ELabResult["selection"]) {
   if (!value) return undefined;
@@ -93,7 +113,8 @@ function selection(value: ELabResult["selection"]) {
 /**
  * The document shaped like {@link SiteFacts}, leaving out anything unusable
  * (wrong type, a non-https link, a malformed email or cohort, a funnel that
- * widens), so the code value shows there instead. Exported for tests.
+ * widens, a booking page off Cal or without its host), so the code value
+ * shows there instead. Exported for tests.
  */
 export function selectSiteFacts(result: SITE_SETTINGS_QUERY_RESULT) {
   if (!result) return null;
@@ -126,10 +147,7 @@ export function selectSiteFacts(result: SITE_SETTINGS_QUERY_RESULT) {
       result.socialLinks,
       https,
     ),
-    partnershipBooking: result.partnershipBooking && {
-      bookingUrl: https(result.partnershipBooking.bookingUrl),
-      bookingHost: result.partnershipBooking.bookingHost,
-    },
+    partnershipBooking: partnershipBooking(result.partnershipBooking),
     eLab: eLab && {
       currentIteration: /^\d{1,2}\.\d$/.test(eLab.currentIteration ?? "")
         ? eLab.currentIteration

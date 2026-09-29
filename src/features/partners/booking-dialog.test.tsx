@@ -5,7 +5,11 @@ import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { partnershipContact } from "@/config/contact";
 import { ContactActions } from "./contact-actions";
 import { PartnershipProvider } from "./partnership-context";
-import { getPartnershipEmailUrl } from "./partnerships";
+import {
+  codePartnershipContact,
+  getPartnershipEmailUrl,
+  type PartnershipContact,
+} from "./partnerships";
 
 /*
  * The Cal.eu embed is a third-party script: the mock renders a placeholder
@@ -51,11 +55,11 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-function renderContact() {
+function renderContact(contact?: PartnershipContact) {
   const user = userEvent.setup();
   const view = render(
     <div id="app-root">
-      <PartnershipProvider>
+      <PartnershipProvider contact={contact}>
         <ContactActions />
       </PartnershipProvider>
     </div>,
@@ -148,4 +152,18 @@ test("returns focus to the button that opened it", async () => {
   await user.keyboard("{Escape}");
   await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
   expect(trigger).toHaveFocus();
+});
+
+test("never loads an embed script from a booking page off Cal", async () => {
+  const { user, trigger } = renderContact({
+    ...codePartnershipContact,
+    bookingUrl: "https://evil.example/ada/intro",
+  });
+  await user.click(trigger);
+  await screen.findByRole("dialog", { name: dialogName });
+  expect(screen.queryByTestId("cal-embed")).toBeNull();
+  expect(cal.getCalApi).not.toHaveBeenCalled();
+  expect(
+    screen.getByRole("link", { name: "Email us instead" }),
+  ).toBeInTheDocument();
 });
