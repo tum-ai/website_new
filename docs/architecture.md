@@ -100,7 +100,7 @@ built-in through any chain of imports (Turbopack would fail the production build
 | --- | --- | --- |
 | `community` | `departments`, `memberJourney`, types `JourneyStep`, `MemberStory` | `getMemberStories`, `buildMemberStoriesBackfill`, `MembershipApplyButton` |
 | `e-lab` | | `getTestimonialCards`, `buildVentureBackfill` |
-| `partners` | the directory helpers `getHighlightedPartners`, `getPartnerKey`; `organizationByKey` | `getPartners`, `getResearchPartners`, `getPartnersCopy` (the pitch), `getPartnerCaseStudies`, `getPartnerLogos`, `buildOrganizationBackfill` |
+| `partners` | the directory helpers `getHighlightedPartners`, `getPartnerKey`; `PartnerRotationGrid` (the rotating partner wall, a client island without CSS: its styles are global, `styles/partner-rotation.css`); `organizationByKey` | `getPartners`, `getResearchPartners`, `getPartnersCopy` (the pitch), `getPartnerCaseStudies`, `getPartnerLogos`, `buildOrganizationBackfill` |
 | `qanda` | | `faqs` (the design-system showcase) |
 | `research` | | `getRexInstitutions` |
 

@@ -1,7 +1,9 @@
 /*
  * /partners mechanics that Tailwind and the design system can't express: the
- * single-instance marquee, the rotation dissolve and the supporter board's
- * pre-hydration row limit. Everything visual lives in the components.
+ * single-instance marquee and the supporter board's pre-hydration row limit
+ * (the rotation dissolve, which the homepage shares, is in
+ * src/styles/partner-rotation.css). Everything visual lives in the
+ * components.
  * Breakpoints are Tailwind's `sm` (40rem), `md` (48rem) and `lg` (64rem).
  */
 
@@ -113,100 +115,6 @@
       position: static;
       transform: none;
       animation: none;
-    }
-  }
-
-  /*
-   * Rotation (PartnerRotationGrid): each slot keeps a stable frame, the
-   * incoming tile sits in flow and the outgoing copy is stacked over it, so
-   * the wall never moves while only the logos inside the tiles dissolve.
-   */
-  .partner-rotation-slot {
-    position: relative;
-    min-width: 0;
-  }
-
-  .partner-rotation-current {
-    height: 100%;
-  }
-
-  .partner-rotation-outgoing {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .partner-rotation-enter > * > * {
-      animation: partner-logo-enter 600ms var(--ease-brand)
-        var(--partner-logo-delay, 0ms) both;
-    }
-
-    .partner-rotation-outgoing > * > * {
-      animation: partner-logo-exit 600ms var(--ease-brand)
-        var(--partner-logo-delay, 0ms) both;
-    }
-
-    /*
-     * Logo artwork also blurs through the swap, so the two logos never sit
-     * sharp on top of each other mid-dissolve. Only the image: name text
-     * (fallbacks, wordmarks) keeps the plain fade, per the no-filter-on-text
-     * rule. The incoming blur ends at `none`, releasing the filter.
-     */
-    .partner-rotation-enter > * > img {
-      animation-name: partner-logo-enter-image;
-    }
-
-    .partner-rotation-outgoing > * > img {
-      animation-name: partner-logo-exit-image;
-    }
-  }
-
-  @keyframes partner-logo-enter {
-    from {
-      opacity: 0;
-      transform: scale(0.96);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-
-  @keyframes partner-logo-exit {
-    from {
-      opacity: 1;
-      transform: scale(1);
-    }
-    to {
-      opacity: 0;
-      transform: scale(1.03);
-    }
-  }
-
-  @keyframes partner-logo-enter-image {
-    from {
-      opacity: 0;
-      filter: blur(5px);
-      transform: scale(0.96);
-    }
-    to {
-      opacity: 1;
-      filter: none;
-      transform: scale(1);
-    }
-  }
-
-  @keyframes partner-logo-exit-image {
-    from {
-      opacity: 1;
-      filter: none;
-      transform: scale(1);
-    }
-    to {
-      opacity: 0;
-      filter: blur(5px);
-      transform: scale(1.03);
     }
   }
 
