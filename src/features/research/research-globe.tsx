@@ -30,14 +30,38 @@ const MAP_SAMPLES = 16000;
 const MAP_SAMPLES_MAX = 50000;
 /** How long the globe redraws after creation, while its map loads. */
 const SETTLE_MS = 1500;
+/**
+ * Share of the remaining distance a zoom covers per animation frame: an
+ * ease-out that settles in about half a second at 60 Hz.
+ */
+const ZOOM_EASE = 0.18;
+/** A zoom has arrived once scale and angles are this close to the goal. */
+const ZOOM_SETTLED_SCALE = 0.005;
+const ZOOM_SETTLED_ANGLE = 0.002;
+/**
+ * The glide after a drag keeps this share of its speed per frame, so a
+ * flick coasts for roughly a second before it rests.
+ */
+const GLIDE_DECAY = 0.93;
+/** One 60 Hz frame in ms: turns the drag's speed (rad/ms) into rad/frame. */
+const FRAME_MS = 16;
+/** Below this speed (rad/frame) the glide stops. */
+const GLIDE_REST = 0.0005;
+/** Zoom factor per pixel of a trackpad pinch (ctrl+wheel `deltaY`). */
+const PINCH_SENSITIVITY = 0.01;
 
-/** Reads a hex colour token (`--color-violet-300`) as cobe's 0..1 RGB. */
-function readColor(name: string, fallback: Rgb): Rgb {
+/**
+ * Reads a hex colour token (`--color-violet-300`) as cobe's 0..1 RGB, or
+ * `undefined` when it isn't a six-digit hex (the stylesheet hasn't loaded, or
+ * the token changed format). The globe then stays hidden, as without WebGL,
+ * instead of drawing in stale copies of the brand colours.
+ */
+function readColor(name: string): Rgb | undefined {
   const value = getComputedStyle(document.documentElement)
     .getPropertyValue(name)
     .trim();
   const hex = /^#([0-9a-f]{6})$/i.exec(value)?.[1];
-  if (!hex) return fallback;
+  if (!hex) return undefined;
   return [0, 2, 4].map(
     (start) => Number.parseInt(hex.slice(start, start + 2), 16) / 255,
   ) as Rgb;
@@ -87,10 +111,12 @@ type GlobeControls = {
  *
  * - turn: drag, or the arrow keys when focused (a slider whose value is the
  *   longitude at the centre), with a short glide after a drag unless
- *   reduced motion is set;
+ *   reduced motion is set (read at each gesture, so a change applies at
+ *   once);
  * - zoom: the + and − buttons, the + and - keys, or a trackpad pinch
- *   (ctrl+wheel; a plain wheel still scrolls the page). Sites in home's
- *   cluster get their labels from `CLUSTER_ZOOM` on.
+ *   (ctrl+wheel; a plain wheel still scrolls the page). A site is labelled
+ *   once the gap to its nearest neighbour spans `LABEL_GAP_PX` on screen,
+ *   so home's cluster gains its labels as the view closes in.
  *
  * City labels hang on cobe's CSS anchors where the browser supports anchor
  * positioning (research.css). WebGL renders after hydration from a lazily
@@ -123,9 +149,9 @@ export function ResearchGlobe({
     const home = sites.find((site) => site.home) ?? sites[0];
     if (!slider || !host || !home) return;
 
-    const reduceMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
+    // Read at each use rather than once, so turning reduced motion on or
+    // off while the page is open applies to the next zoom or drag.
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     const others = sites.filter((site) => site !== home);
     // Opens west of home so Europe and the US east coast face the viewer.
     const start = centerOn([OPEN_LATITUDE, home.location[1] + OPEN_WEST]);
@@ -208,20 +234,20 @@ export function ResearchGlobe({
         Math.PI;
       const goalPhi = focus ? view.phi + turnBy : view.phi;
       const goalTheta = focus ? homeView.theta : view.theta;
-      if (reduceMotion) {
+      if (motionQuery.matches) {
         Object.assign(view, { scale: goal, phi: goalPhi, theta: goalTheta });
         render();
         report();
         return;
       }
       const step = () => {
-        view.scale += (goal - view.scale) * 0.18;
-        view.phi += (goalPhi - view.phi) * 0.18;
-        view.theta += (goalTheta - view.theta) * 0.18;
+        view.scale += (goal - view.scale) * ZOOM_EASE;
+        view.phi += (goalPhi - view.phi) * ZOOM_EASE;
+        view.theta += (goalTheta - view.theta) * ZOOM_EASE;
         const settled =
-          Math.abs(goal - view.scale) < 0.005 &&
-          Math.abs(goalPhi - view.phi) < 0.002 &&
-          Math.abs(goalTheta - view.theta) < 0.002;
+          Math.abs(goal - view.scale) < ZOOM_SETTLED_SCALE &&
+          Math.abs(goalPhi - view.phi) < ZOOM_SETTLED_ANGLE &&
+          Math.abs(goalTheta - view.theta) < ZOOM_SETTLED_ANGLE;
         if (settled) {
           Object.assign(view, { scale: goal, phi: goalPhi, theta: goalTheta });
         }
@@ -237,6 +263,11 @@ export function ResearchGlobe({
       .then(({ default: createGlobe }) => {
         if (cancelled) return;
         const size = host.clientWidth;
+        const baseColor = readColor("--color-violet-800");
+        const markerColor = readColor("--color-violet-300");
+        const glowColor = readColor("--color-violet-950");
+        const arcColor = readColor("--color-violet-400");
+        if (!baseColor || !markerColor || !glowColor || !arcColor) return;
         try {
           globe = createGlobe(canvas, {
             devicePixelRatio: Math.min(window.devicePixelRatio, 2),
@@ -249,10 +280,10 @@ export function ResearchGlobe({
             diffuse: 1.1,
             mapSamples: MAP_SAMPLES,
             mapBrightness: 5,
-            baseColor: readColor("--color-violet-800", [0.32, 0.21, 0.45]),
-            markerColor: readColor("--color-violet-300", [0.79, 0.65, 0.94]),
-            glowColor: readColor("--color-violet-950", [0.1, 0, 0.29]),
-            arcColor: readColor("--color-violet-400", [0.7, 0.54, 0.9]),
+            baseColor,
+            markerColor,
+            glowColor,
+            arcColor,
             arcWidth: ARC_WIDTH,
             arcHeight: 0.28,
             markerElevation: 0.01,
@@ -299,15 +330,15 @@ export function ResearchGlobe({
       if (!drag) return;
       drag = undefined;
       canvas.style.cursor = "grab";
-      if (reduceMotion) {
+      if (motionQuery.matches) {
         report();
         return;
       }
       // A short glide after the drag, decaying to rest.
-      let speed = velocity * 16;
+      let speed = velocity * FRAME_MS;
       const step = () => {
-        speed *= 0.93;
-        if (Math.abs(speed) < 0.0005) {
+        speed *= GLIDE_DECAY;
+        if (Math.abs(speed) < GLIDE_REST) {
           glide = 0;
           report();
           return;
@@ -323,7 +354,9 @@ export function ResearchGlobe({
       if (!event.ctrlKey) return;
       event.preventDefault();
       cancelAnimationFrame(zooming);
-      view.scale = clampZoom(view.scale * Math.exp(-event.deltaY * 0.01));
+      view.scale = clampZoom(
+        view.scale * Math.exp(-event.deltaY * PINCH_SENSITIVITY),
+      );
       render();
       setZoom(view.scale);
     };
