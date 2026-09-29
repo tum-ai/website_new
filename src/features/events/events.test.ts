@@ -3,6 +3,7 @@ import {
   excerpt,
   formatEventDate,
   formatEventLocation,
+  formatHosts,
   getEventPhotos,
   groupEventsBySemester,
   hasStartTime,
@@ -366,5 +367,20 @@ describe("getEventPhotos", () => {
         poster: "/a.webp",
       }),
     ).toEqual([{ src: "/a.webp", alt: "Makeathon, image 1" }]);
+  });
+});
+
+describe("formatHosts", () => {
+  test("lists co-hosts in running text, without a serial comma", () => {
+    expect(formatHosts(["Anthropic", "Lovable", "Hugging Face"])).toBe(
+      "Anthropic, Lovable and Hugging Face",
+    );
+    expect(formatHosts(["CDTM"])).toBe("CDTM");
+  });
+
+  test("ignores stray spaces and empty entries from the editors", () => {
+    expect(formatHosts([" Anthropic ", "", "Lovable"])).toBe(
+      "Anthropic and Lovable",
+    );
   });
 });

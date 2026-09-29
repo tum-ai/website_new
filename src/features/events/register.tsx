@@ -5,6 +5,7 @@ import { EventDetailsDialog } from "./event-details";
 import {
   formatEventDate,
   formatEventLocation,
+  formatHosts,
   groupEventsBySemester,
   hostsBeyondTitle,
   toEventDetails,
@@ -100,7 +101,7 @@ function RegisterRow({ event }: { event: Event }) {
           {hosts.length > 0 ? (
             <>
               {location ? ", " : null}
-              with {hosts.join(", ")}
+              with {formatHosts(hosts)}
             </>
           ) : null}
         </p>

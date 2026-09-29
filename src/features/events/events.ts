@@ -8,6 +8,7 @@
 import { tz } from "@date-fns/tz";
 import { endOfDay, format } from "date-fns";
 import type { Event, EventCategory } from "@/lib/types";
+import { formatList } from "@/lib/words";
 
 /** The timezone every /events date is shown and grouped in. */
 const EVENTS_TIME_ZONE = "Europe/Berlin";
@@ -249,6 +250,14 @@ export function hostsBeyondTitle(
   return event.hosts.filter(
     (host) => !title.includes(host.trim().toLowerCase()),
   );
+}
+
+/**
+ * "Anthropic, Lovable and Hugging Face": co-hosts in running text, the one
+ * format the hero, the register and the poster wall share.
+ */
+export function formatHosts(hosts: readonly string[]): string {
+  return formatList(hosts.map((host) => host.trim()).filter(Boolean));
 }
 
 /** "Location, City", skipping whichever part is missing or repeated. */

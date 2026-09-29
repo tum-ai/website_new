@@ -1,6 +1,5 @@
 import { cn } from "@/lib/cn";
-
-const list = new Intl.ListFormat("en", { type: "conjunction" });
+import { formatHosts } from "./events";
 
 /**
  * "With Anthropic, Lovable and Hugging Face": an event's co-hosts as a
@@ -17,7 +16,7 @@ export function HostLine({
   if (hosts.length === 0) return null;
   return (
     <p className={cn("text-fg-muted", className)}>
-      With <span className="text-fg">{list.format(hosts)}</span>
+      With <span className="text-fg">{formatHosts(hosts)}</span>
     </p>
   );
 }
