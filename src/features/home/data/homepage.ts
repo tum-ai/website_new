@@ -67,7 +67,7 @@ export const ledgerFacts: LedgerItem[] = [
     label: "Raised by E-Lab startups",
     value: eLabConfig.ventureFundingMillions,
     prefix: "€",
-    suffix: "M+",
+    suffix: "M",
     note: `Across ${eLabCompletedIterations} incubator cohorts`,
   },
   {
@@ -105,7 +105,7 @@ export const programs: Program[] = [
   {
     id: "entrepreneurship",
     title: "Entrepreneurship",
-    description: `The AI E-Lab, our equity-free incubator. Its startups have raised €${eLabConfig.ventureFundingMillions}M+ so far.`,
+    description: `The AI E-Lab, our equity-free incubator. Its startups have raised €${eLabConfig.ventureFundingMillions}M so far.`,
     href: "/e-lab",
     image: { src: "/assets/homepage/elab.webp", position: "50% 40%" },
   },

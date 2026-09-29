@@ -3,13 +3,9 @@ import { eLabApplicationCopy, eLabConfig, eLabPhaseCopy } from "@/config/e-lab";
 import { ELabPhase } from "./e-lab-phase";
 
 type ELabApplicationCtaProps = {
-  /** Which label set to show: the hero's (with the cohort) or the card's. */
-  label: "hero" | "card";
   /** Button and badge height; keep equal to the neighbouring status badge. */
   size?: "md" | "lg";
 };
-
-const labelKey = { hero: "heroCtaLabel", card: "cardCtaLabel" } as const;
 
 /**
  * The application call to action for the current E-Lab cohort. It follows
@@ -22,10 +18,7 @@ const labelKey = { hero: "heroCtaLabel", card: "cardCtaLabel" } as const;
  * - closed: a muted "closed" status badge, so the page never shows a dead
  *   button.
  */
-export function ELabApplicationCta({
-  label,
-  size = "lg",
-}: ELabApplicationCtaProps) {
+export function ELabApplicationCta({ size = "lg" }: ELabApplicationCtaProps) {
   const { open, closed } = eLabPhaseCopy;
 
   return (
@@ -36,12 +29,12 @@ export function ELabApplicationCta({
           size={size}
           arrow="external"
         >
-          {open[labelKey[label]]}
+          {open.ctaLabel}
         </ButtonLink>
       }
       closed={
         <StatusBadge status="closed" size={size}>
-          {closed[labelKey[label]]}
+          {closed.ctaLabel}
         </StatusBadge>
       }
     />

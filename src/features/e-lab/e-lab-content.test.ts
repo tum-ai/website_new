@@ -11,42 +11,10 @@ import {
 import { parseMunichDateTime } from "@/lib/munich-time";
 import { faq } from "./data/faq";
 import {
-  eLabMetrics,
   notableStartups,
-  programSteps,
   testimonialCards,
+  tracedVenture,
 } from "./data/venture-page";
-
-const expectedTimeline = [
-  [
-    "Kickoff & Onboarding Weekend",
-    "3 Days Intensive • Team Alignment & Ideation",
-  ],
-  [
-    "Phase I: MVP Build & Foundational Sessions",
-    "4 Weeks • Rapid Prototyping, Problem-Fit & Core Tech",
-  ],
-  ["Midterm Pitch (MVP Gate)", "Live MVP Demo & Jury Feedback"],
-  [
-    "Phase II: Traction, Iteration & Growth Sessions",
-    "6 Weeks • User Testing, Go-to-Market, Legal & Pitch Polish",
-  ],
-  ["Selection Day", "Evaluation for Final Showcase"],
-  ["Final Pitch / Demo Day", "Investor Pitch & Graduation (July)"],
-];
-
-test("E-Lab metrics match the approved proof points", () => {
-  expect(
-    eLabMetrics.map(({ label, to, prefix = "", suffix = "" }) => [
-      prefix + to + suffix,
-      label,
-    ]),
-  ).toStrictEqual([
-    ["~500", "applications per batch"],
-    ["€8M", "raised by E-Lab ventures"],
-    ["5", "E-Lab Iterations"],
-  ]);
-});
 
 // Editors change the deadline every round (docs/contributor-guide.md), so this
 // checks its format and that the copy follows the config, not a fixed date.
@@ -81,8 +49,12 @@ test("E-Lab applications are open until the deadline and closed from it", () => 
   );
   expect(isELabApplicationOpen(new Date(closesAt))).toBe(false);
 
-  expect(eLabPhaseCopy.open.cardCtaLabel).toBe("Apply Now!");
-  expect(eLabPhaseCopy.closed.cardCtaLabel).toBe("Applications Closed");
+  expect(eLabPhaseCopy.open.roundStatus).toContain(
+    eLabApplicationCopy.deadline,
+  );
+  expect(eLabPhaseCopy.closed.roundStatus).toContain(
+    eLabConfig.nextApplicationWindow,
+  );
 });
 
 test("E-Lab testimonials include the requested people and exact quotes", () => {
@@ -105,10 +77,14 @@ test("E-Lab testimonials include the requested people and exact quotes", () => {
   ]);
 });
 
-test("E-Lab program timeline is the approved six-step journey", () => {
+test("the traced venture and its founder quote exist", () => {
   expect(
-    programSteps.map(({ title, description }) => [title, description]),
-  ).toStrictEqual(expectedTimeline);
+    notableStartups.some((startup) => startup.id === tracedVenture.startupId),
+  ).toBe(true);
+  const founder = testimonialCards.find(
+    (card) => card.id === tracedVenture.testimonialId,
+  );
+  expect(founder?.context).toBe(tracedVenture.cohort);
 });
 
 test("E-Lab startup list includes Invertix and the revised workshop copy", () => {
@@ -145,5 +121,12 @@ test("Every E-Lab content image references an existing local asset", () => {
       existsSync(join(process.cwd(), "public", asset.slice(1))),
       `Missing local E-Lab asset: ${asset}`,
     ).toBe(true);
+  }
+});
+
+test("every milestone of the traced venture names its source", () => {
+  expect(tracedVenture.after.length).toBeGreaterThan(0);
+  for (const milestone of tracedVenture.after) {
+    expect(milestone.source, milestone.text).toMatch(/^https:\/\//);
   }
 });

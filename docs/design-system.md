@@ -183,7 +183,7 @@ Content
 - `MediaCard`: photo card. `layout="overlay"` puts text on a scrim, `"stacked"` puts it below. Supports `href`, `aspect`, a `fallback` for a missing or broken image (default `BrandPanel`), a `cornerHint` slot, an `action` slot (for example a dialog trigger instead of a link), `titleId`, and `descriptionLines` (clamp and reserve 2 or 3 lines so titles in a row align). It passes `unoptimized` to next/image for CMS URLs.
 - `CornerHint`: the corner disc that says what a click does (`icon` `arrow` or `open`), for cards that aren't `MediaCard`.
 - `FallbackImage`: next/image that swaps to a fallback when it fails to load.
-- `QuoteCard` (`raised` or `glass`, with `context` and `footer` slots; `editorial` sets one quote in display type without a card) and `QuoteMark`.
+- `QuoteCard` (`raised` or `glass`, with `context` and `footer` slots; `editorial` sets one quote in display type without a card; `ruled` sets quotes in a list under a hairline, without a card) and `QuoteMark`.
 - `Photo`: a documentary photo in the brand frame with a factual `caption` (a `figure`). `aspect` (`3/2` default, `4/3`, `16/10`, `4/5`, `1/1`, and `panorama` for wide group shots: 4/3, then 2/1 from `sm` and 24/7 from `lg`), `shape` (`rounded` = `rounded-4xl`, or `bleed`), `position` for the crop, and `eager` for the LCP photo (high fetch priority, no preload tag). Use it instead of hand-rolled image frames; `MediaCard` is for linked cards with text on or under the photo.
 - `PersonCard`: portrait, name and `byline`; `image.position` keeps a face in frame, and `unoptimized` serves the portrait as is.
 - `LogoTile`, `LogoWall`: logos as tiles (`size` `sm` to `xl`, `responsive` for one step smaller on phones), `variant="chip"` (with `fixed` width so rows don't reflow), `variant="bare"` for artwork made for dark bands, `variant="mono"` for light-background artwork in greyscale on light bands, links, or a `wordmark` lockup, with a name fallback when the artwork fails. `LogoWall layout="strip"` sets `mono` logos in one wrapping row, each sized to the same area from its `aspectRatio`.
@@ -716,7 +716,7 @@ No props of its own; see the source file for the root element or Base UI part it
 
 | Prop | Type | Description |
 | --- | --- | --- |
-| `variant?` | `"raised" \| "glass" \| "editorial"` | `raised` for light bands; `glass` is the frosted panel for dark bands; `editorial` drops the card and sets the quote as a large light statement, for one quote that carries a section. |
+| `variant?` | `"raised" \| "glass" \| "editorial" \| "ruled"` | `raised` for light bands; `glass` is the frosted panel for dark bands; `editorial` drops the card and sets the quote as a large light statement, for one quote that carries a section; `ruled` drops the card for a hairline rule above the quote, for lists of quotes set editorially on any band. |
 | `quote` | `ReactNode` | The quotation, without quote marks. |
 | `name` | `string` | Who said it. |
 | `byline?` | `ReactNode` | Line under the name: role and affiliation. (Not `role`, which stays the figure's ARIA role.) |

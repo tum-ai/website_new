@@ -601,7 +601,7 @@ export function DesignSystemPage() {
             </p>
           </CtaPanel>
         </div>
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           <QuoteCard
             quote="Truly impressive what the team has built. We’re just getting started."
             name="Axel Täubert"
@@ -610,6 +610,13 @@ export function DesignSystemPage() {
               src: "/assets/partners/logos/google.webp",
               alt: "Google",
             }}
+          />
+          <QuoteCard
+            variant="ruled"
+            quote="Ruled: a list of quotes under hairlines, without a card."
+            name="Leon Hergert"
+            byline="Co-Founder @ Spherecast"
+            portrait={{ src: "/assets/e-lab/testimonials/leon_hergert.png" }}
           />
           <PersonCard
             name="Leonie Freisinger"
@@ -787,7 +794,7 @@ export function DesignSystemPage() {
                   label: "Raised",
                   value: eLabConfig.ventureFundingMillions,
                   prefix: "€",
-                  suffix: "M+",
+                  suffix: "M",
                   note: "Ledger lg",
                 },
                 { label: "Without a note", value: "48h" },

@@ -1,15 +1,3 @@
-import { eLabCompletedIterations, eLabConfig } from "@/config/e-lab";
-
-/** A numeric E-Lab proof point rendered with a count-up animation. */
-export interface Metric {
-  id: string;
-  label: string;
-  from: number;
-  to: number;
-  prefix?: string;
-  suffix?: string;
-}
-
 /** A community quote and the local imagery used to attribute it. */
 export interface TestimonialCard {
   id: string;
@@ -24,14 +12,7 @@ export interface TestimonialCard {
   organizationLogoAlt: string;
 }
 
-/** One milestone in the E-Lab venture-building program. */
-export interface ProgramStep {
-  id: string;
-  title: string;
-  description: string;
-}
-
-/** A venture displayed in the notable-startups marquee. */
+/** An alumni venture of the E-Lab. */
 export interface NotableStartup {
   id: string;
   name: string;
@@ -40,30 +21,6 @@ export interface NotableStartup {
   logoAlt: string;
   wordmarkLabel?: string;
 }
-
-export const eLabMetrics = [
-  {
-    id: "applications",
-    label: "applications per batch",
-    from: 0,
-    to: 500,
-    prefix: "~",
-  },
-  {
-    id: "funding",
-    label: "raised by E-Lab ventures",
-    from: 0,
-    to: eLabConfig.ventureFundingMillions,
-    prefix: "€",
-    suffix: "M",
-  },
-  {
-    id: "iterations",
-    label: "E-Lab Iterations",
-    from: 0,
-    to: eLabCompletedIterations,
-  },
-] satisfies readonly Metric[];
 
 export const testimonialCards = [
   {
@@ -157,41 +114,6 @@ export const testimonialCards = [
   },
 ] satisfies readonly TestimonialCard[];
 
-export const programSteps = [
-  {
-    id: "kickoff",
-    title: "Kickoff & Onboarding Weekend",
-    description: "3 Days Intensive • Team Alignment & Ideation",
-  },
-  {
-    id: "phase-one",
-    title: "Phase I: MVP Build & Foundational Sessions",
-    description: "4 Weeks • Rapid Prototyping, Problem-Fit & Core Tech",
-  },
-  {
-    id: "midterm-pitch",
-    title: "Midterm Pitch (MVP Gate)",
-    description: "Live MVP Demo & Jury Feedback",
-  },
-  {
-    id: "phase-two",
-    title: "Phase II: Traction, Iteration & Growth Sessions",
-    description: "6 Weeks • User Testing, Go-to-Market, Legal & Pitch Polish",
-  },
-  {
-    id: "selection-day",
-    title: "Selection Day",
-    description: "Evaluation for Final Showcase",
-  },
-  {
-    id: "final-pitch",
-    title: "Final Pitch / Demo Day",
-    // TODO(content): is Demo Day still in July for E-Lab 6.0, whose
-    // applications close in late September?
-    description: "Investor Pitch & Graduation (July)",
-  },
-] satisfies readonly ProgramStep[];
-
 export const notableStartups = [
   {
     id: "tenmin",
@@ -245,3 +167,51 @@ export const notableStartups = [
     wordmarkLabel: "Invertix",
   },
 ] satisfies readonly NotableStartup[];
+
+/** A milestone of the traced venture after the E-Lab, with its source. */
+export interface VentureMilestone {
+  text: string;
+  /** Where the fact is stated; kept for maintainers, not rendered. */
+  source: string;
+}
+
+/**
+ * The venture /e-lab follows through the gates: an alumni startup, the
+ * founder quote that tells its story, the cohort it came from, and what it
+ * did after the E-Lab, each milestone from a source the company or YC
+ * publishes itself. Ids point into `notableStartups` and `testimonialCards`.
+ */
+export const tracedVenture = {
+  startupId: "spherecast",
+  testimonialId: "leon-hergert",
+  // TUM.ai's own post: "one of our earliest startups, originating from AI
+  // E-Lab 1.0 ... made it all the way from our E-Lab to the Y Combinator S24
+  // Batch" (linkedin.com/posts/tum-ai_tumai-ai-e-lab-graduates-spherecast-
+  // activity-7367523700532817920-p2Ff).
+  // TODO(content): E-Lab 1.0 may not have had every gate the current program
+  // has (Midterm Pitch, Selection Day). Confirm before tracing all of them.
+  cohort: "E-Lab 1.0",
+  after: [
+    {
+      text: "Y Combinator, Summer 2024 batch",
+      source: "https://www.ycombinator.com/companies/spherecast",
+    },
+    {
+      text: "Agnes, an AI supply chain manager for consumer goods brands such as AG1",
+      source: "https://www.spherecast.ai/",
+    },
+    {
+      text: "Offices in Munich and San Francisco",
+      source: "https://www.spherecast.ai/",
+    },
+    {
+      text: "Sphereworld, its own conference in New York, September 2026",
+      source: "https://www.spherecast.ai/sphereworld",
+    },
+  ],
+} satisfies {
+  startupId: string;
+  testimonialId: string;
+  cohort: string;
+  after: VentureMilestone[];
+};

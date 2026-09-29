@@ -1,7 +1,8 @@
 import Image from "next/image";
-import { Highlight, PageHero } from "@/components/ds";
+import { PageHero } from "@/components/ds";
 import { eLabConfig } from "@/config/e-lab";
 import { ELabApplicationCta, ELabApplicationStatus } from "./application-cta";
+import { ApplicationField } from "./application-field";
 
 const HERO_TITLE_ID = "elab-hero-title";
 
@@ -25,7 +26,7 @@ function LogoLockup() {
         <span className="text-fg-subtle">by</span>
         <Image
           src="/assets/tum_ai_logo_new.svg"
-          alt="TUM.ai Logo"
+          alt="TUM.ai"
           width={100}
           height={25}
           className="h-5 w-auto md:h-6"
@@ -35,53 +36,29 @@ function LogoLockup() {
   );
 }
 
-const promises = ["Equity-free", "Munich-based", "Founder-focused"];
-
 /**
- * "Equity-free • Munich-based • Founder-focused". Each item carries its
- * leading bullet in the gap; the row is shifted left under a clip, so the
- * bullet of whichever item starts a line is hidden and wrapped lines never
- * begin or end with a dangling "•".
+ * E-Lab hero: the cohort lockup, the program in one sentence, the terms in
+ * the lead and the live application action, beside the field of a round's
+ * applications thinning to the teams that reach the Final Pitch (the page's
+ * idea, which the gates band then draws to scale).
  */
-function Promises() {
-  return (
-    <p className="overflow-hidden">
-      <span className="-ml-7 flex flex-wrap gap-y-1 font-medium text-fg">
-        {promises.map((promise, index) => (
-          <span key={promise} className="relative pl-7">
-            <span
-              aria-hidden
-              className="absolute left-0 w-7 text-center text-highlight"
-            >
-              {index > 0 ? "•" : ""}
-            </span>
-            {promise}
-            {index < promises.length - 1 ? " " : ""}
-          </span>
-        ))}
-      </span>
-    </p>
-  );
-}
-
-/** E-Lab hero: cohort lockup, headline, promises and the live application CTA. */
 export function Hero() {
   return (
     <PageHero
       titleId={HERO_TITLE_ID}
       eyebrow={<LogoLockup />}
-      title={[
-        "Build the next generation of ",
-        <Highlight key="highlight">AI startups</Highlight>,
-        ` in ${eLabConfig.programWeeks} weeks`,
-      ]}
-      lead={<Promises />}
+      title={`${eLabConfig.programWeeks} weeks from kickoff to the Final Pitch.`}
+      emphasis="highlight"
+      size="md"
+      mark={false}
+      lead={`The E-Lab is TUM.ai's equity-free AI startup incubator, in person in Munich; its ventures have raised €${eLabConfig.ventureFundingMillions}M so far. Apply alone or as a team, with or without an idea. You don't need to be enrolled anywhere.`}
       actions={
         <>
-          <ELabApplicationCta label="hero" />
+          <ELabApplicationCta />
           <ELabApplicationStatus />
         </>
       }
+      media={<ApplicationField />}
     />
   );
 }
