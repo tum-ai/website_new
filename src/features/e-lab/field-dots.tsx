@@ -71,9 +71,11 @@ const LOGO_FADE_RATE = 1.4;
  * left, into its `invite` lines, and shoves the neighbouring dots out of
  * the way. Dots collide and never overlap, so the ones pushed aside push
  * theirs in turn: the field ripples outward and springs back with a little
- * overshoot (see `stepField`). Other dots never open. Keyboard focus on a venture link does what hover does. The
- * loop only runs while something moves, only `transform` and `r` change,
- * and under reduced motion dots jump to their places without the spring.
+ * overshoot (see `stepField`). Other dots never open. Keyboard focus on a
+ * venture link does what hover does. On touch, with no hover, the first tap
+ * opens a venture's dot and the next tap on it follows the link. The loop
+ * only runs while something moves, only `transform` and `r` change, and
+ * under reduced motion dots jump to their places without the spring.
  */
 export function FieldDots({
   dots,
@@ -86,6 +88,12 @@ export function FieldDots({
   const logoRefs = useRef(new Map<number, SVGGElement>());
   const sim = useRef<FieldSim | null>(null);
   const target = useRef(-1);
+  /**
+   * The dot the current press opened, whose link must not follow that
+   * press's click: a tap opens a dot and its click would otherwise land on
+   * the logo growing under the finger. -1 when the press found the dot open.
+   */
+  const pressed = useRef(-1);
   const frame = useRef(0);
   const last = useRef(0);
   const [active, setActive] = useState(-1);
@@ -210,7 +218,11 @@ export function FieldDots({
       className={className}
       aria-label="One round of team applications, with links to ventures from the E-Lab"
       onPointerMove={(event) => aim(dotAt(event.clientX, event.clientY))}
-      onPointerDown={(event) => aim(dotAt(event.clientX, event.clientY))}
+      onPointerDown={(event) => {
+        const index = dotAt(event.clientX, event.clientY);
+        pressed.current = index === target.current ? -1 : index;
+        aim(index);
+      }}
       onPointerLeave={(event) => {
         // A tap ends with pointerleave; keep the tapped dot open until the
         // next tap lands elsewhere.
@@ -246,6 +258,10 @@ export function FieldDots({
             aria-label={`${dot.venture.name}, an E-Lab venture (opens in a new tab)`}
             data-expanded={active === index}
             className="elab-field-venture outline-none"
+            onClick={(event) => {
+              if (pressed.current === index) event.preventDefault();
+              pressed.current = -1;
+            }}
             onFocus={() => aim(index)}
             onBlur={() => {
               if (target.current === index) aim(-1);

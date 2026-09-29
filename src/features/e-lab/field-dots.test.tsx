@@ -1,5 +1,5 @@
 import { axe } from "@test/axe";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { type FieldDotData, FieldDots } from "./field-dots";
@@ -42,6 +42,40 @@ describe("FieldDots", () => {
     expect(link).toHaveAttribute("target", "_blank");
     expect(screen.getAllByRole("link")).toHaveLength(1);
     expect(await axe(container)).toHaveNoViolations();
+  });
+
+  test("a tap opens a venture's dot and only the next tap follows its link", () => {
+    // jsdom has no SVG geometry: map client coordinates 1:1 to the viewBox.
+    vi.stubGlobal(
+      "DOMPoint",
+      class {
+        constructor(
+          readonly x: number,
+          readonly y: number,
+        ) {}
+        matrixTransform() {
+          return this;
+        }
+      },
+    );
+    const { container } = render(
+      <FieldDots dots={dots} viewBox="-1 -1 3 3" radius={0.3} />,
+    );
+    const svg = container.querySelector("svg") as SVGSVGElement;
+    svg.getScreenCTM = () => ({ inverse: () => ({}) }) as unknown as DOMMatrix;
+    const link = screen.getByRole("link");
+    const tap = () => {
+      fireEvent.pointerDown(svg, {
+        clientX: 0.5,
+        clientY: 0.866,
+        pointerType: "touch",
+      });
+      return fireEvent.click(link);
+    };
+
+    expect(tap()).toBe(false);
+    expect(link).toHaveAttribute("data-expanded", "true");
+    expect(tap()).toBe(true);
   });
 
   test("the field is named without a hover tooltip", () => {
