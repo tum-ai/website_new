@@ -14,14 +14,17 @@ import { useClockWindow } from "@/lib/use-clock-switch";
 export function ELabPhaseSwitch({
   clock,
   initialOpen,
+  live,
   open,
   closed,
 }: {
   clock: ClockWindow;
   initialOpen?: boolean;
+  /** `false` on a fixed render clock (`MOCK_CMS_NOW`); see `useClockSwitch`. */
+  live?: boolean;
   open: ReactNode;
   closed: ReactNode;
 }) {
-  const isOpen = useClockWindow(clock, { initial: initialOpen });
+  const isOpen = useClockWindow(clock, { initial: initialOpen, live });
   return <>{isOpen ? open : closed}</>;
 }
