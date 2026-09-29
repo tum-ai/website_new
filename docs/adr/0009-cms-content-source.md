@@ -120,7 +120,8 @@ datasets; a type name used in both workspaces with different fields fails the me
 - The `code` source is the default everywhere, so this change and every slice that follows ship
   without a visible difference until the environment flips.
 - Drafts, Presentation and live updates cover the live dataset only; content edits appear when a
-  page revalidates (or after a `revalidateTag` webhook on the `content:*` tags, not built yet).
+  page revalidates, which the Sanity webhook on `/api/revalidate` triggers on publish by
+  expiring the changed type's `content:<type>` tag (static routes included).
 - Code fallbacks remain the source of truth for shape and the safety net for content, so they are
   kept up to date until the CMS content is reviewed; after launch they can shrink to minimal
   defaults, slice by slice.
@@ -164,11 +165,27 @@ redirects to `/studio/live`.
    redeploy.
 5. Add the Vercel preview and production domains as Sanity CORS origins with credentials allowed
    (sanity.io/manage, API, CORS origins) if they are missing; the embedded Studio needs them.
-6. Until a `revalidateTag` webhook for the `content:*` tags exists, a content edit shows when its
-   route revalidates: within an hour on `/apply`, 5 minutes on `/e-lab` and `/events`, 15
-   minutes on `/partners` and `/research`, and at the next deploy on the static routes (`/`,
-   `/community`, `/projects`, `/qanda`, the legal pages); the header and footer refresh with the
-   route they render on. Tell editors, or redeploy after a batch of edits.
+6. Create the revalidation webhooks (the free plan allows two), so edits show on the next
+   request instead of at the next deploy:
+   1. Generate a secret (`openssl rand -hex 32`) and set it as `SANITY_REVALIDATE_SECRET` on
+      Vercel **Preview** and **Production**; redeploy. Until it is set, `/api/revalidate`
+      answers 503.
+   2. In sanity.io/manage, project, API, Webhooks, create a GROQ webhook for the content
+      dataset: name "Revalidate site (redesign)", URL
+      `https://<production domain>/api/revalidate`, dataset `redesign`, trigger on create,
+      update and delete, filter empty (every type), projection `{_type}`, HTTP method POST, API
+      version `v2025-02-19` or later, drafts and versions **off**, and the secret from step 1.
+   3. Create the same webhook for the live dataset `production` (name "Revalidate site
+      (production)"), so event, partner and research edits also refresh the static caches.
+   4. Publish a small edit and check the webhook's attempt log in sanity.io/manage: 200 with
+      the tags it expired. 401 means the secret differs; 503 means the env var is missing on
+      that deployment.
+
+   Preview deployments are not covered (one webhook per dataset, pointed at production); they
+   refresh on their `revalidate` timers or a redeploy. Without the webhooks, a content edit
+   shows within an hour on `/apply`, 5 minutes on `/e-lab` and `/events`, 15 minutes on
+   `/partners` and `/research`, and at the next deploy on the static routes (`/`,
+   `/community`, `/projects`, `/qanda`, the legal pages).
 7. After launch, fill `hosts` on the live events in `production` with the new Studio
    (`/studio/live`; see the `TODO(content)` in `lib/mock-cms.ts`).
 

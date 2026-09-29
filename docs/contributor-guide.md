@@ -155,9 +155,10 @@ These stay in code, always:
 Figures, dates and emails inside editable text are placeholders such as `{{eLab.deadline}}` or
 `{{org.activeMembers}}`: editors keep them, and the page fills them from the site settings and
 windows at render. A few texts take page tokens, like `{{count}}`, which the page fills from what
-it lists; the field's help text names them. Content edits show when the page revalidates (at
-most an hour on `/apply`, five minutes on `/e-lab`, the next build for fully static pages until a
-revalidation webhook exists); there is no draft preview for the content dataset yet.
+it lists; the field's help text names them. A published edit shows on the next request a few
+seconds later: a Sanity webhook calls `/api/revalidate`, which expires the pages that read the
+changed type (without the webhook: within the page's `revalidate` time, or at the next deploy
+for fully static pages). There is no draft preview for the content dataset yet.
 
 Until launch, and in the code fallback, the repository is the source: copy in
 `src/features/<domain>/data/`, facts in `src/config/`.

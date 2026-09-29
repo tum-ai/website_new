@@ -56,7 +56,8 @@ src/app/(site)/<route>/page.tsx   thin route: metadata + JsonLd + the feature's 
 src/app/(site)/layout.tsx         site root layout: skip link, header, #main-content, footer, SanityLive
 src/app/studio/[[...tool]]/       Sanity Studio (workspaces /studio/live, /studio/content), own root layout
 src/app/global-not-found.tsx      404 for unmatched URLs (there are two root layouts)
-src/app/api/                      getNotes | getPartners | getResearch (public JSON API), draft-mode
+src/app/api/                      getNotes | getPartners | getResearch (public JSON API), draft-mode,
+                                  revalidate (Sanity webhook → revalidateTag)
 src/features/<domain>/            <domain>-page.tsx, sections, data/ (static copy), logic, tests,
                                   content.ts and <topic>-content.ts (CMS content slices, server
                                   only), optional index.ts (isomorphic) and server.ts (server
@@ -206,7 +207,9 @@ Hard rules:
   return their code fallbacks and make no request. `sanity` reads the content dataset
   (`NEXT_PUBLIC_SANITY_CONTENT_DATASET`, default: the live dataset) and merges it over the
   fallbacks; with `USE_MOCK_CMS=1` it queries the backfill documents locally. Drafts and
-  `SanityLive` cover the live dataset only.
+  `SanityLive` cover the live dataset only. A slice tags its query `content:<type>` for every
+  type it reads (`lib/cache-tags.ts`): the Sanity webhook at `/api/revalidate`
+  (`SANITY_REVALIDATE_SECRET`) expires those tags on publish.
 - **Draft mode and Studio.** Presentation in `/studio/live` enables drafts via `/api/draft-mode/enable`,
   which needs `SANITY_API_READ_TOKEN` (server only; never expose it to the browser; 503 without
   it). `/api/draft-mode/disable` leaves draft mode. `SANITY_API_BROWSER_TOKEN` is a separate,

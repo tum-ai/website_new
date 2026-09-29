@@ -34,7 +34,7 @@ src/
 │   ├── (site)/<route>/page.tsx    thin route: metadata + JSON-LD + the feature's page module
 │   ├── studio/[[...tool]]/        Sanity Studio, its own root layout (no site shell or CSS)
 │   ├── global-not-found.tsx       404 for unmatched URLs (there is no shared root layout)
-│   └── api/                       public JSON API and draft-mode routes
+│   └── api/                       public JSON API, draft-mode and revalidation routes
 ├── features/<domain>/             one folder per page domain (see below)
 ├── components/
 │   ├── ds/                        design system, imported only through `@/components/ds`
@@ -189,7 +189,28 @@ is static in Git: facts in `src/config/`, copy in `src/features/<domain>/data/`.
    exactly the code content.
 
 No drafts, Presentation or `<SanityLive>` for this dataset yet: edits show when a page
-revalidates.
+revalidates, which the revalidation webhook (below) triggers on every publish.
+
+### On-demand revalidation (`/api/revalidate`)
+
+A Sanity GROQ webhook per dataset (projection `{_type}`) posts every published change to
+`POST /api/revalidate`. The route checks the `sanity-webhook-signature` header against
+`SANITY_REVALIDATE_SECRET` with `parseBody` (`next-sanity/webhook`; 401 on a missing or wrong
+signature, 503 while the secret is unset), waits about 3 seconds for the API CDN, and calls
+`revalidateTag(tag, { expire: 0 })` for the type's tags (`lib/cache-tags.ts`): the live types'
+getter tags (`event` → `events`, `partner` → `partners`, `research` → `research-projects`), and
+`content:<type>` for everything else. Every slice tags its query with `content:<type>` for each
+type it reads, dereferenced ones included, and the live getters use `liveCacheTags`
+(`test/cache-tags.test.ts` checks that every Studio type maps).
+
+This reaches static routes too, without a route `revalidate` or fetch cache setting: Next
+16.2 without Cache Components collects each fetch's `next.tags` onto the prerender it runs in
+(`patch-fetch`), stores them with the prerendered page, and treats the page as expired once one
+of its tags is revalidated, so the next request renders it again. The Sanity client passes
+`next.tags` to Next's `fetch`. The layout's site-settings, window and campaign reads tag every
+route, so a Site settings edit refreshes every page. With `CMS_CONTENT_SOURCE=code` (and under
+the mock CMS) the slices make no request, so pages carry no content tags and the webhook has
+nothing to expire.
 
 ### Mock CMS and previews
 
@@ -202,6 +223,9 @@ Vercel regardless ([ADR 0005](adr/0005-mock-cms.md)).
 `SANITY_API_READ_TOKEN` on the server (503 without it). The token never reaches the browser; an
 optional, separate `SANITY_API_BROWSER_TOKEN` can enable live draft updates outside Presentation.
 `/api/draft-mode/disable` leaves draft mode and redirects to same-origin paths only.
+
+**Revalidation.** `/api/revalidate` takes the Sanity webhooks (see "On-demand revalidation"
+above).
 
 **Public API.** `/api/getNotes` (events; legacy name), `/api/getPartners` and `/api/getResearch`
 are consumed outside this repo. They always serve the published perspective with their own frozen
@@ -247,6 +271,7 @@ Facts that change per semester, cohort or year live once in `src/config/`
 | `cms-content-mock.ts` | the content dataset under the mock CMS (groq-js over backfill documents) |
 | `cms-backfill.ts` | backfill document ids and `_sanityAsset` images (Node only) |
 | `content-tokens.ts` | `{{placeholder}}` names and filling |
+| `cache-tags.ts` | the Next cache tags per Sanity type (`liveCacheTags`, `content:<type>`), for the getters and `/api/revalidate` |
 | `content-copy.ts` | filling whole copy objects: `fillCodeCopy`, `fillCmsCopy`, page tokens (`fillPageTokens`) |
 | `content-backfill.ts` | backfill helpers for copy: `backfillContentImage`, `keyedItems` (Node only) |
 | `faq-content.ts` | the `faq` type shared by several pages: query, getter, backfill |
