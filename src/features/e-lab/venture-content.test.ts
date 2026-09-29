@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { buildOrganizationBackfill } from "@/features/partners";
+import { buildOrganizationBackfill } from "@/features/partners/server";
 import { fetchContent } from "@/lib/cms-content";
 import { PEOPLE_QUERY } from "@/lib/person-content";
 import type { PEOPLE_QUERY_RESULT } from "@/lib/sanity.types.generated";

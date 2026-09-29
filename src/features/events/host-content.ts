@@ -1,6 +1,6 @@
 import "server-only";
 
-import { buildOrganizationBackfill } from "@/features/partners";
+import { buildOrganizationBackfill } from "@/features/partners/server";
 import type { BackfillDocument } from "@/lib/cms-backfill";
 import {
   buildLogoListDocument,

@@ -58,7 +58,7 @@ import {
 import { socialLinks } from "@/config/contact";
 import { eLabConfig } from "@/config/e-lab";
 import { organizationFacts } from "@/config/organization";
-import { faqs } from "@/features/qanda";
+import { faqs } from "@/features/qanda/server";
 import { DesignSystemInteractive } from "./design-system-interactive";
 
 /*

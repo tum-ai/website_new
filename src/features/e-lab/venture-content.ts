@@ -1,7 +1,7 @@
 import "server-only";
 
 import { defineQuery } from "next-sanity";
-import { buildOrganizationBackfill } from "@/features/partners";
+import { buildOrganizationBackfill } from "@/features/partners/server";
 import type { BackfillDocument } from "@/lib/cms-backfill";
 import { loadContent } from "@/lib/cms-content";
 import { toContentImage } from "@/lib/cms-content-model";

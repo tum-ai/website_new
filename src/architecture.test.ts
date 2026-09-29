@@ -11,10 +11,12 @@ import { describe, expect, test } from "vitest";
  * |                     | components, config, lib, styles, app                |
  * | app/studio          | sanity, lib (no site shell, CSS or features)        |
  * | src/*.ts            | config, lib (proxy.ts)                              |
- * | features/<x>        | its own files except .css, features/<y> (index),    |
+ * | features/<x>        | its own files except .css, features/<y> (index or  |
+ * |                     | server entry),                                      |
  * |                     | components/{ds,shell}, components/json-ld, config,  |
  * |                     | lib                                                 |
  * | features/<x>/index  | its own feature's files except pages                |
+ * | features/<x>/server | the same; starts with `import "server-only"`        |
  * | components/ds       | its own files and lib/cn                            |
  * | components/shell    | its own files, ds, config, lib                      |
  * | components/*.tsx    | ds, config, lib                                     |
@@ -28,7 +30,11 @@ import { describe, expect, test } from "vitest";
  *
  * A route imports exactly its page module. A feature's `index.ts` is its API
  * for other features and exists only where another feature needs something;
- * it never re-exports a page. Turbopack keeps every re-exported module that
+ * it never re-exports a page. It is isomorphic: nothing it reaches imports
+ * `server-only`, so a client island may import any index. What reads the
+ * CMS content source (the `get…` content getters, async server components)
+ * goes in the feature's `server.ts` entry instead, which starts with
+ * `import "server-only"` and follows the same rules. Turbopack keeps every re-exported module that
  * has client islands (or CSS), so a page in a barrel ships its islands to
  * every page that imports the barrel: the three legal routes would all load
  * the privacy table of contents, and the homepage the partnership finder.
@@ -131,6 +137,14 @@ const isFeatureIndex = (module: Module) =>
   module.layer === "features" &&
   module.path === `features/${module.feature}/index.ts`;
 
+const isFeatureServerEntry = (module: Module) =>
+  module.layer === "features" &&
+  module.path === `features/${module.feature}/server.ts`;
+
+/** A feature's entries for other features: `index.ts` and `server.ts`. */
+const isFeatureEntry = (module: Module) =>
+  isFeatureIndex(module) || isFeatureServerEntry(module);
+
 const isPageModule = (to: Module) =>
   to.layer === "features" && to.path.endsWith("-page.tsx");
 
@@ -169,13 +183,13 @@ function importViolation(from: Module, to: Module): string | null {
       if (isStylesheet(to)) return "import page CSS from the route file";
       if (to.layer === "features") {
         if (to.feature === from.feature) {
-          return isFeatureIndex(from) && isPageModule(to)
-            ? "a feature index may not re-export a page"
+          return isFeatureEntry(from) && isPageModule(to)
+            ? "a feature entry (index, server) may not re-export a page"
             : null;
         }
-        return isFeatureIndex(to)
+        return isFeatureEntry(to)
           ? null
-          : `import @/features/${to.feature} (the index), not its files`;
+          : `import @/features/${to.feature} (the index) or its server entry, not its files`;
       }
       if (
         to.layer === "ds" ||
@@ -275,62 +289,104 @@ describe("client graph", () => {
    * the edge without a build.
    */
   test('no "use client" module reaches a server-only module', () => {
-    const files = sourceFiles(srcDir).filter(
-      (file) => !/\.test\.tsx?$/.test(file),
+    const graph = moduleGraph();
+    const islands = graph.files.filter((file) =>
+      isClientModule(graph.sources.get(file) ?? ""),
     );
-    const sources = new Map(
-      files.map((file) => [file, readFileSync(file, "utf8")]),
-    );
-    const edges = new Map(
-      files.map((file) => [
-        file,
-        runtimeSpecifiers(sources.get(file) ?? "")
-          .filter(
-            (specifier) =>
-              specifier.startsWith("@/") || specifier.startsWith("."),
-          )
-          .map((specifier) => resolveImport(file, specifier))
-          .filter((target): target is string => target !== null),
-      ]),
-    );
-    const name = (file: string) => relative(srcDir, file).split(sep).join("/");
-    const islands = files.filter((file) =>
-      isClientModule(sources.get(file) ?? ""),
-    );
-    const violations: string[] = [];
 
-    for (const island of islands) {
-      const parent = new Map<string, string | null>([[island, null]]);
-      const queue = [island];
-      while (queue.length > 0) {
-        const current = queue.shift() as string;
-        const reason = serverOnlyReason(sources.get(current) ?? "");
-        if (reason) {
-          const chain: string[] = [];
-          for (
-            let at: string | null = current;
-            at;
-            at = parent.get(at) ?? null
-          ) {
-            chain.unshift(name(at));
-          }
-          violations.push(`${chain.join(" → ")} (${reason})`);
-          continue;
-        }
-        for (const next of edges.get(current) ?? []) {
-          if (!parent.has(next)) {
-            parent.set(next, current);
-            queue.push(next);
-          }
-        }
-      }
-    }
-
-    expect(violations).toStrictEqual([]);
+    expect(serverOnlyChains(graph, islands)).toStrictEqual([]);
     // Guards the directive regex: the site has dozens of islands.
     expect(islands.length).toBeGreaterThan(20);
   });
+
+  test("feature indexes are safe for client islands", () => {
+    const graph = moduleGraph();
+    const indexes = graph.files.filter((file) =>
+      isFeatureIndex(moduleOf(relative(srcDir, file))),
+    );
+
+    expect(serverOnlyChains(graph, indexes)).toStrictEqual([]);
+  });
+
+  test('every feature server entry starts with import "server-only"', () => {
+    const graph = moduleGraph();
+    const unmarked = graph.files
+      .filter((file) => isFeatureServerEntry(moduleOf(relative(srcDir, file))))
+      .filter(
+        (file) =>
+          !/^import "server-only";/m.test(graph.sources.get(file) ?? ""),
+      )
+      .map((file) => relative(srcDir, file));
+
+    expect(unmarked).toStrictEqual([]);
+  });
 });
+
+type ModuleGraph = {
+  files: string[];
+  sources: Map<string, string>;
+  /** Each module's local runtime imports, resolved to files. */
+  edges: Map<string, string[]>;
+};
+
+/** The runtime import graph of every non-test module under src/. */
+function moduleGraph(): ModuleGraph {
+  const files = sourceFiles(srcDir).filter(
+    (file) => !/\.test\.tsx?$/.test(file),
+  );
+  const sources = new Map(
+    files.map((file) => [file, readFileSync(file, "utf8")]),
+  );
+  const edges = new Map(
+    files.map((file) => [
+      file,
+      runtimeSpecifiers(sources.get(file) ?? "")
+        .filter(
+          (specifier) =>
+            specifier.startsWith("@/") || specifier.startsWith("."),
+        )
+        .map((specifier) => resolveImport(file, specifier))
+        .filter((target): target is string => target !== null),
+    ]),
+  );
+  return { files, sources, edges };
+}
+
+/**
+ * Every import chain from one of `roots` to a module that may not run in
+ * the browser ({@link serverOnlyReason}), as "a → b → c (reason)". The
+ * walk stops at such a module, so each chain names the first one reached.
+ */
+function serverOnlyChains(
+  { sources, edges }: ModuleGraph,
+  roots: readonly string[],
+): string[] {
+  const name = (file: string) => relative(srcDir, file).split(sep).join("/");
+  const chains: string[] = [];
+  for (const root of roots) {
+    const parent = new Map<string, string | null>([[root, null]]);
+    const queue = [root];
+    while (queue.length > 0) {
+      const current = queue.shift() as string;
+      const reason = serverOnlyReason(sources.get(current) ?? "");
+      if (reason) {
+        const chain: string[] = [];
+        for (let at: string | null = current; at; at = parent.get(at) ?? null) {
+          chain.unshift(name(at));
+        }
+        chains.push(`${chain.join(" → ")} (${reason})`);
+        continue;
+      }
+      for (const next of edges.get(current) ?? []) {
+        if (!parent.has(next)) {
+          parent.set(next, current);
+          queue.push(next);
+        }
+      }
+    }
+  }
+  return chains;
+}
 
 describe("import rules", () => {
   test("every local import follows the layer rules", () => {
@@ -419,6 +475,8 @@ describe("import rules", () => {
     ["app/(site)/layout.tsx", "sanity/sanity.config.ts"],
     ["proxy.ts", "features/home/home-page.tsx"],
     ["proxy.ts", "components/json-ld.tsx"],
+    ["features/partners/server.ts", "features/partners/partners-page.tsx"],
+    ["features/home/home-page.tsx", "features/partners/content.ts"],
   ])("flags %s → %s", (from, to) => {
     expect(importViolation(moduleOf(from), moduleOf(to))).not.toBeNull();
   });
@@ -433,6 +491,7 @@ describe("import rules", () => {
     ["features/home/home-page.tsx", "components/ds/index.ts"],
     ["components/ds/dialog.tsx", "components/ds/refs.ts"],
     ["proxy.ts", "lib/redirects.ts"],
+    ["features/home/home-page.tsx", "features/partners/server.ts"],
   ])("allows %s → %s", (from, to) => {
     expect(importViolation(moduleOf(from), moduleOf(to))).toBeNull();
   });

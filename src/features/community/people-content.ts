@@ -13,9 +13,7 @@ import { type MemberStory, stories } from "./data/member-stories";
  * The member stories slice: `person` documents with the placement
  * `member-story`. Code fallback: `data/member-stories.ts`. /community renders
  * them, and the member journey, /apply and the homepage quote them by name.
- *
- * Not exported through `@/features/community`: that index is reachable from
- * a homepage client island, and this module is server-only.
+ * Other features read it through `./server.ts` (server only).
  */
 
 /** The member stories, in order: the CMS people, or the code list. */

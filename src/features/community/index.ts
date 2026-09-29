@@ -1,9 +1,10 @@
 /**
  * Community public API for other features: the member journey, whose two
- * tracks the Apply page quotes, the core departments, which the homepage
- * counts, the member stories, which the homepage and the Apply page quote, and the dated member call to action the
- * homepage's closing band shares with this page's. The journey's single source is
- * `./data/member-journey.ts`; other pages that describe it read it here.
+ * tracks the Apply page quotes, and the core departments, which the
+ * homepage counts. Their single sources are `./data/`; other pages that
+ * describe them read them here. Safe for client islands: nothing here reads
+ * the CMS. The member stories and the dated member call to action are
+ * server-only (`./server.ts`).
  *
  * The /community route imports `./community-page` directly; never re-export a
  * page here (see features/partners/index.ts).
@@ -11,5 +12,4 @@
 
 export { departments } from "./data/departments";
 export { type JourneyStep, memberJourney } from "./data/member-journey";
-export { stories as memberStories } from "./data/member-stories";
-export { MembershipApplyButton } from "./membership-apply-button";
+export type { MemberStory } from "./data/member-stories";
