@@ -1,5 +1,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { builtinModules } from "node:module";
 import { dirname, join, relative, resolve, sep } from "node:path";
+import ts from "typescript";
 import { describe, expect, test } from "vitest";
 
 /**
@@ -45,8 +47,11 @@ import { describe, expect, test } from "vitest";
  * or, deliberately, the rule (here and in docs/architecture.md).
  *
  * Only local modules (`@/…` and relative paths) are checked; packages are not.
- * Imports are found with a regex over `import … from`, `export … from`,
- * side-effect `import "…"` and dynamic `import("…")`.
+ * Imports are read from the TypeScript syntax tree (`ts.createSourceFile`):
+ * `import … from`, `export … from`, side-effect `import "…"`, `import x =
+ * require("…")`, and `import("…")` or `require("…")` calls with a string or
+ * template literal, so comments, strings and import attributes can't hide or
+ * fake one.
  */
 
 const srcDir = import.meta.dirname;
@@ -59,19 +64,108 @@ function sourceFiles(dir: string): string[] {
   });
 }
 
-const importPatterns = [
-  /\b(?:import|export)\b[^"'`;]*?\bfrom\s*["']([^"']+)["']/g,
-  /\bimport\s*\(\s*["']([^"']+)["']\s*\)/g,
-  /\bimport\s*["']([^"']+)["']/g,
-];
+/** One import of a module, as {@link moduleImports} reads it. */
+type ModuleImport = {
+  specifier: string;
+  /** Erased by the compiler (`import type`, `{ type A }` only, `import("x").T`). */
+  typeOnly: boolean;
+};
 
+const namedTypeOnly = (
+  elements: ts.NodeArray<ts.ImportSpecifier | ts.ExportSpecifier>,
+) => elements.length > 0 && elements.every((element) => element.isTypeOnly);
+
+/**
+ * Every import of `source`, from its syntax tree: static imports and
+ * re-exports, `import = require`, and `import()` or `require()` calls whose
+ * first argument is a string or a template literal without substitutions.
+ */
+function moduleImports(source: string): ModuleImport[] {
+  const file = ts.createSourceFile(
+    "module.tsx",
+    source,
+    ts.ScriptTarget.Latest,
+    false,
+    ts.ScriptKind.TSX,
+  );
+  const imports: ModuleImport[] = [];
+  const visit = (node: ts.Node): void => {
+    if (
+      ts.isImportDeclaration(node) &&
+      ts.isStringLiteral(node.moduleSpecifier)
+    ) {
+      const clause = node.importClause;
+      const bindings = clause?.namedBindings;
+      imports.push({
+        specifier: node.moduleSpecifier.text,
+        typeOnly: Boolean(
+          clause &&
+            (clause.isTypeOnly ||
+              (!clause.name &&
+                bindings &&
+                ts.isNamedImports(bindings) &&
+                namedTypeOnly(bindings.elements))),
+        ),
+      });
+    } else if (
+      ts.isExportDeclaration(node) &&
+      node.moduleSpecifier &&
+      ts.isStringLiteral(node.moduleSpecifier)
+    ) {
+      const clause = node.exportClause;
+      imports.push({
+        specifier: node.moduleSpecifier.text,
+        typeOnly:
+          node.isTypeOnly ||
+          Boolean(
+            clause &&
+              ts.isNamedExports(clause) &&
+              namedTypeOnly(clause.elements),
+          ),
+      });
+    } else if (
+      ts.isImportEqualsDeclaration(node) &&
+      ts.isExternalModuleReference(node.moduleReference) &&
+      ts.isStringLiteral(node.moduleReference.expression)
+    ) {
+      imports.push({
+        specifier: node.moduleReference.expression.text,
+        typeOnly: node.isTypeOnly,
+      });
+    } else if (ts.isCallExpression(node)) {
+      const [argument] = node.arguments;
+      const callee = node.expression;
+      const loads =
+        callee.kind === ts.SyntaxKind.ImportKeyword ||
+        (ts.isIdentifier(callee) && callee.text === "require");
+      if (loads && argument && ts.isStringLiteralLike(argument)) {
+        imports.push({ specifier: argument.text, typeOnly: false });
+      }
+    } else if (
+      ts.isImportTypeNode(node) &&
+      ts.isLiteralTypeNode(node.argument) &&
+      ts.isStringLiteral(node.argument.literal)
+    ) {
+      imports.push({ specifier: node.argument.literal.text, typeOnly: true });
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(file);
+  return imports;
+}
+
+const isLocal = (specifier: string) =>
+  specifier.startsWith("@/") || specifier.startsWith(".");
+
+/** The local modules `source` imports, type-only imports included. */
 function localSpecifiers(source: string): string[] {
-  const specifiers = importPatterns.flatMap((pattern) =>
-    [...source.matchAll(pattern)].map((match) => match[1]),
-  );
-  return [...new Set(specifiers)].filter(
-    (specifier) => specifier.startsWith("@/") || specifier.startsWith("."),
-  );
+  return [
+    ...new Set(
+      moduleImports(source)
+        .map(({ specifier }) => specifier)
+        .filter(isLocal),
+    ),
+  ];
 }
 
 function resolveImport(from: string, specifier: string): string | null {
@@ -230,37 +324,57 @@ function importViolation(from: Module, to: Module): string | null {
 
 /**
  * The specifiers a module imports at runtime: type-only imports and exports
- * (`import type`, or braces whose every name is `type`) are erased by the
- * compiler, so they add no edge to the bundle's module graph.
+ * are erased by the compiler, so they add no edge to the bundle's module
+ * graph.
  */
 function runtimeSpecifiers(source: string): string[] {
-  const specifiers: string[] = [];
-  const statement =
-    /\b(import|export)\s+(?!type\b)([^"'`;]*?)\bfrom\s*["']([^"']+)["']/g;
-  for (const [, , clause, specifier] of source.matchAll(statement)) {
-    const names = /^\{([^}]*)\}\s*$/.exec(clause.trim())?.[1];
-    const typeOnly = names
-      ?.split(",")
-      .map((name) => name.trim())
-      .filter(Boolean)
-      .every((name) => name.startsWith("type "));
-    if (!typeOnly) specifiers.push(specifier);
-  }
-  for (const pattern of importPatterns.slice(1)) {
-    for (const match of source.matchAll(pattern)) specifiers.push(match[1]);
-  }
-  return [...new Set(specifiers)];
+  return [
+    ...new Set(
+      moduleImports(source)
+        .filter(({ typeOnly }) => !typeOnly)
+        .map(({ specifier }) => specifier),
+    ),
+  ];
 }
 
-const isClientModule = (source: string) =>
-  /^(?:\s|\/\/[^\n]*\n|\/\*[\s\S]*?\*\/)*["']use client["']/.test(source);
+/** Whether the module's directive prologue holds `"use client"`. */
+function isClientModule(source: string): boolean {
+  const file = ts.createSourceFile(
+    "module.tsx",
+    source,
+    ts.ScriptTarget.Latest,
+    false,
+    ts.ScriptKind.TSX,
+  );
+  for (const statement of file.statements) {
+    if (
+      !ts.isExpressionStatement(statement) ||
+      !ts.isStringLiteral(statement.expression)
+    ) {
+      return false;
+    }
+    if (statement.expression.text === "use client") return true;
+  }
+  return false;
+}
+
+/**
+ * Modules that never run in the browser: `server-only`, Next's request and
+ * cache APIs, and Node built-ins with or without the `node:` prefix.
+ */
+const serverModules = new Set([
+  "server-only",
+  "next/headers",
+  "next/cache",
+  ...builtinModules,
+]);
 
 /** Why a module may not run in the browser, or null when it may. */
 function serverOnlyReason(source: string): string | null {
-  const specifiers = runtimeSpecifiers(source);
-  if (specifiers.includes("server-only")) return 'imports "server-only"';
-  const builtin = specifiers.find((specifier) => specifier.startsWith("node:"));
-  return builtin ? `imports ${builtin}` : null;
+  const specifier = runtimeSpecifiers(source).find(
+    (name) => name.startsWith("node:") || serverModules.has(name),
+  );
+  return specifier ? `imports "${specifier}"` : null;
 }
 
 describe("client graph", () => {
@@ -271,13 +385,66 @@ describe("client graph", () => {
           'import type { A } from "pkg-a";',
           'import { type B, type C } from "pkg-b";',
           'import { type D, e } from "pkg-d";',
+          'import F, { type G } from "pkg-default";',
           'export { f } from "pkg-f";',
           'export type { G } from "pkg-g";',
           'import "server-only";',
           'const h = () => import("pkg-h");',
+          'type T = import("pkg-type").T;',
         ].join("\n"),
-      ),
-    ).toStrictEqual(["pkg-d", "pkg-f", "pkg-h", "server-only"]);
+      ).sort(),
+    ).toStrictEqual(["pkg-d", "pkg-default", "pkg-f", "pkg-h", "server-only"]);
+  });
+
+  test("finds imports a regex would miss, and none in comments or strings", () => {
+    expect(
+      runtimeSpecifiers(
+        [
+          "import {",
+          "  a, // it's the first",
+          '} from "pkg-apostrophe";',
+          "const b = import(`pkg-template`);",
+          'const c = import("pkg-attributes", { with: { type: "json" } });',
+          'const d = require("pkg-require");',
+          'import e = require("pkg-import-equals");',
+          '// import "pkg-comment";',
+          "const f = 'import \"pkg-string\"';",
+          "const g = import(`pkg-` + name);",
+        ].join("\n"),
+      ).sort(),
+    ).toStrictEqual([
+      "pkg-apostrophe",
+      "pkg-attributes",
+      "pkg-import-equals",
+      "pkg-require",
+      "pkg-template",
+    ]);
+  });
+
+  test("reads the use client directive from the prologue only", () => {
+    expect(isClientModule('/* it\'s */\n// note\n"use client";\nx();')).toBe(
+      true,
+    );
+    expect(isClientModule("'use strict';\n'use client';")).toBe(true);
+    expect(isClientModule('import "a";\n"use client";')).toBe(false);
+    expect(isClientModule('const a = "use client";')).toBe(false);
+  });
+
+  test("flags server-only modules, Next request APIs and Node built-ins", () => {
+    expect(serverOnlyReason('import "server-only";')).toBe(
+      'imports "server-only"',
+    );
+    expect(serverOnlyReason('import { cookies } from "next/headers";')).toBe(
+      'imports "next/headers"',
+    );
+    expect(serverOnlyReason('import { readFileSync } from "fs";')).toBe(
+      'imports "fs"',
+    );
+    expect(serverOnlyReason('import { join } from "node:path";')).toBe(
+      'imports "node:path"',
+    );
+    expect(serverOnlyReason('import type { Stats } from "fs";')).toBeNull();
+    expect(serverOnlyReason('import { cn } from "@/lib/cn";')).toBeNull();
   });
 
   /*
@@ -341,10 +508,7 @@ function moduleGraph(): ModuleGraph {
     files.map((file) => [
       file,
       runtimeSpecifiers(sources.get(file) ?? "")
-        .filter(
-          (specifier) =>
-            specifier.startsWith("@/") || specifier.startsWith("."),
-        )
+        .filter(isLocal)
         .map((specifier) => resolveImport(file, specifier))
         .filter((target): target is string => target !== null),
     ]),

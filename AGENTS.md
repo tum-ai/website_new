@@ -106,7 +106,8 @@ imports page CSS). Reason: Turbopack keeps every re-exported module that has cli
 CSS, so a page in an index ships its islands and styles to every page importing that index.
 A feature `index.ts` reaches no `server-only` module, so client islands may import it; what reads
 the CMS (content getters, async server components) goes in `server.ts`. The architecture test
-also fails when any `"use client"` module reaches a `server-only` module or a Node built-in.
+also fails when any `"use client"` module reaches a `server-only` module, `next/headers`,
+`next/cache` or a Node built-in (imports are read from the TypeScript syntax tree).
 
 ## Conventions
 

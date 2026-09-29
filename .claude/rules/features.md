@@ -22,7 +22,8 @@ One folder per domain: `home`, `apply`, `community`, `events`, `e-lab`, `partner
 - **`server.ts`** is the optional server-only entry: it starts with `import "server-only"` and
   exports what reads the CMS (content getters, their backfill builders, async server components
   such as `MembershipApplyButton`). Import it only from server modules; the architecture test
-  fails when any `"use client"` module reaches `server-only` or a Node built-in.
+  fails when any `"use client"` module reaches `server-only`, `next/headers`, `next/cache` or a
+  Node built-in.
 - **CSS:** never import CSS from a feature file. Page CSS (`<domain>.css`) is imported by the
   route file in `src/app/(site)/<route>/page.tsx`.
 - **Server first:** `"use client"` only on leaf islands (dialogs, filters, carousels). Fetch and
