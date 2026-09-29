@@ -16,8 +16,23 @@ function KeywordTags({ keywords }: { keywords: string[] }) {
 }
 
 /**
+ * The project's paper, linked out by its host ("Paper on arxiv.org"). Renders
+ * nothing unless the entry carries a safe publication URL, which the CMS
+ * allows on ongoing and completed projects alike.
+ */
+function PublicationLink({ project }: { project: ResearchEntry }) {
+  if (!project.publicationUrl || !project.publicationHost) return null;
+  return (
+    <TextLink href={project.publicationUrl} arrow className="mt-5 text-small">
+      Paper on {project.publicationHost}
+    </TextLink>
+  );
+}
+
+/**
  * Ongoing projects as hairline rows, set like a paper's first lines: the
- * title, the institutions with their index numbers, the abstract. The
+ * title, the institutions with their index numbers, the abstract, and the
+ * paper when the CMS links one (a preprint often precedes completion). The
  * project's CMS image sits beside it when there is one (served unoptimized:
  * CMS hosts are outside next/image's list); a missing or broken image leaves
  * the row text-only.
@@ -50,6 +65,7 @@ export function ProjectList({ projects }: { projects: ResearchEntry[] }) {
               <p className="mt-5 max-w-2xl text-body text-fg-muted">
                 {project.description}
               </p>
+              <PublicationLink project={project} />
               <KeywordTags keywords={project.keywords} />
             </div>
             {project.image ? (
@@ -107,15 +123,7 @@ export function ReferenceList({ projects }: { projects: ResearchEntry[] }) {
             <p className="mt-4 max-w-2xl text-fg-muted text-small">
               {project.description}
             </p>
-            {project.publicationUrl && project.publicationHost ? (
-              <TextLink
-                href={project.publicationUrl}
-                arrow
-                className="mt-5 text-small"
-              >
-                Paper on {project.publicationHost}
-              </TextLink>
-            ) : null}
+            <PublicationLink project={project} />
           </article>
         </Reveal>
       ))}
