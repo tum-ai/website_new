@@ -13,15 +13,7 @@ test("one dot per application, no two in the same place", () => {
   expect(places.size).toBe(allDots.length);
 });
 
-test("the dots form a round field, evenly spaced", () => {
-  for (const dot of allDots) {
-    expect(Math.hypot(dot.x, dot.y)).toBeLessThanOrEqual(field.radius);
-  }
-  // A disc of that radius holds about as many lattice points as dots.
-  const cellArea = Math.sqrt(3) / 2;
-  const expected = (Math.PI * field.radius ** 2) / cellArea;
-  expect(allDots.length).toBeGreaterThan(expected * 0.85);
-  expect(allDots.length).toBeLessThan(expected * 1.15);
+test("the dots are evenly spaced in an irregular outline, not a disc", () => {
   // Nearest neighbours sit exactly one pitch apart.
   const first = allDots[0];
   if (!first) throw new Error("empty field");
@@ -31,6 +23,19 @@ test("the dots form a round field, evenly spaced", () => {
       .map((dot) => Math.hypot(dot.x - first.x, dot.y - first.y)),
   );
   expect(nearest).toBeCloseTo(1, 6);
+
+  // A disc of the same dots would end at this radius; the outline reaches
+  // well past it in some directions.
+  const discRadius = Math.sqrt((allDots.length * Math.sqrt(3)) / 2 / Math.PI);
+  const farthest = Math.max(...allDots.map((dot) => Math.hypot(dot.x, dot.y)));
+  expect(farthest).toBeGreaterThan(discRadius * 1.15);
+
+  for (const dot of allDots) {
+    expect(dot.x).toBeGreaterThanOrEqual(field.bounds.minX);
+    expect(dot.x).toBeLessThanOrEqual(field.bounds.maxX);
+    expect(dot.y).toBeGreaterThanOrEqual(field.bounds.minY);
+    expect(dot.y).toBeLessThanOrEqual(field.bounds.maxY);
+  }
 });
 
 test("the dots still lit after each gate are exactly that gate's teams", () => {

@@ -19,7 +19,15 @@ const PAUSE = 450;
 const field = applicationField(gates);
 const finalGate = gates.length - 1;
 const finalists = gates[finalGate]?.teams ?? 0;
-const extent = round(field.radius + RADIUS);
+const { minX, maxX, minY, maxY } = field.bounds;
+const viewBox = [
+  minX - RADIUS,
+  minY - RADIUS,
+  maxX - minX + RADIUS * 2,
+  maxY - minY + RADIUS * 2,
+]
+  .map(round)
+  .join(" ");
 
 /** Three decimals are enough for the drawing and keep the markup short. */
 function round(value: number) {
@@ -46,7 +54,7 @@ function delayOf(group: FieldGroup, index: number) {
 
 /**
  * The hero's field: one dot per team application of a round, evenly spaced
- * in a round field. On load the dots go out one by one, gate after gate
+ * in an irregular outline. On load the dots go out one by one, gate after gate
  * (`.elab-field-out` in e-lab.css, opacity only), until only the teams that
  * reach the Final Pitch stay lit; with reduced motion it renders in that end
  * state. Server markup only. The drawing is decorative: the caption says
@@ -58,8 +66,8 @@ export function ApplicationField({ className }: { className?: string }) {
       <svg
         aria-hidden="true"
         focusable="false"
-        viewBox={`${-extent} ${-extent} ${extent * 2} ${extent * 2}`}
-        className="mx-auto block aspect-square h-auto w-full max-w-xl text-highlight"
+        viewBox={viewBox}
+        className="mx-auto block h-auto max-h-[34rem] w-full max-w-xl text-highlight"
       >
         {field.groups.map((group) => (
           <g key={group.gateIndex} fill="currentColor">

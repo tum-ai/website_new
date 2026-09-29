@@ -15,10 +15,9 @@ export type FieldGroup = {
   dots: FieldDot[];
 };
 
-/** The field: its dots by gate, and the radius that contains them all. */
+/** The field: its dots by gate, and the box around their centres. */
 export type Field = {
-  /** Distance of the outermost dot's centre from the field's centre. */
-  radius: number;
+  bounds: { minX: number; maxX: number; minY: number; maxY: number };
   groups: FieldGroup[];
 };
 
@@ -39,31 +38,42 @@ function seededRandom(seed: number) {
 
 /**
  * The `count` points of a hexagonal lattice (pitch 1, every other row offset
- * by half a pitch) that lie closest to the origin: a round field of evenly
- * spaced points. Ties at the rim are broken by angle, so the set is exact.
+ * by half a pitch) inside an irregular outline: each point's distance from
+ * the origin is divided by the outline's reach in its direction (a few
+ * seeded lobes), plus a little seeded noise per point that roughens the rim,
+ * and the `count` smallest are kept. Exact count, even spacing, organic edge.
  */
-function latticeDisc(count: number): FieldDot[] {
-  const reach = Math.ceil(Math.sqrt((count * ROW_HEIGHT) / Math.PI)) + 2;
+function latticeBlob(count: number, random: () => number): FieldDot[] {
+  const phases = [random(), random(), random()].map((r) => r * 2 * Math.PI);
+  const reachAt = (angle: number) =>
+    1 +
+    0.22 * Math.sin(2 * angle + (phases[0] ?? 0)) +
+    0.14 * Math.sin(3 * angle + (phases[1] ?? 0)) +
+    0.08 * Math.sin(5 * angle + (phases[2] ?? 0));
+
+  const reach = Math.ceil(1.6 * Math.sqrt((count * ROW_HEIGHT) / Math.PI)) + 2;
   const rows = Math.ceil(reach / ROW_HEIGHT);
-  const points: FieldDot[] = [];
+  const candidates: { point: FieldDot; score: number }[] = [];
   for (let row = -rows; row <= rows; row++) {
     const offset = Math.abs(row) % 2 === 1 ? 0.5 : 0;
     for (let column = -reach; column <= reach; column++) {
-      points.push({ x: column + offset, y: row * ROW_HEIGHT });
+      const point = { x: column + offset, y: row * ROW_HEIGHT };
+      const angle = Math.atan2(point.y, point.x);
+      const rim = 1 + (random() - 0.5) * 0.16;
+      candidates.push({
+        point,
+        score: Math.hypot(point.x, point.y) / (reachAt(angle) * rim),
+      });
     }
   }
-  const distance = (point: FieldDot) => Math.hypot(point.x, point.y);
-  return points
-    .sort(
-      (a, b) =>
-        distance(a) - distance(b) ||
-        Math.atan2(a.y, a.x) - Math.atan2(b.y, b.x),
-    )
-    .slice(0, count);
+  return candidates
+    .sort((a, b) => a.score - b.score)
+    .slice(0, count)
+    .map((candidate) => candidate.point);
 }
 
 /**
- * One dot per application of the first gate, as a round field, with each
+ * One dot per application of the first gate, as an irregular field, with each
  * dot assigned the last gate its team reached: exactly
  * `gates[i].teams - gates[i + 1].teams` dots stop at gate i, and
  * `gates.at(-1).teams` dots reach the last one. Which dots go where is a
@@ -74,10 +84,17 @@ export function applicationField(
   gates: Pick<Gate, "teams">[],
   seed = 6,
 ): Field {
-  const dots = latticeDisc(gates[0]?.teams ?? 0);
-  const radius = Math.max(0, ...dots.map((dot) => Math.hypot(dot.x, dot.y)));
-
   const random = seededRandom(seed);
+  const dots = latticeBlob(gates[0]?.teams ?? 0, random);
+  const xs = dots.map((dot) => dot.x);
+  const ys = dots.map((dot) => dot.y);
+  const bounds = {
+    minX: Math.min(...xs),
+    maxX: Math.max(...xs),
+    minY: Math.min(...ys),
+    maxY: Math.max(...ys),
+  };
+
   for (let index = dots.length - 1; index > 0; index--) {
     const swap = Math.floor(random() * (index + 1));
     [dots[index], dots[swap]] = [dots[swap], dots[index]] as [
@@ -95,5 +112,5 @@ export function applicationField(
     return group;
   });
 
-  return { radius, groups };
+  return { bounds, groups };
 }
