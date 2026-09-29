@@ -125,6 +125,18 @@ describe("FaqList deep links", () => {
     ).toHaveAttribute("aria-expanded", "true");
   });
 
+  test("ignores a fragment that is not valid percent-encoding", () => {
+    window.history.replaceState(null, "", "/#100%");
+    render(<FaqList items={linked} />);
+    act(() => {
+      window.history.replaceState(null, "", "/#%");
+      window.dispatchEvent(new HashChangeEvent("hashchange"));
+    });
+    for (const button of screen.getAllByRole("button")) {
+      expect(button).toHaveAttribute("aria-expanded", "false");
+    }
+  });
+
   test("opens an item when the fragment changes to it", () => {
     render(<FaqList items={linked} defaultValue={["Who can apply?"]} />);
     act(() => {

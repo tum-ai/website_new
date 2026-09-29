@@ -62,9 +62,17 @@ export type FaqListProps = {
   className?: string;
 };
 
-/** The item whose `id` the URL fragment names, if any. */
+/**
+ * The item whose `id` the URL fragment names, if any. A fragment that is not
+ * valid percent-encoding (`#%`, `#100%`) names none rather than throwing.
+ */
 function itemFromHash(items: FaqItem[]) {
-  const hash = decodeURIComponent(window.location.hash.slice(1));
+  let hash: string;
+  try {
+    hash = decodeURIComponent(window.location.hash.slice(1));
+  } catch {
+    return undefined;
+  }
   return hash ? items.find((item) => item.id === hash) : undefined;
 }
 
