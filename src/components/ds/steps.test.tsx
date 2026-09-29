@@ -47,3 +47,18 @@ test("rows show a step's description under its title", () => {
     within(screen.getByRole("listitem")).getByText("Tell us about yourself."),
   ).toBeInTheDocument();
 });
+
+test.each(["columns", "rows"] as const)(
+  "%s show a step's detail line under its title",
+  (layout) => {
+    render(
+      <Steps
+        layout={layout}
+        items={[{ title: "Apply", detail: "Until 27 October" }]}
+      />,
+    );
+    expect(
+      within(screen.getByRole("listitem")).getByText("Until 27 October"),
+    ).toBeInTheDocument();
+  },
+);

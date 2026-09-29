@@ -12,6 +12,8 @@ export type StepItem = {
   title: ReactNode;
   /** One or two sentences. */
   description?: ReactNode;
+  /** A short line under the title, such as the step's dates. */
+  detail?: ReactNode;
   /** Icon in the marker instead of the number (the number moves above the title). */
   icon?: LucideIcon;
   /** Overrides the automatic "01" numbering (e.g. "02A"). */
@@ -117,6 +119,9 @@ export function Steps({
                 <HeadingTag className="max-w-3xl text-fg text-heading-md">
                   {item.title}
                 </HeadingTag>
+                {item.detail ? (
+                  <p className="mt-1 text-fg-subtle text-meta">{item.detail}</p>
+                ) : null}
                 {item.description ? (
                   <div className="mt-2 max-w-2xl text-fg-muted text-small">
                     {item.description}
@@ -173,6 +178,9 @@ export function Steps({
               >
                 {item.title}
               </HeadingTag>
+              {item.detail ? (
+                <p className="mt-1 text-fg-subtle text-meta">{item.detail}</p>
+              ) : null}
               {item.description ? (
                 <div className="mt-3 text-fg-muted text-small">
                   {item.description}

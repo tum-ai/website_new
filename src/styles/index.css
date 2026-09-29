@@ -180,6 +180,8 @@
   --animate-marquee-reverse: marquee-reverse var(--marquee-duration, 48s) linear
     infinite;
   --animate-pulse-ring: pulse-ring 2.4s var(--ease-brand) infinite;
+  /* A rule drawing itself from its transform origin (KeyDates, DayRuler). */
+  --animate-draw: draw 1.1s var(--ease-brand) both;
 
   /* Transform and opacity only: a filter (the old blur) would make Safari
      clip each word to its box and repaint large headlines every frame.
@@ -263,6 +265,15 @@
     100% {
       transform: scale(2.4);
       opacity: 0;
+    }
+  }
+
+  @keyframes draw {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: none;
     }
   }
 }
