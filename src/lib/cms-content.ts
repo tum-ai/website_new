@@ -22,8 +22,9 @@ import {
  * old site's dataset, which holds no page content (`hasPageContent`).
  *
  * Scope: published documents only. Draft mode, Presentation and
- * `<SanityLive>` cover events, partners and research (`lib/sanity.ts`), not
- * page content; pages pick up content edits when they revalidate.
+ * `<SanityLive>` cover events and research (`lib/sanity.ts`), not page
+ * content (the partners included: they are organisations); pages pick up
+ * content edits when they revalidate.
  */
 
 /** Where page content comes from. */

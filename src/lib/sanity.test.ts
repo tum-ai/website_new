@@ -53,6 +53,16 @@ const partner = {
   featured: null,
 };
 
+const project = {
+  id: "r1",
+  title: "Study",
+  description: "",
+  status: "ongoing",
+  publication: null,
+  keywords: [],
+  image: "https://cdn/study.png",
+};
+
 beforeEach(() => {
   mocks.draftModeEnabled = false;
   mocks.sanityFetch.mockReset();
@@ -96,30 +106,32 @@ describe("tokens", () => {
 describe("page fetchers", () => {
   test("return [] without a request when no project is configured", async () => {
     const sanity = await loadSanity({ NEXT_PUBLIC_SANITY_PROJECT_ID: "" });
-    await expect(sanity.getSanityPartners()).resolves.toStrictEqual([]);
+    await expect(sanity.getSanityResearchProjects()).resolves.toStrictEqual([]);
     expect(mocks.sanityFetch).not.toHaveBeenCalled();
   });
 
   test("fetch published content without stega outside draft mode", async () => {
-    mocks.sanityFetch.mockResolvedValue({ data: [partner] });
+    mocks.sanityFetch.mockResolvedValue({ data: [project] });
     const sanity = await loadSanity({ SANITY_API_READ_TOKEN: "t" });
 
-    const partners = await sanity.getSanityPartners();
+    const projects = await sanity.getSanityResearchProjects();
 
     expect(mocks.sanityFetch).toHaveBeenCalledWith(
       expect.objectContaining({
         perspective: "published",
         stega: false,
-        tags: ["partners"],
+        tags: ["research-projects"],
       }),
     );
     // `null` fields are dropped for the page components' optional props.
-    expect(partners).toStrictEqual([
+    expect(projects).toStrictEqual([
       {
-        id: "p1",
-        name: "IBM",
-        image: "https://cdn/ibm.png",
-        category: "Research Partners",
+        id: "r1",
+        title: "Study",
+        description: "",
+        status: "ongoing",
+        keywords: [],
+        image: "https://cdn/study.png",
       },
     ]);
   });
@@ -150,21 +162,19 @@ describe("page fetchers", () => {
     );
   });
 
-  test.each([
-    "getSanityEvents",
-    "getSanityPartners",
-    "getSanityResearchPartners",
-    "getSanityResearchProjects",
-  ] as const)("%s logs a CMS failure and returns []", async (name) => {
-    mocks.sanityFetch.mockRejectedValue(new Error("Sanity is down"));
-    const sanity = await loadSanity();
+  test.each(["getSanityEvents", "getSanityResearchProjects"] as const)(
+    "%s logs a CMS failure and returns []",
+    async (name) => {
+      mocks.sanityFetch.mockRejectedValue(new Error("Sanity is down"));
+      const sanity = await loadSanity();
 
-    await expect(sanity[name]()).resolves.toStrictEqual([]);
-    expect(console.error).toHaveBeenCalledWith(
-      expect.stringContaining("[sanity] Could not load"),
-      expect.any(Error),
-    );
-  });
+      await expect(sanity[name]()).resolves.toStrictEqual([]);
+      expect(console.error).toHaveBeenCalledWith(
+        expect.stringContaining("[sanity] Could not load"),
+        expect.any(Error),
+      );
+    },
+  );
 
   test("rethrow Next's control-flow errors instead of swallowing them", async () => {
     mocks.sanityFetch.mockImplementation(() => redirect("/elsewhere"));
@@ -176,7 +186,7 @@ describe("page fetchers", () => {
   test("a non-array result becomes []", async () => {
     mocks.sanityFetch.mockResolvedValue({ data: null });
     const sanity = await loadSanity();
-    await expect(sanity.getSanityPartners()).resolves.toStrictEqual([]);
+    await expect(sanity.getSanityEvents()).resolves.toStrictEqual([]);
   });
 });
 
@@ -188,12 +198,12 @@ describe("mock CMS gate", () => {
     });
 
     const events = await sanity.getSanityEvents();
-    const researchPartners = await sanity.getSanityResearchPartners();
+    const projects = await sanity.getSanityResearchProjects();
 
     expect(events.length).toBeGreaterThan(0);
     expect(events[0].id).toMatch(/^mock-/);
     expect(events[0].event_date).toBe("2026-10-04T18:00:00.000Z");
-    expect(researchPartners.length).toBeGreaterThan(0);
+    expect(projects.length).toBeGreaterThan(0);
     expect(mocks.sanityFetch).not.toHaveBeenCalled();
   });
 
@@ -227,6 +237,56 @@ describe("published fetchers for the public API", () => {
       expect.objectContaining({ perspective: "published", stega: false }),
     );
     expect(mocks.resolvePerspectiveFromCookies).not.toHaveBeenCalled();
+  });
+
+  test("partners come from the partner organisations on the new site's dataset", async () => {
+    mocks.sanityFetch.mockResolvedValue({ data: [partner] });
+    const sanity = await loadSanity({ NEXT_PUBLIC_SANITY_DATASET: "redesign" });
+
+    await expect(sanity.getPublishedPartners()).resolves.toStrictEqual([
+      partner,
+    ]);
+    expect(mocks.sanityFetch).toHaveBeenCalledOnce();
+    expect(mocks.sanityFetch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: expect.stringContaining('_type == "organization"'),
+        tags: ["content:organization"],
+      }),
+    );
+  });
+
+  test("partners fall back to the partner documents until organisations have tiers", async () => {
+    mocks.sanityFetch
+      .mockResolvedValueOnce({ data: [] })
+      .mockResolvedValueOnce({ data: [partner] });
+    const sanity = await loadSanity({ NEXT_PUBLIC_SANITY_DATASET: "redesign" });
+
+    await expect(sanity.getPublishedPartners()).resolves.toStrictEqual([
+      partner,
+    ]);
+    expect(mocks.sanityFetch).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        query: expect.stringContaining('_type == "partner"'),
+        tags: ["partners"],
+      }),
+    );
+  });
+
+  test("partners on production are the partner documents only", async () => {
+    mocks.sanityFetch.mockResolvedValue({ data: [partner] });
+    const sanity = await loadSanity({
+      NEXT_PUBLIC_SANITY_DATASET: "production",
+    });
+
+    await expect(sanity.getPublishedPartners()).resolves.toStrictEqual([
+      partner,
+    ]);
+    expect(mocks.sanityFetch).toHaveBeenCalledOnce();
+    expect(mocks.sanityFetch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: expect.stringContaining('_type == "partner"'),
+      }),
+    );
   });
 
   test("throw on a CMS failure so the route can answer 500", async () => {

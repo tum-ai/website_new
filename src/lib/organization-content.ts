@@ -14,13 +14,19 @@ import {
   toContentImage,
 } from "./cms-content-model";
 import {
+  isPartnerCategory,
+  isPartnerTier,
   type LogoArtwork,
   type LogoListSurface,
   type LogoLists,
   logoListDocumentId,
   type Organization,
+  type Partnership,
 } from "./people-and-logos";
-import type { LOGO_LISTS_QUERY_RESULT } from "./sanity.types.generated";
+import type {
+  LOGO_LISTS_QUERY_RESULT,
+  PARTNER_ORGANIZATIONS_QUERY_RESULT,
+} from "./sanity.types.generated";
 import { isHttpsUrl } from "./security";
 
 /**
@@ -35,6 +41,10 @@ import { isHttpsUrl } from "./security";
  *   section shows them. Order and membership live on the list, not on the
  *   organisation, because one organisation appears in several sections in
  *   different orders (Anthropic: partner marquee and events hero).
+ *
+ * - An `organization` with a `partnerTier` is a TUM.ai partner
+ *   ({@link getPartnerOrganizations}): the partner directory lists every
+ *   one, so partnership lives on the organisation, not on a list.
  *
  * Each feature keeps its code fallback and passes it in (like
  * `lib/faq-content.ts`); this module is the query, the mapping and the
@@ -52,13 +62,21 @@ const ORGANIZATION_PROJECTION = `{
   "logoAspectRatio": logo.aspectRatio,
   "logoOnDark": logoOnDark${CONTENT_IMAGE_PROJECTION},
   "logoOnDarkSymbolOnly": logoOnDark.symbolOnly,
-  "logoOnDarkAspectRatio": logoOnDark.aspectRatio
+  "logoOnDarkAspectRatio": logoOnDark.aspectRatio,
+  partnerTier,
+  partnerCategory,
+  partnerFeatured
 }`;
 
 const LOGO_LISTS_QUERY = defineQuery(`*[_type == "logoList" && _id in $ids]{
   surface,
   "organizations": organizations[]->${ORGANIZATION_PROJECTION}
 }`);
+
+/** Every partner: the organisations with a partner tier. */
+const PARTNER_ORGANIZATIONS_QUERY = defineQuery(
+  `*[_type == "organization" && defined(partnerTier)] | order(key asc)${ORGANIZATION_PROJECTION}`,
+);
 
 /** An organisation as {@link ORGANIZATION_PROJECTION} returns it. */
 export type ProjectedOrganization = {
@@ -72,6 +90,9 @@ export type ProjectedOrganization = {
   logoOnDark?: ProjectedImage;
   logoOnDarkSymbolOnly?: boolean | null;
   logoOnDarkAspectRatio?: number | null;
+  partnerTier?: string | null;
+  partnerCategory?: string | null;
+  partnerFeatured?: boolean | null;
 };
 
 /** The fixed `_id` of a section's `logoList` document. */
@@ -97,6 +118,26 @@ function toArtwork(
     artwork.aspectRatio = aspectRatio;
   }
   return artwork;
+}
+
+/**
+ * The partnership of a projected organisation: its tier, and the category
+ * and featured flag when set. `undefined` without a known tier (not a
+ * partner), and an unknown category is left out.
+ */
+function toPartnership({
+  partnerTier,
+  partnerCategory,
+  partnerFeatured,
+}: ProjectedOrganization): Partnership | undefined {
+  if (!isPartnerTier(partnerTier)) return undefined;
+  return {
+    tier: partnerTier,
+    ...(isPartnerCategory(partnerCategory)
+      ? { category: partnerCategory }
+      : {}),
+    ...(partnerFeatured === true ? { featured: true } : {}),
+  };
 }
 
 /**
@@ -127,6 +168,8 @@ export function toOrganization(
     projected.logoOnDarkAspectRatio,
   );
   if (logoOnDark) organization.logoOnDark = logoOnDark;
+  const partnership = toPartnership(projected);
+  if (partnership) organization.partnership = partnership;
   return organization;
 }
 
@@ -172,6 +215,36 @@ export function getLogoLists<S extends LogoListSurface>({
   });
 }
 
+/**
+ * Every partner organisation: the CMS's (each organisation with a partner
+ * tier) when the source is `sanity` and it has any, otherwise `fallback`,
+ * the code's. Unordered: the partner directory sorts it.
+ */
+export function getPartnerOrganizations({
+  fallback,
+  label,
+  mockDocuments,
+}: {
+  /** The code's partner organisations. */
+  fallback: readonly Organization[];
+  label: string;
+  /** The documents the mock CMS queries: the slice's backfill. */
+  mockDocuments: () => readonly BackfillDocument[];
+}): Promise<Organization[]> {
+  return loadContent<Organization[], PARTNER_ORGANIZATIONS_QUERY_RESULT>({
+    fallback: [...fallback],
+    query: PARTNER_ORGANIZATIONS_QUERY,
+    tags: ["content:organization"],
+    label,
+    mockDocuments,
+    select: (result) =>
+      result.flatMap((projected) => {
+        const organization = toOrganization(projected);
+        return organization?.partnership ? [organization] : [];
+      }),
+  });
+}
+
 function artworkImage(artwork: LogoArtwork) {
   const image: BackfillImage & { symbolOnly?: true; aspectRatio?: number } =
     backfillImage(artwork.src, {
@@ -188,7 +261,8 @@ function artworkImage(artwork: LogoArtwork) {
 export function buildOrganizationDocument(
   organization: Organization,
 ): BackfillDocument {
-  const { key, name, shortName, href, logo, logoOnDark } = organization;
+  const { key, name, shortName, href, logo, logoOnDark, partnership } =
+    organization;
   return {
     _id: organizationId(key),
     _type: "organization",
@@ -198,6 +272,15 @@ export function buildOrganizationDocument(
     ...(href ? { href } : {}),
     ...(logo ? { logo: artworkImage(logo) } : {}),
     ...(logoOnDark ? { logoOnDark: artworkImage(logoOnDark) } : {}),
+    ...(partnership
+      ? {
+          partnerTier: partnership.tier,
+          ...(partnership.category
+            ? { partnerCategory: partnership.category }
+            : {}),
+          ...(partnership.featured ? { partnerFeatured: true } : {}),
+        }
+      : {}),
   };
 }
 

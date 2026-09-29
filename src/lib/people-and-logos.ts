@@ -28,6 +28,64 @@ export type LogoArtwork = ContentImage & {
 };
 
 /**
+ * The partner tiers, highest first: the /partners directory's rows (Gold,
+ * Silver and Bronze, then the supporter board) and the order it sorts by.
+ * Gold, Silver and Bronze partners are the highlighted ones (homepage, the
+ * /partners hero).
+ */
+export const partnerTiers = [
+  { value: "gold", title: "Gold" },
+  { value: "silver", title: "Silver" },
+  { value: "bronze", title: "Bronze" },
+  { value: "supporter", title: "Supporter" },
+] as const;
+
+export type PartnerTier = (typeof partnerTiers)[number]["value"];
+
+/**
+ * The old site's partner categories. /research shows the research partners,
+ * and `/api/getPartners` returns the category, so the values stay exactly
+ * the old `partner` documents' strings.
+ */
+export const partnerCategories = [
+  { value: "Industry Partners", title: "Industry partner" },
+  { value: "Technical Partners", title: "Technical partner" },
+  { value: "Research Partners", title: "Research partner" },
+  { value: "Venture Capital", title: "Venture capital" },
+  { value: "Initiatives", title: "Initiative" },
+] as const;
+
+export type PartnerCategory = (typeof partnerCategories)[number]["value"];
+
+/**
+ * An organisation's partnership with TUM.ai. An organisation is a partner
+ * exactly when it has one (the CMS: when `partnerTier` is set).
+ */
+export type Partnership = {
+  tier: PartnerTier;
+  category?: PartnerCategory;
+  /** Leads its tier. Only present when true. */
+  featured?: true;
+};
+
+const tierValues: ReadonlySet<string> = new Set(
+  partnerTiers.map(({ value }) => value),
+);
+const categoryValues: ReadonlySet<string> = new Set(
+  partnerCategories.map(({ value }) => value),
+);
+
+/** Whether `value` is one of {@link partnerTiers}. */
+export function isPartnerTier(value: unknown): value is PartnerTier {
+  return typeof value === "string" && tierValues.has(value);
+}
+
+/** Whether `value` is one of {@link partnerCategories}. */
+export function isPartnerCategory(value: unknown): value is PartnerCategory {
+  return typeof value === "string" && categoryValues.has(value);
+}
+
+/**
  * One company, lab or institution the site shows a logo for: the code
  * fallback and the CMS `organization` document share this shape. Optional
  * fields are left out, not `undefined`, so code and CMS values compare equal.
@@ -47,6 +105,8 @@ export type Organization = {
   logo?: LogoArtwork;
   /** Official artwork for dark bands (partner marquee, events hero). */
   logoOnDark?: LogoArtwork;
+  /** Set when the organisation is a TUM.ai partner. */
+  partnership?: Partnership;
 };
 
 /**

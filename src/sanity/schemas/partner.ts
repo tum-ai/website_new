@@ -1,5 +1,12 @@
 import { defineField, defineType } from "sanity";
 
+/**
+ * The old site's partner type, registered on every dataset because `main`
+ * reads it on `production`. On the new site's dataset partners are
+ * organisations with a partner tier (`content/organization.ts`); the Studio
+ * there hides this type, and `pnpm sanity:migrate-partners` moves its
+ * documents' tier, category and id onto the organisations.
+ */
 export const partnerType = defineType({
   name: "partner",
   title: "Partner",
@@ -43,7 +50,7 @@ export const partnerType = defineType({
       title: "Partner tier",
       type: "string",
       description:
-        "Groups partners under the Gold, Silver, or Bronze heading and controls logo prominence. These partners also appear in the hero marquee. Leave empty to use the partner-page launch defaults.",
+        "Groups partners under the Gold, Silver, or Bronze heading and controls logo prominence. The new site reads the tier from the partner's organisation instead.",
       options: {
         list: [
           { title: "Gold", value: "gold" },

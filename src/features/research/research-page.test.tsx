@@ -41,7 +41,7 @@ afterEach(() => {
 });
 
 const projects = getMockResearchProjects();
-const partners: Partner[] = [
+const partners = vi.hoisted((): Partner[] => [
   {
     id: "ibm",
     name: "IBM",
@@ -50,13 +50,18 @@ const partners: Partner[] = [
     category: "Research Partners",
   },
   { id: "hms", name: "Harvard Medical School", category: "Research Partners" },
-];
+]);
+
+vi.mock("@/features/partners/server", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/features/partners/server")>()),
+  getResearchPartners: async () => partners,
+}));
 const index = getResearchIndex(projects);
 
 const { closing } = researchCopy;
 
 async function renderPage() {
-  return render(await ResearchPage({ projects, researchPartners: partners }));
+  return render(await ResearchPage({ projects }));
 }
 
 describe("ResearchPage", () => {

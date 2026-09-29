@@ -1,12 +1,7 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, test } from "vitest";
-import {
-  getMockEvents,
-  getMockPartners,
-  getMockResearchPartners,
-  getMockResearchProjects,
-} from "@/lib/mock-cms";
+import { getMockEvents, getMockResearchProjects } from "@/lib/mock-cms";
 import { getMockCmsNow } from "@/lib/mock-cms-env";
 
 // The USE_MOCK_CMS gate itself is tested through lib/sanity.ts (sanity.test.ts).
@@ -87,7 +82,7 @@ test("mock sign-up links are neutral placeholders, not real forms", () => {
   }
 });
 
-test("mock research covers both statuses with local images only", () => {
+test("mock research covers both statuses, events and research use local images only", () => {
   const projects = getMockResearchProjects();
   expect(projects.some((project) => project.status === "ongoing")).toBe(true);
   expect(projects.some((project) => project.status === "completed")).toBe(true);
@@ -96,18 +91,12 @@ test("mock research covers both statuses with local images only", () => {
     true,
   );
 
-  const partners = getMockPartners();
-  expect(getMockResearchPartners()).toStrictEqual(
-    partners.filter((partner) => partner.category === "Research Partners"),
-  );
-
   const images = [
     ...getMockEvents().flatMap((event) => [
       event.poster,
       ...(event.images ?? []),
     ]),
     ...projects.map((project) => project.image),
-    ...partners.map((partner) => partner.image),
   ].filter((image): image is string => Boolean(image));
 
   for (const image of images) {

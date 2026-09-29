@@ -1,6 +1,6 @@
 import { getSiteFacts } from "@/config/site-settings-content";
 import { getMemberStories } from "@/features/community/server";
-import { getPartnerLogos } from "@/features/partners/server";
+import { getPartnerLogos, getPartners } from "@/features/partners/server";
 import { getRexInstitutions } from "@/features/research/server";
 import { getHomeContent } from "./content";
 import { HomeHero } from "./home-hero";
@@ -18,8 +18,8 @@ import { RoomSection } from "./room-section";
  * and the member call to action (ink). Must stay statically prerendered; see
  * HeroAperture for the image-preload contract. The copy comes from the
  * content slice (`content.ts`), the figures from the site facts, and the
- * member stories, REX institutions and partner artwork from their slices
- * (each the CMS or the code).
+ * member stories, REX institutions, partners and partner artwork from their
+ * slices (each the CMS or the code).
  */
 export async function HomePage() {
   const [
@@ -28,12 +28,14 @@ export async function HomePage() {
     rexInstitutions,
     stories,
     { marqueeLogos },
+    partners,
   ] = await Promise.all([
     getHomeContent(),
     getSiteFacts(),
     getRexInstitutions(),
     getMemberStories(),
     getPartnerLogos(),
+    getPartners(),
   ]);
   const { ledger, programs } = homeView(copy, {
     facts,
@@ -42,7 +44,11 @@ export async function HomePage() {
   });
   return (
     <main>
-      <HomeHero hero={copy.hero} marqueeLogos={marqueeLogos} />
+      <HomeHero
+        hero={copy.hero}
+        partners={partners}
+        marqueeLogos={marqueeLogos}
+      />
       <MissionSection mission={copy.mission} ledger={ledger} />
       <ProgramsSection
         title={copy.programs.title}
@@ -50,7 +56,7 @@ export async function HomePage() {
         items={programs}
       />
       <RoomSection room={copy.room} />
-      <PartnersSection copy={copy.partners} />
+      <PartnersSection copy={copy.partners} partners={partners} />
       <JoinSection join={copy.join} stories={stories} />
     </main>
   );

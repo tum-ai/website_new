@@ -104,3 +104,21 @@ test("on production the Studio registers no page content type", () => {
   expect(contentTypes.length).toBeGreaterThan(0);
   expect(typeNames("production")).toStrictEqual(liveTypes);
 });
+
+test("the new site's Studio creates no partner documents; production's does", () => {
+  const defaults = ["partner", "organization", "event"].map((schemaType) => ({
+    id: schemaType,
+    title: schemaType,
+    schemaType,
+    value: {},
+  }));
+  const templates = workspaceOf("redesign").schema?.templates;
+  if (typeof templates !== "function") throw new Error("expected a resolver");
+  const offered = templates(defaults, {} as never).map(
+    ({ schemaType }) => schemaType,
+  );
+  expect(offered).toContain("organization");
+  expect(offered).not.toContain("partner");
+  // Production keeps the Studio's defaults, `partner` included.
+  expect(workspaceOf("production").schema?.templates).toBeUndefined();
+});

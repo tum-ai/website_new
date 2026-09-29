@@ -14,7 +14,7 @@ const rosterKey = (partners: Partner[]) =>
 
 /**
  * "The company we keep": the gold, silver and bronze rows and the supporter
- * board. `partners` is the merged directory (CMS over the launch defaults).
+ * board. `partners` is the partner directory (`getPartners()`).
  */
 export function DirectorySection({
   partners,

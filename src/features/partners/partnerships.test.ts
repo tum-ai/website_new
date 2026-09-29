@@ -1,7 +1,8 @@
 import { existsSync } from "node:fs";
 import { expect, test } from "vitest";
 import { contactEmails, partnershipContact } from "@/config/contact";
-import { alumniDestinations, featuredPartners } from "./data/partner-logos";
+import { partnerOrganizations } from "./data/organizations";
+import { alumniDestinations } from "./data/partner-logos";
 import { marqueeLogos } from "./data/partner-marquee-logos";
 import {
   partnerCaseStudies,
@@ -12,7 +13,13 @@ import {
   getHighlightedPartners,
   getPartnerDirectory,
   getPartnerKey,
+  partnerOf,
 } from "./partner-directory";
+
+/** The code's partner directory. */
+const codeDirectory = () =>
+  getPartnerDirectory(partnerOrganizations.map(partnerOf));
+
 import {
   getPartnershipBookingUrl,
   getPartnershipEmailUrl,
@@ -117,8 +124,8 @@ test("email and booking carry readable, encoded intent, timeframe, and recommend
   );
 });
 
-test("launch defaults include the eighteen partners in tier order", () => {
-  const result = getPartnerDirectory([]);
+test("the code's highlighted partners are the eighteen launch partners in tier order", () => {
+  const result = getHighlightedPartners(codeDirectory());
   expect(result.map((p) => p.name)).toStrictEqual([
     "OpenAI",
     "Google",
@@ -147,7 +154,7 @@ test("launch defaults include the eighteen partners in tier order", () => {
 });
 
 test("every highlighted launch partner has a shipped marquee logo", () => {
-  for (const partner of getHighlightedPartners(getPartnerDirectory([]))) {
+  for (const partner of getHighlightedPartners(codeDirectory())) {
     const image = marqueeLogos[getPartnerKey(partner.name)];
     expect(
       image,
@@ -163,7 +170,7 @@ test("every highlighted launch partner has a shipped marquee logo", () => {
 test("every curated logo, portrait, and case-study image ships with the page", () => {
   for (const item of [
     ...Object.values(marqueeLogos).map((image) => ({ image })),
-    ...featuredPartners,
+    ...codeDirectory(),
     ...alumniDestinations,
     ...partnerProfiles,
     ...partnerPillarTemplates.map(({ image }) => ({ image: image.src })),
@@ -177,40 +184,130 @@ test("every curated logo, portrait, and case-study image ships with the page", (
   }
 });
 
-test("CMS overrides defaults, aliases consolidate, and unclassified legacy entries become supporters", () => {
+test("the directory sorts by tier, lead, launch order and name, and keeps one entry per company", () => {
   const result = getPartnerDirectory([
-    {
-      id: "hrt-cms",
-      name: "HRT",
-      tier: "silver",
-      featured: true,
-      image: "https://cdn.example/hrt.svg",
-    },
-    {
-      id: "hrt-legacy",
-      name: "Hudson River Trading",
-      category: "Industry Partners",
-    },
-    {
-      id: "ibm-research",
-      name: "IBM",
-      category: "Research Partners",
-      link: "https://ibm.com",
-    },
-    { id: "ibm-technical", name: "ibm", category: "Technical Partners" },
-    { id: "missing-logo", name: "New partner", link: "javascript:alert(1)" },
+    { id: "zeta", name: "Zeta", tier: "gold" },
+    { id: "hudson-river-trading", name: "Hudson River Trading", tier: "gold" },
+    { id: "openai", name: "OpenAI", tier: "gold" },
+    { id: "alpha", name: "Alpha", tier: "gold", featured: true },
+    { id: "hrt", name: "HRT", tier: "supporter" },
+    { id: "ibm", name: "IBM", category: "Research Partners" },
+    { id: "unknown", name: "Unknown tier", tier: "platinum" as never },
+    { id: "unsafe", name: "Unsafe", link: "javascript:alert(1)" },
+    { id: "blank", name: " " },
   ]);
-  const hrt = result.filter((p) => p.name === "Hudson River Trading");
-  expect(hrt.length).toBe(1);
-  expect(hrt[0].tier).toBe("silver");
-  expect(hrt[0].featured).toBe(true);
-  expect(hrt[0].image).toBe("https://cdn.example/hrt.svg");
-  expect(result.find((p) => p.tier === "silver")?.name).toBe(
-    "Hudson River Trading",
+  expect(result.map(({ name, tier }) => [name, tier])).toStrictEqual([
+    ["Alpha", "gold"],
+    ["OpenAI", "gold"],
+    ["Hudson River Trading", "gold"],
+    ["Zeta", "gold"],
+    ["IBM", "supporter"],
+    ["Unknown tier", "supporter"],
+    ["Unsafe", "supporter"],
+  ]);
+  expect(result.find((p) => p.name === "Unsafe")?.link).toBeUndefined();
+});
+
+test("a partner organisation lists its website, light logo and partnership", () => {
+  expect(
+    partnerOf({
+      key: "mutagent",
+      name: "Mutagent",
+      href: "https://mutagent.io/",
+      logo: {
+        src: "/assets/partners/logos/mutagent.svg",
+        width: 672,
+        height: 672,
+        alt: "Mutagent logo",
+        symbolOnly: true,
+      },
+      partnership: {
+        tier: "bronze",
+        category: "Industry Partners",
+        featured: true,
+      },
+    }),
+  ).toStrictEqual({
+    id: "mutagent",
+    name: "Mutagent",
+    link: "https://mutagent.io/",
+    image: "/assets/partners/logos/mutagent.svg",
+    category: "Industry Partners",
+    tier: "bronze",
+    featured: true,
+    symbolOnly: true,
+  });
+  expect(partnerOf({ key: "meta", name: "Meta" })).toStrictEqual({
+    id: "meta",
+    name: "Meta",
+    tier: "supporter",
+  });
+});
+
+test("every production partner is a code partner organisation", () => {
+  // Names of the old site's partner documents (2026-09-29), as its editors
+  // typed them: each must find its organisation by key, as the migration does.
+  const keys = new Set(
+    partnerOrganizations.map(({ key }) => getPartnerKey(key)),
   );
-  expect(result.filter((p) => p.name.toLowerCase() === "ibm").length).toBe(1);
-  expect(result.find((p) => p.name === "IBM")?.tier).toBe("bronze");
-  expect(result.find((p) => p.name === "New partner")?.link).toBeUndefined();
+  for (const name of [
+    "10x Founders",
+    "AWS",
+    "Aleph Alpha",
+    "Anthropic",
+    "Applied AI",
+    "BMW",
+    "CDTM",
+    "CoBrowser",
+    "ETH Analytics Club",
+    "EWOR",
+    "Eleven Labs",
+    "Enactus Munich",
+    "EntrepreNow Community",
+    "GDSC",
+    "Google",
+    "Harvard Medical School",
+    "Heimkapital",
+    "Helmholtz",
+    "Hudson River Trading",
+    "Hugging Face",
+    "IBM",
+    "Initiatives for Humanity",
+    "Klinikum Rechts der Isar",
+    "Knust CoE IC",
+    "LMU",
+    "Lovable",
+    "MCML",
+    "MI4People",
+    "MIT",
+    "Microsoft",
+    "OpenAI",
+    "Project-A",
+    "QSummit",
+    "Rohde-Schwarz",
+    "Siemens",
+    "Speedinvest",
+    "Start Munich",
+    "Tensordyne",
+    "TumVentureLabs",
+    "UVC Partners",
+    "Unite",
+    "UnternehmerTUM",
+    "Vercel",
+    "auswaertiges-amt",
+    "bkw",
+    "check24",
+    "flowerlabs",
+    "infineon",
+    "itcs",
+    "janestreet",
+    "ministry_for_digital_affairs",
+    "n8n",
+    "netlight",
+    "nvidia",
+  ]) {
+    expect(keys, name).toContain(getPartnerKey(name));
+  }
 });
 
 test("email CCs reach the configured partnership contacts with and without finder context", () => {
@@ -229,27 +326,15 @@ test("email CCs reach the configured partnership contacts with and without finde
   }
 });
 
-test("marquee includes every highlighted tier and follows CMS overrides and aliases", () => {
-  expect(getHighlightedPartners(getPartnerDirectory([])).length).toBe(18);
-  const directory = getPartnerDirectory([
-    { id: "openai-cms", name: "OpenAI", tier: "supporter" },
-    { id: "hrt-cms", name: "HRT", tier: "silver" },
-    { id: "hrt-alias", name: "Hudson River Trading" },
-    { id: "new-partner", name: "New partner", tier: "bronze" },
-    { id: "legacy", name: "Legacy supporter", featured: true },
-  ]);
-  const highlighted = getHighlightedPartners(directory);
-  expect(highlighted.length).toBe(18);
-  expect(
-    highlighted.filter((partner) => partner.name === "Hudson River Trading")
-      .length,
-  ).toBe(1);
-  expect(highlighted.some((partner) => partner.name === "New partner")).toBe(
-    true,
+test("the marquee shows every highlighted partner and follows the tiers", () => {
+  expect(getHighlightedPartners(codeDirectory())).toHaveLength(18);
+  const highlighted = getHighlightedPartners(
+    getPartnerDirectory([
+      { id: "openai", name: "OpenAI", tier: "supporter" },
+      { id: "new", name: "New partner", tier: "bronze" },
+      { id: "legacy", name: "Legacy supporter", featured: true },
+    ]),
   );
-  expect(highlighted.some((partner) => partner.name === "OpenAI")).toBe(false);
-  expect(
-    highlighted.some((partner) => partner.name === "Legacy supporter"),
-  ).toBe(false);
+  expect(highlighted.map(({ name }) => name)).toStrictEqual(["New partner"]);
   expect(getHighlightedPartners([])).toStrictEqual([]);
 });

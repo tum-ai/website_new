@@ -95,29 +95,24 @@ test("rotation stays unique, fair and changes positions across long seeded runs"
   }
 });
 
-test("company aliases consolidate across CMS categories and preserve requested tiers", () => {
+test("company aliases keep one directory entry per company", () => {
   const partners = getPartnerDirectory([
-    { id: "1", name: "McKinsey" },
+    { id: "1", name: "McKinsey", tier: "silver" },
     { id: "2", name: "McKinsey and Company" },
     { id: "3", name: "Entire" },
-    { id: "4", name: "Entire.io" },
+    { id: "4", name: "Entire.io", tier: "gold" },
     { id: "5", name: "Amazon Web Services" },
     { id: "6", name: "BMW Group" },
-    { id: "7", name: "janestreet" },
-    { id: "8", name: "IBM" },
-    { id: "9", name: "ibm" },
+    { id: "7", name: "ibm" },
+    { id: "8", name: "IBM", tier: "bronze" },
   ]);
-  expect(partners).toHaveLength(18);
-  for (const [name, tier] of [
+  expect(partners.map(({ name, tier }) => [name, tier])).toStrictEqual([
     ["Entire.io", "gold"],
-    ["McKinsey & Company", "silver"],
-    ["AWS", "silver"],
-    ["BMW", "silver"],
-    ["Jane Street", "silver"],
+    ["McKinsey", "silver"],
     ["IBM", "bronze"],
-  ]) {
-    expect(partners.find((partner) => partner.name === name)?.tier).toBe(tier);
-  }
+    ["Amazon Web Services", "supporter"],
+    ["BMW Group", "supporter"],
+  ]);
 });
 
 test("supporter batches reserve outgoing companies and change multiple distinct slots fairly", () => {
