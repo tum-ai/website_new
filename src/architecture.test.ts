@@ -214,6 +214,124 @@ function importViolation(from: Module, to: Module): string | null {
   }
 }
 
+/**
+ * The specifiers a module imports at runtime: type-only imports and exports
+ * (`import type`, or braces whose every name is `type`) are erased by the
+ * compiler, so they add no edge to the bundle's module graph.
+ */
+function runtimeSpecifiers(source: string): string[] {
+  const specifiers: string[] = [];
+  const statement =
+    /\b(import|export)\s+(?!type\b)([^"'`;]*?)\bfrom\s*["']([^"']+)["']/g;
+  for (const [, , clause, specifier] of source.matchAll(statement)) {
+    const names = /^\{([^}]*)\}\s*$/.exec(clause.trim())?.[1];
+    const typeOnly = names
+      ?.split(",")
+      .map((name) => name.trim())
+      .filter(Boolean)
+      .every((name) => name.startsWith("type "));
+    if (!typeOnly) specifiers.push(specifier);
+  }
+  for (const pattern of importPatterns.slice(1)) {
+    for (const match of source.matchAll(pattern)) specifiers.push(match[1]);
+  }
+  return [...new Set(specifiers)];
+}
+
+const isClientModule = (source: string) =>
+  /^(?:\s|\/\/[^\n]*\n|\/\*[\s\S]*?\*\/)*["']use client["']/.test(source);
+
+/** Why a module may not run in the browser, or null when it may. */
+function serverOnlyReason(source: string): string | null {
+  const specifiers = runtimeSpecifiers(source);
+  if (specifiers.includes("server-only")) return 'imports "server-only"';
+  const builtin = specifiers.find((specifier) => specifier.startsWith("node:"));
+  return builtin ? `imports ${builtin}` : null;
+}
+
+describe("client graph", () => {
+  test("parses runtime imports and skips type-only ones", () => {
+    expect(
+      runtimeSpecifiers(
+        [
+          'import type { A } from "pkg-a";',
+          'import { type B, type C } from "pkg-b";',
+          'import { type D, e } from "pkg-d";',
+          'export { f } from "pkg-f";',
+          'export type { G } from "pkg-g";',
+          'import "server-only";',
+          'const h = () => import("pkg-h");',
+        ].join("\n"),
+      ),
+    ).toStrictEqual(["pkg-d", "pkg-f", "pkg-h", "server-only"]);
+  });
+
+  /*
+   * Turbopack fails the production build when a "use client" module
+   * reaches, through any chain of static or dynamic imports (feature index
+   * barrels and data modules included), a module that imports
+   * `server-only` or a Node built-in: the CMS content slices and their
+   * mock loader. Islands take CMS values as props instead. This catches
+   * the edge without a build.
+   */
+  test('no "use client" module reaches a server-only module', () => {
+    const files = sourceFiles(srcDir).filter(
+      (file) => !/\.test\.tsx?$/.test(file),
+    );
+    const sources = new Map(
+      files.map((file) => [file, readFileSync(file, "utf8")]),
+    );
+    const edges = new Map(
+      files.map((file) => [
+        file,
+        runtimeSpecifiers(sources.get(file) ?? "")
+          .filter(
+            (specifier) =>
+              specifier.startsWith("@/") || specifier.startsWith("."),
+          )
+          .map((specifier) => resolveImport(file, specifier))
+          .filter((target): target is string => target !== null),
+      ]),
+    );
+    const name = (file: string) => relative(srcDir, file).split(sep).join("/");
+    const islands = files.filter((file) =>
+      isClientModule(sources.get(file) ?? ""),
+    );
+    const violations: string[] = [];
+
+    for (const island of islands) {
+      const parent = new Map<string, string | null>([[island, null]]);
+      const queue = [island];
+      while (queue.length > 0) {
+        const current = queue.shift() as string;
+        const reason = serverOnlyReason(sources.get(current) ?? "");
+        if (reason) {
+          const chain: string[] = [];
+          for (
+            let at: string | null = current;
+            at;
+            at = parent.get(at) ?? null
+          ) {
+            chain.unshift(name(at));
+          }
+          violations.push(`${chain.join(" → ")} (${reason})`);
+          continue;
+        }
+        for (const next of edges.get(current) ?? []) {
+          if (!parent.has(next)) {
+            parent.set(next, current);
+            queue.push(next);
+          }
+        }
+      }
+    }
+
+    expect(violations).toStrictEqual([]);
+    // Guards the directive regex: the site has dozens of islands.
+    expect(islands.length).toBeGreaterThan(20);
+  });
+});
+
 describe("import rules", () => {
   test("every local import follows the layer rules", () => {
     const violations: string[] = [];
