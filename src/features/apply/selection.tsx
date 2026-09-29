@@ -1,6 +1,7 @@
 import { Container, Section, SectionHeader, Steps } from "@/components/ds";
+import { fillPageTokens } from "@/lib/content-copy";
 import { spellCountCapitalized } from "@/lib/words";
-import { type StageTiming, selectionStages } from "./data/apply";
+import type { ApplyCopy, StageTiming } from "./data/apply";
 import type { RecruitingCall } from "./round";
 
 /** A stage's timing in words, from the round's dates. */
@@ -21,20 +22,29 @@ function when(timing: StageTiming, { words }: RecruitingCall): string {
  * How the round selects members: the stages are a real order, so they are
  * numbered `Steps` rows, each dated from the config.
  */
-export function Selection({ call }: { call: RecruitingCall }) {
+export function Selection({
+  copy,
+  call,
+}: {
+  copy: ApplyCopy["selection"];
+  call: RecruitingCall;
+}) {
+  const { stages } = copy;
   return (
     <Section tone="paper" spacing="lg" aria-labelledby="apply-selection-title">
       <Container>
         <SectionHeader
           id="apply-selection-title"
-          title="How selection works"
+          title={copy.title}
           size="lg"
           layout="stack"
-          lead={`${spellCountCapitalized(selectionStages.length)} stages, from your application to your first weekend as a member.`}
+          lead={fillPageTokens(copy.lead, {
+            count: spellCountCapitalized(stages.length),
+          })}
         />
         <Steps
           layout="rows"
-          items={selectionStages.map((stage) => ({
+          items={stages.map((stage) => ({
             title: stage.title,
             detail: when(stage.when, call),
             description: stage.text,

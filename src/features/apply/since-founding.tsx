@@ -1,11 +1,11 @@
 import { Container, Reveal, Section, SectionHeader } from "@/components/ds";
-import { organizationFacts } from "@/config/organization";
+import { fillPageTokens } from "@/lib/content-copy";
+import type { ApplyCopy } from "./data/apply";
 import {
+  milestonesIn as cellOf,
   type Milestone,
   milestoneKinds,
-  milestones,
-  milestonesIn,
-  milestoneYears,
+  milestoneYearsOf,
 } from "./data/milestones";
 
 /** One entry: a square per milestone (so a cell's density shows), its words. */
@@ -35,16 +35,28 @@ function Entry({ milestone }: { milestone: Milestone }) {
  * grew. A table from `lg`; below it, one stack per year with each entry's
  * kind named.
  */
-export function SinceFounding() {
+export function SinceFounding({
+  copy,
+  milestones,
+}: {
+  copy: ApplyCopy["history"];
+  milestones: readonly Milestone[];
+}) {
+  const milestoneYears = milestoneYearsOf(milestones);
+  const milestonesIn = (kind: Milestone["kind"], year: number) =>
+    cellOf(milestones, kind, year);
   return (
     <Section tone="lavender" spacing="lg" aria-labelledby="apply-history-title">
       <Container>
         <SectionHeader
           id="apply-history-title"
-          title={`Since ${organizationFacts.foundingYear}`}
+          title={copy.title}
           size="lg"
           layout="stack"
-          lead={`What TUM.ai's members have started, by kind and year: ${milestones.length} milestones in ${milestoneYears.length} years.`}
+          lead={fillPageTokens(copy.lead, {
+            count: String(milestones.length),
+            years: String(milestoneYears.length),
+          })}
         />
 
         <Reveal variant="fade" className="hidden lg:block">

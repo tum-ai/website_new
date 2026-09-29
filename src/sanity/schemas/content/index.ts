@@ -1,9 +1,11 @@
+import { applyCopyType } from "./apply-copy";
 import { communityCopyType } from "./community-copy";
 import { departmentType } from "./department";
 import { faqType } from "./faq";
 import { homeCopyType } from "./home-copy";
 import { journeyStepType } from "./journey-step";
 import { labSiteType } from "./lab-site";
+import { milestoneType } from "./milestone";
 import { projectsCopyType } from "./projects-copy";
 import { qandaCopyType } from "./qanda-copy";
 import { researchCopyType } from "./research-copy";
@@ -31,6 +33,8 @@ export const contentSchemaTypes = [
   researchCopyType,
   labSiteType,
   homeCopyType,
+  applyCopyType,
+  milestoneType,
 ];
 
 /**
@@ -46,4 +50,5 @@ export const contentSingletons: readonly { type: string; title: string }[] = [
   { type: "projectsCopy", title: "Projects page" },
   { type: "researchCopy", title: "Research page" },
   { type: "homeCopy", title: "Homepage" },
+  { type: "applyCopy", title: "Apply page" },
 ];

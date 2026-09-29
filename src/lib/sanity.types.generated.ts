@@ -218,6 +218,95 @@ export type Slug = {
   source?: string;
 };
 
+export type Milestone = {
+  _id: string;
+  _type: "milestone";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  year: number;
+  kind: "research" | "programs" | "events" | "organization";
+  order: number;
+  title: string;
+  detail?: string;
+};
+
+export type ApplyCopy = {
+  _id: string;
+  _type: "applyCopy";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  heroLead: string;
+  scope?: {
+    title: string;
+    inScopeTitle: string;
+    notRequiredTitle: string;
+    valuesTitle: string;
+    qualities: Array<{
+      title: string;
+      text: string;
+      _type: "point";
+      _key: string;
+    }>;
+    notRequired: Array<{
+      title: string;
+      text: string;
+      _type: "point";
+      _key: string;
+    }>;
+    values: Array<{
+      title: string;
+      text: string;
+      _type: "point";
+      _key: string;
+    }>;
+    photo: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      _type: "image";
+    };
+  };
+  tracks?: {
+    title: string;
+    lead: string;
+    offeringsTitle: string;
+    offerings: Array<{
+      title: string;
+      text: string;
+      _type: "point";
+      _key: string;
+    }>;
+    photo: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      _type: "image";
+    };
+    journeyLink: string;
+  };
+  selection?: {
+    title: string;
+    lead: string;
+    stages: Array<{
+      title: string;
+      when: "deadline" | "after-deadline" | "interviews" | "onboarding";
+      text: string;
+      _type: "selectionStage";
+      _key: string;
+    }>;
+  };
+  history?: {
+    title: string;
+    lead: string;
+  };
+};
+
 export type HomeCopy = {
   _id: string;
   _type: "homeCopy";
@@ -581,6 +670,8 @@ export type AllSanitySchemaTypes =
   | SanityImageAsset
   | Geopoint
   | Slug
+  | Milestone
+  | ApplyCopy
   | HomeCopy
   | LabSite
   | ResearchCopy
@@ -591,6 +682,91 @@ export type AllSanitySchemaTypes =
   | CommunityCopy
   | QandaCopy
   | Faq;
+
+// Source: ../features/apply/content.ts
+// Variable: APPLY_CONTENT_QUERY
+// Query: {  "copy": *[_id == "applyCopy"][0]{    heroLead,    scope{      title,      inScopeTitle,      notRequiredTitle,      valuesTitle,      qualities[]{ title, text },      notRequired[]{ title, text },      values[]{ title, text },      "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}    },    tracks{      title,      lead,      offeringsTitle,      offerings[]{ title, text },      "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }},      journeyLink    },    selection{ title, lead, stages[]{ title, when, text } },    history{ title, lead }  },  "milestones": *[_type == "milestone"] | order(year asc, order asc){    year,    kind,    title,    detail  }}
+export type APPLY_CONTENT_QUERY_RESULT = {
+  copy:
+    | {
+        heroLead: null;
+        scope: null;
+        tracks: null;
+        selection: null;
+        history: null;
+      }
+    | {
+        heroLead: string;
+        scope: {
+          title: string;
+          inScopeTitle: string;
+          notRequiredTitle: string;
+          valuesTitle: string;
+          qualities: Array<{
+            title: string;
+            text: string;
+          }>;
+          notRequired: Array<{
+            title: string;
+            text: string;
+          }>;
+          values: Array<{
+            title: string;
+            text: string;
+          }>;
+          photo: {
+            src: string | null;
+            width: number | null;
+            height: number | null;
+            alt: string | null;
+            hotspot: {
+              x: number;
+              y: number;
+            } | null;
+          };
+        } | null;
+        tracks: {
+          title: string;
+          lead: string;
+          offeringsTitle: string;
+          offerings: Array<{
+            title: string;
+            text: string;
+          }>;
+          photo: {
+            src: string | null;
+            width: number | null;
+            height: number | null;
+            alt: string | null;
+            hotspot: {
+              x: number;
+              y: number;
+            } | null;
+          };
+          journeyLink: string;
+        } | null;
+        selection: {
+          title: string;
+          lead: string;
+          stages: Array<{
+            title: string;
+            when: "after-deadline" | "deadline" | "interviews" | "onboarding";
+            text: string;
+          }>;
+        } | null;
+        history: {
+          title: string;
+          lead: string;
+        } | null;
+      }
+    | null;
+  milestones: Array<{
+    year: number;
+    kind: "events" | "organization" | "programs" | "research";
+    title: string;
+    detail: string | null;
+  }>;
+};
 
 // Source: ../features/community/content.ts
 // Variable: COMMUNITY_COPY_QUERY
