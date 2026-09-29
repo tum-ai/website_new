@@ -116,7 +116,8 @@ export const testimonials = [
   {
     id: "viktor-shen",
     name: "Viktor Shen",
-    role: "Founder of Tenmin",
+    role: "Founder",
+    roleAtOrganization: true,
     context: "E-Lab 3.0",
     quote:
       "We went from zero to being a funded startup - the E-Lab accelerated our journey far beyond what we thought was possible.",
