@@ -218,6 +218,116 @@ export type Slug = {
   source?: string;
 };
 
+export type Campaign = {
+  _id: string;
+  _type: "campaign";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name: string;
+  startDate: string;
+  startTime?: string;
+  endDate?: string;
+  endTime?: string;
+  headerCta?: {
+    variant: "member" | "partner" | "elab" | "notify";
+    label?: string;
+    notifyUrl?: string;
+    yieldsToRecruiting: boolean;
+  };
+  featuredEventId?: string;
+};
+
+export type ApplicationWindow = {
+  _id: string;
+  _type: "applicationWindow";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  program: "membership" | "e-lab";
+  roundName?: string;
+  switchedOn: boolean;
+  opens?: string;
+  deadlineDate: string;
+  deadlineTime: string;
+  applicationUrl: string;
+  milestones?: Array<{
+    key: "interviews" | "onboarding";
+    from: string;
+    to: string;
+    _type: "milestone";
+    _key: string;
+  }>;
+  nextWindowLabel?: string;
+};
+
+export type SiteSettings = {
+  _id: string;
+  _type: "siteSettings";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  organization: {
+    foundingYear: number;
+    activeMembers: number;
+    alumni: number;
+    majors: number;
+    universities: number;
+    nationalities: number;
+  };
+  brandMission: string;
+  impact: {
+    publications: number;
+    publicationVenues: Array<string>;
+    hackathonParticipants: number;
+  };
+  community: {
+    makeathonSize: number;
+  };
+  contactEmails: {
+    general: string;
+    partners: string;
+    venture: string;
+    recruitment: string;
+  };
+  socialLinks: {
+    linkedin: string;
+    instagram: string;
+    github: string;
+    x: string;
+    youtube: string;
+    facebook: string;
+    tiktok: string;
+    slack: string;
+  };
+  partnershipBooking: {
+    bookingUrl: string;
+    bookingHost: string;
+  };
+  eLab: {
+    currentIteration: string;
+    programWeeks: number;
+    ventureFundingMillions: number;
+    selection: {
+      applications: number;
+      admitted: number;
+      midterm: number;
+      selectionDay: number;
+      finalPitch: number;
+    };
+    heroLogo: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      _type: "image";
+    };
+  };
+  footerTagline: string;
+  headerCtaFallback: "partner" | "member" | "elab";
+};
+
 export type Faq = {
   _id: string;
   _type: "faq";
@@ -254,7 +364,114 @@ export type AllSanitySchemaTypes =
   | SanityImageAsset
   | Geopoint
   | Slug
+  | Campaign
+  | ApplicationWindow
+  | SiteSettings
   | Faq;
+
+// Source: ../config/schedule-content.ts
+// Variable: APPLICATION_WINDOW_QUERY
+// Query: *[_type == "applicationWindow" && program == $program] | order(_updatedAt desc)[0]{  roundName,  switchedOn,  opens,  deadlineDate,  deadlineTime,  applicationUrl,  nextWindowLabel,  milestones[]{ key, from, to }}
+export type APPLICATION_WINDOW_QUERY_RESULT = {
+  roundName: string | null;
+  switchedOn: boolean;
+  opens: string | null;
+  deadlineDate: string;
+  deadlineTime: string;
+  applicationUrl: string;
+  nextWindowLabel: string | null;
+  milestones: Array<{
+    key: "interviews" | "onboarding";
+    from: string;
+    to: string;
+  }> | null;
+} | null;
+
+// Source: ../config/schedule-content.ts
+// Variable: CAMPAIGNS_QUERY
+// Query: *[_type == "campaign"] | order(startDate desc, _id asc){  "id": _id,  name,  startDate,  startTime,  endDate,  endTime,  headerCta{ variant, label, notifyUrl, yieldsToRecruiting },  featuredEventId}
+export type CAMPAIGNS_QUERY_RESULT = Array<{
+  id: string;
+  name: string;
+  startDate: string;
+  startTime: string | null;
+  endDate: string | null;
+  endTime: string | null;
+  headerCta: {
+    variant: "elab" | "member" | "notify" | "partner";
+    label: string | null;
+    notifyUrl: string | null;
+    yieldsToRecruiting: boolean;
+  } | null;
+  featuredEventId: string | null;
+}>;
+
+// Source: ../config/site-settings-content.ts
+// Variable: SITE_SETTINGS_QUERY
+// Query: *[_type == "siteSettings" && _id == "siteSettings"][0]{  organization{ foundingYear, activeMembers, alumni, majors, universities, nationalities },  brandMission,  impact{ publications, publicationVenues, hackathonParticipants },  community{ makeathonSize },  contactEmails{ general, partners, venture, recruitment },  socialLinks{ linkedin, instagram, github, x, youtube, facebook, tiktok, slack },  partnershipBooking{ bookingUrl, bookingHost },  eLab{    currentIteration,    programWeeks,    ventureFundingMillions,    selection{ applications, admitted, midterm, selectionDay, finalPitch },    "heroLogo": heroLogo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}  },  footerTagline,  headerCtaFallback}
+export type SITE_SETTINGS_QUERY_RESULT = {
+  organization: {
+    foundingYear: number;
+    activeMembers: number;
+    alumni: number;
+    majors: number;
+    universities: number;
+    nationalities: number;
+  };
+  brandMission: string;
+  impact: {
+    publications: number;
+    publicationVenues: Array<string>;
+    hackathonParticipants: number;
+  };
+  community: {
+    makeathonSize: number;
+  };
+  contactEmails: {
+    general: string;
+    partners: string;
+    venture: string;
+    recruitment: string;
+  };
+  socialLinks: {
+    linkedin: string;
+    instagram: string;
+    github: string;
+    x: string;
+    youtube: string;
+    facebook: string;
+    tiktok: string;
+    slack: string;
+  };
+  partnershipBooking: {
+    bookingUrl: string;
+    bookingHost: string;
+  };
+  eLab: {
+    currentIteration: string;
+    programWeeks: number;
+    ventureFundingMillions: number;
+    selection: {
+      applications: number;
+      admitted: number;
+      midterm: number;
+      selectionDay: number;
+      finalPitch: number;
+    };
+    heroLogo: {
+      src: string | null;
+      width: number | null;
+      height: number | null;
+      alt: string | null;
+      hotspot: {
+        x: number;
+        y: number;
+      } | null;
+    };
+  };
+  footerTagline: string;
+  headerCtaFallback: "elab" | "member" | "partner";
+} | null;
 
 // Source: ../lib/faq-content.ts
 // Variable: FAQ_QUERY

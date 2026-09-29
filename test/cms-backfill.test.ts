@@ -1,6 +1,7 @@
 import { existsSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 import { assetFileOf, collectSanityAssets } from "@/lib/cms-backfill";
+import { pinnedDocuments } from "@/sanity/content-structure";
 import {
   contentSchemaTypes,
   contentSingletons,
@@ -56,7 +57,9 @@ describe("the CMS backfill", () => {
     expect(ids.filter((id, index) => ids.indexOf(id) !== index)).toStrictEqual(
       [],
     );
-    for (const id of ids) expect(id).toMatch(/^[a-z0-9][a-z0-9-]*$/);
+    // Letters (a singleton's id is its camelCase type name), digits and
+    // hyphens: a `.` would make the document private.
+    for (const id of ids) expect(id).toMatch(/^[a-zA-Z0-9][a-zA-Z0-9-]*$/);
   });
 
   test("every type is a content workspace type, never a live dataset one", () => {
@@ -70,6 +73,15 @@ describe("the CMS backfill", () => {
     const singletons = new Set(contentSingletons.map(({ type }) => type));
     for (const { _id, _type } of documents) {
       if (singletons.has(_type)) expect(_id).toBe(_type);
+    }
+  });
+
+  test("every document the Studio pins by id is backfilled with that id", () => {
+    for (const { id, type } of pinnedDocuments) {
+      expect(
+        documents.find(({ _id }) => _id === id)?._type,
+        `pinned document ${id}`,
+      ).toBe(type);
     }
   });
 

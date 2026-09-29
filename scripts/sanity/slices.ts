@@ -1,3 +1,5 @@
+import { buildScheduleBackfill } from "@/config/schedule-content";
+import { buildSiteSettingsBackfill } from "@/config/site-settings-content";
 import { buildApplyBackfill } from "@/features/apply/content";
 import { buildELabBackfill } from "@/features/e-lab/content";
 import type { BackfillDocument } from "@/lib/cms-backfill";
@@ -16,6 +18,11 @@ export const backfillSlices: readonly {
   { slice: "features/apply/content.ts", build: buildApplyBackfill },
   { slice: "features/e-lab/content.ts", build: buildELabBackfill },
   // Phases 1 and 2: campaigns, application windows, site settings
+  {
+    slice: "config/site-settings-content.ts",
+    build: buildSiteSettingsBackfill,
+  },
+  { slice: "config/schedule-content.ts", build: buildScheduleBackfill },
 
   // Phase 3: organizations (logos) and people
 
