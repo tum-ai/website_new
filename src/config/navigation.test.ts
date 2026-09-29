@@ -59,7 +59,6 @@ test.each([true, false])(
     expect(getHeaderOptions("/events", { membershipOpen })).toStrictEqual({
       solid: false,
       cta: defaultCta(membershipOpen),
-      hideLogoUntilScroll: false,
     });
   },
 );
@@ -75,20 +74,11 @@ test("the default CTA follows the membership window", () => {
   }
 });
 
-test("home shows the logo from the start, like every route", () => {
-  expect(getHeaderOptions("/", { membershipOpen: true })).toStrictEqual({
-    hideLogoUntilScroll: false,
-    solid: false,
-    cta: defaultCta(true),
-  });
-});
-
 test("partners is solid and links to its own contact section", () => {
   for (const membershipOpen of [true, false]) {
     expect(getHeaderOptions("/partners", { membershipOpen })).toStrictEqual({
       solid: true,
       cta: { label: "Become a partner", href: "#partner-contact" },
-      hideLogoUntilScroll: false,
     });
   }
   // Exact match only: sub-paths get the defaults.

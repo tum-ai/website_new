@@ -154,11 +154,6 @@ export type HeaderOptions = {
    * it scrolls the current page instead of leaving it.
    */
   cta: NavLink | null;
-  /**
-   * Hide the logo until the hero scrolls away, for a hero that shows the logo
-   * large itself. No route does at the moment.
-   */
-  hideLogoUntilScroll: boolean;
 };
 
 /** The site-wide header options for a membership state, before route overrides. */
@@ -168,7 +163,6 @@ function defaultHeaderOptions(membershipOpen: boolean): HeaderOptions {
     cta: headerCtaLink(
       selectHeaderCta({ ...headerCtaSetting, membershipOpen }),
     ),
-    hideLogoUntilScroll: false,
   };
 }
 
