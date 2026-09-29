@@ -1,4 +1,10 @@
+import { caseStudyType } from "./case-study";
 import { faqType } from "./faq";
+import { logoListType } from "./logo-list";
+import { organizationType } from "./organization";
+import { partnersCopyType } from "./partners-copy";
+import { personType } from "./person";
+import { ventureTraceType } from "./venture-trace";
 
 /**
  * The document types of the `content` workspace (the content dataset; see
@@ -11,7 +17,12 @@ export const contentSchemaTypes = [
   // Phases 1 and 2: campaigns, application windows, site settings
 
   // Phase 3: organizations (logos) and people
-
+  organizationType,
+  logoListType,
+  personType,
+  caseStudyType,
+  ventureTraceType,
+  partnersCopyType,
   // Phase 4: page copy
 ];
 
@@ -21,4 +32,8 @@ export const contentSchemaTypes = [
  * "create" and "duplicate" for them. Add `{ type, title }` when a singleton
  * type (for example `siteSettings`) joins `contentSchemaTypes`.
  */
-export const contentSingletons: readonly { type: string; title: string }[] = [];
+export const contentSingletons: readonly { type: string; title: string }[] = [
+  // Phase 3: organizations (logos) and people
+  { type: "partnersCopy", title: "Partners page copy" },
+  { type: "ventureTrace", title: "E-Lab traced venture" },
+];
