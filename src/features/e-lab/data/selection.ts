@@ -43,7 +43,7 @@ export type SelectionStage = Gate | Phase;
  * A gate as copy writes it: which selection figure it shows, and its words.
  * The figure and the bar come from the config ({@link buildStages}).
  */
-export type GateCopy = {
+type GateCopy = {
   kind: "gate";
   figure: GateFigure;
   name: string;

@@ -27,7 +27,7 @@ export const ledgerKeys = [
 export type LedgerKey = (typeof ledgerKeys)[number];
 
 /** One of the five ways into TUM.ai on the program index. */
-export type HomeProgram = {
+type HomeProgram = {
   /** Stable key. */
   id: string;
   title: string;

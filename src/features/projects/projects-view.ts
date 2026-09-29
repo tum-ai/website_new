@@ -4,7 +4,7 @@ import type { ProjectsCopy } from "./data/copy";
 import { openSeatSlug, type TaskForce } from "./data/projects";
 
 /** One circle of the figure: a task force, or the open seat. */
-export type FigureSeat = {
+type FigureSeat = {
   slug: string;
   name: string;
   field: string;
