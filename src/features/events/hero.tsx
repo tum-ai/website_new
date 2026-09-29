@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Actions, ButtonLink, Container, TopBlend } from "@/components/ds";
 import type { Event } from "@/lib/types";
-import { hostLogo } from "./data/host-logos";
+import { hostIcon, hostLogo } from "./data/host-logos";
 import { type EventSummary, formatEventDate, type HostEntry } from "./events";
 import { HeroReel } from "./hero-reel";
 import { Lockup } from "./lockup";
@@ -166,6 +166,7 @@ function Reel({ hosts }: { hosts: HostEntry<Event>[] }) {
       {[0, 1, 2].map((copy) =>
         hosts.map((host) => {
           const logo = hostLogo(host.name);
+          const icon = logo ? undefined : hostIcon(host.name);
           const height = logo ? Math.min(0.9, Math.sqrt(1.5 / logo.aspect)) : 0;
           return (
             <div key={`${copy}-${host.name}`} className="events-name">
@@ -180,7 +181,18 @@ function Reel({ hosts }: { hosts: HostEntry<Event>[] }) {
                   <Image src={logo.src} alt="" fill sizes="20rem" />
                 </span>
               ) : (
-                <span className="events-name-text">{host.name}</span>
+                <span className="events-name-text">
+                  {icon ? (
+                    <Image
+                      src={icon}
+                      alt=""
+                      width={160}
+                      height={160}
+                      className="events-name-icon"
+                    />
+                  ) : null}
+                  {host.name}
+                </span>
               )}
               {host.events.length > 1 ? (
                 <span className="events-name-count tabular text-highlight">

@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import { expect, test } from "vitest";
 import { getMockEvents } from "@/lib/mock-cms";
-import { hostLogo } from "./host-logos";
+import { hostIcon, hostLogo } from "./host-logos";
 
 const publicDir = path.resolve(import.meta.dirname, "../../../../public");
 
@@ -12,13 +12,14 @@ test("names match whatever the editors' spacing, case and ampersands", () => {
     "/assets/events/hosts/manage-and-more.svg",
   );
   expect(hostLogo("Mercura")).toBeUndefined();
+  expect(hostIcon("Mercura")).toBe("/assets/events/hosts/mercura-icon.webp");
 });
 
 test("every logo a co-host resolves to ships in public/", () => {
   const hosts = new Set(getMockEvents().flatMap((event) => event.hosts));
   for (const host of hosts) {
-    const logo = hostLogo(host);
-    if (logo)
-      expect(existsSync(path.join(publicDir, logo.src)), host).toBe(true);
+    for (const src of [hostLogo(host)?.src, hostIcon(host)]) {
+      if (src) expect(existsSync(path.join(publicDir, src)), host).toBe(true);
+    }
   }
 });

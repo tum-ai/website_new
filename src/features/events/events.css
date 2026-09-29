@@ -178,11 +178,21 @@
 
       /* A co-host without artwork, set as a wordmark at a logo's scale. */
       .events-name-text {
+        display: flex;
         align-self: center;
+        align-items: center;
+        gap: 0.3em;
         font-size: 0.58em;
         font-weight: 600;
         letter-spacing: -0.02em;
         line-height: 1;
+      }
+
+      /* An app icon beside a co-host's name, rounded like on a phone. */
+      .events-name-icon {
+        width: 1.15em;
+        height: 1.15em;
+        border-radius: 22%;
       }
 
       .events-name-logo {

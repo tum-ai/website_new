@@ -20,16 +20,32 @@ const logos: Readonly<Record<string, { file: string; aspect: number }>> = {
   n8n: { file: "n8n.svg", aspect: 3.684 },
   nvidia: { file: "nvidia.webp", aspect: 1.286 },
   projecta: { file: "project-a.svg", aspect: 4.017 },
+  redbull: { file: "red-bull.svg", aspect: 224.189 / 36 },
   tacto: { file: "tacto.svg", aspect: 3.08 },
   yellow: { file: "yellow.svg", aspect: 3.435 },
 };
+
+/**
+ * Co-hosts whose official artwork is an app icon only, with the name set
+ * beside it as text, the way their own site composes its header.
+ */
+const icons: Readonly<Record<string, string>> = {
+  mercura: "mercura-icon.webp",
+};
+
+const key = (name: string) => name.toLowerCase().replace(/[^a-z0-9]/g, "");
+const asset = (file: string) => `/assets/events/hosts/${file}`;
 
 /** The co-host's dark-band logo, if the site has one. */
 export function hostLogo(
   name: string,
 ): { src: string; aspect: number } | undefined {
-  const logo = logos[name.toLowerCase().replace(/[^a-z0-9]/g, "")];
-  return logo
-    ? { src: `/assets/events/hosts/${logo.file}`, aspect: logo.aspect }
-    : undefined;
+  const logo = logos[key(name)];
+  return logo ? { src: asset(logo.file), aspect: logo.aspect } : undefined;
+}
+
+/** The co-host's app icon, for co-hosts without a wordmark file. */
+export function hostIcon(name: string): string | undefined {
+  const icon = icons[key(name)];
+  return icon ? asset(icon) : undefined;
 }
