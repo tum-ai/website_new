@@ -1,7 +1,8 @@
 import Image from "next/image";
-import { PageHero, Photo } from "@/components/ds";
+import { PageHero } from "@/components/ds";
 import { eLabConfig } from "@/config/e-lab";
 import { ELabApplicationCta, ELabApplicationStatus } from "./application-cta";
+import { ApplicationField } from "./application-field";
 
 const HERO_TITLE_ID = "elab-hero-title";
 
@@ -37,8 +38,9 @@ function LogoLockup() {
 
 /**
  * E-Lab hero: the cohort lockup, the program in one sentence, the terms in
- * the lead, the live application action, and the kickoff hall as the room
- * the page is about.
+ * the lead and the live application action, beside the field of a round's
+ * applications thinning to the teams that reach the Final Pitch (the page's
+ * idea, which the gates band then draws to scale).
  */
 export function Hero() {
   return (
@@ -56,17 +58,7 @@ export function Hero() {
           <ELabApplicationStatus />
         </>
       }
-      media={
-        <Photo
-          src="/assets/homepage/elab.webp"
-          alt="A speaker on stage at the AI E-Lab kickoff, in front of a packed brick hall"
-          caption="AI E-Lab kickoff"
-          position="50% 40%"
-          aspect="4/3"
-          eager
-          sizes="(min-width: 1280px) 36rem, (min-width: 1024px) 44vw, 92vw"
-        />
-      }
+      media={<ApplicationField />}
     />
   );
 }

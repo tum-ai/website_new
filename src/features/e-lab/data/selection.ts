@@ -26,6 +26,8 @@ export type Phase = {
   /** How long it runs, as shown ("4 weeks"). */
   duration: string;
   description: string;
+  /** A real photo from this phase, with its factual caption. */
+  photo?: { src: string; alt: string; caption: string };
 };
 
 /** One stop on the way from the application round to the Final Pitch. */
@@ -54,7 +56,8 @@ const phase = (
   name: string,
   duration: string,
   description: string,
-): Phase => ({ kind: "phase", id, name, duration, description });
+  photo?: Phase["photo"],
+): Phase => ({ kind: "phase", id, name, duration, description, photo });
 
 /**
  * One E-Lab cohort in order: the gates where teams are selected, and the
@@ -80,6 +83,11 @@ export const selectionStages: SelectionStage[] = [
     "Kickoff and onboarding weekend",
     "3 days",
     "An intensive start: team alignment and ideation. Solo founders find co-founders here.",
+    {
+      src: "/assets/homepage/elab.webp",
+      alt: "A speaker on stage at the AI E-Lab kickoff, in front of a packed brick hall",
+      caption: "AI E-Lab kickoff",
+    },
   ),
   phase(
     "phase-one",

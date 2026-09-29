@@ -1,4 +1,10 @@
-import { Container, Reveal, Section, SectionHeader } from "@/components/ds";
+import {
+  Container,
+  Photo,
+  Reveal,
+  Section,
+  SectionHeader,
+} from "@/components/ds";
 import { eLabConfig } from "@/config/e-lab";
 import { cn } from "@/lib/cn";
 import {
@@ -181,17 +187,30 @@ function PhaseRow({ phase }: { phase: Phase }) {
     <li className={cn("pb-8 lg:pb-0", ROW_GRID)}>
       <div
         className={cn(
-          "flex flex-col border-hairline-strong border-l-2 pl-5 lg:col-start-5 lg:border-l-0 lg:pt-2 lg:pb-8 lg:pl-6",
+          "border-hairline-strong border-l-2 pl-5 lg:col-start-5 lg:border-l-0 lg:pt-2 lg:pb-8 lg:pl-6 xl:grid xl:grid-cols-[minmax(0,1fr)_18rem] xl:items-start xl:gap-10",
           SCALE,
         )}
       >
-        <h3 className="mt-1 text-fg text-heading-sm">{phase.name}</h3>
-        <p className="order-first font-semibold text-highlight text-small">
-          {phase.duration}
-        </p>
-        <p className="mt-2 max-w-lg text-fg-muted text-small">
-          {phase.description}
-        </p>
+        <div className="flex flex-col">
+          <h3 className="mt-1 text-fg text-heading-sm">{phase.name}</h3>
+          <p className="order-first font-semibold text-highlight text-small">
+            {phase.duration}
+          </p>
+          <p className="mt-2 max-w-lg text-fg-muted text-small">
+            {phase.description}
+          </p>
+        </div>
+        {phase.photo ? (
+          <Photo
+            src={phase.photo.src}
+            alt={phase.photo.alt}
+            caption={phase.photo.caption}
+            position="50% 40%"
+            aspect="3/2"
+            sizes="(min-width: 1280px) 18rem, (min-width: 1024px) 40vw, 90vw"
+            className="mt-6 max-w-sm xl:mt-0"
+          />
+        ) : null}
       </div>
     </li>
   );

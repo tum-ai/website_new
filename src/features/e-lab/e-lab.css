@@ -1,0 +1,24 @@
+/*
+ * E-Lab-only styles: the hero's application field (see ApplicationField).
+ * Each gate's dots go out together, gate after gate, once on load; only
+ * opacity animates, and under reduced motion the field shows its end state.
+ */
+
+@layer components {
+  @keyframes elab-field-out {
+    from {
+      opacity: 1;
+    }
+  }
+
+  .elab-field-out {
+    opacity: 0.16;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .elab-field-out {
+      animation: elab-field-out 0.8s var(--ease-brand) both;
+      animation-delay: calc(0.6s + var(--gate, 0) * 0.45s);
+    }
+  }
+}
