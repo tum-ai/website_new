@@ -44,6 +44,15 @@ describe("FieldDots", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
+  test("the field is named without a hover tooltip", () => {
+    const { container } = render(
+      <FieldDots dots={dots} viewBox="-1 -1 3 3" radius={0.3} />,
+    );
+    const svg = container.querySelector("svg");
+    expect(svg).toHaveAccessibleName(/team applications/);
+    expect(svg?.querySelector("title")).toBeNull();
+  });
+
   test("keyboard focus opens the venture as hover does, and blur closes it", async () => {
     const user = userEvent.setup();
     render(<FieldDots dots={dots} viewBox="-1 -1 3 3" radius={0.3} />);

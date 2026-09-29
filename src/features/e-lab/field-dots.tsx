@@ -8,6 +8,13 @@ import {
   useRef,
   useState,
 } from "react";
+import {
+  createFieldSim,
+  type FieldSim,
+  MIN_SCALE,
+  settleField,
+  stepField,
+} from "./field-physics";
 
 /** A venture a lit dot opens into: its name, site and logo artwork. */
 type FieldVenture = {
@@ -44,33 +51,15 @@ export type FieldDotsProps = {
 
 /** Radius of a venture's logo disc when open. */
 const LOGO_RADIUS = 2.4;
-/** Clearance a grown dot keeps from its neighbours' centres. */
-const CLEARANCE = 0.55;
-/** How far the push reaches past the clearance ring, and its strength there. */
-const FALLOFF = 1.4;
-const TAIL = 0.3;
-/** Spring stiffness and damping (per second): lively, with a small overshoot. */
-const STIFFNESS = 180;
-const DAMPING = 16;
 /** Pointer catch radius around a lit dot, in lattice units. */
 const CATCH = 1.1;
 /** Extra reach past an open dot's edge before the pointer leaves it. */
 const HIT_SLOP = 0.2;
 /**
- * Below this summed speed and distance to target (lattice units and scale
- * per second) every dot counts as settled and the loop stops: finer motion
- * is under a hundredth of a pixel.
- */
-const REST = 0.002;
-/**
  * The longest step the spring integrates, in seconds: after a dropped frame
  * or a background tab the field resumes instead of jumping.
  */
 const MAX_STEP_S = 1 / 30;
-/** A dot this much above its rest size still pushes its neighbours aside. */
-const GROWN_SCALE = 1.02;
-/** Smallest drawn scale, so the spring's overshoot never inverts a dot. */
-const MIN_SCALE = 0.2;
 /** A logo may overshoot with its dot's spring, up to this scale. */
 const LOGO_MAX_SCALE = 1.2;
 /** A logo is fully opaque once its dot is 1 / this of the way open. */
@@ -79,10 +68,10 @@ const LOGO_FADE_RATE = 1.4;
 /**
  * The field's dots as a small spring simulation. Pointing at a lit dot opens
  * it, into a venture's logo (a link to its site) or, where no venture is
- * left, into its `invite` lines, and pushes the neighbouring dots out of the
- * way: each dot springs toward its rest position plus the push of every open
- * dot, so the field bulges and settles with a little overshoot. Other dots
- * never open. Keyboard focus on a venture link does what hover does. The
+ * left, into its `invite` lines, and shoves the neighbouring dots out of
+ * the way. Dots collide and never overlap, so the ones pushed aside push
+ * theirs in turn: the field ripples outward and springs back with a little
+ * overshoot (see `stepField`). Other dots never open. Keyboard focus on a venture link does what hover does. The
  * loop only runs while something moves, only `transform` and `r` change,
  * and under reduced motion dots jump to their places without the spring.
  */
@@ -95,14 +84,7 @@ export function FieldDots({
   const svgRef = useRef<SVGSVGElement>(null);
   const dotRefs = useRef<(SVGCircleElement | null)[]>([]);
   const logoRefs = useRef(new Map<number, SVGGElement>());
-  const sim = useRef<{
-    ox: Float32Array;
-    oy: Float32Array;
-    vx: Float32Array;
-    vy: Float32Array;
-    s: Float32Array;
-    vs: Float32Array;
-  } | null>(null);
+  const sim = useRef<FieldSim | null>(null);
   const target = useRef(-1);
   const frame = useRef(0);
   const last = useRef(0);
@@ -113,6 +95,10 @@ export function FieldDots({
     () =>
       dots.map((dot) => (dot.venture || dot.invite ? LOGO_RADIUS / radius : 1)),
     [dots, radius],
+  );
+  const bodies = useMemo(
+    () => ({ rest: dots, radius, peaks }),
+    [dots, radius, peaks],
   );
 
   const step = useCallback(
@@ -125,71 +111,13 @@ export function FieldDots({
       const dt = Math.min((now - (last.current || now)) / 1000, MAX_STEP_S);
       last.current = now;
 
-      const grown: number[] = [];
-      for (let index = 0; index < dots.length; index++) {
-        if ((state.s[index] ?? 1) > GROWN_SCALE || index === target.current) {
-          grown.push(index);
-        }
-      }
-
       let moving = false;
+      if (reduced) settleField(state, bodies, target.current);
+      else moving = stepField(state, bodies, target.current, dt);
+
       for (let index = 0; index < dots.length; index++) {
         const dot = dots[index];
         if (!dot) continue;
-        let tx = 0;
-        let ty = 0;
-        for (const source of grown) {
-          if (source === index) continue;
-          const from = dots[source];
-          if (!from) continue;
-          const dx = dot.x - from.x;
-          const dy = dot.y - from.y;
-          const distance = Math.hypot(dx, dy) || 1;
-          const reach = radius * (state.s[source] ?? 1) + CLEARANCE;
-          const tail = TAIL * (reach - radius - CLEARANCE);
-          const push =
-            distance < reach
-              ? reach - distance + tail
-              : tail * Math.exp(-(distance - reach) / FALLOFF);
-          tx += (dx / distance) * push;
-          ty += (dy / distance) * push;
-        }
-        const ts = index === target.current ? (peaks[index] ?? 1) : 1;
-
-        if (reduced) {
-          state.ox[index] = tx;
-          state.oy[index] = ty;
-          state.s[index] = ts;
-          state.vx[index] = 0;
-          state.vy[index] = 0;
-          state.vs[index] = 0;
-        } else {
-          const ox = state.ox[index] ?? 0;
-          const oy = state.oy[index] ?? 0;
-          const s = state.s[index] ?? 1;
-          const vx =
-            (state.vx[index] ?? 0) +
-            (STIFFNESS * (tx - ox) - DAMPING * (state.vx[index] ?? 0)) * dt;
-          const vy =
-            (state.vy[index] ?? 0) +
-            (STIFFNESS * (ty - oy) - DAMPING * (state.vy[index] ?? 0)) * dt;
-          const vs =
-            (state.vs[index] ?? 0) +
-            (STIFFNESS * (ts - s) - DAMPING * (state.vs[index] ?? 0)) * dt;
-          state.vx[index] = vx;
-          state.vy[index] = vy;
-          state.vs[index] = vs;
-          state.ox[index] = ox + vx * dt;
-          state.oy[index] = oy + vy * dt;
-          state.s[index] = s + vs * dt;
-          if (
-            Math.abs(vx) + Math.abs(vy) + Math.abs(vs) > REST ||
-            Math.abs(tx - ox) + Math.abs(ty - oy) + Math.abs(ts - s) > REST
-          ) {
-            moving = true;
-          }
-        }
-
         const circle = dotRefs.current[index];
         const ox = state.ox[index] ?? 0;
         const oy = state.oy[index] ?? 0;
@@ -222,7 +150,7 @@ export function FieldDots({
         last.current = 0;
       }
     },
-    [dots, radius, peaks],
+    [dots, radius, peaks, bodies],
   );
 
   const aim = useCallback(
@@ -230,16 +158,7 @@ export function FieldDots({
       if (target.current === index) return;
       target.current = index;
       setActive(index);
-      if (!sim.current) {
-        sim.current = {
-          ox: new Float32Array(dots.length),
-          oy: new Float32Array(dots.length),
-          vx: new Float32Array(dots.length),
-          vy: new Float32Array(dots.length),
-          s: new Float32Array(dots.length).fill(1),
-          vs: new Float32Array(dots.length),
-        };
-      }
+      if (!sim.current) sim.current = createFieldSim(dots.length);
       if (!frame.current) frame.current = requestAnimationFrame(step);
     },
     [dots.length, step],
@@ -289,6 +208,7 @@ export function FieldDots({
       ref={svgRef}
       viewBox={viewBox}
       className={className}
+      aria-label="One round of team applications, with links to ventures from the E-Lab"
       onPointerMove={(event) => aim(dotAt(event.clientX, event.clientY))}
       onPointerDown={(event) => aim(dotAt(event.clientX, event.clientY))}
       onPointerLeave={(event) => {
@@ -297,9 +217,6 @@ export function FieldDots({
         if (event.pointerType !== "touch") aim(-1);
       }}
     >
-      <title>
-        One round of team applications, with links to ventures from the E-Lab
-      </title>
       <g fill="currentColor">
         {dots.map((dot, index) => (
           <circle
