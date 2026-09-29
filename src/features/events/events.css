@@ -8,8 +8,8 @@
  * without end. It turns once on load (CSS, before hydration), then wherever
  * the reader turns it: the names window is a region of its own (HeroReel
  * turns it on drag, horizontal swipe, wheel and arrow keys and sets --roll,
- * in rows within a turn). A vertical swipe scrolls the page; a vertical
- * wheel turns the reel for one lap, then scrolls the page (`reelTakesWheel`).
+ * in rows within a turn). Over the names the wheel turns the reel; on touch
+ * a vertical swipe scrolls the page (`touch-action: pan-y`).
  *
  * The load turn runs 2.2s, longer than the usual 1.2s entrance ceiling: a
  * full turn through every name needs the time to read as a roll rather than
