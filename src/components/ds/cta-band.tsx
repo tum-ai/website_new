@@ -9,17 +9,11 @@ import { Section, type Tone } from "./section";
 import type { HeadingLevel } from "./types";
 import { Eyebrow } from "./typography";
 
-/** Props for {@link CtaPanel}: a div's props. */
-export type CtaPanelProps = ComponentProps<"div">;
-
 /**
- * The inset ink surface of <CtaBand variant="panel">, on its own: brand ink,
- * aurora light, film grain and the drifting logomark, clipped to
- * `rounded-5xl`. It is only the surface, so it fits where a whole band
- * can't, such as a bento cell; pad it and set a radius that matches its
- * neighbours with `className`. The content reads the ink tone.
+ * The inset ink surface of <CtaBand variant="panel">: brand ink, aurora
+ * light, film grain and the drifting logomark, clipped to `rounded-5xl`.
  */
-export function CtaPanel({ className, children, ...props }: CtaPanelProps) {
+function CtaPanel({ className, children, ...props }: ComponentProps<"div">) {
   return (
     <div
       data-tone="ink"
@@ -75,7 +69,7 @@ export type CtaBandProps = {
   /** Anchor id for the section (e.g. "contact"). */
   id?: string;
   /**
-   * `panel`: rounded ink panel (<CtaPanel>) inset in a light band (default).
+   * `panel`: rounded ink panel inset in a light band (default).
    * `band`: full-bleed dark band.
    */
   variant?: "panel" | "band";

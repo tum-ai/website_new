@@ -10,8 +10,8 @@ import {
 
 /*
  * `prefers-reduced-motion: reduce` (the `reduced-motion` project): every
- * section is visible without scroll reveals, nothing loops, and marquees
- * become a static list without their duplicate copy.
+ * section is visible without scroll reveals and nothing loops (aurora,
+ * drift and the partner marquee hold still).
  */
 
 for (const route of siteRoutes) {
@@ -31,21 +31,3 @@ for (const route of siteRoutes) {
     });
   });
 }
-
-// TODO(redesign): no live route renders the ds Marquee since the E-Lab
-// redesign replaced its testimonial rail (the partners rail is its own
-// component). Point this at the next page that uses Marquee, or retire
-// Marquee; owner: the redesign stream (feat/redesign-e-lab).
-test.fixme("marquees render one static, reachable list", async ({ page }) => {
-  await page.goto("/e-lab");
-  await loadLazyContent(page);
-  const marquees = page.locator('[class~="group/marquee"]');
-  expect(await marquees.count()).toBeGreaterThan(0);
-
-  for (const marquee of await marquees.all()) {
-    // The inert duplicate is display: none; the labelled original remains.
-    await expect(marquee.locator("ul[aria-hidden]")).toBeHidden();
-    await expect(marquee.locator("ul[aria-label]")).toBeVisible();
-    expect(await getRunningAnimations(page, marquee)).toEqual([]);
-  }
-});

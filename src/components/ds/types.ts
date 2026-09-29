@@ -7,8 +7,8 @@ import type { ComponentProps, ElementType } from "react";
 export type HeadingLevel = "h2" | "h3" | "h4";
 
 /**
- * Root elements for the layout and surface family (`as` on Section,
- * Container, Card and Reveal).
+ * Root elements for the layout family (`as` on Section, Container and
+ * Reveal).
  */
 export type BlockElement =
   | "div"

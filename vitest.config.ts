@@ -31,8 +31,8 @@ export default defineConfig({
       reportsDirectory: "coverage",
       // Line coverage per group, enforced by `pnpm test:coverage` (CI's Unit
       // job). Logic is held to 90 %; ds components to 80 %, because their
-      // motion branches (Parallax, CountUp, Timeline scroll markers) only run
-      // in a real browser, where E2E and visual cover them. Measured at the
+      // motion branches (such as CountUp's animation frames) only run in a
+      // real browser, where E2E and visual cover them. Measured at the
       // time of adding: lib 99 %, features/**/*.ts 93 %, ds 90 %.
       thresholds: {
         "src/lib/**": { lines: 90 },

@@ -1,4 +1,4 @@
-import { Brain, Handshake, Inbox, Rocket, Sparkles, Users } from "lucide-react";
+import { Brain, Handshake, Inbox, Rocket, Sparkles } from "lucide-react";
 import type { ReactNode } from "react";
 import {
   Accordion,
@@ -13,27 +13,16 @@ import {
   BulletList,
   ButtonLink,
   buttonStyles,
-  Card,
-  Carousel,
   Container,
-  CornerHint,
   CountUp,
   CtaBand,
-  CtaPanel,
-  cardStyles,
   DayRuler,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-  DialogTrigger,
   Display,
   EmptyState,
   Eyebrow,
   FallbackImage,
   FaqList,
   FaqSection,
-  FeatureCard,
   formatFigure,
   Heading,
   Highlight,
@@ -43,8 +32,6 @@ import {
   Ledger,
   LogoTile,
   LogoWall,
-  Marquee,
-  MediaCard,
   PageHero,
   PersonCard,
   Photo,
@@ -62,14 +49,9 @@ import {
   StatGrid,
   StatusBadge,
   Steps,
-  Tabs,
-  TabsList,
-  TabsPanel,
-  TabsTab,
   Tag,
   Text,
   TextLink,
-  Timeline,
   type Tone,
   TopBlend,
 } from "@/components/ds";
@@ -77,10 +59,7 @@ import { socialLinks } from "@/config/contact";
 import { eLabConfig } from "@/config/e-lab";
 import { organizationFacts } from "@/config/organization";
 import { faqs } from "@/features/qanda";
-import {
-  DesignSystemInteractive,
-  DesignSystemScrollDemo,
-} from "./design-system-interactive";
+import { DesignSystemInteractive } from "./design-system-interactive";
 
 /*
  * Every export of src/components/ds appears on this page at least once, and
@@ -95,13 +74,6 @@ const tones: { tone: Tone; name: string; hex: string }[] = [
   { tone: "violet", name: "Electric Lavender", hex: "#9A64D9" },
   { tone: "ink", name: "Dark Indigo", hex: "#1B0049" },
   { tone: "night", name: "Black", hex: "#0D0214" },
-];
-
-const photos = [
-  { src: "/assets/open_ai_speaker_event.webp", title: "Events" },
-  { src: "/assets/innovation/robotics_discussion.webp", title: "Research" },
-  { src: "/assets/innovation/robotics_writing.webp", title: "Projects" },
-  { src: "/assets/home_img4.webp", title: "E-Lab" },
 ];
 
 const logos = [
@@ -413,49 +385,19 @@ export function DesignSystemPage() {
       </Section>
 
       <Block id="cards" title="Cards">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <FeatureCard icon={Brain} title="Research" index="01">
-            Applied AI research with leading labs and universities.
-          </FeatureCard>
-          <FeatureCard icon={Rocket} title="Ventures" index="02">
-            From first idea to funded startup in the E-Lab.
-          </FeatureCard>
-          <FeatureCard icon={Users} title="Community" index="03">
-            {organizationFacts.alumni}+ alumni across{" "}
-            {organizationFacts.nationalities} nationalities.
-          </FeatureCard>
-          <FeatureCard
-            icon={Handshake}
-            title="Industry"
-            index="04"
-            variant="outline"
-          >
-            Projects and hackathons with partners (outline).
-          </FeatureCard>
-        </div>
-        <div className="mt-4 grid gap-4 md:grid-cols-3">
-          <Card>
-            <Label>Card · raised</Label>
-            <Heading>Base surface</Heading>
-          </Card>
-          <Card variant="outline" interactive as="article">
-            <Label>Card · outline, interactive</Label>
-            <Heading>Lifts on hover</Heading>
-          </Card>
+        <div className="grid gap-4 md:grid-cols-3">
           <SpotlightCard>
-            <Label>SpotlightCard</Label>
+            <Label>SpotlightCard · raised</Label>
             <Heading>Light follows the pointer</Heading>
           </SpotlightCard>
-        </div>
-        <div
-          className={cardStyles({
-            variant: "outline",
-            padding: "sm",
-            className: "mt-4",
-          })}
-        >
-          <Label>cardStyles on a plain div</Label>
-          <Text>For surfaces that are another component&apos;s root.</Text>
+          <SpotlightCard variant="outline" interactive>
+            <Label>SpotlightCard · outline, interactive</Label>
+            <Heading>Lifts on hover</Heading>
+          </SpotlightCard>
+          <SpotlightCard variant="glass" padding="sm">
+            <Label>SpotlightCard · glass, padding sm</Label>
+            <Heading>Frosted panel</Heading>
+          </SpotlightCard>
         </div>
         <div className="mt-10">
           <Label>
@@ -475,25 +417,6 @@ export function DesignSystemPage() {
               Interactive: tilts while the link is hovered
             </a>
           </div>
-        </div>
-        <div className="group/zoom mt-10 flex flex-wrap items-center gap-4">
-          <Label>CornerHint · arrow, open, tonal (hover the row)</Label>
-          <CornerHint />
-          <CornerHint icon="open" />
-          <CornerHint icon="open" variant="tonal" className="size-9" />
-        </div>
-        <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {photos.map((photo, index) => (
-            <MediaCard
-              key={photo.title}
-              href="/design-system"
-              image={{ src: photo.src, alt: "" }}
-              eyebrow="Explore"
-              title={photo.title}
-              meta="Munich · 2026"
-              scrim={index % 2 === 1 ? "strong" : "default"}
-            />
-          ))}
         </div>
         <div className="mt-12 grid items-start gap-6 md:grid-cols-3">
           <Label>Photo · rounded 3/2, 4/5, 4/3, 1/1, bleed 16/10</Label>
@@ -541,65 +464,6 @@ export function DesignSystemPage() {
             caption="aspect panorama, position 50% 45%"
             position="50% 45%"
           />
-        </div>
-        <div className="mt-4 grid items-start gap-4 md:grid-cols-3">
-          <MediaCard
-            image={{ alt: "" }}
-            title="No photo: BrandPanel fallback"
-            meta="`fallback` default"
-            aspect="4/3"
-          />
-          <MediaCard
-            href="/design-system"
-            image={{ src: "/missing/photo.webp", alt: "" }}
-            title="Broken photo: custom fallback"
-            aspect="4/3"
-            fallback={<BrandPanel seed={2} />}
-            cornerHint={<Tag className="bg-white/90 text-violet-950">New</Tag>}
-          />
-          <MediaCard
-            layout="stacked"
-            aspect="4/3"
-            href="/design-system"
-            image={{ src: "/assets/homepage/Makeathon.webp", alt: "" }}
-            eyebrow="Hackathon"
-            title="Stacked media card"
-            description="Image on top, text on the band."
-          />
-        </div>
-        <div className="mt-4 grid gap-4 md:grid-cols-3">
-          <Dialog>
-            <MediaCard
-              aspect="4/5"
-              image={{
-                src: "/assets/innovation/robotics_writing.webp",
-                alt: "",
-              }}
-              eyebrow="01"
-              title="Action: opens a dialog"
-              titleId="ds-media-action-title"
-              description="The whole card is one DialogTrigger, named by the title. descriptionLines={3} clamps this and reserves three lines from md, so titles in a row line up."
-              descriptionLines={3}
-              action={<DialogTrigger aria-labelledby="ds-media-action-title" />}
-            />
-            <DialogContent size="md">
-              <div className="p-8 md:p-10">
-                <DialogTitle>MediaCard action</DialogTitle>
-                <DialogDescription className="mt-3">
-                  Opened from the card&apos;s stretched trigger.
-                </DialogDescription>
-              </div>
-            </DialogContent>
-          </Dialog>
-          <CtaPanel className="flex flex-col justify-between gap-8 rounded-3xl p-8 md:col-span-2">
-            <p className="text-fg text-heading-lg">
-              CtaPanel: the CtaBand panel surface on its own,{" "}
-              <span className="text-highlight">for a bento cell.</span>
-            </p>
-            <p className="border-hairline border-t pt-6 text-fg-muted text-small">
-              Pad it and match its neighbours&apos; radius with className.
-            </p>
-          </CtaPanel>
         </div>
         <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           <QuoteCard
@@ -860,26 +724,6 @@ export function DesignSystemPage() {
 
       <Block id="interactive" title="Interactive" tone="lavender">
         <DesignSystemInteractive />
-        <div className="mt-16">
-          <Tabs defaultValue="projects">
-            <TabsList aria-label="Demo tabs">
-              <TabsTab value="projects">Projects</TabsTab>
-              <TabsTab value="exchange">Research Exchange Program</TabsTab>
-            </TabsList>
-            <TabsPanel
-              value="projects"
-              className="mt-8 text-body text-fg-muted"
-            >
-              Tab panel one.
-            </TabsPanel>
-            <TabsPanel
-              value="exchange"
-              className="mt-8 text-body text-fg-muted"
-            >
-              Tab panel two.
-            </TabsPanel>
-          </Tabs>
-        </div>
         <FaqList
           className="mt-16"
           items={faqs.slice(0, 3).map((faq, index) => ({
@@ -966,31 +810,8 @@ export function DesignSystemPage() {
         </div>
       </Block>
 
-      <Block id="process" title="Timeline and steps">
-        <Label>Timeline · alternate, progress rail, dot markers</Label>
-        <Timeline
-          alternate
-          items={[
-            { label: "Week 1", title: "Kickoff", description: "Onboarding." },
-            { label: "Week 4", title: "Phase I", description: "Build." },
-            { label: "Week 8", title: "Midterm", description: "MVP gate." },
-            { label: "Week 12", title: "Demo Day", description: "Pitch." },
-          ]}
-        />
-        <div className="mt-24">
-          <Label>Timeline · dashed rail, number markers, continuation</Label>
-          <Timeline
-            rail="dashed"
-            marker="number"
-            continuation="Your journey continues..."
-            items={[
-              { title: "Apply", description: "Tell us about your idea." },
-              { title: "Pitch", description: "Meet the jury." },
-              { title: "Build", description: "Twelve weeks of sprints." },
-            ]}
-          />
-        </div>
-        <div className="mt-24">
+      <Block id="process" title="Steps">
+        <div>
           <Label>Steps · badge markers, solid rail</Label>
           <Steps
             items={[
@@ -1046,19 +867,8 @@ export function DesignSystemPage() {
         </div>
       </Block>
 
-      <Block id="logos" title="Logos and rails" tone="mist">
-        <Marquee label="Partners" duration={40}>
-          {logos.map((logo) => (
-            <LogoTile key={logo.name} {...logo} size="sm" className="w-44" />
-          ))}
-        </Marquee>
-        <Marquee className="mt-4" label="Partners, reversed" reverse>
-          {logos.map((logo) => (
-            <LogoTile key={logo.name} {...logo} variant="chip" />
-          ))}
-        </Marquee>
+      <Block id="logos" title="Logos" tone="mist">
         <LogoWall
-          className="mt-8"
           label="Logo wall"
           logos={[
             ...logos,
@@ -1128,36 +938,6 @@ export function DesignSystemPage() {
           <LogoTile name="Missing artwork" src="/missing/logo.png" />
           <LogoTile name="No artwork" size="sm" />
         </div>
-        <Carousel className="mt-16" label="Highlights">
-          {photos.map((photo) => (
-            <MediaCard
-              key={photo.title}
-              image={{ src: photo.src, alt: "" }}
-              title={photo.title}
-              aspect="16/10"
-            />
-          ))}
-        </Carousel>
-        <div className="mt-16 aspect-[16/9] overflow-hidden rounded-4xl">
-          <Carousel
-            variant="overlay"
-            label="Photo frame"
-            classNames={{ slide: "basis-full" }}
-          >
-            {photos.map((photo) => (
-              <div key={photo.title} className="relative h-full">
-                <FallbackImage
-                  src={photo.src}
-                  alt={photo.title}
-                  fill
-                  sizes="(min-width: 1024px) 80vw, 100vw"
-                  className="object-cover"
-                  fallback={<BrandPanel />}
-                />
-              </div>
-            ))}
-          </Carousel>
-        </div>
         <EmptyState
           className="mt-16"
           icon={Inbox}
@@ -1190,9 +970,6 @@ export function DesignSystemPage() {
           className="mt-8 h-px bg-violet-500"
           aria-hidden="true"
         />
-        <div className="mt-10">
-          <DesignSystemScrollDemo />
-        </div>
       </Block>
 
       <Section

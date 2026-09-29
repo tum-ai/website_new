@@ -90,8 +90,8 @@ What the specs check:
 - `a11y`: axe (WCAG 2 A/AA, serious and critical fail), new-tab links announce themselves, and
   accessible names contain the visible label.
 - `keyboard`: skip link, mobile menu focus trap, Escape and focus return, dialogs, accordion,
-  tabs, filter chips, header CTA.
-- `motion`: under reduced motion nothing is pending or looping and marquees are one static list.
+  filter chips, header CTA, header navigation.
+- `motion`: under reduced motion every section is visible and nothing is pending or looping.
 - `no-js`: content is visible without JavaScript.
 - `partners`: anchors land below the header, the finder flow, the booking fallback.
 - `routing`: `/design-system` and unknown paths return 404 in production; `/studio` has no site
@@ -131,7 +131,7 @@ Playwright image `mcr.microsoft.com/playwright:v1.63.0-noble`, so fonts and rend
 Screenshots taken on macOS differ and are never committed (`e2e/.gitignore`).
 
 While capturing, `e2e/visual-screenshot.css` hides photos, video and the film grain but keeps
-their boxes, and the spec masks moving regions (marquees, rotating partner grids, count-ups).
+their boxes, and the spec masks moving regions (rotating partner grids, count-ups).
 The screenshots test layout, not image content. A screenshot may differ from its baseline in at
 most 100 pixels (`maxDiffPixels`); a pixel counts only when it differs beyond Playwright's
 per-pixel `threshold` (0.2), so anti-aliasing noise doesn't. An absolute budget replaced
@@ -169,8 +169,8 @@ label is the only trigger.
   fails "two consecutive stable screenshots" (about 1,400 pixels in the TOC) and the retry
   passes. The old ratio tolerance hid it. Fix pending: wait for the spy to settle in the
   visual spec, or let it update synchronously on scroll.
-- **Fixed:** the E-Lab and Apply timeline markers used to depend on scroll timing; the ds
-  `Timeline` is static under reduced motion now (#280). The partner rotation property test
+- **Fixed:** the E-Lab and Apply timeline markers used to depend on scroll timing; that
+  timeline is static under reduced motion now (#280). The partner rotation property test
   collects failures and asserts once per run, so it no longer times out (#278).
 
 ## Real Safari

@@ -16,8 +16,8 @@ export type AnchorProps = Omit<ComponentProps<"a">, "href"> & {
  * Unstyled, route-aware link, the one place that decides how a link opens.
  * Site routes go through next/link; http(s) URLs (or `external`) open in a new
  * tab with `rel="noopener noreferrer"` and tell screen readers so; mailto:,
- * tel: and in-page anchors stay plain `<a>` elements. `ButtonLink`, `TextLink`,
- * `MediaCard` and `LogoTile` link through it; use it directly for links that
+ * tel: and in-page anchors stay plain `<a>` elements. `ButtonLink`, `TextLink`
+ * and `LogoTile` link through it; use it directly for links that
  * bring their own styling (navigation lists, footers).
  */
 export function Anchor({ href, external, children, ...props }: AnchorProps) {

@@ -14,11 +14,6 @@ export type FaqSectionProps = {
   title?: ReactNode;
   /** Label above the title, when the title needs one. Default none. */
   eyebrow?: ReactNode;
-  /**
-   * @deprecated No longer rendered: pages don't number their sections. Drop
-   * the prop; it is removed in the next release.
-   */
-  index?: string | number;
   /** Questions whose answers start open (see {@link FaqListProps}). */
   defaultValue?: FaqListProps["defaultValue"];
   /** A sentence under the title. */

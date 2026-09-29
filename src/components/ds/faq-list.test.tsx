@@ -237,12 +237,12 @@ describe("FaqSection", () => {
 
   test("opens the default answers under a bare title", async () => {
     const { container } = render(
-      <FaqSection items={items} index={2} defaultValue={[items[0].question]} />,
+      <FaqSection items={items} defaultValue={[items[0].question]} />,
     );
     const section = screen.getByRole("region", {
       name: "Frequently asked questions",
     });
-    // The deprecated counter and the old default eyebrow no longer render.
+    // No eyebrow by default: the title opens the section.
     expect(section).toHaveTextContent(/^Frequently asked questions/);
     expect(
       screen.getByRole("button", { name: "Who can apply?" }),
