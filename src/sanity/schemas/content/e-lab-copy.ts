@@ -11,8 +11,13 @@ const gateFigures = [
   { title: "Final Pitch", value: "finalPitch" },
 ];
 
-/** The gates must open on the applications and use each figure once. */
-function validateStages(stages: unknown): true | string {
+/**
+ * The gates must open on the applications and use each figure exactly once:
+ * the page draws every gate as a share of the one before, and renders the
+ * code cohort instead of a list with a gate missing or doubled
+ * (`selectStages` in features/e-lab/content.ts). Exported for tests.
+ */
+export function validateStages(stages: unknown): true | string {
   if (!Array.isArray(stages)) return true;
   const figures = stages
     .filter((stage) => stage?._type === "gateStage")
@@ -22,6 +27,10 @@ function validateStages(stages: unknown): true | string {
   }
   if (new Set(figures).size !== figures.length) {
     return "Each figure can be one gate only.";
+  }
+  const missing = gateFigures.filter(({ value }) => !figures.includes(value));
+  if (missing.length > 0) {
+    return `Add a gate for ${missing.map(({ title }) => title).join(", ")}: the page needs all five.`;
   }
   return true;
 }
