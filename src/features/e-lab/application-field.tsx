@@ -84,7 +84,7 @@ function fieldDots(
         invite: lit && !venture ? invite : undefined,
         venture: venture && {
           name: venture.name,
-          href: venture.href,
+          ...(venture.href ? { href: venture.href } : {}),
           logoSrc: venture.logoSrc,
           wordmark: venture.wordmarkLabel,
         },

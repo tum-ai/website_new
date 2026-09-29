@@ -78,6 +78,45 @@ describe("FieldDots", () => {
     expect(tap()).toBe(true);
   });
 
+  test("a venture without a site still opens, but as a logo, not a link", async () => {
+    vi.stubGlobal(
+      "DOMPoint",
+      class {
+        constructor(
+          readonly x: number,
+          readonly y: number,
+        ) {}
+        matrixTransform() {
+          return this;
+        }
+      },
+    );
+    const unlinked: FieldDotData[] = [
+      { x: 0, y: 0, delay: 700 },
+      {
+        x: 1,
+        y: 0,
+        venture: {
+          name: "Spherecast",
+          logoSrc: "/assets/e-lab/startups/Spherecast.webp",
+        },
+      },
+    ];
+    const { container } = render(
+      <FieldDots dots={unlinked} viewBox="-1 -1 3 3" radius={0.3} />,
+    );
+    const svg = container.querySelector("svg") as SVGSVGElement;
+    svg.getScreenCTM = () => ({ inverse: () => ({}) }) as unknown as DOMMatrix;
+    expect(container.querySelector("a")).toBeNull();
+    const logo = container.querySelector(
+      'image[href="/assets/e-lab/startups/Spherecast.webp"]',
+    )?.parentElement;
+    expect(logo).toHaveAttribute("data-expanded", "false");
+    fireEvent.pointerMove(svg, { clientX: 1, clientY: 0 });
+    expect(logo).toHaveAttribute("data-expanded", "true");
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   test("the field is named without a hover tooltip", () => {
     const { container } = render(
       <FieldDots dots={dots} viewBox="-1 -1 3 3" radius={0.3} />,

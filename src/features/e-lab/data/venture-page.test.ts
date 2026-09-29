@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
   eLabVoices,
+  notableStartupOf,
   notableStartups,
   testimonialCards,
   tracedVenture,
@@ -49,5 +50,48 @@ describe("tracedVentureLead", () => {
         after: [],
       }),
     ).toBe("Acme came out of E-Lab 1.0, and now builds robots.");
+  });
+});
+
+describe("notableStartupOf", () => {
+  const logo = {
+    src: "/assets/e-lab/startups/Spherecast.webp",
+    alt: "Spherecast logo",
+    width: 400,
+    height: 100,
+  };
+
+  // The Studio's website field is optional: clearing it must not drop the
+  // venture, or with it the traced venture's whole band.
+  test("keeps a venture without a website, unlinked", () => {
+    expect(
+      notableStartupOf({ key: "spherecast", name: "Spherecast", logo }),
+    ).toStrictEqual({
+      id: "spherecast",
+      name: "Spherecast",
+      logoSrc: logo.src,
+      logoAlt: logo.alt,
+    });
+  });
+
+  test("links a venture with a website", () => {
+    expect(
+      notableStartupOf({
+        key: "spherecast",
+        name: "Spherecast",
+        href: "https://www.spherecast.ai/",
+        logo,
+      })?.href,
+    ).toBe("https://www.spherecast.ai/");
+  });
+
+  test("drops a venture without a light logo, which it cannot draw", () => {
+    expect(
+      notableStartupOf({
+        key: "spherecast",
+        name: "Spherecast",
+        href: "https://www.spherecast.ai/",
+      }),
+    ).toBeNull();
   });
 });

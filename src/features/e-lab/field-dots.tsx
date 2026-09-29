@@ -16,10 +16,13 @@ import {
   stepField,
 } from "./field-physics";
 
-/** A venture a lit dot opens into: its name, site and logo artwork. */
+/**
+ * A venture a lit dot opens into: its name, logo artwork and, when it has
+ * one, its site. Without `href` the logo still opens but is not a link.
+ */
 type FieldVenture = {
   name: string;
-  href: string;
+  href?: string;
   logoSrc: string;
   /** Name set under a symbol-only logo. */
   wordmark?: string;
@@ -67,8 +70,8 @@ const LOGO_FADE_RATE = 1.4;
 
 /**
  * The field's dots as a small spring simulation. Pointing at a lit dot opens
- * it, into a venture's logo (a link to its site) or, where no venture is
- * left, into its `invite` lines, and shoves the neighbouring dots out of
+ * it, into a venture's logo (a link to its site when it has one) or, where
+ * no venture is left, into its `invite` lines, and shoves the neighbouring dots out of
  * the way. Dots collide and never overlap, so the ones pushed aside push
  * theirs in turn: the field ripples outward and springs back with a little
  * overshoot (see `stepField`). Other dots never open. Keyboard focus on a
@@ -211,6 +214,12 @@ export function FieldDots({
     return nearest;
   };
 
+  /** Registers the group the step loop scales open for the dot at `index`. */
+  const logoRef = (index: number) => (node: SVGGElement | null) => {
+    if (node) logoRefs.current.set(index, node);
+    else logoRefs.current.delete(index);
+  };
+
   return (
     <svg
       ref={svgRef}
@@ -249,7 +258,7 @@ export function FieldDots({
         ))}
       </g>
       {dots.map((dot, index) =>
-        dot.venture ? (
+        dot.venture?.href ? (
           <a
             key={dot.venture.name}
             href={dot.venture.href}
@@ -268,50 +277,34 @@ export function FieldDots({
             }}
           >
             <g
-              ref={(node) => {
-                if (node) logoRefs.current.set(index, node);
-                else logoRefs.current.delete(index);
-              }}
+              ref={logoRef(index)}
               transform={`translate(${dot.x} ${dot.y}) scale(0)`}
               style={{ opacity: 0 }}
             >
-              <circle r={LOGO_RADIUS} className="fill-white" />
-              <circle
-                r={LOGO_RADIUS + 0.22}
-                fill="none"
-                strokeWidth={0.14}
-                className="elab-field-ring stroke-current"
-              />
-              <image
-                href={dot.venture.logoSrc}
-                x={-1.8}
-                y={dot.venture.wordmark ? -1.35 : -0.9}
-                width={3.6}
-                height={dot.venture.wordmark ? 1.4 : 1.8}
-                preserveAspectRatio="xMidYMid meet"
-              />
-              {dot.venture.wordmark ? (
-                <text
-                  y={0.85}
-                  textAnchor="middle"
-                  fontSize={0.52}
-                  fontWeight={600}
-                  className="fill-violet-950"
-                >
-                  {dot.venture.wordmark}
-                </text>
-              ) : null}
+              <VentureArtwork venture={dot.venture} />
             </g>
           </a>
+        ) : dot.venture ? (
+          // A venture without a site: the same logo, opened by pointing at
+          // it, but no link to follow or focus. Decorative like the invites;
+          // the ventures band below the hero names every venture.
+          // biome-ignore lint/a11y/noAriaHiddenOnFocusable: an SVG <g> without tabindex or a link is not focusable
+          <g
+            key={dot.venture.name}
+            aria-hidden="true"
+            data-expanded={active === index}
+            ref={logoRef(index)}
+            transform={`translate(${dot.x} ${dot.y}) scale(0)`}
+            style={{ opacity: 0 }}
+          >
+            <VentureArtwork venture={dot.venture} />
+          </g>
         ) : dot.invite ? (
           // biome-ignore lint/a11y/noAriaHiddenOnFocusable: an SVG <g> without tabindex or a link is not focusable; this hides the repeated decorative "Your team" text from screen readers
           <g
             key={`invite-${dot.x}:${dot.y}`}
             aria-hidden="true"
-            ref={(node) => {
-              if (node) logoRefs.current.set(index, node);
-              else logoRefs.current.delete(index);
-            }}
+            ref={logoRef(index)}
             transform={`translate(${dot.x} ${dot.y}) scale(0)`}
             style={{ opacity: 0 }}
           >
@@ -337,5 +330,39 @@ export function FieldDots({
         ) : null,
       )}
     </svg>
+  );
+}
+
+/** A venture's open disc: its logo on white, with the name under a symbol. */
+function VentureArtwork({ venture }: { venture: FieldVenture }) {
+  return (
+    <>
+      <circle r={LOGO_RADIUS} className="fill-white" />
+      <circle
+        r={LOGO_RADIUS + 0.22}
+        fill="none"
+        strokeWidth={0.14}
+        className="elab-field-ring stroke-current"
+      />
+      <image
+        href={venture.logoSrc}
+        x={-1.8}
+        y={venture.wordmark ? -1.35 : -0.9}
+        width={3.6}
+        height={venture.wordmark ? 1.4 : 1.8}
+        preserveAspectRatio="xMidYMid meet"
+      />
+      {venture.wordmark ? (
+        <text
+          y={0.85}
+          textAnchor="middle"
+          fontSize={0.52}
+          fontWeight={600}
+          className="fill-violet-950"
+        >
+          {venture.wordmark}
+        </text>
+      ) : null}
+    </>
   );
 }

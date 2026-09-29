@@ -25,11 +25,15 @@ export interface TestimonialCard {
   organizationLogoAlt: string;
 }
 
-/** An alumni venture of the E-Lab. */
+/**
+ * An alumni venture of the E-Lab. `href` is its site when the organisation
+ * has one (the Studio field is optional); without it the venture still
+ * shows, unlinked.
+ */
 export interface NotableStartup {
   id: string;
   name: string;
-  href: string;
+  href?: string;
   logoSrc: string;
   logoAlt: string;
   wordmarkLabel?: string;
@@ -160,7 +164,9 @@ export const eLabLogoLists: LogoLists<"e-lab-ventures"> = {
 
 /**
  * An organisation as a venture: its key is the id, and symbol-only artwork
- * gets the name set beside it.
+ * gets the name set beside it. `null` only without a light logo: a venture
+ * without a website still shows (unlinked), since dropping it would also
+ * drop the traced venture and its band.
  */
 export function notableStartupOf({
   key,
@@ -168,11 +174,11 @@ export function notableStartupOf({
   href,
   logo,
 }: Organization): NotableStartup | null {
-  if (!href || !logo) return null;
+  if (!logo) return null;
   return {
     id: key,
     name,
-    href,
+    ...(href ? { href } : {}),
     logoSrc: logo.src,
     logoAlt: logo.alt,
     ...(logo.symbolOnly ? { wordmarkLabel: name } : {}),
