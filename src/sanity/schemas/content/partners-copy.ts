@@ -123,7 +123,8 @@ const band = (
     name,
     title,
     type: "object",
-    group: "sections",
+    // No `group`: these sit inside the `sections` object, and a nested
+    // field's group resolves against that object, which declares none.
     options: { collapsible: true, collapsed: true },
     fields,
   });
