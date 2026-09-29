@@ -34,6 +34,22 @@
     gap: 2.5rem;
   }
 
+  /*
+   * The TUM.ai logo as the lockup's first half, the height of a capital in
+   * the display size beside it (the × and the co-host logos), so the pair
+   * reads as one line.
+   */
+  .events-lockup-title {
+    display: flex;
+    align-items: center;
+    gap: 0.3em;
+  }
+
+  .events-lockup-logo {
+    width: auto;
+    height: 0.74em;
+  }
+
   .events-names {
     columns: 2;
     column-gap: 2rem;
@@ -98,7 +114,8 @@
         grid-template-columns: minmax(0, 1fr);
         align-content: center;
         gap: 0;
-        font-size: var(--text-display-lg);
+        /* Phones: the stage has room, so the lockup grows with the width. */
+        font-size: max(var(--text-display-lg), 13vw);
         line-height: var(--row);
       }
 
@@ -180,6 +197,7 @@
     ) {
     .events-hero[data-roll] {
       .events-lockup {
+        font-size: var(--text-display-lg);
         grid-template-columns: auto minmax(0, 1fr) minmax(0, 17rem);
         align-items: center;
         column-gap: 0.28em;

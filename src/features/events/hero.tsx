@@ -7,9 +7,9 @@ import { HeroScroll } from "./hero-scroll";
 import { Lockup } from "./lockup";
 
 /**
- * The page's bold element: "TUM.ai ×" as a co-branding lockup, completed by
- * every company, lab and initiative TUM.ai has run an event with, from the
- * CMS. With motion allowed and scripts running, the hero pins while the
+ * The page's bold element: the TUM.ai logo and a × as a co-branding lockup,
+ * completed by every company, lab and initiative TUM.ai has run an event
+ * with, from the CMS. With motion allowed and scripts running, the hero pins while the
  * names roll through the slot after the ×: once on load (a single roll from
  * the last name back to the first), then with the reader's scroll, and the
  * events of the name in the slot show beside it. Otherwise (reduced motion,
@@ -44,9 +44,16 @@ export function EventsHero({
               id="events-hero-title"
               className="events-lockup-title text-display-lg text-fg"
             >
-              TUM.ai
+              <Image
+                src="/assets/tum_ai_logo_new.svg"
+                alt="TUM.ai"
+                width={1640}
+                height={406}
+                loading="eager"
+                className="events-lockup-logo"
+              />
               <span aria-hidden="true" className="text-highlight">
-                {" ×"}
+                ×
               </span>
               <span className="sr-only"> events</span>
             </h1>
