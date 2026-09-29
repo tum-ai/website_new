@@ -218,6 +218,26 @@ export type Slug = {
   source?: string;
 };
 
+export type Faq = {
+  _id: string;
+  _type: "faq";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  collection: "apply" | "e-lab" | "qanda";
+  order: number;
+  question: string;
+  answer: string;
+  anchor?: string;
+  points?: Array<string>;
+  spans?: Array<string>;
+  evidence?: {
+    text?: string;
+    label?: string;
+    href?: string;
+  };
+};
+
 export type AllSanitySchemaTypes =
   | SanityImageAssetReference
   | Partner
@@ -233,7 +253,16 @@ export type AllSanitySchemaTypes =
   | SanityAssetSourceData
   | SanityImageAsset
   | Geopoint
-  | Slug;
+  | Slug
+  | Faq;
+
+// Source: ../lib/faq-content.ts
+// Variable: FAQ_QUERY
+// Query: *[_type == "faq" && collection == $collection] | order(order asc){  question,  answer}
+export type FAQ_QUERY_RESULT = Array<{
+  question: string;
+  answer: string;
+}>;
 
 // Source: ../lib/sanity-queries.ts
 // Variable: EVENTS_QUERY

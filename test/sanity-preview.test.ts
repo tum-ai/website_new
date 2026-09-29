@@ -32,8 +32,12 @@ type PresentationOptions = {
   previewUrl?: { initial?: string; previewMode?: { enable?: string } };
 };
 
+const workspaces = sanityConfig;
+const liveWorkspace = workspaces.find(({ name }) => name === "live");
+
+/** Presentation runs in the live workspace (drafts of the live dataset). */
 function presentationOptions(): PresentationOptions | undefined {
-  const tools = (sanityConfig.plugins ?? []).flatMap((plugin) =>
+  const tools = (liveWorkspace?.plugins ?? []).flatMap((plugin) =>
     typeof plugin === "object" &&
     "tools" in plugin &&
     Array.isArray(plugin.tools)
@@ -59,12 +63,34 @@ test("Studio Presentation enables draft mode through an existing route handler",
   expect(route.GET).toBeTypeOf("function");
 });
 
-test("Studio basePath is served by the embedded Studio catch-all page", () => {
-  const studioPages = pages
+test("every Studio workspace is served by the embedded Studio catch-all page", () => {
+  const catchAll = pages
     .map(routePathOf)
-    .filter((path) => path.startsWith(`${sanityConfig.basePath}/`));
+    .filter((path) => /^\/studio\/\[\[\.\.\.\w+\]\]$/.test(path));
+  expect(catchAll).toHaveLength(1);
 
-  expect(studioPages).toStrictEqual([
-    expect.stringMatching(/^\/studio\/\[\[\.\.\.\w+\]\]$/),
-  ]);
+  // The optional catch-all serves /studio and every path below it.
+  for (const { name, basePath } of workspaces) {
+    expect(basePath, name).toMatch(/^\/studio\/[a-z-]+$/);
+  }
+});
+
+/** The document type names a workspace registers. */
+function typeNames(workspace: string): string[] {
+  const types = workspaces.find(({ name }) => name === workspace)?.schema
+    ?.types;
+  return Array.isArray(types) ? types.map((type) => type.name) : [];
+}
+
+test("the content workspace never edits the live dataset's types", () => {
+  const liveTypes = typeNames("live");
+  expect(new Set(liveTypes)).toStrictEqual(
+    new Set(["event", "partner", "research"]),
+  );
+
+  const contentTypes = typeNames("content");
+  expect(contentTypes.length).toBeGreaterThan(0);
+  expect(contentTypes.filter((type) => liveTypes.includes(type))).toStrictEqual(
+    [],
+  );
 });
