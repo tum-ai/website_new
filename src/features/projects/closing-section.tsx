@@ -5,6 +5,7 @@ import {
   Reveal,
   Section,
 } from "@/components/ds";
+import { callToActionLabels } from "@/config/calls-to-action";
 import { openSeatSlug } from "./data/projects";
 import { OverlapsFigure } from "./overlaps-figure";
 import type { projectsView } from "./projects-view";
@@ -60,7 +61,7 @@ export function ClosingSection({
               ...closing.student,
               action: (
                 <ButtonLink href="/apply" arrow>
-                  Become a Member
+                  {callToActionLabels.member}
                 </ButtonLink>
               ),
             },
@@ -72,7 +73,7 @@ export function ClosingSection({
                   variant="outline"
                   arrow
                 >
-                  Become a Partner
+                  {callToActionLabels.partner}
                 </ButtonLink>
               ),
             },

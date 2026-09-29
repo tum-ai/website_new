@@ -1,6 +1,7 @@
 import { type ClockWindow, isClockWindowOpen } from "@/lib/clock-window";
 import type { ContentImage } from "@/lib/cms-content-model";
 import { parseMunichDateTime } from "@/lib/munich-time";
+import { callToActionLabels } from "./calls-to-action";
 
 /**
  * Single source for E-Lab facts: the cohort, the application phase, the
@@ -222,7 +223,7 @@ function phaseCopy(
      * place, which says when the next round opens.
      */
     ctaLabel: open
-      ? "Apply now"
+      ? callToActionLabels.apply
       : `Applications open in ${window.nextApplicationWindow}`,
     /** One sentence on where the round stands, e.g. for a closing band. */
     roundStatus: open

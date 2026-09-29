@@ -9,6 +9,7 @@ import {
   clockWindowBoundaries,
   isClockWindowOpen,
 } from "@/lib/clock-window";
+import { callToActionLabels } from "./calls-to-action";
 import {
   type Campaign,
   type CampaignHeaderCta,
@@ -100,8 +101,8 @@ type HeaderCtaOption = { label: string; href: string | null };
  */
 function headerCtasFor(eLabCohortName: string) {
   return {
-    member: { label: "Become a Member", href: "/apply" },
-    partner: { label: "Become a Partner", href: "/partners" },
+    member: { label: callToActionLabels.member, href: "/apply" },
+    partner: { label: callToActionLabels.partner, href: "/partners" },
     elab: { label: `Explore ${eLabCohortName}`, href: "/e-lab" },
     // TODO(content): notify target. There is no signup list for recruiting
     // news yet; until it has an href, `notify` can only be selected by a

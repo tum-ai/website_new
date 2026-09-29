@@ -6,6 +6,7 @@ import {
   Section,
   TextLink,
 } from "@/components/ds";
+import { callToActionLabels } from "@/config/calls-to-action";
 import type { Event } from "@/lib/types";
 import { getEventsCopy } from "./content";
 import type { EventsCopy } from "./data/copy";
@@ -40,7 +41,7 @@ export async function ClosingSection({ next }: { next?: Event }) {
               </p>
               <Actions className="mt-10 md:mt-12">
                 <ButtonLink href="/partners#partner-contact" size="lg" arrow>
-                  Become a Partner
+                  {callToActionLabels.partner}
                 </ButtonLink>
               </Actions>
             </Reveal>
@@ -97,7 +98,7 @@ function Membership({ text }: { text: EventsCopy["closing"]["membership"] }) {
       <p className="mt-3 text-body text-fg-muted">{text}</p>
       <p className="mt-5">
         <TextLink href="/apply" arrow className="text-small">
-          Become a Member
+          {callToActionLabels.member}
         </TextLink>
       </p>
     </>

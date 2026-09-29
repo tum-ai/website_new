@@ -7,6 +7,7 @@ import {
   Container,
   TopBlend,
 } from "@/components/ds";
+import { callToActionLabels } from "@/config/calls-to-action";
 import {
   connectLinksFor,
   contributeLinksFor,
@@ -61,7 +62,7 @@ export async function Footer() {
             </p>
             <Actions className="mt-10">
               <ButtonLink href="/apply" arrow>
-                Become a Member
+                {callToActionLabels.member}
               </ButtonLink>
               <ButtonLink href="/partners" variant="outline">
                 Partner with us
