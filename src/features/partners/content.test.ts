@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { contentTokens } from "@/config/content-tokens";
+import { siteFactsFallback } from "@/config/site-facts";
 import { fetchContent } from "@/lib/cms-content";
 import type {
   PARTNER_CASE_STUDIES_QUERY_RESULT,
@@ -17,6 +18,7 @@ import {
   fillPartnerPillars,
   fillPartnerStats,
   partnerCaseStudies,
+  partnerPillarMetricsOf,
   partnerPillarTemplates,
   partnerPitch,
   partnerProfiles,
@@ -64,7 +66,11 @@ const codeCopy = {
   pitch: partnerPitch,
   reasons: partnerReasons,
   stats: fillPartnerStats(partnerStatTemplates, contentTokens),
-  pillars: fillPartnerPillars(partnerPillarTemplates, contentTokens),
+  pillars: fillPartnerPillars(
+    partnerPillarTemplates,
+    contentTokens,
+    partnerPillarMetricsOf(siteFactsFallback),
+  ),
 };
 
 const mockDocuments = () => [
@@ -271,5 +277,19 @@ describe("incomplete CMS copy", () => {
         imagePosition: "30% 60%",
       },
     ]);
+  });
+});
+
+describe("the pillar figures", () => {
+  test("follow the render's site facts", () => {
+    const facts = {
+      ...siteFactsFallback,
+      impact: { ...siteFactsFallback.impact, publications: 42 },
+      eLab: { ...siteFactsFallback.eLab, ventureFundingMillions: 99 },
+    };
+    expect(partnerPillarMetricsOf(facts)).toMatchObject({
+      research: "42+",
+      venture: "99M",
+    });
   });
 });

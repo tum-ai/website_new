@@ -6,10 +6,25 @@ import {
   partnershipFinderCopy,
 } from "./data/partnership-finder";
 
-/** The role address partnership requests go to (also the booking guest). */
-export const PARTNER_EMAIL = contactEmails.partners;
-/** The Cal.eu page "Book a call" embeds (see `partnershipContact`). */
-export const PARTNER_BOOKING_URL = partnershipContact.bookingUrl;
+/**
+ * Where partnership requests go: the partners' role address (also the
+ * booking guest), the Cal.eu page "Book a call" embeds, and who it books.
+ * Site facts: the page passes the render's (`getSiteFacts()`) to the
+ * client islands through `PartnershipProvider`. The CC list stays in code
+ * (`partnershipContact.cc`: it names people).
+ */
+export type PartnershipContact = {
+  email: string;
+  bookingUrl: string;
+  bookingHost: string;
+};
+
+/** The code facts' {@link PartnershipContact}. */
+export const codePartnershipContact: PartnershipContact = {
+  email: contactEmails.partners,
+  bookingUrl: partnershipContact.bookingUrl,
+  bookingHost: partnershipContact.bookingHost,
+};
 
 export interface PartnershipSelection {
   intent: PartnershipIntent | null;
@@ -92,20 +107,22 @@ export function getPartnershipContext(
 export function getPartnershipEmailUrl(
   selection: PartnershipSelection = { intent: null, duration: null },
   copy: PartnershipFinderCopy = partnershipFinderCopy,
+  contact: PartnershipContact = codePartnershipContact,
 ) {
   const intent = copy.intents.find((item) => item.id === selection.intent);
   const subject = intent
     ? `Partnership request: ${intent.shortLabel}`
     : "Partnership request: TUM.ai";
-  return `mailto:${PARTNER_EMAIL}?cc=${encodeURIComponent(partnershipContact.cc.join(","))}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Hi TUM.ai team,\n\n${getPartnershipContext(selection, copy)}\n\n`)}`;
+  return `mailto:${contact.email}?cc=${encodeURIComponent(partnershipContact.cc.join(","))}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Hi TUM.ai team,\n\n${getPartnershipContext(selection, copy)}\n\n`)}`;
 }
 
 export function getPartnershipBookingUrl(
   selection: PartnershipSelection,
   copy: PartnershipFinderCopy = partnershipFinderCopy,
+  contact: PartnershipContact = codePartnershipContact,
 ) {
-  const url = new URL(PARTNER_BOOKING_URL);
-  url.searchParams.append("guest", PARTNER_EMAIL);
+  const url = new URL(contact.bookingUrl);
+  url.searchParams.append("guest", contact.email);
   url.searchParams.set("notes", getPartnershipContext(selection, copy));
   return url.toString();
 }

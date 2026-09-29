@@ -2,6 +2,7 @@ import "server-only";
 
 import { defineQuery } from "next-sanity";
 import { getContentTokens } from "@/config/content-tokens";
+import { getSiteFacts } from "@/config/site-settings-content";
 import {
   type BackfillDocument,
   backfillId,
@@ -35,7 +36,8 @@ import {
   type PartnerStat,
   type PartnersCopy,
   partnerCaseStudies,
-  partnerPillarMetrics,
+  partnerPillarKeys,
+  partnerPillarMetricsOf,
   partnerPillarTemplates,
   partnerPitch,
   partnerProfiles,
@@ -119,7 +121,12 @@ type PartnersCopySource = Omit<PartnersCopy, "intents" | "durations"> & {
 
 const durationFields = { "one-off": "oneOff", ongoing: "ongoing" } as const;
 
-function codeCopySource(tokens: ContentTokens): PartnersCopySource {
+type PillarMetrics = ReturnType<typeof partnerPillarMetricsOf>;
+
+function codeCopySource(
+  tokens: ContentTokens,
+  metrics: PillarMetrics,
+): PartnersCopySource {
   return {
     pitch: partnerPitch,
     intents: Object.fromEntries(
@@ -132,7 +139,7 @@ function codeCopySource(tokens: ContentTokens): PartnersCopySource {
     recommendations,
     reasons: partnerReasons,
     stats: fillPartnerStats(partnerStatTemplates, tokens),
-    pillars: fillPartnerPillars(partnerPillarTemplates, tokens),
+    pillars: fillPartnerPillars(partnerPillarTemplates, tokens, metrics),
   };
 }
 
@@ -144,7 +151,7 @@ const reasonIcons: readonly PartnerReasonIcon[] = [
 const isReasonIcon = (value: string | null): value is PartnerReasonIcon =>
   reasonIcons.includes(value as PartnerReasonIcon);
 const isPillarKey = (value: string | null): value is PartnerPillarKey =>
-  value !== null && value in partnerPillarMetrics;
+  partnerPillarKeys.includes(value as PartnerPillarKey);
 
 type CopyResult = NonNullable<PARTNERS_COPY_QUERY_RESULT>;
 
@@ -171,6 +178,7 @@ function selectStats(
 function selectPillars(
   pillars: CopyResult["pillars"],
   tokens: ContentTokens,
+  metrics: PillarMetrics,
 ): PartnerPillar[] | undefined {
   return pillars?.flatMap(
     ({ key, title, metricLabel, description, image, href }) => {
@@ -190,7 +198,7 @@ function selectPillars(
         {
           key,
           title,
-          metric: partnerPillarMetrics[key],
+          metric: metrics[key],
           metricLabel,
           description: filled,
           image: photo,
@@ -206,12 +214,16 @@ function selectPillars(
  * copy for the rest. The finder's answers keep their code ids and order.
  */
 export async function getPartnersCopy(): Promise<PartnersCopy> {
-  const tokens = await getContentTokens();
+  const [tokens, facts] = await Promise.all([
+    getContentTokens(),
+    getSiteFacts(),
+  ]);
+  const metrics = partnerPillarMetricsOf(facts);
   const source = await loadContent<
     PartnersCopySource,
     PARTNERS_COPY_QUERY_RESULT
   >({
-    fallback: codeCopySource(tokens),
+    fallback: codeCopySource(tokens, metrics),
     query: PARTNERS_COPY_QUERY,
     tags: ["content:partnersCopy"],
     label: "the partners page copy",
@@ -229,7 +241,7 @@ export async function getPartnersCopy(): Promise<PartnersCopy> {
               : [],
         ),
         stats: selectStats(result.stats, tokens),
-        pillars: selectPillars(result.pillars, tokens),
+        pillars: selectPillars(result.pillars, tokens, metrics),
       },
   });
   return {

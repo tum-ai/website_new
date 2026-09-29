@@ -10,17 +10,21 @@ import {
   Section,
   SectionHeader,
 } from "@/components/ds";
-import { officialMembers, organizationFacts } from "@/config/organization";
 import type { AlumniDestination } from "../data/partner-logos";
 import type { PartnerProfile } from "../data/partners";
 
-/** The members: three profiles, the member count and where alumni go. */
+/**
+ * The members: three profiles, the member count and where alumni go.
+ * `members` are the figures from the render's site facts.
+ */
 export function PeopleSection({
   profiles,
   alumniDestinations,
+  members,
 }: {
   profiles: readonly PartnerProfile[];
   alumniDestinations: readonly AlumniDestination[];
+  members: { official: number; majors: number; universities: number };
 }) {
   return (
     <Section tone="lavender" aria-labelledby="partner-people-title">
@@ -67,15 +71,15 @@ export function PeopleSection({
                 strokeWidth={1.3}
               />
               <strong className="mt-8 text-fg text-stat-lg">
-                <CountUp value={`+${officialMembers}`} />
+                <CountUp value={`+${members.official}`} />
               </strong>
               <h3 className="mt-2.5 text-fg text-heading-sm">
                 top tier individuals
               </h3>
               <p className="mt-6 text-fg-muted text-small">
-                {organizationFacts.majors}+ majors
+                {members.majors}+ majors
                 <br />
-                {organizationFacts.universities}+ universities
+                {members.universities}+ universities
               </p>
               <span className="mt-6 text-fg-subtle text-meta">
                 Different backgrounds.

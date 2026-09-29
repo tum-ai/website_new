@@ -1,5 +1,4 @@
-import { eLabConfig } from "@/config/e-lab";
-import { impactFacts } from "@/config/impact";
+import type { SiteFacts } from "@/config/site-facts";
 import type { ContentImage } from "@/lib/cms-content-model";
 import { type ContentTokens, fillCodeTemplate } from "@/lib/content-tokens";
 import type { PartnershipFinderCopy } from "./partnership-finder";
@@ -84,18 +83,31 @@ export function fillPartnerStats(
 /** Which pillar a card is; it picks the card's figure. */
 export type PartnerPillarKey = "research" | "venture" | "hackathons";
 
+/** The pillar keys, in the code order. */
+export const partnerPillarKeys: readonly PartnerPillarKey[] = [
+  "research",
+  "venture",
+  "hackathons",
+];
+
 /**
  * Each pillar's headline figure: a site fact, so it is derived from the
- * config rather than written as copy (the hackathon count reads "2500+",
- * without the grouping the `{{impact.hackathonParticipants}}` placeholder
- * has in running text).
+ * render's facts (`getSiteFacts()`) rather than written as copy (the
+ * hackathon count reads "2500+", without the grouping the
+ * `{{impact.hackathonParticipants}}` placeholder has in running text).
  */
-export const partnerPillarMetrics: Readonly<Record<PartnerPillarKey, string>> =
-  {
-    research: `${impactFacts.publications}+`,
-    venture: `${eLabConfig.ventureFundingMillions}M`,
-    hackathons: `${impactFacts.hackathonParticipants}+`,
+export function partnerPillarMetricsOf({
+  impact,
+  eLab,
+}: Pick<SiteFacts, "impact" | "eLab">): Readonly<
+  Record<PartnerPillarKey, string>
+> {
+  return {
+    research: `${impact.publications}+`,
+    venture: `${eLab.ventureFundingMillions}M`,
+    hackathons: `${impact.hackathonParticipants}+`,
   };
+}
 
 /** A pillar card as the page renders it. */
 export type PartnerPillar = {
@@ -155,14 +167,18 @@ export const partnerPillarTemplates: readonly Omit<PartnerPillar, "metric">[] =
     },
   ];
 
-/** Pillar templates with placeholders filled and their figures derived. */
+/**
+ * Pillar templates with placeholders filled and their figures from
+ * `metrics` ({@link partnerPillarMetricsOf}).
+ */
 export function fillPartnerPillars(
   templates: readonly Omit<PartnerPillar, "metric">[],
   tokens: ContentTokens,
+  metrics: Readonly<Record<PartnerPillarKey, string>>,
 ): PartnerPillar[] {
   return templates.map((pillar) => ({
     ...pillar,
-    metric: partnerPillarMetrics[pillar.key],
+    metric: metrics[pillar.key],
     description: fillCodeTemplate(pillar.description, tokens),
   }));
 }

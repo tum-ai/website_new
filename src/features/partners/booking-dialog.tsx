@@ -9,7 +9,6 @@ import {
   DialogTitle,
   TextLink,
 } from "@/components/ds";
-import { partnershipContact } from "@/config/contact";
 import {
   type PartnershipFinderCopy,
   partnershipFinderCopy,
@@ -18,14 +17,21 @@ import {
   getPartnershipBookingUrl,
   getPartnershipContext,
   getPartnershipEmailUrl,
-  PARTNER_BOOKING_URL,
-  PARTNER_EMAIL,
+  type PartnershipContact,
   type PartnershipSelection,
 } from "./partnerships";
 
 const namespace = "tumai-partners";
-const bookingUrl = new URL(PARTNER_BOOKING_URL);
-const embedJsUrl = `${bookingUrl.origin}/embed.js`;
+
+/** The Cal.eu page and its embed script, from the booking URL. */
+function calOf(bookingUrl: string) {
+  const url = new URL(bookingUrl);
+  return {
+    calLink: url.pathname.slice(1),
+    calOrigin: url.origin,
+    embedJsUrl: `${url.origin}/embed.js`,
+  };
+}
 
 /**
  * Booking dialog (Base UI). The popup content, and with it the Cal.eu embed,
@@ -40,6 +46,7 @@ export function BookingDialog({
   onOpenChange,
   selection,
   copy = partnershipFinderCopy,
+  contact,
   finalFocus,
 }: {
   open: boolean;
@@ -47,6 +54,8 @@ export function BookingDialog({
   selection: PartnershipSelection;
   /** The finder's wording, for the booking notes and the email. */
   copy?: PartnershipFinderCopy;
+  /** Where requests go (the site facts): the booking page, host and guest. */
+  contact: PartnershipContact;
   finalFocus: RefObject<HTMLElement | null>;
 }) {
   return (
@@ -60,16 +69,23 @@ export function BookingDialog({
           <div className="pr-12">
             <DialogTitle>Let’s talk about your partnership.</DialogTitle>
             <DialogDescription className="mt-2">
-              Pick a time for a quick chat with {partnershipContact.bookingHost}{" "}
-              from TUM.ai.
+              Pick a time for a quick chat with {contact.bookingHost} from
+              TUM.ai.
             </DialogDescription>
           </div>
-          <BookingCalendar selection={selection} copy={copy} />
+          <BookingCalendar
+            selection={selection}
+            copy={copy}
+            contact={contact}
+          />
           <div className="flex flex-wrap justify-between gap-x-6 gap-y-3 border-hairline border-t pt-4 text-small">
-            <TextLink href={getPartnershipBookingUrl(selection, copy)} arrow>
+            <TextLink
+              href={getPartnershipBookingUrl(selection, copy, contact)}
+              arrow
+            >
               Open booking page
             </TextLink>
-            <TextLink href={getPartnershipEmailUrl(selection, copy)}>
+            <TextLink href={getPartnershipEmailUrl(selection, copy, contact)}>
               Email us instead
             </TextLink>
           </div>
@@ -82,21 +98,24 @@ export function BookingDialog({
 function BookingCalendar({
   selection,
   copy,
+  contact,
 }: {
   selection: PartnershipSelection;
   copy: PartnershipFinderCopy;
+  contact: PartnershipContact;
 }) {
+  const { calLink, calOrigin, embedJsUrl } = calOf(contact.bookingUrl);
   const [status, setStatus] = useState<"loading" | "ready" | "failed">(
     "loading",
   );
   const config = useMemo(
     () => ({
       notes: getPartnershipContext(selection, copy),
-      guests: [PARTNER_EMAIL],
+      guests: [contact.email],
       layout: "month_view" as const,
       theme: "light" as const,
     }),
-    [selection, copy],
+    [selection, copy, contact.email],
   );
 
   useEffect(() => {
@@ -134,7 +153,7 @@ function BookingCalendar({
         })
         .catch(() => undefined);
     };
-  }, []);
+  }, [embedJsUrl]);
 
   return (
     <div className="min-h-0 flex-1 overflow-auto sm:h-[65dvh] sm:max-h-160 sm:min-h-105 sm:flex-none">
@@ -160,8 +179,8 @@ function BookingCalendar({
       </p>
       <Cal
         namespace={namespace}
-        calLink={bookingUrl.pathname.slice(1)}
-        calOrigin={bookingUrl.origin}
+        calLink={calLink}
+        calOrigin={calOrigin}
         embedJsUrl={embedJsUrl}
         config={config}
         style={{ width: "100%", height: "100%", overflow: "auto" }}

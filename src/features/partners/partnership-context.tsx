@@ -15,7 +15,9 @@ import {
   partnershipFinderCopy,
 } from "./data/partnership-finder";
 import {
+  codePartnershipContact,
   initialFunnelState,
+  type PartnershipContact,
   type PartnershipFunnelAction,
   type PartnershipFunnelState,
   partnershipFunnelReducer,
@@ -33,6 +35,8 @@ const PartnershipContext = createContext<{
   openBooking: () => void;
   /** The finder's answers and formats, as the page serves them. */
   copy: PartnershipFinderCopy;
+  /** Where requests go, from the render's site facts. */
+  contact: PartnershipContact;
 } | null>(null);
 
 /**
@@ -40,14 +44,17 @@ const PartnershipContext = createContext<{
  * page, so every contact action (hero, rows, finder, closing band) sends the
  * same context. The dialog's code loads on the first "Book a call", and
  * closing it returns focus to the control that opened it. `copy` is the
- * finder's wording from the page's content slice (code copy by default).
+ * finder's wording from the page's content slice, `contact` where requests
+ * go from the site facts (both the code values by default).
  */
 export function PartnershipProvider({
   children,
   copy = partnershipFinderCopy,
+  contact = codePartnershipContact,
 }: {
   children: ReactNode;
   copy?: PartnershipFinderCopy;
+  contact?: PartnershipContact;
 }) {
   const [selection, dispatch] = useReducer(
     partnershipFunnelReducer,
@@ -68,6 +75,7 @@ export function PartnershipProvider({
           setBookingOpen(true);
         },
         copy,
+        contact,
       }}
     >
       {children}
@@ -77,6 +85,7 @@ export function PartnershipProvider({
           onOpenChange={setBookingOpen}
           selection={selection}
           copy={copy}
+          contact={contact}
           finalFocus={bookingTrigger}
         />
       ) : null}
@@ -84,7 +93,10 @@ export function PartnershipProvider({
   );
 }
 
-/** The finder state, its dispatch, `openBooking` and the finder copy; throws outside the provider. */
+/**
+ * The finder state, its dispatch, `openBooking`, the finder copy and the
+ * contact; throws outside the provider.
+ */
 export function usePartnership() {
   const context = useContext(PartnershipContext);
   if (!context)
