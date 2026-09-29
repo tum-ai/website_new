@@ -17,8 +17,10 @@ read them, so one edit updates the whole site, and tests fail if a page types a 
 | E-Lab open or closed | `e-lab.ts` `applicationsOpen` is the master switch; applications also close by themselves at exactly the deadline |
 | Next E-Lab window (shown while closed) | `e-lab.ts` `nextApplicationWindow` |
 | E-Lab length, money raised | `e-lab.ts` `programWeeks`, `ventureFundingMillions` |
+| E-Lab selection funnel (teams per gate, drawn to scale on /e-lab) | `e-lab.ts` `selection` (`applications`, `admitted`, `midterm`, `selectionDay`, `finalPitch`; each at most the one before) |
 | Membership recruiting round | `src/config/membership.ts` `applicationsOpen` (master switch; applications also close by themselves at the deadline), `applicationUrl`, `round` (`name`, `opens`, `deadlineDate` "27.10.2026" + `deadlineTime` "23:59" in Munich time, `interviews`, `onboarding`) |
 | Founding year, members, alumni, majors, universities, nationalities | `src/config/organization.ts` `organizationFacts` |
+| The mission statement (brand guide wording; /apply and /qanda quote it) | `src/config/organization.ts` `brandMission` |
 | Role emails, social links, the Imprint's address line | `src/config/contact.ts` (`contactEmails`, `socialLinks`, `registeredOfficeAddressLine`) |
 | Who handles partnership requests: finder CC addresses, the "Book a call" Cal.eu page and its host | `src/config/contact.ts` `partnershipContact` |
 | Community figures quoted in copy (Makeathon size) | `src/config/community.ts` `communityFacts` (the initiative's age comes from `yearsSinceFounding()`) |
@@ -56,7 +58,8 @@ not the derived one.
 - `test/content-facts.test.ts`: hard-coded fact patterns (program length, member counts, phase
   wording, role emails, social links, Tally forms) outside `src/config` and the mock CMS, plus
   consistency checks between config, FAQs and stats.
-- `src/features/e-lab/e-lab-content.test.ts`: E-Lab timeline, FAQ, metrics and startups content.
+- `src/features/e-lab/e-lab-content.test.ts`: the E-Lab deadline and application window, FAQ,
+  testimonials, the traced venture and its milestone sources, the startup list and content images.
 - `src/features/partners/partnerships.test.ts`: the partnership finder, the partner directory
   and the partnership contact emails (CC addresses).
 

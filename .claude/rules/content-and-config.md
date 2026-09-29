@@ -9,13 +9,13 @@ paths:
 Facts that change per semester, cohort or year live in exactly one `src/config` file; pages,
 FAQs and JSON-LD derive their copy from it. The `site-facts` skill maps each fact to its file.
 
-- **Where facts live:** `e-lab.ts` (cohort, application phase, deadline, program length, funding),
-  `membership.ts` (recruiting round), `organization.ts` (founding year, member counts, legal
-  entity, register number, representatives), `contact.ts` (role emails, `partnershipContact`,
-  social links, the Imprint address line), `community.ts` (Makeathon size,
-  `yearsSinceFounding()`), `impact.ts` (publications, venues, hackathon participants), `site.ts`
-  (URL, name, tagline, `absoluteUrl()`), `navigation.ts` (links, `headerCtaSetting`, per-route
-  header options), `seo.ts` (metadata, JSON-LD).
+- **Where facts live:** `e-lab.ts` (cohort, application phase, deadline, program length, funding,
+  the `selection` funnel), `membership.ts` (recruiting round), `organization.ts` (founding year,
+  member counts, `brandMission`, legal entity, register number, representatives), `contact.ts`
+  (role emails, `partnershipContact`, social links, the Imprint address line), `community.ts`
+  (Makeathon size, `yearsSinceFounding()`), `impact.ts` (publications, venues, hackathon
+  participants), `site.ts` (URL, name, tagline, `absoluteUrl()`), `navigation.ts` (links,
+  `headerCtaSetting`, per-route header options), `seo.ts` (metadata, JSON-LD).
 - **Never type a fact into page code or `data/`:** import it and build the sentence with a
   template string. `test/content-facts.test.ts` fails on hard-coded fact patterns; extend its
   patterns when you centralize a new fact rather than silencing them.

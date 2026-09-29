@@ -56,14 +56,14 @@ its feature folder:
 | Route | Page module | Data |
 | --- | --- | --- |
 | `/` | `features/home/home-page.tsx` (+ `home.css`) | static |
-| `/apply` | `features/apply/apply-page.tsx` | static, ISR daily (render date) |
+| `/apply` | `features/apply/apply-page.tsx` | static, ISR 1 h (render date) |
 | `/community` | `features/community/community-page.tsx` | static |
-| `/events` | `features/events/events-page.tsx` | Sanity, ISR 5 min |
-| `/e-lab` | `features/e-lab/e-lab-page.tsx` | static, ISR 5 min (application phase) |
+| `/events` | `features/events/events-page.tsx` (+ `events.css`) | Sanity, ISR 5 min |
+| `/e-lab` | `features/e-lab/e-lab-page.tsx` (+ `e-lab.css`) | static, ISR 5 min (application phase) |
 | `/partners` | `features/partners/partners-page.tsx` (+ `partners.css`) | Sanity, ISR 15 min |
-| `/projects` | `features/projects/projects-page.tsx` | static |
+| `/projects` | `features/projects/projects-page.tsx` (+ `projects.css`) | static |
 | `/qanda` | `features/qanda/qanda-page.tsx` | static |
-| `/research` | `features/research/research-page.tsx` | Sanity, ISR 15 min |
+| `/research` | `features/research/research-page.tsx` (+ `research.css`) | Sanity, ISR 15 min |
 | `/imprint`, `/data-privacy`, `/disclaimer` | `features/legal/*-page.tsx` | static |
 | `/design-system` | `features/design-system/design-system-page.tsx` | dev and Vercel previews only; 404 in production |
 | `/studio` | `app/studio/[[...tool]]/page.tsx` | the embedded Studio |
@@ -81,8 +81,9 @@ src/features/<domain>/
 └── index.ts               optional: what other features may use; never a page
 ```
 
-Feature indexes exist today for `community` (`journeySteps`), `e-lab` (`ELabPhaseSwitch`),
-`partners` (the marquee logos, partner directory and partnership email) and `qanda` (`faqs`).
+Feature indexes exist today for `community` (`memberJourney`, `memberStories`), `e-lab`
+(`testimonialCards`), `partners` (`marqueeLogos`, `partnerCaseStudies` and the directory helpers
+`getHighlightedPartners`, `getPartnerDirectory`, `getPartnerKey`) and `qanda` (`faqs`).
 
 ## Import rules
 
@@ -161,11 +162,12 @@ Facts that change per semester, cohort or year live once in `src/config/`
 | File | Holds |
 | --- | --- |
 | `site.ts` | site URL, name, tagline, `absoluteUrl()` |
-| `organization.ts` | founding year, member figures, legal entity, register number, representatives, office |
+| `organization.ts` | founding year, member figures, `brandMission`, legal entity, register number, representatives, office |
 | `contact.ts` | role emails, `partnershipContact` (finder CC and booking page), social links |
 | `community.ts` | community figures quoted in copy (Makeathon size), `yearsSinceFounding()` |
-| `e-lab.ts` | cohort, application URL, deadline (Munich time), phase copy |
-| `membership.ts` | recruiting round: open flag, form URL, timeline |
+| `impact.ts` | research and hackathon record: publications, venues, hackathon participants |
+| `e-lab.ts` | cohort, application URL, deadline (Munich time), program length, funding, the `selection` funnel, phase copy |
+| `membership.ts` | recruiting: open flag, form URL and the current `round` (Munich dates), plus the schedule helpers (`roundSchedule`, `isMembershipApplicationOpen`, `applicationProgress`, `recruitingTimeline`) |
 | `navigation.ts` | header, footer and legal links, `headerCtaSetting`, per-route header options |
 | `seo.ts` | per-page metadata and JSON-LD, `rootMetadata` |
 

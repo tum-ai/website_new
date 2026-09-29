@@ -14,7 +14,7 @@ calm light bands for reading. Motion is small, purposeful and always optional.
 
 Every page, including `/partners`, is built from these components. Page-only
 styles are the exception: keyframes or mechanics that belong to one page live in
-`src/features/<domain>/<domain>.css` (today `home.css`, `partners.css`, `research.css` and `events.css`),
+`src/features/<domain>/<domain>.css` (today `home.css`, `partners.css`, `research.css`, `events.css`, `e-lab.css` and `projects.css`),
 inside cascade layers, imported by the route.
 
 ## Principles
@@ -54,7 +54,7 @@ Semantic utilities (resolve per tone):
 | `bg-canvas` / `bg-raised` / `bg-sunken` | Band, one step up (cards), one step down (placeholders) |
 | `text-fg` / `text-fg-muted` / `text-fg-subtle` | Primary, secondary, meta text |
 | `border-hairline` / `border-hairline-strong` | Dividers and borders |
-| `text-highlight` | AA-safe accent color for emphasis, eyebrows and links |
+| `text-highlight` | AA-safe accent color for emphasis, links and markers (eyebrows use `text-fg-muted`) |
 | `bg-fg/[0.07]` etc. | Tone-aware tints (works on light and dark) |
 
 Raw scales exist for rare cases: `violet-50…950` (500 = #9A64D9,
@@ -228,10 +228,13 @@ These come from design review. Treat them as hard rules.
 
 ## Page anatomy
 
-1. `PageHero` (ink)
+1. `PageHero`: ink by default; research, projects and Q&A set `tone="night"`, and the home and
+   events heroes are their own night bands (each still owns the page's `h1`)
 2. Alternating bands, for example paper → mist or lavender → ink → paper, each opening with a `SectionHeader`
 3. `FaqSection`, if the page has FAQs
-4. `CtaBand`
+4. A closing band: most pages have their own (`closing-section.tsx` in apply, community, e-lab,
+   projects and qanda; research's closing band and home's `join-section.tsx`); `CtaBand` is the
+   ds version (the partners contact band uses it)
 5. The global footer (night tone)
 
 Pages end on light or ink bands, because the footer is night.
