@@ -17,7 +17,7 @@ read them, so one edit updates the whole site, and tests fail if a page types a 
 | E-Lab open or closed | `e-lab.ts` `applicationsOpen` is the master switch; applications also close by themselves at exactly the deadline |
 | Next E-Lab window (shown while closed) | `e-lab.ts` `nextApplicationWindow` |
 | E-Lab length, money raised | `e-lab.ts` `programWeeks`, `ventureFundingMillions` |
-| Membership recruiting round | `src/config/membership.ts` `applicationsOpen`, `applicationUrl`, `timeline` |
+| Membership recruiting round | `src/config/membership.ts` `applicationsOpen` (master switch; applications also close by themselves at the deadline), `applicationUrl`, `round` (`name`, `opens`, `deadlineDate` "27.10.2026" + `deadlineTime` "23:59" in Munich time, `interviews`, `onboarding`) |
 | Founding year, members, alumni, majors, universities, nationalities | `src/config/organization.ts` `organizationFacts` |
 | Role emails, social links, the Imprint's address line | `src/config/contact.ts` (`contactEmails`, `socialLinks`, `registeredOfficeAddressLine`) |
 | Who handles partnership requests: finder CC addresses, the "Book a call" Cal.eu page and its host | `src/config/contact.ts` `partnershipContact` |
@@ -29,7 +29,7 @@ read them, so one edit updates the whole site, and tests fail if a page types a 
 | Header and footer links | `src/config/navigation.ts` |
 | Header call to action between recruiting rounds | `src/config/navigation.ts` `headerCtaSetting` (`fallback`, optional `override`); `member` shows automatically while `membershipConfig.applicationsOpen` |
 
-Derived values (`officialMembers`, `eLabProgramSummary`, `eLabCompletedIterations`,
+Derived values (`officialMembers`, `recruitingTimeline`, `isMembershipApplicationOpen`, `applicationProgress`, `eLabProgramSummary`, `eLabCompletedIterations`,
 `eLabApplicationsCloseAt`, `eLabPhaseCopy`) are computed in the same files; change the base fact,
 not the derived one.
 

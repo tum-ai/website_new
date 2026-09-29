@@ -1,7 +1,5 @@
 import { contactEmails } from "@/config/contact";
-import { membershipConfig } from "@/config/membership";
-
-const { timeline } = membershipConfig;
+import { recruitingTimeline as timeline } from "@/config/membership";
 
 export const faq = [
   {
