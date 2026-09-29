@@ -68,6 +68,11 @@ export const partnershipDurations = [
 /** A format the finder recommends. */
 type PartnershipRecommendation = { name: string; description: string };
 
+/**
+ * The formats as templates: a description may hold `{{placeholders}}` for
+ * site facts (`lib/content-tokens.ts`), which the content slice fills per
+ * render (`getPartnersCopy`), so islands receive the filled wording.
+ */
 export const recommendations = {
   longTerm: {
     name: "Long-Term Partnership",
@@ -87,7 +92,7 @@ export const recommendations = {
   brand: {
     name: "Community & Brand Activation",
     description:
-      "Put your brand in front of the community where Europe's next AI companies are being built. What you can pack into it: visibility across our 20k+ LinkedIn audience and newsletter, a networking event invitation, and a custom mail to the community.",
+      "Put your brand in front of the community where Europe's next AI companies are being built. What you can pack into it: visibility across our {{org.linkedinAudience}}+ LinkedIn audience and newsletter, a networking event invitation, and a custom mail to the community.",
   },
   research: {
     name: "Research Collaboration",
@@ -148,7 +153,10 @@ export type PartnershipFinderCopy = {
   prompts: PartnershipPrompts;
 };
 
-/** The finder's code copy. */
+/**
+ * The finder's code copy, as templates: the fallback for islands rendered
+ * without the page's filled copy (tests). The page passes the filled copy.
+ */
 export const partnershipFinderCopy: PartnershipFinderCopy = {
   intents: partnershipIntents,
   durations: partnershipDurations,

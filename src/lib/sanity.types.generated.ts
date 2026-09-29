@@ -943,6 +943,8 @@ export type SiteSettings = {
     majors: number;
     universities: number;
     nationalities: number;
+    acceptanceRate: number;
+    linkedinAudience: number;
   };
   brandMission: string;
   impact: {
@@ -1265,7 +1267,7 @@ export type CAMPAIGNS_QUERY_RESULT = Array<{
 
 // Source: ../config/site-settings-content.ts
 // Variable: SITE_SETTINGS_QUERY
-// Query: *[_type == "siteSettings" && _id == "siteSettings"][0]{  organization{ foundingYear, activeMembers, alumni, majors, universities, nationalities },  brandMission,  impact{ publications, publicationVenues, hackathonParticipants },  community{ makeathonSize },  contactEmails{ general, partners, venture, recruitment },  socialLinks{ linkedin, instagram, github, x, youtube, facebook, tiktok, slack },  partnershipBooking{ bookingUrl, bookingHost },  eLab{    currentIteration,    programWeeks,    ventureFundingMillions,    selection{ applications, admitted, midterm, selectionDay, finalPitch },    "heroLogo": heroLogo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}  },  footerTagline,  headerCtaFallback}
+// Query: *[_type == "siteSettings" && _id == "siteSettings"][0]{  organization{    foundingYear,    activeMembers,    alumni,    majors,    universities,    nationalities,    acceptanceRate,    linkedinAudience  },  brandMission,  impact{ publications, publicationVenues, hackathonParticipants },  community{ makeathonSize },  contactEmails{ general, partners, venture, recruitment },  socialLinks{ linkedin, instagram, github, x, youtube, facebook, tiktok, slack },  partnershipBooking{ bookingUrl, bookingHost },  eLab{    currentIteration,    programWeeks,    ventureFundingMillions,    selection{ applications, admitted, midterm, selectionDay, finalPitch },    "heroLogo": heroLogo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}  },  footerTagline,  headerCtaFallback}
 export type SITE_SETTINGS_QUERY_RESULT = {
   organization: {
     foundingYear: number;
@@ -1274,6 +1276,8 @@ export type SITE_SETTINGS_QUERY_RESULT = {
     majors: number;
     universities: number;
     nationalities: number;
+    acceptanceRate: number;
+    linkedinAudience: number;
   };
   brandMission: string;
   impact: {

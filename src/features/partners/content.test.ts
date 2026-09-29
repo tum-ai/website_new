@@ -2,6 +2,7 @@ import { afterEach, describe, expect, test, vi } from "vitest";
 import { contentTokens } from "@/config/content-tokens";
 import { siteFactsFallback } from "@/config/site-facts";
 import { fetchContent } from "@/lib/cms-content";
+import { fillCodeCopy } from "@/lib/content-copy";
 import type {
   PARTNER_CASE_STUDIES_QUERY_RESULT,
   PARTNERS_COPY_QUERY_RESULT,
@@ -65,15 +66,19 @@ function useSource(source: "code" | "sanity") {
 
 const codeCopy = {
   ...partnershipFinderCopy,
+  recommendations: fillCodeCopy(
+    partnershipFinderCopy.recommendations,
+    contentTokens,
+  ),
   pitch: partnerPitch,
-  reasons: partnerReasons,
+  reasons: fillCodeCopy(partnerReasons, contentTokens),
   stats: fillPartnerStats(partnerStatTemplates, contentTokens),
   pillars: fillPartnerPillars(
     partnerPillarTemplates,
     contentTokens,
     partnerPillarMetricsOf(siteFactsFallback),
   ),
-  sections: partnersSections,
+  sections: fillCodeCopy(partnersSections, contentTokens),
 };
 
 const mockDocuments = () => [
@@ -129,6 +134,25 @@ describe("the /partners content slice", () => {
     );
     expect(JSON.stringify(copy)).toContain("{{org.officialMembers}}+");
     expect(JSON.stringify(copy)).toContain("{{community.makeathonSize}}+");
+    expect(JSON.stringify(copy)).toContain("{{org.acceptanceRate}}%");
+    expect(JSON.stringify(copy)).toContain("{{org.linkedinAudience}}+");
+  });
+
+  test("the acceptance rate and LinkedIn audience come from the site facts", async () => {
+    useSource("code");
+    const { acceptanceRate, linkedinAudience } = siteFactsFallback.organization;
+    const rounded = `${Math.round(acceptanceRate)}%`;
+    const audience = `${Math.floor(linkedinAudience / 1000)}k+`;
+    const copy = await getPartnersCopy();
+    expect(
+      copy.stats.find(({ label }) => /acceptance rate/i.test(label))?.value,
+    ).toBe(`${acceptanceRate}%`);
+    expect(copy.reasons[0]?.title).toContain(`cracked ${rounded}`);
+    expect(copy.sections.people.title).toContain(`cracked ${rounded}`);
+    expect(copy.reasons[2]?.description).toContain(`${audience} LinkedIn`);
+    expect(copy.recommendations.brand.description).toContain(
+      `${audience} LinkedIn`,
+    );
   });
 });
 
@@ -198,9 +222,7 @@ describe("incomplete CMS copy", () => {
       ...partnershipFinderCopy.durations[1],
       label: "Year-round",
     });
-    expect(copy.recommendations).toStrictEqual(
-      partnershipFinderCopy.recommendations,
-    );
+    expect(copy.recommendations).toStrictEqual(codeCopy.recommendations);
     expect(copy.reasons).toStrictEqual([
       {
         icon: "network",
@@ -277,10 +299,59 @@ describe("incomplete CMS copy", () => {
     });
     expect(copy.sections.proof.title).toBe("Few get in.");
     expect(copy.sections.contact).toStrictEqual(partnersSections.contact);
+    expect(copy.sections.people).toStrictEqual(codeCopy.sections.people);
     expect(copy.prompts).toStrictEqual({
       ...partnershipFinderCopy.prompts,
       intentQuestion: "What do you need?",
     });
+  });
+
+  test("CMS reasons, formats and headings fill their placeholders; an unknown one drops that text", async () => {
+    useSource("sanity");
+    override.result = {
+      recommendations: {
+        brand: {
+          name: null,
+          description: "Reach our {{org.linkedinAudience}}+ followers.",
+        },
+        talent: { name: null, description: "Hire {{org.nope}} people." },
+      },
+      reasons: [
+        {
+          icon: "users",
+          name: "Talent",
+          title: "The top {{org.acceptanceRate}}%.",
+          description: "Few get in.",
+        },
+        {
+          icon: "network",
+          name: "Reach",
+          title: "Be seen.",
+          description: "By {{org.nope}}.",
+        },
+      ],
+      sections: {
+        people: { title: "The cracked {{ org.acceptanceRateRounded }}%." },
+      },
+    };
+    const copy = await getPartnersCopy();
+    expect(copy.recommendations.brand.description).toBe(
+      `Reach our ${contentTokens["org.linkedinAudience"]}+ followers.`,
+    );
+    expect(copy.recommendations.talent).toStrictEqual(
+      codeCopy.recommendations.talent,
+    );
+    expect(copy.reasons).toStrictEqual([
+      {
+        icon: "users",
+        name: "Talent",
+        title: `The top ${contentTokens["org.acceptanceRate"]}%.`,
+        description: "Few get in.",
+      },
+    ]);
+    expect(copy.sections.people.title).toBe(
+      `The cracked ${contentTokens["org.acceptanceRateRounded"]}%.`,
+    );
   });
 
   test("no singleton yet: the code copy", async () => {

@@ -103,7 +103,7 @@ derive their expectations from config, so a documented edit keeps them green.
 | E-Lab length or money raised | `src/config/e-lab.ts`: `programWeeks`, `ventureFundingMillions` |
 | E-Lab selection funnel (teams at each gate, drawn to scale on `/e-lab`) | `src/config/e-lab.ts`: `selection` (`applications`, `admitted`, `midterm`, `selectionDay`, `finalPitch`; each at most the one before). Update after each round. |
 | Membership recruiting round | `src/config/membership.ts`: `applicationsOpen`, `applicationUrl`, `round` (Munich dates "DD.MM.YYYY" and the deadline time; the Apply page's important dates, day ruler and FAQ, and the home and Community closing bands and the header CTA derive from it and switch live at `opens` and the deadline) |
-| Founding year, member counts, majors, universities, nationalities | `src/config/organization.ts`: `organizationFacts` |
+| Founding year, member counts, majors, universities, nationalities, the recruiting acceptance rate and the LinkedIn audience (both quoted on `/partners`) | `src/config/organization.ts`: `organizationFacts` |
 | The mission statement (the brand guide's wording, quoted on `/apply` and `/qanda`) | `src/config/organization.ts`: `brandMission` |
 | Legal name, registered office, register entry, representatives | `src/config/organization.ts`: `legalEntity` (legal content: confirm with the board first) |
 | Community figures quoted in copy (Makeathon size) | `src/config/community.ts`: `communityFacts` |

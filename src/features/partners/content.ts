@@ -13,6 +13,7 @@ import {
   CONTENT_IMAGE_PROJECTION,
   toContentImage,
 } from "@/lib/cms-content-model";
+import { fillCmsCopy, fillCodeCopy } from "@/lib/content-copy";
 import { type ContentTokens, fillTemplate } from "@/lib/content-tokens";
 import { organizationReference } from "@/lib/organization-content";
 import { buildPersonBackfill, getPeople } from "@/lib/person-content";
@@ -156,36 +157,13 @@ function codeCopySource(
       oneOff: partnershipDurations[0],
       ongoing: partnershipDurations[1],
     },
-    recommendations,
-    reasons: partnerReasons,
+    recommendations: fillCodeCopy(recommendations, tokens),
+    reasons: fillCodeCopy(partnerReasons, tokens),
     stats: fillPartnerStats(partnerStatTemplates, tokens),
     pillars: fillPartnerPillars(partnerPillarTemplates, tokens, metrics),
     prompts: partnershipPrompts,
-    sections: partnersSections,
+    sections: fillCodeCopy(partnersSections, tokens),
   };
-}
-
-/**
- * The CMS section copy with blank lines dropped from every line list, so a
- * heading whose lines are all blank keeps the code lines (an empty list is
- * unset for `mergeOverFallback`).
- */
-function selectSections(sections: CopyResult["sections"]): unknown {
-  const clean = (value: unknown): unknown => {
-    if (Array.isArray(value)) {
-      return value.filter(
-        (line): line is string =>
-          typeof line === "string" && line.trim() !== "",
-      );
-    }
-    if (value && typeof value === "object") {
-      return Object.fromEntries(
-        Object.entries(value).map(([key, item]) => [key, clean(item)]),
-      );
-    }
-    return value;
-  };
-  return clean(sections);
 }
 
 const reasonIcons: readonly PartnerReasonIcon[] = [
@@ -199,6 +177,24 @@ const isPillarKey = (value: string | null): value is PartnerPillarKey =>
   partnerPillarKeys.includes(value as PartnerPillarKey);
 
 type CopyResult = NonNullable<PARTNERS_COPY_QUERY_RESULT>;
+
+/**
+ * CMS reasons, complete ones only, with their placeholders filled; an
+ * unknown placeholder drops the reason.
+ */
+function selectReasons(
+  reasons: CopyResult["reasons"],
+  tokens: ContentTokens,
+): PartnerReason[] | undefined {
+  if (!reasons) return undefined;
+  const filled = fillCmsCopy(reasons, tokens, "the partner reasons");
+  return (Array.isArray(filled) ? filled : []).flatMap(
+    ({ icon, name, title, description }): PartnerReason[] =>
+      isReasonIcon(icon) && name && title && description
+        ? [{ icon, name, title, description }]
+        : [],
+  );
+}
 
 /** CMS stats with their placeholders filled; unknown placeholders drop the stat. */
 function selectStats(
@@ -282,17 +278,22 @@ export async function getPartnersCopy(): Promise<PartnersCopy> {
         pitch: result.pitch,
         intents: result.intents,
         durations: result.durations,
-        recommendations: result.recommendations,
-        reasons: result.reasons?.flatMap(
-          ({ icon, name, title, description }): PartnerReason[] =>
-            isReasonIcon(icon) && name && title && description
-              ? [{ icon, name, title, description }]
-              : [],
+        recommendations: fillCmsCopy(
+          result.recommendations,
+          tokens,
+          "the partnership formats",
         ),
+        reasons: selectReasons(result.reasons, tokens),
         stats: selectStats(result.stats, tokens),
         pillars: selectPillars(result.pillars, tokens, metrics),
         prompts: result.prompts,
-        sections: selectSections(result.sections),
+        // Also drops blank lines from the line lists, so a heading whose
+        // lines are all blank keeps the code lines.
+        sections: fillCmsCopy(
+          result.sections,
+          tokens,
+          "the /partners sections",
+        ),
       },
   });
   return {
