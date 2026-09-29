@@ -51,7 +51,7 @@ export function Hero() {
       emphasis="highlight"
       size="md"
       mark={false}
-      lead="The E-Lab is TUM.ai's equity-free AI startup incubator, in person in Munich. Apply alone or as a team, with or without an idea. You don't need to be enrolled anywhere."
+      lead={`The E-Lab is TUM.ai's equity-free AI startup incubator, in person in Munich; its ventures have raised €${eLabConfig.ventureFundingMillions}M so far. Apply alone or as a team, with or without an idea. You don't need to be enrolled anywhere.`}
       actions={
         <>
           <ELabApplicationCta />

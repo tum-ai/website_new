@@ -58,15 +58,15 @@ export function VentureTrace() {
         </div>
 
         <div className="mt-20 border-hairline-strong border-t pt-10 md:mt-28">
-          <div className="grid gap-6 lg:grid-cols-12 lg:gap-12">
-            <h3 className="text-fg text-heading-lg lg:col-span-4">
-              Also built in the E-Lab
-            </h3>
-            <p className="max-w-xl text-body text-fg-muted lg:col-span-8">
-              Ventures from {eLabCompletedIterations} cohorts have raised €
-              {eLabConfig.ventureFundingMillions}M so far.
-            </p>
-          </div>
+          <h3 className="grid gap-4 lg:grid-cols-12 lg:items-end lg:gap-12">
+            <span className="tabular text-display-2xl text-highlight lg:col-span-5">
+              €{eLabConfig.ventureFundingMillions}M
+            </span>
+            <span className="max-w-md text-fg text-heading-lg lg:col-span-7 lg:pb-3">
+              raised so far by ventures from {eLabCompletedIterations} E-Lab
+              cohorts, including these.
+            </span>
+          </h3>
           <LogoWall
             logos={otherVentures.map((startup) => ({
               name: startup.name,
