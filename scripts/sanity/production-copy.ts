@@ -218,3 +218,116 @@ export async function copyFromProduction({
   const documents = await fetchDocuments({ projectId, dataset: legacyDataset });
   return copyProductionDocuments(documents, { projectId });
 }
+
+/**
+ * What Sanity's image CDN is asked for when the copy downloads an original.
+ * Without `image/webp` in `Accept`, the CDN converts WebP originals to JPEG
+ * or PNG, and the import rejects a `.webp` file holding JPEG data ("Invalid
+ * image, could not process").
+ */
+const imageAccept = "image/webp,image/avif,image/svg+xml,image/*;q=0.8";
+
+/** Whether `bytes` hold the image format the file extension names. */
+export function matchesExtension(
+  bytes: Uint8Array,
+  extension: string,
+): boolean {
+  const ascii = (from: number, to: number) =>
+    String.fromCharCode(...bytes.subarray(from, to));
+  switch (extension) {
+    case "png":
+      return ascii(1, 4) === "PNG";
+    case "jpg":
+    case "jpeg":
+      return bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
+    case "webp":
+      return ascii(0, 4) === "RIFF" && ascii(8, 12) === "WEBP";
+    case "gif":
+      return ascii(0, 3) === "GIF";
+    case "svg":
+      return /<svg[\s>]/.test(
+        new TextDecoder().decode(bytes.subarray(0, 4096)),
+      );
+    default:
+      return false;
+  }
+}
+
+/** Downloads one image; the default fetches the CDN URL with `imageAccept`. */
+export type FetchImage = (url: string) => Promise<Uint8Array>;
+
+const fetchImage: FetchImage = async (url) => {
+  const response = await fetch(url, { headers: { accept: imageAccept } });
+  if (!response.ok) {
+    throw new Error(`Could not download ${url}: HTTP ${response.status}`);
+  }
+  return new Uint8Array(await response.arrayBuffer());
+};
+
+/**
+ * `documents` with every `image@https://cdn.sanity.io/...` asset downloaded
+ * into `dir` and pointed at as a local `image@file://` asset, so the import
+ * uploads exactly the checked bytes instead of fetching the URL itself (and
+ * getting whatever format the CDN negotiates). A file whose bytes don't match
+ * its extension throws.
+ */
+export async function localizeCdnAssets(
+  documents: readonly BackfillDocument[],
+  {
+    dir,
+    writeFile,
+    download = fetchImage,
+  }: {
+    dir: string;
+    writeFile: (path: string, bytes: Uint8Array) => void;
+    download?: FetchImage;
+  },
+): Promise<{ documents: BackfillDocument[]; downloaded: number }> {
+  const cdnPrefix = "image@https://cdn.sanity.io/images/";
+  const local = new Map<string, string>();
+  const visit = (value: unknown) => {
+    if (Array.isArray(value)) value.forEach(visit);
+    else if (value && typeof value === "object") {
+      for (const [key, field] of Object.entries(value)) {
+        if (key === "_sanityAsset" && typeof field === "string") {
+          if (field.startsWith(cdnPrefix)) local.set(field, "");
+        } else visit(field);
+      }
+    }
+  };
+  visit(documents);
+
+  for (const asset of local.keys()) {
+    const url = asset.slice("image@".length);
+    const name = url.slice(url.lastIndexOf("/") + 1);
+    const extension = name.slice(name.lastIndexOf(".") + 1).toLowerCase();
+    const bytes = await download(url);
+    if (!matchesExtension(bytes, extension)) {
+      throw new Error(
+        `${url} did not download as a .${extension} file; the import would reject it.`,
+      );
+    }
+    const path = `${dir}/${name}`;
+    writeFile(path, bytes);
+    local.set(asset, `image@file://${path}`);
+  }
+
+  const rewrite = (value: unknown): unknown => {
+    if (Array.isArray(value)) return value.map(rewrite);
+    if (!value || typeof value !== "object") return value;
+    return Object.fromEntries(
+      Object.entries(value).map(([key, field]) => [
+        key,
+        key === "_sanityAsset" && typeof field === "string"
+          ? (local.get(field) ?? field)
+          : rewrite(field),
+      ]),
+    );
+  };
+  return {
+    documents: documents.map(
+      (document) => rewrite(document) as BackfillDocument,
+    ),
+    downloaded: local.size,
+  };
+}

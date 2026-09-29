@@ -43,7 +43,7 @@ import { join, relative } from "node:path";
 import { parseArgs } from "node:util";
 import { assetFileOf, collectSanityAssets } from "@/lib/cms-backfill";
 import { backfillTarget } from "./backfill-target";
-import { copyFromProduction } from "./production-copy";
+import { copyFromProduction, localizeCdnAssets } from "./production-copy";
 import { collectBackfill } from "./slices";
 
 const root = join(import.meta.dirname, "..", "..");
@@ -76,7 +76,16 @@ if (!projectId) {
 }
 
 const copy = await copyFromProduction({ projectId });
-const documents = [...collectBackfill(), ...copy.documents];
+const outDir = join(root, ".sanity-backfill");
+const copiedAssetDir = join(outDir, "assets");
+mkdirSync(copiedAssetDir, { recursive: true });
+// The copied images are downloaded and checked here, so the import uploads
+// local files rather than whatever format the CDN negotiates for it.
+const localized = await localizeCdnAssets(copy.documents, {
+  dir: copiedAssetDir,
+  writeFile: (path, bytes) => writeFileSync(path, bytes),
+});
+const documents = [...collectBackfill(), ...localized.documents];
 
 const seen = new Set<string>();
 const duplicates = documents
@@ -87,10 +96,10 @@ if (duplicates.length > 0) {
 }
 
 const assets = collectSanityAssets(documents);
-const cdnAssetPrefix = `image@https://cdn.sanity.io/images/${projectId}/`;
-const copiedAssets = assets.filter((asset) => asset.startsWith(cdnAssetPrefix));
+const copiedAssets = assets.filter((asset) =>
+  assetFileOf(asset)?.startsWith(copiedAssetDir),
+);
 const missing = assets.filter((asset) => {
-  if (asset.startsWith(cdnAssetPrefix)) return false;
   const file = assetFileOf(asset);
   return !file || !existsSync(file);
 });
@@ -98,7 +107,6 @@ if (missing.length > 0) {
   throw new Error(`Missing asset file(s):\n${missing.join("\n")}`);
 }
 
-const outDir = join(root, ".sanity-backfill");
 const outFile = join(outDir, `${dataset}.ndjson`);
 mkdirSync(outDir, { recursive: true });
 writeFileSync(

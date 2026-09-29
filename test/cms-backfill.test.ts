@@ -14,6 +14,8 @@ import {
   copyFromProduction,
   copyProductionDocuments,
   imageAssetUrl,
+  localizeCdnAssets,
+  matchesExtension,
   type SourceDocument,
 } from "../scripts/sanity/production-copy";
 import { backfillSlices, collectBackfill } from "../scripts/sanity/slices";
@@ -364,5 +366,70 @@ describe("the copy from production", () => {
   test("the copies and the code content never share an _id", () => {
     const code = new Set(documents.map(({ _id }) => _id));
     expect(copy.documents.filter(({ _id }) => code.has(_id))).toStrictEqual([]);
+  });
+});
+
+describe("copied images", () => {
+  const webp = new Uint8Array([
+    ...new TextEncoder().encode("RIFF"),
+    0,
+    0,
+    0,
+    0,
+    ...new TextEncoder().encode("WEBP"),
+  ]);
+  const jpeg = new Uint8Array([0xff, 0xd8, 0xff, 0xe0]);
+  const url = "https://cdn.sanity.io/images/p/production/abc-10x10.webp";
+  const documents = [
+    {
+      _id: "event-1",
+      _type: "event",
+      poster: {
+        _type: "image",
+        _sanityAsset: `image@${url}`,
+        hotspot: { x: 0.5 },
+      },
+    },
+  ];
+
+  test("checks each file against its extension", () => {
+    expect(matchesExtension(webp, "webp")).toBe(true);
+    expect(matchesExtension(jpeg, "webp")).toBe(false);
+    expect(matchesExtension(jpeg, "jpg")).toBe(true);
+    expect(
+      matchesExtension(
+        new TextEncoder().encode('<?xml?><svg viewBox="0 0 1 1">'),
+        "svg",
+      ),
+    ).toBe(true);
+  });
+
+  test("points the import at the downloaded files and keeps the image fields", async () => {
+    const written = new Map<string, Uint8Array>();
+    const result = await localizeCdnAssets(documents, {
+      dir: "/tmp/backfill-assets",
+      writeFile: (path, bytes) => written.set(path, bytes),
+      download: async () => webp,
+    });
+    expect(result.downloaded).toBe(1);
+    expect(result.documents[0]).toMatchObject({
+      poster: {
+        _sanityAsset: "image@file:///tmp/backfill-assets/abc-10x10.webp",
+        hotspot: { x: 0.5 },
+      },
+    });
+    expect([...written.keys()]).toStrictEqual([
+      "/tmp/backfill-assets/abc-10x10.webp",
+    ]);
+  });
+
+  test("fails when the CDN sends another format than the file names", async () => {
+    await expect(
+      localizeCdnAssets(documents, {
+        dir: "/tmp/backfill-assets",
+        writeFile: () => {},
+        download: async () => jpeg,
+      }),
+    ).rejects.toThrow(/did not download as a \.webp file/);
   });
 });
