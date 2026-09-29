@@ -1,7 +1,7 @@
-import Image from "next/image";
 import {
   Container,
   CountUp,
+  Photo,
   Reveal,
   Section,
   SectionHeader,
@@ -10,7 +10,11 @@ import type { PartnerCaseStudy, PartnersSections } from "../data/partners";
 import { ContactRow } from "./contact-row";
 import { Lines } from "./lines";
 
-/** Partner testimonials: one outcome figure and quote per case, then a booking row. */
+/**
+ * Partner outcomes as ruled rows, one per case: the photo, the partner and
+ * its measured outcome set large, then what happened in their words. A
+ * booking row closes the band.
+ */
 export function CasesSection({
   caseStudies,
   copy,
@@ -19,52 +23,50 @@ export function CasesSection({
   copy: PartnersSections["cases"];
 }) {
   return (
-    <Section tone="paper" aria-labelledby="partner-cases-title">
+    <Section tone="paper" spacing="lg" aria-labelledby="partner-cases-title">
       <Container>
         <SectionHeader
           id="partner-cases-title"
           title={<Lines lines={copy.title} />}
           lead={<Lines lines={copy.lead} />}
         />
-        <div className="grid gap-5 lg:grid-cols-3 lg:gap-6">
-          {caseStudies.map((study, index) => (
-            <Reveal key={study.name} delay={index * 90} className="h-full">
-              <article className="group/zoom flex h-full flex-col overflow-hidden rounded-3xl border border-hairline bg-raised shadow-soft md:max-lg:grid md:max-lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
-                <div className="relative aspect-[2/1] overflow-hidden bg-sunken md:max-lg:aspect-auto md:max-lg:min-h-64">
-                  <Image
-                    src={study.image}
-                    alt={study.alt}
-                    fill
-                    sizes="(min-width: 1024px) 33vw, (min-width: 768px) 40vw, 100vw"
-                    style={{ objectPosition: study.imagePosition }}
-                    className="zoom-media object-cover"
-                  />
-                </div>
-                <div className="flex flex-1 flex-col p-6 md:p-7">
-                  <h3 className="text-eyebrow text-highlight">{study.name}</h3>
-                  <div className="mt-5 text-fg text-stat-lg">
-                    <CountUp value={study.metric} />
-                  </div>
-                  <p className="mt-4 font-semibold text-body text-fg lg:max-xl:min-h-[2lh]">
-                    {study.label}
-                  </p>
-                  <blockquote className="mt-5 border-violet-500/40 border-l-2 pl-4 text-fg-muted text-small">
-                    <p>{study.copy}</p>
-                    {study.attribution ? (
-                      <cite className="mt-3 flex items-center gap-2.5 font-medium text-highlight text-meta not-italic">
-                        <span
-                          aria-hidden
-                          className="h-px w-4 shrink-0 bg-current"
-                        />
-                        {study.attribution}
-                      </cite>
-                    ) : null}
-                  </blockquote>
-                </div>
-              </article>
+        <ul className="border-hairline-strong border-t">
+          {caseStudies.map((study) => (
+            <Reveal
+              as="li"
+              key={study.name}
+              className="grid gap-x-10 gap-y-7 border-hairline border-b py-10 last:border-b-0 md:grid-cols-12 md:items-start lg:py-12"
+            >
+              <Photo
+                src={study.image}
+                alt={study.alt}
+                aspect="3/2"
+                position={study.imagePosition}
+                sizes="(min-width: 768px) 33vw, 100vw"
+                className="md:col-span-5 md:max-lg:row-span-2 lg:col-span-4"
+              />
+              <div className="md:col-span-7 lg:col-span-3">
+                <h3 className="font-semibold text-highlight text-small">
+                  {study.name}
+                </h3>
+                <p className="tabular mt-3 text-fg text-stat-xl">
+                  <CountUp value={study.metric} />
+                </p>
+              </div>
+              <div className="md:col-span-7 md:col-start-6 lg:col-span-5 lg:col-start-8">
+                <p className="text-fg text-heading-md">{study.label}</p>
+                <blockquote className="mt-5 text-body text-fg-muted">
+                  <p>{study.copy}</p>
+                  {study.attribution ? (
+                    <cite className="mt-4 block font-medium text-fg text-meta not-italic">
+                      {study.attribution}
+                    </cite>
+                  ) : null}
+                </blockquote>
+              </div>
             </Reveal>
           ))}
-        </div>
+        </ul>
         <ContactRow title={copy.contact} bookingFirst />
       </Container>
     </Section>

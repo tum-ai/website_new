@@ -43,6 +43,7 @@ export async function PartnersPage({
     getSiteFacts(),
   ]);
   const { intents, durations, recommendations, prompts, sections } = copy;
+  const admitted = admittedPerBatchOf(facts.community);
   return (
     <PartnershipProvider
       copy={{ intents, durations, recommendations, prompts }}
@@ -66,7 +67,7 @@ export async function PartnersPage({
           selection={{
             startedApplications: facts.community.startedApplicationsPerBatch,
             acceptanceRatePercent: facts.community.acceptanceRatePercent,
-            admitted: admittedPerBatchOf(facts.community),
+            admitted,
           }}
           copy={sections.proof}
         />
@@ -83,7 +84,7 @@ export async function PartnersPage({
         />
         <DirectorySection partners={partners} copy={sections.directory} />
         <CasesSection caseStudies={caseStudies} copy={sections.cases} />
-        <ContactSection copy={sections.contact} />
+        <ContactSection admitted={admitted} copy={sections.contact} />
       </main>
     </PartnershipProvider>
   );

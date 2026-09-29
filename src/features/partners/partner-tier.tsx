@@ -7,12 +7,14 @@ const labels = { gold: "Gold", silver: "Silver", bronze: "Bronze" };
 
 /*
  * Narrower rows (from `md` up) and smaller tiles carry the tier hierarchy:
- * gold `xl`, silver `lg`, bronze `md`; the supporters below use `sm`.
+ * gold `lg`, silver `md` on a narrower row, bronze `md` on the narrowest;
+ * the supporters below use `sm`. One step under the tile's largest sizes,
+ * so the wall reads as a board rather than a stack of white slabs.
  */
 const rows: { width: string; size: PartnerTileSize }[] = [
-  { width: "md:w-full", size: "xl" },
-  { width: "md:w-5/6", size: "lg" },
-  { width: "md:w-3/4", size: "md" },
+  { width: "md:w-full", size: "lg" },
+  { width: "md:w-5/6", size: "md" },
+  { width: "md:w-2/3", size: "md" },
 ];
 
 /** One tier's heading and its rotating row of three tiles. */

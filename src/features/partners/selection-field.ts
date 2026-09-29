@@ -5,6 +5,13 @@
  * counts are unit-tested against the config facts.
  */
 
+/** One mark's cell, in SVG viewBox units, shared by every drawing of a round. */
+export const MARK_PITCH = 12;
+/** Radius of a resting mark: every started application. */
+export const MARK_RADIUS = 2.4;
+/** Radius of a lit mark: an admitted member, drawn over its resting mark. */
+export const LIT_RADIUS = 3.6;
+
 /** A mark's cell in the field, counted from the top-left corner. */
 export type FieldCell = { column: number; row: number };
 

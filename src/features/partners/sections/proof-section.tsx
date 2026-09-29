@@ -1,13 +1,13 @@
 import type { CSSProperties } from "react";
 import { Container, Ledger, Reveal, Section } from "@/components/ds";
 import type { PartnerStat, PartnersSections } from "../data/partners";
-import { type SelectionField, selectionField } from "../selection-field";
-
-/** One mark's cell, in viewBox units. */
-const PITCH = 12;
-/** Radii of a mark: every application, and the admitted ones lit over it. */
-const MARK_RADIUS = 2.4;
-const LIT_RADIUS = 3.6;
+import {
+  LIT_RADIUS,
+  MARK_RADIUS,
+  MARK_PITCH as PITCH,
+  type SelectionField,
+  selectionField,
+} from "../selection-field";
 
 /**
  * Columns of the two layouts: 70 fills the wide column in 30 rows, 42 the

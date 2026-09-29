@@ -58,7 +58,7 @@ export function PartnersHero({
         </>
       }
       media={
-        <figure className="group/zoom relative isolate min-h-72 overflow-hidden rounded-signature bg-sunken md:min-h-108 lg:min-h-120">
+        <figure className="group/zoom relative isolate min-h-72 overflow-hidden rounded-4xl bg-sunken md:min-h-108 lg:min-h-120">
           <Image
             src="/assets/partners/hero.webp"
             alt="A speaker presenting to a packed auditorium at a TUM.ai event"
@@ -71,13 +71,8 @@ export function PartnersHero({
             aria-hidden
             className="absolute inset-0 bg-gradient-to-b from-40% from-transparent to-ink-950/85"
           />
-          <figcaption className="absolute inset-x-6 bottom-6 z-1 flex items-end justify-between gap-3 font-medium text-body text-white md:inset-x-7 md:bottom-7 lg:text-lead">
-            <span>
-              <Lines lines={copy.caption} />
-            </span>
-            <span className="hidden text-meta text-white/75 lg:inline">
-              TUM.ai
-            </span>
+          <figcaption className="absolute inset-x-6 bottom-6 z-1 font-medium text-body text-white md:inset-x-7 md:bottom-7 lg:text-lead">
+            <Lines lines={copy.caption} />
           </figcaption>
         </figure>
       }
