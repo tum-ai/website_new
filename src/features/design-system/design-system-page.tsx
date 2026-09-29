@@ -782,7 +782,7 @@ export function DesignSystemPage() {
                   label: "Raised",
                   value: eLabConfig.ventureFundingMillions,
                   prefix: "€",
-                  suffix: "M+",
+                  suffix: "M",
                   note: "Ledger lg",
                 },
                 { label: "Without a note", value: "48h" },

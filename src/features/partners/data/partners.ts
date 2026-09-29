@@ -123,7 +123,7 @@ export const partnerPillars = [
   },
   {
     title: "Venture (E-Lab)",
-    metric: `${eLabConfig.ventureFundingMillions}M+`,
+    metric: `${eLabConfig.ventureFundingMillions}M`,
     metricLabel: "Raised",
     description:
       "Raised by alumni and counting (YC, EWOR, Spherecast, Mercura, dryft). 25 teams each incubator iteration, alumni backed by YC, EWOR and top VCs, partners join exclusive demo days early.",
