@@ -76,14 +76,16 @@ export function DayRuler({
             data-mark-label=""
             className={cn(
               "absolute top-0 whitespace-nowrap",
-              share < 0.15
-                ? "-translate-x-1"
-                : share > 0.85
-                  ? "-translate-x-full"
-                  : "-translate-x-1/2",
+              share >= 0.15 && share <= 0.85 && "-translate-x-1/2",
               drawIn && "[animation-delay:900ms] motion-safe:animate-fade",
             )}
-            style={{ left: at(done) }}
+            style={
+              share < 0.15
+                ? { left: 0 }
+                : share > 0.85
+                  ? { right: 0 }
+                  : { left: at(done) }
+            }
           >
             {markLabel}
           </span>

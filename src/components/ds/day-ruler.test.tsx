@@ -42,14 +42,13 @@ describe("DayRuler", () => {
         <DayRuler days={20} elapsed={elapsed} markLabel="Today" />,
       );
       const node = container.querySelector<HTMLElement>("[data-mark-label]");
-      const result = { left: node?.style.left, className: node?.className };
+      const result = { left: node?.style.left, right: node?.style.right };
       unmount();
       return result;
     };
-    expect(label(10)).toMatchObject({ left: "50%" });
-    expect(label(10).className).toContain("-translate-x-1/2");
-    expect(label(1).className).not.toContain("-translate-x-1/2");
-    expect(label(19).className).toContain("-translate-x-full");
+    expect(label(10)).toEqual({ left: "50%", right: "" });
+    expect(label(1)).toEqual({ left: "0px", right: "" });
+    expect(label(19)).toEqual({ left: "", right: "0px" });
   });
 
   test("is hidden from assistive tech, labels included", async () => {

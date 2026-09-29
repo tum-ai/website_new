@@ -158,7 +158,7 @@ Page patterns
 - `CtaPanel`: the panel surface of `CtaBand` on its own (ink, aurora, grain, logomark), for places a whole band can't go, such as a bento cell.
 - `FaqSection`: sticky heading beside an accordion, with an eyebrow `index` and `defaultValue` (questions that start open). `FaqList` renders the accordion on its own and takes `defaultValue` too.
 - `Timeline`: a vertical rail that fills as you scroll (static under reduced motion). `alternate` zig-zags the items; `rail="dashed"`, `marker="number"` and `continuation` cover the E-Lab program.
-- `Steps`: a numbered process, with `rail` (`solid`, `dashed`, `none`), `marker` (`badge`, `dot`) and an optional per-step `number` (e.g. "02A"). `layout="rows"` sets each step as a hairline row with the number beside it, for steps that are sentences.
+- `Steps`: a numbered process, with `rail` (`solid`, `dashed`, `none`), `marker` (`badge`, `dot`), an optional per-step `number` (e.g. "02A") and a `detail` line under the title (such as the step's dates). `layout="rows"` sets each step as a hairline row with the number beside it, for steps that are sentences.
 - `StatGrid`: numeric values count up when they scroll into view (sizes `sm`–`xl` on the `text-stat-*` tokens); strings render as they are, or count with `count`.
 - `Ledger`: key figures as an annual-report ledger, one hairline row per figure with its label and a `note` on the left and the figure right-aligned (`size` `md` or `lg`). Same figure rules as `StatGrid`.
 - `KeyDates`: a round's important dates as a call for papers sets them. One hairline row per date, the label (and a `detail` line) on the left and the date in light figures on the right. Each row's `state` (`past`, `next`, `upcoming`) comes from the caller's own clock: past dates are struck through and say "(passed)" to screen readers, and the next one is in the accent with its `note`. `size` `md` or `lg`; `drawIn` draws the strikes once on load (above the fold).
@@ -835,7 +835,7 @@ No props of its own; see the source file for the root element or Base UI part it
 | `columns?` | `4 \| 3 \| 5` | Columns on wide screens. |
 | `marker?` | `"badge" \| "dot"` |  |
 | `rail?` | `"none" \| "solid" \| "dashed"` | The line that joins the markers on wide screens: `solid` hairline, `dashed` violet dashes (a path that runs on), or `none`. |
-| `items` | `StepItem[]` | The steps, in order. |
+| `items` | `StepItem[]` | The steps, in order: `title`, optional `description`, `detail` (a short line under the title, such as the step's dates), `icon`, `number` and `id`. |
 | `layout?` | `"columns" \| "rows"` | `columns` (default): markers on a rail, one column per step on wide screens. `rows`: one hairline row per step with the number beside it, for steps that are sentences rather than short labels. `rows` ignores `columns`, `rail`, `marker` and icons. |
 | `headingAs?` | `HeadingLevel` | Heading level of each step title. Default `h3`. |
 | `className?` | `string` | Classes merged over the wrapper. |
