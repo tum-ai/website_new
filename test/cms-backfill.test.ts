@@ -56,7 +56,8 @@ describe("the CMS backfill", () => {
     expect(ids.filter((id, index) => ids.indexOf(id) !== index)).toStrictEqual(
       [],
     );
-    for (const id of ids) expect(id).toMatch(/^[a-z0-9][a-z0-9-]*$/);
+    // Letters, digits and hyphens: singletons use their camelCase type name.
+    for (const id of ids) expect(id).toMatch(/^[a-zA-Z0-9][a-zA-Z0-9-]*$/);
   });
 
   test("every type is a content workspace type, never a live dataset one", () => {
