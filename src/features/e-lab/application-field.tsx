@@ -1,6 +1,8 @@
-import type { CSSProperties } from "react";
+import { eLabApplicationCopy } from "@/config/e-lab";
 import { applicationField, type FieldGroup } from "./data/field";
 import { gates } from "./data/selection";
+import { notableStartups } from "./data/venture-page";
+import { type FieldDotData, FieldDots } from "./field-dots";
 
 /** Dot radius in lattice units (the pitch between neighbours is 1). */
 const RADIUS = 0.3;
@@ -53,48 +55,54 @@ function delayOf(group: FieldGroup, index: number) {
 }
 
 /**
+ * Every dot with its fade delay. The dots that stay lit carry the alumni
+ * ventures, one each, in the data's order; once the ventures run out, the
+ * remaining lit dots open as places for a new team in the current cohort.
+ */
+const dots: FieldDotData[] = field.groups.flatMap((group) =>
+  group.dots.map((dot, index) => {
+    const lit = group.gateIndex === finalGate;
+    const venture = lit ? notableStartups[index] : undefined;
+    return {
+      x: round(dot.x),
+      y: round(dot.y),
+      delay: lit ? undefined : delayOf(group, index),
+      invite:
+        lit && !venture
+          ? (["Your team", eLabApplicationCopy.cohortName] as [string, string])
+          : undefined,
+      venture: venture && {
+        name: venture.name,
+        href: venture.href,
+        logoSrc: venture.logoSrc,
+        wordmark: venture.wordmarkLabel,
+      },
+    };
+  }),
+);
+const ventureCount = dots.filter((dot) => dot.venture).length;
+
+/**
  * The hero's field: one dot per team application of a round, evenly spaced
- * in an irregular outline. On load the dots go out one by one, gate after gate
- * (`.elab-field-out` in e-lab.css, opacity only), until only the teams that
- * reach the Final Pitch stay lit; with reduced motion it renders in that end
- * state. Server markup only. The drawing is decorative: the caption says
- * the same in words.
+ * in an irregular outline. On load the dots go out one by one, gate after
+ * gate (`.elab-field-out` in e-lab.css, opacity only), until only the teams
+ * that reach the Final Pitch stay lit; with reduced motion it renders in
+ * that end state. Pointing at a dot pushes the field aside (see FieldDots),
+ * and lit dots open into ventures that came out of the E-Lab.
  */
 export function ApplicationField({ className }: { className?: string }) {
   return (
     <figure className={className}>
-      <svg
-        aria-hidden="true"
-        focusable="false"
+      <FieldDots
+        dots={dots}
         viewBox={viewBox}
-        className="mx-auto block h-auto max-h-[34rem] w-full max-w-xl text-highlight"
-      >
-        {field.groups.map((group) => (
-          <g key={group.gateIndex} fill="currentColor">
-            {group.dots.map((dot, index) => (
-              <circle
-                key={`${dot.x}:${dot.y}`}
-                cx={round(dot.x)}
-                cy={round(dot.y)}
-                r={RADIUS}
-                className={
-                  group.gateIndex < finalGate ? "elab-field-out" : undefined
-                }
-                style={
-                  group.gateIndex < finalGate
-                    ? ({
-                        "--delay": `${delayOf(group, index)}ms`,
-                      } as CSSProperties)
-                    : undefined
-                }
-              />
-            ))}
-          </g>
-        ))}
-      </svg>
+        radius={RADIUS}
+        className="mx-auto block h-auto max-h-[34rem] w-full max-w-xl touch-manipulation overflow-visible text-highlight"
+      />
       <figcaption className="mx-auto mt-6 max-w-xl text-fg-subtle text-meta">
         Each dot is one team application in a round. The {finalists} still lit
-        pitch at the Final Pitch.
+        pitch at the Final Pitch: {ventureCount} open into ventures from earlier
+        cohorts, and {finalists - ventureCount} are left for new teams.
       </figcaption>
     </figure>
   );

@@ -16,6 +16,15 @@
     opacity: 0.16;
   }
 
+  /* The focus ring around an open venture logo: keyboard focus only. */
+  .elab-field-ring {
+    opacity: 0;
+  }
+
+  .elab-field-venture:focus-visible .elab-field-ring {
+    opacity: 1;
+  }
+
   @media (prefers-reduced-motion: no-preference) {
     .elab-field-out {
       animation: elab-field-out 1.2s var(--ease-brand) both;
