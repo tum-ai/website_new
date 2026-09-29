@@ -1,6 +1,14 @@
-import { eLabApplicationCopy, eLabConfig } from "@/config/e-lab";
+import { contentTokens } from "@/config/content-tokens";
+import { fillCodeTemplate } from "@/lib/content-tokens";
+import type { FaqTemplate } from "@/lib/faq-content";
 
-export const faq = [
+/**
+ * Questions founders ask, answered on /e-lab: the code source of the `e-lab`
+ * FAQ collection (see `features/e-lab/content.ts`). Answers may use
+ * `{{name}}` placeholders for site facts (`lib/content-tokens.ts`); the
+ * backfill copies them to the CMS as they are.
+ */
+export const faqTemplates: readonly FaqTemplate[] = [
   {
     question: "Can I apply as a solo founder?",
     answer:
@@ -18,7 +26,8 @@ export const faq = [
   },
   {
     question: "What is the time commitment for the program?",
-    answer: `The E-Lab is a ${eLabConfig.programWeeks}-week intensive program that requires significant time commitment. We expect participants to dedicate substantial time each week to building their startups, attending workshops, and participating in program activities.`,
+    answer:
+      "The E-Lab is a {{eLab.programWeeks}}-week intensive program that requires significant time commitment. We expect participants to dedicate substantial time each week to building their startups, attending workshops, and participating in program activities.",
   },
   {
     question: "Do you take equity in my startup?",
@@ -39,7 +48,7 @@ export const faq = [
 
   {
     question: "When is the application deadline?",
-    answer: `The application phase closes on ${eLabApplicationCopy.deadlineLabel}.`,
+    answer: "The application phase closes on {{eLab.deadline}}.",
   },
   {
     question: "Can I apply with a team?",
@@ -67,3 +76,9 @@ export const faq = [
       "Yes. Many of our participants balance studies or jobs alongside the program. The main requirement is that you can commit enough time to make consistent progress, attend the workshops, and engage with mentors.",
   },
 ];
+
+/** The /e-lab FAQ as the page shows it without the CMS: the code fallback. */
+export const faq = faqTemplates.map(({ question, answer }) => ({
+  question,
+  answer: fillCodeTemplate(answer, contentTokens),
+}));

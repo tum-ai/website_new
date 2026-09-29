@@ -1,6 +1,6 @@
 import { FaqSection } from "@/components/ds";
 import { ClosingSection } from "./closing-section";
-import { faq } from "./data/faq";
+import { getApplyFaqs } from "./content";
 import { Hero } from "./hero";
 import { recruitingCall } from "./round";
 import { Selection } from "./selection";
@@ -19,10 +19,12 @@ type ApplyPageProps = {
  * should apply (paper), what you'll work on (mist), how selection works
  * (paper), what members started since the founding (lavender), the FAQ
  * (mist), and the submission box (ink). Every date and the open state come
- * from `membershipConfig` at `now`.
+ * from `membershipConfig` at `now`; the FAQ comes from the content slice
+ * (`content.ts`: the CMS or the code list).
  */
-export function ApplyPage({ now }: ApplyPageProps) {
+export async function ApplyPage({ now }: ApplyPageProps) {
   const call = recruitingCall(now);
+  const faq = await getApplyFaqs();
   return (
     <main>
       <Hero call={call} />

@@ -1,8 +1,14 @@
-import { contactEmails } from "@/config/contact";
-import { recruitingTimeline as timeline } from "@/config/membership";
+import { contentTokens } from "@/config/content-tokens";
+import { fillCodeTemplate } from "@/lib/content-tokens";
+import type { FaqTemplate } from "@/lib/faq-content";
 
-/** Questions applicants ask, answered on /apply. */
-export const faq = [
+/**
+ * Questions applicants ask, answered on /apply: the code source of the
+ * `apply` FAQ collection (see `features/apply/content.ts`). Answers may use
+ * `{{name}}` placeholders for site facts (`lib/content-tokens.ts`); the
+ * backfill copies them to the CMS as they are.
+ */
+export const faqTemplates: readonly FaqTemplate[] = [
   {
     question: "Do I need to be proficient in AI to join TUM.ai?",
     answer:
@@ -10,7 +16,8 @@ export const faq = [
   },
   {
     question: "What does the application timeline look like?",
-    answer: `Application ${timeline.application}: Fill out our application form. Interview ${timeline.interview}: If you passed the screening phase, we will invite you to an interview round to get to know you better. Onboarding ${timeline.onboarding} (mandatory): Congratulations! You are invited to our onboarding weekend to get to know TUM.ai.`,
+    answer:
+      "Application {{recruiting.application}}: Fill out our application form. Interview {{recruiting.interview}}: If you passed the screening phase, we will invite you to an interview round to get to know you better. Onboarding {{recruiting.onboarding}} (mandatory): Congratulations! You are invited to our onboarding weekend to get to know TUM.ai.",
   },
   {
     question: "How should I prepare myself for the interview?",
@@ -19,6 +26,13 @@ export const faq = [
   },
   {
     question: "Where can I contact TUM.ai for recruitment purposes?",
-    answer: `If you have further questions, feel free to write us an email at ${contactEmails.recruitment}.`,
+    answer:
+      "If you have further questions, feel free to write us an email at {{contact.recruitmentEmail}}.",
   },
 ];
+
+/** The /apply FAQ as the page shows it without the CMS: the code fallback. */
+export const faq = faqTemplates.map(({ question, answer }) => ({
+  question,
+  answer: fillCodeTemplate(answer, contentTokens),
+}));
