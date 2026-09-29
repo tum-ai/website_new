@@ -21,6 +21,8 @@ export type FieldSim = {
   vy: Float32Array;
   s: Float32Array;
   vs: Float32Array;
+  /** Frame time not yet simulated, in seconds: always under one step. */
+  lag: number;
 };
 
 /** Spring stiffness and damping (per second): lively, with a small overshoot. */
@@ -30,8 +32,14 @@ const DAMPING = 16;
 export const GAP = 0.25;
 /** Smallest drawn and colliding scale, so a spring's overshoot never inverts a dot. */
 export const MIN_SCALE = 0.2;
-/** Substeps per frame and contact passes per substep. */
-const SUBSTEPS = 2;
+/**
+ * The fixed step the spring integrates, in seconds, with contact passes per
+ * step. A fixed step makes the motion the same at every frame rate and under
+ * frame-time jitter: a step that varied with the frame turned the contacts'
+ * leftover pushes into fresh velocity, and a packed field never came to rest.
+ * At 60 Hz this is two steps per frame.
+ */
+const STEP = 1 / 120;
 const CONTACT_PASSES = 3;
 /** Contact passes for the reduced-motion jump straight to the end state. */
 const RELAX_PASSES = 80;
@@ -41,6 +49,14 @@ const RELAX_PASSES = 80;
  * a pixel.
  */
 const REST = 0.002;
+/**
+ * A dot held by a neighbour counts as settled below this speed over the
+ * frame (lattice units per second, under a pixel per second on /e-lab). Its
+ * velocity is not a measure there: the spring and the contact cancel each
+ * step, leaving velocity on a dot that no longer moves, and the pushes the
+ * contact passes leave over make a packed rim creep slower than this.
+ */
+const CONTACT_REST = 0.03;
 
 /** A field of `count` dots at rest. */
 export function createFieldSim(count: number): FieldSim {
@@ -51,6 +67,7 @@ export function createFieldSim(count: number): FieldSim {
     vy: new Float32Array(count),
     s: new Float32Array(count).fill(1),
     vs: new Float32Array(count),
+    lag: 0,
   };
 }
 
@@ -65,8 +82,11 @@ const targetScale = (bodies: FieldBodies, index: number, aimed: number) =>
  * their radii plus {@link GAP}) are pushed apart, and the push becomes
  * velocity, so an opening dot shoves its neighbours, which shove theirs:
  * the field ripples outward and settles. The aimed dot has infinite mass
- * and stays under the pointer. A step of no time (a loop's first frame)
- * changes nothing and reports motion, so the loop goes on.
+ * and stays under the pointer. Time advances in fixed steps of
+ * {@link STEP}; the rest of `dt` carries over to the next call. A call
+ * shorter than a step (a loop's first frame, of no time) changes nothing
+ * and reports motion, so the loop goes on. A dot held by a neighbour is
+ * settled once it moves less than {@link CONTACT_REST} over the call.
  */
 export function stepField(
   sim: FieldSim,
@@ -74,14 +94,20 @@ export function stepField(
   aimed: number,
   dt: number,
 ): boolean {
-  // Pushes become velocity by dividing by the substep: none without time.
   if (!(dt > 0)) return true;
+  sim.lag += dt;
+  // Pushes become velocity by dividing by the step: none without a step.
+  const steps = Math.floor(sim.lag / STEP + 1e-6);
+  if (steps === 0) return true;
+  sim.lag = Math.max(sim.lag - steps * STEP, 0);
   const count = bodies.rest.length;
-  const h = dt / SUBSTEPS;
+  const h = STEP;
+  const startX = Float32Array.from(sim.ox);
+  const startY = Float32Array.from(sim.oy);
   const cx = new Float32Array(count);
   const cy = new Float32Array(count);
   const touched = new Uint8Array(count);
-  for (let sub = 0; sub < SUBSTEPS; sub++) {
+  for (let step = 0; step < steps; step++) {
     for (let index = 0; index < count; index++) {
       const ts = targetScale(bodies, index, aimed);
       const ox = sim.ox[index] ?? 0;
@@ -108,19 +134,24 @@ export function stepField(
     }
   }
 
+  const elapsed = steps * h;
   for (let index = 0; index < count; index++) {
-    const speed =
-      Math.abs(sim.vx[index] ?? 0) +
-      Math.abs(sim.vy[index] ?? 0) +
-      Math.abs(sim.vs[index] ?? 0);
     const growth = Math.abs(
       targetScale(bodies, index, aimed) - (sim.s[index] ?? 1),
     );
-    // A dot held out by a neighbour is at rest off home; a free one is not.
-    const away = touched[index]
-      ? 0
-      : Math.abs(sim.ox[index] ?? 0) + Math.abs(sim.oy[index] ?? 0);
-    if (speed > REST || growth > REST || away > REST) return true;
+    const sizing = Math.abs(sim.vs[index] ?? 0);
+    if (growth > REST || sizing > REST) return true;
+    if (touched[index]) {
+      // Held out by a neighbour: at rest off home once it stops moving.
+      const moved =
+        Math.abs((sim.ox[index] ?? 0) - (startX[index] ?? 0)) +
+        Math.abs((sim.oy[index] ?? 0) - (startY[index] ?? 0));
+      if (moved / elapsed > CONTACT_REST) return true;
+      continue;
+    }
+    const speed = Math.abs(sim.vx[index] ?? 0) + Math.abs(sim.vy[index] ?? 0);
+    const away = Math.abs(sim.ox[index] ?? 0) + Math.abs(sim.oy[index] ?? 0);
+    if (speed > REST || away > REST) return true;
   }
   return false;
 }

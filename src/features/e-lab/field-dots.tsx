@@ -59,8 +59,8 @@ const CATCH = 1.1;
 /** Extra reach past an open dot's edge before the pointer leaves it. */
 const HIT_SLOP = 0.2;
 /**
- * The longest step the spring integrates, in seconds: after a dropped frame
- * or a background tab the field resumes instead of jumping.
+ * The longest frame time the field advances by, in seconds: after a dropped
+ * frame or a background tab the field resumes instead of jumping.
  */
 const MAX_STEP_S = 1 / 30;
 /** A logo may overshoot with its dot's spring, up to this scale. */
