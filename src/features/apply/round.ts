@@ -5,9 +5,11 @@ import {
   isMembershipApplicationOpen,
   type MembershipConfig,
   membershipConfig,
+  membershipWindowClock,
   type RoundSchedule,
   roundSchedule,
 } from "@/config/membership";
+import type { ClockWindow } from "@/lib/clock-window";
 import { munichDayNumber, munichIsoDate } from "@/lib/munich-time";
 
 /** Where the call stands: not yet open, taking applications, or closed. */
@@ -16,6 +18,11 @@ export type CallPhase = "upcoming" | "open" | "closed";
 /** Everything /apply shows about the recruiting round at one instant. */
 export type RecruitingCall = {
   phase: CallPhase;
+  /**
+   * The application window as instants, for the islands that switch live
+   * when the form opens and at the deadline (the apply action).
+   */
+  clock: ClockWindow;
   /** Who the round recruits for ("Winter semester 2026/27"). */
   name: string;
   /** The application form, for the apply action while the call is open. */
@@ -185,6 +192,7 @@ export function recruitingCall(
 
   return {
     phase,
+    clock: membershipWindowClock(config),
     name: config.round.name,
     applicationUrl: config.applicationUrl,
     keyDates,

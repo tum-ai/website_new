@@ -13,3 +13,4 @@
 export { departments } from "./data/departments";
 export { type JourneyStep, memberJourney } from "./data/member-journey";
 export type { MemberStory } from "./data/member-stories";
+export { MembershipPhase } from "./membership-phase";

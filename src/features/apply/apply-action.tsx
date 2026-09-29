@@ -1,6 +1,11 @@
 import { Button, ButtonLink, StatusBadge } from "@/components/ds";
 import { callToActionLabels } from "@/config/calls-to-action";
-import type { CallPhase } from "./round";
+import { MembershipPhase } from "@/features/community";
+import {
+  type CallPhase,
+  closedLabel as closedLabelOf,
+  type RecruitingCall,
+} from "./round";
 
 type ApplyActionProps = {
   /** The call's phase at render time (`recruitingCall(now).phase`). */
@@ -51,5 +56,44 @@ export function ApplyAction({
         </StatusBadge>
       </span>
     </>
+  );
+}
+
+/**
+ * The apply action for the render's call, kept current in the browser: it
+ * becomes the form link when the form opens and the inert button at the
+ * deadline, through the same membership window island as the header CTA
+ * and the closing bands (<MembershipPhase>), so the /apply page (hourly
+ * ISR) never offers a closed form or hides an open one in between.
+ */
+export function LiveApplyAction({
+  call,
+  statusId,
+}: {
+  call: RecruitingCall;
+  statusId: string;
+}) {
+  // While open, the closed variant is what the deadline turns it into.
+  const closedPhase = call.phase === "open" ? "closed" : call.phase;
+  return (
+    <MembershipPhase
+      clock={call.clock}
+      open={
+        <ApplyAction
+          phase="open"
+          href={call.applicationUrl}
+          statusId={statusId}
+          closedLabel=""
+        />
+      }
+      closed={
+        <ApplyAction
+          phase={closedPhase}
+          href={call.applicationUrl}
+          statusId={statusId}
+          closedLabel={closedLabelOf({ ...call, phase: closedPhase })}
+        />
+      }
+    />
   );
 }

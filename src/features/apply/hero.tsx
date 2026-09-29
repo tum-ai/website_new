@@ -1,8 +1,8 @@
 import { ButtonLink, DayRuler, KeyDates, PageHero } from "@/components/ds";
 import { fillPageTokens } from "@/lib/content-copy";
-import { ApplyAction } from "./apply-action";
+import { LiveApplyAction } from "./apply-action";
 import type { ApplyCopy } from "./data/apply";
-import { callStatus, closedLabel, type RecruitingCall } from "./round";
+import { callStatus, type RecruitingCall } from "./round";
 
 /**
  * The call for members: the title and status on the left, and the page's
@@ -31,12 +31,7 @@ export function Hero({
       }
       actions={
         <>
-          <ApplyAction
-            phase={call.phase}
-            href={call.applicationUrl}
-            statusId="apply-hero-status"
-            closedLabel={closedLabel(call)}
-          />
+          <LiveApplyAction call={call} statusId="apply-hero-status" />
           <ButtonLink href="#apply-faq" size="lg" variant="outline">
             {copy.faqLabel}
           </ButtonLink>

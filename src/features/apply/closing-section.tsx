@@ -8,14 +8,9 @@ import {
   TextLink,
 } from "@/components/ds";
 import { callToActionLabels } from "@/config/calls-to-action";
-import { ApplyAction } from "./apply-action";
+import { LiveApplyAction } from "./apply-action";
 import type { ApplyCopy } from "./data/apply";
-import {
-  closedLabel,
-  closingLead,
-  closingTitle,
-  type RecruitingCall,
-} from "./round";
+import { closingLead, closingTitle, type RecruitingCall } from "./round";
 
 /**
  * The call's submission box, on ink: the hero's register reduced to the one
@@ -60,12 +55,7 @@ export function ClosingSection({
               {closingLead(call)}
             </p>
             <Actions className="mt-10">
-              <ApplyAction
-                phase={call.phase}
-                href={call.applicationUrl}
-                statusId="apply-close-status"
-                closedLabel={closedLabel(call)}
-              />
+              <LiveApplyAction call={call} statusId="apply-close-status" />
               <ButtonLink href="/qanda" size="lg" variant="outline">
                 {callToActionLabels.questions}
               </ButtonLink>
