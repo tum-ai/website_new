@@ -237,3 +237,80 @@ test.describe("header navigation", { tag: "@keyboard" }, () => {
     await expect(links.last()).toBeFocused();
   });
 });
+
+test.describe("interactive figures", { tag: "@keyboard" }, () => {
+  test("the research globe turns with the arrow keys", async ({ page }) => {
+    await page.goto("/research");
+    const globe = page.getByRole("slider", {
+      name: "Globe of our research sites",
+    });
+    const centre = async () =>
+      Number(await globe.getAttribute("aria-valuenow"));
+    const start = await centre();
+
+    await globe.focus();
+    await expect(globe).toBeFocused();
+    // Right raises the value: the longitude at the centre moves east.
+    await page.keyboard.press("ArrowRight");
+    await expect.poll(centre).toBeGreaterThan(start);
+    await page.keyboard.press("ArrowLeft");
+    await expect.poll(centre).toBe(start);
+    await expect(globe).toHaveAttribute("aria-valuetext", /^Centred on/);
+  });
+
+  test("the events co-host reel steps with the arrow keys", async ({
+    page,
+  }) => {
+    await page.goto("/events");
+    // The reel is a named group only with motion allowed and scripts on;
+    // under reduced motion the hero is a static list.
+    const reel = page.getByRole("group", { name: /^Co-hosts:/ });
+    await expect(reel).toBeVisible();
+    // The panel beside the reel shows the events of the name in the slot.
+    const panels = page.locator("[data-host-panel]");
+    const count = await panels.count();
+    expect(count).toBeGreaterThan(1);
+    const shown = (index: number) =>
+      page.locator(`[data-host-panel="${index}"]`);
+    await expect(shown(0)).toHaveAttribute("data-active", "");
+
+    await reel.focus();
+    await page.keyboard.press("ArrowDown");
+    await expect(shown(1)).toHaveAttribute("data-active", "");
+    await expect(shown(0)).not.toHaveAttribute("data-active");
+
+    // Back past the first name: the reel wraps to the last.
+    await page.keyboard.press("ArrowUp");
+    await page.keyboard.press("ArrowUp");
+    await expect(shown(count - 1)).toHaveAttribute("data-active", "");
+  });
+
+  test("a focused venture in the E-Lab field opens, and closes on blur", async ({
+    page,
+  }) => {
+    await page.goto("/e-lab");
+    const ventures = page.getByRole("link", { name: /, an E-Lab venture/ });
+    const first = ventures.first();
+    const second = ventures.nth(1);
+
+    await first.focus();
+    await expect(first).toBeFocused();
+    await expect(first).toHaveAttribute("data-expanded", "true");
+
+    // The next Tab stop is the next venture: the first closes as it opens.
+    await pressTab(page);
+    await expect(second).toBeFocused();
+    await expect(second).toHaveAttribute("data-expanded", "true");
+    await expect(first).toHaveAttribute("data-expanded", "false");
+  });
+});
+
+test.describe("deep links", { tag: "@keyboard" }, () => {
+  test("/qanda#member-journey opens that answer", async ({ page }) => {
+    await page.goto("/qanda#member-journey");
+    const question = page
+      .getByRole("main")
+      .getByRole("button", { name: "What does the member journey look like?" });
+    await expect(question).toHaveAttribute("aria-expanded", "true");
+  });
+});
