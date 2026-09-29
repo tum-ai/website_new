@@ -1,5 +1,9 @@
 import { organizationByKey } from "@/features/partners";
-import type { LogoLists, Organization } from "@/lib/people-and-logos";
+import {
+  type LogoLists,
+  type Organization,
+  personRoleLine,
+} from "@/lib/people-and-logos";
 
 /**
  * The /e-lab venture content: the code source of the E-Lab testimonials
@@ -15,6 +19,7 @@ import type { LogoLists, Organization } from "@/lib/people-and-logos";
 export interface TestimonialCard {
   id: string;
   name: string;
+  /** The line under the name, "@ organisation" included. */
   role: string;
   context?: string;
   quote: string;
@@ -41,24 +46,26 @@ export interface NotableStartup {
 
 /**
  * A testimonial as code writes it: the organisation the person speaks for
- * by key, whose light logo attributes the quote.
+ * by key, whose light logo attributes the quote, and whether the role is
+ * held there (then `role` is only the position; see `personRoleLine`).
  */
 export type Testimonial = Omit<
   TestimonialCard,
   "organizationLogoSrc" | "organizationLogoAlt"
-> & { organization: string };
+> & { organization: string; roleAtOrganization?: true };
 
 /**
- * A testimonial with its organisation's logo, or `null` when the
- * organisation has no light logo.
+ * A testimonial with its organisation's logo and its role line, or `null`
+ * when the organisation has no light logo.
  */
 function testimonialCardOf(
-  { organization: _, ...testimonial }: Testimonial,
-  organization: Pick<Organization, "logo">,
+  { organization: _, roleAtOrganization, ...testimonial }: Testimonial,
+  organization: Pick<Organization, "logo" | "name" | "shortName">,
 ): TestimonialCard | null {
   if (!organization.logo) return null;
   return {
     ...testimonial,
+    role: personRoleLine(testimonial.role, organization, roleAtOrganization),
     organizationLogoSrc: organization.logo.src,
     organizationLogoAlt: organization.logo.alt,
   };
@@ -98,12 +105,13 @@ export const testimonials = [
   {
     id: "oliver-schoppe",
     name: "Oliver Schoppe",
-    role: "Principal @ UVC Partners",
+    role: "Principal",
     context: "Mentor & Investor",
     quote:
       "The quality of founders coming out of E-Lab is exceptional. We're proud to be part of this community.",
     portraitSrc: "/assets/e-lab/testimonials/oliver_schoppe.png",
     organization: "uvc-partners",
+    roleAtOrganization: true,
   },
   {
     id: "viktor-shen",
@@ -118,20 +126,22 @@ export const testimonials = [
   {
     id: "axel-taeubert",
     name: "Axel Täubert",
-    role: "Head of Startups @ Google Cloud",
+    role: "Head of Startups",
     quote:
       "Truly impressive what the team has built. 🚀 We’re just getting started",
     portraitSrc: "/assets/e-lab/testimonials/axel_taeubert.webp",
     organization: "google-cloud",
+    roleAtOrganization: true,
   },
   {
     id: "alexandra-reinert",
     name: "Alexandra Reinert",
-    role: "Partner @ Accel",
+    role: "Partner",
     quote:
       "The density of real builders at the E-Lab Final Pitch is exactly what Tier-1 venture funds look for at the pre-seed stage",
     portraitSrc: "/assets/e-lab/testimonials/alexandra_reinert.webp",
     organization: "accel",
+    roleAtOrganization: true,
   },
 ] satisfies readonly Testimonial[];
 

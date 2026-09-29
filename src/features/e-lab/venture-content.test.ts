@@ -160,6 +160,43 @@ describe("incomplete CMS content", () => {
     });
   });
 
+  test("a testimonial's role reads “position @ organisation” when held there", async () => {
+    useSource("sanity");
+    const image = (src: string) => ({
+      src,
+      width: 100,
+      height: 100,
+      alt: "",
+      hotspot: null,
+    });
+    const person = (key: string, role: string, atOrganization: boolean) => ({
+      key,
+      name: key,
+      role,
+      context: null,
+      quote: "Great.",
+      story: null,
+      portrait: image(`https://cdn.sanity.io/${key}.webp`),
+      organization: {
+        key: "harvard-university",
+        name: "Harvard University",
+        shortName: "Harvard",
+        logo: image("https://cdn.sanity.io/harvard.svg"),
+      },
+      roleAtOrganization: atOrganization,
+    });
+    override.result = [
+      person("fellow", "Fellow", true),
+      person("founder", "Founder @ Engines", false),
+    ];
+    expect(
+      (await getTestimonialCards()).map(({ id, role }) => [id, role]),
+    ).toStrictEqual([
+      ["fellow", "Fellow @ Harvard"],
+      ["founder", "Founder @ Engines"],
+    ]);
+  });
+
   test("a complete CMS trace replaces the code trace whole, without its `now`", async () => {
     useSource("sanity");
     override.result = {

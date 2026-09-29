@@ -10,6 +10,7 @@ import {
   getLogoLists,
   organizationReference,
 } from "@/lib/organization-content";
+import { personRoleLine } from "@/lib/people-and-logos";
 import { buildPersonBackfill, getPeople, personId } from "@/lib/person-content";
 import type { VENTURE_TRACE_QUERY_RESULT } from "@/lib/sanity.types.generated";
 import { isHttpsUrl } from "@/lib/security";
@@ -64,7 +65,16 @@ export function getTestimonialCards(): Promise<TestimonialCard[]> {
     fallback: testimonialCards,
     label: "the E-Lab testimonials",
     mockDocuments: ventureMockDocuments,
-    select: ({ key, name, role, context, quote, portrait, organization }) => {
+    select: ({
+      key,
+      name,
+      role,
+      context,
+      quote,
+      portrait,
+      organization,
+      roleAtOrganization,
+    }) => {
       const image = toContentImage(portrait);
       const logo = toContentImage(organization?.logo);
       if (!quote || !image || !logo) {
@@ -76,7 +86,7 @@ export function getTestimonialCards(): Promise<TestimonialCard[]> {
       return {
         id: key,
         name,
-        role,
+        role: personRoleLine(role, organization, roleAtOrganization),
         ...(context ? { context } : {}),
         quote,
         portraitSrc: image.src,

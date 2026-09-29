@@ -85,7 +85,7 @@ export const personType = defineType({
       title: "Role",
       type: "string",
       description:
-        "One line under the name. Member stories: degree and university (“Computer Science, TUM”). Partner profiles and testimonials: position and organisation (“Partner @ Accel”).",
+        "One line under the name. Member stories: degree and university (“Computer Science, TUM”). Partner profiles and testimonials: the position (“Partner”) when “Role at the organisation” is on, which adds “@ Accel”; a role elsewhere than the organisation below is written out whole (“Co-Founder @ Spherecast”).",
       validation: (Rule) => Rule.required().max(80),
     }),
     defineField({
@@ -131,8 +131,7 @@ export const personType = defineType({
       type: "reference",
       to: [{ type: "organization" }],
       description:
-        "Testimonials: the organisation the person speaks for; its light logo is shown with the quote.",
-      hidden: onlyFor("e-lab-testimonial"),
+        "The organisation the person works at or speaks for. Testimonials need one: its light logo is shown with the quote. Optional for the others.",
       validation: (Rule) =>
         Rule.custom(
           requiredFor(
@@ -140,6 +139,14 @@ export const personType = defineType({
             "e-lab-testimonial",
           ),
         ),
+    }),
+    defineField({
+      name: "roleAtOrganization",
+      title: "Role at the organisation",
+      type: "boolean",
+      description:
+        "On: the line under the name reads “<role> @ <organisation>” (its short name, if set), so the role holds only the position. Off: the role is shown as written.",
+      hidden: ({ document }) => !document?.organization,
     }),
   ],
   orderings: [

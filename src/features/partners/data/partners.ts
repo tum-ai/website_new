@@ -1,6 +1,8 @@
 import type { SiteFacts } from "@/config/site-facts";
 import type { ContentImage } from "@/lib/cms-content-model";
 import { type ContentTokens, fillCodeTemplate } from "@/lib/content-tokens";
+import { personRoleLine } from "@/lib/people-and-logos";
+import { organizationByKey } from "./organizations";
 import type { PartnershipFinderCopy } from "./partnership-finder";
 
 /**
@@ -194,6 +196,7 @@ export type PartnerProfile = {
    */
   key: string;
   name: string;
+  /** The line under the name, "@ organisation" included. */
   role: string;
   /** One line under the role; empty for none. */
   detail: string;
@@ -202,11 +205,22 @@ export type PartnerProfile = {
   position: string;
 };
 
-export const partnerProfiles: readonly PartnerProfile[] = [
+/**
+ * A profile as code writes it: the position in `role`, held at the
+ * organisation with the key `organization` (see `personRoleLine`).
+ */
+export type PartnerProfileTemplate = PartnerProfile & {
+  organization?: string;
+  roleAtOrganization?: true;
+};
+
+export const partnerProfileTemplates: readonly PartnerProfileTemplate[] = [
   {
     key: "leonie-freisinger",
     name: "Leonie Freisinger",
-    role: "Co-Founder & CTO @Dryft",
+    role: "Co-Founder & CTO",
+    organization: "dryft",
+    roleAtOrganization: true,
     detail: "5M raised, GC/Neo-backed",
     image: "/assets/partners/people/leonie-portrait.webp",
     position: "56% 35%",
@@ -214,7 +228,9 @@ export const partnerProfiles: readonly PartnerProfile[] = [
   {
     key: "mohamed-elrefaie",
     name: "Mohamed Elrefaie",
-    role: "PhD Researcher @MIT",
+    role: "PhD Researcher",
+    organization: "mit",
+    roleAtOrganization: true,
     detail: "Schwarzman College",
     image: "/assets/partners/people/mohamed-portrait.webp",
     position: "52% 30%",
@@ -222,12 +238,26 @@ export const partnerProfiles: readonly PartnerProfile[] = [
   {
     key: "jasmin-el-wafi",
     name: "Jasmin El-Wafi",
-    role: "ML Consultant & Systems Architect @AWS",
+    role: "ML Consultant & Systems Architect",
+    organization: "aws",
+    roleAtOrganization: true,
     detail: "",
     image: "/assets/partners/people/jasmin-portrait.webp",
     position: "55% 35%",
   },
 ];
+
+export const partnerProfiles: readonly PartnerProfile[] =
+  partnerProfileTemplates.map(
+    ({ organization, roleAtOrganization, ...profile }) => ({
+      ...profile,
+      role: personRoleLine(
+        profile.role,
+        organization ? organizationByKey(organization) : undefined,
+        roleAtOrganization,
+      ),
+    }),
+  );
 
 /**
  * How partners meet the members, in one sentence: the partner fork in the
@@ -246,7 +276,11 @@ export type PartnerCaseStudy = {
   /** The outcome in a few words, for the homepage ledger. */
   summary: string;
   copy: string;
-  /** Who said it, when `copy` is a quote. */
+  /**
+   * Who said it, when `copy` is a quote, as they sign; written out whole,
+   * since the company part ("BMW Group") can differ from the organisation's
+   * name ("BMW").
+   */
   attribution?: string;
   image: string;
   alt: string;

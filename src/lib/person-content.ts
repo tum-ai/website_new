@@ -36,8 +36,10 @@ export const PEOPLE_QUERY =
   "organization": organization->{
     key,
     name,
+    shortName,
     "logo": logo${CONTENT_IMAGE_PROJECTION}
-  }
+  },
+  roleAtOrganization
 }`);
 
 /** One person as {@link PEOPLE_QUERY} returns it. */
@@ -54,8 +56,10 @@ export type PersonTemplate = {
   story?: string;
   /** A shipped `/assets/...` file; `objectPosition` becomes the hotspot. */
   portrait: { src: string; alt?: string; objectPosition?: string };
-  /** The key of the organisation the person speaks for. */
+  /** The key of the organisation the person speaks for or works at. */
   organization?: string;
+  /** The role is held at `organization`: pages show "role @ organisation". */
+  roleAtOrganization?: true;
 };
 
 /** The backfill `_id` of a person: placement and key. */
@@ -94,6 +98,7 @@ export function buildPersonBackfill(
     ...(person.organization
       ? { organization: organizationReference(person.organization) }
       : {}),
+    ...(person.roleAtOrganization ? { roleAtOrganization: true } : {}),
   }));
 }
 

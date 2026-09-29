@@ -162,3 +162,23 @@ export const personPlacements = [
 ] as const;
 
 export type PersonPlacement = (typeof personPlacements)[number]["value"];
+
+/**
+ * The line under a person's name: the role, followed by "@ organisation"
+ * (its short name, else its name) when the role is held there
+ * (`atOrganization`): "Partner @ Accel". A role held elsewhere than the
+ * organisation shown with the person (a founder quoted under an investor's
+ * logo) is written out whole in `role` ("Co-Founder @ Spherecast") and
+ * shown as it is, as is every role without an organisation.
+ */
+export function personRoleLine(
+  role: string,
+  organization:
+    | { name?: string | null; shortName?: string | null }
+    | null
+    | undefined,
+  atOrganization: boolean | null | undefined,
+): string {
+  const place = organization?.shortName?.trim() || organization?.name?.trim();
+  return atOrganization && place ? `${role.trim()} @ ${place}` : role;
+}

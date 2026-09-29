@@ -830,6 +830,7 @@ export type Person = {
     _type: "image";
   };
   organization?: OrganizationReference;
+  roleAtOrganization?: boolean;
 };
 
 export type LogoList = {
@@ -2967,7 +2968,7 @@ export type ORGANIZATIONS_BY_KEY_QUERY_RESULT = Array<{
 
 // Source: ../lib/person-content.ts
 // Variable: PEOPLE_QUERY
-// Query: *[_type == "person" && placement == $placement] | order(order asc){  key,  name,  role,  context,  quote,  story,  "portrait": portrait{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "organization": organization->{    key,    name,    "logo": logo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}  }}
+// Query: *[_type == "person" && placement == $placement] | order(order asc){  key,  name,  role,  context,  quote,  story,  "portrait": portrait{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "organization": organization->{    key,    name,    shortName,    "logo": logo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}  },  roleAtOrganization}
 export type PEOPLE_QUERY_RESULT = Array<{
   key: string;
   name: string;
@@ -2994,6 +2995,7 @@ export type PEOPLE_QUERY_RESULT = Array<{
   organization: {
     key: string;
     name: string;
+    shortName: string | null;
     logo: {
       src: string | null;
       width: number | null;
@@ -3011,6 +3013,7 @@ export type PEOPLE_QUERY_RESULT = Array<{
       } | null;
     } | null;
   } | null;
+  roleAtOrganization: boolean | null;
 }>;
 
 // Source: ../lib/sanity-queries.ts

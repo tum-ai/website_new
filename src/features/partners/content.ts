@@ -16,6 +16,7 @@ import {
 import { fillCmsCopy, fillCodeCopy } from "@/lib/content-copy";
 import { type ContentTokens, fillTemplate } from "@/lib/content-tokens";
 import { organizationReference } from "@/lib/organization-content";
+import { personRoleLine } from "@/lib/people-and-logos";
 import { buildPersonBackfill, getPeople } from "@/lib/person-content";
 import type {
   PARTNER_CASE_STUDIES_QUERY_RESULT,
@@ -39,6 +40,7 @@ import {
   partnerPillarTemplates,
   partnerPitch,
   partnerProfiles,
+  partnerProfileTemplates,
   partnerReasons,
   partnerStatTemplates,
   partnersSections,
@@ -357,13 +359,21 @@ export function getPartnerProfiles(): Promise<PartnerProfile[]> {
     fallback: [...partnerProfiles],
     label: "the partner profiles",
     mockDocuments: partnersMockDocuments,
-    select: ({ key, name, role, context, portrait }) => {
+    select: ({
+      key,
+      name,
+      role,
+      context,
+      portrait,
+      organization,
+      roleAtOrganization,
+    }) => {
       const image = toContentImage(portrait);
       if (!name || !role || !image) return null;
       return {
         key,
         name,
-        role,
+        role: personRoleLine(role, organization, roleAtOrganization),
         detail: context ?? "",
         image: image.src,
         position: image.objectPosition ?? "50% 50%",
@@ -441,13 +451,13 @@ export function buildPartnersBackfill(): BackfillDocument[] {
     })),
     ...buildPersonBackfill(
       "partner-profile",
-      partnerProfiles.map(({ key, name, role, detail, image, position }) => ({
-        key,
-        name,
-        role,
-        ...(detail ? { context: detail } : {}),
-        portrait: { src: image, objectPosition: position },
-      })),
+      partnerProfileTemplates.map(
+        ({ detail, image, position, ...profile }) => ({
+          ...profile,
+          ...(detail ? { context: detail } : {}),
+          portrait: { src: image, objectPosition: position },
+        }),
+      ),
     ),
   ];
 }

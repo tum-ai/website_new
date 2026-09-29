@@ -94,7 +94,7 @@ export const caseStudyType = defineType({
       title: "Attribution",
       type: "string",
       description:
-        "Who said it, when the story is a quote: “Manuel, Head of Innovation, BMW Group”. Optional.",
+        "Who said it, when the story is a quote, as they sign: “Manuel, Head of Innovation, BMW Group”. Written out whole, since the company part can differ from the organisation's name (“BMW”). Optional.",
       validation: (Rule) => Rule.max(80),
     }),
     photoField({
