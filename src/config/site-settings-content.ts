@@ -29,6 +29,7 @@ export const SITE_SETTINGS_QUERY =
     universities,
     nationalities,
     acceptanceRate,
+    startedApplicationsPerBatch,
     linkedinAudience
   },
   brandMission,

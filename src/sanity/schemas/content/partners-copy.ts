@@ -253,7 +253,7 @@ export const partnersCopyType = defineType({
       type: "array",
       group: "sections",
       description:
-        "The figures on violet (“Small acceptance rate. Outsized potential.”). Figures that are site facts stay placeholders, so they follow the site settings.",
+        "The figures in the night band beside the selection field (“Small acceptance rate. Outsized potential.”). Figures that are site facts stay placeholders, so they follow the site settings.",
       of: [
         {
           type: "object",
@@ -431,7 +431,19 @@ export const partnersCopyType = defineType({
           }),
           line("contact", "Contact row", 40),
         ]),
-        band("proof", "Figures", [line("title", "Title", 60)]),
+        band("proof", "Figures", [
+          line("title", "Title", 60),
+          copyText({
+            name: "caption",
+            title: "Selection caption",
+            max: 200,
+            rows: 2,
+            required: false,
+            placeholders: true,
+            description:
+              "Under the drawing of one recruiting round: says in words what the marks show.",
+          }),
+        ]),
         band("pillars", "Pillars", [
           lines("title", "Title", { max: 24, maxLines: 2 }),
           copyText({

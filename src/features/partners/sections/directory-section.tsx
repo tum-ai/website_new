@@ -28,7 +28,7 @@ export function DirectorySection({
     <Section
       id="our-partners"
       tone="night"
-      grain
+      spacing="lg"
       aria-labelledby="partner-directory-title"
       className="scroll-mt-header"
     >

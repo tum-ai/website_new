@@ -149,7 +149,7 @@ Layout
 
 Page patterns
 - `PageHero`: every page starts with one: a flat ink band (no aurora or grain). It accepts `eyebrow`, `title` (strings rise in word by word, and `<Highlight>` parts work), `lead`, `actions`, an optional `media` column, `children` (for stats or filters under the headline) and `classNames` slots. `emphasis="highlight"` sets the whole title in the tone's accent, as on the brand guide's section slides; keep the default when the title marks words with `<Highlight>`. `size="fit"` caps the title for long single words (the privacy page). It clears the fixed header.
-- `CtaBand`: closing call to action. `variant="panel"` is an inset ink panel; `variant="band"` is full bleed. Takes `children` and `classNames.footer`.
+- `CtaBand`: closing call to action on flat ink (no aurora or grain). `variant="panel"` is an inset ink panel; `variant="band"` is full bleed. `mark={false}` drops the drifting logomark when `visual` is the band's artwork. Takes `children` and `classNames.footer`.
 - `FaqSection`: sticky heading beside an accordion, with `defaultValue` (questions that start open). No eyebrow by default. `FaqList` renders the accordion on its own (one answer open at a time) and takes `defaultValue` too, or `value` with `onValueChange` when a parent reacts to the open question. An item with an `id` is deep-linkable: a link to `#id` opens it, on load and on later fragment changes.
 - `Steps`: a numbered process, with `rail` (`solid`, `dashed`, `none`), `marker` (`badge`, `dot`), an optional per-step `number` (e.g. "02A") and a `detail` line under the title (such as the step's dates). `layout="rows"` sets each step as a hairline row with the number beside it, for steps that are sentences.
 - `StatGrid`: numeric values count up when they scroll into view (sizes `sm`–`xl` on the `text-stat-*` tokens); strings render as they are, or count with `count`.
@@ -428,6 +428,7 @@ prop. When this table and the source disagree, the source wins: update the table
 | `id?` | `string` | Anchor id for the section (e.g. "contact"). |
 | `variant?` | `"panel" \| "band"` | `panel`: rounded ink panel inset in a light band (default). `band`: full-bleed dark band. |
 | `tone?` | `Tone` | Surrounding band tone for the `panel` variant. Default `paper`. |
+| `mark?` | `boolean` | The drifting logomark behind the content. Default true; turn it off when `visual` is the band's artwork. |
 | `classNames?` | `CtaBandClassNames` | Class overrides for the inner parts. |
 | `className?` | `string` | Classes merged over the section. |
 

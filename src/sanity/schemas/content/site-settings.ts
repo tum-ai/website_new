@@ -143,6 +143,14 @@ export const siteSettingsType = defineType({
             "Share of applicants a recruiting round accepts, in percent with at most one decimal: 2.3. /partners shows it as “2.3%” and, rounded to a whole percent, in its “cracked …%” headings. Not a count, so no “+”.",
           validation: (Rule) => Rule.required().min(0).max(100).precision(1),
         }),
+        defineField({
+          name: "startedApplicationsPerBatch",
+          title: "Started applications per round",
+          type: "number",
+          description:
+            "Membership applications started in one recruiting round; shown with “+”. /partners draws the round from it and lights the accepted share.",
+          validation: (Rule) => Rule.integer().min(1),
+        }),
         countField(
           "linkedinAudience",
           "LinkedIn audience",

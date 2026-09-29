@@ -724,6 +724,7 @@ export type PartnersCopy = {
     };
     proof?: {
       title?: string;
+      caption?: string;
     };
     pillars?: {
       title?: Array<string>;
@@ -951,6 +952,7 @@ export type SiteSettings = {
     universities: number;
     nationalities: number;
     acceptanceRate: number;
+    startedApplicationsPerBatch?: number;
     linkedinAudience: number;
   };
   brandMission: string;
@@ -1275,7 +1277,7 @@ export type CAMPAIGNS_QUERY_RESULT = Array<{
 
 // Source: ../config/site-settings-content.ts
 // Variable: SITE_SETTINGS_QUERY
-// Query: *[_type == "siteSettings" && _id == "siteSettings"][0]{  organization{    foundingYear,    activeMembers,    alumni,    majors,    universities,    nationalities,    acceptanceRate,    linkedinAudience  },  brandMission,  impact{ publications, publicationVenues, hackathonParticipants },  community{ makeathonSize },  contactEmails{ general, partners, venture, recruitment },  socialLinks{ linkedin, instagram, github, x, youtube, facebook, tiktok, slack },  partnershipBooking{ bookingUrl, bookingHost },  eLab{    currentIteration,    programWeeks,    ventureFundingMillions,    selection{ applications, admitted, midterm, selectionDay, finalPitch },    "heroLogo": heroLogo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}  },  footerTagline,  headerCtaFallback}
+// Query: *[_type == "siteSettings" && _id == "siteSettings"][0]{  organization{    foundingYear,    activeMembers,    alumni,    majors,    universities,    nationalities,    acceptanceRate,    startedApplicationsPerBatch,    linkedinAudience  },  brandMission,  impact{ publications, publicationVenues, hackathonParticipants },  community{ makeathonSize },  contactEmails{ general, partners, venture, recruitment },  socialLinks{ linkedin, instagram, github, x, youtube, facebook, tiktok, slack },  partnershipBooking{ bookingUrl, bookingHost },  eLab{    currentIteration,    programWeeks,    ventureFundingMillions,    selection{ applications, admitted, midterm, selectionDay, finalPitch },    "heroLogo": heroLogo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}  },  footerTagline,  headerCtaFallback}
 export type SITE_SETTINGS_QUERY_RESULT = {
   organization: {
     foundingYear: number;
@@ -1285,6 +1287,7 @@ export type SITE_SETTINGS_QUERY_RESULT = {
     universities: number;
     nationalities: number;
     acceptanceRate: number;
+    startedApplicationsPerBatch: number | null;
     linkedinAudience: number;
   };
   brandMission: string;
@@ -2080,7 +2083,7 @@ export type HOME_COPY_QUERY_RESULT =
 
 // Source: ../features/partners/content.ts
 // Variable: PARTNERS_COPY_QUERY
-// Query: *[_id == "partnersCopy"][0]{  pitch,  intents{    talent{ label, shortLabel, detail },    hackathon{ label, shortLabel, detail },    brand{ label, shortLabel, detail },    research{ label, shortLabel, detail }  },  durations{    oneOff{ label, detail },    ongoing{ label, detail }  },  recommendations{    longTerm{ name, description },    hackathon{ name, description },    talent{ name, description },    brand{ name, description },    research{ name, description }  },  reasons[]{ icon, name, title, description },  stats[]{ value, label, detail },  pillars[]{    key,    title,    metricLabel,    description,    "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},    href  },  prompts{    intentQuestion,    durationQuestion,    resultQuestion,    firstChoice,    bookingTitle,    bookingLead,    bookingSlow  },  sections{    hero{ eyebrow, title, lead, contactLabel, fitLabel, caption },    marquee{ label, link },    finder{ eyebrow, title, lead, note },    reasons{ title, lead, contact },    proof{ title },    pillars{ title, lead },    people{ title, lead, statLabel, tagline, alumniTitle },    directory{ title, lead, supportersTitle },    cases{ title, lead, contact },    contact{ title, lead, emailLabel }  }}
+// Query: *[_id == "partnersCopy"][0]{  pitch,  intents{    talent{ label, shortLabel, detail },    hackathon{ label, shortLabel, detail },    brand{ label, shortLabel, detail },    research{ label, shortLabel, detail }  },  durations{    oneOff{ label, detail },    ongoing{ label, detail }  },  recommendations{    longTerm{ name, description },    hackathon{ name, description },    talent{ name, description },    brand{ name, description },    research{ name, description }  },  reasons[]{ icon, name, title, description },  stats[]{ value, label, detail },  pillars[]{    key,    title,    metricLabel,    description,    "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},    href  },  prompts{    intentQuestion,    durationQuestion,    resultQuestion,    firstChoice,    bookingTitle,    bookingLead,    bookingSlow  },  sections{    hero{ eyebrow, title, lead, contactLabel, fitLabel, caption },    marquee{ label, link },    finder{ eyebrow, title, lead, note },    reasons{ title, lead, contact },    proof{ title, caption },    pillars{ title, lead },    people{ title, lead, statLabel, tagline, alumniTitle },    directory{ title, lead, supportersTitle },    cases{ title, lead, contact },    contact{ title, lead, emailLabel }  }}
 export type PARTNERS_COPY_QUERY_RESULT =
   | {
       pitch: null;
@@ -2218,6 +2221,7 @@ export type PARTNERS_COPY_QUERY_RESULT =
         } | null;
         proof: {
           title: string | null;
+          caption: string | null;
         } | null;
         pillars: {
           title: Array<string> | null;

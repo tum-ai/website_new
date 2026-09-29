@@ -1,33 +1,179 @@
-import { Container, Reveal, Section, StatGrid } from "@/components/ds";
+import type { CSSProperties } from "react";
+import {
+  Container,
+  Ledger,
+  Reveal,
+  Section,
+  SectionHeader,
+} from "@/components/ds";
 import type { PartnerStat, PartnersSections } from "../data/partners";
+import {
+  MARK_RADIUS,
+  MARK_PITCH as PITCH,
+  type SelectionField,
+  selectionField,
+} from "../selection-field";
 
-/** The selectivity figures on violet; copy figures count up to their exact text. */
+/**
+ * Columns of the two layouts: 70 fills the wide column in 30 rows, 42 the
+ * phone width in 50 (for 2100 marks; other counts end in a short row).
+ */
+const WIDE_COLUMNS = 70;
+const NARROW_COLUMNS = 42;
+
+/**
+ * The stagger between lit marks: the last one starts 400ms after the first,
+ * whatever the count, so the entrance stays inside the 1.2s motion budget.
+ */
+export function litStep(count: number): CSSProperties {
+  return {
+    "--lit-step": `${Math.round((400 / Math.max(1, count - 1)) * 10) / 10}ms`,
+  } as CSSProperties;
+}
+
+/** The recruiting round the field draws, from the render's site facts. */
+export type SelectionFacts = {
+  startedApplications: number;
+  acceptanceRatePercent: number;
+  admitted: number;
+};
+
+/**
+ * One layout of the field. The resting marks are one pattern fill clipped to
+ * the exact count (full rows, then the short last row), so the markup stays
+ * small; the admitted marks are drawn over them one by one and light up in
+ * the order the sequence placed them.
+ */
+function FieldArtwork({
+  field,
+  patternId,
+  className,
+}: {
+  field: SelectionField;
+  patternId: string;
+  className?: string;
+}) {
+  const width = field.columns * PITCH;
+  const fullRows =
+    field.lastRow === field.columns ? field.rows : field.rows - 1;
+  return (
+    <svg
+      aria-hidden="true"
+      focusable="false"
+      viewBox={`0 0 ${width} ${field.rows * PITCH}`}
+      className={className}
+      style={litStep(field.lit.length)}
+    >
+      <defs>
+        <pattern
+          id={patternId}
+          width={PITCH}
+          height={PITCH}
+          patternUnits="userSpaceOnUse"
+        >
+          <circle
+            cx={PITCH / 2}
+            cy={PITCH / 2}
+            r={MARK_RADIUS}
+            fill="currentColor"
+          />
+        </pattern>
+      </defs>
+      <g className="selection-field-rest">
+        <rect
+          width={width}
+          height={fullRows * PITCH}
+          fill={`url(#${patternId})`}
+        />
+        {fullRows < field.rows ? (
+          <rect
+            y={fullRows * PITCH}
+            width={field.lastRow * PITCH}
+            height={PITCH}
+            fill={`url(#${patternId})`}
+          />
+        ) : null}
+      </g>
+      <g className="text-highlight">
+        {field.lit.map(({ column, row }, order) => (
+          <circle
+            key={`${column}:${row}`}
+            className="selection-field-lit"
+            cx={column * PITCH + PITCH / 2}
+            cy={row * PITCH + PITCH / 2}
+            r={MARK_RADIUS}
+            fill="currentColor"
+            style={{ "--lit-order": order } as CSSProperties}
+          />
+        ))}
+      </g>
+    </svg>
+  );
+}
+
+/**
+ * The proof band on night: the selection figures beside the recruiting
+ * round drawn to the exact count, one mark per started application with
+ * the admitted share lit. The drawing is decorative; its caption says the
+ * same in words, and the ledger holds the figures.
+ */
 export function ProofSection({
   stats,
+  selection,
   copy,
 }: {
   stats: readonly PartnerStat[];
+  selection: SelectionFacts;
   copy: PartnersSections["proof"];
 }) {
+  const marks = selection.startedApplications;
+  const wide = selectionField({
+    marks,
+    lit: selection.admitted,
+    columns: WIDE_COLUMNS,
+  });
+  const narrow = selectionField({
+    marks,
+    lit: selection.admitted,
+    columns: NARROW_COLUMNS,
+  });
   return (
-    <Section tone="violet" spacing="sm" aria-labelledby="partner-proof-title">
+    <Section tone="night" spacing="lg" aria-labelledby="partner-proof-title">
       <Container>
-        <Reveal>
-          <h2 id="partner-proof-title" className="text-fg text-heading-md">
-            {copy.title}
-          </h2>
-        </Reveal>
-        <Reveal delay={100}>
-          <StatGrid
-            className="mt-8 md:mt-10"
-            items={stats.map((stat) => ({
-              value: stat.value,
-              count: true,
-              label: stat.label,
-              description: stat.detail,
-            }))}
-          />
-        </Reveal>
+        <SectionHeader
+          id="partner-proof-title"
+          title={copy.title}
+          classNames={{ title: "max-w-[12em]" }}
+        />
+        <div className="grid gap-12 lg:grid-cols-12 lg:items-end lg:gap-x-12">
+          <Reveal as="figure" variant="fade" className="lg:col-span-8">
+            <div className="text-fg/20">
+              <FieldArtwork
+                field={narrow}
+                patternId="selection-marks-narrow"
+                className="h-auto w-full md:hidden"
+              />
+              <FieldArtwork
+                field={wide}
+                patternId="selection-marks-wide"
+                className="hidden h-auto w-full md:block"
+              />
+            </div>
+            <figcaption className="mt-6 max-w-lg text-fg-muted text-small">
+              {copy.caption}
+            </figcaption>
+          </Reveal>
+          <Reveal delay={120} className="lg:col-span-4">
+            <Ledger
+              items={stats.map((stat) => ({
+                value: stat.value,
+                count: true,
+                label: stat.label,
+                note: stat.detail,
+              }))}
+            />
+          </Reveal>
+        </div>
       </Container>
     </Section>
   );

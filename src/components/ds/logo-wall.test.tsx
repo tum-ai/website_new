@@ -63,6 +63,22 @@ describe("LogoTile", () => {
     );
   });
 
+  test("keeps a mono tile free of opacity, so its artwork's multiply blend reaches the band", () => {
+    const { container } = render(
+      <LogoTile
+        variant="mono"
+        name="Google"
+        src="/assets/partners/logos/google.webp"
+      />,
+    );
+    const tile = container.firstElementChild as HTMLElement;
+    expect(tile.className).not.toMatch(/\bopacity-/);
+    expect(screen.getByRole("img", { name: "Google" })).toHaveClass(
+      "mix-blend-multiply",
+      "opacity-75",
+    );
+  });
+
   test("reserves a fixed width for chips in wrapping rows", () => {
     const { container } = render(
       <LogoTile variant="chip" fixed name="Google" src="/missing.png" />,

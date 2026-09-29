@@ -1,3 +1,4 @@
+import { admittedPerBatchOf } from "@/config/organization";
 import { deriveSiteFacts } from "@/config/site-facts";
 import { getSiteFacts } from "@/config/site-settings-content";
 import {
@@ -36,6 +37,7 @@ export async function PartnersPage() {
       getSiteFacts(),
     ]);
   const { intents, durations, recommendations, prompts, sections } = copy;
+  const admitted = admittedPerBatchOf(facts.organization);
   return (
     <PartnershipProvider
       copy={{ intents, durations, recommendations, prompts }}
@@ -54,7 +56,15 @@ export async function PartnersPage() {
         />
         <FinderSection copy={sections.finder} />
         <ReasonsSection reasons={copy.reasons} copy={sections.reasons} />
-        <ProofSection stats={copy.stats} copy={sections.proof} />
+        <ProofSection
+          stats={copy.stats}
+          selection={{
+            startedApplications: facts.organization.startedApplicationsPerBatch,
+            acceptanceRatePercent: facts.organization.acceptanceRate,
+            admitted,
+          }}
+          copy={sections.proof}
+        />
         <PillarsSection pillars={copy.pillars} copy={sections.pillars} />
         <PeopleSection
           profiles={profiles}
@@ -68,7 +78,7 @@ export async function PartnersPage() {
         />
         <DirectorySection partners={partners} copy={sections.directory} />
         <CasesSection caseStudies={caseStudies} copy={sections.cases} />
-        <ContactSection copy={sections.contact} />
+        <ContactSection admitted={admitted} copy={sections.contact} />
       </main>
     </PartnershipProvider>
   );

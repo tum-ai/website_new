@@ -37,6 +37,8 @@ export const contentTokenNames = [
   "org.nationalities",
   "org.acceptanceRate",
   "org.acceptanceRateRounded",
+  "org.startedApplications",
+  "org.admittedPerBatch",
   "org.linkedinAudience",
   "impact.publications",
   "impact.publicationVenues",

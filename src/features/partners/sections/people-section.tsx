@@ -1,10 +1,7 @@
-import { Globe2 } from "lucide-react";
 import {
-  Aurora,
-  BrandMark,
   Container,
   CountUp,
-  LogoTile,
+  LogoWall,
   PersonCard,
   Reveal,
   Section,
@@ -15,7 +12,8 @@ import type { PartnerProfile, PartnersSections } from "../data/partners";
 import { Lines } from "./lines";
 
 /**
- * The members: three profiles, the member count and where alumni go.
+ * The members: three profiles and the member count on a flat ink panel,
+ * then where alumni go as one row of logos at equal visual weight.
  * `members` are the figures from the render's site facts.
  */
 export function PeopleSection({
@@ -30,7 +28,11 @@ export function PeopleSection({
   members: { official: number; majors: number; universities: number };
 }) {
   return (
-    <Section tone="lavender" aria-labelledby="partner-people-title">
+    <Section
+      tone="lavender"
+      spacing="lg"
+      aria-labelledby="partner-people-title"
+    >
       <Container>
         <SectionHeader
           id="partner-people-title"
@@ -55,52 +57,39 @@ export function PeopleSection({
           <Reveal delay={profiles.length * 90} className="h-full">
             <div
               data-tone="ink"
-              className="relative isolate flex h-full min-h-72 flex-col items-start overflow-clip rounded-3xl p-5 sm:p-7"
+              className="flex h-full min-h-72 flex-col rounded-3xl bg-canvas p-5 sm:p-7"
             >
-              <Aurora intensity="subtle" />
-              <BrandMark
-                className="absolute -right-[30%] -bottom-[18%] -z-10 w-[120%]"
-                intensity="soft"
-              />
-              <Globe2
-                aria-hidden
-                className="mb-auto size-8 text-highlight"
-                strokeWidth={1.3}
-              />
-              <strong className="mt-8 text-fg text-stat-lg">
-                <CountUp value={`+${members.official}`} />
+              <strong className="tabular mt-auto text-fg text-stat-lg">
+                <CountUp value={`${members.official}+`} />
               </strong>
-              <h3 className="mt-2.5 text-fg text-heading-sm">
-                {copy.statLabel}
-              </h3>
-              <p className="mt-6 text-fg-muted text-small">
+              <h3 className="mt-3 text-fg text-heading-sm">{copy.statLabel}</h3>
+              <p className="mt-6 border-hairline border-t pt-4 text-fg-muted text-small">
                 {members.majors}+ majors
                 <br />
                 {members.universities}+ universities
               </p>
-              <span className="mt-6 text-fg-subtle text-meta">
+              <span className="mt-4 text-fg-subtle text-meta">
                 <Lines lines={copy.tagline} />
               </span>
             </div>
           </Reveal>
         </div>
-        <Reveal className="mt-16 border-hairline border-t pt-8 md:mt-20 md:pt-10">
-          <h3 className="text-center text-eyebrow text-fg-muted">
+        {/* Not inside a Reveal: its opacity would isolate the strip, and
+            the mono logos' multiply blend needs the band behind them. */}
+        <div className="mt-16 border-hairline-strong border-t pt-8 md:mt-20 md:pt-10">
+          <h3 className="font-semibold text-fg text-small">
             {copy.alumniTitle}
           </h3>
-          <ul className="mt-7 flex flex-wrap items-center justify-center gap-2.5 md:gap-4">
-            {alumniDestinations.map((company) => (
-              <li key={company.name} className="flex">
-                <LogoTile
-                  variant="chip"
-                  fixed
-                  name={company.name}
-                  src={company.image}
-                />
-              </li>
-            ))}
-          </ul>
-        </Reveal>
+          <LogoWall
+            layout="strip"
+            className="mt-8 md:mt-10"
+            logos={alumniDestinations.map((company) => ({
+              name: company.name,
+              src: company.image,
+              aspectRatio: company.aspectRatio,
+            }))}
+          />
+        </div>
       </Container>
     </Section>
   );

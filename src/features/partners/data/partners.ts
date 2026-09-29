@@ -47,12 +47,15 @@ export const partnerReasons: readonly PartnerReason[] = [
   },
 ];
 
-/** A proof figure on violet; `value` counts up to its exact text. */
+/** A proof figure in the night band's ledger; `value` counts up to its exact text. */
 export type PartnerStat = { value: string; label: string; detail?: string };
 
 /** The proof figures as templates: facts from the config are placeholders. */
 export const partnerStatTemplates: readonly PartnerStat[] = [
-  { value: "2100+", label: "Started applications per batch" },
+  {
+    value: "{{org.startedApplications}}+",
+    label: "Started applications per batch",
+  },
   { value: "{{org.acceptanceRate}}%", label: "Acceptance rate per batch" },
   {
     value: "{{org.officialMembers}}+",
@@ -321,7 +324,11 @@ export type PartnersSections = {
     /** The contact row under the cards. */
     contact: string;
   };
-  proof: { title: string };
+  proof: {
+    title: string;
+    /** Under the selection field: the drawing in words. Placeholders allowed. */
+    caption: string;
+  };
   pillars: { title: Lines; lead: string };
   people: {
     title: string;
@@ -367,7 +374,11 @@ export const partnersSections: PartnersSections = {
     lead: "Exceptional talent. Tomorrow’s decision makers. A community moving AI forward.",
     contact: "Let’s talk.",
   },
-  proof: { title: "Small acceptance rate. Outsized potential." },
+  proof: {
+    title: "Small acceptance rate. Outsized potential.",
+    caption:
+      "One recruiting round: {{org.startedApplications}}+ started applications, one mark each. The {{org.admittedPerBatch}} lit marks are the {{org.acceptanceRate}}% who become members.",
+  },
   pillars: {
     title: ["Three pillars.", "One ecosystem."],
     lead: "From the first research question to the next venture. Find your place at every stage.",

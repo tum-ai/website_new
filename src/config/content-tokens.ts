@@ -12,6 +12,7 @@ import {
 } from "./membership";
 import {
   acceptanceRateRoundedOf,
+  admittedPerBatchOf,
   linkedinAudienceLabelOf,
 } from "./organization";
 import { getELabWindow, getMembershipWindow } from "./schedule-content";
@@ -73,6 +74,9 @@ export function contentTokensFor({
       acceptanceRateRoundedOf(org.acceptanceRate),
     ),
     // "20k", followed by "+" in copy.
+    // Ungrouped ("2100"), as the partner stats count it up.
+    "org.startedApplications": String(org.startedApplicationsPerBatch),
+    "org.admittedPerBatch": String(admittedPerBatchOf(org)),
     "org.linkedinAudience": linkedinAudienceLabelOf(org.linkedinAudience),
     "impact.publications": String(impact.publications),
     "impact.publicationVenues": derived.publicationVenuesText,

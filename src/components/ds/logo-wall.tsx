@@ -52,7 +52,10 @@ const logoTileStyles = cva(
         tile: "w-full rounded-2xl bg-white text-violet-950 ring-1 ring-ink-200/70",
         chip: "h-9 gap-2 rounded-xl bg-white px-3 text-violet-950",
         bare: "text-fg",
-        mono: "h-(--logo-h,2.5rem) w-(--logo-w,7rem) text-fg opacity-75 transition-opacity duration-300 ease-brand hover:opacity-100 focus-visible:opacity-100 motion-reduce:transition-none",
+        // The dimming sits on the artwork and the name, not here: opacity
+        // on the tile would isolate the artwork's multiply blend and bring
+        // back its white matte.
+        mono: "h-(--logo-h,2.5rem) w-(--logo-w,7rem) text-fg",
       },
       /**
        * Tile height and logo cap (the `tile` variant only), smallest to
@@ -131,7 +134,7 @@ const logoImageStyles = cva("h-auto w-auto max-w-full object-contain", {
       bare: "",
       // Multiply drops the white matte; the colour returns with the link's
       // hover or focus (a swap, not a transition: only opacity animates).
-      mono: "size-full mix-blend-multiply grayscale group-hover/logo:grayscale-0 group-focus-visible/logo:grayscale-0",
+      mono: "size-full opacity-75 mix-blend-multiply grayscale transition-opacity duration-300 ease-brand group-hover/logo:opacity-100 group-hover/logo:grayscale-0 group-focus-visible/logo:opacity-100 group-focus-visible/logo:grayscale-0 motion-reduce:transition-none",
     },
     size: { sm: "", md: "", lg: "", xl: "" },
     responsive: { true: "", false: "" },
@@ -171,7 +174,7 @@ const logoNameStyles = cva("font-semibold", {
       tile: "",
       chip: "text-label-sm tracking-[-0.01em]",
       bare: "",
-      mono: "text-center text-label",
+      mono: "text-center text-label opacity-75 transition-opacity duration-300 ease-brand group-hover/logo:opacity-100 group-focus-visible/logo:opacity-100 motion-reduce:transition-none",
     },
     lockup: { true: "", false: "" },
   },

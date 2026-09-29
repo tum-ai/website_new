@@ -106,7 +106,7 @@ export const PARTNERS_COPY_QUERY = defineQuery(`*[_id == "partnersCopy"][0]{
     marquee{ label, link },
     finder{ eyebrow, title, lead, note },
     reasons{ title, lead, contact },
-    proof{ title },
+    proof{ title, caption },
     pillars{ title, lead },
     people{ title, lead, statLabel, tagline, alumniTitle },
     directory{ title, lead, supportersTitle },

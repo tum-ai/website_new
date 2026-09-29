@@ -21,6 +21,12 @@ export const organizationFacts = {
    */
   acceptanceRate: 2.3,
   /**
+   * Membership applications started in one recruiting round, a lower bound
+   * shown with "+". /partners draws the round from it, with the admitted
+   * share ({@link admittedPerBatchOf}) lit.
+   */
+  startedApplicationsPerBatch: 2100,
+  /**
    * TUM.ai's LinkedIn audience, a lower bound. /partners shows it in
    * thousands ({@link linkedinAudienceLabelOf}): "20k+".
    */
@@ -47,6 +53,21 @@ export function officialMembersOf(
   facts: Pick<OrganizationFacts, "activeMembers" | "alumni">,
 ): number {
   return facts.activeMembers + facts.alumni;
+}
+
+/**
+ * The members one recruiting round admits: the started applications times
+ * the acceptance rate, rounded to whole people (2100 at 2.3% is 48).
+ */
+export function admittedPerBatchOf(
+  facts: Pick<
+    OrganizationFacts,
+    "startedApplicationsPerBatch" | "acceptanceRate"
+  >,
+): number {
+  return Math.round(
+    (facts.startedApplicationsPerBatch * facts.acceptanceRate) / 100,
+  );
 }
 
 /**
