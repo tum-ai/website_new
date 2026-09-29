@@ -37,9 +37,6 @@ export {
   type AccordionProps,
   AccordionTrigger,
   type AccordionTriggerProps,
-  type FaqItem,
-  FaqList,
-  type FaqListProps,
 } from "./accordion";
 export { Actions, type ActionsProps } from "./actions";
 export { Anchor, type AnchorProps } from "./anchor";
@@ -98,6 +95,7 @@ export {
 } from "./dialog";
 export { EmptyState, type EmptyStateProps } from "./empty-state";
 export { FallbackImage, type FallbackImageProps } from "./fallback-image";
+export { type FaqItem, FaqList, type FaqListProps } from "./faq-list";
 export { FaqSection, type FaqSectionProps } from "./faq-section";
 export { FeatureCard, type FeatureCardProps } from "./feature-card";
 export { formatFigure, type ParsedFigure, parseFigure } from "./figure";

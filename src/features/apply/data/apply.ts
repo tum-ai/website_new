@@ -3,13 +3,6 @@ import { organizationFacts } from "@/config/organization";
 /** A named point with one or two sentences of copy. */
 export type Point = { title: string; text: string };
 
-/**
- * The 2026 brand guide's mission (slide "Brand Story & Mission"), quoted as
- * the call's scope.
- */
-export const mission =
-  "To bridge the gap between theory and practice by empowering students to build the future of AI. We combine academic rigor with a “make-it-happen” mindset to solve real-world challenges.";
-
 /** The hero's second paragraph, under the call's status. */
 export const heroLead =
   "We look for students who want to build the future of AI, whatever they study. You don't need to be an AI expert to apply.";
