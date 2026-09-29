@@ -144,7 +144,8 @@ test.describe("disclosure widgets", { tag: "@keyboard" }, () => {
     const first = triggers.first();
     const second = triggers.nth(1);
 
-    // The first answer starts open (FaqSection `defaultValue`), the rest closed.
+    // The first answer starts open (MissionAnswers' initial state), the rest
+    // closed.
     await expect(first).toHaveAttribute("aria-expanded", "true");
     await expect(second).toHaveAttribute("aria-expanded", "false");
 

@@ -33,7 +33,8 @@ const heroPartners = getHighlightedPartners(getPartnerDirectory([]))
  * the gold partners along the bottom.
  *
  * Everything above the fold animates with CSS, never with hydration-bound
- * reveals; the header logo is the page's only image preload.
+ * reveals. The page preloads two images: the header logo and the aperture's
+ * first photo (test/perf/homepage.perf.ts).
  */
 export function HomeHero() {
   return (
