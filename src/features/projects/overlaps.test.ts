@@ -3,6 +3,7 @@ import { taskForces } from "./data/projects";
 import {
   AI_RADIUS,
   figureExtent,
+  LABEL_HALF_HEIGHT,
   layoutSeats,
   SEAT_DISTANCE,
   type Seat,
@@ -64,16 +65,20 @@ describe.each(counts)("a ring of %i seats", (count) => {
     }
   });
 
-  test("labels sit in the crescent: inside their seat, clear of the AI circle", () => {
+  test("label boxes sit in the crescent: inside their seat, clear of the AI circle", () => {
     for (const seat of seats) {
       const { x, y, width } = seat.label;
-      expect(width).toBeGreaterThan(0.6 * seat.r);
-      // Both ends of the label's line lie inside the seat and outside AI.
-      for (const end of [x - width / 2, x + width / 2]) {
-        expect(distance(end - seat.cx, y - seat.cy)).toBeLessThan(seat.r);
-        expect(distance(end, y)).toBeGreaterThan(AI_RADIUS);
+      const halfHeight = LABEL_HALF_HEIGHT * seat.r;
+      expect(width).toBeGreaterThan(0.5 * seat.r);
+      // Every corner of the label's box lies inside the seat and outside AI.
+      for (const cornerX of [x - width / 2, x + width / 2]) {
+        for (const cornerY of [y - halfHeight, y + halfHeight]) {
+          expect(
+            distance(cornerX - seat.cx, cornerY - seat.cy),
+          ).toBeLessThanOrEqual(seat.r);
+          expect(distance(cornerX, cornerY)).toBeGreaterThanOrEqual(AI_RADIUS);
+        }
       }
-      expect(distance(x, y)).toBeGreaterThan(AI_RADIUS);
     }
   });
 

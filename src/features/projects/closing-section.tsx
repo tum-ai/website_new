@@ -1,4 +1,10 @@
-import { ButtonLink, Container, Reveal, Section } from "@/components/ds";
+import {
+  ButtonLink,
+  Container,
+  Eyebrow,
+  Reveal,
+  Section,
+} from "@/components/ds";
 import { closing, figureSeats } from "./data/copy";
 import { openSeat } from "./data/projects";
 import { OverlapsFigure } from "./overlaps-figure";
@@ -69,13 +75,14 @@ export function ClosingSection() {
             <Reveal
               key={fork.audience}
               delay={position * 100}
-              className="border-hairline py-8 max-md:not-last:border-b md:py-10 md:even:border-l md:even:pl-12 md:odd:pr-12"
+              className="flex flex-col border-hairline py-8 max-md:not-last:border-b md:py-10 md:even:border-l md:even:pl-12 md:odd:pr-12"
             >
-              <h3 className="text-fg-subtle text-meta">{fork.audience}</h3>
-              <p className="mt-3 max-w-md text-fg text-heading-md">
+              <Eyebrow>{fork.audience}</Eyebrow>
+              <h3 className="mt-3 max-w-md text-fg text-heading-md">
                 {fork.text}
-              </p>
-              <div className="mt-8">{fork.action}</div>
+              </h3>
+              {/* Pinned to the row's foot, so both actions line up. */}
+              <div className="mt-auto pt-8">{fork.action}</div>
             </Reveal>
           ))}
         </div>

@@ -51,7 +51,9 @@ export function OverlapsFigure({
   return (
     <div
       className={cn(
-        "relative aspect-square w-full",
+        // A size container: the labels follow the figure's width, not the
+        // viewport's, since the close draws it smaller than the hero.
+        "@container relative aspect-square w-full",
         isIndex && "overlaps-hero",
         className,
       )}
@@ -76,6 +78,8 @@ export function OverlapsFigure({
         AI
       </p>
       <Seats
+        // Safari drops the list role (and its name) from an unstyled list.
+        role={isIndex ? "list" : undefined}
         aria-label={isIndex ? label : undefined}
         aria-hidden={isIndex ? undefined : true}
       >
@@ -150,8 +154,7 @@ function SeatShape({
       style={style}
       className={cn(
         "overlaps-part group/seat absolute rounded-full",
-        Root === "a" &&
-          "focus-visible:outline-2 focus-visible:outline-highlight focus-visible:outline-offset-4",
+        Root === "a" && "focus-visible:outline-offset-4",
       )}
     >
       <svg
@@ -167,9 +170,22 @@ function SeatShape({
               ? "opacity-100"
               : dotted
                 ? "opacity-0 group-hover/seat:opacity-40 group-focus-visible/seat:opacity-40"
-                : "opacity-30 group-hover/seat:opacity-100 group-focus-visible/seat:opacity-100",
+                : "opacity-30 group-hover/seat:opacity-60 group-focus-visible/seat:opacity-60",
           )}
         />
+        {Root === "a" && !dotted ? (
+          // Hover and focus draw the seat in the accent; only the close's
+          // open seat gets the solid lens.
+          <circle
+            cx={geometry.cx}
+            cy={geometry.cy}
+            r={geometry.r}
+            fill="none"
+            strokeWidth={1.5}
+            vectorEffect="non-scaling-stroke"
+            className="stroke-highlight opacity-0 transition-opacity duration-300 ease-brand group-hover/seat:opacity-100 group-focus-visible/seat:opacity-100"
+          />
+        ) : null}
         <circle
           cx={geometry.cx}
           cy={geometry.cy}
@@ -190,13 +206,13 @@ function SeatShape({
       >
         <span
           className={cn(
-            "text-balance font-medium text-label-sm leading-tight md:text-label",
+            "text-balance font-medium @lg:text-label text-label-sm",
             seat.open ? "text-highlight" : "text-fg",
           )}
         >
           {seat.name}
         </span>
-        <span className="mt-1 text-balance text-fg-subtle text-meta leading-tight max-sm:hidden">
+        <span className="mt-0.5 @lg:block hidden text-balance text-fg-subtle text-meta">
           {seat.field}
         </span>
       </span>

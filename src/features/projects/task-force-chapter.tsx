@@ -39,11 +39,12 @@ export function TaskForceChapter({
 
       <Reveal
         className={cn(
-          "md:col-span-7",
-          photo ? "lg:col-span-5" : "lg:col-span-6",
+          photo
+            ? "md:col-span-7 lg:col-span-5"
+            : "md:col-span-12 lg:col-span-8",
         )}
       >
-        <h2 id={titleId} className="font-light text-display-md text-fg">
+        <h2 id={titleId} className="text-display-md text-fg">
           {name}
         </h2>
         <p className="mt-5 text-fg text-lead">{description}</p>
@@ -52,7 +53,7 @@ export function TaskForceChapter({
         </p>
         {work ? (
           <div className="mt-10">
-            <h3 className="text-fg-subtle text-meta">
+            <h3 className="text-eyebrow text-fg-muted">
               Research projects with {work.partner} include
             </h3>
             <ul className="mt-4 border-hairline-strong border-t">

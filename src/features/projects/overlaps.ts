@@ -22,6 +22,11 @@ const PADDING = 6;
 const LABEL_OFFSET = 0.22;
 /** Share of the crescent's width the label may fill. */
 const LABEL_FILL = 0.9;
+/**
+ * Half the height a label may take, as a share of the seat radius: up to
+ * three lines (a name that wraps, and the field) at the largest figure.
+ */
+export const LABEL_HALF_HEIGHT = 0.3;
 
 /** A seat's circle, its lens and where its label goes. */
 export type Seat = {
@@ -116,13 +121,27 @@ export function layoutSeats(count: number): Seat[] {
 
 /**
  * The label of the seat centred at (cx, cy): at LABEL_OFFSET·r along the
- * axis vertically, and horizontally in the middle of the crescent at that
- * height, between the AI circle and the seat's outer edge.
+ * axis vertically, and horizontally in the crescent between the AI circle
+ * and the seat's outer edge. The crescent narrows towards the label's top or
+ * bottom, so its width is the narrowest free span over the label's height.
  */
 function labelPlace(cx: number, cy: number, r: number, uy: number) {
-  const R = AI_RADIUS;
   const y = cy + uy * LABEL_OFFSET * r;
-  const halfChord = Math.sqrt(r * r - (y - cy) ** 2);
+  const halfHeight = LABEL_HALF_HEIGHT * r;
+  let left = Number.NEGATIVE_INFINITY;
+  let right = Number.POSITIVE_INFINITY;
+  for (const line of [y - halfHeight, y, y + halfHeight]) {
+    const span = freeSpan(cx, cy, r, line);
+    left = Math.max(left, span.left);
+    right = Math.min(right, span.right);
+  }
+  return { x: (left + right) / 2, y, width: LABEL_FILL * (right - left) };
+}
+
+/** The part of the seat's chord at height `y` that lies outside the AI circle. */
+function freeSpan(cx: number, cy: number, r: number, y: number) {
+  const R = AI_RADIUS;
+  const halfChord = Math.sqrt(Math.max(0, r * r - (y - cy) ** 2));
   let left = cx - halfChord;
   let right = cx + halfChord;
   const aiHalfChord = Math.abs(y) < R ? Math.sqrt(R * R - y * y) : 0;
@@ -131,7 +150,7 @@ function labelPlace(cx: number, cy: number, r: number, uy: number) {
     if (cx > 0) left = Math.max(left, aiHalfChord);
     else right = Math.min(right, -aiHalfChord);
   }
-  return { x: (left + right) / 2, y, width: LABEL_FILL * (right - left) };
+  return { left, right };
 }
 
 /**
