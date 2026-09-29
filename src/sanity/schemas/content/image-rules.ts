@@ -39,6 +39,9 @@ function minimumSize(minWidth: number, minHeight: number, advice: string) {
   };
 }
 
+const altMessage =
+  "Describe the image for screen readers, for example “Accel logo”.";
+
 /**
  * Required alt text, but only once a file is uploaded: an image field left
  * empty (an optional logo) can still hold an object without an asset, and
@@ -50,18 +53,25 @@ export function validateRequiredAlt(
 ): true | string {
   const parent = context.parent as { asset?: unknown } | undefined;
   if (!parent?.asset || value?.trim()) return true;
-  return "Describe the image for screen readers, for example “Accel logo”.";
+  return altMessage;
 }
 
-const altField = (description: string, required: boolean) =>
+/**
+ * `required`: always (the image itself is required). `once-uploaded`: only
+ * with a file ({@link validateRequiredAlt}), for optional images.
+ */
+const altField = (description: string, rule?: "required" | "once-uploaded") =>
   defineField({
     name: "alt",
     title: "Alternative text",
     type: "string",
     description,
-    validation: required
-      ? (Rule) => Rule.custom(validateRequiredAlt)
-      : undefined,
+    validation:
+      rule === "required"
+        ? (Rule) => Rule.required().error(altMessage)
+        : rule === "once-uploaded"
+          ? (Rule) => Rule.custom(validateRequiredAlt)
+          : undefined,
   });
 
 /**
@@ -80,7 +90,7 @@ export function logoArtworkField(options: {
     type: "image",
     options: { accept: "image/svg+xml,image/png,image/webp,image/jpeg" },
     fields: [
-      altField("Usually the name and “logo”: “Accel logo”.", true),
+      altField("Usually the name and “logo”: “Accel logo”.", "once-uploaded"),
       defineField({
         name: "symbolOnly",
         title: "Symbol only",
@@ -130,7 +140,6 @@ export function portraitField(options: { description?: string } = {}) {
     fields: [
       altField(
         "Leave empty: the portrait sits beside the person's name, so screen readers skip it.",
-        false,
       ),
     ],
     validation: (Rule) => [
@@ -163,7 +172,7 @@ export function photoField(options: {
       .join(" "),
     type: "image",
     options: { hotspot: true },
-    fields: [altField("What the photo shows, for screen readers.", true)],
+    fields: [altField("What the photo shows, for screen readers.", "required")],
     validation: (Rule) => [
       Rule.required(),
       Rule.custom(

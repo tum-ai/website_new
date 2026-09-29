@@ -858,7 +858,7 @@ export type Organization = {
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
-    alt: string;
+    alt?: string;
     symbolOnly?: boolean;
     aspectRatio?: number;
     _type: "image";
@@ -868,7 +868,7 @@ export type Organization = {
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
-    alt: string;
+    alt?: string;
     symbolOnly?: boolean;
     aspectRatio?: number;
     _type: "image";
@@ -887,10 +887,10 @@ export type Campaign = {
   endDate?: string;
   endTime?: string;
   headerCta?: {
-    variant: "member" | "partner" | "elab" | "notify";
+    variant?: "member" | "partner" | "elab" | "notify";
     label?: string;
     notifyUrl?: string;
-    yieldsToRecruiting: boolean;
+    yieldsToRecruiting?: boolean;
   };
   featuredEventId?: string;
 };
@@ -1243,10 +1243,10 @@ export type CAMPAIGNS_QUERY_RESULT = Array<{
   endDate: string | null;
   endTime: string | null;
   headerCta: {
-    variant: "elab" | "member" | "notify" | "partner";
+    variant: "elab" | "member" | "notify" | "partner" | null;
     label: string | null;
     notifyUrl: string | null;
-    yieldsToRecruiting: boolean;
+    yieldsToRecruiting: boolean | null;
   } | null;
   featuredEventId: string | null;
 }>;
@@ -2761,7 +2761,7 @@ export type LOGO_LISTS_QUERY_RESULT = Array<{
       src: string | null;
       width: number | null;
       height: number | null;
-      alt: string;
+      alt: string | null;
       hotspot: {
         x: number;
         y: number;
@@ -2779,7 +2779,7 @@ export type LOGO_LISTS_QUERY_RESULT = Array<{
       src: string | null;
       width: number | null;
       height: number | null;
-      alt: string;
+      alt: string | null;
       hotspot: {
         x: number;
         y: number;
@@ -2829,7 +2829,7 @@ export type PEOPLE_QUERY_RESULT = Array<{
       src: string | null;
       width: number | null;
       height: number | null;
-      alt: string;
+      alt: string | null;
       hotspot: {
         x: number;
         y: number;
