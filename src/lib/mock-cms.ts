@@ -23,23 +23,30 @@ function daysFrom(now: Date, days: number) {
   return date.toISOString();
 }
 
-/** A past event with its fixed date; only the fields /events reads. */
+/** A co-host organisation as `coHosts` projects it. */
+const host = (key: string, name: string) => ({ key, name });
+
+/**
+ * A past event with its fixed date; only the fields /events reads. Its
+ * `hosts` (the old site's names) are its co-hosts' names.
+ */
 type PastEvent = Omit<Event, "id" | "images" | "hosts"> & {
   id: string;
   images?: string[];
-  hosts?: string[];
 };
 
 /**
  * The live events as of 2026-09 (titles, dates, venues, categories), with
- * `hosts` filled from each event's title and description: the co-hosts,
- * sponsors and challenge partners the CMS text names. Speakers and jury
- * members are left out. Posters and photos are local stand-ins (the live
+ * their co-hosts filled from each event's title and description: the
+ * co-hosts, sponsors and challenge partners the CMS text names, as the
+ * organisations `coHosts` references (`pnpm sanity:migrate-org-references`
+ * sets them from the names). Speakers and jury members are left out. Posters and photos are local stand-ins (the live
  * posters are square social graphics on the Sanity CDN), and descriptions are
  * shortened and free of names.
  *
- * The live documents in `production` have no `hosts`: the backfill adds these
- * to its copies of them in the new site's dataset ({@link liveEventHosts}).
+ * The live documents in `production` have no `hosts`: the backfill adds the
+ * names to its copies of them in the new site's dataset
+ * ({@link liveEventHosts}).
  */
 const pastEvents: PastEvent[] = [
   {
@@ -51,7 +58,13 @@ const pastEvents: PastEvent[] = [
     location: "TUM Audimax",
     city: "Munich",
     category: "Speaker",
-    hosts: ["CDTM", "Project A", "Beyond Presence", "Mercura", "Red Bull"],
+    coHosts: [
+      host("cdtm", "CDTM"),
+      host("project-a", "Project A"),
+      host("beyond-presence", "Beyond Presence"),
+      host("mercura", "Mercura"),
+      host("red-bull", "Red Bull"),
+    ],
     poster: "/assets/open_ai_speaker_event.webp",
     images: ["/assets/open_ai_speaker_event.webp", "/assets/martin_talk.webp"],
   },
@@ -64,7 +77,11 @@ const pastEvents: PastEvent[] = [
     location: "CDTM Offices / TUM",
     city: "Munich",
     category: "Hackathon",
-    hosts: ["AWS", "Lovable", "n8n"],
+    coHosts: [
+      host("aws", "AWS"),
+      host("lovable", "Lovable"),
+      host("n8n", "n8n"),
+    ],
     poster: "/assets/innovation/robotics_writing.webp",
   },
   {
@@ -76,7 +93,7 @@ const pastEvents: PastEvent[] = [
     location: "Google Office",
     city: "Munich",
     category: "Hackathon",
-    hosts: ["Google Cloud", "CDTM"],
+    coHosts: [host("google-cloud", "Google Cloud"), host("cdtm", "CDTM")],
     poster: "/assets/homepage/nvidia-5.webp",
     images: ["/assets/homepage/nvidia-5.webp", "/assets/home_img2.webp"],
   },
@@ -89,7 +106,11 @@ const pastEvents: PastEvent[] = [
     location: "Tacto Office",
     city: "Munich",
     category: "Event",
-    hosts: ["Manage & More", "CDTM", "Tacto"],
+    coHosts: [
+      host("manage-and-more", "Manage & More"),
+      host("cdtm", "CDTM"),
+      host("tacto", "Tacto"),
+    ],
     poster: "/assets/homepage/venture_onboarding25.webp",
   },
   {
@@ -101,7 +122,12 @@ const pastEvents: PastEvent[] = [
     location: "TUM Audimax",
     city: "Munich",
     category: "Hackathon",
-    hosts: ["Anthropic", "Lovable", "Hugging Face", "CDTM"],
+    coHosts: [
+      host("anthropic", "Anthropic"),
+      host("lovable", "Lovable"),
+      host("hugging-face", "Hugging Face"),
+      host("cdtm", "CDTM"),
+    ],
     poster: "/assets/apply/new_section_photo_4.webp",
   },
   {
@@ -113,7 +139,7 @@ const pastEvents: PastEvent[] = [
     location: "Mark, Munich",
     city: "Munich",
     category: "Hackathon",
-    hosts: ["BKW"],
+    coHosts: [host("bkw", "BKW")],
   },
   {
     id: "mock-event-bmw",
@@ -124,7 +150,7 @@ const pastEvents: PastEvent[] = [
     location: "BMW Office",
     city: "Munich",
     category: "Hackathon",
-    hosts: ["BMW"],
+    coHosts: [host("bmw", "BMW")],
     poster: "/assets/innovation/robotics_arm.webp",
   },
   {
@@ -136,7 +162,7 @@ const pastEvents: PastEvent[] = [
     location: "Munich",
     city: "Munich",
     category: "Hackathon",
-    hosts: ["Anthropic"],
+    coHosts: [host("anthropic", "Anthropic")],
     poster: "/assets/innovation/robotics_discussion.webp",
   },
   {
@@ -235,7 +261,7 @@ const pastEvents: PastEvent[] = [
     location: "TUM.ai Office, Rosenheimer Straße 116A - 7th floor",
     city: "Munich",
     category: "Hackathon",
-    hosts: ["Project A", "Yellow"],
+    coHosts: [host("project-a", "Project A"), host("yellow", "Yellow")],
     poster: "/assets/home_img2.webp",
   },
   {
@@ -283,8 +309,10 @@ export const liveEventHosts: readonly {
   title: string;
   event_date: string;
   hosts: readonly string[];
-}[] = pastEvents.flatMap(({ title, event_date, hosts }) =>
-  hosts?.length ? [{ title, event_date, hosts }] : [],
+}[] = pastEvents.flatMap(({ title, event_date, coHosts }) =>
+  coHosts?.length
+    ? [{ title, event_date, hosts: coHosts.map(({ name }) => name) }]
+    : [],
 );
 
 const longDescription =
@@ -320,6 +348,7 @@ export function getMockEvents(now: Date = new Date()): Event[] {
       city: "Munich",
       category: "Speaker",
       hosts: ["NVIDIA"],
+      coHosts: [host("nvidia", "NVIDIA")],
       poster: "/assets/homepage/nvidia-5.webp",
       images: ["/assets/homepage/nvidia-5.webp"],
       sign_up: "https://example.com/sign-up/nvidia-talk",
@@ -342,7 +371,7 @@ export function getMockEvents(now: Date = new Date()): Event[] {
     ...upcoming,
     ...pastEvents.map((event) => ({
       ...event,
-      hosts: event.hosts ?? [],
+      hosts: (event.coHosts ?? []).map(({ name }) => name),
       images: event.images ?? (event.poster ? [event.poster] : []),
     })),
   ];

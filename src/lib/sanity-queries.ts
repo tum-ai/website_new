@@ -22,6 +22,7 @@ export const EVENTS_QUERY = defineQuery(`*[_type == "event"]{
   city,
   category,
   "hosts": coalesce(hosts, []),
+  "coHosts": coHosts[]->{ key, name },
   "poster": poster.asset->url,
   "images": array::compact([poster.asset->url, img.asset->url]),
   sign_up

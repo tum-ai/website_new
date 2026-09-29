@@ -3,7 +3,7 @@ import { Actions, ButtonLink, Container, TopBlend } from "@/components/ds";
 import { callToActionLabels } from "@/config/calls-to-action";
 import type { Event } from "@/lib/types";
 import { getEventsCopy } from "./content";
-import { type HostArtwork, hostIcon, hostLogo } from "./data/host-logos";
+import type { HostArtwork } from "./data/host-logos";
 import { type EventSummary, formatEventDate, type HostEntry } from "./events";
 import { HeroReel } from "./hero-reel";
 import { getHostArtwork } from "./host-content";
@@ -18,7 +18,9 @@ import { Lockup } from "./lockup";
  * then wherever the reader turns the reel, and the events of the name in the
  * slot show beside it. Otherwise (reduced motion, no JavaScript) it is a
  * static two-column index. Mechanics: `events.css` and {@link HeroReel}.
- * Co-host artwork comes from the co-host slice (the CMS or the code list).
+ * Co-host artwork is each co-host organisation's logo for dark backgrounds
+ * (the CMS or the code's organisations); a co-host typed as a name only is
+ * set as text.
  */
 export async function EventsHero({
   summary,
@@ -34,7 +36,9 @@ export async function EventsHero({
 }) {
   const rolls = hosts.length > 1;
   const [artwork, { hero }] = await Promise.all([
-    rolls ? getHostArtwork() : undefined,
+    rolls
+      ? getHostArtwork(hosts.flatMap(({ key }) => (key ? [key] : [])))
+      : undefined,
     getEventsCopy(),
   ]);
   return (
@@ -189,8 +193,8 @@ function Reel({
     <div aria-hidden="true" className="events-reel">
       {[0, 1, 2].map((copy) =>
         hosts.map((host) => {
-          const logo = hostLogo(host.name, artwork);
-          const icon = logo ? undefined : hostIcon(host.name, artwork);
+          const logo = host.key ? artwork.logos[host.key] : undefined;
+          const icon = logo || !host.key ? undefined : artwork.icons[host.key];
           const height = logo ? Math.min(0.9, Math.sqrt(1.5 / logo.aspect)) : 0;
           return (
             <div key={`${copy}-${host.name}`} className="events-name">

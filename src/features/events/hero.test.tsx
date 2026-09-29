@@ -36,7 +36,7 @@ async function renderHero(events: ReturnType<typeof getMockEvents>) {
 describe("EventsHero", () => {
   test("shows the plain logo, without a ×, while no event has co-hosts", async () => {
     const events = getMockEvents(new Date("2026-10-01T12:00:00Z")).map(
-      (event) => ({ ...event, hosts: [] }),
+      (event) => ({ ...event, hosts: [], coHosts: [] }),
     );
     const { container } = await renderHero(events);
     const title = screen.getByRole("heading", { level: 1 });
@@ -58,5 +58,32 @@ describe("EventsHero", () => {
     expect(
       screen.getByRole("list", { name: /co-hosts/i }).children,
     ).toHaveLength(hosts.length);
+  });
+
+  test("the reel shows a referenced co-host's dark logo, a typed name as text", async () => {
+    const at = "2026-01-01T10:00:00Z";
+    const { container } = await renderHero([
+      {
+        ...getMockEvents(new Date(at))[0],
+        id: "a",
+        event_date: at,
+        hosts: [],
+        coHosts: [{ key: "anthropic", name: "Anthropic" }],
+      },
+      {
+        ...getMockEvents(new Date(at))[0],
+        id: "b",
+        event_date: at,
+        hosts: ["Amazon Web Services"],
+        coHosts: [],
+      },
+    ]);
+    const reel = container.querySelector(".events-reel");
+    const sources = [...(reel?.querySelectorAll("img") ?? [])].map(
+      (image) => image.getAttribute("src") ?? "",
+    );
+    expect(sources.some((src) => src.includes("anthropic.svg"))).toBe(true);
+    expect(reel).toHaveTextContent("Amazon Web Services");
+    expect(reel).not.toHaveTextContent("Anthropic");
   });
 });

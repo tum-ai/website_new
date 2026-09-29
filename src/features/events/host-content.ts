@@ -1,38 +1,27 @@
 import "server-only";
 
+import { organizationsWithKeys } from "@/features/partners";
 import { buildOrganizationBackfill } from "@/features/partners/server";
-import type { BackfillDocument } from "@/lib/cms-backfill";
-import {
-  buildLogoListDocument,
-  getLogoLists,
-} from "@/lib/organization-content";
-import {
-  eventHostLists,
-  type HostArtwork,
-  hostArtworkOf,
-} from "./data/host-logos";
+import { getOrganizationsByKey } from "@/lib/organization-content";
+import { type HostArtwork, hostArtworkOf } from "./data/host-logos";
 
 /**
- * The /events co-host slice: the `event-hosts` logo list, whose
- * organisations' dark logos the hero's reel shows. Code fallback:
- * `data/host-logos.ts`; the organisations are the partners' organisation
- * slice.
+ * The /events co-host artwork: the dark logos of the organisations the
+ * events reference as co-hosts (`event.coHosts`). The organisations are the
+ * partners' organisation slice; the hero orders the co-hosts itself (most
+ * events first), so no list decides which or in what order.
  */
 
-/** The hero's co-host artwork: the CMS list, or the code list. */
-export async function getHostArtwork(): Promise<HostArtwork> {
-  const lists = await getLogoLists({
-    lists: eventHostLists,
+/** The artwork of the co-hosts with `keys`: the CMS organisations, or the code's. */
+export async function getHostArtwork(
+  keys: readonly string[],
+): Promise<HostArtwork> {
+  if (keys.length === 0) return { logos: {}, icons: {} };
+  const organizations = await getOrganizationsByKey({
+    keys,
+    fallback: organizationsWithKeys(keys),
     label: "the events co-host logos",
-    mockDocuments: () => [
-      ...buildEventHostBackfill(),
-      ...buildOrganizationBackfill(),
-    ],
+    mockDocuments: buildOrganizationBackfill,
   });
-  return hostArtworkOf(lists["event-hosts"]);
-}
-
-/** The co-host logo list as a document for `pnpm sanity:backfill`. */
-export function buildEventHostBackfill(): BackfillDocument[] {
-  return [buildLogoListDocument("event-hosts", eventHostLists["event-hosts"])];
+  return hostArtworkOf(organizations);
 }

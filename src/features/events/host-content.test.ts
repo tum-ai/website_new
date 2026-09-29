@@ -1,16 +1,12 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
-import {
-  eventHostLists,
-  hostArtworkOf,
-  hostIcon,
-  hostLogo,
-} from "./data/host-logos";
+import { organizationsWithKeys } from "@/features/partners";
+import { hostArtworkOf } from "./data/host-logos";
 import { getHostArtwork } from "./host-content";
 
 /**
- * Parity for the /events co-host slice: the `event-hosts` list, read back
- * from the backfill through the real query under the mock CMS, gives the
- * code artwork, aspect ratios included.
+ * Parity for the /events co-host artwork: the co-hosts' organisations, read
+ * back from the backfill through the real query under the mock CMS, give
+ * the code artwork, aspect ratios included.
  */
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -22,31 +18,47 @@ function useSource(source: "code" | "sanity") {
   vi.stubEnv("VERCEL", "");
 }
 
-const codeArtwork = hostArtworkOf(eventHostLists["event-hosts"]);
+const keys = ["anthropic", "manage-and-more", "mercura", "red-bull", "nope"];
+const codeArtwork = hostArtworkOf(organizationsWithKeys(keys));
 
-describe("the /events co-host slice", () => {
-  test("code source: the code artwork", async () => {
+describe("the /events co-host artwork", () => {
+  test("code source: the code organisations' artwork", async () => {
     useSource("code");
-    await expect(getHostArtwork()).resolves.toStrictEqual(codeArtwork);
+    await expect(getHostArtwork(keys)).resolves.toStrictEqual(codeArtwork);
   });
 
   test("sanity source over the backfill: the same artwork", async () => {
     useSource("sanity");
-    const artwork = await getHostArtwork();
+    const artwork = await getHostArtwork(keys);
     expect(artwork).toStrictEqual(codeArtwork);
-    expect(Object.keys(artwork.logos).length).toBeGreaterThan(10);
+    expect(Object.keys(artwork.logos)).toStrictEqual([
+      "anthropic",
+      "manage-and-more",
+      "red-bull",
+    ]);
+    expect(artwork.icons).toStrictEqual({
+      mercura: "/assets/events/hosts/mercura-icon.webp",
+    });
+  });
+
+  test("no co-host organisations, no request and no artwork", async () => {
+    useSource("sanity");
+    await expect(getHostArtwork([])).resolves.toStrictEqual({
+      logos: {},
+      icons: {},
+    });
   });
 });
 
-describe("host artwork lookups", () => {
-  test("match a co-host by its key or its name, and set icons apart", () => {
-    expect(hostLogo("Manage & More")).toStrictEqual(
-      hostLogo("Manage and More"),
+describe("hostArtworkOf", () => {
+  test("keys the dark logos by organisation, icons apart", () => {
+    const { logos, icons } = hostArtworkOf(
+      organizationsWithKeys(["red-bull", "mercura"]),
     );
-    expect(hostLogo("Red Bull")?.aspect).toBeCloseTo(224.189 / 36);
-    expect(hostLogo("Mercura")).toBeUndefined();
-    expect(hostIcon("Mercura")).toBe("/assets/events/hosts/mercura-icon.webp");
-    expect(hostLogo("Unknown Co")).toBeUndefined();
+    expect(logos["red-bull"]?.aspect).toBeCloseTo(224.189 / 36);
+    expect(icons).toStrictEqual({
+      mercura: "/assets/events/hosts/mercura-icon.webp",
+    });
   });
 
   test("artwork without an aspect ratio is sized by its file", () => {

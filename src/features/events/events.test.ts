@@ -3,6 +3,7 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { getMockEvents } from "@/lib/mock-cms";
 import type { Event } from "@/lib/types";
 import {
+  eventHosts,
   excerpt,
   formatEventDate,
   formatEventLocation,
@@ -257,6 +258,75 @@ describe("indexHosts", () => {
     ]);
     expect(index).toHaveLength(1);
     expect(index[0].events).toHaveLength(2);
+  });
+});
+
+describe("co-host organisations", () => {
+  const aws = { key: "aws", name: "AWS" };
+
+  test("an event lists its referenced organisations, not its typed names", () => {
+    expect(
+      eventHosts({
+        hosts: ["Amazon Web Services", "Old name"],
+        coHosts: [aws],
+      }),
+    ).toEqual([aws]);
+  });
+
+  test("typed names stand in while no reference resolves", () => {
+    expect(
+      eventHosts({
+        hosts: ["Amazon Web Services", " "],
+        // A deleted organisation projects as null.
+        coHosts: [null as never],
+      }),
+    ).toEqual([{ name: "Amazon Web Services" }]);
+  });
+
+  test("the hero counts a typed name and a reference to its organisation once", () => {
+    const index = indexHosts([
+      {
+        id: "old",
+        event_date: "2025-01-01T10:00:00Z",
+        hosts: ["Amazon Web Services"],
+      },
+      {
+        id: "new",
+        event_date: "2026-01-01T10:00:00Z",
+        hosts: ["Amazon Web Services"],
+        coHosts: [aws],
+      },
+    ]);
+    expect(
+      index.map(({ key, name, events }) => [key, name, ids(events)]),
+    ).toEqual([["aws", "AWS", ["new", "old"]]]);
+  });
+
+  test("the title leaves out the organisations it names", () => {
+    expect(
+      hostsBeyondTitle({
+        title: "AWS x Lovable Hackathon",
+        hosts: [],
+        coHosts: [
+          aws,
+          { key: "lovable", name: "Lovable" },
+          { key: "n8n", name: "n8n" },
+        ],
+      }),
+    ).toEqual(["n8n"]);
+  });
+
+  test("an event with only referenced co-hosts counts as co-hosted", () => {
+    expect(
+      summarizeEvents([
+        {
+          event_date: "2026-04-17T00:00:00Z",
+          category: "Hackathon",
+          hosts: [],
+          coHosts: [aws],
+        },
+      ]).withHosts,
+    ).toBe(1);
   });
 });
 

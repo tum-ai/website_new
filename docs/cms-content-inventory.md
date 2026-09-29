@@ -28,8 +28,9 @@ events' `hosts` from `liveEventHosts` in `lib/mock-cms.ts`. The new site reads p
 `organization` instead (a partner is an organisation with a `partnerTier`);
 `pnpm sanity:migrate-partners` moves the copied `partner` documents onto organisations, and the
 Studio hides `partner` outside `production` (ADR 0009, "Partners are organisations"). On every
-dataset but `production` the research type also has `institutions` (references to organisations,
-which /research cites instead of the names in the title); the old site's string fields stay.
+dataset but `production` the research type also has `institutions` and the event type `coHosts`
+(references to organisations, which /research cites instead of the names in the title and /events
+lists instead of `hosts`); the old site's string fields stay.
 
 | Type | Kind | Holds | Owner |
 | --- | --- | --- | --- |
@@ -38,7 +39,7 @@ which /research cites instead of the names in the title); the old site's string 
 | `applicationWindow` | list | `program` (`membership`, `e-lab`), `roundName` or cohort, `switchedOn`, `opens`, `deadlineDate`, `deadlineTime` (Munich), `applicationUrl`, `milestones[]` (`key` such as `interviews`/`onboarding`, `from`, `to`), `nextWindowLabel` | done (A) |
 | `siteSettings` | singleton | organization figures, `brandMission`, role emails, social links, booking page and host, community and impact figures, E-Lab program facts (length, funding, selection funnel, hero logo), footer tagline, header CTA fallback | done (A) |
 | `organization` | list | `name`, `key` (kebab-case; pages match its letters and digits), `shortName`, `href`, `logo` and optional `logoOnDark` (image with `alt`, `symbolOnly`, `aspectRatio`); the "Partnership" group: `partnerTier` (set = a partner), `partnerFeatured`, `partnerCategory`, hidden `legacyPartnerId` (the old `partner` document's id, which `/api/getPartners` returns); one document per company, reused by every surface | done (B) |
-| `logoList` | list, fixed ids | `surface` (`alumni-destinations`, `partner-marquee`, `e-lab-ventures`, `event-hosts`, `rex-institutions`), `organizations[]` (references, in page order); one document per section, `_id` `logolist-<surface>`. Membership and order live here, not on the organisation, because one organisation appears in several sections in different places | done (B) |
+| `logoList` | list, fixed ids | `surface` (`alumni-destinations`, `partner-marquee`, `e-lab-ventures`, `rex-institutions`), `organizations[]` (references, in page order); one document per section, `_id` `logolist-<surface>`. Membership and order live here, not on the organisation, because one organisation appears in several sections in different places | done (B) |
 | `person` | list | `placement` (`member-story`, `partner-profile`, `e-lab-testimonial`; one per document, since role and portrait differ per page), `key` (the id code picks by), `order`, `name`, `role`, `context`, `quote` or `story`, `portrait` (hotspot = position), `organization` (reference, testimonials) | done (B) |
 | `caseStudy` | list | partner case studies: `organization`, `metric`, `label`, `summary`, `copy`, `attribution`, `image` | done (B) |
 | `ventureTrace` | singleton | the traced E-Lab venture: `venture` and `person` references, `cohort`, `now`, `milestones[]` with source URLs | done (B) |
@@ -101,7 +102,7 @@ fields, and each owner defines its own schema file.
 | E-Lab ventures | `e-lab/data/venture-page.ts`: `notableStartups` (7) | `venture-trace.tsx`, `application-field.tsx` | **done**: `organization` (`roles: eLabVenture`) | B |
 | Traced venture | `e-lab/data/venture-page.ts`: `tracedVenture`, `tracedVentureLead` | `venture-trace.tsx` | **done**: `ventureTrace`; the lead sentence stays built in code | B |
 | E-Lab venture copy | inline in `e-lab/venture-trace.tsx`, `voices-section.tsx`, `application-field.tsx` (figcaption), `field-dots.tsx` (aria) | e-lab | **done** (integration): `eLabCopy.ventures`, `.voices`, `.field` (the caption's drawn figures are page tokens); the founder and investor picks (`eLabVoices`) and aria strings stay in code | B |
-| Event host logos | `events/data/host-logos.ts` (17 keys, dynamic `/assets/events/hosts/`, `/assets/partners/`) | `events/hero.tsx` | **done**: `organization` (`roles: eventHost`, `key` = the normalised host name) | B |
+| Event host logos | `events/data/host-logos.ts` (dynamic `/assets/events/hosts/`, `/assets/partners/`) | `events/hero.tsx` | **done**: each co-host's `organization.logoOnDark`, by the events' `coHosts` references (`events/host-content.ts`); no logo list, since the hero orders co-hosts by their events | B |
 | Events hero lockup and reel | inline in `events/hero.tsx`, `hero-reel.tsx`, `lockup.tsx` (lead "Hackathons, talks and pitch nights…", generated summary) | /events | **done**: logos from `organization`; the lead without events in `eventsCopy.hero.emptyLead` (integration); the counted lead stays built in code | B |
 | REX institutions | `research/data/rex.ts`: `rexInstitutions` (4), `rexLead`, `rexProcess`, `rexOrigin` | `research/research-page.tsx`, home `programs` text | **done**: `organization` in the `rex-institutions` logo list; the REX lead, process and origin in `researchCopy.rex` (integration) | B |
 | Member stories | `community/data/member-stories.ts`: `stories` (6) | `community-page.tsx`, `member-stories.tsx`, `semester-plan.tsx`, apply `tracks.tsx`, home `join-section.tsx` | **done**: `person` (`placements: memberStory`); the journey and homepage excerpts must stay verbatim substrings (Studio validation, `lib/quote-excerpt.ts`) | B |

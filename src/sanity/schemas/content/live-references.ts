@@ -18,6 +18,8 @@ import { researchType } from "../research";
  *
  * - `research.institutions`: the new site cites these instead of the names
  *   before the colon in the title.
+ * - `event.coHosts`: the new site lists these instead of the names in
+ *   `hosts`, which it reads only for an event without any.
  */
 
 /** `fields` with `added` inserted after the field named `after`. */
@@ -65,12 +67,39 @@ const researchWithInstitutions = defineType({
   ]),
 });
 
+/** The old site's co-host names, deprecated where organisations exist. */
+const legacyHostsField = (field: FieldDefinition): FieldDefinition =>
+  field.name === "hosts"
+    ? {
+        ...field,
+        title: "Co-host names (old site)",
+        description:
+          "The old site's co-host names. The new site lists “Co-hosts” above and reads these names only for an event without any.",
+        deprecated: {
+          reason:
+            "Add the organisations to “Co-hosts”; pnpm sanity:migrate-org-references converts these names.",
+        },
+      }
+    : field;
+
+const eventWithCoHosts = defineType({
+  ...eventType,
+  fields: withFieldsAfter(eventType.fields.map(legacyHostsField), "category", [
+    organizationList({
+      name: "coHosts",
+      title: "Co-hosts",
+      description:
+        "Companies, labs and initiatives that ran or backed the event with TUM.ai: co-hosts, sponsors and challenge partners. Not speakers or jury members. /events lists every one in its hero, with its logo for dark backgrounds when it has one.",
+    }),
+  ]),
+});
+
 /**
  * The old site's types with their organisation references, for every
  * dataset with page content (`sanity.config.ts`).
  */
 export const liveTypesWithReferences = [
   researchWithInstitutions,
-  eventType,
+  eventWithCoHosts,
   partnerType,
 ];

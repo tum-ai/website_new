@@ -25,6 +25,7 @@ import {
 } from "./people-and-logos";
 import type {
   LOGO_LISTS_QUERY_RESULT,
+  ORGANIZATIONS_BY_KEY_QUERY_RESULT,
   PARTNER_ORGANIZATIONS_QUERY_RESULT,
 } from "./sanity.types.generated";
 import { isHttpsUrl } from "./security";
@@ -76,6 +77,11 @@ const LOGO_LISTS_QUERY = defineQuery(`*[_type == "logoList" && _id in $ids]{
 /** Every partner: the organisations with a partner tier. */
 const PARTNER_ORGANIZATIONS_QUERY = defineQuery(
   `*[_type == "organization" && defined(partnerTier)] | order(key asc)${ORGANIZATION_PROJECTION}`,
+);
+
+/** The organisations with the given keys (`$keys`), in no order. */
+const ORGANIZATIONS_BY_KEY_QUERY = defineQuery(
+  `*[_type == "organization" && key in $keys]${ORGANIZATION_PROJECTION}`,
 );
 
 /** An organisation as {@link ORGANIZATION_PROJECTION} returns it. */
@@ -242,6 +248,37 @@ export function getPartnerOrganizations({
         const organization = toOrganization(projected);
         return organization?.partnership ? [organization] : [];
       }),
+  });
+}
+
+/**
+ * The organisations with `keys` (references elsewhere name them, such as an
+ * event's co-hosts): the CMS's when the source is `sanity` and any exists,
+ * otherwise `fallback`, the code's. Unordered; a key without an
+ * organisation is left out.
+ */
+export function getOrganizationsByKey({
+  keys,
+  fallback,
+  label,
+  mockDocuments,
+}: {
+  keys: readonly string[];
+  /** The code's organisations with those keys. */
+  fallback: readonly Organization[];
+  label: string;
+  /** The documents the mock CMS queries: the slice's backfill. */
+  mockDocuments: () => readonly BackfillDocument[];
+}): Promise<Organization[]> {
+  return loadContent<Organization[], ORGANIZATIONS_BY_KEY_QUERY_RESULT>({
+    fallback: [...fallback],
+    query: ORGANIZATIONS_BY_KEY_QUERY,
+    params: { keys: [...keys] },
+    tags: ["content:organization"],
+    label,
+    mockDocuments,
+    select: (result) =>
+      result.flatMap((projected) => toOrganization(projected) ?? []),
   });
 }
 

@@ -92,9 +92,10 @@ export function isPartnerCategory(value: unknown): value is PartnerCategory {
  */
 export type Organization = {
   /**
-   * Stable id, kebab-case (`hudson-river-trading`). Pages that match names
-   * (the partner marquee, the events co-hosts) compare its letters and
-   * digits, so it spells the name.
+   * Stable id, kebab-case (`hudson-river-trading`). References and code
+   * lists name organisations by it; pages that match names (the partner
+   * marquee, research titles) compare its letters and digits, so it spells
+   * the name.
    */
   key: string;
   name: string;
@@ -124,7 +125,6 @@ export const logoListSurfaces = [
     title: "Partners: marquee artwork on dark (/partners hero)",
   },
   { value: "e-lab-ventures", title: "E-Lab: alumni ventures (/e-lab)" },
-  { value: "event-hosts", title: "Events: co-host artwork (/events hero)" },
   {
     value: "rex-institutions",
     title: "Research: REX institutions (/research)",

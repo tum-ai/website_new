@@ -11,7 +11,10 @@
  * islands to every page that imports the entry.
  */
 
-export { organizationByKey } from "./data/organizations";
+export {
+  organizationByKey,
+  organizationsWithKeys,
+} from "./data/organizations";
 export { getHighlightedPartners } from "./partner-directory";
 export { getPartnerKey } from "./partner-key";
 export { PartnerRotationGrid } from "./partner-rotation-grid";

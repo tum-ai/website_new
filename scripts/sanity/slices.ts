@@ -6,7 +6,6 @@ import { buildMemberStoriesBackfill } from "@/features/community/people-content"
 import { buildELabBackfill } from "@/features/e-lab/content";
 import { buildVentureBackfill } from "@/features/e-lab/venture-content";
 import { buildEventsBackfill } from "@/features/events/content";
-import { buildEventHostBackfill } from "@/features/events/host-content";
 import { buildHomeBackfill } from "@/features/home/content";
 import { buildPartnersBackfill } from "@/features/partners/content";
 import { buildOrganizationBackfill } from "@/features/partners/organization-content";
@@ -43,7 +42,6 @@ export const backfillSlices: readonly {
   },
   { slice: "features/partners/content.ts", build: buildPartnersBackfill },
   { slice: "features/e-lab/venture-content.ts", build: buildVentureBackfill },
-  { slice: "features/events/host-content.ts", build: buildEventHostBackfill },
   { slice: "features/research/rex-content.ts", build: buildRexBackfill },
   {
     slice: "features/community/people-content.ts",

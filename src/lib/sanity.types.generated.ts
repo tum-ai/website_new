@@ -842,7 +842,6 @@ export type LogoList = {
     | "alumni-destinations"
     | "partner-marquee"
     | "e-lab-ventures"
-    | "event-hosts"
     | "rex-institutions";
   organizations: Array<
     {
@@ -1070,6 +1069,11 @@ export type Event = {
   location?: string;
   city?: "Munich" | "Online";
   category?: "Hackathon" | "Speaker" | "Event" | "E-Lab";
+  coHosts?: Array<
+    {
+      _key: string;
+    } & OrganizationReference
+  >;
   hosts?: Array<string>;
   poster?: {
     asset?: SanityImageAssetReference;
@@ -2796,7 +2800,6 @@ export type LOGO_LISTS_QUERY_RESULT = Array<{
   surface:
     | "alumni-destinations"
     | "e-lab-ventures"
-    | "event-hosts"
     | "partner-marquee"
     | "rex-institutions";
   organizations: Array<{
@@ -2907,6 +2910,61 @@ export type PARTNER_ORGANIZATIONS_QUERY_RESULT = Array<{
   partnerFeatured: boolean | null;
 }>;
 
+// Source: ../lib/organization-content.ts
+// Variable: ORGANIZATIONS_BY_KEY_QUERY
+// Query: *[_type == "organization" && key in $keys]{  key,  name,  shortName,  href,  "logo": logo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "logoSymbolOnly": logo.symbolOnly,  "logoAspectRatio": logo.aspectRatio,  "logoOnDark": logoOnDark{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "logoOnDarkSymbolOnly": logoOnDark.symbolOnly,  "logoOnDarkAspectRatio": logoOnDark.aspectRatio,  partnerTier,  partnerCategory,  partnerFeatured}
+export type ORGANIZATIONS_BY_KEY_QUERY_RESULT = Array<{
+  key: string;
+  name: string;
+  shortName: string | null;
+  href: string | null;
+  logo: {
+    src: string | null;
+    width: number | null;
+    height: number | null;
+    alt: string | null;
+    hotspot: {
+      x: number;
+      y: number;
+    } | null;
+    crop: {
+      top: number;
+      bottom: number;
+      left: number;
+      right: number;
+    } | null;
+  } | null;
+  logoSymbolOnly: boolean | null;
+  logoAspectRatio: number | null;
+  logoOnDark: {
+    src: string | null;
+    width: number | null;
+    height: number | null;
+    alt: string | null;
+    hotspot: {
+      x: number;
+      y: number;
+    } | null;
+    crop: {
+      top: number;
+      bottom: number;
+      left: number;
+      right: number;
+    } | null;
+  } | null;
+  logoOnDarkSymbolOnly: boolean | null;
+  logoOnDarkAspectRatio: number | null;
+  partnerTier: "bronze" | "gold" | "silver" | "supporter" | null;
+  partnerCategory:
+    | "Industry Partners"
+    | "Initiatives"
+    | "Research Partners"
+    | "Technical Partners"
+    | "Venture Capital"
+    | null;
+  partnerFeatured: boolean | null;
+}>;
+
 // Source: ../lib/person-content.ts
 // Variable: PEOPLE_QUERY
 // Query: *[_type == "person" && placement == $placement] | order(order asc){  key,  name,  role,  context,  quote,  story,  "portrait": portrait{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "organization": organization->{    key,    name,    "logo": logo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}  }}
@@ -2957,7 +3015,7 @@ export type PEOPLE_QUERY_RESULT = Array<{
 
 // Source: ../lib/sanity-queries.ts
 // Variable: EVENTS_QUERY
-// Query: *[_type == "event"]{  "id": _id,  title,  "description": coalesce(desc, ""),  event_date,  location,  city,  category,  "hosts": coalesce(hosts, []),  "poster": poster.asset->url,  "images": array::compact([poster.asset->url, img.asset->url]),  sign_up}
+// Query: *[_type == "event"]{  "id": _id,  title,  "description": coalesce(desc, ""),  event_date,  location,  city,  category,  "hosts": coalesce(hosts, []),  "coHosts": coHosts[]->{ key, name },  "poster": poster.asset->url,  "images": array::compact([poster.asset->url, img.asset->url]),  sign_up}
 export type EVENTS_QUERY_RESULT = Array<{
   id: string;
   title: string;
@@ -2967,6 +3025,10 @@ export type EVENTS_QUERY_RESULT = Array<{
   city: "Munich" | "Online" | null;
   category: "E-Lab" | "Event" | "Hackathon" | "Speaker" | null;
   hosts: Array<string> | Array<never>;
+  coHosts: Array<{
+    key: string;
+    name: string;
+  }> | null;
   poster: string | null;
   images: Array<string>;
   sign_up: string | null;

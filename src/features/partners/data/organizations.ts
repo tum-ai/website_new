@@ -1052,6 +1052,14 @@ export function organizationByKey(key: string): Organization {
   return organization;
 }
 
+/**
+ * The organisations among `keys` the table has, for keys that come from
+ * the CMS (an event's co-hosts), where an unknown key is no error.
+ */
+export function organizationsWithKeys(keys: readonly string[]): Organization[] {
+  return keys.flatMap((key) => byKey.get(key) ?? []);
+}
+
 /** The partner sections' logo lists, in page order. */
 export const partnerLogoLists: LogoLists<
   "alumni-destinations" | "partner-marquee"

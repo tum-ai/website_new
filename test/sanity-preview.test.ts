@@ -141,4 +141,10 @@ test("the old site's types keep their fields; organisation references only where
   expect(fieldNames("redesign", "research")).toStrictEqual(
     expect.arrayContaining([...research, "institutions"]),
   );
+  const event = fieldNames("production", "event");
+  expect(event).not.toContain("coHosts");
+  expect(event).toContain("hosts");
+  expect(fieldNames("redesign", "event")).toStrictEqual(
+    expect.arrayContaining([...event, "coHosts"]),
+  );
 });

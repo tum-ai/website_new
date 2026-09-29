@@ -71,6 +71,36 @@ test("event query: hosts stay an array and default to empty", async () => {
   expect(bare.hosts).toStrictEqual([]);
 });
 
+test("event query: co-hosts resolve to organisations beside the old names", async () => {
+  const dataset = [
+    { _id: "org-aws", _type: "organization", key: "aws", name: "AWS" },
+    {
+      _id: "evt-refs",
+      _type: "event",
+      title: "Hackathon",
+      event_date: "2026-01-01",
+      hosts: ["Amazon Web Services"],
+      coHosts: [
+        { _key: "aws", _type: "reference", _ref: "org-aws" },
+        { _key: "gone", _type: "reference", _ref: "org-deleted" },
+      ],
+    },
+    {
+      _id: "evt-names",
+      _type: "event",
+      title: "Talk",
+      event_date: "2026-02-01",
+    },
+  ];
+
+  const [referenced, bare] = await run(EVENTS_QUERY, dataset);
+
+  expect(referenced.coHosts).toStrictEqual([{ key: "aws", name: "AWS" }, null]);
+  expect(referenced.hosts).toStrictEqual(["Amazon Web Services"]);
+  expect(bare.coHosts).toBeNull();
+  expect(bare.hosts).toStrictEqual([]);
+});
+
 test("research query: keywords stay an array, description falls back", async () => {
   const dataset = [
     {
@@ -166,6 +196,22 @@ describe("public API query shapes are frozen", () => {
       ].sort(),
     );
     expect(event.detail).toBe("Long text");
+  });
+
+  test("events answer the same with co-host references", async () => {
+    const [event] = await run(PUBLIC_EVENTS_QUERY, [
+      { _id: "o", _type: "organization", key: "aws", name: "AWS" },
+      {
+        _id: "e",
+        _type: "event",
+        title: "T",
+        event_date: "2026-01-01",
+        hosts: ["AWS"],
+        coHosts: [{ _key: "aws", _type: "reference", _ref: "o" }],
+      },
+    ]);
+    expect(event).not.toHaveProperty("coHosts");
+    expect(event).not.toHaveProperty("hosts");
   });
 
   test("research keeps keywords as one comma-joined string", async () => {

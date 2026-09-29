@@ -8,6 +8,7 @@
 import { tz } from "@date-fns/tz";
 import { endOfDay, format } from "date-fns";
 import { stegaClean } from "next-sanity";
+import { getPartnerKey } from "@/features/partners";
 import type { Event, EventCategory } from "@/lib/types";
 import { formatList } from "@/lib/words";
 
@@ -131,36 +132,72 @@ export function groupEventsBySemester<T extends Dated>(
   return [...groups.values()];
 }
 
-/** One co-host in the hero's index, as {@link indexHosts} returns it. */
-export type HostEntry<T> = {
-  /** The name as editors entered it the latest time. */
+/** An event's co-host as /events shows it. */
+export type EventHost = {
+  /**
+   * The organisation's name, or the name as typed in `hosts`; in draft mode
+   * with the stega metadata that makes it clickable in Presentation.
+   */
   name: string;
+  /** The organisation's key; only for a referenced organisation. */
+  key?: string;
+};
+
+/** The fields {@link eventHosts} reads. */
+type Hosted = Pick<Event, "hosts" | "coHosts">;
+
+/** A name without stega metadata (which also contains characters `\s` matches). */
+const plain = (value: string | null | undefined) =>
+  stegaClean(value ?? "")
+    .trim()
+    .replace(/\s+/g, " ");
+
+/**
+ * An event's co-hosts: the organisations `coHosts` references (those that
+ * resolve), or, for an event without any, the names in `hosts`, the old
+ * site's field. Blank names are left out.
+ */
+export function eventHosts(event: Hosted): EventHost[] {
+  const referenced = (event.coHosts ?? []).flatMap((organization) => {
+    const key = plain(organization?.key);
+    const name = organization?.name ?? "";
+    return key && plain(name) ? [{ key, name }] : [];
+  });
+  if (referenced.length > 0) return referenced;
+  return event.hosts.flatMap((name) => (plain(name) ? [{ name }] : []));
+}
+
+/**
+ * One co-host in the hero's index, as {@link indexHosts} returns it: the
+ * name without stega metadata.
+ */
+export type HostEntry<T> = EventHost & {
   /** The events the co-host was part of, newest first. */
   events: T[];
 };
 
 /**
  * Every co-host across the events, most frequent first and, among equals,
- * the most recent first (then by name, so the order is stable). Names match
- * case- and space-insensitively, since editors type them by hand. Names are
- * read without the stega metadata draft mode appends per event (which also
- * contains characters `\s` matches).
+ * the most recent first (then by name, so the order is stable). A co-host
+ * is one organisation, matched by `getPartnerKey` of its name, so a typed
+ * name ("Amazon Web Services") and a referenced organisation ("AWS") are
+ * one entry; the name and key are the latest event's.
  */
-export function indexHosts<T extends Pick<Event, "event_date" | "hosts">>(
+export function indexHosts<T extends Pick<Event, "event_date"> & Hosted>(
   events: readonly T[],
 ): HostEntry<T>[] {
   const hosts = new Map<string, HostEntry<T>>();
   const newestFirst = [...events].sort((a, b) => time(b) - time(a));
   for (const event of newestFirst) {
     const seen = new Set<string>();
-    for (const raw of event.hosts) {
-      const name = stegaClean(raw).trim().replace(/\s+/g, " ");
-      const key = name.toLowerCase();
-      if (!name || seen.has(key)) continue;
-      seen.add(key);
-      const entry = hosts.get(key);
+    for (const host of eventHosts(event)) {
+      const name = plain(host.name);
+      const id = getPartnerKey(name);
+      if (seen.has(id)) continue;
+      seen.add(id);
+      const entry = hosts.get(id);
       if (entry) entry.events.push(event);
-      else hosts.set(key, { name, events: [event] });
+      else hosts.set(id, { ...host, name, events: [event] });
     }
   }
   const latest = (entry: HostEntry<T>) => time(entry.events[0]);
@@ -186,7 +223,7 @@ export type EventSummary = {
 
 /** Counts for the hero's lead, over every event on the page. */
 export function summarizeEvents(
-  events: readonly Pick<Event, "event_date" | "category" | "hosts">[],
+  events: readonly (Pick<Event, "event_date" | "category"> & Hosted)[],
 ): EventSummary {
   const first = events.reduce<(typeof events)[number] | undefined>(
     (earliest, event) =>
@@ -200,7 +237,7 @@ export function summarizeEvents(
       (event) =>
         stegaClean(event.category) === ("Hackathon" satisfies EventCategory),
     ).length,
-    withHosts: events.filter((event) => event.hosts.length > 0).length,
+    withHosts: events.filter((event) => eventHosts(event).length > 0).length,
   };
 }
 
@@ -266,13 +303,13 @@ export function lockupParts(title: string): string[] {
  * Face" with hosts Anthropic, Lovable, Hugging Face and CDTM leaves CDTM.
  */
 export function hostsBeyondTitle(
-  event: Pick<Event, "title" | "hosts">,
+  event: Pick<Event, "title"> & Hosted,
 ): string[] {
   // By text: in draft mode stega appends invisible characters to both.
   const title = stegaClean(event.title).toLowerCase();
-  return event.hosts.filter(
-    (host) => !title.includes(stegaClean(host).trim().toLowerCase()),
-  );
+  return eventHosts(event)
+    .map(({ name }) => name)
+    .filter((name) => !title.includes(plain(name).toLowerCase()));
 }
 
 /**

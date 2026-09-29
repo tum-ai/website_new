@@ -133,10 +133,12 @@ describe("the backfill builders", () => {
   });
 
   test("a logo list references organisations in order under a fixed id", () => {
-    expect(buildLogoListDocument("event-hosts", [globex, acme])).toStrictEqual({
-      _id: logoListId("event-hosts"),
+    expect(
+      buildLogoListDocument("e-lab-ventures", [globex, acme]),
+    ).toStrictEqual({
+      _id: logoListId("e-lab-ventures"),
       _type: "logoList",
-      surface: "event-hosts",
+      surface: "e-lab-ventures",
       organizations: [
         { _key: "globex", _type: "reference", _ref: organizationId("globex") },
         { _key: "acme", _type: "reference", _ref: organizationId("acme") },
@@ -155,13 +157,13 @@ describe("getLogoLists", () => {
   test("a section's CMS list replaces its code list; a missing list keeps code", async () => {
     useSanityMock();
     const lists = await getLogoLists({
-      lists: { "event-hosts": [acme], "rex-institutions": [acme] },
+      lists: { "e-lab-ventures": [acme], "rex-institutions": [acme] },
       label: "test",
       mockDocuments: documents([
-        buildLogoListDocument("event-hosts", [globex, acme]),
+        buildLogoListDocument("e-lab-ventures", [globex, acme]),
       ]),
     });
-    expect(lists["event-hosts"].map(({ key }) => key)).toStrictEqual([
+    expect(lists["e-lab-ventures"].map(({ key }) => key)).toStrictEqual([
       "globex",
       "acme",
     ]);
@@ -170,16 +172,16 @@ describe("getLogoLists", () => {
 
   test("dangling references are skipped", async () => {
     useSanityMock();
-    const list = buildLogoListDocument("event-hosts", [
+    const list = buildLogoListDocument("e-lab-ventures", [
       { key: "gone" },
       globex,
     ]);
     const lists = await getLogoLists({
-      lists: { "event-hosts": [acme] },
+      lists: { "e-lab-ventures": [acme] },
       label: "test",
       mockDocuments: documents([list]),
     });
-    expect(lists["event-hosts"].map(({ key }) => key)).toStrictEqual([
+    expect(lists["e-lab-ventures"].map(({ key }) => key)).toStrictEqual([
       "globex",
     ]);
   });

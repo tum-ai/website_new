@@ -162,7 +162,8 @@ export async function getSanityEvents(): Promise<Event[]> {
 
   const events = await fetchSanityList<EVENTS_QUERY_RESULT[number]>(
     EVENTS_QUERY,
-    [...liveCacheTags.event],
+    // The events' co-hosts are organisations.
+    [...liveCacheTags.event, contentCacheTag("organization")],
     "events",
   );
   return events.map(omitNulls);
