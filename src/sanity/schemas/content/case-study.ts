@@ -14,7 +14,7 @@ export function metricProblem(
 ): true | string {
   const number = typeof metric === "string" && /\d+(?:[.,]\d+)?/.exec(metric);
   if (!number) return true;
-  const digits = number[0].replace(/[.,]/g, "\\$&");
+  const digits = number[0].replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const mentions = new RegExp(`(?<![\\d.,])${digits}(?![\\d])`);
   const texts = [summary, copy].filter(
     (text): text is string => typeof text === "string",
