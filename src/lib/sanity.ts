@@ -19,10 +19,8 @@ import type {
 } from "./sanity.types.generated";
 import {
   isSanityConfigured,
-  sanityApiVersion,
-  sanityDataset,
-  sanityProjectId,
-  studioPaths,
+  sanityClientConfig,
+  studioPath,
 } from "./sanity-config";
 import {
   EVENTS_QUERY,
@@ -63,17 +61,14 @@ const browserToken = process.env.SANITY_API_BROWSER_TOKEN || false;
 export { isSanityConfigured };
 
 /**
- * The live dataset's client (events, partners, research). Page content from
- * the content dataset goes through `lib/cms-content.ts` instead.
+ * The client for events, partners and research, with draft mode, stega and
+ * Sanity Live. Page content from the same dataset goes through
+ * `lib/cms-content.ts`, which shares `sanityClientConfig`.
  */
 export const client = createClient({
-  projectId: sanityProjectId,
-  dataset: sanityDataset,
-  apiVersion: sanityApiVersion,
-  useCdn: true,
-  perspective: "published",
+  ...sanityClientConfig,
   stega: {
-    studioUrl: studioPaths.live,
+    studioUrl: studioPath,
   },
 });
 

@@ -5,22 +5,25 @@ import { createClient } from "next-sanity";
 import type { BackfillDocument } from "./cms-backfill";
 import { mergeOverFallback } from "./cms-content-model";
 import {
+  hasPageContent,
   isSanityConfigured,
-  sanityApiVersion,
-  sanityContentDataset,
-  sanityProjectId,
+  sanityClientConfig,
 } from "./sanity-config";
 
 /**
  * The read path for page content that moves from code to the CMS (FAQs,
- * campaigns, logos, copy): the source gate, the content-dataset client and
- * the fetch-and-merge every content slice uses. Server only; client
- * components receive the result as props. Decision record:
+ * campaigns, logos, copy): the source gate, the content client and the
+ * fetch-and-merge every content slice uses. Server only; client components
+ * receive the result as props. Decision record:
  * docs/adr/0009-cms-content-source.md.
  *
+ * It reads the site's one dataset (`NEXT_PUBLIC_SANITY_DATASET`) with the
+ * same client configuration as `lib/sanity.ts`, but never `production`, the
+ * old site's dataset, which holds no page content (`hasPageContent`).
+ *
  * Scope: published documents only. Draft mode, Presentation and
- * `<SanityLive>` cover the live dataset (`lib/sanity.ts`), not this one;
- * pages pick up content edits when they revalidate.
+ * `<SanityLive>` cover events, partners and research (`lib/sanity.ts`), not
+ * page content; pages pick up content edits when they revalidate.
  */
 
 /** Where page content comes from. */
@@ -29,7 +32,7 @@ export type ContentSource = "code" | "sanity";
 /**
  * `CMS_CONTENT_SOURCE`: `code` (the default) renders the code fallbacks and
  * makes no request, exactly the site before the CMS; `sanity` reads the
- * content dataset and lays it over the fallbacks. Server-only and read at
+ * dataset's page content and lays it over the fallbacks. Server-only and read at
  * render time, so it takes effect with the next build or revalidation.
  * Anything else throws, so a typo fails the build instead of silently
  * serving code.
@@ -45,35 +48,29 @@ export function getContentSource(
 }
 
 /**
- * The content dataset's client (`NEXT_PUBLIC_SANITY_CONTENT_DATASET`):
- * published perspective from the CDN, no token, no stega. `null` without a
- * content dataset: there is no default, and never the live dataset.
+ * The content client: the site's dataset, published perspective from the
+ * CDN, no token, no stega (`sanityClientConfig`). `null` on `production`,
+ * the old site's dataset, which never holds page content.
  */
-export const contentClient = sanityContentDataset
-  ? createClient({
-      projectId: sanityProjectId,
-      dataset: sanityContentDataset,
-      apiVersion: sanityApiVersion,
-      useCdn: true,
-      perspective: "published",
-    })
+export const contentClient = hasPageContent
+  ? createClient(sanityClientConfig)
   : null;
 
-let warnedNoContentDataset = false;
+let warnedNoPageContent = false;
 
 /**
  * Whether the `sanity` source has somewhere to read from: always under the
- * mock CMS (it queries the backfill documents), otherwise only with a
- * content dataset. Without one the source acts as `code`, and says so once
- * per server process instead of once per slice.
+ * mock CMS (it queries the backfill documents), otherwise only when the
+ * dataset is not `production`. On `production` the source acts as `code`,
+ * and says so once per server process instead of once per slice.
  */
-function hasContentDataset(): boolean {
+function readsPageContent(): boolean {
   if (process.env.USE_MOCK_CMS === "1" && !process.env.VERCEL) return true;
   if (contentClient) return true;
-  if (!warnedNoContentDataset) {
-    warnedNoContentDataset = true;
+  if (!warnedNoPageContent) {
+    warnedNoPageContent = true;
     console.warn(
-      "[cms-content] CMS_CONTENT_SOURCE=sanity, but NEXT_PUBLIC_SANITY_CONTENT_DATASET is unset or names the live dataset; rendering the code content.",
+      '[cms-content] CMS_CONTENT_SOURCE=sanity, but NEXT_PUBLIC_SANITY_DATASET is "production" (the old site\'s dataset, which holds no page content); rendering the code content. Set it to "redesign".',
     );
   }
   return false;
@@ -97,9 +94,10 @@ export type FetchContentOptions = {
 };
 
 /**
- * One query against the content dataset, or `null` when there is nothing to
- * use: no project or content dataset configured, or the request failed (logged; Next's own
- * control-flow errors are rethrown, as in `lib/sanity.ts`). Callers merge
+ * One page-content query against the dataset, or `null` when there is
+ * nothing to use: no project configured, the dataset is `production`, or the
+ * request failed (logged; Next's own control-flow errors are rethrown, as in
+ * `lib/sanity.ts`). Callers merge
  * the result over their code fallback, so an outage renders the code copy.
  *
  * Under the mock CMS (`USE_MOCK_CMS=1`, never on Vercel) the query runs with
@@ -152,8 +150,7 @@ export type LoadContentOptions<T, R> = FetchContentOptions & {
 
 /**
  * The content a slice's `get<X>Content()` returns: `fallback` for the
- * `code` source, and for the `sanity` source without a content dataset
- * (logged once); otherwise the query result, shaped by `select`, merged
+ * `code` source, and for the `sanity` source on `production` (logged once); otherwise the query result, shaped by `select`, merged
  * over `fallback` (`mergeOverFallback` in `lib/cms-content-model.ts`).
  */
 export async function loadContent<T, R>({
@@ -161,7 +158,7 @@ export async function loadContent<T, R>({
   select,
   ...fetchOptions
 }: LoadContentOptions<T, R>): Promise<T> {
-  if (getContentSource() === "code" || !hasContentDataset()) return fallback;
+  if (getContentSource() === "code" || !readsPageContent()) return fallback;
   const result = await fetchContent<R>(fetchOptions);
   return mergeOverFallback(fallback, result === null ? null : select(result));
 }

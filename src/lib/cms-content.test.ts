@@ -20,8 +20,7 @@ vi.mock("next-sanity", () => ({
 
 async function loadCmsContent(env: Record<string, string> = {}) {
   vi.stubEnv("NEXT_PUBLIC_SANITY_PROJECT_ID", "abc123");
-  vi.stubEnv("NEXT_PUBLIC_SANITY_DATASET", "production");
-  vi.stubEnv("NEXT_PUBLIC_SANITY_CONTENT_DATASET", "redesign");
+  vi.stubEnv("NEXT_PUBLIC_SANITY_DATASET", "redesign");
   vi.stubEnv("CMS_CONTENT_SOURCE", "sanity");
   vi.stubEnv("USE_MOCK_CMS", "");
   vi.stubEnv("VERCEL", "");
@@ -70,7 +69,7 @@ describe("getContentSource", () => {
   });
 });
 
-test("the content client reads the content dataset, published, from the CDN", async () => {
+test("the content client reads the site's dataset, published, from the CDN", async () => {
   await loadCmsContent();
   expect(mocks.createClient).toHaveBeenCalledWith(
     expect.objectContaining({
@@ -82,26 +81,23 @@ test("the content client reads the content dataset, published, from the CDN", as
   );
 });
 
-describe("without a content dataset", () => {
+describe("on production, the old site's dataset", () => {
   test.each([
-    ["unset", ""],
-    ["the live dataset", "production"],
-  ])(
-    "(%s) there is no client, never one on the live dataset",
-    async (_, value) => {
-      const { contentClient } = await loadCmsContent({
-        NEXT_PUBLIC_SANITY_CONTENT_DATASET: value,
-      });
-      expect(contentClient).toBeNull();
-      expect(mocks.createClient).not.toHaveBeenCalled();
-    },
-  );
+    ["by default", ""],
+    ["when named", "production"],
+  ])("(%s) there is no content client", async (_, value) => {
+    const { contentClient } = await loadCmsContent({
+      NEXT_PUBLIC_SANITY_DATASET: value,
+    });
+    expect(contentClient).toBeNull();
+    expect(mocks.createClient).not.toHaveBeenCalled();
+  });
 
   test("the sanity source renders the code content, and says so once", async () => {
     vi.spyOn(console, "warn").mockImplementation(() => {});
     mocks.fetch.mockResolvedValue({ title: "CMS" });
     const { fetchContent, loadContent } = await loadCmsContent({
-      NEXT_PUBLIC_SANITY_CONTENT_DATASET: "",
+      NEXT_PUBLIC_SANITY_DATASET: "",
     });
     const fallback = { title: "Code" };
     const load = { ...options, fallback, select: (result: unknown) => result };
@@ -111,13 +107,13 @@ describe("without a content dataset", () => {
     await expect(fetchContent(options)).resolves.toBeNull();
     expect(mocks.fetch).not.toHaveBeenCalled();
     expect(console.warn).toHaveBeenCalledExactlyOnceWith(
-      expect.stringContaining("NEXT_PUBLIC_SANITY_CONTENT_DATASET"),
+      expect.stringContaining("NEXT_PUBLIC_SANITY_DATASET"),
     );
   });
 
-  test("the mock CMS needs no content dataset", async () => {
+  test("the mock CMS still serves the backfill", async () => {
     const { loadContent } = await loadCmsContent({
-      NEXT_PUBLIC_SANITY_CONTENT_DATASET: "",
+      NEXT_PUBLIC_SANITY_DATASET: "",
       USE_MOCK_CMS: "1",
     });
     await expect(

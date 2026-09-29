@@ -1,48 +1,48 @@
-import { defineConfig, type WorkspaceOptions } from "sanity";
+import { type Config, defineConfig } from "sanity";
 import { presentationTool } from "sanity/presentation";
 import { structureTool } from "sanity/structure";
 import {
-  sanityContentDataset,
+  datasetHoldsPageContent,
   sanityDataset,
   sanityProjectId,
-  studioPaths,
+  studioPath,
 } from "../lib/sanity-config";
 import {
   contentDocumentActions,
-  contentStructure,
   contentTemplates,
+  siteStructure,
 } from "./content-structure";
 import { liveSchemaTypes } from "./schemas";
 import { contentSchemaTypes } from "./schemas/content";
 
 /**
- * The Studio's workspaces (docs/adr/0009-cms-content-source.md):
+ * The Studio for `dataset` (docs/adr/0009-cms-content-source.md): one
+ * workspace at `/studio` with events, partners and research, Presentation
+ * for their draft previews, and, on every dataset except `production`, the
+ * page content types in one desk structure (`siteStructure`).
  *
- * - `live` edits events, partners and research in the live dataset, with
- *   Presentation for draft previews. The old site renders these documents
- *   too, so this workspace never gets new types.
- * - `content` edits the page content types in `contentDataset`
- *   (`NEXT_PUBLIC_SANITY_CONTENT_DATASET`), published only (no Presentation
- *   or draft preview yet). Without a content dataset (`null`: unset, or
- *   naming the live dataset) the workspace does not exist, so an editor can
- *   never publish page content into the live dataset.
- *
- * Sanity requires workspace base paths with the same number of segments, so
- * both sit one level below `/studio`, which redirects to the first one.
+ * On `production`, the old site's dataset, the content types are not
+ * registered: an editor can never create page content there, where the old
+ * site renders every event, partner and research document.
  */
-export function studioWorkspaces(
-  contentDataset: string | null,
-): WorkspaceOptions[] {
-  const live: WorkspaceOptions = {
-    name: "live",
-    title: "Events, partners and research",
-    subtitle: sanityDataset,
-    basePath: studioPaths.live,
+export function studioConfig(dataset: string): Config {
+  const pageContent = datasetHoldsPageContent(dataset);
+  return defineConfig({
+    name: "default",
+    title: "TUM.ai",
+    subtitle: dataset,
+    basePath: studioPath,
     projectId: sanityProjectId,
-    dataset: sanityDataset,
-    schema: { types: liveSchemaTypes },
+    dataset,
+    schema: pageContent
+      ? {
+          types: [...liveSchemaTypes, ...contentSchemaTypes],
+          templates: contentTemplates,
+        }
+      : { types: liveSchemaTypes },
+    document: { actions: contentDocumentActions },
     plugins: [
-      structureTool(),
+      structureTool(pageContent ? { structure: siteStructure } : {}),
       presentationTool({
         previewUrl: {
           initial: "/",
@@ -52,23 +52,8 @@ export function studioWorkspaces(
         },
       }),
     ],
-  };
-  if (!contentDataset) return [live];
-  return [
-    live,
-    {
-      name: "content",
-      title: "Site content",
-      subtitle: contentDataset,
-      basePath: studioPaths.content,
-      projectId: sanityProjectId,
-      dataset: contentDataset,
-      schema: { types: contentSchemaTypes, templates: contentTemplates },
-      document: { actions: contentDocumentActions },
-      plugins: [structureTool({ structure: contentStructure })],
-    },
-  ];
+  });
 }
 
-/** The embedded Studio (`/studio`); see {@link studioWorkspaces}. */
-export default defineConfig(studioWorkspaces(sanityContentDataset));
+/** The embedded Studio (`/studio`) on `NEXT_PUBLIC_SANITY_DATASET`. */
+export default studioConfig(sanityDataset);

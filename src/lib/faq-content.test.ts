@@ -19,7 +19,7 @@ const templates = [
 
 async function loadFaqContent(source: string) {
   vi.stubEnv("NEXT_PUBLIC_SANITY_PROJECT_ID", "abc123");
-  vi.stubEnv("NEXT_PUBLIC_SANITY_CONTENT_DATASET", "redesign");
+  vi.stubEnv("NEXT_PUBLIC_SANITY_DATASET", "redesign");
   vi.stubEnv("CMS_CONTENT_SOURCE", source);
   vi.stubEnv("USE_MOCK_CMS", "");
   vi.resetModules();

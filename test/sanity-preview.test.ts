@@ -2,7 +2,9 @@ import { globSync } from "node:fs";
 import { dirname, relative, sep } from "node:path";
 import { createClient } from "next-sanity";
 import { expect, test, vi } from "vitest";
-import { studioWorkspaces } from "../src/sanity/sanity.config.ts";
+import { studioConfig } from "../src/sanity/sanity.config.ts";
+import { liveSchemaTypes } from "../src/sanity/schemas";
+import { contentSchemaTypes } from "../src/sanity/schemas/content";
 
 // The route handler reads the shared client; the real module also defines
 // Sanity Live, which only loads under the react-server runtime.
@@ -32,13 +34,18 @@ type PresentationOptions = {
   previewUrl?: { initial?: string; previewMode?: { enable?: string } };
 };
 
-// Both workspaces, as a deployment with a content dataset has them.
-const workspaces = studioWorkspaces("redesign");
-const liveWorkspace = workspaces.find(({ name }) => name === "live");
+/** The Studio's one workspace, as the new site's dataset has it. */
+function workspaceOf(dataset: string) {
+  const config = studioConfig(dataset);
+  if (Array.isArray(config)) throw new Error("expected one workspace");
+  return config;
+}
 
-/** Presentation runs in the live workspace (drafts of the live dataset). */
+const workspace = workspaceOf("redesign");
+
+/** Presentation previews drafts of events, partners and research. */
 function presentationOptions(): PresentationOptions | undefined {
-  const tools = (liveWorkspace?.plugins ?? []).flatMap((plugin) =>
+  const tools = (workspace.plugins ?? []).flatMap((plugin) =>
     typeof plugin === "object" &&
     "tools" in plugin &&
     Array.isArray(plugin.tools)
@@ -64,40 +71,36 @@ test("Studio Presentation enables draft mode through an existing route handler",
   expect(route.GET).toBeTypeOf("function");
 });
 
-test("every Studio workspace is served by the embedded Studio catch-all page", () => {
+test("the Studio is served by the embedded Studio catch-all page at /studio", () => {
   const catchAll = pages
     .map(routePathOf)
     .filter((path) => /^\/studio\/\[\[\.\.\.\w+\]\]$/.test(path));
   expect(catchAll).toHaveLength(1);
 
   // The optional catch-all serves /studio and every path below it.
-  for (const { name, basePath } of workspaces) {
-    expect(basePath, name).toMatch(/^\/studio\/[a-z-]+$/);
-  }
+  expect(workspace.basePath).toBe("/studio");
 });
 
-/** The document type names a workspace registers. */
-function typeNames(workspace: string): string[] {
-  const types = workspaces.find(({ name }) => name === workspace)?.schema
-    ?.types;
+/** The document type names the Studio registers on `dataset`. */
+function typeNames(dataset: string): string[] {
+  const types = workspaceOf(dataset).schema?.types;
   return Array.isArray(types) ? types.map((type) => type.name) : [];
 }
 
-test("the content workspace never edits the live dataset's types", () => {
-  const liveTypes = typeNames("live");
+const liveTypes = liveSchemaTypes.map(({ name }) => name);
+const contentTypes = contentSchemaTypes.map(({ name }) => name);
+
+test("the new site's dataset edits every type in one workspace", () => {
+  expect(new Set(typeNames("redesign"))).toStrictEqual(
+    new Set([...liveTypes, ...contentTypes]),
+  );
+  expect(workspaceOf("redesign").dataset).toBe("redesign");
+});
+
+test("on production the Studio registers no page content type", () => {
   expect(new Set(liveTypes)).toStrictEqual(
     new Set(["event", "partner", "research"]),
   );
-
-  const contentTypes = typeNames("content");
   expect(contentTypes.length).toBeGreaterThan(0);
-  expect(contentTypes.filter((type) => liveTypes.includes(type))).toStrictEqual(
-    [],
-  );
-});
-
-test("without a content dataset the Studio has no content workspace", () => {
-  expect(studioWorkspaces(null).map(({ name }) => name)).toStrictEqual([
-    "live",
-  ]);
+  expect(typeNames("production")).toStrictEqual(liveTypes);
 });

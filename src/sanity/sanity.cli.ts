@@ -7,19 +7,17 @@ import { defineCliConfig } from "sanity/cli";
  * folder holding that file as the project root and resolves every path below
  * from here.
  *
- * - The Studio has two workspaces (`live`, `content`) and
- *   `sanity schemas extract` reads one per run, so `pnpm sanity:typegen`
- *   extracts both and `scripts/sanity/merge-schemas.mjs` merges them into
- *   `schema.json`. The extracts are intermediate files in
- *   `node_modules/.cache`, not committed: they are mostly Sanity's built-in
- *   asset types, and the generated TypeScript is what reviewers read.
- *   The `content` workspace exists only with a content dataset, so the
- *   script names a placeholder one (`schema-extract`) for that extract;
- *   extraction reads the local schema and never contacts a dataset.
- * - Queries are found in `lib` (the live dataset's queries and shared
- *   content types), in feature content slices (`features/<x>/content.ts` and
- *   `<topic>-content.ts`)
- *   and in config content slices (`config/<x>-content.ts`).
+ * - `pnpm sanity:typegen` extracts the Studio's one workspace into
+ *   `schema.json`, an intermediate file in `node_modules/.cache`, not
+ *   committed: it is mostly Sanity's built-in asset types, and the generated
+ *   TypeScript is what reviewers read. The Studio registers the page content
+ *   types on every dataset except `production`, so the script names a
+ *   placeholder dataset (`schema-extract`); extraction reads the local
+ *   schema and never contacts a dataset.
+ * - Queries are found in `lib` (the event, partner and research queries and
+ *   shared content types), in feature content slices
+ *   (`features/<x>/content.ts` and `<topic>-content.ts`) and in config
+ *   content slices (`config/<x>-content.ts`).
  * - Required fields (`Rule.required()`) are extracted as non-optional
  *   (`--enforce-required-fields`), so `title`, `name` and `event_date` are
  *   typed `string`, not `string | null`.

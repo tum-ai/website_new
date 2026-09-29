@@ -43,6 +43,9 @@ const fixedTypes = new Set([
 /** Types with their own entry in the structure, left out of the plain lists. */
 const structuredTypes = new Set([
   ...fixedTypes,
+  "event",
+  "partner",
+  "research",
   "faq",
   "campaign",
   "organization",
@@ -60,15 +63,19 @@ const faqInCollectionTemplate: Template = {
 };
 
 /**
- * The content workspace's desk: singletons first (one fixed document each),
- * then the dated content (the application window of each program, pinned,
- * and the campaigns, latest first), FAQs grouped by page and sorted as the
- * page shows them, then every other type as a plain list.
+ * The Studio's desk on a dataset with page content (everything but
+ * `production`): the old site's types first (events latest first, partners,
+ * research projects), then the singletons (one fixed document each), the
+ * dated content (the application window of each program, pinned, and the
+ * campaigns, latest first), FAQs grouped by page and sorted as the page
+ * shows them, logos and people, then every other type as a plain list.
  */
-export const contentStructure: StructureResolver = (S) =>
+export const siteStructure: StructureResolver = (S) =>
   S.list()
-    .title("Site content")
+    .title("Content")
     .items([
+      ...liveItems(S),
+      S.divider(),
       ...contentSingletons.map(({ type, title }) =>
         S.listItem()
           .id(type)
@@ -142,6 +149,23 @@ export const contentStructure: StructureResolver = (S) =>
         return !(id && structuredTypes.has(id));
       }),
     ]);
+
+/** Events, partners and research: the types the old site also has. */
+function liveItems(S: StructureBuilder) {
+  return [
+    S.listItem()
+      .id("event")
+      .title("Events")
+      .schemaType("event")
+      .child(
+        S.documentTypeList("event")
+          .title("Events, latest first")
+          .defaultOrdering([{ field: "event_date", direction: "desc" }]),
+      ),
+    S.documentTypeListItem("partner").title("Partners"),
+    S.documentTypeListItem("research").title("Research projects"),
+  ];
+}
 
 /** Initial-value templates: no "new" for fixed types, plus the FAQ one. */
 export function contentTemplates(templates: Template[]): Template[] {

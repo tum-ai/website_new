@@ -1,14 +1,10 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  // Loaded by the Sanity CLI and run from `src/sanity` by `pnpm
-  // sanity:typegen`, where knip can't follow the paths. (`pnpm
-  // sanity:backfill` runs scripts/sanity/backfill.ts through tsx, which knip
-  // finds in package.json by itself.)
-  "entry": [
-    "test/stubs/*.ts",
-    "src/sanity/sanity.cli.ts",
-    "scripts/sanity/merge-schemas.mjs"
-  ],
+  // Loaded by the Sanity CLI from `src/sanity` by `pnpm sanity:typegen`,
+  // where knip can't follow the path. (`pnpm sanity:backfill` runs
+  // scripts/sanity/backfill.ts through tsx, which knip finds in package.json
+  // by itself.)
+  "entry": ["test/stubs/*.ts", "src/sanity/sanity.cli.ts"],
   // Loaded by path: playwright.config.ts `toHaveScreenshot.stylePath`.
   "ignoreFiles": ["e2e/visual-screenshot.css"],
   "ignoreIssues": {
