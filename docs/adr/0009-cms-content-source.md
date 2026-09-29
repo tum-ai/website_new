@@ -94,7 +94,7 @@ production would show.
 
 ### Backfill by NDJSON import
 
-`pnpm sanity:backfill [--dataset redesign]` runs every builder registered in
+`pnpm sanity:backfill --dataset redesign` runs every builder registered in
 `scripts/sanity/slices.ts` and writes `.sanity-backfill/<dataset>.ndjson` (gitignored) with a
 count per type. Documents have deterministic, public `_id`s (`[a-z0-9-]`; a `.` would make them
 private) from explicit keys in the code data (a FAQ's `id`, a milestone's, department's or
@@ -112,8 +112,12 @@ repository or CI.
   waits 10 seconds before it starts. Use it only on a dataset nobody has edited, or to reset one
   on purpose.
 
-`production` is refused without `--allow-production`. `test/cms-backfill.test.ts` checks the registry (unique ids, registered
-types, required fields, existing files).
+`--dataset` is required (no default), and the live dataset is always refused: `production` and
+the configured `NEXT_PUBLIC_SANITY_DATASET` (`scripts/sanity/backfill-target.ts`; there is no
+override). The script loads `.env.local` and `.env` like Next, because the Sanity CLI runs from
+`src/sanity` and would not find them, and prints the project and dataset before it writes the file
+and before it imports. `test/cms-backfill.test.ts` checks the registry (unique ids, registered
+types, required fields, existing files) and the target guard.
 
 ### Studio workspaces
 

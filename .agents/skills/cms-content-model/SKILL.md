@@ -166,7 +166,7 @@ proves the CMS path renders the same.
    ```bash
    pnpm lint && pnpm typecheck && pnpm sanity:typegen:check && CI=1 pnpm knip
    pnpm exec vitest run <slice tests> test/cms-backfill.test.ts test/content-facts.test.ts
-   pnpm sanity:backfill        # dry run: check the per-type counts
+   pnpm sanity:backfill --dataset redesign   # dry run: check the per-type counts
    ```
 
    Never run `--apply`, `sanity dataset create` or `sanity dataset import`: importing is a launch

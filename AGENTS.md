@@ -41,7 +41,7 @@ batch the fixes into one push. Never close and reopen a PR to re-run CI. Details
 `pnpm build` writes `.next-prod`; `pnpm start` serves it. `test:perf` reads that build.
 `pnpm sanity:typegen` regenerates `src/lib/sanity.types.generated.ts` after a schema or query
 change (CI fails when it's stale; `pnpm sanity:typegen:check` shows it locally).
-`pnpm sanity:backfill [--dataset redesign]` writes the content slices' documents to
+`pnpm sanity:backfill --dataset redesign` (required; never the live dataset) writes the content slices' documents to
 `.sanity-backfill/<dataset>.ndjson` (a dry run); its `--apply` imports them into Sanity and is a
 maintainer's launch step, never part of a change (docs/adr/0009-cms-content-source.md). In the
 Claude sandbox, run `sanity:typegen` and `sanity:backfill` unsandboxed (tsx and the Sanity CLI

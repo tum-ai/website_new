@@ -1,5 +1,5 @@
 /**
- * `pnpm sanity:backfill [--dataset redesign] [--apply [--overwrite]] [--allow-production]`
+ * `pnpm sanity:backfill --dataset redesign [--apply [--overwrite]]`
  *
  * Turns today's code content into Sanity documents (every slice registered
  * in `slices.ts`) and writes them to `.sanity-backfill/<dataset>.ndjson`
@@ -19,38 +19,39 @@
  * Ids come from explicit keys in the code data (`backfillId`), so a copy
  * edit in code finds the same document instead of adding a second one.
  *
- * The live dataset (`production`) is refused without `--allow-production`:
- * the old site renders what is there. See docs/adr/0009-cms-content-source.md
- * for the launch runbook.
+ * `--dataset` is required and never the live dataset (`production` or the
+ * configured `NEXT_PUBLIC_SANITY_DATASET`; `backfill-target.ts`): the old
+ * site renders what is there. The script reads `.env.local` and `.env` like
+ * Next (the Sanity CLI runs from `src/sanity` and would not find them) and
+ * prints the project and dataset before it writes anything. See
+ * docs/adr/0009-cms-content-source.md for the launch runbook.
  */
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { parseArgs } from "node:util";
 import { assetFileOf, collectSanityAssets } from "@/lib/cms-backfill";
+import { backfillTarget } from "./backfill-target";
 import { collectBackfill } from "./slices";
 
 const root = join(import.meta.dirname, "..", "..");
 
+// Like Next: the shell's values win, then .env.local, then .env. The
+// import below inherits them, so the Sanity CLI sees the same project.
+for (const file of [".env.local", ".env"]) {
+  const path = join(root, file);
+  if (existsSync(path)) process.loadEnvFile(path);
+}
+
 const { values } = parseArgs({
   options: {
-    dataset: { type: "string", default: "redesign" },
+    dataset: { type: "string" },
     apply: { type: "boolean", default: false },
     overwrite: { type: "boolean", default: false },
-    "allow-production": { type: "boolean", default: false },
   },
 });
 
-const dataset = values.dataset;
-if (!/^[a-z0-9][a-z0-9_-]{0,63}$/.test(dataset)) {
-  throw new Error(`Not a dataset name: "${dataset}"`);
-}
-
-if (values.apply && dataset === "production" && !values["allow-production"]) {
-  throw new Error(
-    'Refusing to import into "production": the old site renders that dataset. Use the content dataset (--dataset redesign), or pass --allow-production if you really mean it.',
-  );
-}
+const { dataset, projectId } = backfillTarget(values.dataset, process.env);
 
 if (values.overwrite && !values.apply) {
   throw new Error("--overwrite only changes how --apply imports; add --apply.");
@@ -89,7 +90,7 @@ for (const { _type } of documents) {
 }
 const width = Math.max(...[...counts.keys()].map((type) => type.length), 6);
 const lines = [
-  `Backfill for dataset "${dataset}": ${relative(root, outFile)}`,
+  `Backfill for project "${projectId ?? "(NEXT_PUBLIC_SANITY_PROJECT_ID unset)"}", dataset "${dataset}": ${relative(root, outFile)}`,
   ...[...counts].map(([type, count]) => `  ${type.padEnd(width)}  ${count}`),
   `  ${"assets".padEnd(width)}  ${assets.length} file(s) to upload`,
   `  ${"total".padEnd(width)}  ${documents.length} document(s)`,
@@ -103,6 +104,11 @@ if (!values.apply) {
   process.exit(0);
 }
 
+if (!projectId) {
+  throw new Error(
+    "Set NEXT_PUBLIC_SANITY_PROJECT_ID (in .env.local) before importing.",
+  );
+}
 const mode = values.overwrite ? "--replace" : "--missing";
 if (values.overwrite) {
   process.stderr.write(
@@ -122,7 +128,9 @@ if (values.overwrite) {
     "Creating missing documents only (--missing): existing ones, and the edits in them, stay as they are.\n",
   );
 }
-process.stdout.write(`Importing into "${dataset}" (${mode})...\n`);
+process.stdout.write(
+  `Importing into project "${projectId}", dataset "${dataset}" (${mode})...\n`,
+);
 const result = spawnSync(
   join(root, "node_modules", ".bin", "sanity"),
   ["dataset", "import", outFile, dataset, mode],

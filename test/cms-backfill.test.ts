@@ -6,6 +6,7 @@ import {
   contentSchemaTypes,
   contentSingletons,
 } from "@/sanity/schemas/content";
+import { backfillTarget } from "../scripts/sanity/backfill-target";
 import { backfillSlices, collectBackfill } from "../scripts/sanity/slices";
 
 /**
@@ -140,5 +141,33 @@ describe("the CMS backfill", () => {
     expect(
       isRequired((rule: { integer: () => unknown }) => rule.integer()),
     ).toBe(false);
+  });
+});
+
+describe("the backfill target", () => {
+  test("needs an explicit dataset", () => {
+    expect(() => backfillTarget(undefined, {})).toThrow(/--dataset/);
+    expect(() => backfillTarget("", {})).toThrow(/--dataset/);
+    expect(() => backfillTarget("Not a name", {})).toThrow(/dataset name/);
+  });
+
+  test("never the live dataset, by name or by configuration", () => {
+    expect(() => backfillTarget("production", {})).toThrow(/live dataset/);
+    expect(() =>
+      backfillTarget("production", { NEXT_PUBLIC_SANITY_DATASET: "live" }),
+    ).toThrow(/live dataset/);
+    expect(() =>
+      backfillTarget("live", { NEXT_PUBLIC_SANITY_DATASET: "live" }),
+    ).toThrow(/live dataset/);
+  });
+
+  test("names the content dataset and the configured project", () => {
+    expect(
+      backfillTarget("redesign", { NEXT_PUBLIC_SANITY_PROJECT_ID: "abc123" }),
+    ).toStrictEqual({ dataset: "redesign", projectId: "abc123" });
+    expect(backfillTarget("redesign", {})).toStrictEqual({
+      dataset: "redesign",
+      projectId: null,
+    });
   });
 });

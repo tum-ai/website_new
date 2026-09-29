@@ -183,7 +183,7 @@ keep it current until the CMS content is reviewed.
 Follow the "Content slices" section of the `cms-content-model` skill: schema in
 `src/sanity/schemas/content/`, a `content.ts` slice next to the data, the builder registered in
 `scripts/sanity/slices.ts`, a parity test, `pnpm sanity:typegen`, and a dry run of
-`pnpm sanity:backfill`. Importing into a dataset (`--apply`) is a launch step for a maintainer
+`pnpm sanity:backfill --dataset redesign`. Importing into a dataset (`--apply`) is a launch step for a maintainer
 (runbook in ADR 0009), never part of a change.
 
 ### Change events, research or partners data

@@ -37,7 +37,7 @@ moving out of code, read through content slices (`lib/cms-content.ts`) behind
   dereferenced ones included (`lib/cache-tags.ts`); the live getters use `liveCacheTags`.
   `/api/revalidate` (a Sanity webhook, `SANITY_REVALIDATE_SECRET`) expires them on publish; a
   missing tag means that page ignores the type's edits until its timer or the next deploy.
-- **Backfill:** `pnpm sanity:backfill` is a dry run that writes `.sanity-backfill/<dataset>.ndjson`.
+- **Backfill:** `pnpm sanity:backfill --dataset redesign` is a dry run that writes `.sanity-backfill/<dataset>.ndjson`.
   Never run `--apply`, `sanity dataset create` or `sanity dataset import` as part of a change:
   importing is a maintainer's launch step. `--apply` only creates missing documents;
   `--apply --overwrite` replaces existing ones with the code content and **discards editors'
