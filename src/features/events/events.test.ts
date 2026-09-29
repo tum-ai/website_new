@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { getMockEvents } from "@/lib/mock-cms";
+import type { Event } from "@/lib/types";
 import {
   excerpt,
   formatEventDate,
@@ -390,7 +391,7 @@ describe("formatHosts", () => {
 describe("toEventDetails", () => {
   const [base] = getMockEvents(new Date("2026-10-01T12:00:00Z"));
   if (!base) throw new Error("expected a mock event");
-  const event = {
+  const event: Event = {
     ...base,
     title: "  Anthropic x Lovable  ",
     event_date: "2026-10-10T16:30:00Z",
@@ -398,7 +399,7 @@ describe("toEventDetails", () => {
     city: "Munich",
     hosts: ["Anthropic", "Lovable", "CDTM"],
     description: "An evening of demos.",
-    category: "Hackathon" as const,
+    category: "Hackathon",
     poster: "/poster.png",
     images: ["/one.png", "/two.png"],
   };
