@@ -31,7 +31,7 @@ function useSource(source: "code" | "sanity") {
 const code = {
   copy: fillCodeCopy(communityCopyTemplate, contentTokens),
   journey: memberJourney,
-  departments,
+  departments: fillCodeCopy([...departments], contentTokens),
 };
 
 const fetchBackfill = <T>(query: string) =>

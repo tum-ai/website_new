@@ -1,13 +1,12 @@
-import { contentTokens } from "@/config/content-tokens";
 import type { Department } from "@/lib/community-model";
-import { fillCodeCopy } from "@/lib/content-copy";
 
 /**
  * The core departments on /community, in display order: the code fallback of
  * the `department` documents (`lib/community-content.ts`). Descriptions may
- * hold `{{placeholders}}` for site facts.
+ * hold `{{placeholders}}` for site facts, which the content slice fills on
+ * the server (this module reaches client bundles through the homepage).
  */
-export const departmentTemplates: readonly Department[] = [
+export const departments: readonly Department[] = [
   {
     name: "Makeathon",
     photo: {
@@ -79,9 +78,3 @@ export const departmentTemplates: readonly Department[] = [
       "The partnership department is the main point of contact for companies, focused on building strategic partnerships and securing sponsorships to support ambitious events and projects. We make speaker events with AI leaders like OpenAI and Anthropic happen, and connect other departments with the right partners to help their initiatives succeed.",
   },
 ];
-
-/** The departments as rendered without the CMS: placeholders filled. */
-export const departments: Department[] = fillCodeCopy(
-  [...departmentTemplates],
-  contentTokens,
-);

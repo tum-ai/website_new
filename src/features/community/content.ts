@@ -16,7 +16,7 @@ import { backfillContentImage } from "@/lib/content-backfill";
 import { fillCmsCopy, fillCodeCopy } from "@/lib/content-copy";
 import type { COMMUNITY_COPY_QUERY_RESULT } from "@/lib/sanity.types.generated";
 import { type CommunityCopy, communityCopyTemplate } from "./data/copy";
-import { departmentTemplates } from "./data/departments";
+import { departments as departmentTemplates } from "./data/departments";
 import { memberJourney } from "./data/member-journey";
 
 /**
