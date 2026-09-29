@@ -19,6 +19,53 @@ describe("parseMunichDateTime", () => {
     );
   });
 
+  // 2026: summer time starts on 29 March (02:00 CET → 03:00 CEST, at
+  // 01:00Z) and ends on 25 October (03:00 CEST → 02:00 CET, at 01:00Z).
+  test.each([
+    ["29.03.2026", "00:30", "2026-03-28T23:30:00.000Z"],
+    ["29.03.2026", "01:30", "2026-03-29T00:30:00.000Z"],
+    ["29.03.2026", "01:59", "2026-03-29T00:59:00.000Z"],
+    ["29.03.2026", "03:00", "2026-03-29T01:00:00.000Z"],
+    ["29.03.2026", "03:30", "2026-03-29T01:30:00.000Z"],
+    ["29.03.2026", "23:59", "2026-03-29T21:59:00.000Z"],
+  ])("the spring change day: %s %s is %s", (date, time, iso) => {
+    expect(parseMunichDateTime(date, time).toISOString()).toBe(iso);
+  });
+
+  test("the hour the spring change skips lands after the gap", () => {
+    // 02:00 to 02:59 never shows in Munich that night: read with winter
+    // time, as far past 03:00 CEST as it is past 02:00.
+    expect(parseMunichDateTime("29.03.2026", "02:00").toISOString()).toBe(
+      "2026-03-29T01:00:00.000Z",
+    );
+    expect(parseMunichDateTime("29.03.2026", "02:30").toISOString()).toBe(
+      "2026-03-29T01:30:00.000Z",
+    );
+    expect(munichIsoDate(parseMunichDateTime("29.03.2026", "02:59"))).toBe(
+      "2026-03-29",
+    );
+  });
+
+  test.each([
+    ["25.10.2026", "00:30", "2026-10-24T22:30:00.000Z"],
+    ["25.10.2026", "01:30", "2026-10-24T23:30:00.000Z"],
+    ["25.10.2026", "01:59", "2026-10-24T23:59:00.000Z"],
+    ["25.10.2026", "03:00", "2026-10-25T02:00:00.000Z"],
+    ["25.10.2026", "23:59", "2026-10-25T22:59:00.000Z"],
+  ])("the autumn change day: %s %s is %s", (date, time, iso) => {
+    expect(parseMunichDateTime(date, time).toISOString()).toBe(iso);
+  });
+
+  test("the hour the autumn change repeats is its first, summer-time pass", () => {
+    // 02:30 shows at 00:30Z (CEST) and again at 01:30Z (CET).
+    expect(parseMunichDateTime("25.10.2026", "02:00").toISOString()).toBe(
+      "2026-10-25T00:00:00.000Z",
+    );
+    expect(parseMunichDateTime("25.10.2026", "02:30").toISOString()).toBe(
+      "2026-10-25T00:30:00.000Z",
+    );
+  });
+
   test("rejects malformed input", () => {
     expect(() => parseMunichDateTime("2026-09-28", "00:00")).toThrow();
     expect(() => parseMunichDateTime("28.09.2026", "0:00")).toThrow();

@@ -34,11 +34,41 @@ const berlinParts = new Intl.DateTimeFormat("en-US", {
   minute: "2-digit",
 });
 
+/** The Munich wall clock at `instant`, read as if it were UTC (epoch ms). */
+function munichWallClock(instant: number): number {
+  const parts = Object.fromEntries(
+    berlinParts
+      .formatToParts(new Date(instant))
+      .map((part) => [part.type, Number(part.value)]),
+  );
+  return Date.UTC(
+    parts.year,
+    parts.month - 1,
+    parts.day,
+    parts.hour,
+    parts.minute,
+  );
+}
+
+const DAY_MS = 86_400_000;
+
 /**
  * The instant of a Munich wall-clock time, e.g. ("26.09.2026", "23:59") →
  * 2026-09-26T21:59:00Z. Editors write dates the way the site shows them;
  * summer and winter time are resolved here, independent of the server's
  * timezone. Throws on malformed input so a typo fails the build and tests.
+ *
+ * On the two days a year the clocks change:
+ *
+ * - **Spring gap** (last Sunday of March, 02:00 CET jumps to 03:00 CEST):
+ *   02:00 to 02:59 never shows on a Munich clock. Such a time is read with
+ *   the offset before the change, so it lands **after the gap**, as far
+ *   past 03:00 as it is past 02:00 (02:30 → 03:30 CEST); a deadline set
+ *   there is not missed. This is what `Temporal` calls "compatible".
+ * - **Autumn repeat** (last Sunday of October, 03:00 CEST goes back to
+ *   02:00 CET): 02:00 to 02:59 shows twice. The **first** one wins, still in
+ *   summer time (02:30 → 00:30Z, not 01:30Z), also as in "compatible": a
+ *   deadline closes the first time the clock shows it.
  */
 export function parseMunichDateTime(date: string, time: string): Date {
   const dateMatch = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(date);
@@ -50,23 +80,21 @@ export function parseMunichDateTime(date: string, time: string): Date {
   }
   const [, day, month, year] = dateMatch.map(Number);
   const [, hour, minute] = timeMatch.map(Number);
-  const wallClockAsUtc = Date.UTC(year, month - 1, day, hour, minute);
+  const wallClock = Date.UTC(year, month - 1, day, hour, minute);
 
-  // Munich's offset at that moment: format the instant in Europe/Berlin and
-  // compare it with the same wall-clock reading taken as UTC.
-  const parts = Object.fromEntries(
-    berlinParts
-      .formatToParts(new Date(wallClockAsUtc))
-      .map((part) => [part.type, Number(part.value)]),
+  // Munich's offsets a day either side: the same on ordinary days, the
+  // winter and summer offsets around a change. Clocks change at most once
+  // a day, so these are the only candidates.
+  const offsetAt = (instant: number) => munichWallClock(instant) - instant;
+  const before = offsetAt(wallClock - DAY_MS);
+  const after = offsetAt(wallClock + DAY_MS);
+  const matches = [...new Set([before, after])]
+    .map((offset) => wallClock - offset)
+    .filter((instant) => munichWallClock(instant) === wallClock);
+  // None: a time in the spring gap, read with the offset before it.
+  return new Date(
+    matches.length > 0 ? Math.min(...matches) : wallClock - before,
   );
-  const berlinAsUtc = Date.UTC(
-    parts.year,
-    parts.month - 1,
-    parts.day,
-    parts.hour,
-    parts.minute,
-  );
-  return new Date(wallClockAsUtc - (berlinAsUtc - wallClockAsUtc));
 }
 
 const munichDatePattern = /^(\d{2})\.(\d{2})\.(\d{4})$/;
