@@ -5,7 +5,8 @@ import {
   Section,
   SectionHeader,
 } from "@/components/ds";
-import { mission, notRequired, qualities, values } from "./data/apply";
+import { brandMission } from "@/config/organization";
+import { notRequired, qualities, values } from "./data/apply";
 
 /**
  * The call's scope, as a call for papers states it: what is in scope (the
@@ -21,7 +22,7 @@ export function WhoShouldApply() {
           title="Who should apply"
           size="lg"
           layout="stack"
-          lead={mission}
+          lead={brandMission}
         />
 
         <div className="grid gap-14 lg:grid-cols-12 lg:gap-12">

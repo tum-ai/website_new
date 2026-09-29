@@ -21,9 +21,10 @@ function Answer({ faq }: { faq: (typeof faqs)[number] }) {
   return (
     <>
       {faq.spans ? (
-        // The passage sits beside the list from lg; below that, each answer
-        // quotes the words of the passage it is marked by.
-        <p className="mb-4 text-fg-subtle text-small lg:hidden">
+        // Below lg the passage is out of sight, so each answer quotes the
+        // words that mark it; from lg the marks show it, and the quote stays
+        // for screen readers, which can't see the marks.
+        <p className="mb-4 text-fg-subtle text-small lg:sr-only">
           From our mission: “{faq.spans.join(" … ")}”
         </p>
       ) : null}

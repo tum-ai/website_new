@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, type ReactNode, useState } from "react";
-import { FaqList } from "@/components/ds";
+import { FaqList, TextLink } from "@/components/ds";
 import type { PassageSegment } from "./mission-spans";
 
 /** A question as the island receives it: its anchor id and rendered answer. */
@@ -50,7 +50,7 @@ export function MissionAnswers({
                   key={segment.start}
                   data-answers={segment.id}
                   data-active={segment.id === openId ? "" : undefined}
-                  className="decoration-2 decoration-transparent underline-offset-[0.22em] transition-[color,text-decoration-color] duration-500 ease-brand data-active:text-fg data-active:underline data-active:decoration-highlight motion-reduce:transition-none"
+                  className="underline decoration-2 decoration-transparent underline-offset-[0.22em] transition-[color,text-decoration-color] duration-500 ease-brand data-active:text-fg data-active:decoration-highlight motion-reduce:transition-none"
                 >
                   {segment.text}
                 </span>
@@ -65,13 +65,18 @@ export function MissionAnswers({
               {unmarked.map((entry, index) => (
                 <Fragment key={entry.id}>
                   {index > 0 ? ", " : null}
-                  <a
+                  <TextLink
                     href={`#${entry.id}`}
-                    onClick={() => setOpen([entry.question])}
-                    className="font-semibold text-highlight underline underline-offset-4"
+                    // FaqList opens the item on the fragment change; a
+                    // fragment that is already current fires none.
+                    onClick={() => {
+                      if (window.location.hash === `#${entry.id}`) {
+                        setOpen([entry.question]);
+                      }
+                    }}
                   >
                     {entry.question}
-                  </a>
+                  </TextLink>
                 </Fragment>
               ))}
             </p>

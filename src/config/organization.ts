@@ -15,6 +15,13 @@ export const organizationFacts = {
   nationalities: 35,
 } as const;
 
+/**
+ * The mission as the 2026 brand guide states it (slide "Brand Story &
+ * Mission"). /apply quotes it as the call's scope and /qanda opens on it.
+ */
+export const brandMission =
+  "To bridge the gap between theory and practice by empowering students to build the future of AI. We combine academic rigor with a “make-it-happen” mindset to solve real-world challenges.";
+
 /** Everyone who has been an official member: active members plus alumni. */
 export const officialMembers =
   organizationFacts.activeMembers + organizationFacts.alumni;

@@ -7,25 +7,10 @@ import {
   TextLink,
 } from "@/components/ds";
 import { contactEmails } from "@/config/contact";
+import { forks } from "./data/qanda";
 
 /** A mail to the general inbox, its subject filled in. */
 const askUs = `mailto:${contactEmails.general}?subject=${encodeURIComponent("A question about TUM.ai")}`;
-
-/** The two readers' next steps beside the inbox. */
-const forks = [
-  {
-    reader: "For students",
-    text: "Membership starts with a recruiting round. The apply page has the dates and the steps.",
-    label: "Become a Member",
-    href: "/apply",
-  },
-  {
-    reader: "For companies",
-    text: "Partners meet our members through talent packages, hackathon challenges and company visits.",
-    label: "Become a Partner",
-    href: "/partners",
-  },
-] as const;
 
 /**
  * The page's close on ink. The page opens with the answers marked in the

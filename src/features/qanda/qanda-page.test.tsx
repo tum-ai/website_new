@@ -3,7 +3,8 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { contactEmails } from "@/config/contact";
-import { brandMission, faqs, missionQuestion } from "./data/qanda";
+import { brandMission } from "@/config/organization";
+import { faqs, missionQuestion } from "./data/qanda";
 import { QandAPage, qandaMainEntity } from "./qanda-page";
 
 /*

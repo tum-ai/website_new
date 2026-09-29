@@ -2,13 +2,6 @@ import { eLabCompletedIterations, eLabProgramSummary } from "@/config/e-lab";
 import { impactFacts, publicationVenuesText } from "@/config/impact";
 import { organizationFacts } from "@/config/organization";
 
-/**
- * The mission in the 2026 brand guide ("Brand Story & Mission" slide):
- * the short version, which opens the page.
- */
-export const brandMission =
-  "To bridge the gap between theory and practice by empowering students to build the future of AI. We combine academic rigor with a “make-it-happen” mindset to solve real-world challenges.";
-
 /** The question the mission passage answers. */
 export const missionQuestion = "What is TUM.ai's mission?";
 
@@ -128,3 +121,19 @@ export const faqs: QandaEntry[] = [
     },
   },
 ];
+
+/** The two readers' next steps, beside the inbox in the page's close. */
+export const forks = [
+  {
+    reader: "For students",
+    text: "Membership starts with a recruiting round. The apply page has the dates and the steps.",
+    label: "Become a Member",
+    href: "/apply",
+  },
+  {
+    reader: "For companies",
+    text: "Partners meet our members through talent packages, hackathon challenges and company visits.",
+    label: "Become a Partner",
+    href: "/partners",
+  },
+] as const;

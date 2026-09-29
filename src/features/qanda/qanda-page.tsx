@@ -1,16 +1,13 @@
 import { PageHero } from "@/components/ds";
+import { brandMission } from "@/config/organization";
 import { ClosingSection } from "./closing-section";
-import {
-  brandMission,
-  faqs,
-  missionPassage,
-  missionQuestion,
-} from "./data/qanda";
+import { faqs, missionPassage, missionQuestion } from "./data/qanda";
 import { MissionSection } from "./mission-section";
 
 /**
  * The page's questions as schema.org `Question` nodes, for the FAQPage
- * JSON-LD the route renders. Answers are the visible text, facts included.
+ * JSON-LD the route renders. Each answer is the visible answer text and its
+ * listed points.
  */
 export const qandaMainEntity = [
   { question: missionQuestion, answer: missionPassage },
