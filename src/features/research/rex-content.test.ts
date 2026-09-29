@@ -1,6 +1,8 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { rexInstitutions, rexInstitutionsOf } from "./data/rex";
+import { rexInstitutionsOf, rexOrganizations } from "./data/rex";
 import { buildRexBackfill, getRexInstitutions } from "./rex-content";
+
+const rexInstitutions = rexInstitutionsOf(rexOrganizations);
 
 /**
  * Parity for the REX slice: the institutions, read back from the backfill

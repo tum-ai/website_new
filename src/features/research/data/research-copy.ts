@@ -34,7 +34,21 @@ export type ResearchCopy = {
   figurePanels: FigurePanel[];
   ongoing: { title: string; empty: string };
   completed: { title: string; lead: string };
-  rex: { title: string; logosLabel: string; processTitle: string };
+  /** The Research Exchange (REX) band; the institutions are its logo list. */
+  rex: {
+    title: string;
+    /** Names the institutions the logos below repeat. */
+    lead: string;
+    logosLabel: string;
+    processTitle: string;
+    /**
+     * One sentence completing "We …", split at its commas into the steps of
+     * the process. The clauses stay lower case: they continue the "We".
+     */
+    process: string[];
+    /** Why REX exists, in the program's own words. */
+    origin: string;
+  };
   /** The closing band: the affiliation line gets one more slot. */
   closing: {
     title: string;
@@ -96,8 +110,18 @@ export const researchCopyTemplate: ResearchCopy = {
   },
   rex: {
     title: "Research abroad",
+    lead: "Our Research Exchange (REX) Program gives TUM.ai members the chance to do research abroad. Offers range from final theses to research internships with leading labs.",
     logosLabel: "Offers from labs at institutions like",
     processTitle: "How REX works",
+    process: [
+      "collect project proposals from our partners,",
+      "inform members about the requirements and usual processes,",
+      "preselect applicants based on prior relevant (research) experience,",
+      "recommend them to our partner labs,",
+      "and eventually support their journey abroad with alumni experience in visa processes, housing, etc.",
+    ],
+    origin:
+      "REX started because members were already doing research abroad and recommending others to follow. It works because researchers in our network trust TUM.ai to send them curious minds, and introduce our members to their fields.",
   },
   closing: {
     title: "Add your lab to the list.",

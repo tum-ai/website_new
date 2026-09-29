@@ -1,7 +1,7 @@
 import type { LogoItem } from "@/components/ds";
 import { getSafeExternalUrl } from "@/lib/security";
 import type { Partner, ResearchProject, ResearchStatus } from "@/lib/types";
-import { type LabSite, labSites } from "./data/lab-sites";
+import type { LabSite } from "./data/lab-sites";
 
 /** An institution on a project, with its number in the page's affiliation index. */
 export type ProjectAffiliation = {
@@ -223,11 +223,15 @@ export function distanceKm(
 }
 
 /**
- * Places the page's institutions on the globe: every site that one of
- * `names` belongs to, plus TUM.ai's home, in `labSites` order. Names no
- * site lists (and "IBM", which several do) come back as `unplaced`.
+ * Places the page's institutions on the globe: every site of `labSites`
+ * (the render's list, `getLabSiteList()`) that one of `names` belongs to,
+ * plus TUM.ai's home, in list order. Names no site lists (and "IBM", which
+ * several do) come back as `unplaced`.
  */
-export function getLabSites(names: readonly string[]): {
+export function getLabSites(
+  names: readonly string[],
+  labSites: readonly LabSite[],
+): {
   sites: LocatedSite[];
   unplaced: string[];
 } {

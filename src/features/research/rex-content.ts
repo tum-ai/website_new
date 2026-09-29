@@ -15,10 +15,8 @@ import {
 /**
  * The REX slice on /research: the institutions' `organization` documents and
  * the `rex-institutions` logo list. Code fallback: `data/rex.ts`. The REX
- * copy (lead, process, origin) stays in code until `researchCopy` exists.
- *
- * Not exported through `@/features/research`: that index is reachable from a
- * homepage client island, and this module is server-only.
+ * copy (lead, process, origin) is part of `researchCopy` (`content.ts`).
+ * Other features read the getter through `../server.ts`.
  */
 
 /** The REX institutions, in order: the CMS list, or the code list. */

@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { getMockResearchProjects } from "@/lib/mock-cms";
 import type { Partner, ResearchProject } from "@/lib/types";
+import { labSites } from "./data/lab-sites";
 import {
   cleanKeywords,
   distanceKm,
@@ -211,8 +212,27 @@ describe("getLabSites", () => {
     "Inria",
   ];
 
+  test("places names on the list it is given (the CMS lab sites)", () => {
+    const zurich = {
+      id: "zurich",
+      city: "Zurich",
+      location: [47.3769, 8.5417] as [number, number],
+      institutions: ["ETH Zürich"],
+    };
+    const home = labSites.filter((site) => site.home);
+    const { sites, unplaced } = getLabSites(
+      ["ETH Zürich", "MIT"],
+      [...home, zurich],
+    );
+    expect(sites.map(({ id }) => id)).toEqual([
+      ...home.map(({ id }) => id),
+      "zurich",
+    ]);
+    expect(unplaced).toEqual(["MIT"]);
+  });
+
   test("places every live institution but the ambiguous and unknown ones", () => {
-    const { sites, unplaced } = getLabSites(liveNames);
+    const { sites, unplaced } = getLabSites(liveNames, labSites);
     expect(unplaced).toEqual(["IBM", "flowerlabs"]);
     expect(sites.map(({ id }) => id)).toEqual([
       "munich",
@@ -230,7 +250,7 @@ describe("getLabSites", () => {
   });
 
   test("always includes home, where the arcs start", () => {
-    const { sites } = getLabSites(["mit"]);
+    const { sites } = getLabSites(["mit"], labSites);
     expect(sites.map(({ id, home }) => [id, Boolean(home)])).toEqual([
       ["munich", true],
       ["boston", false],
@@ -239,7 +259,7 @@ describe("getLabSites", () => {
   });
 
   test("every site sits on the globe", () => {
-    for (const { location } of getLabSites(liveNames).sites) {
+    for (const { location } of getLabSites(liveNames, labSites).sites) {
       const [latitude, longitude] = location;
       expect(Math.abs(latitude)).toBeLessThanOrEqual(90);
       expect(Math.abs(longitude)).toBeLessThanOrEqual(180);
@@ -257,7 +277,7 @@ test("distanceKm measures great circles", () => {
 });
 
 test("each site knows how far its nearest neighbour is", () => {
-  const { sites } = getLabSites(["MIT", "IBM Research"]);
+  const { sites } = getLabSites(["MIT", "IBM Research"], labSites);
   const km = Object.fromEntries(
     sites.map(({ id, nearestKm }) => [id, Math.round(nearestKm)]),
   );
@@ -265,5 +285,7 @@ test("each site knows how far its nearest neighbour is", () => {
   expect(km.munich).toBe(km.zurich);
   expect(km.munich).toBeLessThan(300);
   expect(km.boston).toBeGreaterThan(5000);
-  expect(getLabSites([]).sites[0]?.nearestKm).toBe(Number.POSITIVE_INFINITY);
+  expect(getLabSites([], labSites).sites[0]?.nearestKm).toBe(
+    Number.POSITIVE_INFINITY,
+  );
 });

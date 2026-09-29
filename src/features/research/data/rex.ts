@@ -1,10 +1,9 @@
-/** Copy for the Research Exchange (REX) band on /research. */
+/**
+ * The Research Exchange (REX) institutions on /research. The band's copy is
+ * part of the page copy (`research-copy.ts`, `researchCopy.rex`).
+ */
 import type { LogoItem } from "@/components/ds";
 import type { Organization } from "@/lib/people-and-logos";
-
-/** The REX lead. It names the institutions `rexInstitutions` repeats. */
-export const rexLead =
-  "Our Research Exchange (REX) Program gives TUM.ai members the chance to do research abroad. Offers range from final theses to research internships with leading labs.";
 
 /** A REX institution: its logo, and the short name prose uses ("Harvard"). */
 export type RexInstitution = LogoItem & { shortName: string };
@@ -16,10 +15,8 @@ export type RexInstitution = LogoItem & { shortName: string };
  * Aspect ratios come from each SVG's viewBox; sizes are the files' as Sanity
  * reports them. The homepage names them by `shortName`.
  *
- * They live here, not in the partners' organisation table: this module is
- * reachable from a homepage client island (through `@/features/research`),
- * so it must not import the partners index, which exports server-only
- * getters.
+ * They live here, not in the partners' organisation table, which holds the
+ * partners' logo lists; the lead in the page copy names them.
  *
  * TODO(content): confirm we may show these four logos (Harvard, MIT and Inria
  * from Wikimedia Commons, the University of Cambridge from Wikipedia).
@@ -90,21 +87,3 @@ export function rexInstitutionsOf(
       : {}),
   }));
 }
-
-export const rexInstitutions = rexInstitutionsOf(rexOrganizations);
-
-/**
- * One sentence of the REX copy ("We …"), split at its commas into the steps
- * of the process. The clauses stay lower case: they continue the "We".
- */
-export const rexProcess = [
-  "collect project proposals from our partners,",
-  "inform members about the requirements and usual processes,",
-  "preselect applicants based on prior relevant (research) experience,",
-  "recommend them to our partner labs,",
-  "and eventually support their journey abroad with alumni experience in visa processes, housing, etc.",
-];
-
-/** Why REX exists, in the program's own words. */
-export const rexOrigin =
-  "REX started because members were already doing research abroad and recommending others to follow. It works because researchers in our network trust TUM.ai to send them curious minds, and introduce our members to their fields.";

@@ -1,5 +1,5 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
-import { copyString, copyText } from "./copy-fields";
+import { copyString, copyStringList, copyText } from "./copy-fields";
 import { contentImageField } from "./fields";
 
 const fork = (name: string, title: string) =>
@@ -151,11 +151,19 @@ export const researchCopyType = defineType({
     }),
     defineField({
       name: "rex",
-      title: "Research abroad (REX) headings",
+      title: "Research abroad (REX)",
       type: "object",
-      description: "The REX band's headings; its lead and steps are REX copy.",
+      description:
+        "The REX band. Its institutions are the “REX institutions” logo list.",
       fields: [
         copyString({ name: "title", title: "Title", max: 30 }),
+        copyText({
+          name: "lead",
+          title: "Lead",
+          description: "What REX offers; name the institutions the logos show.",
+          max: 240,
+          rows: 3,
+        }),
         copyString({
           name: "logosLabel",
           title: "Logos label",
@@ -164,6 +172,22 @@ export const researchCopyType = defineType({
           max: 60,
         }),
         copyString({ name: "processTitle", title: "Process heading", max: 40 }),
+        copyStringList({
+          name: "process",
+          title: "Process steps",
+          description:
+            "One sentence completing “We …”, split at its commas: each step starts in lower case and ends with its comma; the last one starts with “and” and ends with a full stop.",
+          max: 120,
+          minItems: 2,
+          maxItems: 7,
+        }),
+        copyText({
+          name: "origin",
+          title: "Origin",
+          description: "Why REX exists, beside the steps.",
+          max: 280,
+          rows: 3,
+        }),
       ],
     }),
     defineField({

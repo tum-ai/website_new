@@ -26,7 +26,8 @@ import {
  * The /research content slice: the `researchCopy` singleton (hero, abstract,
  * Figure 1, section headings, closing) and the `labSite` documents that
  * place institutions on the hero globe. The projects come from the live
- * dataset and the REX band from `rex.ts`; the code fallbacks are in `data/`.
+ * dataset and the REX institutions from their logo list (`rex-content.ts`);
+ * the code fallbacks are in `data/`.
  */
 
 export const RESEARCH_COPY_QUERY = defineQuery(`*[_id == "researchCopy"][0]{
@@ -36,7 +37,7 @@ export const RESEARCH_COPY_QUERY = defineQuery(`*[_id == "researchCopy"][0]{
   "figurePanels": figurePanels[]{ "image": image${CONTENT_IMAGE_PROJECTION}, caption },
   ongoing{ title, empty },
   completed{ title, lead },
-  rex{ title, logosLabel, processTitle },
+  rex{ title, lead, logosLabel, processTitle, process, origin },
   closing{
     title,
     openSlot,
@@ -102,9 +103,7 @@ const isLabSite = (value: unknown): value is LabSite => {
 /**
  * The cities on the hero globe and the institution names that place a lab
  * there: the CMS `labSite` list when there is one, otherwise the code list.
- *
- * Not rendered yet: `getLabSites` in `research.ts` reads the code list
- * directly (see docs/cms-content-inventory.md, integration points).
+ * The page places its institutions on it with `getLabSites` (`research.ts`).
  */
 export async function getLabSiteList(): Promise<LabSite[]> {
   const tokens = await getContentTokens();

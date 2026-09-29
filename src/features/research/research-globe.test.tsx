@@ -2,6 +2,7 @@ import { axe } from "@test/axe";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test, vi } from "vitest";
+import { labSites } from "./data/lab-sites";
 import { getLabSites } from "./research";
 import { ResearchGlobe } from "./research-globe";
 
@@ -25,7 +26,7 @@ beforeEach(() => {
   );
 });
 
-const { sites } = getLabSites(["MIT", "IBM Almaden", "Inria"]);
+const { sites } = getLabSites(["MIT", "IBM Almaden", "Inria"], labSites);
 
 describe("ResearchGlobe", () => {
   test("is a named slider that says which places it shows", async () => {

@@ -11,23 +11,25 @@ import {
   Steps,
   Text,
 } from "@/components/ds";
+import { callToActionLabels } from "@/config/calls-to-action";
 import type { Partner, ResearchProject } from "@/lib/types";
 import { AffiliationIndex } from "./affiliations";
-import { getResearchCopy } from "./content";
+import { getLabSiteList, getResearchCopy } from "./content";
 import { getAbstractBody } from "./data/research-copy";
-import { rexInstitutions, rexLead, rexOrigin, rexProcess } from "./data/rex";
 import { ProjectList, ReferenceList } from "./project-list";
 import { getLabSites, getPartnerLogos, getResearchIndex } from "./research";
 import { ResearchFigure } from "./research-figure";
 import { ResearchGlobe } from "./research-globe";
+import { getRexInstitutions } from "./rex-content";
 
 /**
  * The /research page, set like a paper's first page. The hero is the title
  * block: every institution named on a CMS project, numbered, and each
  * project below cites them by number. Completed projects form the
  * references list, REX follows on lavender, and the closing band repeats the
- * affiliation line with one open slot for the next lab. The copy comes from
- * the content slice (`content.ts`: the CMS or the code copy).
+ * affiliation line with one open slot for the next lab. The copy and the
+ * lab sites come from the content slice (`content.ts`), the REX
+ * institutions from theirs (`rex-content.ts`): each the CMS or the code.
  */
 export async function ResearchPage({
   projects,
@@ -38,15 +40,22 @@ export async function ResearchPage({
   /** Partners in the "Research Partners" category. */
   researchPartners: Partner[];
 }) {
-  const copy = await getResearchCopy();
-  const { closing } = copy;
+  const [copy, rexInstitutions, labSites] = await Promise.all([
+    getResearchCopy(),
+    getRexInstitutions(),
+    getLabSiteList(),
+  ]);
+  const { closing, rex } = copy;
   const { affiliations, ongoing, completed } = getResearchIndex(projects);
   const partnerLogos = getPartnerLogos(researchPartners);
-  const { sites } = getLabSites([
-    ...affiliations,
-    ...researchPartners.map(({ name }) => name),
-    ...rexInstitutions.map(({ name }) => name),
-  ]);
+  const { sites } = getLabSites(
+    [
+      ...affiliations,
+      ...researchPartners.map(({ name }) => name),
+      ...rexInstitutions.map(({ name }) => name),
+    ],
+    labSites,
+  );
 
   return (
     <main>
@@ -60,10 +69,10 @@ export async function ResearchPage({
         actions={
           <>
             <ButtonLink href="/partners#partner-contact" size="lg">
-              Become a Partner
+              {callToActionLabels.partner}
             </ButtonLink>
             <ButtonLink href="/apply" size="lg" variant="outline" arrow>
-              Become a Member
+              {callToActionLabels.member}
             </ButtonLink>
           </>
         }
@@ -180,44 +189,42 @@ export async function ResearchPage({
         <Container>
           <SectionHeader
             id="rex-title"
-            title={copy.rex.title}
+            title={rex.title}
             layout="stack"
-            lead={rexLead}
+            lead={rex.lead}
           />
           {/* The list below carries the same name for assistive tech. */}
           <p aria-hidden="true" className="text-fg-subtle text-meta">
-            {copy.rex.logosLabel}
+            {rex.logosLabel}
           </p>
           <LogoWall
             layout="strip"
             logos={rexInstitutions.map(({ shortName: _, ...logo }) => logo)}
-            label={copy.rex.logosLabel}
+            label={rex.logosLabel}
             className="mt-8"
           />
 
           <div className="mt-20 grid gap-14 md:mt-28 lg:grid-cols-12 lg:gap-12">
             <div className="lg:col-span-8">
-              <h3 className="text-fg-subtle text-meta">
-                {copy.rex.processTitle}
-              </h3>
+              <h3 className="text-fg-subtle text-meta">{rex.processTitle}</h3>
               {/* "We" opens the sentence the steps complete. */}
               <p className="mt-6 font-light text-display-md text-fg">We</p>
               <Steps
                 layout="rows"
                 headingAs="h4"
                 className="mt-6"
-                items={rexProcess.map((clause) => ({ title: clause }))}
+                items={rex.process.map((clause) => ({ title: clause }))}
               />
             </div>
             <Reveal className="lg:col-span-3 lg:col-start-10 lg:pt-12">
-              <Text className="max-w-md">{rexOrigin}</Text>
+              <Text className="max-w-md">{rex.origin}</Text>
               <ButtonLink
                 href="/apply"
                 className="mt-8"
                 variant="outline"
                 arrow
               >
-                Become a Member
+                {callToActionLabels.member}
               </ButtonLink>
             </Reveal>
           </div>
@@ -254,7 +261,7 @@ export async function ResearchPage({
                 ...closing.partner,
                 action: (
                   <ButtonLink href="/partners#partner-contact">
-                    Become a Partner
+                    {callToActionLabels.partner}
                   </ButtonLink>
                 ),
               },
@@ -262,7 +269,7 @@ export async function ResearchPage({
                 ...closing.student,
                 action: (
                   <ButtonLink href="/apply" variant="outline" arrow>
-                    Become a Member
+                    {callToActionLabels.member}
                   </ButtonLink>
                 ),
               },
