@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { fillCmsCopy, fillCodeCopy, fillPageTokens } from "./content-copy";
+import {
+  fillCmsCopy,
+  fillCodeCopy,
+  fillPageTokens,
+  splitAtPageToken,
+} from "./content-copy";
 import { type ContentTokens, contentTokenNames } from "./content-tokens";
 
 const tokens = Object.fromEntries(
@@ -133,5 +138,19 @@ describe("page tokens", () => {
         partner: "Helmholtz",
       }),
     ).toBe("Five teams, Helmholtz, {{other}}");
+  });
+});
+
+describe("splitAtPageToken", () => {
+  test("splits around the token, with or without spaces in the braces", () => {
+    expect(
+      splitAtPageToken("Try {{format}}, then {{ format }}.", "format"),
+    ).toStrictEqual(["Try ", ", then ", "."]);
+  });
+
+  test("leaves other placeholders and token-free text whole", () => {
+    expect(splitAtPageToken("{{count}} teams", "format")).toStrictEqual([
+      "{{count}} teams",
+    ]);
   });
 });

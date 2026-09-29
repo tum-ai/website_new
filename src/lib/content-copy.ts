@@ -99,6 +99,24 @@ export function fillPageTokens(
   );
 }
 
+/**
+ * `template` split around each `{{name}}` page token, with whitespace inside
+ * the braces allowed as the Studio allows it (`{{ format }}`): the text
+ * before, between and after the tokens, so a page can put an element where a
+ * token was. Other placeholders stay text; without the token, `[template]`.
+ */
+export function splitAtPageToken(template: string, name: string): string[] {
+  const parts: string[] = [];
+  let start = 0;
+  for (const match of template.matchAll(placeholder)) {
+    if (match[1] !== name) continue;
+    parts.push(template.slice(start, match.index));
+    start = match.index + match[0].length;
+  }
+  parts.push(template.slice(start));
+  return parts;
+}
+
 /** A value {@link fillCmsCopy} drops because it holds an unknown placeholder. */
 const rejected = Symbol("rejected");
 

@@ -135,32 +135,38 @@ test("Back returns to the previous question and Start again clears the answers",
   expect(screen.queryByRole("link", { name: "Request via email" })).toBeNull();
 });
 
-test("asks the questions the page's copy passes in", async () => {
-  const user = userEvent.setup();
-  render(
-    <PartnershipProvider
-      copy={{
-        ...partnershipFinderCopy,
-        prompts: {
-          ...partnershipFinderCopy.prompts,
-          intentQuestion: "What brings you here?",
-          resultQuestion: "Try {{format}} first.",
-        },
-      }}
-    >
-      <PartnershipFinder />
-    </PartnershipProvider>,
-  );
-  expect(screen.getByRole("heading", { level: 3 })).toHaveTextContent(
-    "What brings you here?",
-  );
-  await user.click(
-    screen.getByRole("button", { name: new RegExp(talent.label) }),
-  );
-  await user.click(
-    screen.getByRole("button", { name: new RegExp(oneOff.label) }),
-  );
-  const result = screen.getByRole("heading", { level: 3 });
-  expect(result).toHaveTextContent(`Try ${recommendations.talent.name} first.`);
-  expect(within(result).getByText(recommendations.talent.name)).toBeVisible();
-});
+// The Studio accepts whitespace inside the braces (`copy-fields.ts`).
+test.each(["Try {{format}} first.", "Try {{ format }} first."])(
+  "asks the questions the page's copy passes in (%s)",
+  async (resultQuestion) => {
+    const user = userEvent.setup();
+    render(
+      <PartnershipProvider
+        copy={{
+          ...partnershipFinderCopy,
+          prompts: {
+            ...partnershipFinderCopy.prompts,
+            intentQuestion: "What brings you here?",
+            resultQuestion,
+          },
+        }}
+      >
+        <PartnershipFinder />
+      </PartnershipProvider>,
+    );
+    expect(screen.getByRole("heading", { level: 3 })).toHaveTextContent(
+      "What brings you here?",
+    );
+    await user.click(
+      screen.getByRole("button", { name: new RegExp(talent.label) }),
+    );
+    await user.click(
+      screen.getByRole("button", { name: new RegExp(oneOff.label) }),
+    );
+    const result = screen.getByRole("heading", { level: 3 });
+    expect(result).toHaveTextContent(
+      `Try ${recommendations.talent.name} first.`,
+    );
+    expect(within(result).getByText(recommendations.talent.name)).toBeVisible();
+  },
+);

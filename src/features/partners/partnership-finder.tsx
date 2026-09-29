@@ -14,6 +14,7 @@ import {
 import { type ReactNode, useEffect, useRef } from "react";
 import { Button, Highlight, IconBadge, Text } from "@/components/ds";
 import { cn } from "@/lib/cn";
+import { splitAtPageToken } from "@/lib/content-copy";
 import { ContactActions } from "./contact-actions";
 import { usePartnership } from "./partnership-context";
 import { getPartnershipRecommendation } from "./partnerships";
@@ -73,11 +74,12 @@ function FinderOption({
 }
 
 /**
- * The result question with `{{format}}` replaced by `format` (the
- * highlighted format name); without the token, the text alone.
+ * The result question with `{{format}}` (or `{{ format }}`, as the Studio
+ * allows) replaced by `format`, the highlighted format name; without the
+ * token, the text alone.
  */
 function withFormat(template: string, format: ReactNode): ReactNode {
-  const [before, ...rest] = template.split("{{format}}");
+  const [before, ...rest] = splitAtPageToken(template, "format");
   if (rest.length === 0) return template;
   return (
     <>
