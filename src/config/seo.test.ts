@@ -85,6 +85,16 @@ test("/e-lab adds the Venture Department as a TUM.ai sub-organization", () => {
   expect(getJsonLd("events")).toHaveLength(2);
 });
 
+test("page fields from the page's content join the page node", () => {
+  const mainEntity = [{ "@type": "Question", name: "Who can apply?" }];
+  const [, page] = getJsonLd("qanda", { mainEntity }) as Record<
+    string,
+    unknown
+  >[];
+  expect(page).toMatchObject({ "@type": "FAQPage", mainEntity });
+  expect(page.url).toBe(absoluteUrl("/qanda"));
+});
+
 test("the root layout defaults come from the site config", () => {
   expect(rootMetadata.metadataBase.href).toBe(`${siteConfig.url}/`);
   expect(rootMetadata.title).toStrictEqual({
