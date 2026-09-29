@@ -218,6 +218,78 @@ export type Slug = {
   source?: string;
 };
 
+export type LabSite = {
+  _id: string;
+  _type: "labSite";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  order: number;
+  city: string;
+  key: Slug;
+  location: Geopoint;
+  home?: boolean;
+  institutions: Array<string>;
+};
+
+export type ResearchCopy = {
+  _id: string;
+  _type: "researchCopy";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  hero?: {
+    title: string;
+    lead: string;
+  };
+  partnersLabel: string;
+  abstract?: {
+    label: string;
+    statement: string;
+    body: string;
+    runningOne: string;
+    runningMany: string;
+  };
+  figurePanels: Array<{
+    image: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      _type: "image";
+    };
+    caption: string;
+    _type: "figurePanel";
+    _key: string;
+  }>;
+  ongoing?: {
+    title: string;
+    empty: string;
+  };
+  completed?: {
+    title: string;
+    lead: string;
+  };
+  rex?: {
+    title: string;
+    logosLabel: string;
+    processTitle: string;
+  };
+  closing?: {
+    title: string;
+    openSlot: string;
+    partner?: {
+      audience: string;
+      text: string;
+    };
+    student?: {
+      audience: string;
+      text: string;
+    };
+  };
+};
+
 export type TaskForce = {
   _id: string;
   _type: "taskForce";
@@ -418,6 +490,8 @@ export type AllSanitySchemaTypes =
   | SanityImageAsset
   | Geopoint
   | Slug
+  | LabSite
+  | ResearchCopy
   | TaskForce
   | ProjectsCopy
   | Department
@@ -435,6 +509,21 @@ export type COMMUNITY_COPY_QUERY_RESULT =
       journey: null;
       departments: null;
       closing: null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+        photo: null;
+        photoCaption: null;
+      } | null;
+      journey: null;
+      departments: null;
+      closing: {
+        title: string;
+        lead: null;
+        companiesReader: null;
+      } | null;
     }
   | {
       hero: null;
@@ -502,6 +591,28 @@ export type PROJECTS_CONTENT_QUERY_RESULT = {
         hero: null;
         openSeat: null;
         closing: null;
+      }
+    | {
+        hero: {
+          eyebrow: null;
+          title: string;
+          lead: string;
+          figureLabel: null;
+        } | null;
+        openSeat: null;
+        closing: {
+          title: string;
+          lead: null;
+          student: {
+            audience: string;
+            text: string;
+          } | null;
+          partner: {
+            audience: string;
+            text: string;
+            textWithoutPartner: null;
+          } | null;
+        } | null;
       }
     | {
         hero: null;
@@ -598,6 +709,18 @@ export type QANDA_CONTENT_QUERY_RESULT = {
         missionPassage: null;
         closing: {
           title: string;
+          lead: null;
+          action: null;
+        } | null;
+        forks: null;
+      }
+    | {
+        heroTitle: null;
+        missionQuestion: null;
+        missionLead: null;
+        missionPassage: null;
+        closing: {
+          title: string;
           lead: string;
           action: null;
         } | null;
@@ -637,6 +760,142 @@ export type QANDA_CONTENT_QUERY_RESULT = {
     } | null;
   }>;
 };
+
+// Source: ../features/research/content.ts
+// Variable: RESEARCH_COPY_QUERY
+// Query: *[_id == "researchCopy"][0]{  hero{ title, lead },  partnersLabel,  abstract{ label, statement, body, runningOne, runningMany },  "figurePanels": figurePanels[]{ "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}, caption },  ongoing{ title, empty },  completed{ title, lead },  rex{ title, logosLabel, processTitle },  closing{    title,    openSlot,    partner{ audience, text },    student{ audience, text }  }}
+export type RESEARCH_COPY_QUERY_RESULT =
+  | {
+      hero: null;
+      partnersLabel: null;
+      abstract: null;
+      figurePanels: null;
+      ongoing: null;
+      completed: null;
+      rex: null;
+      closing: null;
+    }
+  | {
+      hero: null;
+      partnersLabel: null;
+      abstract: null;
+      figurePanels: null;
+      ongoing: null;
+      completed: null;
+      rex: null;
+      closing: {
+        title: string;
+        openSlot: null;
+        partner: null;
+        student: null;
+      } | null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+      } | null;
+      partnersLabel: null;
+      abstract: null;
+      figurePanels: null;
+      ongoing: null;
+      completed: null;
+      rex: null;
+      closing: {
+        title: string;
+        openSlot: null;
+        partner: null;
+        student: null;
+      } | null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+      } | null;
+      partnersLabel: null;
+      abstract: null;
+      figurePanels: null;
+      ongoing: null;
+      completed: null;
+      rex: null;
+      closing: {
+        title: string;
+        openSlot: null;
+        partner: {
+          audience: string;
+          text: string;
+        } | null;
+        student: {
+          audience: string;
+          text: string;
+        } | null;
+      } | null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+      } | null;
+      partnersLabel: string;
+      abstract: {
+        label: string;
+        statement: string;
+        body: string;
+        runningOne: string;
+        runningMany: string;
+      } | null;
+      figurePanels: Array<{
+        image: {
+          src: string | null;
+          width: number | null;
+          height: number | null;
+          alt: string | null;
+          hotspot: {
+            x: number;
+            y: number;
+          } | null;
+        };
+        caption: string;
+      }>;
+      ongoing: {
+        title: string;
+        empty: string;
+      } | null;
+      completed: {
+        title: string;
+        lead: string;
+      } | null;
+      rex: {
+        title: string;
+        logosLabel: string;
+        processTitle: string;
+      } | null;
+      closing: {
+        title: string;
+        openSlot: string;
+        partner: {
+          audience: string;
+          text: string;
+        } | null;
+        student: {
+          audience: string;
+          text: string;
+        } | null;
+      } | null;
+    }
+  | null;
+
+// Source: ../features/research/content.ts
+// Variable: LAB_SITES_QUERY
+// Query: *[_type == "labSite"] | order(order asc){  "id": key.current,  city,  "location": [location.lat, location.lng],  home,  institutions}
+export type LAB_SITES_QUERY_RESULT = Array<{
+  id: string;
+  city: string;
+  location: Array<number | null>;
+  home: boolean | null;
+  institutions: Array<string>;
+}>;
 
 // Source: ../lib/community-content.ts
 // Variable: JOURNEY_QUERY

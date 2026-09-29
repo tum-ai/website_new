@@ -3,6 +3,7 @@ import { buildCommunityBackfill } from "@/features/community/content";
 import { buildELabBackfill } from "@/features/e-lab/content";
 import { buildProjectsBackfill } from "@/features/projects/content";
 import { buildQandaBackfill } from "@/features/qanda/content";
+import { buildResearchBackfill } from "@/features/research/content";
 import type { BackfillDocument } from "@/lib/cms-backfill";
 
 /**
@@ -26,6 +27,7 @@ export const backfillSlices: readonly {
   { slice: "features/qanda/content.ts", build: buildQandaBackfill },
   { slice: "features/community/content.ts", build: buildCommunityBackfill },
   { slice: "features/projects/content.ts", build: buildProjectsBackfill },
+  { slice: "features/research/content.ts", build: buildResearchBackfill },
 ];
 
 /** The documents of every slice, in registry order. */

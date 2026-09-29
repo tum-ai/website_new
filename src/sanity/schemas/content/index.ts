@@ -2,8 +2,10 @@ import { communityCopyType } from "./community-copy";
 import { departmentType } from "./department";
 import { faqType } from "./faq";
 import { journeyStepType } from "./journey-step";
+import { labSiteType } from "./lab-site";
 import { projectsCopyType } from "./projects-copy";
 import { qandaCopyType } from "./qanda-copy";
+import { researchCopyType } from "./research-copy";
 import { taskForceType } from "./task-force";
 
 /**
@@ -25,6 +27,8 @@ export const contentSchemaTypes = [
   departmentType,
   projectsCopyType,
   taskForceType,
+  researchCopyType,
+  labSiteType,
 ];
 
 /**
@@ -38,4 +42,5 @@ export const contentSingletons: readonly { type: string; title: string }[] = [
   { type: "qandaCopy", title: "Q&A page" },
   { type: "communityCopy", title: "Community page" },
   { type: "projectsCopy", title: "Projects page" },
+  { type: "researchCopy", title: "Research page" },
 ];

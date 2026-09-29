@@ -38,7 +38,9 @@ export function ResearchFigure({ panels }: { panels: FigurePanel[] }) {
               sizes={`(min-width: 1024px) ${Math.round(40 / panels.length)}vw, ${Math.round(100 / panels.length)}vw`}
               className="object-cover"
               style={
-                panel.position ? { objectPosition: panel.position } : undefined
+                panel.objectPosition
+                  ? { objectPosition: panel.objectPosition }
+                  : undefined
               }
             />
             <span

@@ -13,13 +13,8 @@ import {
 } from "@/components/ds";
 import type { Partner, ResearchProject } from "@/lib/types";
 import { AffiliationIndex } from "./affiliations";
-import {
-  abstractStatement,
-  closing,
-  figurePanels,
-  getAbstractBody,
-  heroLead,
-} from "./data/research-copy";
+import { getResearchCopy } from "./content";
+import { getAbstractBody } from "./data/research-copy";
 import { rexInstitutions, rexLead, rexOrigin, rexProcess } from "./data/rex";
 import { ProjectList, ReferenceList } from "./project-list";
 import { getLabSites, getPartnerLogos, getResearchIndex } from "./research";
@@ -31,9 +26,10 @@ import { ResearchGlobe } from "./research-globe";
  * block: every institution named on a CMS project, numbered, and each
  * project below cites them by number. Completed projects form the
  * references list, REX follows on lavender, and the closing band repeats the
- * affiliation line with one open slot for the next lab.
+ * affiliation line with one open slot for the next lab. The copy comes from
+ * the content slice (`content.ts`: the CMS or the code copy).
  */
-export function ResearchPage({
+export async function ResearchPage({
   projects,
   researchPartners,
 }: {
@@ -42,6 +38,8 @@ export function ResearchPage({
   /** Partners in the "Research Partners" category. */
   researchPartners: Partner[];
 }) {
+  const copy = await getResearchCopy();
+  const { closing } = copy;
   const { affiliations, ongoing, completed } = getResearchIndex(projects);
   const partnerLogos = getPartnerLogos(researchPartners);
   const { sites } = getLabSites([
@@ -56,9 +54,9 @@ export function ResearchPage({
         tone="night"
         mark={false}
         titleId="research-title"
-        title="Research"
+        title={copy.hero.title}
         emphasis="highlight"
-        lead={heroLead}
+        lead={copy.hero.lead}
         actions={
           <>
             <ButtonLink href="/partners#partner-contact" size="lg">
@@ -99,13 +97,13 @@ export function ResearchPage({
           <Container className="mb-24 md:mb-32">
             {/* The list below carries the same name for assistive tech. */}
             <p aria-hidden="true" className="text-fg-subtle text-meta">
-              Research partners
+              {copy.partnersLabel}
             </p>
             <Reveal variant="fade">
               <LogoWall
                 layout="strip"
                 logos={partnerLogos}
-                label="Research partners"
+                label={copy.partnersLabel}
                 className="mt-8 border-hairline border-b pb-16 md:pb-20"
               />
             </Reveal>
@@ -114,17 +112,17 @@ export function ResearchPage({
         <Container className="grid gap-14 lg:grid-cols-12 lg:gap-12">
           <div className="lg:col-span-6">
             <h2 id="abstract-title" className="text-fg-subtle text-meta">
-              Abstract
+              {copy.abstract.label}
             </h2>
             <Display as="p" size="md" className="mt-6 max-w-[16em]">
-              {abstractStatement}
+              {copy.abstract.statement}
             </Display>
             <Text size="lead" className="mt-8 max-w-xl">
-              {getAbstractBody(ongoing.length)}
+              {getAbstractBody(ongoing.length, copy.abstract)}
             </Text>
           </div>
           <Reveal className="lg:col-span-5 lg:col-start-8 lg:self-end">
-            <ResearchFigure panels={figurePanels} />
+            <ResearchFigure panels={copy.figurePanels} />
           </Reveal>
         </Container>
       </Section>
@@ -139,14 +137,14 @@ export function ResearchPage({
         <Container>
           <SectionHeader
             id="projects-title"
-            title="In progress"
+            title={copy.ongoing.title}
             count={ongoing.length}
             layout="stack"
           />
           {ongoing.length > 0 ? (
             <ProjectList projects={ongoing} />
           ) : (
-            <EmptyState title="No ongoing projects" />
+            <EmptyState title={copy.ongoing.empty} />
           )}
         </Container>
       </Section>
@@ -162,10 +160,10 @@ export function ResearchPage({
           <Container>
             <SectionHeader
               id="publications-title"
-              title="Completed"
+              title={copy.completed.title}
               count={completed.length}
               layout="stack"
-              lead="Finished projects and the papers that came out of them."
+              lead={copy.completed.lead}
             />
             <ReferenceList projects={completed} />
           </Container>
@@ -182,24 +180,26 @@ export function ResearchPage({
         <Container>
           <SectionHeader
             id="rex-title"
-            title="Research abroad"
+            title={copy.rex.title}
             layout="stack"
             lead={rexLead}
           />
           {/* The list below carries the same name for assistive tech. */}
           <p aria-hidden="true" className="text-fg-subtle text-meta">
-            Offers from labs at institutions like
+            {copy.rex.logosLabel}
           </p>
           <LogoWall
             layout="strip"
             logos={rexInstitutions.map(({ shortName: _, ...logo }) => logo)}
-            label="Offers from labs at institutions like"
+            label={copy.rex.logosLabel}
             className="mt-8"
           />
 
           <div className="mt-20 grid gap-14 md:mt-28 lg:grid-cols-12 lg:gap-12">
             <div className="lg:col-span-8">
-              <h3 className="text-fg-subtle text-meta">How REX works</h3>
+              <h3 className="text-fg-subtle text-meta">
+                {copy.rex.processTitle}
+              </h3>
               {/* "We" opens the sentence the steps complete. */}
               <p className="mt-6 font-light text-display-md text-fg">We</p>
               <Steps
