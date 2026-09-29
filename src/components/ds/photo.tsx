@@ -6,13 +6,18 @@ import { cn } from "@/lib/cn";
 /** Frame of a {@link Photo}: its aspect ratio and corner treatment. */
 const photoFrameStyles = cva("relative overflow-hidden bg-sunken", {
   variants: {
-    /** Aspect ratio of the frame; the photo is cropped to fill it. */
+    /**
+     * Aspect ratio of the frame; the photo is cropped to fill it.
+     * `panorama` is for wide group shots: 4:3 on phones, 2:1 from `sm` and
+     * 24:7 from `lg`, so faces stay large enough on every screen.
+     */
     aspect: {
       "3/2": "aspect-[3/2]",
       "4/3": "aspect-[4/3]",
       "16/10": "aspect-[16/10]",
       "4/5": "aspect-[4/5]",
       "1/1": "aspect-square",
+      panorama: "aspect-[4/3] sm:aspect-[2/1] lg:aspect-[24/7]",
     },
     /**
      * `rounded` is the brand's large photo radius; `bleed` has square

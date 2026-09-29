@@ -83,6 +83,7 @@ export {
   CtaPanel,
   type CtaPanelProps,
 } from "./cta-band";
+export { DayRuler, type DayRulerProps } from "./day-ruler";
 export {
   Dialog,
   DialogClose,
@@ -106,6 +107,12 @@ export {
   type IndexListItem,
   type IndexListProps,
 } from "./index-list";
+export {
+  type KeyDateItem,
+  type KeyDateState,
+  KeyDates,
+  type KeyDatesProps,
+} from "./key-dates";
 export { Ledger, type LedgerItem, type LedgerProps } from "./ledger";
 export {
   type LogoItem,
