@@ -6,16 +6,10 @@ import {
   Section,
   SectionHeader,
 } from "@/components/ds";
-
-interface Story {
-  name: string;
-  role: string;
-  story: string;
-  image: string;
-}
+import type { MemberStory } from "./data/member-stories";
 
 interface MemberStoriesProps {
-  stories: Story[];
+  stories: MemberStory[];
 }
 
 /**

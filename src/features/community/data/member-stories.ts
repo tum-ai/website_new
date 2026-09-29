@@ -1,3 +1,12 @@
+/** A member's testimonial: who they are and their story in their words. */
+export type MemberStory = {
+  name: string;
+  /** Their degree and university. */
+  role: string;
+  story: string;
+  image: string;
+};
+
 /** Member testimonials shown on /community. */
 export const stories = [
   {
@@ -44,4 +53,4 @@ export const stories = [
       "Joining TUM.ai as part of the MIT project gave me the chance to work on exciting AI research with talented peers and mentors. I also enjoyed participating in a GenAI Hackathon in Paris and later joined the recruiting team, helping to shape the community. The inspiring people I met at TUM.ai have motivated me to pursue new opportunities and push my own ambitions further.",
     image: "/assets/apply/marco_lorenz.webp",
   },
-];
+] satisfies MemberStory[];
