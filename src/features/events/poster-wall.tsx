@@ -8,7 +8,8 @@ import {
 } from "@/components/ds";
 import type { Event } from "@/lib/types";
 import { EventDetailsDialog } from "./event-details";
-import { toEventDetails } from "./events";
+import { formatEventDate, hostsBeyondTitle, toEventDetails } from "./events";
+import { Lockup } from "./lockup";
 
 /**
  * Every past event as it was announced: its poster, in an exact grid of
@@ -16,8 +17,8 @@ import { toEventDetails } from "./events";
  * colours, so each tile, set edge to edge with a hairline of the band
  * between, sits under a brand colour layer (a `color` blend of
  * Dark Indigo) that keeps the wall one tone; hovering or focusing a tile
- * fades the layer and shows the poster as it was, and a click opens the
- * event. Events without a poster are left out.
+ * fades the layer, shows the poster as it was and names the event and its
+ * co-hosts, and a click opens the event. Events without a poster are left out.
  */
 export function PosterWall({ events }: { events: Event[] }) {
   const posters = events.filter((event): event is Event & { poster: string } =>
@@ -72,7 +73,32 @@ function PosterTile({ event }: { event: Event & { poster: string } }) {
         aria-hidden="true"
         className="absolute inset-0 bg-violet-950 mix-blend-color transition-opacity duration-500 ease-brand group-hover/poster:opacity-0 group-focus-visible/poster:opacity-0 motion-reduce:transition-none"
       />
+      <PosterCaption event={event} title={title} />
       <span className="sr-only">Read More about {title}</span>
     </EventDetailsDialog>
+  );
+}
+
+/**
+ * What the tile is, shown over a scrim while it is hovered or focused: the
+ * title as a lockup, then the co-hosts the title doesn't name, or the date
+ * when there are none. Decorative: the tile's name already carries the title.
+ */
+function PosterCaption({ event, title }: { event: Event; title: string }) {
+  const hosts = hostsBeyondTitle(event);
+  return (
+    <span
+      aria-hidden="true"
+      className="absolute inset-x-0 bottom-0 flex translate-y-2 flex-col bg-gradient-to-t from-violet-950/90 via-violet-950/45 to-transparent px-3 pt-14 pb-3 text-left opacity-0 transition-[opacity,translate] duration-300 ease-brand group-hover/poster:translate-y-0 group-hover/poster:opacity-100 group-focus-visible/poster:translate-y-0 group-focus-visible/poster:opacity-100 motion-reduce:translate-y-0 motion-reduce:transition-none sm:px-4 sm:pb-4"
+    >
+      <span className="line-clamp-2 font-medium text-small text-white leading-snug">
+        <Lockup title={title} crossClassName="text-violet-300" />
+      </span>
+      <span className="mt-1 line-clamp-1 text-meta text-violet-100">
+        {hosts.length > 0
+          ? `With ${hosts.join(", ")}`
+          : formatEventDate(event.event_date).long}
+      </span>
+    </span>
   );
 }

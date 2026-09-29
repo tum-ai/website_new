@@ -10,10 +10,13 @@ import { lockupParts } from "./events";
 export function Lockup({
   title,
   className,
+  crossClassName,
 }: {
   /** The CMS title, e.g. "Anthropic x Lovable x Hugging Face". */
   title: string;
   className?: string;
+  /** Classes for each ×, e.g. its colour over a photo instead of the tone's accent. */
+  crossClassName?: string;
 }) {
   const parts = lockupParts(title);
   return (
@@ -21,7 +24,7 @@ export function Lockup({
       {parts.map((part, index) => (
         // biome-ignore lint/suspicious/noArrayIndexKey: a title's parts are static and may repeat; their position is their identity.
         <Fragment key={index}>
-          {index > 0 ? <Cross /> : null}
+          {index > 0 ? <Cross className={crossClassName} /> : null}
           {part}
         </Fragment>
       ))}
