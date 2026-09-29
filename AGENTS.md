@@ -205,8 +205,9 @@ Hard rules:
   `2026-10-01T12:00:00Z`. Without Sanity env vars, CMS pages render empty lists.
 - **CMS content source.** `CMS_CONTENT_SOURCE` (server only) is `code` by default: content slices
   return their code fallbacks and make no request. `sanity` reads the content dataset
-  (`NEXT_PUBLIC_SANITY_CONTENT_DATASET`, default: the live dataset) and merges it over the
-  fallbacks; with `USE_MOCK_CMS=1` it queries the backfill documents locally. Drafts and
+  (`NEXT_PUBLIC_SANITY_CONTENT_DATASET`; no default: unset, or naming the live dataset, the Studio
+  has no `content` workspace and `sanity` renders the code content, logged once) and merges it
+  over the fallbacks; with `USE_MOCK_CMS=1` it queries the backfill documents locally. Drafts and
   `SanityLive` cover the live dataset only. A slice tags its query `content:<type>` for every
   type it reads (`lib/cache-tags.ts`): the Sanity webhook at `/api/revalidate`
   (`SANITY_REVALIDATE_SECRET`) expires those tags on publish.

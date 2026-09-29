@@ -166,7 +166,8 @@ is static in Git: facts in `src/config/`, copy in `src/features/<domain>/data/`.
 ### The content dataset (content slices)
 
 1. **Config:** `lib/sanity-config.ts` names both datasets: `NEXT_PUBLIC_SANITY_DATASET` (live)
-   and `NEXT_PUBLIC_SANITY_CONTENT_DATASET` (content, defaults to the live one).
+   and `NEXT_PUBLIC_SANITY_CONTENT_DATASET` (content; no default: unset or equal to the live one,
+   the Studio has no `content` workspace and the `sanity` source renders the code content).
 2. **Schemas** in `src/sanity/schemas/content/`, registered only in the Studio's `content`
    workspace (`/studio/content`).
 3. **Slices:** `features/<x>/content.ts` (server only) exports getters such as `getApplyFaqs()`

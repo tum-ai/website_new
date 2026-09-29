@@ -41,7 +41,8 @@ moving out of code, read through content slices (`lib/cms-content.ts`) behind
   Never run `--apply`, `sanity dataset create` or `sanity dataset import` as part of a change:
   importing is a maintainer's launch step.
 - **Studio:** two workspaces, `live` (`/studio/live`, Presentation) and `content`
-  (`/studio/content`); `/studio` redirects to `/studio/live`.
+  (`/studio/content`, only when `NEXT_PUBLIC_SANITY_CONTENT_DATASET` names a dataset other than
+  the live one; never a fallback to it); `/studio` redirects to `/studio/live`.
 
 - **Change flow** (the `cms-content-model` skill has the steps): schema in `src/sanity/schemas/`,
   then the GROQ query in `src/lib/sanity-queries.ts` (wrapped in `defineQuery`), then

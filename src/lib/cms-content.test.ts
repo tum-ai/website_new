@@ -82,11 +82,52 @@ test("the content client reads the content dataset, published, from the CDN", as
   );
 });
 
-test("the content dataset defaults to the live dataset", async () => {
-  await loadCmsContent({ NEXT_PUBLIC_SANITY_CONTENT_DATASET: "" });
-  expect(mocks.createClient).toHaveBeenCalledWith(
-    expect.objectContaining({ dataset: "production" }),
+describe("without a content dataset", () => {
+  test.each([
+    ["unset", ""],
+    ["the live dataset", "production"],
+  ])(
+    "(%s) there is no client, never one on the live dataset",
+    async (_, value) => {
+      const { contentClient } = await loadCmsContent({
+        NEXT_PUBLIC_SANITY_CONTENT_DATASET: value,
+      });
+      expect(contentClient).toBeNull();
+      expect(mocks.createClient).not.toHaveBeenCalled();
+    },
   );
+
+  test("the sanity source renders the code content, and says so once", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    mocks.fetch.mockResolvedValue({ title: "CMS" });
+    const { fetchContent, loadContent } = await loadCmsContent({
+      NEXT_PUBLIC_SANITY_CONTENT_DATASET: "",
+    });
+    const fallback = { title: "Code" };
+    const load = { ...options, fallback, select: (result: unknown) => result };
+
+    await expect(loadContent(load)).resolves.toBe(fallback);
+    await expect(loadContent(load)).resolves.toBe(fallback);
+    await expect(fetchContent(options)).resolves.toBeNull();
+    expect(mocks.fetch).not.toHaveBeenCalled();
+    expect(console.warn).toHaveBeenCalledExactlyOnceWith(
+      expect.stringContaining("NEXT_PUBLIC_SANITY_CONTENT_DATASET"),
+    );
+  });
+
+  test("the mock CMS needs no content dataset", async () => {
+    const { loadContent } = await loadCmsContent({
+      NEXT_PUBLIC_SANITY_CONTENT_DATASET: "",
+      USE_MOCK_CMS: "1",
+    });
+    await expect(
+      loadContent({
+        ...options,
+        fallback: { title: "Code" },
+        select: (result: unknown) => result,
+      }),
+    ).resolves.toStrictEqual({ title: "From the mock" });
+  });
 });
 
 describe("fetchContent", () => {

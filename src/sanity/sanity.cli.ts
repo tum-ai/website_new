@@ -13,6 +13,9 @@ import { defineCliConfig } from "sanity/cli";
  *   `schema.json`. The extracts are intermediate files in
  *   `node_modules/.cache`, not committed: they are mostly Sanity's built-in
  *   asset types, and the generated TypeScript is what reviewers read.
+ *   The `content` workspace exists only with a content dataset, so the
+ *   script names a placeholder one (`schema-extract`) for that extract;
+ *   extraction reads the local schema and never contacts a dataset.
  * - Queries are found in `lib` (the live dataset's queries and shared
  *   content types), in feature content slices (`features/<x>/content.ts` and
  *   `<topic>-content.ts`)

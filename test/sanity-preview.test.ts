@@ -2,7 +2,7 @@ import { globSync } from "node:fs";
 import { dirname, relative, sep } from "node:path";
 import { createClient } from "next-sanity";
 import { expect, test, vi } from "vitest";
-import sanityConfig from "../src/sanity/sanity.config.ts";
+import { studioWorkspaces } from "../src/sanity/sanity.config.ts";
 
 // The route handler reads the shared client; the real module also defines
 // Sanity Live, which only loads under the react-server runtime.
@@ -32,7 +32,8 @@ type PresentationOptions = {
   previewUrl?: { initial?: string; previewMode?: { enable?: string } };
 };
 
-const workspaces = sanityConfig;
+// Both workspaces, as a deployment with a content dataset has them.
+const workspaces = studioWorkspaces("redesign");
 const liveWorkspace = workspaces.find(({ name }) => name === "live");
 
 /** Presentation runs in the live workspace (drafts of the live dataset). */
@@ -93,4 +94,10 @@ test("the content workspace never edits the live dataset's types", () => {
   expect(contentTypes.filter((type) => liveTypes.includes(type))).toStrictEqual(
     [],
   );
+});
+
+test("without a content dataset the Studio has no content workspace", () => {
+  expect(studioWorkspaces(null).map(({ name }) => name)).toStrictEqual([
+    "live",
+  ]);
 });

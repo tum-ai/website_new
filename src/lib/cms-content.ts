@@ -45,17 +45,39 @@ export function getContentSource(
 }
 
 /**
- * The content dataset's client (`NEXT_PUBLIC_SANITY_CONTENT_DATASET`, which
- * defaults to the live dataset): published perspective from the CDN, no
- * token, no stega.
+ * The content dataset's client (`NEXT_PUBLIC_SANITY_CONTENT_DATASET`):
+ * published perspective from the CDN, no token, no stega. `null` without a
+ * content dataset: there is no default, and never the live dataset.
  */
-export const contentClient = createClient({
-  projectId: sanityProjectId,
-  dataset: sanityContentDataset,
-  apiVersion: sanityApiVersion,
-  useCdn: true,
-  perspective: "published",
-});
+export const contentClient = sanityContentDataset
+  ? createClient({
+      projectId: sanityProjectId,
+      dataset: sanityContentDataset,
+      apiVersion: sanityApiVersion,
+      useCdn: true,
+      perspective: "published",
+    })
+  : null;
+
+let warnedNoContentDataset = false;
+
+/**
+ * Whether the `sanity` source has somewhere to read from: always under the
+ * mock CMS (it queries the backfill documents), otherwise only with a
+ * content dataset. Without one the source acts as `code`, and says so once
+ * per server process instead of once per slice.
+ */
+function hasContentDataset(): boolean {
+  if (process.env.USE_MOCK_CMS === "1" && !process.env.VERCEL) return true;
+  if (contentClient) return true;
+  if (!warnedNoContentDataset) {
+    warnedNoContentDataset = true;
+    console.warn(
+      "[cms-content] CMS_CONTENT_SOURCE=sanity, but NEXT_PUBLIC_SANITY_CONTENT_DATASET is unset or names the live dataset; rendering the code content.",
+    );
+  }
+  return false;
+}
 
 export type FetchContentOptions = {
   /** A `defineQuery` GROQ query, so TypeGen types its result. */
@@ -76,7 +98,7 @@ export type FetchContentOptions = {
 
 /**
  * One query against the content dataset, or `null` when there is nothing to
- * use: no project configured, or the request failed (logged; Next's own
+ * use: no project or content dataset configured, or the request failed (logged; Next's own
  * control-flow errors are rethrown, as in `lib/sanity.ts`). Callers merge
  * the result over their code fallback, so an outage renders the code copy.
  *
@@ -100,7 +122,7 @@ export async function fetchContent<T>({
     return evaluateMockQuery<T>(query, params, mockDocuments());
   }
 
-  if (!isSanityConfigured) return null;
+  if (!isSanityConfigured || !contentClient) return null;
 
   try {
     const result = await contentClient.fetch<T>(query, params, {
@@ -130,7 +152,8 @@ export type LoadContentOptions<T, R> = FetchContentOptions & {
 
 /**
  * The content a slice's `get<X>Content()` returns: `fallback` for the
- * `code` source; otherwise the query result, shaped by `select`, merged
+ * `code` source, and for the `sanity` source without a content dataset
+ * (logged once); otherwise the query result, shaped by `select`, merged
  * over `fallback` (`mergeOverFallback` in `lib/cms-content-model.ts`).
  */
 export async function loadContent<T, R>({
@@ -138,7 +161,7 @@ export async function loadContent<T, R>({
   select,
   ...fetchOptions
 }: LoadContentOptions<T, R>): Promise<T> {
-  if (getContentSource() === "code") return fallback;
+  if (getContentSource() === "code" || !hasContentDataset()) return fallback;
   const result = await fetchContent<R>(fetchOptions);
   return mergeOverFallback(fallback, result === null ? null : select(result));
 }

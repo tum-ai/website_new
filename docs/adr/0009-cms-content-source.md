@@ -27,8 +27,11 @@ Three constraints shape how:
 - `NEXT_PUBLIC_SANITY_DATASET` (`production`) stays the **live dataset**: `event`, `partner`,
   `research`, read by `lib/sanity.ts` with draft mode, Presentation and `<SanityLive>` as before.
 - `NEXT_PUBLIC_SANITY_CONTENT_DATASET` (planned `redesign`) is the **content dataset** for the new
-  types. It defaults to the live dataset, so the same code also works with the content types added
-  to one dataset. Both live in `lib/sanity-config.ts`.
+  types. It has **no default**: unset, blank or naming the live dataset, there is no content
+  dataset, so the Studio has no `content` workspace and the `sanity` source renders the code
+  content (`loadContent` logs this once per server process). Nothing ever falls back to the live
+  dataset, which the old site renders and where a Publish in `/studio/content` would otherwise
+  land. Both live in `lib/sanity-config.ts`.
 - References between the datasets are plain strings (for example a campaign's featured event is
   the event's `_id`), because cross-dataset references need a paid plan.
 
@@ -153,8 +156,9 @@ redirects to `/studio/live`.
    `pnpm sanity:backfill --dataset redesign --apply`. It imports every slice in one file with
    `--replace`, so the references between them (logo lists, testimonials, the traced venture, the
    homepage quotes, the journey evidence) resolve; asset files upload with the import.
-3. Editors review and correct the content in `/studio/content` (locally, or on a preview
-   deployment with the env below): the Site settings and both Application windows first (the
+3. Editors review and correct the content in `/studio/content` (locally with
+   `NEXT_PUBLIC_SANITY_CONTENT_DATASET=redesign` in `.env.local`, or on a preview deployment with
+   the env below; without it the workspace does not exist): the Site settings and both Application windows first (the
    open `TODO(content)` facts: the E-Lab window's open switch and next window, the membership
    round's placeholder dates, the selection funnel), then Campaigns, the page singletons, the
    lists and Logos and people. Open the Studio in a real browser once: the pinned documents, the
