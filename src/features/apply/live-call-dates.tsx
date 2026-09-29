@@ -5,6 +5,8 @@ import { DayRuler, KeyDates } from "@/components/ds";
 import type { MembershipConfig } from "@/config/membership";
 import { useClockState } from "@/lib/use-clock-switch";
 import {
+  closingLead,
+  closingTitle,
   type RecruitingCall,
   recruitingCall,
   recruitingCallBoundaries,
@@ -96,5 +98,26 @@ export function LiveClosingRuler(props: LiveCallDatesProps) {
       endLabel={endLabel(call)}
       markLabel={call.daysLeftLabel || undefined}
     />
+  );
+}
+
+/**
+ * The closing band's title for the call's phase (`closingTitle`). Kept
+ * current in the browser (see `useLiveCall`).
+ */
+export function LiveClosingTitle(props: LiveCallDatesProps) {
+  const call = useLiveCall(props);
+  return <>{closingTitle(call)}</>;
+}
+
+/**
+ * The paragraph under the closing band's title (`closingLead`): the days
+ * left while open, so it turns at Munich midnight with the ruler's mark.
+ * Kept current in the browser (see `useLiveCall`).
+ */
+export function LiveClosingLead(props: LiveCallDatesProps) {
+  const call = useLiveCall(props);
+  return (
+    <p className="max-w-xl text-fg-muted text-lead">{closingLead(call)}</p>
   );
 }

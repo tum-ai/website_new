@@ -124,7 +124,7 @@ describe("the hero's dates", () => {
   });
 });
 
-describe("the closing ruler", () => {
+describe("the closing band", () => {
   function renderClosing(renderedAt: string) {
     return render(
       <ClosingSection
@@ -145,6 +145,41 @@ describe("the closing ruler", () => {
     expect(screen.getByText("Closes today")).toBeInTheDocument();
     expect(screen.queryByText("1 day left")).toBeNull();
     await expectNoAxeViolations(container);
+  });
+
+  test("the paragraph under the title counts down with the ruler", () => {
+    vi.useFakeTimers();
+    renderClosing("2026-10-26T12:00:00Z");
+    const lead = (label: string) =>
+      screen.getByText(new RegExp(`^${label}\\. The form closes at 23:59`));
+    expect(lead("1 day left")).toBeVisible();
+
+    runUntil("2026-10-26T23:00:01Z");
+    expect(lead("Closes today")).toBeVisible();
+    expect(
+      screen.getByRole("heading", {
+        name: "Applications close on 27 October.",
+      }),
+    ).toBeVisible();
+  });
+
+  test("an upcoming call's title and paragraph read as open once the form opens", () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    renderClosing("2026-09-27T12:00:00Z");
+    expect(
+      screen.getByRole("heading", {
+        name: "Applications open on 28 September.",
+      }),
+    ).toBeVisible();
+    expect(screen.getByText(/^The form stays open until/)).toBeVisible();
+
+    returnAt("2026-09-27T22:00:00Z");
+    expect(
+      screen.getByRole("heading", {
+        name: "Applications close on 27 October.",
+      }),
+    ).toBeVisible();
+    expect(screen.getByText(/^29 days left\. The form closes/)).toBeVisible();
   });
 
   test("an upcoming call's ruler says opened once the form opens", () => {

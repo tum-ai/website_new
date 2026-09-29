@@ -9,18 +9,24 @@ import {
 import { callToActionLabels } from "@/config/calls-to-action";
 import type { MembershipConfig } from "@/config/membership";
 import { isCmsClockFixed } from "@/lib/mock-cms-env";
-import { LiveApplyAction, LiveCallPhase } from "./apply-action";
+import { LiveApplyAction } from "./apply-action";
 import type { ApplyCopy } from "./data/apply";
-import { LiveClosingRuler } from "./live-call-dates";
-import { closingLead, closingTitle, type RecruitingCall } from "./round";
+import {
+  LiveClosingLead,
+  LiveClosingRuler,
+  LiveClosingTitle,
+} from "./live-call-dates";
+import type { RecruitingCall } from "./round";
 
 /**
  * The call's submission box, on ink: the hero's register reduced to the one
  * date that matters, over the same day ruler at full width, with the apply
  * action. Beside it, the partners' way to meet the members
- * (`partnerPitch`, from the partners copy). The ruler and the phase's words
- * stay current in the browser (`membership` is the window `call` was
- * computed from).
+ * (`partnerPitch`, from the partners copy). The title, the ruler and the
+ * paragraph with the days left read the same call kept current in the
+ * browser (`live-call-dates.tsx`), so they turn together at the opening,
+ * the deadline and every Munich midnight (`membership` is the window `call`
+ * was computed from).
  */
 export function ClosingSection({
   call,
@@ -33,6 +39,7 @@ export function ClosingSection({
   copy: ApplyCopy["closing"];
   partnerPitch: string;
 }) {
+  const liveCall = { call, config: membership, live: !isCmsClockFixed() };
   return (
     <Section tone="ink" spacing="xl" aria-labelledby="apply-close-title">
       <Container>
@@ -41,29 +48,15 @@ export function ClosingSection({
             id="apply-close-title"
             className="max-w-[12em] text-display-xl text-highlight"
           >
-            <LiveCallPhase
-              call={call}
-              render={(variant) => closingTitle(variant)}
-            />
+            <LiveClosingTitle {...liveCall} />
           </h2>
         </Reveal>
         <Reveal variant="fade" delay={100}>
-          <LiveClosingRuler
-            call={call}
-            config={membership}
-            live={!isCmsClockFixed()}
-          />
+          <LiveClosingRuler {...liveCall} />
         </Reveal>
         <div className="mt-12 grid gap-16 md:mt-16 lg:grid-cols-12 lg:gap-12">
           <Reveal delay={160} className="lg:col-span-8">
-            <LiveCallPhase
-              call={call}
-              render={(variant) => (
-                <p className="max-w-xl text-fg-muted text-lead">
-                  {closingLead(variant)}
-                </p>
-              )}
-            />
+            <LiveClosingLead {...liveCall} />
             <Actions className="mt-10">
               <LiveApplyAction call={call} statusId="apply-close-status" />
               <ButtonLink href="/qanda" size="lg" variant="outline">
