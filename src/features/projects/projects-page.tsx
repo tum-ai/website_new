@@ -1,72 +1,55 @@
-import { Container, PageHero, Reveal, Section } from "@/components/ds";
-import { cn } from "@/lib/cn";
-import { projects } from "./data/projects";
-import { ProjectCard } from "./project-card";
+import { Container, PageHero, Section } from "@/components/ds";
+import { ClosingSection } from "./closing-section";
+import { figureSeats, hero } from "./data/copy";
+import { taskForces } from "./data/projects";
+import { OverlapsFigure } from "./overlaps-figure";
+import { TaskForceChapter } from "./task-force-chapter";
 
-/*
- * Bento on wide screens (six-column grid): the first two task forces lead as
- * landscape tiles, the rest follow as 4:5 portraits, three to a row. On
- * tablets it is a two-column grid whose odd last tile spans the full row.
+/**
+ * /projects, the task forces. The page's one bold element is the figure in
+ * the hero: AI in the middle and one circle per field around it, where each
+ * overlap is a task force and links to its chapter. The chapters follow the
+ * figure clockwise, and the close returns to it with the open circle, the
+ * next task force, drawn solid.
  */
-function tileLayout(index: number, count: number) {
-  const featured = index < 2;
-  const lastOdd = index === count - 1 && count % 2 === 1;
-  return {
-    item: cn(
-      featured ? "xl:col-span-3" : "xl:col-span-2",
-      lastOdd && "md:col-span-2 xl:col-span-2",
-    ),
-    tile: cn(
-      featured && "xl:aspect-4/3",
-      lastOdd && "md:aspect-video xl:aspect-4/5",
-    ),
-    sizes: featured
-      ? "(min-width: 1280px) 50vw, (min-width: 768px) 50vw, 100vw"
-      : lastOdd
-        ? "(min-width: 1280px) 33vw, 100vw"
-        : "(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw",
-  };
-}
-
-/** The /projects page: the task forces as a bento grid. */
 export function ProjectsPage() {
-  const count = projects.length;
   return (
     <main>
       <PageHero
-        title="Task Forces and Projects"
-        lead="Explore the TUM.ai task forces driving research, education, and community initiatives across AI."
+        tone="night"
+        mark={false}
+        titleId="projects-hero-title"
+        eyebrow={hero.eyebrow}
+        title={hero.title}
+        emphasis="highlight"
+        lead={hero.lead}
+        classNames={{
+          grid: "lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center",
+          media: "mx-auto w-full max-w-md lg:max-w-none",
+        }}
+        media={
+          <OverlapsFigure
+            seats={figureSeats}
+            variant="index"
+            label={hero.figureLabel}
+          />
+        }
       />
 
-      <Section tone="paper" spacing="md" aria-labelledby="task-forces-title">
+      <Section tone="paper" spacing="md" aria-label="Task forces">
         <Container>
-          {/* The hero already introduces the grid; the heading keeps the
-              outline (h1 > h2 > h3) for assistive tech. */}
-          <h2 id="task-forces-title" className="sr-only">
-            Task forces
-          </h2>
-          <ul className="grid gap-4 md:grid-cols-2 md:gap-5 xl:grid-cols-6 xl:gap-6">
-            {projects.map((project, index) => {
-              const layout = tileLayout(index, count);
-              return (
-                <Reveal
-                  as="li"
-                  key={project.name}
-                  delay={(index < 2 ? index : index - 2) * 90}
-                  className={layout.item}
-                >
-                  <ProjectCard
-                    project={project}
-                    index={index}
-                    className={layout.tile}
-                    sizes={layout.sizes}
-                  />
-                </Reveal>
-              );
-            })}
-          </ul>
+          {taskForces.map((taskForce, index) => (
+            <TaskForceChapter
+              key={taskForce.slug}
+              taskForce={taskForce}
+              index={index}
+              seatCount={figureSeats.length}
+            />
+          ))}
         </Container>
       </Section>
+
+      <ClosingSection />
     </main>
   );
 }
