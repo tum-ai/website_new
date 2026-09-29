@@ -48,16 +48,18 @@ export function PillarsSection({
                 sizes="(min-width: 1024px) 30vw, (min-width: 768px) 45vw, 100vw"
               />
               <div className="mt-7 flex flex-1 flex-col border-hairline-strong border-t pt-5 md:max-lg:mt-0">
-                <Link
-                  href={pillar.href}
-                  className="flex items-baseline justify-between gap-3 text-fg outline-none after:absolute after:-inset-3 after:z-10 after:rounded-5xl focus-visible:after:outline-3 focus-visible:after:outline-violet-500 focus-visible:after:outline-offset-2"
-                >
-                  <h3 className="text-heading-md">{pillar.title}</h3>
+                <h3 className="flex items-baseline justify-between gap-3 text-fg text-heading-md">
+                  <Link
+                    href={pillar.href}
+                    className="outline-none after:absolute after:-inset-2 after:z-10 after:rounded-5xl focus-visible:after:outline-3 focus-visible:after:outline-violet-500 focus-visible:after:outline-offset-2"
+                  >
+                    {pillar.title}
+                  </Link>
                   <ArrowUpRight
                     aria-hidden
                     className="size-5 shrink-0 text-highlight transition-transform duration-500 ease-brand group-hover/zoom:translate-x-0.5 group-hover/zoom:-translate-y-0.5 motion-reduce:transition-none"
                   />
-                </Link>
+                </h3>
                 <p className="mt-8 flex items-baseline gap-3">
                   <strong className="tabular text-fg text-stat-md">
                     <CountUp value={pillar.metric} />

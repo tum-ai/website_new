@@ -1,8 +1,13 @@
 import type { CSSProperties } from "react";
-import { Container, Ledger, Reveal, Section } from "@/components/ds";
+import {
+  Container,
+  Ledger,
+  Reveal,
+  Section,
+  SectionHeader,
+} from "@/components/ds";
 import type { PartnerStat, PartnersSections } from "../data/partners";
 import {
-  LIT_RADIUS,
   MARK_RADIUS,
   MARK_PITCH as PITCH,
   type SelectionField,
@@ -15,6 +20,16 @@ import {
  */
 const WIDE_COLUMNS = 70;
 const NARROW_COLUMNS = 42;
+
+/**
+ * The stagger between lit marks: the last one starts 400ms after the first,
+ * whatever the count, so the entrance stays inside the 1.2s motion budget.
+ */
+export function litStep(count: number): CSSProperties {
+  return {
+    "--lit-step": `${Math.round((400 / Math.max(1, count - 1)) * 10) / 10}ms`,
+  } as CSSProperties;
+}
 
 /** The recruiting round the field draws, from the render's site facts. */
 export type SelectionFacts = {
@@ -47,6 +62,7 @@ function FieldArtwork({
       focusable="false"
       viewBox={`0 0 ${width} ${field.rows * PITCH}`}
       className={className}
+      style={litStep(field.lit.length)}
     >
       <defs>
         <pattern
@@ -85,7 +101,7 @@ function FieldArtwork({
             className="selection-field-lit"
             cx={column * PITCH + PITCH / 2}
             cy={row * PITCH + PITCH / 2}
-            r={LIT_RADIUS}
+            r={MARK_RADIUS}
             fill="currentColor"
             style={{ "--lit-order": order } as CSSProperties}
           />
@@ -124,17 +140,14 @@ export function ProofSection({
   return (
     <Section tone="night" spacing="lg" aria-labelledby="partner-proof-title">
       <Container>
-        <Reveal>
-          <h2
-            id="partner-proof-title"
-            className="max-w-[12em] text-display-md text-fg"
-          >
-            {copy.title}
-          </h2>
-        </Reveal>
-        <div className="mt-12 grid gap-12 md:mt-16 lg:grid-cols-12 lg:items-end lg:gap-x-12">
+        <SectionHeader
+          id="partner-proof-title"
+          title={copy.title}
+          classNames={{ title: "max-w-[12em]" }}
+        />
+        <div className="grid gap-12 lg:grid-cols-12 lg:items-end lg:gap-x-12">
           <Reveal as="figure" variant="fade" className="lg:col-span-8">
-            <div className="text-fg/25">
+            <div className="text-fg/20">
               <FieldArtwork
                 field={narrow}
                 patternId="selection-marks-narrow"
@@ -147,10 +160,7 @@ export function ProofSection({
               />
             </div>
             <figcaption className="mt-6 max-w-lg text-fg-muted text-small">
-              One recruiting round, drawn to the count:{" "}
-              {marks.toLocaleString("en")} started applications, one mark each.
-              The {selection.admitted} lit marks are the{" "}
-              {selection.acceptanceRatePercent}% who become members.
+              {copy.caption}
             </figcaption>
           </Reveal>
           <Reveal delay={120} className="lg:col-span-4">

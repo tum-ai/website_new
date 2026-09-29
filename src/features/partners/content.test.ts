@@ -2,6 +2,7 @@ import { afterEach, describe, expect, test, vi } from "vitest";
 import { contentTokens } from "@/config/content-tokens";
 import { siteFactsFallback } from "@/config/site-facts";
 import { fetchContent } from "@/lib/cms-content";
+import { fillCodeTemplate } from "@/lib/content-tokens";
 import type {
   PARTNER_CASE_STUDIES_QUERY_RESULT,
   PARTNERS_COPY_QUERY_RESULT,
@@ -73,7 +74,13 @@ const codeCopy = {
     contentTokens,
     partnerPillarMetricsOf(siteFactsFallback),
   ),
-  sections: partnersSections,
+  sections: {
+    ...partnersSections,
+    proof: {
+      ...partnersSections.proof,
+      caption: fillCodeTemplate(partnersSections.proof.caption, contentTokens),
+    },
+  },
 };
 
 const mockDocuments = () => [

@@ -7,13 +7,16 @@
 
 /** One mark's cell, in SVG viewBox units, shared by every drawing of a round. */
 export const MARK_PITCH = 12;
-/** Radius of a resting mark: every started application. */
-export const MARK_RADIUS = 2.4;
-/** Radius of a lit mark: an admitted member, drawn over its resting mark. */
-export const LIT_RADIUS = 3.6;
+/**
+ * Radius of every mark, lit or not. One size keeps the drawing to scale by
+ * area as well as by count: the lit marks cover exactly the admitted share
+ * of the field's ink (48 of 2100 is 2.3%), and only their colour sets them
+ * apart. A larger lit mark would overstate the share by its area ratio.
+ */
+export const MARK_RADIUS = 2.6;
 
 /** A mark's cell in the field, counted from the top-left corner. */
-export type FieldCell = { column: number; row: number };
+type FieldCell = { column: number; row: number };
 
 /** A field laid out on a fixed number of columns. */
 export type SelectionField = {

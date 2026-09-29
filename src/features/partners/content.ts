@@ -13,7 +13,11 @@ import {
   CONTENT_IMAGE_PROJECTION,
   toContentImage,
 } from "@/lib/cms-content-model";
-import { type ContentTokens, fillTemplate } from "@/lib/content-tokens";
+import {
+  type ContentTokens,
+  fillCodeTemplate,
+  fillTemplate,
+} from "@/lib/content-tokens";
 import { organizationReference } from "@/lib/organization-content";
 import { buildPersonBackfill, getPeople } from "@/lib/person-content";
 import type {
@@ -105,7 +109,7 @@ export const PARTNERS_COPY_QUERY = defineQuery(`*[_id == "partnersCopy"][0]{
     marquee{ label, link },
     finder{ eyebrow, title, lead, note },
     reasons{ title, lead, contact },
-    proof{ title },
+    proof{ title, caption },
     pillars{ title, lead },
     people{ title, lead, statLabel, tagline, alumniTitle },
     directory{ title, lead, supportersTitle },
@@ -161,7 +165,13 @@ function codeCopySource(
     stats: fillPartnerStats(partnerStatTemplates, tokens),
     pillars: fillPartnerPillars(partnerPillarTemplates, tokens, metrics),
     prompts: partnershipPrompts,
-    sections: partnersSections,
+    sections: {
+      ...partnersSections,
+      proof: {
+        ...partnersSections.proof,
+        caption: fillCodeTemplate(partnersSections.proof.caption, tokens),
+      },
+    },
   };
 }
 
@@ -186,6 +196,22 @@ function selectSections(sections: CopyResult["sections"]): unknown {
     return value;
   };
   return clean(sections);
+}
+
+/**
+ * The CMS sections with the selection caption's placeholders filled; a
+ * caption with an unknown placeholder is dropped, so the code caption shows.
+ */
+function fillProofCaption(
+  sections: CopyResult["sections"],
+  tokens: ContentTokens,
+): CopyResult["sections"] {
+  const caption = sections?.proof?.caption;
+  if (!sections?.proof || !caption) return sections;
+  return {
+    ...sections,
+    proof: { ...sections.proof, caption: fillTemplate(caption, tokens) },
+  };
 }
 
 const reasonIcons: readonly PartnerReasonIcon[] = [
@@ -292,7 +318,7 @@ export async function getPartnersCopy(): Promise<PartnersCopy> {
         stats: selectStats(result.stats, tokens),
         pillars: selectPillars(result.pillars, tokens, metrics),
         prompts: result.prompts,
-        sections: selectSections(result.sections),
+        sections: selectSections(fillProofCaption(result.sections, tokens)),
       },
   });
   return {

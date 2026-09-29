@@ -41,6 +41,7 @@ export const contentTokenNames = [
   "community.makeathonSize",
   "community.startedApplications",
   "community.acceptanceRate",
+  "community.admittedPerBatch",
 ] as const;
 
 type ContentTokenName = (typeof contentTokenNames)[number];

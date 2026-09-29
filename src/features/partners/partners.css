@@ -266,16 +266,22 @@
    */
   @media (prefers-reduced-motion: no-preference) {
     .selection-field-rest {
-      transition: opacity 900ms var(--ease-brand);
+      transition: opacity 800ms var(--ease-brand);
     }
 
     .selection-field-lit {
       transform-box: fill-box;
       transform-origin: center;
       transition:
-        opacity 600ms var(--ease-brand),
-        scale 600ms var(--ease-brand);
-      transition-delay: calc(400ms + var(--lit-order, 0) * 20ms);
+        opacity 500ms var(--ease-brand),
+        scale 500ms var(--ease-brand);
+      /* The drawing sets --lit-step so the last mark starts 400ms after the
+         first: 300ms + 400ms + 500ms keeps the entrance within 1.2s. */
+      transition-delay: calc(
+        300ms +
+        var(--lit-order, 0) *
+        var(--lit-step, 8ms)
+      );
     }
 
     [data-reveal="pending"] .selection-field-rest {

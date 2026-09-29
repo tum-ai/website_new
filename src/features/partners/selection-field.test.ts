@@ -43,6 +43,14 @@ describe("selectionField", () => {
     });
   }
 
+  test("lights the admitted share of the marks, to within one mark", () => {
+    const field = selectionField({ marks, lit, columns: 70 });
+    const share = field.lit.length / field.marks;
+    expect(
+      Math.abs(share - communityFacts.acceptanceRatePercent / 100),
+    ).toBeLessThanOrEqual(1 / (2 * field.marks));
+  });
+
   test("is deterministic, so server and client draw the same field", () => {
     const options = { marks, lit, columns: 70 };
     expect(selectionField(options)).toStrictEqual(selectionField(options));

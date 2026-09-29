@@ -1,4 +1,5 @@
 import type { ContentTokens } from "@/lib/content-tokens";
+import { admittedPerBatchOf } from "./community";
 import {
   type ELabApplicationWindow,
   eLabApplicationCopyOf,
@@ -74,6 +75,7 @@ export function contentTokensFor({
       facts.community.startedApplicationsPerBatch,
     ),
     "community.acceptanceRate": String(facts.community.acceptanceRatePercent),
+    "community.admittedPerBatch": String(admittedPerBatchOf(facts.community)),
   };
 }
 
