@@ -4,6 +4,7 @@ import {
   isEmptyContent,
   mergeOverFallback,
   toContentImage,
+  whole,
 } from "./cms-content-model";
 
 const image: ContentImage = {
@@ -135,5 +136,27 @@ describe("mergeOverFallback", () => {
     expect(
       mergeOverFallback<{ note?: string }>({}, { note: "CMS" }),
     ).toStrictEqual({ note: "CMS" });
+  });
+
+  test("takes a whole group as it is, optional fields left out included", () => {
+    const fallback = {
+      title: "Code",
+      quote: { name: "Code member", excerpt: "Code words", role: "Code role" },
+    };
+    expect(
+      mergeOverFallback(fallback, {
+        quote: whole({ name: "CMS member", excerpt: "CMS words" }),
+      }),
+    ).toStrictEqual({
+      title: "Code",
+      quote: { name: "CMS member", excerpt: "CMS words" },
+    });
+    expect(mergeOverFallback(fallback, whole({ title: "CMS" }))).toStrictEqual({
+      title: "CMS",
+    });
+    // Left out by `select` (incomplete): the code group, whole.
+    expect(mergeOverFallback(fallback, { quote: undefined })).toStrictEqual(
+      fallback,
+    );
   });
 });

@@ -10,7 +10,7 @@ import {
 import { buildVentureBackfill } from "@/features/e-lab/server";
 import type { BackfillDocument } from "@/lib/cms-backfill";
 import { loadContent } from "@/lib/cms-content";
-import { CONTENT_IMAGE_PROJECTION } from "@/lib/cms-content-model";
+import { CONTENT_IMAGE_PROJECTION, whole } from "@/lib/cms-content-model";
 import { getDepartments } from "@/lib/community-content";
 import { backfillContentImage, keyedItems } from "@/lib/content-backfill";
 import { fillCmsCopy, fillCodeCopy } from "@/lib/content-copy";
@@ -80,8 +80,24 @@ type Filled = Partial<Record<keyof HomeCopy, Record<string, unknown>>> & {
   ledger?: { key?: string; label?: string; note?: string }[];
 };
 
-/** A filled CMS copy, with incomplete list items dropped. */
-function selectCopy(copy: Filled | null) {
+/**
+ * The join band's quote as a whole: the excerpt with the member it
+ * references, or nothing (the code quote shows). An excerpt whose person
+ * did not resolve is never attributed to the code member.
+ */
+function joinQuote(quote: unknown) {
+  const { name, excerpt } = (quote ?? {}) as {
+    name?: string;
+    excerpt?: string;
+  };
+  return name && excerpt ? whole({ name, excerpt }) : undefined;
+}
+
+/**
+ * A filled CMS copy, with incomplete list items dropped and the join quote
+ * whole or left out. Exported for tests.
+ */
+export function selectHomeCopy(copy: Filled | null) {
   if (!copy) return null;
   const photos = (copy.room?.photos ?? []) as {
     image?: RoomPhoto;
@@ -117,6 +133,7 @@ function selectCopy(copy: Filled | null) {
       steps: (
         (copy.join.steps ?? []) as { title?: string; dates?: string }[]
       ).filter((step) => step.title && step.dates),
+      quote: joinQuote(copy.join.quote),
     },
   };
 }
@@ -137,7 +154,7 @@ export async function getHomeContent(): Promise<HomeContent> {
         ...buildVentureBackfill(),
       ],
       select: (result) =>
-        selectCopy(
+        selectHomeCopy(
           fillCmsCopy(
             result,
             tokens,

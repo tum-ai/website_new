@@ -4,7 +4,7 @@ import { defineQuery } from "next-sanity";
 import { buildOrganizationBackfill } from "@/features/partners/server";
 import type { BackfillDocument } from "@/lib/cms-backfill";
 import { loadContent } from "@/lib/cms-content";
-import { toContentImage } from "@/lib/cms-content-model";
+import { toContentImage, whole } from "@/lib/cms-content-model";
 import {
   buildLogoListDocument,
   getLogoLists,
@@ -12,6 +12,7 @@ import {
 } from "@/lib/organization-content";
 import { buildPersonBackfill, getPeople, personId } from "@/lib/person-content";
 import type { VENTURE_TRACE_QUERY_RESULT } from "@/lib/sanity.types.generated";
+import { isHttpsUrl } from "@/lib/security";
 import {
   eLabLogoLists,
   type NotableStartup,
@@ -85,7 +86,35 @@ export function getTestimonialCards(): Promise<TestimonialCard[]> {
   });
 }
 
-/** The traced venture: the CMS singleton's fields that are set, else code. */
+/**
+ * The traced venture as a whole: the CMS trace when it is complete (the
+ * venture and the founder resolve to keys, a cohort, at least one milestone
+ * with an https source), otherwise the code trace. Never mixed: each field
+ * describes the one venture, so the code's "and now ..." or milestones
+ * under another startup would tell the wrong story.
+ */
+function selectTracedVenture(result: VENTURE_TRACE_QUERY_RESULT) {
+  if (!result) return null;
+  const { startupId, testimonialId, cohort, now } = result;
+  const after = (result.after ?? []).flatMap(({ text, source }) =>
+    text && source && isHttpsUrl(source) ? [{ text, source }] : [],
+  );
+  if (!startupId || !testimonialId || !cohort || after.length === 0) {
+    console.warn(
+      "[cms-content] The E-Lab traced venture needs a venture, a founder, a cohort and a sourced milestone; rendering the code trace.",
+    );
+    return null;
+  }
+  return whole<TracedVenture>({
+    startupId,
+    testimonialId,
+    cohort,
+    ...(now ? { now } : {}),
+    after,
+  });
+}
+
+/** The traced venture: the complete CMS trace, else the code trace. */
 export function getTracedVenture(): Promise<TracedVenture> {
   return loadContent<TracedVenture, VENTURE_TRACE_QUERY_RESULT>({
     fallback: tracedVenture,
@@ -93,13 +122,7 @@ export function getTracedVenture(): Promise<TracedVenture> {
     tags: ["content:ventureTrace", "content:organization", "content:person"],
     label: "the E-Lab traced venture",
     mockDocuments: ventureMockDocuments,
-    select: (result) =>
-      result && {
-        ...result,
-        after: result.after?.flatMap(({ text, source }) =>
-          text && source ? [{ text, source }] : [],
-        ),
-      },
+    select: selectTracedVenture,
   });
 }
 

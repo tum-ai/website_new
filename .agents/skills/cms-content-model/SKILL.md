@@ -129,7 +129,10 @@ proves the CMS path renders the same.
      `fillCmsCopy(result, tokens, label, pageTokens)` for placeholders) and leaves anything it
      cannot use empty so the fallback wins;
    - a field that names a person or organisation is a `reference`, projected to the code
-     shape's key (`quote->key`, `person->name`); its backfill uses the target's deterministic id
+     shape's key (`quote->key`, `person->name`); when the reference and the fields beside it
+     describe one thing (a quote and its person), `select` returns the group as `whole(group)`
+     only when complete and leaves it out otherwise, so an unresolved reference never pairs CMS
+     words with the code person; its backfill uses the target's deterministic id
      (`personId`, `organizationId`), and `mockDocuments` adds the target documents (the other
      slice's builder) so the mock resolves it;
    - one `build<X>Backfill(): BackfillDocument[]` for everything the slice owns, from the code

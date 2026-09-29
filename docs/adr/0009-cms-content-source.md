@@ -56,6 +56,9 @@ Pages are static or ISR, so a change takes effect with the next build or revalid
 - plain objects (singletons, field groups): merged field by field, recursively; set fields the
   fallback lacks are added;
 - images (`ContentImage`, objects with a `src`): atomic, never mixed with the code image;
+- whole groups (`whole(group)` from a slice's `select`): fields that describe one thing (a quote
+  and its person, the traced venture and its story, the booking page and its host) are taken
+  complete or not at all, so a CMS quote is never attributed to the code person;
 - primitives: the fetched value when its type matches.
 
 So a failed request, an empty collection or a half-filled singleton renders the code content for

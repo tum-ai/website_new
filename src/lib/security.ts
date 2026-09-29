@@ -16,6 +16,19 @@ export function getSafeExternalUrl(value?: string) {
   }
 }
 
+/**
+ * Whether `value` is an absolute `https:` URL, for CMS links that leave the
+ * site. Callers keep `value` as written (unlike {@link getSafeExternalUrl},
+ * which normalises it), so a valid CMS link renders exactly as the code one.
+ */
+export function isHttpsUrl(value: string): boolean {
+  try {
+    return new URL(value).protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 export function serializeJsonLd(value: unknown) {
   return JSON.stringify(value)
     .replace(/</g, "\\u003c")

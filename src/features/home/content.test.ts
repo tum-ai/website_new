@@ -4,9 +4,15 @@ import { departments } from "@/features/community";
 import { buildMemberStoriesBackfill } from "@/features/community/server";
 import { buildVentureBackfill } from "@/features/e-lab/server";
 import { fetchContent } from "@/lib/cms-content";
+import { mergeOverFallback } from "@/lib/cms-content-model";
 import { fillCodeCopy } from "@/lib/content-copy";
 import type { HOME_COPY_QUERY_RESULT } from "@/lib/sanity.types.generated";
-import { buildHomeBackfill, getHomeContent, HOME_COPY_QUERY } from "./content";
+import {
+  buildHomeBackfill,
+  getHomeContent,
+  HOME_COPY_QUERY,
+  selectHomeCopy,
+} from "./content";
 import { homeCopyTemplate, homePageTokens } from "./data/homepage";
 
 /**
@@ -75,5 +81,25 @@ describe("the homepage content slice", () => {
     expect(buildHomeBackfill().map(({ _id }) => _id)).toStrictEqual([
       "homeCopy",
     ]);
+  });
+});
+
+describe("CMS copy over the code copy", () => {
+  const merged = (copy: Parameters<typeof selectHomeCopy>[0]) =>
+    mergeOverFallback(code.copy, selectHomeCopy(copy));
+
+  test("the join quote takes the CMS member and words together", () => {
+    const { join } = merged({
+      join: { quote: { name: "Ada Lovelace", excerpt: "CMS words" } },
+    });
+    expect(join.quote).toStrictEqual({
+      name: "Ada Lovelace",
+      excerpt: "CMS words",
+    });
+  });
+
+  test("words whose member did not resolve never go to the code member", () => {
+    const { join } = merged({ join: { quote: { excerpt: "CMS words" } } });
+    expect(join.quote).toStrictEqual(code.copy.join.quote);
   });
 });

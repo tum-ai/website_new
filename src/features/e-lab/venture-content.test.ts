@@ -127,22 +127,44 @@ describe("incomplete CMS content", () => {
     expect(console.warn).toHaveBeenCalled();
   });
 
-  test("the trace keeps code for empty fields and drops incomplete milestones", async () => {
+  test("a complete CMS trace replaces the code trace whole, without its `now`", async () => {
     useSource("sanity");
     override.result = {
-      startupId: null,
-      testimonialId: "leon-hergert",
+      startupId: "engines",
+      testimonialId: "ada",
       cohort: "E-Lab 2.0",
       now: null,
       after: [
         { text: "Seed round", source: "https://example.com/" },
         { text: null, source: "https://example.com/" },
+        { text: "Unsourced", source: "javascript:alert(1)" },
       ],
     };
     await expect(getTracedVenture()).resolves.toStrictEqual({
-      ...tracedVenture,
+      startupId: "engines",
+      testimonialId: "ada",
       cohort: "E-Lab 2.0",
       after: [{ text: "Seed round", source: "https://example.com/" }],
     });
+  });
+
+  test.each([
+    ["a venture reference that resolves to nothing", { startupId: null }],
+    ["a founder reference that resolves to nothing", { testimonialId: null }],
+    ["no cohort", { cohort: null }],
+    ["no sourced milestone", { after: [{ text: "Seed", source: null }] }],
+  ])("%s keeps the whole code trace", async (_, edit) => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    useSource("sanity");
+    override.result = {
+      startupId: "engines",
+      testimonialId: "ada",
+      cohort: "E-Lab 2.0",
+      now: "sells engines",
+      after: [{ text: "Seed round", source: "https://example.com/" }],
+      ...edit,
+    };
+    await expect(getTracedVenture()).resolves.toStrictEqual(tracedVenture);
+    vi.restoreAllMocks();
   });
 });

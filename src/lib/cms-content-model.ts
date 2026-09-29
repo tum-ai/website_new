@@ -89,6 +89,29 @@ const isPlainObject = (value: unknown): value is PlainObject =>
 const isContentImage = (value: unknown): value is ContentImage =>
   isPlainObject(value) && typeof value.src === "string" && value.src !== "";
 
+/**
+ * A group of fields that belong together, marked by a slice's `select` so
+ * {@link mergeOverFallback} takes it whole: the fetched group replaces the
+ * code group, optional fields included, instead of being merged field by
+ * field. For groups whose fields describe one thing (a quote and who said
+ * it, a venture and what it does now): mixed with the code group, the CMS
+ * quote would be attributed to the code person. `select` returns
+ * `whole(group)` only when the group is complete, otherwise leaves it out,
+ * so the code group shows as a whole.
+ *
+ * The marker never reaches a page: the merge unwraps it. Use it where the
+ * fallback has an object (a singleton or a group), not inside lists, which
+ * replace the fallback wholesale anyway.
+ */
+export class Whole<T> {
+  constructor(readonly value: T) {}
+}
+
+/** Marks `group` to replace the fallback group as a whole; see {@link Whole}. */
+export function whole<T>(group: T): Whole<T> {
+  return new Whole(group);
+}
+
 /** `null`, `undefined`, a blank string and an empty list count as "not set". */
 export function isEmptyContent(value: unknown): boolean {
   if (value === null || value === undefined) return true;
@@ -112,11 +135,14 @@ export function isEmptyContent(value: unknown): boolean {
  * - **Images** (objects with a non-empty `src`, see {@link ContentImage})
  *   are atomic: a fetched image replaces the fallback image as a whole, so
  *   the code `alt` or position never mixes with an uploaded file.
+ * - **Whole groups** (`whole(group)` from the slice's `select`, see
+ *   {@link Whole}) replace the fallback as they are, never mixed with it.
  * - **Primitives** (strings, numbers, booleans; `false` and `0` count as
  *   set): the fetched value when its type matches the fallback's, otherwise
  *   the fallback.
  */
 export function mergeOverFallback<T>(fallback: T, fetched: unknown): T {
+  if (fetched instanceof Whole) return fetched.value as T;
   if (isEmptyContent(fetched)) return fallback;
 
   if (Array.isArray(fallback)) {
@@ -132,6 +158,8 @@ export function mergeOverFallback<T>(fallback: T, fetched: unknown): T {
     for (const [key, value] of Object.entries(fetched)) {
       if (key in fallback) {
         merged[key] = mergeOverFallback(fallback[key], value);
+      } else if (value instanceof Whole) {
+        merged[key] = value.value;
       } else if (!isEmptyContent(value)) {
         merged[key] = value;
       }
