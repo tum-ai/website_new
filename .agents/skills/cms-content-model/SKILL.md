@@ -36,6 +36,13 @@ launch, add it to the copy (as `hosts` is, from `liveEventHosts` in `lib/mock-cm
 Removing or renaming a field breaks existing documents and the public API: keep the old field
 readable (or alias it in the projection) until the content is migrated.
 
+A field that references a page content type (`research.institutions`, `event.coHosts` point at
+`organization`) goes on the variant in `src/sanity/schemas/content/live-references.ts`, which the
+Studio registers on every dataset but `production` (where `organization` doesn't exist and the old
+site reads the string field beside it). Keep the string field; the page prefers the reference and
+falls back to the string, and a migration (`pnpm sanity:migrate-org-references`) fills the
+references in existing documents.
+
 ## 2. Query
 
 Update the projection in `src/lib/sanity-queries.ts`. Wrap queries in `defineQuery` so TypeGen can

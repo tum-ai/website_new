@@ -235,6 +235,19 @@ login (`sanity exec --with-user-token`), drafts included, patching only fields t
 the value the backfill wrote and only at the revision it read. Like `--apply` above, it is a
 maintainer's step, never part of a change.
 
+`pnpm sanity:migrate-org-references --dataset redesign` (same pattern) gives the documents already
+in the dataset the references to organisations that replaced names (#287): research
+`institutions` from the names before the title's colon, event `coHosts` from `hosts`, the lab
+sites' `organizations` from their alias strings, a person's `organization` and position from a
+role's "@ Company" (`roleAtOrganization`), the task force's `work.partner` from its name, and it
+deletes the `event-hosts` logo list, which nothing reads any more. Names match organisations by
+`getPartnerKey` (with its aliases). It only fills empty fields; a document whose names don't all
+find an organisation is left alone and listed (it never invents one), and it creates only the
+logo-less institutions the change added to the code (TUM, TUM CAMP, LMU Klinikum, Helmholtz
+Munich, IBM Almaden, IBM Research). On `production` nothing changes: the old site's types there
+keep their string fields, and the Studio registers the reference fields only where the
+`organization` type exists.
+
 `--dataset` is required (no default), and `production` is always refused
 (`scripts/sanity/backfill-target.ts`; there is no override). The script loads `.env.local` and
 `.env` like Next, because the Sanity CLI runs from `src/sanity` and would not find them, needs
@@ -317,7 +330,10 @@ exists (public) and already holds the page content from the first backfill.
    re-run before launch, for partners added since; it only fills what is missing.
    `redesign` was filled before the content-dedup changes: run
    `pnpm sanity:migrate-content-dedup --dataset redesign` (dry run), then with `--apply`, once
-   (see "Content migrations").
+   (see "Content migrations"). Then, after the partner migration,
+   `pnpm sanity:migrate-org-references --dataset redesign` (dry run; check the unmatched names it
+   lists), then with `--apply`; run it again after the re-run before launch, for events and
+   research copied since.
 2. **Review.** Editors review and correct the content at `/studio` on a preview deployment with
    `NEXT_PUBLIC_SANITY_DATASET=redesign` (or locally with it in `.env.local`): the Site settings
    and both Application windows first (the open `TODO(content)` facts: the E-Lab window's open

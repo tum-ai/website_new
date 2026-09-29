@@ -48,9 +48,10 @@ events, partners and research (with the events' co-hosts) to `.sanity-backfill/<
 a maintainer's launch step, never part of a change (docs/adr/0009-cms-content-source.md).
 `pnpm sanity:migrate-partners --dataset redesign` (same guard) is a dry run that plans moving the
 copied partner documents onto organisations (partners are organisations with a `partnerTier`);
-its `--apply` is a launch step too. In the Claude sandbox, run `sanity:typegen`,
-`sanity:backfill` and `sanity:migrate-partners` unsandboxed (tsx and the Sanity CLI fail with
-EPERM there).
+its `--apply` is a launch step too, as are those of `pnpm sanity:migrate-content-dedup` and
+`pnpm sanity:migrate-org-references` (dry runs by default). In the Claude sandbox, run
+`sanity:typegen`, `sanity:backfill` and the `sanity:migrate-*` scripts unsandboxed (tsx and the
+Sanity CLI fail with EPERM there).
 
 ## Architecture
 
@@ -83,7 +84,8 @@ src/lib/                          cn, sanity-config, sanity client/queries/fetch
 src/sanity/                       Studio config, desk structure and schemas (TypeGen writes
                                   src/lib/sanity.types.generated.ts)
 scripts/sanity/                   backfill script, slice registry, copy from production, content
-                                  migrations (migrate-partners, migrate-content-dedup)
+                                  migrations (migrate-partners, migrate-content-dedup,
+                                  migrate-org-references)
 src/styles/index.css              tokens, tones, cascade layers, utilities
 src/proxy.ts                      host redirects (join.tum-ai.com to /apply)
 test/                             repo-wide fitness tests (content facts, assets, perf budget)
