@@ -250,9 +250,10 @@ export function lockupParts(title: string): string[] {
 export function hostsBeyondTitle(
   event: Pick<Event, "title" | "hosts">,
 ): string[] {
-  const title = event.title.toLowerCase();
+  // By text: in draft mode stega appends invisible characters to both.
+  const title = stegaClean(event.title).toLowerCase();
   return event.hosts.filter(
-    (host) => !title.includes(host.trim().toLowerCase()),
+    (host) => !title.includes(stegaClean(host).trim().toLowerCase()),
   );
 }
 

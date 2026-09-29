@@ -327,6 +327,16 @@ describe("hostsBeyondTitle", () => {
       }),
     ).toEqual(["CDTM"]);
   });
+
+  test("compares stega-encoded values in draft mode by their text", () => {
+    const cdtm = stegaEncode("CDTM", "event-1", "hosts");
+    expect(
+      hostsBeyondTitle({
+        title: stegaEncode("Anthropic x Lovable", "event-1", "title"),
+        hosts: [stegaEncode("Anthropic", "event-1", "hosts"), cdtm],
+      }),
+    ).toEqual([cdtm]);
+  });
 });
 
 describe("formatEventLocation", () => {
