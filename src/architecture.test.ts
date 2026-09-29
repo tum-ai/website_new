@@ -455,7 +455,12 @@ describe("client graph", () => {
    * mock loader. Islands take CMS values as props instead. This catches
    * the edge without a build.
    */
-  test('no "use client" module reaches a server-only module', () => {
+  // Parsing every module with TypeScript takes several seconds under
+  // coverage instrumentation, so this test (the first to build the graph)
+  // gets a longer timeout than the 5 s default.
+  test('no "use client" module reaches a server-only module', {
+    timeout: 30_000,
+  }, () => {
     const graph = moduleGraph();
     const islands = graph.files.filter((file) =>
       isClientModule(graph.sources.get(file) ?? ""),
@@ -496,8 +501,18 @@ type ModuleGraph = {
   edges: Map<string, string[]>;
 };
 
-/** The runtime import graph of every non-test module under src/. */
+let cachedGraph: ModuleGraph | undefined;
+
+/**
+ * The runtime import graph of every non-test module under src/, built once
+ * per run: the tests below only read it.
+ */
 function moduleGraph(): ModuleGraph {
+  cachedGraph ??= buildModuleGraph();
+  return cachedGraph;
+}
+
+function buildModuleGraph(): ModuleGraph {
   const files = sourceFiles(srcDir).filter(
     (file) => !/\.test\.tsx?$/.test(file),
   );
