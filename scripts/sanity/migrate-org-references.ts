@@ -22,7 +22,6 @@
  * organisations) and again after a backfill re-run copies new events or
  * research; it only fills empty fields.
  */
-import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -37,6 +36,7 @@ import {
   type PlanInput,
   planOrgReferences,
 } from "./org-references-plan";
+import { sanityExec } from "./sanity-exec";
 import { collectBackfill } from "./slices";
 
 /**
@@ -109,22 +109,12 @@ async function main() {
     process.stdout.write(
       `Migrating project "${projectId}", dataset "${dataset}" (published documents and drafts; input ${relative(root, inputFile)})...\n`,
     );
-    const applied = spawnSync(
-      join(root, "node_modules", ".bin", "sanity"),
-      [
-        "exec",
-        join(import.meta.dirname, "migrate-org-references-apply.ts"),
-        "--with-user-token",
-      ],
+    const applied = sanityExec(
+      join(import.meta.dirname, "migrate-org-references-apply.ts"),
       {
-        cwd: join(root, "src", "sanity"),
-        stdio: "inherit",
-        env: {
-          ...process.env,
-          MIGRATE_DATASET: dataset,
-          ORG_REFERENCES_INPUT: inputFile,
-          NEXT_PUBLIC_SANITY_PROJECT_ID: projectId,
-        },
+        MIGRATE_DATASET: dataset,
+        ORG_REFERENCES_INPUT: inputFile,
+        NEXT_PUBLIC_SANITY_PROJECT_ID: projectId,
       },
     );
     process.exit(applied.status ?? 1);
