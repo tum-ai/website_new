@@ -204,11 +204,10 @@
         flex: none;
       }
 
-      /* Centred on the logo, then raised a little: the same superscript
-         place beside every logo, whatever its height. */
+      /* Centred on the logo: the same place beside every logo, whatever
+         its height. */
       .events-reel .events-name-count {
         align-self: center;
-        margin-bottom: 0.5em;
         font-size: 0.32em;
         line-height: 1;
         letter-spacing: 0;
