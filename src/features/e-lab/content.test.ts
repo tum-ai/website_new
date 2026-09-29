@@ -12,6 +12,7 @@ import {
   ELAB_COPY_QUERY,
   getELabCopy,
   getELabFaqs,
+  selectStages,
 } from "./content";
 import { eLabCopyTemplate, eLabPageTokens } from "./data/copy";
 import { faq } from "./data/faq";
@@ -95,5 +96,50 @@ describe("the /e-lab copy", () => {
   test("sanity source over the backfill: the same copy", async () => {
     useSource("sanity");
     await expect(getELabCopy()).resolves.toStrictEqual(code);
+  });
+});
+
+describe("the CMS stages", () => {
+  const { stages } = fillCodeCopy(
+    eLabCopyTemplate,
+    contentTokens,
+    eLabPageTokens,
+  ).gates;
+  // The stages as the query returns them, before `toStage`.
+  const raw = stages.map(({ kind, ...stage }) => ({
+    _type: kind === "gate" ? "gateStage" : "phaseStage",
+    ...stage,
+  }));
+
+  test("a whole list is served as it is", () => {
+    expect(selectStages(raw, raw.length)).toStrictEqual(stages);
+  });
+
+  test.each([
+    ["a stage dropped for an unknown placeholder", raw.slice(1), raw.length],
+    [
+      "a gate figure missing",
+      raw.filter((stage) => !("figure" in stage) || stage.figure !== "midterm"),
+      raw.length - 1,
+    ],
+    [
+      "a gate figure twice",
+      raw.map((stage) =>
+        "figure" in stage && stage.figure === "midterm"
+          ? { ...stage, figure: "admitted" }
+          : stage,
+      ),
+      raw.length,
+    ],
+    [
+      "an incomplete stage",
+      raw.map((stage, index) => (index === 0 ? { ...stage, name: "" } : stage)),
+      raw.length,
+    ],
+  ])("%s keeps the code cohort", (_, list, fetched) => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    expect(selectStages(list, fetched)).toStrictEqual([]);
+    expect(warn).toHaveBeenCalled();
+    warn.mockRestore();
   });
 });

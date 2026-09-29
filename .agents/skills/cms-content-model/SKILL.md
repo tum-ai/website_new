@@ -178,6 +178,9 @@ proves the CMS path renders the same.
    editors changed.
 
 Gotchas: images in the mock are sized from the file header like Sanity does, so the code
-`ContentImage` must state the file's intrinsic size or parity fails; lists replace wholesale
+`ContentImage` must state the file's intrinsic size or parity fails; a structural list (one the
+page draws as a whole, like the E-Lab gates or the journey's fork) must fall back to the code list
+when `select` or `fillCmsCopy` drops any item, and check its invariants (every gate figure once,
+a two-step fork); lists replace wholesale
 (no per-item merge); the CMS cannot clear a value the fallback sets; content edits show after
 revalidation (no drafts or `SanityLive` for the content dataset yet).

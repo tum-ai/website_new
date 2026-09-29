@@ -92,6 +92,34 @@ function toStage({ _type, ...stage }: RawStage): StageCopy | null {
   return null;
 }
 
+/**
+ * The CMS stages, or `[]` (so the code cohort shows) unless the list is
+ * whole: no stage dropped by `fillCmsCopy` (an unknown placeholder; the
+ * query returned `fetched` stages), every stage complete, and each gate
+ * figure exactly once. The funnel draws the gates to scale against each
+ * other, so a missing or doubled gate would skew it. Exported for tests.
+ */
+export function selectStages(
+  stages: readonly RawStage[],
+  fetched: number,
+): StageCopy[] {
+  const complete = stages.map(toStage);
+  const gates = complete.flatMap((stage) =>
+    stage?.kind === "gate" ? [stage.figure] : [],
+  );
+  const whole =
+    stages.length === fetched &&
+    complete.every(Boolean) &&
+    gates.length === figures.length &&
+    figures.every((figure) => gates.includes(figure as GateFigure));
+  if (!whole && fetched > 0) {
+    console.warn(
+      "[cms-content] The E-Lab stages need every stage complete and each gate figure once; rendering the code cohort.",
+    );
+  }
+  return whole ? (complete as StageCopy[]) : [];
+}
+
 /** The /e-lab copy: the CMS `eLabCopy` over the code copy. */
 export async function getELabCopy(): Promise<ELabCopy> {
   const tokens = await getContentTokens();
@@ -111,14 +139,14 @@ export async function getELabCopy(): Promise<ELabCopy> {
         gates?: { stages?: RawStage[] };
       } | null;
       if (!copy?.gates) return copy;
-      const stages = (copy.gates.stages ?? []).map(toStage);
       return {
         ...copy,
         gates: {
           ...copy.gates,
-          // An incomplete stage drops the whole list, so the code cohort
-          // shows: a missing gate would skew the drawing.
-          stages: stages.every(Boolean) ? stages : [],
+          stages: selectStages(
+            copy.gates.stages ?? [],
+            result?.gates?.stages?.length ?? 0,
+          ),
         },
       };
     },

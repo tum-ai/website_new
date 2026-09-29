@@ -103,16 +103,24 @@ export function getMemberJourney(
     ],
     select: (result) => {
       const filled = fillCmsCopy(result, tokens, "the member journey");
-      const steps = (Array.isArray(filled) ? filled : [])
+      const raw = Array.isArray(filled) ? filled : [];
+      const steps = raw
         .map((step: Partial<JourneyStep>) => withResolvedEvidence(step))
         .filter(isJourneyStep);
-      const stages = groupJourneyStages(steps);
-      if (!stages) {
-        console.warn(
-          "[cms-content] The member journey has a stage with more than two steps; rendering the code journey.",
-        );
+      // The journey is structural: a dropped step (an unknown placeholder
+      // or a missing field) would collapse the fork /apply draws its two
+      // tracks from, so anything but the whole list keeps the code journey.
+      const stages =
+        steps.length === result.length ? groupJourneyStages(steps) : null;
+      if (!stages?.some((stage) => stage.kind === "fork")) {
+        if (result.length > 0) {
+          console.warn(
+            "[cms-content] The member journey needs every step complete, at most two steps per stage and one two-step fork; rendering the code journey.",
+          );
+        }
+        return null;
       }
-      return stages ?? null;
+      return stages;
     },
   });
 }

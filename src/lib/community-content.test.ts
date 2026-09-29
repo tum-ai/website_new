@@ -125,11 +125,28 @@ describe("getMemberJourney", () => {
     expect(served[2]).toMatchObject({ step: { name: "Lead a team" } });
   });
 
-  test("drops a step with an unknown icon or duration", async () => {
+  test.each([
+    ["an unknown icon", { iconKey: "star" }],
+    ["an unknown placeholder", { description: "Runs {{nope}}." }],
+  ])("a step with %s keeps the whole code journey", async (_, edit) => {
     useSanity();
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     tamper.edit = (document) =>
-      document.number === "03" ? { ...document, iconKey: "star" } : document;
-    expect(await getMemberJourney(journey, contentTokens)).toHaveLength(2);
+      document.number === "02B" ? { ...document, ...edit } : document;
+    await expect(
+      getMemberJourney(journey, contentTokens, { people }),
+    ).resolves.toStrictEqual(journey);
+    expect(warn).toHaveBeenCalled();
+  });
+
+  test("a journey without a two-step fork keeps the code journey", async () => {
+    useSanity();
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    // Every step in its own stage: /apply would draw no tracks.
+    tamper.edit = (document) => ({ ...document, stage: document.order });
+    await expect(
+      getMemberJourney(journey, contentTokens, { people }),
+    ).resolves.toStrictEqual(journey);
   });
 
   test("renders the code journey when a stage has three steps", async () => {

@@ -160,7 +160,9 @@ function clean(
  * - projected images become `ContentImage`s (`toContentImage`);
  * - text with an unknown placeholder is dropped (and logged): a field then
  *   shows the code copy; an object or list item that holds it is dropped as a
- *   whole, so no half-filled item reaches the page.
+ *   whole, so no half-filled item reaches the page. A slice whose list is
+ *   structural (the E-Lab stages, the member journey) compares the count
+ *   with the query result and keeps the code list when an item was dropped.
  *
  * `label` names the content in the log line; `keep` lists the page tokens
  * to leave for {@link fillPageTokens}.
