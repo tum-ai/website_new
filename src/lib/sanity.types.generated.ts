@@ -218,6 +218,32 @@ export type Slug = {
   source?: string;
 };
 
+export type QandaCopy = {
+  _id: string;
+  _type: "qandaCopy";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  heroTitle: string;
+  missionQuestion: string;
+  missionLead: string;
+  missionPassage: string;
+  closing?: {
+    title: string;
+    lead: string;
+    action: string;
+  };
+  forks?: {
+    students?: {
+      reader: string;
+      text: string;
+    };
+    companies?: {
+      reader: string;
+    };
+  };
+};
+
 export type Faq = {
   _id: string;
   _type: "faq";
@@ -254,7 +280,56 @@ export type AllSanitySchemaTypes =
   | SanityImageAsset
   | Geopoint
   | Slug
+  | QandaCopy
   | Faq;
+
+// Source: ../features/qanda/content.ts
+// Variable: QANDA_CONTENT_QUERY
+// Query: {  "copy": *[_id == "qandaCopy"][0]{    heroTitle,    missionQuestion,    missionLead,    missionPassage,    closing{ title, lead, action },    forks{ students{ reader, text }, companies{ reader } }  },  "faqs": *[_type == "faq" && collection == "qanda"] | order(order asc){    "id": anchor,    question,    answer,    points,    spans,    evidence{ text, label, href }  }}
+export type QANDA_CONTENT_QUERY_RESULT = {
+  copy:
+    | {
+        heroTitle: null;
+        missionQuestion: null;
+        missionLead: null;
+        missionPassage: null;
+        closing: null;
+        forks: null;
+      }
+    | {
+        heroTitle: string;
+        missionQuestion: string;
+        missionLead: string;
+        missionPassage: string;
+        closing: {
+          title: string;
+          lead: string;
+          action: string;
+        } | null;
+        forks: {
+          students: {
+            reader: string;
+            text: string;
+          } | null;
+          companies: {
+            reader: string;
+          } | null;
+        } | null;
+      }
+    | null;
+  faqs: Array<{
+    id: string | null;
+    question: string;
+    answer: string;
+    points: Array<string> | null;
+    spans: Array<string> | null;
+    evidence: {
+      text: string | null;
+      label: string | null;
+      href: string | null;
+    } | null;
+  }>;
+};
 
 // Source: ../lib/faq-content.ts
 // Variable: FAQ_QUERY

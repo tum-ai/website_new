@@ -5,19 +5,12 @@ import {
   SectionHeader,
   TextLink,
 } from "@/components/ds";
-import { faqs, missionPassage, missionQuestion } from "./data/qanda";
+import { segmentPassage } from "@/lib/passage-spans";
+import type { QandaCopy, QandaEntry } from "./data/qanda";
 import { type AnswerItem, MissionAnswers } from "./mission-answers";
-import { segmentPassage } from "./mission-spans";
-
-const segments = segmentPassage(
-  missionPassage,
-  faqs.flatMap((faq) =>
-    (faq.spans ?? []).map((text) => ({ id: faq.id, text })),
-  ),
-);
 
 /** The answer, its listed points and the fact that shows it. */
-function Answer({ faq }: { faq: (typeof faqs)[number] }) {
+function Answer({ faq }: { faq: QandaEntry }) {
   return (
     <>
       {faq.spans ? (
@@ -48,19 +41,30 @@ function Answer({ faq }: { faq: (typeof faqs)[number] }) {
   );
 }
 
-const items: AnswerItem[] = faqs.map((faq) => ({
-  id: faq.id,
-  question: faq.question,
-  answer: <Answer faq={faq} />,
-}));
-
 /**
  * The page's bold element: the mission paragraph as the context passage,
  * with the words that answer each question marked, beside the questions.
  * Opening a question marks its words in the passage.
  * Server markup for the copy, one island for the shared open state.
  */
-export function MissionSection() {
+export function MissionSection({
+  copy,
+  faqs,
+}: {
+  copy: Pick<QandaCopy, "missionQuestion" | "missionLead" | "missionPassage">;
+  faqs: readonly QandaEntry[];
+}) {
+  const segments = segmentPassage(
+    copy.missionPassage,
+    faqs.flatMap((faq) =>
+      (faq.spans ?? []).map((text) => ({ id: faq.id, text })),
+    ),
+  );
+  const items: AnswerItem[] = faqs.map((faq) => ({
+    id: faq.id,
+    question: faq.question,
+    answer: <Answer faq={faq} />,
+  }));
   return (
     <Section
       tone="paper"
@@ -72,10 +76,10 @@ export function MissionSection() {
       <Container>
         <SectionHeader
           id="mission-title"
-          title={missionQuestion}
+          title={copy.missionQuestion}
           size="lg"
           layout="stack"
-          lead="The short answer is above. The long one covers most of what people ask us: open a question and the words that answer it are marked."
+          lead={copy.missionLead}
         />
         <MissionAnswers
           segments={segments}

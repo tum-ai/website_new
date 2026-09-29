@@ -1,5 +1,6 @@
 import { defineField, defineType } from "sanity";
 import { placeholderHelp, validatePlaceholders } from "./fields";
+import { validateEntrySpans } from "./qanda-spans";
 
 /** The pages a FAQ entry can appear on. */
 export const faqCollections = [
@@ -20,7 +21,7 @@ const unlessQanda = ({ document }: { document?: Record<string, unknown> }) =>
  * Answers are plain text (the page renders them as one paragraph) with
  * `{{placeholders}}` for site facts. The Q&A-only fields (anchor, points,
  * mission spans, evidence) mirror `QandaEntry` in
- * `features/qanda/data/qanda.ts`; the /qanda page does not read them yet.
+ * `features/qanda/data/qanda.ts`, read by `features/qanda/content.ts`.
  */
 export const faqType = defineType({
   name: "faq",
@@ -64,14 +65,26 @@ export const faqType = defineType({
       description:
         "Q&A only: the link target, as in /qanda#<anchor>. Lowercase letters, digits and hyphens.",
       hidden: unlessQanda,
-      validation: (Rule) => Rule.regex(/^[a-z0-9-]+$/, { name: "anchor id" }),
+      validation: (Rule) =>
+        Rule.regex(/^[a-z0-9-]+$/, { name: "anchor id" }).custom(
+          (value, { document }) =>
+            document?.collection === "qanda" && !value
+              ? "The Q&A page needs an anchor id for every entry."
+              : true,
+        ),
     }),
     defineField({
       name: "points",
       title: "Points",
       type: "array",
-      of: [{ type: "string" }],
-      description: "Q&A only: points listed after the answer's first sentence.",
+      of: [
+        {
+          type: "string",
+          validation: (Rule) =>
+            Rule.custom((value) => validatePlaceholders(value)),
+        },
+      ],
+      description: `Q&A only: points listed after the answer's first sentence. ${placeholderHelp}`,
       hidden: unlessQanda,
     }),
     defineField({
@@ -80,8 +93,9 @@ export const faqType = defineType({
       type: "array",
       of: [{ type: "string" }],
       description:
-        "Q&A only: exact phrases of the mission passage that answer the question; the page marks them.",
+        "Q&A only: the words of the Q&A page's mission passage that answer the question, quoted exactly; the page marks them while the question is open. Each must occur once in the passage and must not overlap another entry's phrase. Leave empty when the passage doesn't answer the question: the page then links to it under the passage.",
       hidden: unlessQanda,
+      validation: (Rule) => Rule.custom(validateEntrySpans),
     }),
     defineField({
       name: "evidence",

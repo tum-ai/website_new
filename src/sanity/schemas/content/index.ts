@@ -1,4 +1,5 @@
 import { faqType } from "./faq";
+import { qandaCopyType } from "./qanda-copy";
 
 /**
  * The document types of the `content` workspace (the content dataset; see
@@ -13,6 +14,7 @@ export const contentSchemaTypes = [
   // Phase 3: organizations (logos) and people
 
   // Phase 4: page copy
+  qandaCopyType,
 ];
 
 /**
@@ -21,4 +23,7 @@ export const contentSchemaTypes = [
  * "create" and "duplicate" for them. Add `{ type, title }` when a singleton
  * type (for example `siteSettings`) joins `contentSchemaTypes`.
  */
-export const contentSingletons: readonly { type: string; title: string }[] = [];
+export const contentSingletons: readonly { type: string; title: string }[] = [
+  // Phase 4: page copy
+  { type: "qandaCopy", title: "Q&A page" },
+];
