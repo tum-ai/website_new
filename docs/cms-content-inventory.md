@@ -24,7 +24,10 @@ never blocks deleting the event; references between content types are normal ref
 
 The old site's types (`event`, `partner`, `research`) are not in this table: the backfill copies
 their published documents from `production` into `redesign` unchanged (same `_id`s), adding the
-events' `hosts` from `liveEventHosts` in `lib/mock-cms.ts`.
+events' `hosts` from `liveEventHosts` in `lib/mock-cms.ts`. The new site reads partners from
+`organization` instead (a partner is an organisation with a `partnerTier`);
+`pnpm sanity:migrate-partners` moves the copied `partner` documents onto organisations, and the
+Studio hides `partner` outside `production` (ADR 0009, "Partners are organisations").
 
 | Type | Kind | Holds | Owner |
 | --- | --- | --- | --- |
@@ -32,7 +35,7 @@ events' `hosts` from `liveEventHosts` in `lib/mock-cms.ts`.
 | `campaign` | list | `name`, start and end (Sanity dates plus Munich "HH:MM" times), the header CTA (`variant` key `member`/`partner`/`elab`/`notify`, optional `label`, `yieldsToRecruiting`), `notifyUrl`, `featuredEventId` (an event `_id` as a string); no priority: the latest start wins | done (A) |
 | `applicationWindow` | list | `program` (`membership`, `e-lab`), `roundName` or cohort, `switchedOn`, `opens`, `deadlineDate`, `deadlineTime` (Munich), `applicationUrl`, `milestones[]` (`key` such as `interviews`/`onboarding`, `from`, `to`), `nextWindowLabel` | done (A) |
 | `siteSettings` | singleton | organization figures, `brandMission`, role emails, social links, booking page and host, community and impact figures, E-Lab program facts (length, funding, selection funnel, hero logo), footer tagline, header CTA fallback | done (A) |
-| `organization` | list | `name`, `key` (kebab-case; pages match its letters and digits), `shortName`, `href`, `logo` and optional `logoOnDark` (image with `alt`, `symbolOnly`, `aspectRatio`); one document per company, reused by every surface | done (B) |
+| `organization` | list | `name`, `key` (kebab-case; pages match its letters and digits), `shortName`, `href`, `logo` and optional `logoOnDark` (image with `alt`, `symbolOnly`, `aspectRatio`); the "Partnership" group: `partnerTier` (set = a partner), `partnerFeatured`, `partnerCategory`, hidden `legacyPartnerId` (the old `partner` document's id, which `/api/getPartners` returns); one document per company, reused by every surface | done (B) |
 | `logoList` | list, fixed ids | `surface` (`alumni-destinations`, `partner-marquee`, `e-lab-ventures`, `event-hosts`, `rex-institutions`), `organizations[]` (references, in page order); one document per section, `_id` `logolist-<surface>`. Membership and order live here, not on the organisation, because one organisation appears in several sections in different places | done (B) |
 | `person` | list | `placement` (`member-story`, `partner-profile`, `e-lab-testimonial`; one per document, since role and portrait differ per page), `key` (the id code picks by), `order`, `name`, `role`, `context`, `quote` or `story`, `portrait` (hotspot = position), `organization` (reference, testimonials) | done (B) |
 | `caseStudy` | list | partner case studies: `organization`, `metric`, `label`, `summary`, `copy`, `attribution`, `image` | done (B) |
@@ -84,11 +87,11 @@ fields, and each owner defines its own schema file.
 
 | Content | Source | Consumers | Decision | Owner |
 | --- | --- | --- | --- | --- |
-| Partner directory fallback | `partners/data/partner-logos.ts`: `featuredPartners` (18) | `partners/partner-directory.ts` → home hero, home partners, partners page | **keep** as the fallback of the `partner` type (never add `partner` documents to production); logo overrides by `key` via `organization` if needed | B |
+| Partner directory | `partners/data/organizations.ts`: every organisation with a `partnership` (62: the 18 highlighted with tiers, the old site's other partners as supporters); `partnerLaunchOrder` | `getPartners()` → home hero, home partners, partners page, /research (research partners), `/api/getPartners` from the CMS | **done**: `organization` (`partnerTier`, `partnerFeatured`, `partnerCategory`); replaces `featuredPartners` and, on the new dataset, the `partner` type | B |
 | Symbol-only logos | `partners/data/partner-logos.ts`: `symbolOnlyLogos` | `partner-tile.tsx`, `partner-marquee.tsx`, home partners | **done**: `organization.symbolOnly` | B |
 | Alumni destinations | `partners/data/partner-logos.ts`: `alumniDestinations` (11) | `partners/sections/people-section.tsx` | **done**: `organization` (`roles: alumniDestination`) | B |
 | Marquee logos (on dark) | `partners/data/partner-marquee-logos.ts`: `marqueeLogos` (18) | `partner-marquee.tsx`, home hero | **done**: `organization.logoOnDark` (`roles: marquee`) | B |
-| Partner directory logic | `partners/partner-directory.ts` (alias map, tier order, merge), `partner-rotation.ts` | partners, home | **keep**: logic | B |
+| Partner directory logic | `partners/partner-directory.ts` (alias map, `partnerOf`, tier and launch order), `partner-rotation.ts` | partners, home | **keep**: logic | B |
 | Partner profiles | `partners/data/partners.ts`: `partnerProfiles` (3) | `people-section.tsx` | **done**: `person` (`placements: partnerProfile`) | B |
 | Case studies | `partners/data/partners.ts`: `partnerCaseStudies` (3) | `cases-section.tsx`, home partners | **done**: `caseStudy` | B |
 | Partners page copy and funnel | `partners/data/partners.ts`: `partnershipIntents`, `partnershipDurations`, `recommendations`, `partnerReasons`, `partnerStats`, `partnerPillars`, `partnerPitch`; inline copy in `partners/sections/*`, `partnership-finder.tsx`, `booking-dialog.tsx`, `contact-actions.tsx`, `partner-marquee.tsx`, `partner-tier.tsx`, `partner-supporters.tsx`; mail texts in `partnerships.ts` | partners page; `partnerPitch` also in apply, community, qanda closings | **done**: `partnersCopy` for the pitch (read by every closing), finder answers, reasons, stats and pillars (pillar figures derived from the site facts; icons as keys); the section headings, leads and labels in `partnersCopy.sections` (headings set on fixed lines as line lists, the hero title animating line by line), the finder questions and the booking dialog's words in `partnersCopy.prompts` (through `PartnershipProvider` to the islands); interface labels ("Book a call", "Request via email", the step names) and mail templates stay in code | B |
@@ -139,7 +142,7 @@ fields, and each owner defines its own schema file.
 | Standing CTA labels | `config/calls-to-action.ts` ("Become a Member", "Become a Partner", "Apply now", "Questions and answers") | they name destinations, like the menu; one owner keeps every page consistent |
 | Logic with embedded wording | `apply/round.ts` status lines and date notes, `config/e-lab.ts` phase copy, the events hero's counted lead, `e-lab/data/venture-page.ts` `tracedVentureLead`, `events/events.ts`, `events/filters.ts`, `partners/partnerships.ts` mail templates, `research/research.ts` | grammar follows dates and counts; tied to code paths and tests |
 | JSON-LD facts | `config/seo.ts` (emails, social links, E-Lab summary, organisation figures) | SEO structure and synchronous metadata; reads the code facts (a follow-up could pass the render's facts) |
-| Event, partner and research mock fixtures | `lib/mock-cms.ts` | test data for events, research, partners; its `liveEventHosts` is the source of the co-hosts the backfill adds to the copied events |
+| Event and research mock fixtures | `lib/mock-cms.ts` | test data for events and research (partners are organisations: the mock queries their backfill); its `liveEventHosts` is the source of the co-hosts the backfill adds to the copied events |
 | Design system showcase | `features/design-system/*` | development only |
 
 ## Assets (`public/assets/`)
@@ -157,7 +160,7 @@ the Sanity CDN; the files stay in the repository as long as a code fallback uses
 | `events/hosts/` | 13 logos (sources: `docs/asset-sources/events-hosts.md`) | `events/data/host-logos.ts` (dynamic paths) | B |
 | `homepage/` | 8 photos | home, departments, partners pillars, research figure, e-lab kickoff | C (partners pillars: B) |
 | `innovation/` | 6 photos | projects, home programs, research figure | C |
-| `partners/` (`hero.webp`, `cases/`, `logos/`, `marquee/`, `people/`) | 1, 3, 22, 14, 6 | partners page, host logos | B |
+| `partners/` (`hero.webp`, `cases/`, `logos/`, `marquee/`, `people/`) | 1, 3, 62, 14, 6 | partners page, homepage, /research, host logos | B |
 | `research/rex/` | 4 logos | `research/data/rex.ts` | B |
 
 Unreferenced today: `partners/logos/osapiens.svg`, `partners/logos/entire.svg`,
@@ -221,7 +224,8 @@ Content one stream moved but another stream's file rendered, wired after the thr
 - Member stories (B) in `semester-plan.tsx`, `member-stories.tsx`, `apply/tracks.tsx` and
   `home/join-section.tsx`, passed from the page components.
 - REX institutions (B) on /research and in the home programs; the REX copy in `researchCopy`.
-- Partner artwork (B) in the home hero and partner wall (`getPartnerLogos()`), `partnerPitch` as
+- Partner artwork (B) in the home hero and partner wall (`getPartnerLogos()`), the partners
+  themselves (`getPartners()`) on the homepage and /research, `partnerPitch` as
   `getPartnersCopy().pitch` in the apply, community and qanda closings.
 - Lab sites (C): `getLabSites(names, await getLabSiteList())`.
 - Inline copy in A's and B's files into `applyCopy`, `eLabCopy`, `communityCopy.stories`,

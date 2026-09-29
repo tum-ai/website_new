@@ -15,8 +15,9 @@ paths:
 # Sanity CMS, data fetching and API routes
 
 One dataset (docs/adr/0009-cms-content-source.md): `NEXT_PUBLIC_SANITY_DATASET`, `redesign` for
-the new site, holds the copies of the old site's events, research projects and partners
-(`lib/sanity.ts`) and the page content moving out of code, read through content slices
+the new site, holds the copies of the old site's events and research projects (`lib/sanity.ts`)
+and partners (which only the partner migration and the API's fallback read: partners are
+organisations with a `partnerTier`), and the page content moving out of code, read through content slices
 (`lib/cms-content.ts`) behind `CMS_CONTENT_SOURCE` (`code` by default). The default when unset is
 `production`, the old site's dataset: `main` renders it, nothing here writes to it, and page
 content never goes there (`datasetHoldsPageContent` in `lib/sanity-config.ts`: the Studio drops
@@ -37,8 +38,8 @@ Git.
   (`personId`, `organizationId`), and the slice's `mockDocuments` include the target documents so
   the mock resolves it.
 - **Cache tags:** a slice's `tags` name `content:<type>` for every type its query reads,
-  dereferenced ones included (`lib/cache-tags.ts`); the event, partner and research getters use
-  `liveCacheTags`.
+  dereferenced ones included (`lib/cache-tags.ts`); the event and research getters use
+  `liveCacheTags` (the partners, organisations, `content:organization`).
   `/api/revalidate` (a Sanity webhook, `SANITY_REVALIDATE_SECRET`) expires them on publish; a
   missing tag means that page ignores the type's edits until its timer (at most an hour: the site
   layout's `revalidate = 3600` safety net).
@@ -54,10 +55,16 @@ Git.
   removed (`scripts/sanity/repair-assets.ts`); `--apply --overwrite` replaces existing ones with
   the code content or the copy and **discards editors' edits**. Backfill ids come from explicit
   keys in the code data (`id`/`key`), never from text.
+- **Partners:** an `organization` with a `partnerTier` (code: the `partnership` in
+  `features/partners/data/organizations.ts`; getter `getPartners()`). `partner` stays registered
+  everywhere, but the Studio hides it outside `production`. `pnpm sanity:migrate-partners
+  --dataset redesign` is a dry run that plans moving the copied `partner` documents onto
+  organisations (`scripts/sanity/partner-migration.ts`); like the backfill, never run its
+  `--apply` as part of a change.
 - **Studio:** one workspace at `/studio` on `NEXT_PUBLIC_SANITY_DATASET` (`studioConfig` in
   `src/sanity/sanity.config.ts`) with Presentation; the content types and the merged desk
   (`siteStructure` in `src/sanity/content-structure.ts`) only when the dataset is not
-  `production`.
+  `production` (on those, "Partners" lists the organisations with a partner tier).
 
 - **Change flow** (the `cms-content-model` skill has the steps): schema in `src/sanity/schemas/`,
   then the GROQ query in `src/lib/sanity-queries.ts` (wrapped in `defineQuery`), then
@@ -68,7 +75,7 @@ Git.
   `src/lib/types.ts` derives the app types from it. CI's Typecheck job runs
   `pnpm sanity:typegen:check` and fails when the file is stale.
 - **Fetching:** `src/lib/sanity.ts` is `server-only`. Pages call its getters
-  (`getSanityEvents`, `getSanityResearchProjects`, `getSanityPartners`), which return `[]` when
+  (`getSanityEvents`, `getSanityResearchProjects`), which return `[]` when
   Sanity is not configured or a fetch fails (logged), and the fixtures when the build had
   `USE_MOCK_CMS=1`.
 - **Tokens:** `SANITY_API_READ_TOKEN` stays on the server. Never pass it to `browserToken` or a
@@ -77,7 +84,9 @@ Git.
   401 for a wrong secret); `/api/draft-mode/disable` redirects to same-origin paths only.
 - **Public API:** `/api/getNotes` (returns events), `/api/getPartners`, `/api/getResearch` are
   consumed outside this repo. They use their own frozen `PUBLIC_*` queries; keep response shapes
-  stable and serve the published perspective.
+  stable and serve the published perspective. `/api/getPartners` answers from the partner
+  organisations (`id` = `legacyPartnerId`) on a dataset with page content, and from the `partner`
+  documents on `production` or while no organisation has a tier (`getPublishedPartners`).
 - **Mock CMS:** fixtures follow the query projections exactly, use neutral links and shipped
   assets, and contain no personal data. `USE_MOCK_CMS` is inlined at build time
   (`next.config.ts`), and the gate is off on Vercel. Fixture dates are relative to `MOCK_CMS_NOW`

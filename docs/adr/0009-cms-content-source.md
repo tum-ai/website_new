@@ -103,6 +103,51 @@ item:
 - a Q&A anchor id must be well formed, unique and not an id the layout or /qanda renders
   (`reservedQandaIds`), because it is the question's element id.
 
+### Partners are organisations
+
+On every dataset but `production`, a partner is an `organization` with a `partnerTier`, not a
+`partner` document. The organisation already held one company's name, link and logos for every
+surface; the `partner` type repeated them, and its tiers lived only in code (`featuredPartners`),
+so a tier set in the Studio never reached the homepage. The organisation's "Partnership" group
+holds `partnerTier` (gold, silver, bronze, supporter; set means "is a partner"),
+`partnerFeatured` ("lead its tier"), `partnerCategory` (the old site's five categories, for
+/research and the API) and a hidden `legacyPartnerId`.
+
+- **Code fallback:** `features/partners/data/organizations.ts` holds every partner: the 18
+  highlighted ones with their tiers and the old site's 56 `partner` documents (54 companies) as
+  supporters with their category, link and logo (`docs/asset-sources/partners.md`). MIT, a
+  research partner, moved there from the REX list, which picks it by key.
+- **Readers:** the organisation slice's `getPartners()` (`features/partners/server.ts`, tag
+  `content:organization`) feeds /partners, the homepage hero and partner wall, and /research
+  (the "Research Partners" category). The directory sorts by tier, "lead its tier", the launch
+  brief's order (`partnerLaunchOrder`), then name.
+- **Public API:** `/api/getPartners` keeps its frozen shape. On a dataset with page content it
+  answers from the partner organisations (`PUBLIC_PARTNER_ORGANIZATIONS_QUERY`) with
+  `id` = `legacyPartnerId`, the `_id` of the old `partner` document the organisation replaced,
+  so consumers keep the ids they know; an organisation without one (a highlighted partner the old
+  site never had, or a partner added since) answers with its own `_id`. While no organisation
+  has a tier (before the migration) it answers from the copied `partner` documents, and on
+  `production` it always does. IBM and CDTM had two `partner` documents each (one per category);
+  each is one organisation now, so the API lists 54 partners instead of 56, and the merged
+  documents' ids and categories are gone (IBM keeps "Research Partners", CDTM "Initiatives").
+- **Studio:** `partner` stays registered on every dataset (the old site reads it on
+  `production`; the migration and the API's fallback read the copies), but on the new site's
+  dataset the desk hides it and offers no way to create one; "Partners" lists the organisations
+  with a tier instead.
+- **Migration:** `pnpm sanity:migrate-partners --dataset redesign` (`scripts/sanity/`; same
+  target guard as the backfill, `production` refused) moves the copied `partner` documents onto
+  organisations: per company it finds the organisation by key and sets only the fields it lacks
+  (tier, category, featured, `legacyPartnerId`, and a website and light logo when missing), or
+  creates the organisation from its code document (from the `partner` document when the code
+  has none). Values an editor set on the `partner` document (tier, featured, category, link) win
+  over the code's. An organisation that already has a `legacyPartnerId` gets no partnership
+  fields again, so a tier an editor cleared stays cleared (a highlighted partner the old site
+  never had has no such marker: a re-run gives it its code tier back). It is a dry run by default
+  (public API, no token; the plan goes to `.sanity-backfill/<dataset>.partner-migration.json`);
+  `--apply` carries that plan out through `sanity exec --with-user-token` with
+  `createIfNotExists` and `setIfMissing` on the published document and its draft, uploading the
+  code's logo files.
+
 ### Content slices
 
 Each domain owns a slice next to its data: `features/<x>/content.ts` (or
@@ -195,7 +240,8 @@ assets converted, drafts skipped, hosts matched, `_id`s kept.
 `src/app/studio/[[...tool]]`) on `NEXT_PUBLIC_SANITY_DATASET`, with Presentation for draft
 previews. On every dataset but `production` it registers the page content types too, with one desk
 structure (`siteStructure` in `src/sanity/content-structure.ts`): Events (latest first), Partners
-and Research projects, then the pinned singletons (fixed `_id`, no create, duplicate or delete),
+(the organisations with a partner tier; the `partner` type is hidden there) and Research projects,
+then the pinned singletons (fixed `_id`, no create, duplicate or delete),
 the application windows and campaigns, FAQs by page, logos and people, and every other type.
 Stega's `studioUrl` is `/studio`. TypeGen extracts that one workspace (with a placeholder dataset
 name, so the content types are included); there is nothing to merge.
@@ -204,8 +250,8 @@ name, so the content types are included); there is nothing to merge.
 
 - The `code` source is the default everywhere, so this change and every slice that follows ship
   without a visible difference until the environment flips.
-- Drafts, Presentation's click-to-edit and live updates cover events, partners and research only
-  (`lib/sanity.ts`); the page content is read without draft mode or `<SanityLive>` (follow-up:
+- Drafts, Presentation's click-to-edit and live updates cover events and research only
+  (`lib/sanity.ts`); the page content, partners included (they are organisations), is read without draft mode or `<SanityLive>` (follow-up:
   route `fetchContent` through `sanityFetch`, with stega kept off the values the pages validate).
   Content edits appear when a page revalidates, which the Sanity webhook on `/api/revalidate`
   triggers on publish by expiring the changed type's `content:<type>` tag (static routes
@@ -237,7 +283,8 @@ name, so the content types are included); there is nothing to merge.
 - **Two copies of the old site's content until launch.** Edits made in `production` after the
   first import do not reach `redesign` (only new documents do, on a re-run). Ask editors to hold
   event, partner and research edits between the last re-run and the switch, or to repeat them in
-  the new Studio.
+  the new Studio. For partners the migration adds only what an organisation lacks, so a tier or
+  category changed in `production` after it ran has to be changed on the organisation.
 
 ## Launch runbook
 
@@ -255,6 +302,9 @@ exists (public) and already holds the page content from the first backfill.
    documents only (`--missing`); never add `--overwrite` once editors have started, because it
    replaces their documents. **Re-run it right before launch** to copy the events, partners and
    research projects added to `production` since (edits to copied ones are not re-copied).
+   Then move the partners onto organisations: `pnpm sanity:migrate-partners --dataset redesign`
+   (a dry run; review the plan it prints), then the same with `--apply`. Run it again after the
+   re-run before launch, for partners added since; it only fills what is missing.
 2. **Review.** Editors review and correct the content at `/studio` on a preview deployment with
    `NEXT_PUBLIC_SANITY_DATASET=redesign` (or locally with it in `.env.local`): the Site settings
    and both Application windows first (the open `TODO(content)` facts: the E-Lab window's open

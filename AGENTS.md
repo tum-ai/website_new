@@ -45,9 +45,12 @@ change (CI fails when it's stale; `pnpm sanity:typegen:check` shows it locally).
 command: it writes the content slices' documents plus a read-only copy of `production`'s published
 events, partners and research (with the events' co-hosts) to `.sanity-backfill/<dataset>.ndjson`
 (a dry run; needs `NEXT_PUBLIC_SANITY_PROJECT_ID`); its `--apply` imports them into Sanity and is
-a maintainer's launch step, never part of a change (docs/adr/0009-cms-content-source.md). In the
-Claude sandbox, run `sanity:typegen` and `sanity:backfill` unsandboxed (tsx and the Sanity CLI
-fail with EPERM there).
+a maintainer's launch step, never part of a change (docs/adr/0009-cms-content-source.md).
+`pnpm sanity:migrate-partners --dataset redesign` (same guard) is a dry run that plans moving the
+copied partner documents onto organisations (partners are organisations with a `partnerTier`);
+its `--apply` is a launch step too. In the Claude sandbox, run `sanity:typegen`,
+`sanity:backfill` and `sanity:migrate-partners` unsandboxed (tsx and the Sanity CLI fail with
+EPERM there).
 
 ## Architecture
 
@@ -78,7 +81,8 @@ src/lib/                          cn, sanity-config, sanity client/queries/fetch
                                   use-media-query, security, redirects
 src/sanity/                       Studio config, desk structure and schemas (TypeGen writes
                                   src/lib/sanity.types.generated.ts)
-scripts/sanity/                   backfill script, slice registry, copy from production
+scripts/sanity/                   backfill script, slice registry, copy from production, partner
+                                  migration
 src/styles/index.css              tokens, tones, cascade layers, utilities
 src/proxy.ts                      host redirects (join.tum-ai.com to /apply)
 test/                             repo-wide fitness tests (content facts, assets, perf budget)
@@ -211,9 +215,9 @@ Hard rules:
   dataset, `NEXT_PUBLIC_SANITY_DATASET` (`redesign` for the new site), and merges it over the
   fallbacks; with `USE_MOCK_CMS=1` it queries the backfill documents locally. On `production`
   (the default, the old site's dataset) the Studio has no content types and `sanity` renders the
-  code content, logged once: page content never goes there. Drafts and `SanityLive` cover events,
-  partners and research only. A slice tags its query `content:<type>` for every
-  type it reads (`lib/cache-tags.ts`): the Sanity webhook at `/api/revalidate`
+  code content, logged once: page content never goes there. Drafts and `SanityLive` cover events
+  and research only (partners are organisations, page content). A slice tags its query
+  `content:<type>` for every type it reads (`lib/cache-tags.ts`): the Sanity webhook at `/api/revalidate`
   (`SANITY_REVALIDATE_SECRET`) expires those tags on publish.
 - **Draft mode and Studio.** Presentation in `/studio` enables drafts via `/api/draft-mode/enable`,
   which needs `SANITY_API_READ_TOKEN` (server only; never expose it to the browser; 503 without
