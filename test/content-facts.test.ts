@@ -10,7 +10,7 @@ import {
   eLabProgramSummary,
   isApplicationWindowOpen,
 } from "../src/config/e-lab.ts";
-import { membershipConfig } from "../src/config/membership.ts";
+import { recruitingTimeline } from "../src/config/membership.ts";
 import {
   officialMembers,
   organizationFacts,
@@ -93,9 +93,9 @@ test("member figures add up and feed the partner stats", () => {
 
 test("the Apply FAQ timeline comes from the recruiting config", () => {
   const timeline = applyFaq.find(
-    (item) => item.question === "How does the application timeline look like?",
+    (item) => item.question === "What does the application timeline look like?",
   );
-  for (const window of Object.values(membershipConfig.timeline)) {
+  for (const window of Object.values(recruitingTimeline)) {
     expect(timeline?.answer, window).toContain(window);
   }
 });
@@ -122,6 +122,11 @@ const hardcodedFacts: [RegExp, string][] = [
     "social links: config/contact.ts",
   ],
   [/tally\.so\/r\//, "application forms: config/e-lab.ts or membership.ts"],
+  [
+    // A typed date range such as "September 24th - October 27th".
+    /\b(?:january|february|march|april|may|june|july|august|september|october|november|december) \d{1,2}(?:[a-z]{2})? ?(?:-|to|until) ?(?:january|february|march|april|may|june|july|august|september|october|november|december|\d)/i,
+    "recruiting round dates: membershipConfig.round in config/membership.ts",
+  ],
   [
     // Anchored per line (`m`); the first group is the reported literal.
     /^.*?(https?:\/\/(?:www\.)?tum-ai\.com)(?![\w.-])/m,

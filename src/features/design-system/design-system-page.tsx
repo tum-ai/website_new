@@ -21,6 +21,7 @@ import {
   CtaBand,
   CtaPanel,
   cardStyles,
+  DayRuler,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -38,6 +39,7 @@ import {
   Highlight,
   IconBadge,
   IndexList,
+  KeyDates,
   Ledger,
   LogoTile,
   LogoWall,
@@ -530,6 +532,16 @@ export function DesignSystemPage() {
             sizes="(min-width: 768px) 30vw, 100vw"
           />
         </div>
+        <div className="mt-6">
+          <Label>Photo · panorama (4/3, 2/1 from sm, 24/7 from lg)</Label>
+          <Photo
+            aspect="panorama"
+            src="/assets/apply/new_section_photo_1.webp"
+            alt="A batch of members in winter jackets in front of a baroque building"
+            caption="aspect panorama, position 50% 45%"
+            position="50% 45%"
+          />
+        </div>
         <div className="mt-4 grid items-start gap-4 md:grid-cols-3">
           <MediaCard
             image={{ alt: "" }}
@@ -876,6 +888,68 @@ export function DesignSystemPage() {
             </AccordionPanel>
           </AccordionItem>
         </Accordion>
+      </Block>
+
+      <Block
+        id="key-dates"
+        title="Key dates and day ruler"
+        lead="KeyDates sets a round's important dates as a call for papers does: passed dates struck through, the next in the accent. DayRuler shows how much of a window of days is gone."
+      >
+        <div className="grid gap-12 lg:grid-cols-2">
+          <div>
+            <Label>KeyDates md, drawIn · DayRuler md</Label>
+            <KeyDates
+              drawIn
+              items={[
+                {
+                  id: "opens",
+                  label: "Applications open",
+                  date: "28 Sep",
+                  state: "past",
+                },
+                {
+                  id: "deadline",
+                  label: "Application deadline",
+                  detail: "23:59, Munich time",
+                  date: "27 Oct",
+                  state: "next",
+                  note: "26 days left",
+                },
+                { id: "interviews", label: "Interviews", date: "2 - 8 Nov" },
+              ]}
+            />
+            <DayRuler
+              className="mt-8"
+              days={29}
+              elapsed={3}
+              startLabel="Opened 28 Sep"
+              endLabel="Deadline 27 Oct"
+              markLabel="Today"
+            />
+          </div>
+          <div>
+            <Label>KeyDates lg, one row · DayRuler lg</Label>
+            <KeyDates
+              size="lg"
+              items={[
+                {
+                  id: "deadline",
+                  label: "Application deadline",
+                  date: "27 Oct",
+                  state: "next",
+                  note: "in 26 days",
+                },
+              ]}
+            />
+            <DayRuler
+              className="mt-8"
+              size="lg"
+              days={29}
+              elapsed={22}
+              markLabel="7 days left"
+            />
+          </div>
+        </div>
       </Block>
 
       <Block id="process" title="Timeline and steps">

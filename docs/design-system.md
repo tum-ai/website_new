@@ -158,9 +158,11 @@ Page patterns
 - `CtaPanel`: the panel surface of `CtaBand` on its own (ink, aurora, grain, logomark), for places a whole band can't go, such as a bento cell.
 - `FaqSection`: sticky heading beside an accordion, with an eyebrow `index` and `defaultValue` (questions that start open). `FaqList` renders the accordion on its own and takes `defaultValue` too.
 - `Timeline`: a vertical rail that fills as you scroll (static under reduced motion). `alternate` zig-zags the items; `rail="dashed"`, `marker="number"` and `continuation` cover the E-Lab program.
-- `Steps`: a numbered process, with `rail` (`solid`, `dashed`, `none`), `marker` (`badge`, `dot`) and an optional per-step `number` (e.g. "02A"). `layout="rows"` sets each step as a hairline row with the number beside it, for steps that are sentences.
+- `Steps`: a numbered process, with `rail` (`solid`, `dashed`, `none`), `marker` (`badge`, `dot`), an optional per-step `number` (e.g. "02A") and a `detail` line under the title (such as the step's dates). `layout="rows"` sets each step as a hairline row with the number beside it, for steps that are sentences.
 - `StatGrid`: numeric values count up when they scroll into view (sizes `sm`–`xl` on the `text-stat-*` tokens); strings render as they are, or count with `count`.
 - `Ledger`: key figures as an annual-report ledger, one hairline row per figure with its label and a `note` on the left and the figure right-aligned (`size` `md` or `lg`). Same figure rules as `StatGrid`.
+- `KeyDates`: a round's important dates as a call for papers sets them. One hairline row per date, the label (and a `detail` line) on the left and the date in light figures on the right. Each row's `state` (`past`, `next`, `upcoming`) comes from the caller's own clock: past dates are struck through and say "(passed)" to screen readers, and the next one is in the accent with its `note`. `size` `md` or `lg`; `drawIn` draws the strikes once on load (above the fold).
+- `DayRuler`: a window of days as a ruler, with one tick per day, taller week ticks, and a fill and mark up to today (`days`, `elapsed`, optional `startLabel`, `endLabel` and a `markLabel` over today's mark, `size` `md` or `lg`, `drawIn`). It is decorative, so say the same thing in text beside it ("26 days left").
 - `IndexList`: a typographic index of destinations. Full-width link rows (large light title, one line of description, optional `detail`, an arrow); from `lg` a sticky photo beside the list follows the hovered or focused row and the other rows dim. Below `lg` each row shows its photo as a thumbnail.
 - `BrandPanel`: the branded placeholder for a missing image.
 - `TopBlend`: eases a dark band's edge into the root canvas (see [browser-quirks.md](browser-quirks.md)).
@@ -182,7 +184,7 @@ Content
 - `CornerHint`: the corner disc that says what a click does (`icon` `arrow` or `open`), for cards that aren't `MediaCard`.
 - `FallbackImage`: next/image that swaps to a fallback when it fails to load.
 - `QuoteCard` (`raised` or `glass`, with `context` and `footer` slots; `editorial` sets one quote in display type without a card) and `QuoteMark`.
-- `Photo`: a documentary photo in the brand frame with a factual `caption` (a `figure`). `aspect` (`3/2` default, `4/3`, `16/10`, `4/5`, `1/1`), `shape` (`rounded` = `rounded-4xl`, or `bleed`), `position` for the crop, and `eager` for the LCP photo (high fetch priority, no preload tag). Use it instead of hand-rolled image frames; `MediaCard` is for linked cards with text on or under the photo.
+- `Photo`: a documentary photo in the brand frame with a factual `caption` (a `figure`). `aspect` (`3/2` default, `4/3`, `16/10`, `4/5`, `1/1`, and `panorama` for wide group shots: 4/3, then 2/1 from `sm` and 24/7 from `lg`), `shape` (`rounded` = `rounded-4xl`, or `bleed`), `position` for the crop, and `eager` for the LCP photo (high fetch priority, no preload tag). Use it instead of hand-rolled image frames; `MediaCard` is for linked cards with text on or under the photo.
 - `PersonCard`: portrait, name and `byline`; `image.position` keeps a face in frame, and `unoptimized` serves the portrait as is.
 - `LogoTile`, `LogoWall`: logos as tiles (`size` `sm` to `xl`, `responsive` for one step smaller on phones), `variant="chip"` (with `fixed` width so rows don't reflow), `variant="bare"` for artwork made for dark bands, `variant="mono"` for light-background artwork in greyscale on light bands, links, or a `wordmark` lockup, with a name fallback when the artwork fails. `LogoWall layout="strip"` sets `mono` logos in one wrapping row, each sized to the same area from its `aspectRatio`.
 - `BulletList`: a short list of points as raised rows with an accent dot (for example inside an FAQ answer).
@@ -684,7 +686,7 @@ No props of its own; see the source file for the root element or Base UI part it
 | `src` | `string` | Image path under /public or an allowed remote URL. |
 | `alt` | `string` | What the photo shows, for screen readers. Required: photos carry content. Screen readers read it before the caption, so describe what the caption leaves out rather than repeating it. |
 | `caption?` | `ReactNode` | A factual caption under the photo: what, where and when. Never a slogan; leave it out rather than guess. |
-| `aspect?` | `"3/2" \| "4/3" \| "16/10" \| "4/5" \| "1/1"` | Aspect ratio of the frame; the photo is cropped to fill it. Default `3/2`. |
+| `aspect?` | `"3/2" \| "4/3" \| "16/10" \| "4/5" \| "1/1" \| "panorama"` | Aspect ratio of the frame; the photo is cropped to fill it. `panorama` is for wide group shots: 4:3 on phones, 2:1 from `sm` and 24:7 from `lg`. Default `3/2`. |
 | `shape?` | `"rounded" \| "bleed"` | `rounded` is the brand's large photo radius; `bleed` has square corners for photos that run to the edge. Default `rounded`. |
 | `position?` | `string` | `object-position` of the crop, e.g. "50% 30%" to keep faces in frame. |
 | `sizes?` | `string` | Responsive `sizes` for next/image. Default: the full viewport width. |
@@ -731,6 +733,28 @@ No props of its own; see the source file for the root element or Base UI part it
 | `items` | `IndexListItem[]` | The destinations, in reading order. |
 | `headingAs?` | `HeadingLevel` | Heading level of each title. Default `h3`. |
 | `className?` | `string` | Classes merged over the wrapper. |
+
+### `KeyDates`
+
+| Prop | Type | Description |
+| --- | --- | --- |
+| `items` | `KeyDateItem[]` | The dates, in calendar order: `id`, `label`, `date` (as shown), optional `dateTime` (ISO, for `<time>`), `detail`, `state` (`past` \| `next` \| `upcoming`, default `upcoming`) and `note` (shown beside the `next` date). |
+| `size?` | `"md" \| "lg"` | `md` beside a headline; `lg` when the dates are the band's content. Default `md`. |
+| `drawIn?` | `boolean` | Draw the strikes through past dates once on load, in order. For a register above the fold. |
+| `className?` | `string` | Classes merged over the `dl`. |
+
+### `DayRuler`
+
+| Prop | Type | Description |
+| --- | --- | --- |
+| `days` | `number` | Days the ruler spans: it draws `days + 1` ticks, one per midnight. |
+| `elapsed` | `number` | Whole days gone, `0..days`: the fill runs to this tick and the mark sits on it (clamped). |
+| `startLabel?` | `ReactNode` | Label under the first tick. |
+| `endLabel?` | `ReactNode` | Label under the last tick. |
+| `size?` | `"md" \| "lg"` | Tick heights: `md` under a register, `lg` when the ruler carries a band. Default `md`. |
+| `markLabel?` | `ReactNode` | Label over today's mark (e.g. "Today", "26 days left"): centred on the mark, flush with the ruler's end near either edge. |
+| `drawIn?` | `boolean` | Draw the fill once on load, for a ruler above the fold. |
+| `className?` | `string` | Classes merged over the root (`aria-hidden`). |
 
 ### `Ledger`
 
@@ -811,7 +835,7 @@ No props of its own; see the source file for the root element or Base UI part it
 | `columns?` | `4 \| 3 \| 5` | Columns on wide screens. |
 | `marker?` | `"badge" \| "dot"` |  |
 | `rail?` | `"none" \| "solid" \| "dashed"` | The line that joins the markers on wide screens: `solid` hairline, `dashed` violet dashes (a path that runs on), or `none`. |
-| `items` | `StepItem[]` | The steps, in order. |
+| `items` | `StepItem[]` | The steps, in order: `title`, optional `description`, `detail` (a short line under the title, such as the step's dates), `icon`, `number` and `id`. |
 | `layout?` | `"columns" \| "rows"` | `columns` (default): markers on a rail, one column per step on wide screens. `rows`: one hairline row per step with the number beside it, for steps that are sentences rather than short labels. `rows` ignores `columns`, `rail`, `marker` and icons. |
 | `headingAs?` | `HeadingLevel` | Heading level of each step title. Default `h3`. |
 | `className?` | `string` | Classes merged over the wrapper. |

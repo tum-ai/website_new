@@ -8,7 +8,7 @@ import {
   Section,
   TextLink,
 } from "@/components/ds";
-import { membershipConfig } from "@/config/membership";
+import { membershipConfig, recruitingTimeline } from "@/config/membership";
 import { organizationFacts } from "@/config/organization";
 import { memberStories } from "@/features/community";
 import { ConstructionLines } from "./construction-lines";
@@ -19,9 +19,9 @@ import { memberQuote } from "./data/homepage";
  * sequence, so these are the page's only numbered items.
  */
 const recruitingSteps = [
-  { title: "Apply", dates: membershipConfig.timeline.application },
-  { title: "Interview", dates: membershipConfig.timeline.interview },
-  { title: "Onboarding", dates: membershipConfig.timeline.onboarding },
+  { title: "Apply", dates: recruitingTimeline.application },
+  { title: "Interview", dates: recruitingTimeline.interview },
+  { title: "Onboarding", dates: recruitingTimeline.onboarding },
 ];
 
 const quoted = memberStories.find((story) => story.name === memberQuote.name);

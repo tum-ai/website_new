@@ -93,7 +93,7 @@ keeps them green.
 | When the next E-Lab application phase opens (shown while closed) | `src/config/e-lab.ts`: `nextApplicationWindow` |
 | New E-Lab cohort | `src/config/e-lab.ts`: `currentIteration` (and `heroLogo` if the logo changes). The completed-iterations metric follows. |
 | E-Lab length or money raised | `src/config/e-lab.ts`: `programWeeks`, `ventureFundingMillions` |
-| Membership recruiting round | `src/config/membership.ts`: `applicationsOpen`, `applicationUrl`, `timeline` |
+| Membership recruiting round | `src/config/membership.ts`: `applicationsOpen`, `applicationUrl`, `round` (Munich dates "DD.MM.YYYY" and the deadline time; the Apply page's important dates, day ruler and FAQ, and the home and Community closing bands derive from it) |
 | Founding year, member counts, majors, universities, nationalities | `src/config/organization.ts`: `organizationFacts` |
 | Legal name, registered office, register entry, representatives | `src/config/organization.ts`: `legalEntity` (legal content: confirm with the board first) |
 | Community figures quoted in copy (Makeathon size) | `src/config/community.ts`: `communityFacts` |

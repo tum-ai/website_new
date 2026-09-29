@@ -6,7 +6,7 @@ import {
   Section,
   TextLink,
 } from "@/components/ds";
-import { membershipConfig } from "@/config/membership";
+import { membershipConfig, recruitingTimeline } from "@/config/membership";
 
 /**
  * The page's close on ink: back to column 0 of the timetable, the recruiting
@@ -15,7 +15,8 @@ import { membershipConfig } from "@/config/membership";
  * to meet the members.
  */
 export function ClosingSection() {
-  const { applicationsOpen, applicationUrl, timeline } = membershipConfig;
+  const { applicationsOpen, applicationUrl } = membershipConfig;
+  const timeline = recruitingTimeline;
   return (
     <Section tone="ink" spacing="xl" aria-labelledby="community-close-title">
       <Container>
