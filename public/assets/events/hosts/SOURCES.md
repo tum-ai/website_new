@@ -1,0 +1,19 @@
+# Events hero co-host logo sources
+
+Retrieved 2026-09-29. Official artwork from each company's own website or brand hub, or existing repository files. Every file is the variant for dark backgrounds, shown on the hero's `#0D0214` band. Brand colours are unchanged. Where only a light-background version existed, only the dark wordmark fills were set to `#FFFFFF`. Transparent margins are trimmed (SVG `viewBox` fitted to the artwork); paths and proportions are unchanged unless noted.
+
+- `cdtm.svg`: https://www.cdtm.com/ (inline header SVG; the site renders it with `currentColor` in light grey on its dark header). `currentColor` resolved to white, margins trimmed.
+- `project-a.svg`: https://www.project-a.vc/ (inline header wordmark SVG, `currentColor`). `currentColor` resolved to white, margins trimmed.
+- `anthropic.svg`: copied unchanged from `public/assets/partners/marquee/anthropic.svg` (official white wordmark, see `public/assets/partners/SOURCES.md`).
+- `lovable.svg`: https://lovablebrand.lovable.app/logos/lockup-white.svg (official Lovable Brand Hub, linked from https://lovable.dev/brand; gradient heart and white wordmark lockup). Unchanged except margins trimmed.
+- `nvidia.webp`: copied unchanged from `public/assets/partners/marquee/nvidia.webp` (green symbol, white wordmark).
+- `yellow.svg`: https://yellow.vc/wp-content/uploads/2023/05/yellow-logo.svg (official yellow wordmark of Yellow, the pre-seed VC. It matches the "yellow" wordmark on TUM.ai's "Project A x Yellow x TUM.ai E-Lab – Hackathon" poster, https://cdn.sanity.io/images/o9uuv2sq/production/7cb55405dc92d600db0f7033ac0cb273c3bee5cb-1080x1080.png). Unchanged except margins trimmed.
+- `bmw.svg`: copied unchanged from `public/assets/partners/logos/bmw.svg` (TUM.ai CMS roundel, https://cdn.sanity.io/images/o9uuv2sq/production/24d94fc04d991c57a86a9faf5b5f5047bd498859-2500x2500.svg).
+- `bkw.svg`: https://www.bkw.ch/_assets/ef8a3373fba5e85d784abcc81e47d961/Sites/Bkw/Images/Logo/logo-blue.svg (current official BKW header wordmark, orange `#ff4100`). Unchanged except CSS class removed and margins trimmed.
+- `hugging-face.svg`: https://huggingface.co/datasets/huggingface/brand-assets/resolve/main/hf-logo-with-title.svg (official brand assets linked from https://huggingface.co/brand). Dark wordmark fill `#000B1B` set to white, brand colours unchanged. Margins trimmed, path data optimised with SVGO (precision 2; the rendered result is visually identical).
+- `manage-and-more.svg`: https://www.manageandmore.de/ (inline header SVG). Unfilled (black) wordmark group set to white, brand blue `#04A2CC` symbol unchanged. An empty zero-length path was removed and margins trimmed.
+- `tacto.svg`: https://www.tacto.ai/ (inline header SVG). Black wordmark fills set to white, orange `#FF6414` symbol unchanged. Margins trimmed.
+- `google-cloud.svg`: https://www.gstatic.com/cgc/google-cloud-logo-fullcolor.svg (official logo used on https://cloud.google.com/). Dark wordmark fill `#212226` set to white, brand colours unchanged. Margins trimmed.
+- `aws.webp`: copied unchanged from `public/assets/partners/marquee/aws.webp` (white wordmark and smile).
+- `n8n.svg`: https://cdn.sanity.io/images/o9uuv2sq/production/79583ec75dd0ac9924da52b5246a7c733da58942-296x80.svg (TUM.ai CMS). Dark wordmark fill `#040506` set to white, brand pink `#EA4B71` symbol unchanged (this matches n8n.io's dark header). Margins trimmed.
+- `beyond-presence.svg`: https://cdn.prod.website-files.com/67ff9faac266bb379ddc0ea2/6807e5a16cc2f96271e59302_Logo.svg (official white logo from https://www.beyondpresence.ai/). Unchanged except margins trimmed.
