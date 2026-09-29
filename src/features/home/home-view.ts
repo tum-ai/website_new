@@ -10,15 +10,21 @@ import type { HomeCopy, LedgerKey } from "./data/homepage";
  */
 function ledgerFiguresOf(
   facts: SiteFacts,
-): Record<LedgerKey, Pick<LedgerItem, "value" | "prefix" | "suffix">> {
+): Record<
+  LedgerKey,
+  Pick<LedgerItem, "value" | "prefix" | "suffix" | "decimals">
+> {
+  const funding = facts.eLab.ventureFundingMillions;
   return {
     founded: { value: String(facts.organization.foundingYear) },
     members: { value: deriveSiteFacts(facts).officialMembers, suffix: "+" },
     nationalities: { value: facts.organization.nationalities, suffix: "+" },
     funding: {
-      value: facts.eLab.ventureFundingMillions,
+      value: funding,
       prefix: "€",
       suffix: "M",
+      // As many as the fact has (€7.5M), like the copy that quotes it.
+      decimals: String(funding).split(".")[1]?.length ?? 0,
     },
     makeathon: { value: facts.community.makeathonSize, suffix: "+" },
     publications: { value: facts.impact.publications, suffix: "+" },

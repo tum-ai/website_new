@@ -51,3 +51,16 @@ test("the ledger follows edited facts", () => {
     expect.objectContaining({ value: 99, suffix: "+" }),
   );
 });
+
+test("the funding figure keeps the fact's decimals", () => {
+  const withFunding = (ventureFundingMillions: number) =>
+    homeView(copy, {
+      ...sources,
+      facts: {
+        ...siteFactsFallback,
+        eLab: { ...siteFactsFallback.eLab, ventureFundingMillions },
+      },
+    }).ledger.find(({ value }) => value === ventureFundingMillions);
+  expect(withFunding(7.5)).toMatchObject({ prefix: "€", decimals: 1 });
+  expect(withFunding(12)).toMatchObject({ prefix: "€", decimals: 0 });
+});

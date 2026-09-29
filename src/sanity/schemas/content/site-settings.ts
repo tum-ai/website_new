@@ -296,7 +296,8 @@ export const siteSettingsType = defineType({
           name: "ventureFundingMillions",
           title: "Funding raised by E-Lab ventures (million euros)",
           type: "number",
-          validation: (Rule) => Rule.required().min(0),
+          description: "In millions, with at most one decimal: 7.5 for €7.5M.",
+          validation: (Rule) => Rule.required().min(0).precision(1),
         }),
         defineField({
           name: "selection",
