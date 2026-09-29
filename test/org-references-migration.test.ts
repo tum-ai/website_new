@@ -218,10 +218,16 @@ describe("the organisation-references migration", () => {
   });
 
   test("lab sites: the migrated sites are today's backfill", () => {
+    // Added to the sites after the migration ran, with their own data change.
+    const addedSince = new Set(["organization-ibm"]);
     for (const id of Object.keys(formerAliases)) {
       const site = byId.get(id);
       expect(site?.institutions, id).toBeUndefined();
-      expect(site?.organizations, id).toStrictEqual(current(id).organizations);
+      expect(site?.organizations, id).toStrictEqual(
+        (current(id).organizations as { _ref: string }[] | undefined)?.filter(
+          ({ _ref }) => !addedSince.has(_ref),
+        ),
+      );
     }
   });
 

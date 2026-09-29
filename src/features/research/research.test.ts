@@ -303,15 +303,16 @@ describe("getLabSites", () => {
     ).toEqual(["ETH Zürich"]);
   });
 
-  test("places every live institution but the ones no site lists", () => {
+  test("places every live institution", () => {
     const { sites, unplaced } = getLabSites(liveInstitutions, labSites);
-    expect(unplaced).toEqual(["IBM", "Flower Labs"]);
+    expect(unplaced).toEqual([]);
     expect(sites.map(({ id }) => id)).toEqual([
       "munich",
       "boston",
       "cambridge",
       "san-jose",
       "zurich",
+      "hamburg",
       "paris",
     ]);
     expect(sites.find(({ id }) => id === "munich")?.institutions).toEqual([

@@ -860,14 +860,36 @@ export const organizations: readonly Organization[] = [
   // (features/research/data/lab-sites.ts), and Helmholtz Munich is med.AI's
   // partner on /projects. Named as the project titles name them.
   // TODO(content): add each one's website.
-  defineOrganization({ key: "tum", name: "TUM" }),
-  defineOrganization({ key: "tum-camp", name: "TUM CAMP" }),
-  defineOrganization({ key: "lmu-klinikum", name: "LMU Klinikum" }),
+  defineOrganization({ key: "tum", name: "TUM", href: "https://www.tum.de/" }),
+  defineOrganization({
+    key: "tum-camp",
+    name: "TUM CAMP",
+    href: "https://www.cs.cit.tum.de/camp/",
+  }),
+  defineOrganization({
+    key: "lmu-klinikum",
+    name: "LMU Klinikum",
+    href: "https://www.lmu-klinikum.de/",
+  }),
   // TODO(content): the partner "Helmholtz" (helmholtz.de, the association's
   // wordmark) and the Munich centre may be one partner; merge them if so.
-  defineOrganization({ key: "helmholtz-munich", name: "Helmholtz Munich" }),
-  defineOrganization({ key: "ibm-almaden", name: "IBM Almaden" }),
-  defineOrganization({ key: "ibm-research", name: "IBM Research" }),
+  defineOrganization({
+    key: "helmholtz-munich",
+    name: "Helmholtz Munich",
+    href: "https://www.helmholtz-munich.de/",
+  }),
+  // IBM's lab in San Jose, now "IBM Research – Silicon Valley".
+  defineOrganization({
+    key: "ibm-almaden",
+    name: "IBM Almaden",
+    href: "https://research.ibm.com/labs/silicon-valley",
+  }),
+  // IBM Research Europe, Zurich (Rüschlikon).
+  defineOrganization({
+    key: "ibm-research",
+    name: "IBM Research",
+    href: "https://research.ibm.com/labs/zurich",
+  }),
 
   // Events co-hosts (features/events/data/host-logos.ts; sources in
   // docs/asset-sources/events-hosts.md)

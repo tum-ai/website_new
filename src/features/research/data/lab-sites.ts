@@ -81,16 +81,25 @@ export const labSiteTemplates: readonly LabSiteTemplate[] = [
   {
     id: "san-jose",
     city: "San Jose",
-    // IBM Research Almaden.
+    // IBM Research Almaden. The research partner IBM sits at both of its
+    // labs TUM.ai works with, here and in Zurich.
     location: [37.2106, -121.8077],
-    organizations: ["ibm-almaden"],
+    organizations: ["ibm-almaden", "ibm"],
   },
   {
     id: "zurich",
     city: "Zurich",
-    // TODO(content): confirm the IBM Research lab is Zurich (Rüschlikon).
+    // IBM Research Europe in Rüschlikon: the number-token-loss paper
+    // (ICML 2025) is with its Zurich lab.
     location: [47.3163, 8.5528],
-    organizations: ["ibm-research"],
+    organizations: ["ibm-research", "ibm"],
+  },
+  {
+    id: "hamburg",
+    city: "Hamburg",
+    // Flower Labs' headquarters (flower.ai/imprint).
+    location: [53.5745, 10.0265],
+    organizations: ["flower-labs"],
   },
   {
     id: "paris",
