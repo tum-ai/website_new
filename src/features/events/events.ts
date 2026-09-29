@@ -60,6 +60,24 @@ export function splitEvents<T extends Dated>(
   };
 }
 
+/**
+ * `upcoming` with the event a running campaign features (`featuredId`,
+ * `getFeaturedEventId()` in `config/schedule-content.ts`) moved to the
+ * front; the rest keep their order (soonest first). Without a featured
+ * event, or when it is not among `upcoming` (it has started, or the
+ * campaign names an event that was deleted), `upcoming` as it is. The input
+ * is left untouched.
+ */
+export function pinFeaturedEvent<T extends { id: string }>(
+  upcoming: readonly T[],
+  featuredId: string | null,
+): T[] {
+  const featured = upcoming.find((event) => event.id === featuredId);
+  return featured
+    ? [featured, ...upcoming.filter((event) => event !== featured)]
+    : [...upcoming];
+}
+
 /** A TUM semester, as {@link semesterOf} returns it. */
 export type Semester = {
   /** "2026-summer", "2025-winter": unique and a React key. */

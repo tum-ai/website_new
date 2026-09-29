@@ -13,6 +13,7 @@ import {
   hostsBeyondTitle,
   indexHosts,
   lockupParts,
+  pinFeaturedEvent,
   semesterOf,
   splitEvents,
   summarizeEvents,
@@ -457,5 +458,42 @@ describe("toEventDetails", () => {
     expect(
       toEventDetails({ ...event, poster: undefined, images: [] }).image,
     ).toBeUndefined();
+  });
+});
+
+describe("pinFeaturedEvent", () => {
+  const upcoming = [
+    at("2026-10-02T18:00:00Z", "talk"),
+    at("2026-10-09T18:00:00Z", "meetup"),
+    at("2026-11-20T09:00:00Z", "makeathon"),
+  ];
+
+  test("a campaign's featured event leads; the rest stay soonest first", () => {
+    expect(ids(pinFeaturedEvent(upcoming, "makeathon"))).toEqual([
+      "makeathon",
+      "talk",
+      "meetup",
+    ]);
+  });
+
+  test("without a featured event, or one that is not upcoming, the order stays", () => {
+    expect(ids(pinFeaturedEvent(upcoming, null))).toEqual([
+      "talk",
+      "meetup",
+      "makeathon",
+    ]);
+    // Started already (so among the past events), or deleted since.
+    expect(ids(pinFeaturedEvent(upcoming, "last-year"))).toEqual([
+      "talk",
+      "meetup",
+      "makeathon",
+    ]);
+    expect(pinFeaturedEvent([], "makeathon")).toEqual([]);
+  });
+
+  test("leaves its input untouched", () => {
+    const before = ids(upcoming);
+    pinFeaturedEvent(upcoming, "makeathon");
+    expect(ids(upcoming)).toEqual(before);
   });
 });

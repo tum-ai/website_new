@@ -1,6 +1,11 @@
 import type { Event } from "@/lib/types";
 import { ClosingSection } from "./closing-section";
-import { indexHosts, splitEvents, summarizeEvents } from "./events";
+import {
+  indexHosts,
+  pinFeaturedEvent,
+  splitEvents,
+  summarizeEvents,
+} from "./events";
 import { EventsHero } from "./hero";
 import { PosterWall } from "./poster-wall";
 import { Register } from "./register";
@@ -11,20 +16,27 @@ import { Upcoming } from "./upcoming";
  * ("Anthropic x Lovable x Hugging Face"): the hero completes "TUM.ai ×" with
  * every co-host from the CMS, then come the upcoming events, the archive as
  * a register by semester, the posters as they were announced, and a close
- * that completes the lockup with the reader's team. A server component: it
- * splits the events at `now` and renders every row, so the only client
- * parts are the register's filter and the dialogs.
+ * that completes the lockup with the reader's team. A running campaign's
+ * featured event leads the upcoming events and the close while it is
+ * upcoming. A server component: it splits the events at `now` and renders
+ * every row, so the only client parts are the register's filter and the
+ * dialogs.
  */
 export function EventsPage({
   events,
   now,
+  featuredEventId = null,
 }: {
   /** Every published event, in any order. */
   events: Event[];
   /** The instant that separates upcoming from past (the render time). */
   now: Date;
+  /** The `_id` of the event a running campaign features, if any. */
+  featuredEventId?: string | null;
 }) {
-  const { upcoming, past } = splitEvents(events, now);
+  const split = splitEvents(events, now);
+  const { past } = split;
+  const upcoming = pinFeaturedEvent(split.upcoming, featuredEventId);
   const summary = summarizeEvents(events);
 
   return (
