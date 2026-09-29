@@ -149,3 +149,18 @@ test("leaves Ctrl-wheel and pinch zoom to the browser", async () => {
   // A plain wheel still turns the reel.
   expect(fireEvent.wheel(reel, { deltaY: 120 })).toBe(false);
 });
+
+test("marks the new first host's panel when a publish reorders the hosts", () => {
+  const setMotion = stubMotionPreference(true);
+  const { rerender } = render(<Reel names={["Acme", "Globex", "Initech"]} />);
+  expect(activePanels()).toStrictEqual(["0"]);
+
+  // The keyed panels move before the old reel's cleanup runs.
+  rerender(<Reel names={["Globex", "Acme", "Initech"]} />);
+  expect(activePanels()).toStrictEqual(["0"]);
+
+  // Reduced motion resets to the first panel in the current order too.
+  rerender(<Reel names={["Initech", "Globex", "Acme"]} />);
+  setMotion(false);
+  expect(activePanels()).toStrictEqual(["0"]);
+});

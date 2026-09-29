@@ -58,6 +58,18 @@ const GLIDE = 0.16;
 /** How long the wheel must rest before the reel snaps to a name. */
 const WHEEL_REST_MS = 140;
 
+/** The host panels in their current document order. */
+const hostPanels = (band: HTMLElement) => [
+  ...band.querySelectorAll<HTMLElement>("[data-host-panel]"),
+];
+
+/** Marks the panel at `index` active and every other one inactive. */
+function showPanel(panels: readonly HTMLElement[], index: number) {
+  panels.forEach((panel, at) => {
+    panel.toggleAttribute("data-active", at === index);
+  });
+}
+
 /**
  * The events hero's band and its reel: the names window turns (without end,
  * in both directions) and snaps to the nearest name when the input stops.
@@ -101,7 +113,10 @@ export function HeroReel({
     if (!band || !region || count < 2 || !reelMode) return;
     const hosts = namesKey.split("\n");
 
-    const panels = [...band.querySelectorAll<HTMLElement>("[data-host-panel]")];
+    // Queried per setup: a publish that reorders the hosts moves the keyed
+    // panels, and the first one is the host at --roll 0.
+    const panels = hostPanels(band);
+    showPanel(panels, 0);
     const rowPx = () =>
       region.getBoundingClientRect().height /
         Number(getComputedStyle(region).getPropertyValue("--visible") || 1) ||
@@ -134,8 +149,7 @@ export function HeroReel({
       band.style.setProperty("--roll", turn.toFixed(4));
       const next = Math.round(turn) % count;
       if (next !== active) {
-        panels[active]?.removeAttribute("data-active");
-        panels[next]?.setAttribute("data-active", "");
+        showPanel(panels, next);
         active = next;
       }
     };
@@ -262,9 +276,9 @@ export function HeroReel({
       region.removeEventListener("pointercancel", onPointerUp);
       region.removeEventListener("keydown", onKeyDown);
       band.style.removeProperty("--roll");
-      // Back to the server markup: the first host's panel, as at --roll 0.
-      for (const panel of panels) panel.removeAttribute("data-active");
-      panels[0]?.setAttribute("data-active", "");
+      // Back to the server markup: the first host's panel, as at --roll 0,
+      // in the current order (a reorder has already moved the panels).
+      showPanel(hostPanels(band), 0);
       delete region.dataset.dragging;
       live.remove();
     };
