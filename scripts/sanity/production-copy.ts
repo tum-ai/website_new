@@ -53,7 +53,7 @@ const PUBLISHED_QUERY = `*[_type in $types && !(_id in path("drafts.**")) && !(_
  * launch sees the latest edits. Throws on any failure: a partial copy must
  * never reach the import.
  */
-export const fetchPublishedDocuments: FetchDocuments = async ({
+const fetchPublishedDocuments: FetchDocuments = async ({
   projectId,
   dataset,
 }) => {
