@@ -6,8 +6,11 @@ import type { LogoItem } from "@/components/ds";
 import { organizationByKey } from "@/features/partners";
 import type { Organization } from "@/lib/people-and-logos";
 
-/** A REX institution: its logo, and the short name prose uses ("Harvard"). */
-export type RexInstitution = LogoItem & { shortName: string };
+/**
+ * A REX institution: its logo, the short name prose uses ("Harvard") and
+ * its organisation's key (the /research globe places it by that).
+ */
+export type RexInstitution = LogoItem & { key: string; shortName: string };
 
 /**
  * The institutions REX offers come from, as the lead's examples, with their
@@ -80,7 +83,8 @@ export const rexOrganizations: Organization[] = [
 export function rexInstitutionsOf(
   list: readonly Organization[],
 ): RexInstitution[] {
-  return list.map(({ name, shortName, logo }) => ({
+  return list.map(({ key, name, shortName, logo }) => ({
+    key,
     name,
     shortName: shortName ?? name,
     ...(logo

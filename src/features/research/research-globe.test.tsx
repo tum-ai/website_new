@@ -26,7 +26,10 @@ beforeEach(() => {
   );
 });
 
-const { sites } = getLabSites(["MIT", "IBM Almaden", "Inria"], labSites);
+const { sites } = getLabSites(
+  [{ name: "MIT" }, { name: "IBM Almaden" }, { key: "inria", name: "Inria" }],
+  labSites,
+);
 
 describe("ResearchGlobe", () => {
   test("is a named slider that says which places it shows", async () => {

@@ -120,7 +120,7 @@ describe("page fetchers", () => {
       expect.objectContaining({
         perspective: "published",
         stega: false,
-        tags: ["research-projects"],
+        tags: ["research-projects", "content:organization"],
       }),
     );
     // `null` fields are dropped for the page components' optional props.

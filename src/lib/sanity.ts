@@ -174,7 +174,8 @@ export async function getSanityResearchProjects(): Promise<ResearchProject[]> {
 
   const projects = await fetchSanityList<RESEARCH_QUERY_RESULT[number]>(
     RESEARCH_QUERY,
-    [...liveCacheTags.research],
+    // The projects' institutions are organisations.
+    [...liveCacheTags.research, contentCacheTag("organization")],
     "research projects",
   );
   return projects.map(omitNulls);

@@ -3,6 +3,7 @@ import { isPartnerTier, partnerTiers } from "@/lib/people-and-logos";
 import { getSafeExternalUrl } from "@/lib/security";
 import type { Partner } from "@/lib/types";
 import { partnerLaunchOrder } from "./data/organizations";
+import { getPartnerKey } from "./partner-key";
 
 /** Gold, silver and bronze partners: the homepage and the /partners hero. */
 export function getHighlightedPartners(partners: Partner[]) {
@@ -15,26 +16,6 @@ export function getHighlightedPartners(partners: Partner[]) {
 }
 
 const tierOrder = partnerTiers.map(({ value }) => value);
-
-/**
- * A company's letters and digits, lower-cased, with the aliases the old
- * partner documents used: how the site matches partners, organisations and
- * their artwork by name ("HRT" and "Hudson River Trading" are one company).
- */
-export function getPartnerKey(name: string) {
-  const key = name.toLowerCase().replace(/[^a-z0-9]/g, "");
-  const aliases: Record<string, string> = {
-    hrt: "hudsonrivertrading",
-    mckinsey: "mckinseycompany",
-    mckinseyandcompany: "mckinseycompany",
-    entire: "entireio",
-    amazonwebservices: "aws",
-    bmwgroup: "bmw",
-    internationalbusinessmachines: "ibm",
-    advancedmicrodevices: "amd",
-  };
-  return aliases[key] ?? key;
-}
 
 /**
  * A partner organisation as the pages list it: its key as the id, its

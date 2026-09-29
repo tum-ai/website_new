@@ -30,6 +30,7 @@ export const EVENTS_QUERY = defineQuery(`*[_type == "event"]{
 export const RESEARCH_QUERY = defineQuery(`*[_type == "research"]{
   "id": _id,
   title,
+  "institutions": institutions[]->{ key, name },
   "description": coalesce(desc, ""),
   status,
   publication,

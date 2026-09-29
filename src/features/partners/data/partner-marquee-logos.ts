@@ -1,5 +1,5 @@
 import type { Organization } from "@/lib/people-and-logos";
-import { getPartnerKey } from "../partner-directory";
+import { getPartnerKey } from "../partner-key";
 import { partnerLogoLists } from "./organizations";
 
 /**

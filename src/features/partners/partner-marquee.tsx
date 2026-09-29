@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 import { ButtonLink, LogoTile } from "@/components/ds";
 import type { Partner } from "@/lib/types";
 import type { PartnersSections } from "./data/partners";
-import { getPartnerKey } from "./partner-directory";
+import { getPartnerKey } from "./partner-key";
 
 /**
  * Highlighted-partner rail for the dark hero. Every partner is rendered once

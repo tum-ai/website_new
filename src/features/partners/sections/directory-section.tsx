@@ -1,7 +1,7 @@
 import { Container, Reveal, Section, SectionHeader } from "@/components/ds";
 import type { Partner } from "@/lib/types";
 import type { PartnersSections } from "../data/partners";
-import { getPartnerKey } from "../partner-directory";
+import { getPartnerKey } from "../partner-key";
 import { PartnerSupporters } from "../partner-supporters";
 import { PartnerTier } from "../partner-tier";
 import { Lines } from "./lines";

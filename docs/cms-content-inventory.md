@@ -27,7 +27,9 @@ their published documents from `production` into `redesign` unchanged (same `_id
 events' `hosts` from `liveEventHosts` in `lib/mock-cms.ts`. The new site reads partners from
 `organization` instead (a partner is an organisation with a `partnerTier`);
 `pnpm sanity:migrate-partners` moves the copied `partner` documents onto organisations, and the
-Studio hides `partner` outside `production` (ADR 0009, "Partners are organisations").
+Studio hides `partner` outside `production` (ADR 0009, "Partners are organisations"). On every
+dataset but `production` the research type also has `institutions` (references to organisations,
+which /research cites instead of the names in the title); the old site's string fields stay.
 
 | Type | Kind | Holds | Owner |
 | --- | --- | --- | --- |
@@ -44,7 +46,7 @@ Studio hides `partner` outside `production` (ADR 0009, "Partners are organisatio
 | `journeyStep` | list | `number`, `name`, `description`, `iconKey` (mapped to a Lucide icon in code), `fromSemester`, `span`, `stage`/fork, `evidence` (a `person` reference to a member story and an excerpt) | done (C) |
 | `milestone` | list | `year`, `kind` (`research`, `programs`, `events`, `organization`), `title`, `detail` | done (C) |
 | `taskForce` | list | `slug`, `name`, `field`, `description`, `detailedDescription`, `work` (`partner`, `items[]`), optional `photo` | done (C) |
-| `labSite` | list | `city`, `location` (lat, lng), `home`, `institutions[]` (aliases matched against research titles) | done (C) |
+| `labSite` | list | `city`, `location` (lat, lng), `home`, `organizations[]` (references: the research projects', research partners' and REX institutions' organisations there) | done (C) |
 | `<page>Copy` | singleton per page | the page's hero, section titles and leads, closings and figure copy: `homeCopy` (its quotes reference `person`), `applyCopy`, `communityCopy`, `eventsCopy`, `eLabCopy`, `projectsCopy`, `qandaCopy`, `researchCopy` (with the REX band's copy) (C); `partnersCopy` (B) | done (C, B) |
 
 `pageCopy` is one singleton type per page, not one generic type: TypeGen then types each page's

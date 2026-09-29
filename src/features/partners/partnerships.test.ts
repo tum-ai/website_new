@@ -12,9 +12,9 @@ import {
 import {
   getHighlightedPartners,
   getPartnerDirectory,
-  getPartnerKey,
   partnerOf,
 } from "./partner-directory";
+import { getPartnerKey } from "./partner-key";
 
 /** The code's partner directory. */
 const codeDirectory = () =>

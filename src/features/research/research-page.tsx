@@ -18,14 +18,19 @@ import { AffiliationIndex } from "./affiliations";
 import { getLabSiteList, getResearchCopy } from "./content";
 import { getAbstractBody } from "./data/research-copy";
 import { ProjectList, ReferenceList } from "./project-list";
-import { getLabSites, getPartnerLogos, getResearchIndex } from "./research";
+import {
+  getLabSites,
+  getPartnerLogos,
+  getResearchIndex,
+  reportUnplaced,
+} from "./research";
 import { ResearchFigure } from "./research-figure";
 import { ResearchGlobe } from "./research-globe";
 import { getRexInstitutions } from "./rex-content";
 
 /**
  * The /research page, set like a paper's first page. The hero is the title
- * block: every institution named on a CMS project, numbered, and each
+ * block: every institution of a CMS project, numbered, and each
  * project below cites them by number. Completed projects form the
  * references list, REX follows on lavender, and the closing band repeats the
  * affiliation line with one open slot for the next lab. The copy and the
@@ -51,14 +56,16 @@ export async function ResearchPage({
   const { closing, rex } = copy;
   const { affiliations, ongoing, completed } = getResearchIndex(projects);
   const partnerLogos = getPartnerLogos(researchPartners);
-  const { sites } = getLabSites(
+  const { sites, unplaced } = getLabSites(
     [
       ...affiliations,
-      ...researchPartners.map(({ name }) => name),
-      ...rexInstitutions.map(({ name }) => name),
+      ...researchPartners.map(({ id: key, name }) => ({ key, name })),
+      ...rexInstitutions.map(({ key, name }) => ({ key, name })),
     ],
     labSites,
   );
+  reportUnplaced(unplaced);
+  const affiliationNames = affiliations.map(({ name }) => name);
 
   return (
     <main>
@@ -93,7 +100,7 @@ export async function ResearchPage({
           <AffiliationIndex
             id="hero-affiliations"
             label="Affiliations"
-            affiliations={affiliations}
+            affiliations={affiliationNames}
             className="border-hairline border-t pt-8 md:pt-10"
           />
         ) : null}
@@ -202,7 +209,9 @@ export async function ResearchPage({
           </p>
           <LogoWall
             layout="strip"
-            logos={rexInstitutions.map(({ shortName: _, ...logo }) => logo)}
+            logos={rexInstitutions.map(
+              ({ key: _key, shortName: _shortName, ...logo }) => logo,
+            )}
             label={rex.logosLabel}
             className="mt-8"
           />
@@ -253,7 +262,7 @@ export async function ResearchPage({
             <AffiliationIndex
               id="closing-affiliations"
               label="Affiliations"
-              affiliations={affiliations}
+              affiliations={affiliationNames}
               openSlot={closing.openSlot}
               className="mt-12 border-hairline border-t pt-8 md:mt-16"
             />

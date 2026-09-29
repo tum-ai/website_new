@@ -1,12 +1,22 @@
+import { organizationByKey } from "@/features/partners";
+import type { Organization } from "@/lib/people-and-logos";
+import { rexOwnOrganizations } from "./rex";
+
 /**
  * Where the institutions on /research are, for the hero globe. One site per
- * city: labs a few kilometres apart would draw one marker anyway. The
- * `institutions` lists hold every name the CMS, the partners and the REX
- * copy use for a lab in that city. The code fallback of the `labSite`
- * documents (`../content.ts`).
+ * city: labs a few kilometres apart would draw one marker anyway. Each site
+ * lists the organisations there that the research projects, the research
+ * partners and the REX institutions name. The code fallback of the
+ * `labSite` documents (`../content.ts`).
  */
 
-/** A city on the globe and the institutions TUM.ai works with there. */
+/** An organisation at a lab site: what the globe matches institutions by. */
+export type LabSiteOrganization = Pick<
+  Organization,
+  "key" | "name" | "shortName"
+>;
+
+/** A city on the globe and the organisations TUM.ai works with there. */
 export type LabSite = {
   /** Stable id; the globe's CSS anchor is `--cobe-<id>`. */
   id: string;
@@ -16,28 +26,43 @@ export type LabSite = {
   location: [number, number];
   /** TUM.ai's own city, where every arc starts. */
   home?: boolean;
-  /** Names that place an institution here (case-insensitive). */
-  institutions: string[];
+  /** The organisations here, in the Studio's order. */
+  organizations: LabSiteOrganization[];
 };
 
-export const labSites: LabSite[] = [
+const rexOwnByKey = new Map(
+  rexOwnOrganizations.map((organization) => [organization.key, organization]),
+);
+
+/** The organisation with `key`, from the partners' table or the REX list. */
+function siteOrganization(key: string): LabSiteOrganization {
+  const { name, shortName } = rexOwnByKey.get(key) ?? organizationByKey(key);
+  return { key, name, ...(shortName ? { shortName } : {}) };
+}
+
+/** A lab site as code writes it: its organisations by key. */
+type LabSiteTemplate = Omit<LabSite, "organizations"> & {
+  organizations: string[];
+};
+
+/** The lab sites, their organisations by key (the backfill references them). */
+export const labSiteTemplates: readonly LabSiteTemplate[] = [
   {
     id: "munich",
     city: "Munich",
     // TUM main campus.
     location: [48.1497, 11.5679],
     home: true,
-    institutions: [
-      "TUM",
-      "TUM CAMP",
-      "Helmholtz",
-      "Helmholtz Zentrum",
-      "Helmholtz Munich",
-      "LMU",
-      "LMU Klinikum",
-      "Klinikum rechts der Isar",
+    organizations: [
+      "tum",
+      "tum-camp",
+      "helmholtz",
+      "helmholtz-munich",
+      "lmu",
+      "lmu-klinikum",
+      "klinikum-rechts-der-isar",
       // TODO(content): confirm MI4People is based in Munich.
-      "MI4People",
+      "mi4people",
     ],
   },
   {
@@ -45,38 +70,40 @@ export const labSites: LabSite[] = [
     city: "Boston",
     // MIT; Harvard is 3 km away.
     location: [42.3601, -71.0942],
-    institutions: [
-      "MIT",
-      "Harvard",
-      "Harvard University",
-      "Harvard Medical School",
-    ],
+    organizations: ["mit", "harvard-university", "harvard-medical-school"],
   },
   {
     id: "cambridge",
     city: "Cambridge",
     location: [52.2043, 0.1149],
-    institutions: ["University of Cambridge", "Cambridge"],
+    organizations: ["university-of-cambridge"],
   },
   {
     id: "san-jose",
     city: "San Jose",
     // IBM Research Almaden.
     location: [37.2106, -121.8077],
-    institutions: ["IBM Almaden"],
+    organizations: ["ibm-almaden"],
   },
   {
     id: "zurich",
     city: "Zurich",
     // TODO(content): confirm the IBM Research lab is Zurich (Rüschlikon).
     location: [47.3163, 8.5528],
-    institutions: ["IBM Research"],
+    organizations: ["ibm-research"],
   },
   {
     id: "paris",
     city: "Paris",
     // TODO(content): which Inria centre hosts REX offers? Paris for now.
     location: [48.8566, 2.3522],
-    institutions: ["Inria", "INRIA"],
+    organizations: ["inria"],
   },
 ];
+
+export const labSites: LabSite[] = labSiteTemplates.map(
+  ({ organizations, ...site }) => ({
+    ...site,
+    organizations: organizations.map(siteOrganization),
+  }),
+);

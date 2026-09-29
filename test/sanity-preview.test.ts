@@ -122,3 +122,23 @@ test("the new site's Studio creates no partner documents; production's does", ()
   // Production keeps the Studio's defaults, `partner` included.
   expect(workspaceOf("production").schema?.templates).toBeUndefined();
 });
+
+/** The field names of `type` as the Studio registers it on `dataset`. */
+function fieldNames(dataset: string, type: string): string[] {
+  const types = workspaceOf(dataset).schema?.types;
+  const found = (Array.isArray(types) ? types : []).find(
+    (candidate) => candidate.name === type,
+  ) as { fields?: { name: string }[] } | undefined;
+  return (found?.fields ?? []).map(({ name }) => name);
+}
+
+test("the old site's types keep their fields; organisation references only where organisations exist", () => {
+  const research = fieldNames("production", "research");
+  // Production has no organisation type, and the old site reads the title.
+  expect(research).not.toContain("institutions");
+  expect(research).toContain("title");
+  // The new site's dataset adds the references and keeps every old field.
+  expect(fieldNames("redesign", "research")).toStrictEqual(
+    expect.arrayContaining([...research, "institutions"]),
+  );
+});

@@ -92,7 +92,7 @@ describe("ResearchPage", () => {
       within(opening)
         .getAllByRole("listitem")
         .map((item) => item.textContent),
-    ).toEqual(index.affiliations.map((name, i) => `${i + 1}${name}`));
+    ).toEqual(index.affiliations.map(({ name }, i) => `${i + 1}${name}`));
     expect(
       within(closingList).getAllByRole("listitem").at(-1),
     ).toHaveTextContent(`${index.affiliations.length + 1}${closing.openSlot}`);
@@ -105,6 +105,30 @@ describe("ResearchPage", () => {
     expect(
       screen.getByRole("link", { name: /^IBM\s?\(opens in a new tab\)$/ }),
     ).toHaveAttribute("href", "https://www.ibm.com/");
+  });
+
+  test("reports the institutions the globe cannot place", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    render(
+      await ResearchPage({
+        projects: [
+          ...projects,
+          {
+            id: "unplaced",
+            title: "Atlantis Institute: Tides",
+            description: "A lab no lab site lists.",
+            status: "ongoing",
+            keywords: [],
+          },
+        ],
+      }),
+    );
+    expect(
+      warn.mock.calls.some(([message]) =>
+        String(message).includes("Atlantis Institute"),
+      ),
+    ).toBe(true);
+    warn.mockRestore();
   });
 
   test("lists every project once and links each paper by its host", async () => {

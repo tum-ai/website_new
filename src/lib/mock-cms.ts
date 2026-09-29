@@ -351,7 +351,9 @@ export function getMockEvents(now: Date = new Date()): Event[] {
 /**
  * Mirrors the live research documents (2026-09), including their rough
  * edges: several institutions or a person before the colon, a line break in
- * a title, a missing image and mostly empty keywords. Images are local
+ * a title, a missing image and mostly empty keywords. Two carry their
+ * `institutions` references (as `pnpm sanity:migrate-org-references` sets
+ * them), the rest only the names in their titles. Images are local
  * stand-ins for the CMS photos.
  */
 export function getMockResearchProjects(): ResearchProject[] {
@@ -401,6 +403,7 @@ export function getMockResearchProjects(): ResearchProject[] {
     {
       id: "mock-research-surgical-video",
       title: "TUM CAMP: Long-Form Surgical Video Understanding",
+      institutions: [{ key: "tum-camp", name: "TUM CAMP" }],
       description:
         "Working on long-form video understanding, reasoning over hours of surgical video.",
       status: "ongoing",
@@ -410,6 +413,7 @@ export function getMockResearchProjects(): ResearchProject[] {
       id: "mock-research-retro-rank",
       title:
         "MIT: Ranking-Based Approach for Inorganic Materials Synthesis Planning",
+      institutions: [{ key: "mit", name: "MIT" }],
       description:
         "Retro-Rank-In: ranking framework for inorganic retrosynthesis with state-of-the-art generalization.",
       status: "completed",

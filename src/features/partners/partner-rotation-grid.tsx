@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import type { Partner } from "@/lib/types";
-import { getPartnerKey } from "./partner-directory";
+import { getPartnerKey } from "./partner-key";
 import { createPartnerRotation, nextPartnerBatch } from "./partner-rotation";
 import { PartnerTile, type PartnerTileSize } from "./partner-tile";
 

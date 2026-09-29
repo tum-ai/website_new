@@ -46,6 +46,8 @@ describe("the REX slice", () => {
   test("an institution without a logo or short name is set by its name", () => {
     expect(
       rexInstitutionsOf([{ key: "eth", name: "ETH Zurich" }]),
-    ).toStrictEqual([{ name: "ETH Zurich", shortName: "ETH Zurich" }]);
+    ).toStrictEqual([
+      { key: "eth", name: "ETH Zurich", shortName: "ETH Zurich" },
+    ]);
   });
 });

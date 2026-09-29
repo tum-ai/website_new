@@ -2,6 +2,7 @@ import "server-only";
 
 import { defineQuery } from "next-sanity";
 import { getContentTokens } from "@/config/content-tokens";
+import { buildOrganizationBackfill } from "@/features/partners/server";
 import { type BackfillDocument, backfillId } from "@/lib/cms-backfill";
 import { loadContent } from "@/lib/cms-content";
 import {
@@ -10,22 +11,29 @@ import {
 } from "@/lib/cms-content-model";
 import { backfillContentImage, keyedItems } from "@/lib/content-backfill";
 import { fillCmsCopy, fillCodeCopy } from "@/lib/content-copy";
+import { organizationReference } from "@/lib/organization-content";
 import type {
   LAB_SITES_QUERY_RESULT,
   RESEARCH_COPY_QUERY_RESULT,
 } from "@/lib/sanity.types.generated";
-import { type LabSite, labSites } from "./data/lab-sites";
+import {
+  type LabSite,
+  type LabSiteOrganization,
+  labSites,
+  labSiteTemplates,
+} from "./data/lab-sites";
 import {
   type FigurePanel,
   type ResearchCopy,
   researchCopyTemplate,
   researchPageTokens,
 } from "./data/research-copy";
+import { buildRexBackfill } from "./rex-content";
 
 /**
  * The /research content slice: the `researchCopy` singleton (hero, abstract,
  * Figure 1, section headings, closing) and the `labSite` documents that
- * place institutions on the hero globe. The projects come from the
+ * place institutions on the hero globe by their organisations. The projects come from the
  * `research` documents (`lib/sanity.ts`) and the REX institutions from their logo list (`rex-content.ts`);
  * the code fallbacks are in `data/`.
  */
@@ -52,7 +60,7 @@ export const LAB_SITES_QUERY =
   city,
   "location": [location.lat, location.lng],
   home,
-  institutions
+  "organizations": organizations[]->{ key, name, shortName }
 }`);
 
 /**
@@ -89,40 +97,80 @@ export async function getResearchCopy(): Promise<ResearchCopy> {
   });
 }
 
-const isLabSite = (value: unknown): value is LabSite => {
-  const site = (value ?? {}) as Partial<LabSite>;
-  return Boolean(
-    site.id &&
-      site.city &&
-      site.location?.length === 2 &&
-      site.location.every((degrees) => typeof degrees === "number") &&
-      site.institutions?.length,
-  );
-};
+type ProjectedSite = LAB_SITES_QUERY_RESULT[number];
+
+/** The site's organisations that resolve, without empty short names. */
+function siteOrganizations(
+  organizations: ProjectedSite["organizations"],
+): LabSiteOrganization[] {
+  return (organizations ?? []).flatMap((organization) => {
+    const key = organization?.key?.trim();
+    const name = organization?.name?.trim();
+    if (!key || !name) return [];
+    const shortName = organization?.shortName?.trim();
+    return [{ key, name, ...(shortName ? { shortName } : {}) }];
+  });
+}
+
+/** A projected site the globe can draw, or `null`. */
+function toLabSite({
+  id,
+  city,
+  location,
+  home,
+  organizations,
+}: ProjectedSite): LabSite | null {
+  const [lat, lng] = location ?? [];
+  const placed = siteOrganizations(organizations);
+  if (
+    !id ||
+    !city ||
+    typeof lat !== "number" ||
+    typeof lng !== "number" ||
+    placed.length === 0
+  ) {
+    return null;
+  }
+  return {
+    id,
+    city,
+    location: [lat, lng],
+    ...(home ? { home } : {}),
+    organizations: placed,
+  };
+}
 
 /**
- * The cities on the hero globe and the institution names that place a lab
- * there: the CMS `labSite` list when there is one, otherwise the code list.
- * The page places its institutions on it with `getLabSites` (`research.ts`).
+ * The cities on the hero globe and the organisations there: the CMS
+ * `labSite` list when there is one, otherwise the code list. The page
+ * places its institutions on it with `getLabSites` (`research.ts`).
  */
 export async function getLabSiteList(): Promise<LabSite[]> {
   const tokens = await getContentTokens();
   return loadContent<LabSite[], LAB_SITES_QUERY_RESULT>({
     fallback: labSites,
     query: LAB_SITES_QUERY,
-    tags: ["content:labSite"],
+    tags: ["content:labSite", "content:organization"],
     label: "the lab sites",
-    mockDocuments: buildResearchBackfill,
+    mockDocuments: () => [
+      ...buildResearchBackfill(),
+      ...buildRexBackfill(),
+      ...buildOrganizationBackfill(),
+    ],
     select: (result) => {
       const filled = fillCmsCopy(result, tokens, "the lab sites");
-      return (Array.isArray(filled) ? filled : [])
-        .filter(isLabSite)
-        .map(({ home, ...site }) => (home ? { ...site, home } : site));
+      return (Array.isArray(filled) ? (filled as ProjectedSite[]) : [])
+        .map(toLabSite)
+        .filter((site) => site !== null);
     },
   });
 }
 
-/** The /research copy and lab sites as documents for `pnpm sanity:backfill`. */
+/**
+ * The /research copy and lab sites as documents for `pnpm sanity:backfill`
+ * (the sites reference the organisation slice's and the REX slice's
+ * organisations).
+ */
 export function buildResearchBackfill(): BackfillDocument[] {
   const { figurePanels, ...copy } = researchCopyTemplate;
   return [
@@ -138,15 +186,20 @@ export function buildResearchBackfill(): BackfillDocument[] {
         })),
       ),
     },
-    ...labSites.map(({ id, location: [lat, lng], home, ...site }, index) => ({
-      _id: backfillId("lab-site", id),
-      _type: "labSite",
-      order: (index + 1) * 10,
-      key: { _type: "slug", current: id },
-      ...site,
-      institutions: [...site.institutions],
-      location: { _type: "geopoint", lat, lng },
-      ...(home ? { home } : {}),
-    })),
+    ...labSiteTemplates.map(
+      ({ id, location: [lat, lng], home, organizations, ...site }, index) => ({
+        _id: backfillId("lab-site", id),
+        _type: "labSite",
+        order: (index + 1) * 10,
+        key: { _type: "slug", current: id },
+        ...site,
+        organizations: organizations.map((key) => ({
+          _key: key,
+          ...organizationReference(key),
+        })),
+        location: { _type: "geopoint", lat, lng },
+        ...(home ? { home } : {}),
+      }),
+    ),
   ];
 }

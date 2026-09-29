@@ -340,6 +340,13 @@ export type HomeCopy = {
   };
 };
 
+export type OrganizationReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "organization";
+};
+
 export type LabSite = {
   _id: string;
   _type: "labSite";
@@ -351,7 +358,11 @@ export type LabSite = {
   key: Slug;
   location: Geopoint;
   home?: boolean;
-  institutions: Array<string>;
+  organizations: Array<
+    {
+      _key: string;
+    } & OrganizationReference
+  >;
 };
 
 export type Geopoint = {
@@ -755,13 +766,6 @@ export type PartnersCopy = {
   };
 };
 
-export type OrganizationReference = {
-  _ref: string;
-  _type: "reference";
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: "organization";
-};
-
 export type VentureTrace = {
   _id: string;
   _type: "ventureTrace";
@@ -1092,6 +1096,11 @@ export type Research = {
   _updatedAt: string;
   _rev: string;
   title: string;
+  institutions?: Array<
+    {
+      _key: string;
+    } & OrganizationReference
+  >;
   desc?: string;
   status?: "ongoing" | "completed";
   publication?: string;
@@ -1205,6 +1214,7 @@ export type AllSanitySchemaTypes =
   | ApplyCopy
   | PersonReference
   | HomeCopy
+  | OrganizationReference
   | LabSite
   | Geopoint
   | Slug
@@ -1216,7 +1226,6 @@ export type AllSanitySchemaTypes =
   | CommunityCopy
   | QandaCopy
   | PartnersCopy
-  | OrganizationReference
   | VentureTrace
   | CaseStudy
   | Person
@@ -2711,13 +2720,17 @@ export type RESEARCH_COPY_QUERY_RESULT =
 
 // Source: ../features/research/content.ts
 // Variable: LAB_SITES_QUERY
-// Query: *[_type == "labSite"] | order(order asc){  "id": key.current,  city,  "location": [location.lat, location.lng],  home,  institutions}
+// Query: *[_type == "labSite"] | order(order asc){  "id": key.current,  city,  "location": [location.lat, location.lng],  home,  "organizations": organizations[]->{ key, name, shortName }}
 export type LAB_SITES_QUERY_RESULT = Array<{
   id: string;
   city: string;
   location: Array<number | null>;
   home: boolean | null;
-  institutions: Array<string>;
+  organizations: Array<{
+    key: string;
+    name: string;
+    shortName: string | null;
+  }>;
 }>;
 
 // Source: ../lib/community-content.ts
@@ -2961,10 +2974,14 @@ export type EVENTS_QUERY_RESULT = Array<{
 
 // Source: ../lib/sanity-queries.ts
 // Variable: RESEARCH_QUERY
-// Query: *[_type == "research"]{  "id": _id,  title,  "description": coalesce(desc, ""),  status,  publication,  "keywords": coalesce(keywords, []),  "image": img.asset->url}
+// Query: *[_type == "research"]{  "id": _id,  title,  "institutions": institutions[]->{ key, name },  "description": coalesce(desc, ""),  status,  publication,  "keywords": coalesce(keywords, []),  "image": img.asset->url}
 export type RESEARCH_QUERY_RESULT = Array<{
   id: string;
   title: string;
+  institutions: Array<{
+    key: string;
+    name: string;
+  }> | null;
   description: string | "";
   status: "completed" | "ongoing" | null;
   publication: string | null;

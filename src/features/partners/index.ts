@@ -12,5 +12,6 @@
  */
 
 export { organizationByKey } from "./data/organizations";
-export { getHighlightedPartners, getPartnerKey } from "./partner-directory";
+export { getHighlightedPartners } from "./partner-directory";
+export { getPartnerKey } from "./partner-key";
 export { PartnerRotationGrid } from "./partner-rotation-grid";

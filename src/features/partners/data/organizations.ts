@@ -855,6 +855,20 @@ export const organizations: readonly Organization[] = [
     logo: { src: "/assets/e-lab/partners/accel.svg", width: 1288, height: 413 },
   }),
 
+  // Research institutions and labs the site names without a logo: the
+  // research projects cite them, the /research globe places them
+  // (features/research/data/lab-sites.ts), and Helmholtz Munich is med.AI's
+  // partner on /projects. Named as the project titles name them.
+  // TODO(content): add each one's website.
+  defineOrganization({ key: "tum", name: "TUM" }),
+  defineOrganization({ key: "tum-camp", name: "TUM CAMP" }),
+  defineOrganization({ key: "lmu-klinikum", name: "LMU Klinikum" }),
+  // TODO(content): the partner "Helmholtz" (helmholtz.de, the association's
+  // wordmark) and the Munich centre may be one partner; merge them if so.
+  defineOrganization({ key: "helmholtz-munich", name: "Helmholtz Munich" }),
+  defineOrganization({ key: "ibm-almaden", name: "IBM Almaden" }),
+  defineOrganization({ key: "ibm-research", name: "IBM Research" }),
+
   // Events co-hosts (features/events/data/host-logos.ts; sources in
   // docs/asset-sources/events-hosts.md)
   defineOrganization({

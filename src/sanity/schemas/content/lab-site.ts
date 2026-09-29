@@ -2,11 +2,12 @@ import { defineArrayMember, defineField, defineType } from "sanity";
 import { copyString, orderField } from "./copy-fields";
 
 /**
- * A city on the /research hero globe and the institutions TUM.ai works with
- * there. Institution names from the research projects, research partners
- * and REX copy are matched against each site's names (case-insensitive);
- * the globe draws the sites that match, plus the home site. Read by
- * `features/research/content.ts`, over `features/research/data/lab-sites.ts`.
+ * A city on the /research hero globe and the organisations TUM.ai works
+ * with there. The research projects' institutions, the research partners
+ * and the REX institutions are placed on the site that references their
+ * organisation; the globe draws the sites with any, plus the home site.
+ * Read by `features/research/content.ts`, over
+ * `features/research/data/lab-sites.ts`.
  */
 export const labSiteType = defineType({
   name: "labSite",
@@ -46,18 +47,18 @@ export const labSiteType = defineType({
       initialValue: false,
     }),
     defineField({
-      name: "institutions",
-      title: "Institution names",
+      name: "organizations",
+      title: "Organisations",
       type: "array",
       of: [
         defineArrayMember({
-          type: "string",
-          validation: (Rule) => Rule.required().max(80),
+          type: "reference",
+          to: [{ type: "organization" }],
         }),
       ],
       description:
-        "Every name the projects, partners and REX copy use for a lab here (TUM, TUM CAMP, Helmholtz Munich, ...). A name matches case-insensitively.",
-      validation: (Rule) => Rule.required().min(1),
+        "The institutions, labs and partners here (TUM CAMP, Helmholtz Munich, ...). A research project, research partner or REX institution that is one of them puts this site on the globe. One organisation belongs to one site.",
+      validation: (Rule) => Rule.required().min(1).unique(),
     }),
   ],
   orderings: [
@@ -67,5 +68,5 @@ export const labSiteType = defineType({
       by: [{ field: "order", direction: "asc" }],
     },
   ],
-  preview: { select: { title: "city", subtitle: "institutions.0" } },
+  preview: { select: { title: "city", subtitle: "organizations.0.name" } },
 });

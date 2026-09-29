@@ -94,6 +94,34 @@ test("research query: keywords stay an array, description falls back", async () 
   expect(bare.keywords).toStrictEqual([]);
 });
 
+test("research query: institutions resolve to organisations, in order", async () => {
+  const dataset = [
+    { _id: "org-mit", _type: "organization", key: "mit", name: "MIT" },
+    { _id: "org-tum", _type: "organization", key: "tum", name: "TUM" },
+    {
+      _id: "res-refs",
+      _type: "research",
+      title: "TUM, MIT: Study",
+      institutions: [
+        { _key: "tum", _type: "reference", _ref: "org-tum" },
+        { _key: "gone", _type: "reference", _ref: "org-deleted" },
+        { _key: "mit", _type: "reference", _ref: "org-mit" },
+      ],
+    },
+    { _id: "res-title", _type: "research", title: "MIT: Study" },
+  ];
+
+  const [referenced, titled] = await run(RESEARCH_QUERY, dataset);
+
+  expect(referenced.institutions).toStrictEqual([
+    { key: "tum", name: "TUM" },
+    null,
+    { key: "mit", name: "MIT" },
+  ]);
+  expect(referenced.title).toBe("TUM, MIT: Study");
+  expect(titled.institutions).toBeNull();
+});
+
 test("the page event query no longer fetches the unused detail text", async () => {
   const [event] = await run(EVENTS_QUERY, [
     {
@@ -156,6 +184,20 @@ describe("public API query shapes are frozen", () => {
         "title",
       ].sort(),
     );
+  });
+
+  test("research answers the same with institution references", async () => {
+    const [project] = await run(PUBLIC_RESEARCH_QUERY, [
+      { _id: "o", _type: "organization", key: "mit", name: "MIT" },
+      {
+        _id: "r",
+        _type: "research",
+        title: "MIT: S",
+        institutions: [{ _key: "mit", _type: "reference", _ref: "o" }],
+      },
+    ]);
+    expect(project).not.toHaveProperty("institutions");
+    expect(project.title).toBe("MIT: S");
   });
 
   const partnerKeys = [

@@ -14,6 +14,7 @@ import {
 } from "./content-structure";
 import { liveSchemaTypes } from "./schemas";
 import { contentSchemaTypes } from "./schemas/content";
+import { liveTypesWithReferences } from "./schemas/content/live-references";
 
 /**
  * The Studio for `dataset` (docs/adr/0009-cms-content-source.md): one
@@ -24,7 +25,9 @@ import { contentSchemaTypes } from "./schemas/content";
  * On `production`, the old site's dataset, the content types are not
  * registered: an editor can never create page content there, where the old
  * site renders every event, partner and research document, and partners
- * are the `partner` documents. Everywhere else partners are organisations
+ * are the `partner` documents. There the events and research have only
+ * their old fields; everywhere else they also reference organisations
+ * (`liveTypesWithReferences`). Everywhere else partners are organisations
  * with a partner tier: `partner` stays registered (its copied documents
  * remain readable) but the desk hides it and offers no way to create one.
  */
@@ -39,7 +42,7 @@ export function studioConfig(dataset: string): Config {
     dataset,
     schema: pageContent
       ? {
-          types: [...liveSchemaTypes, ...contentSchemaTypes],
+          types: [...liveTypesWithReferences, ...contentSchemaTypes],
           templates: contentTemplates,
         }
       : { types: liveSchemaTypes },
