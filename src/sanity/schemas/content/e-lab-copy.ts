@@ -12,10 +12,13 @@ const gateFigures = [
 ];
 
 /**
- * The gates must open on the applications and use each figure exactly once:
- * the page draws every gate as a share of the one before, and renders the
- * code cohort instead of a list with a gate missing or doubled
- * (`selectStages` in features/e-lab/content.ts). Exported for tests.
+ * The gates must use each figure exactly once, in funnel order (applications,
+ * admitted, midterm, selectionDay, finalPitch): the page draws every gate as
+ * a share of the one before, the hero's field needs decreasing counts and
+ * lights the last gate's teams as the Final Pitch, and it renders the code
+ * cohort instead of a list with a gate missing, doubled or out of order
+ * (`selectStages` in features/e-lab/content.ts). Phases may sit anywhere
+ * between them. Exported for tests.
  */
 export function validateStages(stages: unknown): true | string {
   if (!Array.isArray(stages)) return true;
@@ -31,6 +34,9 @@ export function validateStages(stages: unknown): true | string {
   const missing = gateFigures.filter(({ value }) => !figures.includes(value));
   if (missing.length > 0) {
     return `Add a gate for ${missing.map(({ title }) => title).join(", ")}: the page needs all five.`;
+  }
+  if (figures.some((figure, index) => figure !== gateFigures[index]?.value)) {
+    return `Put the gates in funnel order: ${gateFigures.map(({ title }) => title).join(", ")}.`;
   }
   return true;
 }

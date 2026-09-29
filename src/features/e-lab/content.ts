@@ -53,6 +53,7 @@ export const ELAB_COPY_QUERY = defineQuery(`*[_id == "eLabCopy"][0]{
   closing{ title, followLabel, partnersReader, partnersText }
 }`);
 
+/** The gate figures in funnel order: the order the CMS gates must follow. */
 const figures: readonly unknown[] = [
   "applications",
   "admitted",
@@ -96,8 +97,10 @@ function toStage({ _type, ...stage }: RawStage): StageCopy | null {
  * The CMS stages, or `[]` (so the code cohort shows) unless the list is
  * whole: no stage dropped by `fillCmsCopy` (an unknown placeholder; the
  * query returned `fetched` stages), every stage complete, and each gate
- * figure exactly once. The funnel draws the gates to scale against each
- * other, so a missing or doubled gate would skew it. Exported for tests.
+ * figure exactly once, in the funnel order of `figures`. The funnel draws
+ * the gates to scale against each other and the hero's field lights the
+ * last gate's teams as the Final Pitch, so a missing, doubled or reordered
+ * gate would skew both. Exported for tests.
  */
 export function selectStages(
   stages: readonly RawStage[],
@@ -111,10 +114,10 @@ export function selectStages(
     stages.length === fetched &&
     complete.every(Boolean) &&
     gates.length === figures.length &&
-    figures.every((figure) => gates.includes(figure as GateFigure));
+    figures.every((figure, index) => gates[index] === figure);
   if (!whole && fetched > 0) {
     console.warn(
-      "[cms-content] The E-Lab stages need every stage complete and each gate figure once; rendering the code cohort.",
+      "[cms-content] The E-Lab stages need every stage complete and each gate figure once, in funnel order; rendering the code cohort.",
     );
   }
   return whole ? (complete as StageCopy[]) : [];

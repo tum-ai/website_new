@@ -24,3 +24,26 @@ test("a stage list without one of the gates is refused, as the page would ignore
     "Add a gate for Midterm Pitch: the page needs all five.",
   );
 });
+
+test("gates out of funnel order are refused: the field needs decreasing counts", () => {
+  const swapped = [
+    gate("applications"),
+    gate("admitted"),
+    phase,
+    gate("finalPitch"),
+    gate("selectionDay"),
+    gate("midterm"),
+  ];
+  expect(validateStages(swapped)).toBe(
+    "Put the gates in funnel order: Team applications, Admitted to the cohort, Midterm Pitch, Selection Day, Final Pitch.",
+  );
+  expect(
+    validateStages([
+      gate("applications"),
+      gate("midterm"),
+      gate("admitted"),
+      gate("selectionDay"),
+      gate("finalPitch"),
+    ]),
+  ).toMatch(/funnel order/);
+});

@@ -132,6 +132,17 @@ describe("the CMS stages", () => {
       raw.length,
     ],
     [
+      "the Midterm and Final Pitch gates swapped",
+      raw.map((stage) =>
+        "figure" in stage && stage.figure === "midterm"
+          ? { ...stage, figure: "finalPitch" }
+          : "figure" in stage && stage.figure === "finalPitch"
+            ? { ...stage, figure: "midterm" }
+            : stage,
+      ),
+      raw.length,
+    ],
+    [
       "an incomplete stage",
       raw.map((stage, index) => (index === 0 ? { ...stage, name: "" } : stage)),
       raw.length,
