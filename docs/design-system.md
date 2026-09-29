@@ -242,7 +242,7 @@ Pages end on light or ink bands, because the footer is night.
 ## Constraints
 
 - **Homepage budget** (`test/perf/homepage.perf.ts`, run by `pnpm test:perf` against the Turbopack output of `pnpm build`, in CI's Build job):
-  - Two image preloads only: `/assets/tum_ai_logo_new.svg`, the header logo (`priority`), and the hero aperture's first photo, which is eager in the server HTML so React preloads it responsively (`imagesrcset` with `sizes`). The mark's entrance waits for that photo, so shape and image arrive together. Every other homepage image is lazy, including the other aperture photos, which mount after hydration.
+  - Two image preloads only: `/assets/tum_ai_logo_new.svg`, the header logo (`preload`), and the hero aperture's first photo, which is eager in the server HTML so React preloads it responsively (`imagesrcset` with `sizes`). The mark's entrance waits for that photo, so shape and image arrive together. Every other homepage image is lazy, including the other aperture photos, which mount after hydration.
   - `brand-grid-tile` and `mix-blend-overlay` must not appear in server-rendered HTML.
   - The CSS the homepage links must contain the utilities it uses.
 - **Facts and content:** dates, counts, emails and links come from `src/config/`, never from components or page code. Changing them there is the intended way to update the site (see "Updating site facts" in [contributor-guide.md](contributor-guide.md)); the content tests derive their expectations from config, so they stay green. Don't hard-code a fact to make a layout work, and don't loosen a guard pattern.

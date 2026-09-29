@@ -81,9 +81,11 @@ src/features/<domain>/
 └── index.ts               optional: what other features may use; never a page
 ```
 
-Feature indexes exist today for `community` (`memberJourney`, `memberStories`), `e-lab`
-(`testimonialCards`), `partners` (`marqueeLogos`, `partnerCaseStudies` and the directory helpers
-`getHighlightedPartners`, `getPartnerDirectory`, `getPartnerKey`) and `qanda` (`faqs`).
+Feature indexes exist today for `community` (`departments`, `memberJourney`, `memberStories`,
+`MembershipApplyButton`), `e-lab` (`testimonialCards`), `partners` (`marqueeLogos`,
+`partnerCaseStudies`, `partnerPitch`, `symbolOnlyLogos` and the directory helpers
+`getHighlightedPartners`, `getPartnerDirectory`, `getPartnerKey`), `qanda` (`faqs`) and
+`research` (`rexInstitutions`).
 
 ## Import rules
 

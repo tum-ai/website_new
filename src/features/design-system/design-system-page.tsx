@@ -158,7 +158,7 @@ export function DesignSystemPage() {
               src="/assets/open_ai_speaker_event.webp"
               alt="A speaker on stage at a TUM.ai event"
               fill
-              priority
+              preload
               sizes="(min-width: 1024px) 45vw, 100vw"
               className="zoom-media object-cover"
               fallback={<BrandPanel />}

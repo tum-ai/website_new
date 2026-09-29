@@ -74,7 +74,7 @@ and set `export const revalidate = <seconds>`.
 If the page belongs in the header or footer, add it to `src/config/navigation.ts`
 (`mainNavigation`, `connectLinks`, `legalLinks`, ...). If the header should behave differently on
 it (frosted from the start, another CTA), add an entry to the route overrides behind
-`getHeaderOptions` in the same file.
+`getHeaderOptions(pathname, { membershipOpen })` in the same file.
 
 ## 5. E2E and visual baseline
 

@@ -52,6 +52,13 @@ export type DayRulerProps = Omit<ComponentProps<"div">, "children"> &
  * eyeballed. Decorative (`aria-hidden`): state the same fact in text beside
  * it, such as "27 days left".
  */
+/**
+ * Share of the ruler at each end where the mark label pins to that edge instead
+ * of centring on the mark, so a label near the first or last day never overflows
+ * the ruler.
+ */
+const LABEL_EDGE = 0.15;
+
 export function DayRuler({
   days,
   elapsed,
@@ -76,13 +83,15 @@ export function DayRuler({
             data-mark-label=""
             className={cn(
               "absolute top-0 whitespace-nowrap",
-              share >= 0.15 && share <= 0.85 && "-translate-x-1/2",
+              share >= LABEL_EDGE &&
+                share <= 1 - LABEL_EDGE &&
+                "-translate-x-1/2",
               drawIn && "[animation-delay:900ms] motion-safe:animate-fade",
             )}
             style={
-              share < 0.15
+              share < LABEL_EDGE
                 ? { left: 0 }
-                : share > 0.85
+                : share > 1 - LABEL_EDGE
                   ? { right: 0 }
                   : { left: at(done) }
             }

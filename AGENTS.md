@@ -58,7 +58,8 @@ src/components/ds/                design system (Base UI + tone tokens), barrel 
 src/components/shell/             header, footer, skip link
 src/components/json-ld.tsx        JSON-LD script tag
 src/config/                       site facts, navigation (incl. header CTA) and SEO
-src/lib/                          cn, sanity client/queries/fetch, mock-cms, munich-time, security, redirects
+src/lib/                          cn, sanity client/queries/fetch, mock-cms, munich-time, words, use-clock-switch,
+                                  use-media-query, security, redirects
 src/sanity/                       Studio config and schemas (TypeGen writes src/lib/sanity.types.generated.ts)
 src/styles/index.css              tokens, tones, cascade layers, utilities
 src/proxy.ts                      host redirects (join.tum-ai.com to /apply)

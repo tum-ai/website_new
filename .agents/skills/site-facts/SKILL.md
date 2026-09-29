@@ -29,7 +29,7 @@ read them, so one edit updates the whole site, and tests fail if a page types a 
 | Site URL, name, tagline, `absoluteUrl()` | `src/config/site.ts` `siteConfig` |
 | Legal identity, registered office, register number, representatives | `src/config/organization.ts` `legalEntity` |
 | Header and footer links | `src/config/navigation.ts` |
-| Header call to action between recruiting rounds | `src/config/navigation.ts` `headerCtaSetting` (`fallback`, optional `override`); `member` shows automatically while `membershipConfig.applicationsOpen` |
+| Header call to action between recruiting rounds | `src/config/navigation.ts` `headerCtaSetting` (`fallback`, optional `override`); `member` shows automatically while `isMembershipApplicationOpen` (the dated round window) |
 
 Derived values (`officialMembers`, `recruitingTimeline`, `isMembershipApplicationOpen`, `applicationProgress`, `eLabProgramSummary`, `eLabCompletedIterations`,
 `eLabApplicationsCloseAt`, `eLabPhaseCopy`) are computed in the same files; change the base fact,

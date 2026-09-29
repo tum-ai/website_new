@@ -74,11 +74,13 @@ Everything is in `src/config/navigation.ts`:
 
 - `mainNavigation`, `headerConnectLinks`, `connectLinks`, `legalLinks`, `contributeLinks`: the
   header and footer links.
-- `headerCtaSetting`: which call to action the header shows. While membership applications are
-  open (`membershipConfig.applicationsOpen`) it shows `member`; otherwise `fallback`. Set
-  `override` to pin one variant. The variants and their labels are in `headerCtas`.
-- `getHeaderOptions(pathname)`: per-route header behaviour (frosted from the start, hidden logo
-  over the hero, route-specific CTA).
+- `headerCtaSetting`: which call to action the header shows. While the membership round is open
+  (`isMembershipApplicationOpen`, the dated window in `membershipConfig`) it shows `member`;
+  otherwise `fallback`. Set `override` to pin one variant. The variants and their labels are in
+  `headerCtas`. The site layout decides on the server and the header switches live at the
+  window's boundaries.
+- `getHeaderOptions(pathname, { membershipOpen })`: per-route header behaviour (frosted from the
+  start, route-specific CTA).
 
 ### Updating site facts
 
@@ -94,7 +96,7 @@ keeps them green.
 | New E-Lab cohort | `src/config/e-lab.ts`: `currentIteration` (and `heroLogo` if the logo changes). The completed-iterations metric follows. |
 | E-Lab length or money raised | `src/config/e-lab.ts`: `programWeeks`, `ventureFundingMillions` |
 | E-Lab selection funnel (teams at each gate, drawn to scale on `/e-lab`) | `src/config/e-lab.ts`: `selection` (`applications`, `admitted`, `midterm`, `selectionDay`, `finalPitch`; each at most the one before). Update after each round. |
-| Membership recruiting round | `src/config/membership.ts`: `applicationsOpen`, `applicationUrl`, `round` (Munich dates "DD.MM.YYYY" and the deadline time; the Apply page's important dates, day ruler and FAQ, and the home and Community closing bands derive from it) |
+| Membership recruiting round | `src/config/membership.ts`: `applicationsOpen`, `applicationUrl`, `round` (Munich dates "DD.MM.YYYY" and the deadline time; the Apply page's important dates, day ruler and FAQ, and the home and Community closing bands and the header CTA derive from it and switch live at `opens` and the deadline) |
 | Founding year, member counts, majors, universities, nationalities | `src/config/organization.ts`: `organizationFacts` |
 | The mission statement (the brand guide's wording, quoted on `/apply` and `/qanda`) | `src/config/organization.ts`: `brandMission` |
 | Legal name, registered office, register entry, representatives | `src/config/organization.ts`: `legalEntity` (legal content: confirm with the board first) |
