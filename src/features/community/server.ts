@@ -9,5 +9,6 @@ import "server-only";
  * a page here (see features/partners/index.ts).
  */
 
+export { memberStoryKey } from "./data/member-stories";
 export { MembershipApplyButton } from "./membership-apply-button";
 export { buildMemberStoriesBackfill, getMemberStories } from "./people-content";

@@ -13,12 +13,13 @@ const tokens = Object.fromEntries(
 ) as ContentTokens;
 
 const templates = [
-  { question: "When?", answer: "Until {{eLab.deadline}}." },
+  { question: "When?", answer: "Until {{eLab.deadline}}.", id: "deadline" },
   { question: "Who?", answer: "Anyone.", id: "who" },
 ];
 
 async function loadFaqContent(source: string) {
   vi.stubEnv("NEXT_PUBLIC_SANITY_PROJECT_ID", "abc123");
+  vi.stubEnv("NEXT_PUBLIC_SANITY_CONTENT_DATASET", "redesign");
   vi.stubEnv("CMS_CONTENT_SOURCE", source);
   vi.stubEnv("USE_MOCK_CMS", "");
   vi.resetModules();
@@ -35,11 +36,11 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-test("the backfill keeps the placeholders, the order and stable public ids", async () => {
+test("the backfill keeps the placeholders, the order and ids from the keys, not the wording", async () => {
   const { buildFaqBackfill } = await loadFaqContent("code");
   expect(buildFaqBackfill("e-lab", templates)).toStrictEqual([
     {
-      _id: "faq-e-lab-when",
+      _id: "faq-e-lab-deadline",
       _type: "faq",
       collection: "e-lab",
       order: 10,

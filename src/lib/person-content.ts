@@ -63,7 +63,10 @@ export function personId(placement: PersonPlacement, key: string): string {
   return backfillId("person", placement, key);
 }
 
-/** A kebab-case key from a name, for code lists without ids. */
+/**
+ * A kebab-case key from a name. Code lists carry explicit keys; this seeds
+ * one, and names test fixtures.
+ */
 export function personKey(name: string): string {
   return backfillId("person", name).slice("person-".length);
 }

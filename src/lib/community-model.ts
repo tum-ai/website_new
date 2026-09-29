@@ -20,6 +20,13 @@ export type Department = {
 };
 
 /**
+ * A department as code writes it: `key` names its `department` document in
+ * the backfill (`department-<key>`), fixed so renaming a department in code
+ * never turns into a second document. Pages never see it.
+ */
+export type DepartmentTemplate = Department & { key: string };
+
+/**
  * The icons a step can carry, as keys: the CMS stores the key and
  * `features/community/data/member-journey.ts` maps it to a Lucide icon.
  */

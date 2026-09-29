@@ -133,8 +133,9 @@ proves the CMS path renders the same.
      (`personId`, `organizationId`), and `mockDocuments` adds the target documents (the other
      slice's builder) so the mock resolves it;
    - one `build<X>Backfill(): BackfillDocument[]` for everything the slice owns, from the code
-     fallback: `_id` from `backfillId(type, stable key)` (only `[a-z0-9-]`; a `.` makes the
-     document private), images with `backfillImage("/assets/...", { alt, objectPosition })`,
+     fallback: `_id` from `backfillId(type, key)`, where the key is an explicit field of the
+     code data (`id`/`key`), never the visible text: an id that follows the wording turns a copy
+     edit into a second document (only `[a-z0-9-]`; a `.` makes the document private), images with `backfillImage("/assets/...", { alt, objectPosition })`,
      placeholders kept as `{{name}}`.
    A type used by several features keeps its shared part in `lib` with the fallback passed in
    (`lib/faq-content.ts`); the per-feature `content.ts` stays a thin wrapper. The server-only
@@ -169,7 +170,9 @@ proves the CMS path renders the same.
    ```
 
    Never run `--apply`, `sanity dataset create` or `sanity dataset import`: importing is a launch
-   step for a maintainer (the runbook in ADR 0009).
+   step for a maintainer (the runbook in ADR 0009). `--apply` creates missing documents only;
+   `--apply --overwrite` replaces existing documents with the code content and discards what
+   editors changed.
 
 Gotchas: images in the mock are sized from the file header like Sanity does, so the code
 `ContentImage` must state the file's intrinsic size or parity fails; lists replace wholesale

@@ -97,11 +97,22 @@ production would show.
 `pnpm sanity:backfill [--dataset redesign]` runs every builder registered in
 `scripts/sanity/slices.ts` and writes `.sanity-backfill/<dataset>.ndjson` (gitignored) with a
 count per type. Documents have deterministic, public `_id`s (`[a-z0-9-]`; a `.` would make them
-private). Images use the import convention
+private) from explicit keys in the code data (a FAQ's `id`, a milestone's, department's or
+person's `key`), never from visible text, so a copy edit in code finds the same document instead
+of adding a second one. Images use the import convention
 `{"_type":"image","_sanityAsset":"image@file://<abs path>"}`, so `--apply` runs
-`sanity dataset import <file> <dataset> --replace` with the editor's CLI login and uploads the
-files: no write token in the repository or CI. `production` is refused without
-`--allow-production`. `test/cms-backfill.test.ts` checks the registry (unique ids, registered
+`sanity dataset import` with the editor's CLI login and uploads the files: no write token in the
+repository or CI.
+
+- `--apply` imports with `--missing`: it creates the documents the dataset lacks and **never
+  touches an existing one**, so running it again after editors started is safe (it only adds
+  what code gained since).
+- `--apply --overwrite` imports with `--replace`: **every existing document with a backfill id is
+  replaced by the code content, and the editors' edits to it are lost.** It prints a warning and
+  waits 10 seconds before it starts. Use it only on a dataset nobody has edited, or to reset one
+  on purpose.
+
+`production` is refused without `--allow-production`. `test/cms-backfill.test.ts` checks the registry (unique ids, registered
 types, required fields, existing files).
 
 ### Studio workspaces
@@ -153,9 +164,11 @@ redirects to `/studio/live`.
    `src/sanity`, logged in with `sanity login`).
 2. `pnpm sanity:backfill --dataset redesign` (a dry run; in the Claude sandbox, unsandboxed),
    review `.sanity-backfill/redesign.ndjson` and the per-type counts, then
-   `pnpm sanity:backfill --dataset redesign --apply`. It imports every slice in one file with
-   `--replace`, so the references between them (logo lists, testimonials, the traced venture, the
-   homepage quotes, the journey evidence) resolve; asset files upload with the import.
+   `pnpm sanity:backfill --dataset redesign --apply`. It imports every slice in one file, so the
+   references between them (logo lists, testimonials, the traced venture, the homepage quotes,
+   the journey evidence) resolve; asset files upload with the import. It creates missing
+   documents only (`--missing`); never add `--overwrite` once editors have started, because it
+   replaces their documents with the code content.
 3. Editors review and correct the content in `/studio/content` (locally with
    `NEXT_PUBLIC_SANITY_CONTENT_DATASET=redesign` in `.env.local`, or on a preview deployment with
    the env below; without it the workspace does not exist): the Site settings and both Application windows first (the

@@ -15,11 +15,7 @@ import {
 } from "@/lib/cms-content-model";
 import { type ContentTokens, fillTemplate } from "@/lib/content-tokens";
 import { organizationReference } from "@/lib/organization-content";
-import {
-  buildPersonBackfill,
-  getPeople,
-  personKey,
-} from "@/lib/person-content";
+import { buildPersonBackfill, getPeople } from "@/lib/person-content";
 import type {
   PARTNER_CASE_STUDIES_QUERY_RESULT,
   PARTNERS_COPY_QUERY_RESULT,
@@ -355,10 +351,11 @@ export function getPartnerProfiles(): Promise<PartnerProfile[]> {
     fallback: [...partnerProfiles],
     label: "the partner profiles",
     mockDocuments: partnersMockDocuments,
-    select: ({ name, role, context, portrait }) => {
+    select: ({ key, name, role, context, portrait }) => {
       const image = toContentImage(portrait);
       if (!name || !role || !image) return null;
       return {
+        key,
         name,
         role,
         detail: context ?? "",
@@ -438,8 +435,8 @@ export function buildPartnersBackfill(): BackfillDocument[] {
     })),
     ...buildPersonBackfill(
       "partner-profile",
-      partnerProfiles.map(({ name, role, detail, image, position }) => ({
-        key: personKey(name),
+      partnerProfiles.map(({ key, name, role, detail, image, position }) => ({
+        key,
         name,
         role,
         ...(detail ? { context: detail } : {}),

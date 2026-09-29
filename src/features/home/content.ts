@@ -3,7 +3,10 @@ import "server-only";
 import { defineQuery } from "next-sanity";
 import { getContentTokens } from "@/config/content-tokens";
 import { departments } from "@/features/community";
-import { buildMemberStoriesBackfill } from "@/features/community/server";
+import {
+  buildMemberStoriesBackfill,
+  memberStoryKey,
+} from "@/features/community/server";
 import { buildVentureBackfill } from "@/features/e-lab/server";
 import type { BackfillDocument } from "@/lib/cms-backfill";
 import { loadContent } from "@/lib/cms-content";
@@ -11,7 +14,7 @@ import { CONTENT_IMAGE_PROJECTION } from "@/lib/cms-content-model";
 import { getDepartments } from "@/lib/community-content";
 import { backfillContentImage, keyedItems } from "@/lib/content-backfill";
 import { fillCmsCopy, fillCodeCopy } from "@/lib/content-copy";
-import { personId, personKey } from "@/lib/person-content";
+import { personId } from "@/lib/person-content";
 import type { HOME_COPY_QUERY_RESULT } from "@/lib/sanity.types.generated";
 import {
   type HomeCopy,
@@ -200,7 +203,10 @@ export function buildHomeBackfill(): BackfillDocument[] {
         ...join,
         steps: keyedItems("recruitingStep", join.steps),
         quote: {
-          person: personReference("member-story", personKey(join.quote.name)),
+          person: personReference(
+            "member-story",
+            memberStoryKey(join.quote.name),
+          ),
           excerpt: join.quote.excerpt,
         },
       },

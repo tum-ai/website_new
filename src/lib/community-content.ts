@@ -6,6 +6,7 @@ import { loadContent } from "./cms-content";
 import { CONTENT_IMAGE_PROJECTION } from "./cms-content-model";
 import {
   type Department,
+  type DepartmentTemplate,
   groupJourneyStages,
   type JourneyStage,
   type JourneyStep,
@@ -77,19 +78,29 @@ function withResolvedEvidence<T extends Partial<JourneyStep>>({
  * number, when the source is `sanity` and they form a journey the timetable
  * can draw; otherwise `journey`, the code journey. A step's evidence
  * references a member story's `person`; `people` are those documents for
- * the mock CMS (the member stories' backfill).
+ * the mock CMS (the member stories' backfill), and `storyKey` finds a
+ * story's key by the quoted name (see {@link buildJourneyBackfill}).
  */
 export function getMemberJourney(
   journey: readonly JourneyStage[],
   tokens: ContentTokens,
-  { people = () => [] }: { people?: () => readonly BackfillDocument[] } = {},
+  {
+    people = () => [],
+    storyKey = personKey,
+  }: {
+    people?: () => readonly BackfillDocument[];
+    storyKey?: (name: string) => string;
+  } = {},
 ): Promise<JourneyStage[]> {
   return loadContent<JourneyStage[], JOURNEY_QUERY_RESULT>({
     fallback: fillCodeCopy([...journey], tokens),
     query: JOURNEY_QUERY,
     tags: ["content:journeyStep", "content:person"],
     label: "the member journey",
-    mockDocuments: () => [...buildJourneyBackfill(journey), ...people()],
+    mockDocuments: () => [
+      ...buildJourneyBackfill(journey, storyKey),
+      ...people(),
+    ],
     select: (result) => {
       const filled = fillCmsCopy(result, tokens, "the member journey");
       const steps = (Array.isArray(filled) ? filled : [])
@@ -108,11 +119,14 @@ export function getMemberJourney(
 
 /** The core departments: the CMS list when there is one, otherwise `departments`. */
 export function getDepartments(
-  departments: readonly Department[],
+  departments: readonly DepartmentTemplate[],
   tokens: ContentTokens,
 ): Promise<Department[]> {
   return loadContent<Department[], DEPARTMENTS_QUERY_RESULT>({
-    fallback: fillCodeCopy([...departments], tokens),
+    fallback: fillCodeCopy(
+      departments.map(({ key: _, ...department }) => department),
+      tokens,
+    ),
     query: DEPARTMENTS_QUERY,
     tags: ["content:department"],
     label: "the departments",
@@ -129,10 +143,14 @@ export function getDepartments(
 
 /**
  * The journey as `journeyStep` documents: one per step, with its stage. A
- * step's evidence references the member story's `person` by the name's key.
+ * step's evidence references the member story's `person`, whose key
+ * `storyKey` finds by the quoted name (the member stories slice passes
+ * `memberStoryKey`, which reads the story's explicit key; the default
+ * derives it from the name, for tests).
  */
 export function buildJourneyBackfill(
   journey: readonly JourneyStage[],
+  storyKey: (name: string) => string = personKey,
 ): BackfillDocument[] {
   return journey
     .flatMap((stage, stageIndex) =>
@@ -154,7 +172,7 @@ export function buildJourneyBackfill(
             evidence: {
               person: {
                 _type: "reference",
-                _ref: personId("member-story", personKey(step.evidence.name)),
+                _ref: personId("member-story", storyKey(step.evidence.name)),
               },
               excerpt: step.evidence.excerpt,
             },
@@ -165,11 +183,11 @@ export function buildJourneyBackfill(
 
 /** The departments as `department` documents, in order. */
 export function buildDepartmentBackfill(
-  departments: readonly Department[],
+  departments: readonly DepartmentTemplate[],
 ): BackfillDocument[] {
   return departments.map(
-    ({ name, description, photo, photoCaption }, index) => ({
-      _id: backfillId("department", name),
+    ({ key, name, description, photo, photoCaption }, index) => ({
+      _id: backfillId("department", key),
       _type: "department",
       order: (index + 1) * 10,
       name,

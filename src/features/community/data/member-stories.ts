@@ -1,5 +1,11 @@
 /** A member's testimonial: who they are and their story in their words. */
 export type MemberStory = {
+  /**
+   * The `person` document's key (`member-story` placement): its backfill id
+   * and how code picks the story, fixed so a renamed member stays one
+   * document.
+   */
+  key: string;
   name: string;
   /** Their degree and university. */
   role: string;
@@ -10,6 +16,7 @@ export type MemberStory = {
 /** Member testimonials shown on /community. */
 export const stories = [
   {
+    key: "jasmin-el-wafi",
     name: "Jasmin El-Wafi",
     role: "Mathematics in Data Science, TUM",
     story:
@@ -17,6 +24,7 @@ export const stories = [
     image: "/assets/apply/jasmin_el-wafi.webp",
   },
   {
+    key: "zexin-gong",
     name: "Zexin Gong",
     role: "Information Systems, TUM",
     story:
@@ -24,6 +32,7 @@ export const stories = [
     image: "/assets/apply/zexin_gong.webp",
   },
   {
+    key: "sami-haddouti",
     name: "Sami Haddouti",
     role: "Robotics, Cognition and Intelligence, TUM",
     story:
@@ -31,6 +40,7 @@ export const stories = [
     image: "/assets/apply/sami_haddouti.webp",
   },
   {
+    key: "xabier-irizar",
     name: "Xabier Irizar",
     role: "Robotics, Cognition and Intelligence, TUM",
     story:
@@ -39,6 +49,7 @@ export const stories = [
   },
 
   {
+    key: "simon-huang",
     name: "Simon Huang",
     role: "Computer Science, TUM",
     story:
@@ -47,6 +58,7 @@ export const stories = [
   },
 
   {
+    key: "marco-lorenz",
     name: "Marco Lorenz",
     role: "Robotics, Cognition and Intelligence, TUM",
     story:
@@ -54,3 +66,15 @@ export const stories = [
     image: "/assets/apply/marco_lorenz.webp",
   },
 ] satisfies MemberStory[];
+
+/**
+ * The key of the member story told by `name`, for backfill references from
+ * copy that quotes a member by name (the journey's evidence, the homepage
+ * join quote). Throws for a name without a story, so a renamed member
+ * fails the backfill test instead of importing a dangling reference.
+ */
+export function memberStoryKey(name: string): string {
+  const story = stories.find((entry) => entry.name === name);
+  if (!story) throw new Error(`No member story by "${name}"`);
+  return story.key;
+}

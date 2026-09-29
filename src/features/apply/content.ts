@@ -3,7 +3,10 @@ import "server-only";
 import { defineQuery } from "next-sanity";
 import { getContentTokens } from "@/config/content-tokens";
 import { memberJourney } from "@/features/community";
-import { buildMemberStoriesBackfill } from "@/features/community/server";
+import {
+  buildMemberStoriesBackfill,
+  memberStoryKey,
+} from "@/features/community/server";
 import { type BackfillDocument, backfillId } from "@/lib/cms-backfill";
 import { loadContent } from "@/lib/cms-content";
 import { CONTENT_IMAGE_PROJECTION } from "@/lib/cms-content-model";
@@ -139,7 +142,10 @@ export async function getApplyContent(): Promise<ApplyContent> {
     loadContent<Omit<ApplyContent, "journey">, APPLY_CONTENT_QUERY_RESULT>({
       fallback: {
         copy: fillCodeCopy(applyCopyTemplate, tokens, applyPageTokens),
-        milestones: fillCodeCopy(milestones, tokens),
+        milestones: fillCodeCopy(
+          milestones.map(({ key: _, ...milestone }) => milestone),
+          tokens,
+        ),
       },
       query: APPLY_CONTENT_QUERY,
       tags: ["content:applyCopy", "content:milestone"],
@@ -162,6 +168,7 @@ export async function getApplyContent(): Promise<ApplyContent> {
     }),
     getMemberJourney(memberJourney, tokens, {
       people: buildMemberStoriesBackfill,
+      storyKey: memberStoryKey,
     }),
   ]);
   return { ...content, journey };
@@ -200,8 +207,8 @@ export function buildApplyBackfill(): BackfillDocument[] {
         ),
       },
     },
-    ...milestones.map((milestone, index) => ({
-      _id: backfillId("milestone", milestone.year, milestone.title),
+    ...milestones.map(({ key, ...milestone }, index) => ({
+      _id: backfillId("milestone", key),
       _type: "milestone",
       order: (index + 1) * 10,
       ...milestone,

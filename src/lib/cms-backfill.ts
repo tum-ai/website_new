@@ -12,7 +12,10 @@ import { isAbsolute, join, relative, sep } from "node:path";
 
 /** A document as `sanity dataset import` reads it. */
 export type BackfillDocument = {
-  /** Deterministic, from {@link backfillId}, so a re-import replaces it. */
+  /**
+   * Deterministic, from {@link backfillId}, so a re-import finds the same
+   * document (and skips it, unless the import overwrites).
+   */
   _id: string;
   _type: string;
   [field: string]: unknown;
@@ -52,9 +55,10 @@ const slug = (part: string | number) =>
  * in a private path that published queries never return, and `drafts.` is
  * the draft prefix.
  *
- * Base the parts on something that survives copy edits (a key or an anchor
- * id) where one exists; the text itself works for lists without keys, at
- * the cost of a new document when that text changes in code before launch.
+ * Base the parts on an explicit key in the code data (a FAQ `id`, a
+ * milestone or department `key`, a person's `key`), never on its visible
+ * text: an id that follows the wording turns a copy edit in code into a
+ * second document next to the imported one.
  */
 export function backfillId(
   type: string,

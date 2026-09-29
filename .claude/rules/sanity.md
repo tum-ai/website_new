@@ -39,7 +39,9 @@ moving out of code, read through content slices (`lib/cms-content.ts`) behind
   missing tag means that page ignores the type's edits until its timer or the next deploy.
 - **Backfill:** `pnpm sanity:backfill` is a dry run that writes `.sanity-backfill/<dataset>.ndjson`.
   Never run `--apply`, `sanity dataset create` or `sanity dataset import` as part of a change:
-  importing is a maintainer's launch step.
+  importing is a maintainer's launch step. `--apply` only creates missing documents;
+  `--apply --overwrite` replaces existing ones with the code content and **discards editors'
+  edits**. Backfill ids come from explicit keys in the code data (`id`/`key`), never from text.
 - **Studio:** two workspaces, `live` (`/studio/live`, Presentation) and `content`
   (`/studio/content`, only when `NEXT_PUBLIC_SANITY_CONTENT_DATASET` names a dataset other than
   the live one; never a fallback to it); `/studio` redirects to `/studio/live`.

@@ -31,7 +31,11 @@ function useSource(source: "code" | "sanity") {
 const code = {
   copy: fillCodeCopy(communityCopyTemplate, contentTokens),
   journey: memberJourney,
-  departments: fillCodeCopy([...departments], contentTokens),
+  // The keys name the backfill documents only; pages never see them.
+  departments: fillCodeCopy(
+    departments.map(({ key: _, ...department }) => department),
+    contentTokens,
+  ),
 };
 
 const fetchBackfill = <T>(query: string) =>

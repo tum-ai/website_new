@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { getDepartments, getMemberJourney } from "./community-content";
-import type { Department, JourneyStage } from "./community-model";
+import type { DepartmentTemplate, JourneyStage } from "./community-model";
 import { type ContentTokens, contentTokenNames } from "./content-tokens";
 import { personId } from "./person-content";
 
@@ -66,9 +66,14 @@ const journey: JourneyStage[] = [
   },
 ];
 
-const departments: Department[] = [
-  { name: "Events", description: "Runs {{community.makeathonSize}} seats." },
+const departments: DepartmentTemplate[] = [
   {
+    key: "events",
+    name: "Events",
+    description: "Runs {{community.makeathonSize}} seats.",
+  },
+  {
+    key: "venture",
     name: "Venture",
     description: "Runs the E-Lab.",
     photo: {
@@ -139,12 +144,14 @@ describe("getMemberJourney", () => {
 });
 
 describe("getDepartments", () => {
+  // The keys name the backfill documents only; pages never see them.
+  const shown = ({ key: _, ...department }: DepartmentTemplate) => department;
   const filled = [
     {
-      ...departments[0],
+      ...shown(departments[0]),
       description: `Runs ${contentTokens["community.makeathonSize"]} seats.`,
     },
-    departments[1],
+    shown(departments[1]),
   ];
 
   test("fills placeholders and keeps the photos, from either source", async () => {
@@ -163,6 +170,6 @@ describe("getDepartments", () => {
       document.name === "Events" ? { ...document, name: null } : document;
     await expect(
       getDepartments(departments, contentTokens),
-    ).resolves.toStrictEqual([departments[1]]);
+    ).resolves.toStrictEqual([shown(departments[1])]);
   });
 });

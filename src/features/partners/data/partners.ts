@@ -185,6 +185,11 @@ export function fillPartnerPillars(
 
 /** A member profile on /partners ("The cracked 2%."). */
 export type PartnerProfile = {
+  /**
+   * The `person` document's key (`partner-profile` placement), fixed so a
+   * renamed member stays one document.
+   */
+  key: string;
   name: string;
   role: string;
   /** One line under the role; empty for none. */
@@ -196,6 +201,7 @@ export type PartnerProfile = {
 
 export const partnerProfiles: readonly PartnerProfile[] = [
   {
+    key: "leonie-freisinger",
     name: "Leonie Freisinger",
     role: "Co-Founder & CTO @Dryft",
     detail: "5M raised, GC/Neo-backed",
@@ -203,6 +209,7 @@ export const partnerProfiles: readonly PartnerProfile[] = [
     position: "56% 35%",
   },
   {
+    key: "mohamed-elrefaie",
     name: "Mohamed Elrefaie",
     role: "PhD Researcher @MIT",
     detail: "Schwarzman College",
@@ -210,6 +217,7 @@ export const partnerProfiles: readonly PartnerProfile[] = [
     position: "52% 30%",
   },
   {
+    key: "jasmin-el-wafi",
     name: "Jasmin El-Wafi",
     role: "ML Consultant & Systems Architect @AWS",
     detail: "",

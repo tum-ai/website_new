@@ -29,10 +29,11 @@ export type FaqTemplate = {
   question: string;
   answer: string;
   /**
-   * A stable key for the backfill `_id` (the /qanda anchor id); without
-   * one the id comes from the question.
+   * The entry's key: its backfill `_id` is `faq-<collection>-<id>`, so it
+   * never follows the question's wording (a reworded question in code must
+   * not become a second document). On /qanda it is also the anchor id.
    */
-  id?: string;
+  id: string;
 };
 
 /** One entry as the page renders it: placeholders filled. */
@@ -57,7 +58,7 @@ export function buildFaqBackfill(
   templates: readonly FaqTemplate[],
 ): BackfillDocument[] {
   return templates.map((entry, index) => ({
-    _id: backfillId("faq", collection, entry.id ?? entry.question),
+    _id: backfillId("faq", collection, entry.id),
     _type: "faq",
     collection,
     order: (index + 1) * 10,

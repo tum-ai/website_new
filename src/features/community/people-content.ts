@@ -2,11 +2,7 @@ import "server-only";
 
 import type { BackfillDocument } from "@/lib/cms-backfill";
 import { toContentImage } from "@/lib/cms-content-model";
-import {
-  buildPersonBackfill,
-  getPeople,
-  personKey,
-} from "@/lib/person-content";
+import { buildPersonBackfill, getPeople } from "@/lib/person-content";
 import { type MemberStory, stories } from "./data/member-stories";
 
 /**
@@ -23,9 +19,11 @@ export function getMemberStories(): Promise<MemberStory[]> {
     fallback: stories,
     label: "the member stories",
     mockDocuments: buildMemberStoriesBackfill,
-    select: ({ name, role, story, portrait }) => {
+    select: ({ key, name, role, story, portrait }) => {
       const image = toContentImage(portrait);
-      return story && image ? { name, role, story, image: image.src } : null;
+      return story && image
+        ? { key, name, role, story, image: image.src }
+        : null;
     },
   });
 }
@@ -34,8 +32,8 @@ export function getMemberStories(): Promise<MemberStory[]> {
 export function buildMemberStoriesBackfill(): BackfillDocument[] {
   return buildPersonBackfill(
     "member-story",
-    stories.map(({ name, role, story, image }) => ({
-      key: personKey(name),
+    stories.map(({ key, name, role, story, image }) => ({
+      key,
       name,
       role,
       story,

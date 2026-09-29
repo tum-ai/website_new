@@ -1,14 +1,23 @@
 /**
- * `pnpm sanity:backfill [--dataset redesign] [--apply] [--allow-production]`
+ * `pnpm sanity:backfill [--dataset redesign] [--apply [--overwrite]] [--allow-production]`
  *
  * Turns today's code content into Sanity documents (every slice registered
  * in `slices.ts`) and writes them to `.sanity-backfill/<dataset>.ndjson`
  * (gitignored), with a count per type. Nothing leaves the machine unless
- * `--apply` is given: then it runs
- * `sanity dataset import <file> <dataset> --replace` with your CLI login
- * (`sanity login`), which uploads the `_sanityAsset` images and replaces
- * documents with the same `_id`. Documents that exist only in the dataset are
- * left alone.
+ * `--apply` is given: then it runs `sanity dataset import` with your CLI
+ * login (`sanity login`), which uploads the `_sanityAsset` images.
+ *
+ * - `--apply` imports with `--missing`: it **creates** the documents the
+ *   dataset lacks and leaves every existing one as it is, so running it
+ *   again never touches what editors changed in the Studio.
+ * - `--apply --overwrite` imports with `--replace`: every document with a
+ *   backfill `_id` is **replaced by the code content**, discarding the
+ *   editors' edits to it. Only for a dataset nobody has edited yet (or to
+ *   deliberately reset it); the script warns before it starts.
+ *
+ * Documents that exist only in the dataset are left alone in both modes.
+ * Ids come from explicit keys in the code data (`backfillId`), so a copy
+ * edit in code finds the same document instead of adding a second one.
  *
  * The live dataset (`production`) is refused without `--allow-production`:
  * the old site renders what is there. See docs/adr/0009-cms-content-source.md
@@ -27,6 +36,7 @@ const { values } = parseArgs({
   options: {
     dataset: { type: "string", default: "redesign" },
     apply: { type: "boolean", default: false },
+    overwrite: { type: "boolean", default: false },
     "allow-production": { type: "boolean", default: false },
   },
 });
@@ -40,6 +50,10 @@ if (values.apply && dataset === "production" && !values["allow-production"]) {
   throw new Error(
     'Refusing to import into "production": the old site renders that dataset. Use the content dataset (--dataset redesign), or pass --allow-production if you really mean it.',
   );
+}
+
+if (values.overwrite && !values.apply) {
+  throw new Error("--overwrite only changes how --apply imports; add --apply.");
 }
 
 const documents = collectBackfill();
@@ -89,10 +103,29 @@ if (!values.apply) {
   process.exit(0);
 }
 
-process.stdout.write(`Importing into "${dataset}" (--replace)...\n`);
+const mode = values.overwrite ? "--replace" : "--missing";
+if (values.overwrite) {
+  process.stderr.write(
+    [
+      "",
+      "!!! --overwrite: every document above that already exists in",
+      `!!! "${dataset}" is REPLACED by the code content. Edits made in the`,
+      "!!! Studio to those documents are lost. Starting in 10 s; Ctrl+C unless",
+      "!!! nobody has edited this dataset yet or you mean to reset it.",
+      "",
+    ].join("\n"),
+  );
+  // A moment to read the warning and abort before anything is replaced.
+  await new Promise((resolve) => setTimeout(resolve, 10_000));
+} else {
+  process.stdout.write(
+    "Creating missing documents only (--missing): existing ones, and the edits in them, stay as they are.\n",
+  );
+}
+process.stdout.write(`Importing into "${dataset}" (${mode})...\n`);
 const result = spawnSync(
   join(root, "node_modules", ".bin", "sanity"),
-  ["dataset", "import", outFile, dataset, "--replace"],
+  ["dataset", "import", outFile, dataset, mode],
   { cwd: join(root, "src", "sanity"), stdio: "inherit" },
 );
 process.exit(result.status ?? 1);

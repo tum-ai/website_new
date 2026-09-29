@@ -73,7 +73,11 @@ describe("the /apply content slice", () => {
 describe("the /apply copy, milestones and journey", () => {
   const code = {
     copy: fillCodeCopy(applyCopyTemplate, contentTokens, applyPageTokens),
-    milestones: fillCodeCopy(milestones, contentTokens),
+    // The keys name the backfill documents only; pages never see them.
+    milestones: fillCodeCopy(
+      milestones.map(({ key: _, ...milestone }) => milestone),
+      contentTokens,
+    ),
     journey: memberJourney,
   };
 

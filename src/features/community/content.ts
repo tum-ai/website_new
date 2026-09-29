@@ -18,6 +18,7 @@ import type { COMMUNITY_COPY_QUERY_RESULT } from "@/lib/sanity.types.generated";
 import { type CommunityCopy, communityCopyTemplate } from "./data/copy";
 import { departments as departmentTemplates } from "./data/departments";
 import { memberJourney } from "./data/member-journey";
+import { memberStoryKey } from "./data/member-stories";
 import { buildMemberStoriesBackfill } from "./people-content";
 
 /**
@@ -56,6 +57,7 @@ export async function getCommunityContent(): Promise<CommunityContent> {
     }),
     getMemberJourney(memberJourney, tokens, {
       people: buildMemberStoriesBackfill,
+      storyKey: memberStoryKey,
     }),
     getDepartments(departmentTemplates, tokens),
   ]);
@@ -75,7 +77,7 @@ export function buildCommunityBackfill(): BackfillDocument[] {
       hero: { ...hero, photo: backfillContentImage(hero.photo) },
       ...copy,
     },
-    ...buildJourneyBackfill(memberJourney),
+    ...buildJourneyBackfill(memberJourney, memberStoryKey),
     ...buildDepartmentBackfill(departmentTemplates),
   ];
 }
