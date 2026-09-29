@@ -34,7 +34,9 @@ const quoteCardStyles = cva("relative flex h-full flex-col", {
     /**
      * `raised` for light bands; `glass` is the frosted panel for dark bands;
      * `editorial` drops the card and sets the quote as a large light
-     * statement, for one quote that carries a section.
+     * statement, for one quote that carries a section; `ruled` drops the
+     * card for a hairline rule above the quote, for lists of quotes set
+     * editorially on any band.
      */
     variant: {
       raised:
@@ -42,6 +44,7 @@ const quoteCardStyles = cva("relative flex h-full flex-col", {
       glass:
         "rounded-3xl border border-white/10 bg-white/[0.045] p-7 shadow-inset-hairline backdrop-blur-md md:p-8",
       editorial: "",
+      ruled: "border-hairline-strong border-t pt-8",
     },
   },
   defaultVariants: { variant: "raised" },
@@ -53,6 +56,7 @@ const quoteTextStyles = cva("flex-1 text-fg", {
       raised: "mt-6 text-lead",
       glass: "mt-6 text-lead",
       editorial: "mt-8 text-display-md",
+      ruled: "mt-5 text-lead",
     },
   },
   defaultVariants: { variant: "raised" },
@@ -92,7 +96,8 @@ export type QuoteCardProps = Omit<ComponentProps<"figure">, "children"> &
 
 /**
  * Testimonial: quote mark, quotation, and a person row with portrait. The
- * `editorial` variant sets the quotation in display type, without a card.
+ * `editorial` variant sets the quotation in display type, without a card;
+ * `ruled` sets it under a hairline, without a card.
  */
 export function QuoteCard({
   quote,
