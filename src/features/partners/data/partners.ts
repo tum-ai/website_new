@@ -166,6 +166,13 @@ export const partnerProfiles = [
   },
 ] as const;
 
+/**
+ * How partners meet the members, in one sentence: the partner fork in the
+ * closing bands of /apply, /community and /qanda.
+ */
+export const partnerPitch =
+  "Partners meet our members through talent packages, hackathon challenges and company visits.";
+
 export const partnerCaseStudies = [
   {
     name: "QuantCo",

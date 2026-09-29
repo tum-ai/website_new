@@ -14,11 +14,9 @@ import {
   getHighlightedPartners,
   getPartnerDirectory,
   partnerCaseStudies,
+  symbolOnlyLogos,
 } from "@/features/partners";
 import { partnerQuoteId } from "./data/homepage";
-
-/** Partners whose artwork is a symbol without the name. */
-const LOCKUP_NAMES = new Set(["Mutagent"]);
 
 const quote = testimonialCards.find((card) => card.id === partnerQuoteId);
 
@@ -31,7 +29,10 @@ const partnerLogos = getHighlightedPartners(getPartnerDirectory([])).map(
     name: partner.name,
     src: partner.image,
     // Symbol-only artwork: set the name beside it.
-    wordmark: LOCKUP_NAMES.has(partner.name) ? partner.name : undefined,
+    wordmark:
+      partner.image && symbolOnlyLogos.has(partner.image)
+        ? partner.name
+        : undefined,
   }),
 );
 

@@ -7,6 +7,7 @@ import {
   TextLink,
 } from "@/components/ds";
 import { recruitingTimeline } from "@/config/membership";
+import { partnerPitch } from "@/features/partners";
 import { MembershipApplyButton } from "./membership-apply-button";
 
 /**
@@ -49,10 +50,7 @@ export function ClosingSection() {
             className="border-hairline-strong border-t pt-8 lg:col-span-4 lg:self-end"
           >
             <p className="font-medium text-fg text-small">For companies</p>
-            <p className="mt-3 text-body text-fg-muted">
-              Partners meet our members through talent packages, hackathon
-              challenges and company visits.
-            </p>
+            <p className="mt-3 text-body text-fg-muted">{partnerPitch}</p>
             <p className="mt-5">
               <TextLink href="/partners" arrow className="text-small">
                 Become a Partner
