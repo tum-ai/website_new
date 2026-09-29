@@ -47,16 +47,7 @@ const twMerge = extendTailwindMerge({
       ],
       radius: ["signature"],
       ease: ["brand", "snappy", "in-out-soft"],
-      animate: [
-        "rise",
-        "rise-sm",
-        "fade",
-        "aurora",
-        "drift",
-        "marquee",
-        "marquee-reverse",
-        "pulse-ring",
-      ],
+      animate: ["rise", "rise-sm", "fade", "aurora", "drift", "pulse-ring"],
     },
     classGroups: {
       "fvn-spacing": ["tabular"],

@@ -6,9 +6,10 @@ import { marqueeLogos } from "./data/partner-marquee-logos";
 import { getPartnerKey } from "./partner-directory";
 
 /**
- * Highlighted-partner rail for the dark hero. Unlike the DS `Marquee` (which
- * duplicates its list), every partner is rendered once and moves at an equal
- * rate, wrapping outside the clipped window; mechanics live in partners.css.
+ * Highlighted-partner rail for the dark hero. Every partner is rendered once
+ * (no duplicated list for a seamless loop) and moves at an equal rate,
+ * wrapping outside the clipped window; mechanics live in partners.css. Under
+ * reduced motion the rail stands still as a wrapped row of logos.
  * Only artwork verified on dark bands is shown (`marqueeLogos`); everything
  * else, and artwork that fails to load, falls back to the name.
  */

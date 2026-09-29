@@ -519,9 +519,9 @@ export async function expectContentVisible(page: Page): Promise<void> {
 // ---------------------------------------------------------------------------
 
 /**
- * Regions whose pixels change between runs even under reduced motion:
- * marquee rails (scroll position), the rotating partner logo grids, and
- * count-up figures. `toHaveScreenshot` paints them over with a solid box.
+ * Regions whose pixels change between runs even under reduced motion: the
+ * rotating partner logo grids and count-up figures. (The partners marquee
+ * stands still under reduced motion, so it needs no mask.) `toHaveScreenshot` paints them over with a solid box.
  *
  * The home hero aperture is deliberately not masked: it sits behind the
  * heading and CTAs (masking it would hide them), its photos are hidden while
@@ -529,7 +529,6 @@ export async function expectContentVisible(page: Page): Promise<void> {
  * use, holds its crossfade still.
  */
 const visualMaskSelectors = [
-  '[class~="group/marquee"]',
   "[data-rotating]",
   ".tabular:has(> [aria-hidden] + .sr-only)",
 ] as const;
