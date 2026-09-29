@@ -77,13 +77,19 @@ export function figureViewBox(count: number) {
 }
 
 /**
- * Lays out `count` seats evenly around the AI circle, clockwise from the
- * top. Each seat's lens is the two arcs between its crossings: the AI
+ * Lays out `count` seats (at least 2) evenly around the AI circle,
+ * clockwise from the top. Each seat's lens is the two arcs between its crossings: the AI
  * circle's arc on the seat's side, then the seat circle's arc on the
  * origin's side. Both are minor arcs, drawn counter-clockwise (sweep 0),
  * because both centres lie outside the other circle's chord.
  */
 export function layoutSeats(count: number): Seat[] {
+  // One seat has no neighbours to size against (its radius would be 0 and
+  // the lens undefined); the page always seats the open circle beside at
+  // least one task force.
+  if (!Number.isInteger(count) || count < 2) {
+    throw new RangeError(`layoutSeats needs at least 2 seats, got ${count}`);
+  }
   const r = seatRadius(count);
   const d = SEAT_DISTANCE;
   const R = AI_RADIUS;

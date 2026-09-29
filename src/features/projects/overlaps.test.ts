@@ -3,11 +3,14 @@ import { taskForces } from "./data/projects";
 import {
   AI_RADIUS,
   figureExtent,
+  figureViewBox,
   LABEL_HALF_HEIGHT,
   layoutSeats,
   SEAT_DISTANCE,
   type Seat,
+  seatBox,
   seatRadius,
+  seatViewBox,
 } from "./overlaps";
 
 const distance = (x: number, y: number) => Math.hypot(x, y);
@@ -102,4 +105,57 @@ test("the lens path runs from one crossing along both arcs and back", () => {
   // The top seat's first crossing is on the right, so a counter-clockwise
   // arc (sweep 0) runs over the top: through the lens, not around the circle.
   expect(first.x).toBeGreaterThan(0);
+});
+
+describe("layoutSeats guard", () => {
+  test("needs at least two seats", () => {
+    for (const count of [-1, 0, 1, 2.5, Number.NaN]) {
+      expect(() => layoutSeats(count), String(count)).toThrow(RangeError);
+    }
+    expect(layoutSeats(2)).toHaveLength(2);
+  });
+
+  test("the page always has enough seats", () => {
+    expect(pageCount).toBeGreaterThanOrEqual(2);
+  });
+});
+
+describe.each(counts)("placement boxes for %i seats", (count) => {
+  const seats = layoutSeats(count);
+  const extent = figureExtent(count);
+  const percent = (value: string) => Number.parseFloat(value) / 100;
+
+  test("the figure's viewBox is the square around the origin", () => {
+    expect(figureViewBox(count)).toBe(
+      `${-extent} ${-extent} ${2 * extent} ${2 * extent}`,
+    );
+  });
+
+  test("each seat's box covers exactly its circle, as shares of the figure", () => {
+    for (const seat of seats) {
+      const box = seatBox(seat, count);
+      // Back from shares of the figure to figure units.
+      const left = percent(box.left) * 2 * extent - extent;
+      const top = percent(box.top) * 2 * extent - extent;
+      const width = percent(box.width) * 2 * extent;
+      const height = percent(box.height) * 2 * extent;
+      expect(left).toBeCloseTo(seat.cx - seat.r, 2);
+      expect(top).toBeCloseTo(seat.cy - seat.r, 2);
+      expect(width).toBeCloseTo(2 * seat.r, 2);
+      expect(height).toBeCloseTo(width, 6);
+      // Inside the figure.
+      expect(percent(box.left)).toBeGreaterThanOrEqual(0);
+      expect(percent(box.left) + percent(box.width)).toBeLessThanOrEqual(1);
+    }
+  });
+
+  test("each seat's viewBox is the square around its circle", () => {
+    for (const seat of seats) {
+      const [x, y, width, height] = seatViewBox(seat).split(" ").map(Number);
+      expect(x).toBeCloseTo(seat.cx - seat.r, 2);
+      expect(y).toBeCloseTo(seat.cy - seat.r, 2);
+      expect(width).toBeCloseTo(2 * seat.r, 2);
+      expect(height).toBe(width);
+    }
+  });
 });
