@@ -18,6 +18,10 @@ close and reopen a PR to re-run CI.
 
 People can run any suite locally when it helps; the commands are below.
 
+**Knip locally:** run `CI=1 pnpm knip`. Knip's lefthook plugin counts the `lefthook` dependency as
+used only when `CI` is set or it finds installed git hooks, so a plain `pnpm knip` in a git
+worktree (or a clone whose hooks aren't installed) reports `lefthook` as unused. CI sets `CI`.
+
 ## Layers
 
 | Layer | Files | Command | Environment |
@@ -39,7 +43,8 @@ thresholds (`vitest.config.ts`): `src/lib/**` and `src/features/**/*.ts` 90 %,
 
 `vitest.config.ts` defines two projects. `*.test.ts` runs in node, `*.test.tsx` in jsdom with
 `vitest.setup.ts` (jest-dom matchers and the axe matcher). The `@/` and `@test/` aliases work in
-both, and `server-only` is replaced by a stub, so `lib/sanity.ts` can be imported; mock
+both, and `server-only` is replaced by a stub (`vitest.aliases.ts`, shared with
+`vitest.perf.config.ts`), so `lib/sanity.ts` can be imported; mock
 `next/headers`, `next/navigation` and `next-sanity` with `vi.mock`.
 
 ```tsx
