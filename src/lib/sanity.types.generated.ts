@@ -218,6 +218,86 @@ export type Slug = {
   source?: string;
 };
 
+export type Department = {
+  _id: string;
+  _type: "department";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  order: number;
+  name: string;
+  description: string;
+  photo?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  photoCaption?: string;
+};
+
+export type JourneyStep = {
+  _id: string;
+  _type: "journeyStep";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  order: number;
+  stage: number;
+  number: string;
+  name: string;
+  description: string;
+  iconKey:
+    | "rocket"
+    | "brain"
+    | "handshake"
+    | "chart"
+    | "globe"
+    | "graduation-cap";
+  fromSemester: number;
+  span: "event" | "ongoing";
+  evidence?: {
+    name: string;
+    excerpt: string;
+  };
+};
+
+export type CommunityCopy = {
+  _id: string;
+  _type: "communityCopy";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  hero?: {
+    title: string;
+    lead: string;
+    photo: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      _type: "image";
+    };
+    photoCaption: string;
+  };
+  journey?: {
+    title: string;
+    lead: string;
+  };
+  departments?: {
+    title: string;
+    lead: string;
+  };
+  closing?: {
+    title: string;
+    lead: string;
+    companiesReader: string;
+  };
+};
+
 export type QandaCopy = {
   _id: string;
   _type: "qandaCopy";
@@ -280,8 +360,63 @@ export type AllSanitySchemaTypes =
   | SanityImageAsset
   | Geopoint
   | Slug
+  | Department
+  | JourneyStep
+  | CommunityCopy
   | QandaCopy
   | Faq;
+
+// Source: ../features/community/content.ts
+// Variable: COMMUNITY_COPY_QUERY
+// Query: *[_id == "communityCopy"][0]{  hero{ title, lead, "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}, photoCaption },  journey{ title, lead },  departments{ title, lead },  closing{ title, lead, companiesReader }}
+export type COMMUNITY_COPY_QUERY_RESULT =
+  | {
+      hero: null;
+      journey: null;
+      departments: null;
+      closing: null;
+    }
+  | {
+      hero: null;
+      journey: null;
+      departments: null;
+      closing: {
+        title: string;
+        lead: string;
+        companiesReader: null;
+      } | null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+        photo: {
+          src: string | null;
+          width: number | null;
+          height: number | null;
+          alt: string | null;
+          hotspot: {
+            x: number;
+            y: number;
+          } | null;
+        };
+        photoCaption: string;
+      } | null;
+      journey: {
+        title: string;
+        lead: string;
+      } | null;
+      departments: {
+        title: string;
+        lead: string;
+      } | null;
+      closing: {
+        title: string;
+        lead: string;
+        companiesReader: string;
+      } | null;
+    }
+  | null;
 
 // Source: ../features/qanda/content.ts
 // Variable: QANDA_CONTENT_QUERY
@@ -294,6 +429,18 @@ export type QANDA_CONTENT_QUERY_RESULT = {
         missionLead: null;
         missionPassage: null;
         closing: null;
+        forks: null;
+      }
+    | {
+        heroTitle: null;
+        missionQuestion: null;
+        missionLead: null;
+        missionPassage: null;
+        closing: {
+          title: string;
+          lead: string;
+          action: null;
+        } | null;
         forks: null;
       }
     | {
@@ -330,6 +477,48 @@ export type QANDA_CONTENT_QUERY_RESULT = {
     } | null;
   }>;
 };
+
+// Source: ../lib/community-content.ts
+// Variable: JOURNEY_QUERY
+// Query: *[_type == "journeyStep"] | order(order asc){  "step": number,  name,  description,  iconKey,  fromSemester,  span,  stage,  evidence{ name, excerpt }}
+export type JOURNEY_QUERY_RESULT = Array<{
+  step: string;
+  name: string;
+  description: string;
+  iconKey:
+    | "brain"
+    | "chart"
+    | "globe"
+    | "graduation-cap"
+    | "handshake"
+    | "rocket";
+  fromSemester: number;
+  span: "event" | "ongoing";
+  stage: number;
+  evidence: {
+    name: string;
+    excerpt: string;
+  } | null;
+}>;
+
+// Source: ../lib/community-content.ts
+// Variable: DEPARTMENTS_QUERY
+// Query: *[_type == "department"] | order(order asc){  name,  description,  "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }},  photoCaption}
+export type DEPARTMENTS_QUERY_RESULT = Array<{
+  name: string;
+  description: string;
+  photo: {
+    src: string | null;
+    width: number | null;
+    height: number | null;
+    alt: string | null;
+    hotspot: {
+      x: number;
+      y: number;
+    } | null;
+  } | null;
+  photoCaption: string | null;
+}>;
 
 // Source: ../lib/faq-content.ts
 // Variable: FAQ_QUERY

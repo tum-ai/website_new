@@ -1,4 +1,7 @@
+import { communityCopyType } from "./community-copy";
+import { departmentType } from "./department";
 import { faqType } from "./faq";
+import { journeyStepType } from "./journey-step";
 import { qandaCopyType } from "./qanda-copy";
 
 /**
@@ -15,6 +18,9 @@ export const contentSchemaTypes = [
 
   // Phase 4: page copy
   qandaCopyType,
+  communityCopyType,
+  journeyStepType,
+  departmentType,
 ];
 
 /**
@@ -26,4 +32,5 @@ export const contentSchemaTypes = [
 export const contentSingletons: readonly { type: string; title: string }[] = [
   // Phase 4: page copy
   { type: "qandaCopy", title: "Q&A page" },
+  { type: "communityCopy", title: "Community page" },
 ];

@@ -1,4 +1,5 @@
 import { buildApplyBackfill } from "@/features/apply/content";
+import { buildCommunityBackfill } from "@/features/community/content";
 import { buildELabBackfill } from "@/features/e-lab/content";
 import { buildQandaBackfill } from "@/features/qanda/content";
 import type { BackfillDocument } from "@/lib/cms-backfill";
@@ -22,6 +23,7 @@ export const backfillSlices: readonly {
 
   // Phase 4: page copy
   { slice: "features/qanda/content.ts", build: buildQandaBackfill },
+  { slice: "features/community/content.ts", build: buildCommunityBackfill },
 ];
 
 /** The documents of every slice, in registry order. */

@@ -3,10 +3,11 @@ import Image from "next/image";
 import type { CSSProperties } from "react";
 import { Container, Reveal, Section, SectionHeader } from "@/components/ds";
 import { cn } from "@/lib/cn";
+import type { CommunityCopy } from "./data/copy";
 import {
+  type JourneyStage,
   type JourneyStep,
-  memberJourney,
-  semesterColumns,
+  semesterColumnsOf,
   stepAnchor,
 } from "./data/member-journey";
 import { stories } from "./data/member-stories";
@@ -25,10 +26,10 @@ const RAIL_WIDTH = "w-[calc((100%-3rem)*7/12)]";
 /**
  * Horizontal position of a semester's column rule within a row, from the
  * ROW_GRID numbers: past the copy column and the gap, then that share of the
- * timetable.
+ * timetable's `columns` columns.
  */
-const columnLeft = (semester: number) =>
-  `calc((100% - 3rem) * 5 / 12 + 3rem + (100% - 3rem) * 7 / 12 * ${semester} / ${semesterColumns.length})`;
+const columnLeft = (semester: number, columns: number) =>
+  `calc((100% - 3rem) * 5 / 12 + 3rem + (100% - 3rem) * 7 / 12 * ${semester} / ${columns})`;
 
 /**
  * Vertical centre of a row's marker from the row's top, in theme spacing
@@ -38,9 +39,9 @@ const columnLeft = (semester: number) =>
 const MARKER_TOP = "calc(var(--spacing) * (14 + 10 / 2))";
 
 /** One grid track per timetable column, so the columns follow the data. */
-const COLUMNS: CSSProperties = {
-  gridTemplateColumns: `repeat(${semesterColumns.length}, minmax(0, 1fr))`,
-};
+const gridOf = (columns: number): CSSProperties => ({
+  gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+});
 
 /** Places an element from a step's opening semester to the last column. */
 const fromColumn = (step: JourneyStep): CSSProperties => ({
@@ -60,7 +61,14 @@ const opensIn = (step: JourneyStep) =>
  * onboarding weekend is a single point. A member's own words hang on the
  * rows they took. Server markup only: the rules draw in with `Reveal`.
  */
-export function SemesterPlan() {
+export function SemesterPlan({
+  copy,
+  journey,
+}: {
+  copy: CommunityCopy["journey"];
+  journey: readonly JourneyStage[];
+}) {
+  const columns = semesterColumnsOf(journey);
   return (
     <Section
       tone="paper"
@@ -72,28 +80,36 @@ export function SemesterPlan() {
       <Container>
         <SectionHeader
           id="journey-title"
-          title="Semester by semester"
+          title={copy.title}
           size="lg"
           layout="stack"
-          lead="Every member starts at the onboarding weekend. The rows below show when each step of the membership opens, counted in semesters."
+          lead={copy.lead}
         />
         <div className="relative">
-          <ColumnRules />
-          <ColumnHeads />
+          <ColumnRules columns={columns} />
+          <ColumnHeads columns={columns} />
           <ol className="border-hairline-strong border-t lg:border-t-0">
-            {memberJourney.map((stage) =>
+            {journey.map((stage) =>
               stage.kind === "single" ? (
                 <li key={stage.step.step} className="border-hairline border-b">
-                  <StepRow step={stage.step} />
+                  <StepRow step={stage.step} columns={columns} />
                 </li>
               ) : (
                 <li
                   key={stage.steps[0].step}
                   className="border-hairline border-b"
                 >
-                  <StepRow step={stage.steps[0]} connect="down" />
-                  <ForkDivider step={stage.steps[0]} />
-                  <StepRow step={stage.steps[1]} connect="up" />
+                  <StepRow
+                    step={stage.steps[0]}
+                    columns={columns}
+                    connect="down"
+                  />
+                  <ForkDivider step={stage.steps[0]} columns={columns} />
+                  <StepRow
+                    step={stage.steps[1]}
+                    columns={columns}
+                    connect="up"
+                  />
                 </li>
               ),
             )}
@@ -104,8 +120,11 @@ export function SemesterPlan() {
   );
 }
 
+/** The timetable's column labels ("0", "1", ... "3+"). */
+type Columns = { columns: readonly string[] };
+
 /** Hairline column rules behind the timetable (lg and up). */
-function ColumnRules() {
+function ColumnRules({ columns }: Columns) {
   return (
     <div
       aria-hidden="true"
@@ -113,9 +132,9 @@ function ColumnRules() {
         "pointer-events-none absolute inset-y-0 right-0 hidden lg:grid",
         RAIL_WIDTH,
       )}
-      style={COLUMNS}
+      style={gridOf(columns.length)}
     >
-      {semesterColumns.map((label) => (
+      {columns.map((label) => (
         <span key={label} className="border-hairline border-l" />
       ))}
     </div>
@@ -123,15 +142,15 @@ function ColumnRules() {
 }
 
 /** The semester numerals over the columns (lg and up). */
-function ColumnHeads() {
+function ColumnHeads({ columns }: Columns) {
   return (
     <div
       aria-hidden="true"
       className={cn("hidden border-hairline-strong border-b pb-8", ROW_GRID)}
     >
       <p className="self-end text-fg-subtle text-meta">Semester</p>
-      <div className="grid" style={COLUMNS}>
-        {semesterColumns.map((label, index) => (
+      <div className="grid" style={gridOf(columns.length)}>
+        {columns.map((label, index) => (
           <div key={label} className="pl-5">
             <span className="tabular block text-display-lg text-highlight">
               {label}
@@ -151,8 +170,9 @@ function ColumnHeads() {
 /** One step: its copy, where it sits in the timetable, and its evidence. */
 function StepRow({
   step,
+  columns,
   connect,
-}: {
+}: Columns & {
   step: JourneyStep;
   /**
    * In a fork: draw the tracks' shared connector from this row's marker
@@ -173,7 +193,7 @@ function StepRow({
           aria-hidden="true"
           className="absolute z-20 hidden w-0.5 -translate-x-1/2 bg-highlight lg:block"
           style={{
-            left: columnLeft(step.fromSemester),
+            left: columnLeft(step.fromSemester, columns.length),
             ...(connect === "down"
               ? { top: MARKER_TOP, bottom: 0 }
               : { top: 0, height: MARKER_TOP }),
@@ -184,13 +204,13 @@ function StepRow({
         <h3 className="text-fg text-heading-lg">{step.name}</h3>
         <div className="mt-2 flex items-center gap-4">
           <p className="text-fg-subtle text-meta">{opensIn(step)}</p>
-          <SemesterStrip step={step} />
+          <SemesterStrip step={step} columns={columns} />
         </div>
         <p className="mt-4 max-w-xl text-body text-fg-muted">
           {step.description}
         </p>
       </div>
-      <div className="lg:grid lg:content-start" style={COLUMNS}>
+      <div className="lg:grid lg:content-start" style={gridOf(columns.length)}>
         <Rule step={step} />
         {step.evidence && story ? (
           <figure
@@ -254,10 +274,14 @@ function Rule({ step }: { step: JourneyStep }) {
  * columns: one cell per semester, the opening one marked and the rest of the
  * run drawn.
  */
-function SemesterStrip({ step }: { step: JourneyStep }) {
+function SemesterStrip({ step, columns }: Columns & { step: JourneyStep }) {
   return (
-    <div aria-hidden="true" className="grid h-3 w-24 lg:hidden" style={COLUMNS}>
-      {semesterColumns.map((label, index) => {
+    <div
+      aria-hidden="true"
+      className="grid h-3 w-24 lg:hidden"
+      style={gridOf(columns.length)}
+    >
+      {columns.map((label, index) => {
         const opens = index === step.fromSemester;
         const runs = step.span === "ongoing" && index > step.fromSemester;
         return (
@@ -282,17 +306,17 @@ function SemesterStrip({ step }: { step: JourneyStep }) {
  * "or" between the two tracks of a fork. From lg it sits beside the violet
  * connector that joins both tracks' markers on the semester they open in.
  */
-function ForkDivider({ step }: { step: JourneyStep }) {
+function ForkDivider({ step, columns }: Columns & { step: JourneyStep }) {
   return (
     <div className="relative lg:py-2">
       <span
         aria-hidden="true"
         className="absolute inset-y-0 hidden w-0.5 -translate-x-1/2 bg-highlight lg:block"
-        style={{ left: columnLeft(step.fromSemester) }}
+        style={{ left: columnLeft(step.fromSemester, columns.length) }}
       />
       <p
         className="flex items-center gap-3 text-fg-subtle text-meta lg:absolute lg:top-1/2 lg:ml-4 lg:block lg:-translate-y-1/2"
-        style={{ left: columnLeft(step.fromSemester) }}
+        style={{ left: columnLeft(step.fromSemester, columns.length) }}
       >
         <span
           aria-hidden="true"

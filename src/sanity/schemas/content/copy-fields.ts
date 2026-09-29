@@ -100,3 +100,15 @@ export function copyStringList(
     },
   });
 }
+
+/** The position of a document in its page list, ascending. */
+export function orderField() {
+  return defineField({
+    name: "order",
+    title: "Order",
+    type: "number",
+    description:
+      "Position on the page, ascending. Leave gaps (10, 20, 30) to insert entries later.",
+    validation: (Rule) => Rule.required().integer(),
+  });
+}

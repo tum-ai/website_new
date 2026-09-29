@@ -1,7 +1,8 @@
 import { axe } from "@test/axe";
 import { render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { journeySteps, stepAnchor } from "./data/member-journey";
+import { communityCopyTemplate } from "./data/copy";
+import { journeySteps, memberJourney, stepAnchor } from "./data/member-journey";
 import { stories } from "./data/member-stories";
 import { SemesterPlan } from "./semester-plan";
 
@@ -33,11 +34,17 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
+const Plan = () => (
+  <SemesterPlan copy={communityCopyTemplate.journey} journey={memberJourney} />
+);
+
 describe("SemesterPlan", () => {
   test("lists every journey step in order under the section heading", async () => {
-    const { container } = render(<SemesterPlan />);
+    const { container } = render(<Plan />);
     expect(
-      screen.getByRole("region", { name: "Semester by semester" }),
+      screen.getByRole("region", {
+        name: communityCopyTemplate.journey.title,
+      }),
     ).toBeInTheDocument();
     expect(
       screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent),
@@ -46,7 +53,7 @@ describe("SemesterPlan", () => {
   });
 
   test("keeps each step's anchor for deep links", () => {
-    render(<SemesterPlan />);
+    render(<Plan />);
     for (const step of journeySteps) {
       const heading = screen.getByRole("heading", { name: step.name });
       expect(heading.closest(`#${stepAnchor(step.step)}`)).not.toBeNull();
@@ -54,7 +61,7 @@ describe("SemesterPlan", () => {
   });
 
   test("says in words when each step opens, since the columns are decorative", () => {
-    render(<SemesterPlan />);
+    render(<Plan />);
     for (const step of journeySteps) {
       const row = document.getElementById(stepAnchor(step.step));
       expect(row).toHaveTextContent(
@@ -66,7 +73,7 @@ describe("SemesterPlan", () => {
   });
 
   test("quotes the members named as evidence, with their names", () => {
-    render(<SemesterPlan />);
+    render(<Plan />);
     for (const step of journeySteps) {
       if (!step.evidence) continue;
       const row = document.getElementById(stepAnchor(step.step));

@@ -5,7 +5,8 @@ import {
   Section,
   SectionHeader,
 } from "@/components/ds";
-import { departments } from "./data/departments";
+import type { Department } from "@/lib/community-model";
+import type { CommunityCopy } from "./data/copy";
 
 /**
  * The departments behind the initiative track, as a hairline-ruled roster:
@@ -13,7 +14,13 @@ import { departments } from "./data/departments";
  * its work where we have a real one. No cards and no counters: the roster
  * has no order to encode.
  */
-export function DepartmentsSection() {
+export function DepartmentsSection({
+  copy,
+  departments,
+}: {
+  copy: CommunityCopy["departments"];
+  departments: readonly Department[];
+}) {
   return (
     <Section
       tone="mist"
@@ -24,10 +31,10 @@ export function DepartmentsSection() {
       <Container>
         <SectionHeader
           id="departments-title"
-          title="The departments that run TUM.ai"
+          title={copy.title}
           size="lg"
           layout="stack"
-          lead="On the initiative track, you join one of these teams. Together they organize everything TUM.ai does, from the Makeathon to the contracts."
+          lead={copy.lead}
         />
         <ul className="border-hairline-strong border-t">
           {departments.map((department) => (
@@ -46,8 +53,8 @@ export function DepartmentsSection() {
                 <Photo
                   src={department.photo.src}
                   alt={department.photo.alt}
-                  caption={department.photo.caption}
-                  position={department.photo.position}
+                  caption={department.photoCaption}
+                  position={department.photo.objectPosition}
                   aspect="4/3"
                   sizes="(min-width: 1024px) 22vw, (min-width: 768px) 60vw, 100vw"
                   className="mt-2 md:col-span-8 md:col-start-5 lg:col-span-3 lg:mt-0"
