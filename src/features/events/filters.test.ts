@@ -1,86 +1,54 @@
 import { describe, expect, test } from "vitest";
-import type { EventCategory, EventCity } from "@/lib/types";
 import {
-  ALL_CATEGORIES,
-  ALL_CITIES,
+  ALL_EVENTS,
+  categoryLabel,
   countFilterOptions,
-  DEFAULT_EVENT_FILTERS,
   eventCategories,
-  eventCities,
-  hasActiveFilters,
-  matchesFilters,
-  toCategoryFilter,
-  toCityFilter,
+  filterLabel,
+  filterValues,
+  matchesFilter,
+  toFilter,
 } from "./filters";
 
-const events: { category?: EventCategory; city?: EventCity }[] = [
-  { category: "Hackathon", city: "Munich" },
-  { category: "Speaker", city: "Munich" },
-  { category: "Speaker", city: "Online" },
-  { category: "E-Lab" },
-  {},
-];
-
 describe("filter options", () => {
-  test("offer every category and city once", () => {
-    expect(new Set(eventCategories).size).toBe(eventCategories.length);
-    expect(new Set(eventCities).size).toBe(eventCities.length);
-    expect(eventCategories).not.toContain(ALL_CATEGORIES);
-    expect(eventCities).not.toContain(ALL_CITIES);
+  test("offer All, then every schema category once", () => {
+    expect(filterValues[0]).toBe(ALL_EVENTS);
+    expect(new Set(filterValues).size).toBe(filterValues.length);
+    expect(filterValues.slice(1)).toEqual(eventCategories);
+  });
+
+  test("name one event in the singular and a chip in the plural", () => {
+    expect(categoryLabel("Speaker")).toBe("Talk");
+    expect(filterLabel("Speaker")).toBe("Talks");
+    expect(filterLabel(ALL_EVENTS)).toBe("All");
   });
 
   test("chip values parse back, and anything unknown means All", () => {
-    for (const category of eventCategories) {
-      expect(toCategoryFilter(category)).toBe(category);
-    }
-    for (const city of eventCities) {
-      expect(toCityFilter(city)).toBe(city);
-    }
-    expect(toCategoryFilter("Workshop")).toBe(ALL_CATEGORIES);
-    expect(toCityFilter("Berlin")).toBe(ALL_CITIES);
+    for (const value of filterValues) expect(toFilter(value)).toBe(value);
+    expect(toFilter("Workshop")).toBe(ALL_EVENTS);
   });
 });
 
-describe("matchesFilters", () => {
-  test("the defaults match every event, including ones without a category or city", () => {
-    expect(
-      events.every((event) => matchesFilters(event, DEFAULT_EVENT_FILTERS)),
-    ).toBe(true);
-    expect(hasActiveFilters(DEFAULT_EVENT_FILTERS)).toBe(false);
+describe("matchesFilter", () => {
+  test("All matches every event, including one without a category", () => {
+    expect(matchesFilter({}, ALL_EVENTS)).toBe(true);
+    expect(matchesFilter({ category: "E-Lab" }, ALL_EVENTS)).toBe(true);
   });
 
-  test("category and city combine", () => {
-    const filters = { category: "Speaker", city: "Online" } as const;
-    expect(events.filter((event) => matchesFilters(event, filters))).toEqual([
-      { category: "Speaker", city: "Online" },
-    ]);
-    expect(hasActiveFilters(filters)).toBe(true);
+  test("a category matches only its events", () => {
+    expect(matchesFilter({ category: "Hackathon" }, "Hackathon")).toBe(true);
+    expect(matchesFilter({ category: "Speaker" }, "Hackathon")).toBe(false);
+    expect(matchesFilter({}, "Hackathon")).toBe(false);
   });
 });
 
-describe("countFilterOptions", () => {
-  test("counts each chip under the other filter (faceted)", () => {
-    const counts = countFilterOptions(events, {
-      category: ALL_CATEGORIES,
-      city: "Munich",
-    });
-    expect(counts.category).toEqual({
-      [ALL_CATEGORIES]: 2,
-      Hackathon: 1,
-      Speaker: 1,
-      Event: 0,
-      "E-Lab": 0,
-    });
-    // City chips ignore the city selection and apply the category one.
-    expect(counts.city).toEqual({ [ALL_CITIES]: 5, Munich: 2, Online: 1 });
-  });
-
-  test("has a count for every chip", () => {
-    const counts = countFilterOptions(events, DEFAULT_EVENT_FILTERS);
-    expect(Object.keys(counts.category)).toEqual([
-      ALL_CATEGORIES,
-      ...eventCategories,
-    ]);
-    expect(Object.keys(counts.city)).toEqual([ALL_CITIES, ...eventCities]);
-  });
+test("countFilterOptions counts every chip", () => {
+  expect(
+    countFilterOptions([
+      { category: "Hackathon" },
+      { category: "Hackathon" },
+      { category: "Speaker" },
+      {},
+    ]),
+  ).toEqual({ All: 4, Hackathon: 2, Speaker: 1, "E-Lab": 0, Event: 0 });
 });

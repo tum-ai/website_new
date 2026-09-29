@@ -22,8 +22,6 @@ import type {
 export type Event = WithoutNulls<EVENTS_QUERY_RESULT[number]>;
 /** "E-Lab" | "Event" | "Hackathon" | "Speaker". */
 export type EventCategory = NonNullable<Event["category"]>;
-/** "Munich" | "Online". */
-export type EventCity = NonNullable<Event["city"]>;
 
 /** A partner on /partners, /research and the homepage. */
 export type Partner = WithoutNulls<PARTNERS_QUERY_RESULT[number]>;

@@ -161,26 +161,22 @@ test.describe("disclosure widgets", { tag: "@keyboard" }, () => {
     await expect(second).toHaveAttribute("aria-expanded", "false");
   });
 
-  test("event filter chips use roving focus and keep focus on Clear", async ({
-    page,
-  }) => {
+  test("event filter chips use roving focus", async ({ page }) => {
     await page.goto("/events");
     const category = page.getByRole("group", { name: "Category" });
-    const all = category.getByRole("button", { name: /^All Categories/ });
-    const hackathon = category.getByRole("button", { name: /^Hackathon/ });
+    const all = category.getByRole("button", { name: /^All/ });
+    const hackathons = category.getByRole("button", { name: /^Hackathons/ });
     await expect(all).toHaveAttribute("aria-pressed", "true");
 
     await all.focus();
     await page.keyboard.press("ArrowRight");
-    await expect(hackathon).toBeFocused();
+    await expect(hackathons).toBeFocused();
     await page.keyboard.press("Enter");
-    await expect(hackathon).toHaveAttribute("aria-pressed", "true");
+    await expect(hackathons).toHaveAttribute("aria-pressed", "true");
     await expect(all).toHaveAttribute("aria-pressed", "false");
 
-    const clear = page.getByRole("button", { name: "Clear" });
-    await clear.focus();
+    await page.keyboard.press("ArrowLeft");
     await page.keyboard.press("Enter");
-    await expect(clear).toBeHidden();
     await expect(all).toHaveAttribute("aria-pressed", "true");
     await expect(all).toBeFocused();
   });
