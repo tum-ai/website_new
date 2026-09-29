@@ -1,3 +1,4 @@
+import { stegaEncode } from "@test/stega";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { getMockEvents } from "@/lib/mock-cms";
 import type { Event } from "@/lib/types";
@@ -247,6 +248,15 @@ describe("indexHosts", () => {
   test("ignores blank names", () => {
     expect(indexHosts([event("2026-01-01T10:00:00Z", [" ", ""])])).toEqual([]);
   });
+
+  test("merges a host that stega encodes per event in draft mode", () => {
+    const index = indexHosts([
+      event("2025-09-08T00:00:00Z", [stegaEncode("CDTM", "event-1", "hosts")]),
+      event("2025-09-24T00:00:00Z", [stegaEncode("CDTM", "event-2", "hosts")]),
+    ]);
+    expect(index).toHaveLength(1);
+    expect(index[0].events).toHaveLength(2);
+  });
 });
 
 describe("summarizeEvents", () => {
@@ -270,6 +280,19 @@ describe("summarizeEvents", () => {
         },
       ]),
     ).toEqual({ total: 3, since: "March 2025", hackathons: 2, withHosts: 2 });
+  });
+
+  test("counts stega-encoded hackathons in draft mode", () => {
+    const hackathon = stegaEncode("Hackathon", "event-1", "category");
+    expect(
+      summarizeEvents([
+        {
+          event_date: "2026-04-17T00:00:00Z",
+          category: hackathon as Event["category"],
+          hosts: [],
+        },
+      ]).hackathons,
+    ).toBe(1);
   });
 
   test("has no start month without events", () => {

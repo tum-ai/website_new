@@ -1,4 +1,6 @@
+import { stegaEncode } from "@test/stega";
 import { describe, expect, test } from "vitest";
+import type { EventCategory } from "@/lib/types";
 import {
   ALL_EVENTS,
   categoryLabel,
@@ -51,4 +53,30 @@ test("countFilterOptions counts every chip", () => {
       {},
     ]),
   ).toEqual({ All: 4, Hackathon: 2, Speaker: 1, "E-Lab": 0, Event: 0 });
+});
+
+describe("in draft mode, with stega-encoded categories", () => {
+  const draft = (category: EventCategory, id = "event-1") =>
+    stegaEncode(category, id, "category") as EventCategory;
+
+  test("an event still reads by its category's name", () => {
+    expect(categoryLabel(draft("Hackathon"))).toBe("Hackathon");
+    expect(categoryLabel(draft("Speaker"))).toBe("Talk");
+  });
+
+  test("the chips still match and count the events", () => {
+    const events = [
+      { category: draft("Hackathon", "event-1") },
+      { category: draft("Hackathon", "event-2") },
+      { category: draft("Speaker", "event-3") },
+    ];
+    expect(matchesFilter(events[0], "Hackathon")).toBe(true);
+    expect(countFilterOptions(events)).toEqual({
+      All: 3,
+      Hackathon: 2,
+      Speaker: 1,
+      "E-Lab": 0,
+      Event: 0,
+    });
+  });
 });

@@ -1,3 +1,4 @@
+import { stegaClean } from "next-sanity";
 import type { EventCategory } from "@/lib/types";
 
 /*
@@ -17,9 +18,15 @@ const categoryNames = {
 /** Every event category, in the Studio's order. */
 export const eventCategories = Object.keys(categoryNames) as EventCategory[];
 
+/*
+ * Categories are cleaned before every lookup: in draft mode stega appends
+ * invisible source metadata to each string, so a draft's "Hackathon" no
+ * longer equals the key "Hackathon".
+ */
+
 /** What one event of a category is called: "Hackathon", "Talk". */
 export function categoryLabel(category: EventCategory): string {
-  return categoryNames[category].one;
+  return categoryNames[stegaClean(category)].one;
 }
 
 /** The chip that matches every event. */
@@ -44,7 +51,7 @@ export function matchesFilter(
   event: FilterableEvent,
   filter: EventFilter,
 ): boolean {
-  return filter === ALL_EVENTS || event.category === filter;
+  return filter === ALL_EVENTS || stegaClean(event.category) === filter;
 }
 
 /** A chip value as a filter; unknown values select "All". */

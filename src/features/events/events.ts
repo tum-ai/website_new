@@ -7,6 +7,7 @@
  */
 import { tz } from "@date-fns/tz";
 import { endOfDay, format } from "date-fns";
+import { stegaClean } from "next-sanity";
 import type { Event, EventCategory } from "@/lib/types";
 import { formatList } from "@/lib/words";
 
@@ -123,7 +124,9 @@ export type HostEntry<T> = {
 /**
  * Every co-host across the events, most frequent first and, among equals,
  * the most recent first (then by name, so the order is stable). Names match
- * case- and space-insensitively, since editors type them by hand.
+ * case- and space-insensitively, since editors type them by hand. Names are
+ * read without the stega metadata draft mode appends per event (which also
+ * contains characters `\s` matches).
  */
 export function indexHosts<T extends Pick<Event, "event_date" | "hosts">>(
   events: readonly T[],
@@ -133,7 +136,7 @@ export function indexHosts<T extends Pick<Event, "event_date" | "hosts">>(
   for (const event of newestFirst) {
     const seen = new Set<string>();
     for (const raw of event.hosts) {
-      const name = raw.trim().replace(/\s+/g, " ");
+      const name = stegaClean(raw).trim().replace(/\s+/g, " ");
       const key = name.toLowerCase();
       if (!name || seen.has(key)) continue;
       seen.add(key);
@@ -176,7 +179,8 @@ export function summarizeEvents(
     total: events.length,
     since: first ? formatInMunich(first.event_date, "MMMM yyyy") : undefined,
     hackathons: events.filter(
-      (event) => event.category === ("Hackathon" satisfies EventCategory),
+      (event) =>
+        stegaClean(event.category) === ("Hackathon" satisfies EventCategory),
     ).length,
     withHosts: events.filter((event) => event.hosts.length > 0).length,
   };
