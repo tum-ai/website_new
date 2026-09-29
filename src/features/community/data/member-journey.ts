@@ -64,7 +64,7 @@ export const memberJourney: JourneyStage[] = [
         step: "02A",
         name: "Research Track",
         description:
-          "Join a team on an Impact Project applying AI to real world challenges. Contribute to research, academic publications, or open-source work, and engage with the TUM.ai community through update sessions.",
+          "Join a team on an Impact Project applying AI to real-world challenges. Contribute to research, academic publications, or open-source work, and engage with the TUM.ai community through update sessions.",
         icon: Brain,
         fromSemester: 1,
         span: "ongoing",
