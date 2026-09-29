@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Highlight, PageHero } from "@/components/ds";
+import { PageHero, Photo } from "@/components/ds";
 import { eLabConfig } from "@/config/e-lab";
 import { ELabApplicationCta, ELabApplicationStatus } from "./application-cta";
 
@@ -35,52 +35,37 @@ function LogoLockup() {
   );
 }
 
-const promises = ["Equity-free", "Munich-based", "Founder-focused"];
-
 /**
- * "Equity-free • Munich-based • Founder-focused". Each item carries its
- * leading bullet in the gap; the row is shifted left under a clip, so the
- * bullet of whichever item starts a line is hidden and wrapped lines never
- * begin or end with a dangling "•".
+ * E-Lab hero: the cohort lockup, the program in one sentence, the terms in
+ * the lead, the live application action, and the kickoff hall as the room
+ * the page is about.
  */
-function Promises() {
-  return (
-    <p className="overflow-hidden">
-      <span className="-ml-7 flex flex-wrap gap-y-1 font-medium text-fg">
-        {promises.map((promise, index) => (
-          <span key={promise} className="relative pl-7">
-            <span
-              aria-hidden
-              className="absolute left-0 w-7 text-center text-highlight"
-            >
-              {index > 0 ? "•" : ""}
-            </span>
-            {promise}
-            {index < promises.length - 1 ? " " : ""}
-          </span>
-        ))}
-      </span>
-    </p>
-  );
-}
-
-/** E-Lab hero: cohort lockup, headline, promises and the live application CTA. */
 export function Hero() {
   return (
     <PageHero
       titleId={HERO_TITLE_ID}
       eyebrow={<LogoLockup />}
-      title={[
-        "Build the next generation of ",
-        <Highlight key="highlight">AI startups</Highlight>,
-        ` in ${eLabConfig.programWeeks} weeks`,
-      ]}
-      lead={<Promises />}
+      title={`${eLabConfig.programWeeks} weeks from application to the Final Pitch.`}
+      emphasis="highlight"
+      size="md"
+      mark={false}
+      lead="The E-Lab is TUM.ai's equity-free AI startup incubator, in person in Munich. Apply alone or as a team, with or without an idea. You don't need to be enrolled anywhere."
       actions={
         <>
-          <ELabApplicationCta label="hero" />
+          <ELabApplicationCta />
           <ELabApplicationStatus />
         </>
+      }
+      media={
+        <Photo
+          src="/assets/homepage/elab.webp"
+          alt="A speaker on stage at the AI E-Lab kickoff, in front of a packed brick hall"
+          caption="AI E-Lab kickoff"
+          position="50% 40%"
+          aspect="4/3"
+          eager
+          sizes="(min-width: 1280px) 36rem, (min-width: 1024px) 44vw, 92vw"
+        />
       }
     />
   );

@@ -28,6 +28,24 @@ export type ELabConfig = {
   programWeeks: number;
   /** Money raised by E-Lab ventures, in million euros. */
   ventureFundingMillions: number;
+  /**
+   * How one cohort is selected, gate by gate, from the application round to
+   * the Final Pitch. Every figure counts teams (a solo applicant is a team of
+   * one), so /e-lab can draw the gates to scale against each other. Each
+   * figure is at most the one before it. Update them after each round.
+   */
+  selection: {
+    /** Team applications in one round (about this many). */
+    applications: number;
+    /** Teams admitted to the cohort. */
+    admitted: number;
+    /** Teams that pitch their MVP at the Midterm Pitch. */
+    midterm: number;
+    /** Teams evaluated on Selection Day. */
+    selectionDay: number;
+    /** Teams that pitch to investors at the Final Pitch. */
+    finalPitch: number;
+  };
   heroLogo: {
     src: string;
     alt: string;
@@ -49,6 +67,16 @@ export const eLabConfig: ELabConfig = {
   nextApplicationWindow: "August",
   programWeeks: 14,
   ventureFundingMillions: 8,
+  selection: {
+    applications: 500,
+    // TODO(content): placeholders. How many teams are admitted, pitch at the
+    // Midterm Pitch, are evaluated on Selection Day and pitch at the Final
+    // Pitch in a typical cohort? Ask the Venture team.
+    admitted: 30,
+    midterm: 24,
+    selectionDay: 16,
+    finalPitch: 10,
+  },
   heroLogo: {
     // TODO(content): E-Lab 6.0 still shows the E-Lab 5 artwork. Is there an
     // E-Lab 6 logo, or is the 5.0 lockup intended for this cohort?
@@ -115,16 +143,17 @@ function phaseCopy(open: boolean) {
     teaserStatus: open
       ? `Applications open until ${eLabConfig.applicationDeadlineDate}`
       : `Applications open in ${eLabConfig.nextApplicationWindow}`,
-    heroCtaLabel: open
-      ? `${cohortName} - Apply Now!`
-      : `${cohortName} - Applications Closed`,
-    cardHeading: open
-      ? `Application for ${cohortName} is open!`
-      : `Applications for ${cohortName} are closed!`,
-    cardDescription: open
-      ? "Secure your spot in one of Europe’s leading AI incubators and join a network of top founders, mentors, and investors."
-      : "Applications for this cohort are now closed. Follow TUM.ai for the next intake and upcoming founder opportunities.",
-    cardCtaLabel: open ? "Apply Now!" : "Applications Closed",
+    /**
+     * The apply button's label, or, while closed, the status badge in its
+     * place, which says when the next round opens.
+     */
+    ctaLabel: open
+      ? "Apply now"
+      : `Applications open in ${eLabConfig.nextApplicationWindow}`,
+    /** One sentence on where the round stands, e.g. for a closing band. */
+    roundStatus: open
+      ? `Applications for ${cohortName} close on ${deadline} (Munich time).`
+      : `Applications for ${cohortName} are closed. The next round opens in ${eLabConfig.nextApplicationWindow}.`,
   } as const;
 }
 

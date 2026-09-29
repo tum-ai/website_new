@@ -1,15 +1,3 @@
-import { eLabCompletedIterations, eLabConfig } from "@/config/e-lab";
-
-/** A numeric E-Lab proof point rendered with a count-up animation. */
-export interface Metric {
-  id: string;
-  label: string;
-  from: number;
-  to: number;
-  prefix?: string;
-  suffix?: string;
-}
-
 /** A community quote and the local imagery used to attribute it. */
 export interface TestimonialCard {
   id: string;
@@ -24,14 +12,7 @@ export interface TestimonialCard {
   organizationLogoAlt: string;
 }
 
-/** One milestone in the E-Lab venture-building program. */
-export interface ProgramStep {
-  id: string;
-  title: string;
-  description: string;
-}
-
-/** A venture displayed in the notable-startups marquee. */
+/** An alumni venture of the E-Lab. */
 export interface NotableStartup {
   id: string;
   name: string;
@@ -40,30 +21,6 @@ export interface NotableStartup {
   logoAlt: string;
   wordmarkLabel?: string;
 }
-
-export const eLabMetrics = [
-  {
-    id: "applications",
-    label: "applications per batch",
-    from: 0,
-    to: 500,
-    prefix: "~",
-  },
-  {
-    id: "funding",
-    label: "raised by E-Lab ventures",
-    from: 0,
-    to: eLabConfig.ventureFundingMillions,
-    prefix: "€",
-    suffix: "M",
-  },
-  {
-    id: "iterations",
-    label: "E-Lab Iterations",
-    from: 0,
-    to: eLabCompletedIterations,
-  },
-] satisfies readonly Metric[];
 
 export const testimonialCards = [
   {
@@ -157,41 +114,6 @@ export const testimonialCards = [
   },
 ] satisfies readonly TestimonialCard[];
 
-export const programSteps = [
-  {
-    id: "kickoff",
-    title: "Kickoff & Onboarding Weekend",
-    description: "3 Days Intensive • Team Alignment & Ideation",
-  },
-  {
-    id: "phase-one",
-    title: "Phase I: MVP Build & Foundational Sessions",
-    description: "4 Weeks • Rapid Prototyping, Problem-Fit & Core Tech",
-  },
-  {
-    id: "midterm-pitch",
-    title: "Midterm Pitch (MVP Gate)",
-    description: "Live MVP Demo & Jury Feedback",
-  },
-  {
-    id: "phase-two",
-    title: "Phase II: Traction, Iteration & Growth Sessions",
-    description: "6 Weeks • User Testing, Go-to-Market, Legal & Pitch Polish",
-  },
-  {
-    id: "selection-day",
-    title: "Selection Day",
-    description: "Evaluation for Final Showcase",
-  },
-  {
-    id: "final-pitch",
-    title: "Final Pitch / Demo Day",
-    // TODO(content): is Demo Day still in July for E-Lab 6.0, whose
-    // applications close in late September?
-    description: "Investor Pitch & Graduation (July)",
-  },
-] satisfies readonly ProgramStep[];
-
 export const notableStartups = [
   {
     id: "tenmin",
@@ -245,3 +167,17 @@ export const notableStartups = [
     wordmarkLabel: "Invertix",
   },
 ] satisfies readonly NotableStartup[];
+
+/**
+ * The venture /e-lab follows through the gates: an alumni startup, the
+ * founder quote that tells its story, the cohort it came from and where it
+ * went next. Ids point into `notableStartups` and `testimonialCards`.
+ */
+export const tracedVenture = {
+  startupId: "spherecast",
+  testimonialId: "leon-hergert",
+  cohort: "E-Lab 1.0",
+  // TODO(content): confirm Spherecast went through every gate of its cohort,
+  // including the Final Pitch (E-Lab 1.0 may have been structured differently).
+  next: "Y Combinator, Summer 2024 batch",
+} as const;

@@ -17,7 +17,6 @@ import {
 } from "../src/config/organization.ts";
 import { faq as applyFaq } from "../src/features/apply/data/faq.ts";
 import { faq as eLabFaq } from "../src/features/e-lab/data/faq.ts";
-import { eLabMetrics } from "../src/features/e-lab/data/venture-page.ts";
 import { partnerStats } from "../src/features/partners/data/partners.ts";
 import { parseMunichDateTime } from "../src/lib/munich-time.ts";
 
@@ -76,9 +75,9 @@ test("E-Lab program length and proof points come from the config", () => {
   );
   expect(commitment?.answer).toContain(weeks);
 
-  const metric = (id: string) => eLabMetrics.find((item) => item.id === id);
-  expect(metric("iterations")?.to).toBe(eLabCompletedIterations);
-  expect(metric("funding")?.to).toBe(eLabConfig.ventureFundingMillions);
+  expect(eLabCompletedIterations).toBe(
+    Number.parseInt(eLabConfig.currentIteration, 10) - 1,
+  );
 });
 
 test("member figures add up and feed the partner stats", () => {
@@ -108,6 +107,10 @@ test("the Apply FAQ timeline comes from the recruiting config", () => {
  */
 const hardcodedFacts: [RegExp, string][] = [
   [/\b1\d-week\b|\bin 1\d weeks\b/i, "E-Lab length: config/e-lab.ts"],
+  [
+    /\b\d{3,}\+?\s+(?:team\s+)?applications\b/i,
+    "E-Lab application count: eLabConfig.selection in config/e-lab.ts",
+  ],
   [/\b\d+\+? active members\b/i, "member counts: config/organization.ts"],
   [
     /applications open in (january|february|march|april|may|june|july|august|september|october|november|december)/i,

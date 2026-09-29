@@ -32,8 +32,11 @@ for (const route of siteRoutes) {
   });
 }
 
-// The E-Lab testimonials are the ds Marquee's live use (the home page has none).
-test("marquees render one static, reachable list", async ({ page }) => {
+// TODO(redesign): no live route renders the ds Marquee since the E-Lab
+// redesign replaced its testimonial rail (the partners rail is its own
+// component). Point this at the next page that uses Marquee, or retire
+// Marquee; owner: the redesign stream (feat/redesign-e-lab).
+test.fixme("marquees render one static, reachable list", async ({ page }) => {
   await page.goto("/e-lab");
   await loadLazyContent(page);
   const marquees = page.locator('[class~="group/marquee"]');
