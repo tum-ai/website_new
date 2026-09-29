@@ -9,12 +9,12 @@ import { Lockup } from "./lockup";
 /**
  * The page's bold element: the TUM.ai logo and a × as a co-branding lockup,
  * completed by every company, lab and initiative TUM.ai has run an event
- * with, from the CMS. With motion allowed and scripts running, the hero pins while the
- * names roll through the slot after the ×: once on load (a single roll from
- * the last name back to the first), then with the reader's scroll, and the
- * events of the name in the slot show beside it. Otherwise (reduced motion,
- * no JavaScript) it is a static two-column index. Mechanics: `events.css`
- * and {@link HeroScroll}.
+ * with, from the CMS (the plain logo while no event has co-hosts). With
+ * motion allowed and scripts running, the names roll through the slot after
+ * the ×: once on load (a single roll from the last name back to the first),
+ * then wherever the reader turns the reel, and the events of the name in the
+ * slot show beside it. Otherwise (reduced motion, no JavaScript) it is a
+ * static two-column index. Mechanics: `events.css` and {@link HeroReel}.
  */
 export function EventsHero({
   summary,
@@ -52,9 +52,12 @@ export function EventsHero({
                 loading="eager"
                 className="events-lockup-logo"
               />
-              <span aria-hidden="true" className="text-highlight">
-                ×
-              </span>
+              {/* Without co-hosts the × would lead nowhere: the plain logo. */}
+              {hosts.length > 0 ? (
+                <span aria-hidden="true" className="text-highlight">
+                  ×
+                </span>
+              ) : null}
               <span className="sr-only"> events</span>
             </h1>
             {hosts.length > 0 ? (
@@ -154,9 +157,9 @@ function Count({ count }: { count: number }) {
 }
 
 /**
- * The names as a reel for the pinned hero: three copies of the index in a
- * row, so the slot always has neighbours and a full turn ends where it began
- * (HeroScroll keeps the position within the middle copy). Co-hosts with
+ * The names as a reel: three copies of the index in a row, so the slot
+ * always has neighbours and a full turn ends where it began (HeroReel keeps
+ * `--roll` within one turn, so the copies wrap without a seam). Co-hosts with
  * verified dark-band artwork show their logo, sized to one optical area.
  * Decorative: the list above carries the names for assistive technology.
  */
