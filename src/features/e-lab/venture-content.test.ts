@@ -165,6 +165,7 @@ describe("incomplete CMS content", () => {
     override.result = {
       startupId: "engines",
       testimonialId: "ada",
+      founderContext: "E-Lab 2.0",
       cohort: "E-Lab 2.0",
       now: null,
       after: [
@@ -186,12 +187,18 @@ describe("incomplete CMS content", () => {
     ["a founder reference that resolves to nothing", { testimonialId: null }],
     ["no cohort", { cohort: null }],
     ["no sourced milestone", { after: [{ text: "Seed", source: null }] }],
+    [
+      "a founder whose testimonial names another cohort",
+      { founderContext: "E-Lab 3.0" },
+    ],
+    ["a founder whose testimonial names no cohort", { founderContext: null }],
   ])("%s keeps the whole code trace", async (_, edit) => {
     vi.spyOn(console, "warn").mockImplementation(() => {});
     useSource("sanity");
     override.result = {
       startupId: "engines",
       testimonialId: "ada",
+      founderContext: "E-Lab 2.0",
       cohort: "E-Lab 2.0",
       now: "sells engines",
       after: [{ text: "Seed round", source: "https://example.com/" }],

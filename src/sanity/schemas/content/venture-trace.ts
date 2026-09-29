@@ -1,4 +1,66 @@
-import { defineField, defineType } from "sanity";
+import { defineField, defineType, type ValidationContext } from "sanity";
+import { logoListDocumentId } from "../../../lib/people-and-logos";
+import { sanityApiVersion } from "../../../lib/sanity-config";
+
+const published = '!(_id in path("drafts.**"))';
+
+/**
+ * The trace's cohort must be the founder's context, word for word: the
+ * lead names the cohort and the founder's quote card names the context, so
+ * two different cohorts would contradict each other. The page renders the
+ * code trace instead of a mismatched one (`features/e-lab/venture-content.ts`),
+ * also when the founder's published testimonial has no context. Exported
+ * for tests.
+ */
+export function cohortProblem(
+  cohort: unknown,
+  founderContext: unknown,
+): true | string {
+  if (typeof cohort !== "string" || !cohort.trim()) return true;
+  if (typeof founderContext !== "string" || !founderContext.trim()) {
+    return "The founder's published testimonial names no cohort: set its context to this cohort first.";
+  }
+  return cohort.trim() === founderContext.trim()
+    ? true
+    : `The founder's testimonial names “${founderContext.trim()}”. Use the same cohort here, or change the testimonial's context first.`;
+}
+
+/** {@link cohortProblem} against the picked founder's published context. */
+async function validateCohort(cohort: unknown, context: ValidationContext) {
+  const person = (context.document?.person as { _ref?: string } | undefined)
+    ?._ref;
+  if (!person) return true;
+  const founderContext = await context
+    .getClient({ apiVersion: sanityApiVersion })
+    .fetch<string | null>(`*[_id == $id && ${published}][0].context`, {
+      id: person,
+    });
+  return cohortProblem(cohort, founderContext);
+}
+
+/**
+ * The venture must be in the published E-Lab ventures logo list: the
+ * section finds the traced venture there and hides without it. Without a
+ * published list the page shows the code list, which this cannot check.
+ * Exported for tests.
+ */
+export async function validateListedVenture(
+  venture: unknown,
+  context: ValidationContext,
+): Promise<true | string> {
+  const id = (venture as { _ref?: string } | undefined)?._ref;
+  if (!id) return true;
+  const listed = await context
+    .getClient({ apiVersion: sanityApiVersion })
+    .fetch<string[] | null>(
+      `*[_id == $list && ${published}][0].organizations[]._ref`,
+      { list: logoListDocumentId("e-lab-ventures") },
+    );
+  if (!listed) return true;
+  return listed.includes(id)
+    ? true
+    : "Add this organisation to the E-Lab ventures logo list first: the section hides a venture that is not in it.";
+}
 
 /**
  * The venture /e-lab follows through the gates ("One team, all the way
@@ -20,7 +82,7 @@ export const ventureTraceType = defineType({
       to: [{ type: "organization" }],
       description:
         "Pick one of the organisations in the E-Lab ventures logo list; the section hides if the venture is not in that list.",
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule.required().custom(validateListedVenture),
     }),
     defineField({
       name: "person",
@@ -29,7 +91,7 @@ export const ventureTraceType = defineType({
       to: [{ type: "person" }],
       options: { filter: 'placement == "e-lab-testimonial"' },
       description:
-        "An E-Lab testimonial by one of the venture's founders. Its context should name the cohort below.",
+        "An E-Lab testimonial by one of the venture's founders. Its context must name the cohort below.",
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -37,8 +99,8 @@ export const ventureTraceType = defineType({
       title: "Cohort",
       type: "string",
       description:
-        "The cohort the venture came out of, as the lead names it: “E-Lab 1.0”.",
-      validation: (Rule) => Rule.required().max(20),
+        "The cohort the venture came out of, as the lead names it: “E-Lab 1.0”. It must match the founder's testimonial context.",
+      validation: (Rule) => Rule.required().max(20).custom(validateCohort),
     }),
     defineField({
       name: "now",

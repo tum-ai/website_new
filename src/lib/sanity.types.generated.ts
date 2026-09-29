@@ -1781,11 +1781,12 @@ export type ELAB_COPY_QUERY_RESULT =
 
 // Source: ../features/e-lab/venture-content.ts
 // Variable: VENTURE_TRACE_QUERY
-// Query: *[_id == "ventureTrace"][0]{  "startupId": venture->key,  "testimonialId": person->key,  cohort,  now,  "after": milestones[]{ text, source }}
+// Query: *[_id == "ventureTrace"][0]{  "startupId": venture->key,  "testimonialId": person->key,  "founderContext": person->context,  cohort,  now,  "after": milestones[]{ text, source }}
 export type VENTURE_TRACE_QUERY_RESULT =
   | {
       startupId: string;
       testimonialId: string;
+      founderContext: string | null;
       cohort: string;
       now: string | null;
       after: Array<{
@@ -1796,6 +1797,7 @@ export type VENTURE_TRACE_QUERY_RESULT =
   | {
       startupId: null;
       testimonialId: null;
+      founderContext: null;
       cohort: null;
       now: null;
       after: null;
@@ -1803,6 +1805,7 @@ export type VENTURE_TRACE_QUERY_RESULT =
   | {
       startupId: null;
       testimonialId: null;
+      founderContext: null;
       cohort: null;
       now: null;
       after: Array<{
