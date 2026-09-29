@@ -438,7 +438,7 @@ export const organizations: readonly Organization[] = [
   }),
 
   // Events co-hosts (features/events/data/host-logos.ts; sources in
-  // public/assets/events/hosts/SOURCES.md)
+  // docs/asset-sources/events-hosts.md)
   defineOrganization({
     key: "beyond-presence",
     name: "Beyond Presence",

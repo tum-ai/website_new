@@ -18,7 +18,7 @@ export type HostArtwork = {
 /**
  * The events co-hosts with official artwork for the hero's dark band, from
  * the organisation table (brand colours unchanged; sources in
- * public/assets/events/hosts/SOURCES.md): the code source of the
+ * docs/asset-sources/events-hosts.md): the code source of the
  * `event-hosts` logo list (`features/events/host-content.ts`). A co-host
  * missing here is set as its name.
  */

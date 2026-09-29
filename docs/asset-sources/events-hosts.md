@@ -1,5 +1,7 @@
 # Events hero co-host logo sources
 
+File paths below are relative to `public/assets/events/hosts/`. This note lives in `docs/`, not next to the files, because everything under `public/` is served as part of the site.
+
 Retrieved 2026-09-29. Official artwork from each company's own website or brand hub, or existing repository files. Every file is the variant for dark backgrounds, shown on the hero's `#0D0214` band. Brand colours are unchanged. Where only a light-background version existed, only the dark wordmark fills were set to `#FFFFFF`. Transparent margins are trimmed (SVG `viewBox` fitted to the artwork); paths and proportions are unchanged unless noted.
 
 - `cdtm.svg`: https://www.cdtm.com/ (inline header SVG; the site renders it with `currentColor` in light grey on its dark header). `currentColor` resolved to white, margins trimmed.
@@ -16,4 +18,4 @@ Retrieved 2026-09-29. Official artwork from each company's own website or brand 
 - `red-bull.svg`: https://www.redbull.com/v3/resources/images/client/header/redbullcom-logo_double-with-text.svg (official redbull.com header logo: red `#d2003c` wordmark and bulls, yellow `#fc0` sun). Copied from the page in the browser (the site blocks scripted downloads) and checked character for character against the served file; unchanged except the `viewBox` width trimmed from 225 to the artwork's 224.189.
 - `mercura-icon.webp`: https://framerusercontent.com/images/DXRZsq02gR0GftNJPLXpm0ZoJc.png (Mercura's official app icon, the favicon and apple-touch-icon of https://www.mercura.ai/). Resized from 300 to 160 px and encoded as WebP. Mercura has no wordmark file (its header sets the name as live text beside the icon), so the hero sets "Mercura" as text next to this icon.
 
-Reused from the partner artwork rather than copied (see `public/assets/partners/SOURCES.md`): Anthropic (`partners/marquee/anthropic.svg`, official white wordmark), NVIDIA (`partners/marquee/nvidia.webp`, green symbol, white wordmark), AWS (`partners/marquee/aws.webp`, white wordmark and smile) and BMW (`partners/logos/bmw.svg`, TUM.ai CMS roundel). `src/features/events/data/host-logos.ts` points at those files.
+Reused from the partner artwork rather than copied (see `docs/asset-sources/partners.md`): Anthropic (`partners/marquee/anthropic.svg`, official white wordmark), NVIDIA (`partners/marquee/nvidia.webp`, green symbol, white wordmark), AWS (`partners/marquee/aws.webp`, white wordmark and smile) and BMW (`partners/logos/bmw.svg`, TUM.ai CMS roundel). `src/features/events/data/host-logos.ts` points at those files.

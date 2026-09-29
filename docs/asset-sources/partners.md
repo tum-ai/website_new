@@ -1,5 +1,7 @@
 # Partner page asset sources
 
+File paths below are relative to `public/assets/partners/`. This note lives in `docs/`, not next to the files, because everything under `public/` is served as part of the site.
+
 Retrieved 2026-09-16. Original artwork and portraits from TUM.ai’s published CMS or official company / university sites. Raster assets are resized and encoded as WebP; logo margins are trimmed without altering artwork.
 
 - `logos/hrt.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/59ac543e0b01136b5adaf88786ad2ff0a01474e8-616x479.png

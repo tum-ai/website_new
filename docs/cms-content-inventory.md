@@ -154,7 +154,7 @@ the Sanity CDN; the files stay in the repository as long as a code fallback uses
 | `apply/` | 6 member portraits, 3 section photos | member stories (B); apply sections, home programs (C) | B portraits, C photos |
 | `e-lab/` | `E-Lab5Logo.svg` | `eLabConfig.heroLogo` | A |
 | `e-lab/partners/`, `e-lab/startups/`, `e-lab/testimonials/` | 6, 7, 7 logos and portraits | venture page (B), partner logos | B |
-| `events/hosts/` | 13 logos (+ `SOURCES.md`) | `events/data/host-logos.ts` (dynamic paths) | B |
+| `events/hosts/` | 13 logos (sources: `docs/asset-sources/events-hosts.md`) | `events/data/host-logos.ts` (dynamic paths) | B |
 | `homepage/` | 8 photos | home, departments, partners pillars, research figure, e-lab kickoff | C (partners pillars: B) |
 | `innovation/` | 6 photos | projects, home programs, research figure | C |
 | `partners/` (`hero.webp`, `cases/`, `logos/`, `marquee/`, `people/`) | 1, 3, 22, 14, 6 | partners page, host logos | B |
