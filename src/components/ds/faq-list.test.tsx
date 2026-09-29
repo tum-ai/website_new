@@ -139,6 +139,42 @@ describe("FaqList deep links", () => {
     ).toHaveAttribute("aria-expanded", "false");
   });
 
+  test("brings the opened item back into view once it has opened", () => {
+    vi.useFakeTimers();
+    const scrolled: Element[] = [];
+    const scrollIntoView = vi.fn(function (this: Element) {
+      scrolled.push(this);
+    });
+    Element.prototype.scrollIntoView = scrollIntoView;
+    try {
+      render(<FaqList items={linked} defaultValue={["Who can apply?"]} />);
+      act(() => {
+        window.history.replaceState(null, "", "/#cost");
+        window.dispatchEvent(new HashChangeEvent("hashchange"));
+      });
+      // Once on the next frame, again after the closing answer collapsed.
+      act(() => vi.advanceTimersByTime(1000));
+      expect(scrollIntoView).toHaveBeenCalledTimes(2);
+      expect(scrolled.every((node) => node.id === "cost")).toBe(true);
+    } finally {
+      vi.useRealTimers();
+      // jsdom has no scrollIntoView of its own.
+      Reflect.deleteProperty(Element.prototype, "scrollIntoView");
+    }
+  });
+
+  test("leaves the scroll alone when the named item is already open", () => {
+    const scrollIntoView = vi.fn();
+    Element.prototype.scrollIntoView = scrollIntoView;
+    try {
+      window.history.replaceState(null, "", "/#who");
+      render(<FaqList items={linked} defaultValue={["Who can apply?"]} />);
+      expect(scrollIntoView).not.toHaveBeenCalled();
+    } finally {
+      Reflect.deleteProperty(Element.prototype, "scrollIntoView");
+    }
+  });
+
   test("lets the reader close the linked item again", async () => {
     const user = userEvent.setup();
     window.history.replaceState(null, "", "/#cost");

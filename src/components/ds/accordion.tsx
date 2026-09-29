@@ -17,7 +17,7 @@ export type AccordionProps = Omit<BaseAccordion.Root.Props, "className"> & {
   className?: string;
 };
 
-/** List of disclosure items; open several at once unless `multiple={false}`. */
+/** List of disclosure items; one open at a time unless `multiple`. */
 export function Accordion({ className, ...props }: AccordionProps) {
   return (
     <BaseAccordion.Root
