@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
+import { getMockEvents } from "@/lib/mock-cms";
 import {
   excerpt,
   formatEventDate,
@@ -13,6 +14,7 @@ import {
   semesterOf,
   splitEvents,
   summarizeEvents,
+  toEventDetails,
 } from "./events";
 
 const at = (event_date: string, id = event_date) => ({ id, event_date });
@@ -382,5 +384,44 @@ describe("formatHosts", () => {
     expect(formatHosts([" Anthropic ", "", "Lovable"])).toBe(
       "Anthropic and Lovable",
     );
+  });
+});
+
+describe("toEventDetails", () => {
+  const [base] = getMockEvents(new Date("2026-10-01T12:00:00Z"));
+  if (!base) throw new Error("expected a mock event");
+  const event = {
+    ...base,
+    title: "  Anthropic x Lovable  ",
+    event_date: "2026-10-10T16:30:00Z",
+    location: "Munich Urban Colab",
+    city: "Munich",
+    hosts: ["Anthropic", "Lovable", "CDTM"],
+    description: "An evening of demos.",
+    category: "Hackathon" as const,
+    poster: "/poster.png",
+    images: ["/one.png", "/two.png"],
+  };
+
+  test("shapes plain, pre-formatted props for the dialog", () => {
+    expect(toEventDetails(event)).toEqual({
+      title: "Anthropic x Lovable",
+      date: formatEventDate("2026-10-10T16:30:00Z"),
+      location: "Munich Urban Colab",
+      category: "Hackathon",
+      hosts: ["CDTM"],
+      description: "An evening of demos.",
+      image: { src: "/poster.png", alt: "Anthropic x Lovable, poster" },
+    });
+  });
+
+  test("falls back to the first photo without a poster, and to none", () => {
+    expect(toEventDetails({ ...event, poster: undefined }).image).toEqual({
+      src: "/one.png",
+      alt: "Anthropic x Lovable, image 1",
+    });
+    expect(
+      toEventDetails({ ...event, poster: undefined, images: [] }).image,
+    ).toBeUndefined();
   });
 });

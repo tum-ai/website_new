@@ -303,14 +303,15 @@ export function getEventPhotos(
   event: Pick<Event, "title" | "images" | "poster">,
 ): EventPhoto[] {
   const images = [...new Set(event.images)];
+  const title = event.title.trim();
   if (images.length > 0) {
     return images.map((src, index) => ({
       src,
-      alt: `${event.title}, image ${index + 1}`,
+      alt: `${title}, image ${index + 1}`,
     }));
   }
   if (event.poster) {
-    return [{ src: event.poster, alt: `${event.title}, poster` }];
+    return [{ src: event.poster, alt: `${title}, poster` }];
   }
   return [];
 }
