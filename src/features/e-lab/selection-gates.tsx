@@ -5,7 +5,6 @@ import {
   Section,
   SectionHeader,
 } from "@/components/ds";
-import { eLabConfig } from "@/config/e-lab";
 import { cn } from "@/lib/cn";
 import type { ELabCopy } from "./data/copy";
 import {
@@ -49,10 +48,16 @@ const AXIS_LEFT = `calc((100% - 11 * ${GAP}) / 3 + 4 * ${GAP})`;
 export function SelectionGates({
   copy,
   stages,
+  applications,
 }: {
   copy: Pick<ELabCopy["gates"], "title" | "lead" | "scaleLabel">;
   /** The cohort as drawn (`buildStages`). */
   stages: readonly SelectionStage[];
+  /**
+   * The team applications of a round (`facts.eLab.selection.applications`):
+   * the scale's full length, which every bar is a share of.
+   */
+  applications: number;
 }) {
   const gates = gatesOf(stages);
   return (
@@ -71,7 +76,7 @@ export function SelectionGates({
           layout="stack"
           lead={copy.lead}
         />
-        <Scale label={copy.scaleLabel} />
+        <Scale label={copy.scaleLabel} max={applications} />
         <div className="relative">
           <span
             aria-hidden="true"
@@ -98,8 +103,8 @@ export function SelectionGates({
 }
 
 /** The tick scale over the bars, in teams. Decorative: each gate states its figure. */
-function Scale({ label }: { label: string }) {
-  const ticks = scaleTicks(eLabConfig.selection.applications, TICK_STEP);
+function Scale({ label, max }: { label: string; max: number }) {
+  const ticks = scaleTicks(max, TICK_STEP);
   return (
     <div aria-hidden="true" className={cn("pb-3", ROW_GRID)}>
       <p

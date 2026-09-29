@@ -165,6 +165,113 @@ export const eLabCopyType = defineType({
         }),
       ],
     }),
+    defineField({
+      name: "field",
+      title: "Dot field",
+      type: "object",
+      description: "The hero's field of team applications.",
+      fields: [
+        copyText({
+          name: "caption",
+          title: "Caption",
+          max: 240,
+          rows: 3,
+          pageTokens: {
+            finalists: "the dots still lit (the Final Pitch figure)",
+            ventures: "how many of them open into alumni ventures",
+            open: "how many are left for new teams",
+          },
+        }),
+        copyString({
+          name: "inviteLabel",
+          title: "Open place label",
+          description:
+            "On a lit dot without a venture, before the cohort's name (E-Lab 6.0).",
+          max: 20,
+        }),
+      ],
+    }),
+    defineField({
+      name: "ventures",
+      title: "Traced venture",
+      type: "object",
+      description:
+        "The traced venture band's headings; the venture, its trail and the other ventures are their own content.",
+      fields: [
+        copyString({ name: "title", title: "Title", max: 50 }),
+        copyText({
+          name: "fundingNote",
+          title: "Funding note",
+          description:
+            "Beside the funding figure (site settings), over the other ventures' logos. Starts in lower case.",
+          max: 120,
+          rows: 2,
+          placeholders: true,
+        }),
+        copyString({
+          name: "logosLabel",
+          title: "Logos label",
+          description: "The ventures' logo wall, read by screen readers.",
+          max: 60,
+        }),
+      ],
+    }),
+    defineField({
+      name: "voices",
+      title: "Voices",
+      type: "object",
+      description:
+        "The testimonials band's headings; the quotes are E-Lab testimonials (People).",
+      fields: [
+        copyString({ name: "title", title: "Title", max: 50 }),
+        copyText({ name: "lead", title: "Lead", max: 200, rows: 2 }),
+        copyString({
+          name: "foundersLabel",
+          title: "Founders column",
+          max: 30,
+        }),
+        copyString({
+          name: "investorsLabel",
+          title: "Investors column",
+          max: 30,
+        }),
+      ],
+    }),
+    defineField({
+      name: "closing",
+      title: "Closing",
+      type: "object",
+      description:
+        "The ink band at the end; its round status follows the E-Lab application window.",
+      fields: [
+        copyString({
+          name: "title",
+          title: "Title",
+          max: 90,
+          pageTokens: {
+            applications: "the team applications of a round (site settings)",
+          },
+        }),
+        copyString({
+          name: "followLabel",
+          title: "Button while closed",
+          description:
+            "Leads to TUM.ai on LinkedIn while applications are closed.",
+          max: 40,
+        }),
+        copyString({
+          name: "partnersReader",
+          title: "Label for partners",
+          max: 40,
+        }),
+        copyText({
+          name: "partnersText",
+          title: "Text for partners",
+          max: 160,
+          rows: 2,
+        }),
+      ],
+    }),
   ],
   preview: { prepare: () => ({ title: "E-Lab page" }) },
 });

@@ -13,7 +13,7 @@ import {
   getELabCopy,
   getELabFaqs,
 } from "./content";
-import { eLabCopyTemplate } from "./data/copy";
+import { eLabCopyTemplate, eLabPageTokens } from "./data/copy";
 import { faq } from "./data/faq";
 import { buildStages, selectionStages } from "./data/selection";
 
@@ -70,7 +70,7 @@ describe("the /e-lab content slice", () => {
 });
 
 describe("the /e-lab copy", () => {
-  const code = fillCodeCopy(eLabCopyTemplate, contentTokens);
+  const code = fillCodeCopy(eLabCopyTemplate, contentTokens, eLabPageTokens);
 
   test("code source: the code copy, whose stages draw the code cohort", async () => {
     useSource("code");

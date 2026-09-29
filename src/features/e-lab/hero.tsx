@@ -1,8 +1,8 @@
 import Image from "next/image";
+import type { ReactNode } from "react";
 import { PageHero } from "@/components/ds";
-import { eLabConfig } from "@/config/e-lab";
+import type { ContentImage } from "@/lib/cms-content-model";
 import { ELabApplicationCta, ELabApplicationStatus } from "./application-cta";
-import { ApplicationField } from "./application-field";
 import type { ELabCopy } from "./data/copy";
 
 const HERO_TITLE_ID = "elab-hero-title";
@@ -12,12 +12,12 @@ const HERO_TITLE_ID = "elab-hero-title";
  * cohort SVG's viewBox starts 248 units left of the letterforms, so a negative
  * margin (0.468 × its height) aligns the "E" with the headline below.
  */
-function LogoLockup() {
+function LogoLockup({ logo }: { logo: ContentImage }) {
   return (
     <span className="flex flex-wrap items-end gap-x-4 gap-y-3 pb-3 md:pb-5">
       <Image
-        src={eLabConfig.heroLogo.src}
-        alt={eLabConfig.heroLogo.alt}
+        src={logo.src}
+        alt={logo.alt}
         width={287}
         height={56}
         preload
@@ -41,13 +41,22 @@ function LogoLockup() {
  * E-Lab hero: the cohort lockup, the program in one sentence, the terms in
  * the lead and the live application action, beside the field of a round's
  * applications thinning to the teams that reach the Final Pitch (the page's
- * idea, which the gates band then draws to scale).
+ * idea, which the gates band then draws to scale). `logo` is the cohort's
+ * artwork (`facts.eLab.heroLogo`); `field` the dot field (ApplicationField).
  */
-export function Hero({ copy }: { copy: ELabCopy["hero"] }) {
+export function Hero({
+  copy,
+  logo,
+  field,
+}: {
+  copy: ELabCopy["hero"];
+  logo: ContentImage;
+  field: ReactNode;
+}) {
   return (
     <PageHero
       titleId={HERO_TITLE_ID}
-      eyebrow={<LogoLockup />}
+      eyebrow={<LogoLockup logo={logo} />}
       title={copy.title}
       emphasis="highlight"
       size="md"
@@ -59,7 +68,7 @@ export function Hero({ copy }: { copy: ELabCopy["hero"] }) {
           <ELabApplicationStatus />
         </>
       }
-      media={<ApplicationField />}
+      media={field}
     />
   );
 }

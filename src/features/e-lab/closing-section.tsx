@@ -6,10 +6,13 @@ import {
   Section,
   TextLink,
 } from "@/components/ds";
+import { callToActionLabels } from "@/config/calls-to-action";
 import { eLabPhaseCopyOf, eLabWindowClock } from "@/config/e-lab";
 import { getELabWindow } from "@/config/schedule-content";
 import { getSiteFacts } from "@/config/site-settings-content";
+import { fillPageTokens } from "@/lib/content-copy";
 import { ELabApplicationCta } from "./application-cta";
+import type { ELabCopy } from "./data/copy";
 import { ELabPhase } from "./e-lab-phase";
 
 /**
@@ -17,9 +20,10 @@ import { ELabPhase } from "./e-lab-phase";
  * as the full-length bar it is on the scale above. The round's status and
  * action follow the application phase: apply while open, and a way to hear
  * about the next round while closed. Beside it, the partners' way in. Facts,
- * phase and copy come from the render's `getSiteFacts()` and `getELabWindow()`.
+ * phase and phase copy come from the render's `getSiteFacts()` and
+ * `getELabWindow()`, the rest of the words from the page copy.
  */
-export async function ClosingSection() {
+export async function ClosingSection({ copy }: { copy: ELabCopy["closing"] }) {
   const [facts, eLabWindow] = await Promise.all([
     getSiteFacts(),
     getELabWindow(),
@@ -39,8 +43,9 @@ export async function ClosingSection() {
                 id="elab-close-title"
                 className="max-w-[12em] text-display-lg text-highlight"
               >
-                Every Final Pitch starts as one of about{" "}
-                {facts.eLab.selection.applications} applications.
+                {fillPageTokens(copy.title, {
+                  applications: String(facts.eLab.selection.applications),
+                })}
               </h2>
             </Reveal>
             <div
@@ -71,7 +76,7 @@ export async function ClosingSection() {
                       size="lg"
                       arrow="external"
                     >
-                      Follow TUM.ai on LinkedIn
+                      {copy.followLabel}
                     </ButtonLink>
                   }
                 />
@@ -83,17 +88,12 @@ export async function ClosingSection() {
             className="border-hairline-strong border-t pt-8 lg:col-span-4 lg:self-end"
           >
             <p className="font-medium text-fg text-small">
-              For investors and companies
+              {copy.partnersReader}
             </p>
-            {/* TODO(content): confirm with the Venture team that partners
-                mentor teams and attend the Final Pitch. */}
-            <p className="mt-3 text-body text-fg-muted">
-              Mentor a team, give feedback and meet the founders at the Final
-              Pitch.
-            </p>
+            <p className="mt-3 text-body text-fg-muted">{copy.partnersText}</p>
             <p className="mt-5">
               <TextLink href="/partners" arrow className="text-small">
-                Become a Partner
+                {callToActionLabels.partner}
               </TextLink>
             </p>
           </Reveal>

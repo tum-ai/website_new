@@ -7,8 +7,8 @@ import {
   Section,
   SectionHeader,
 } from "@/components/ds";
-import { eLabCompletedIterations, eLabConfig } from "@/config/e-lab";
-import { gates } from "./data/selection";
+import type { ELabCopy } from "./data/copy";
+import type { Gate } from "./data/selection";
 import {
   type NotableStartup,
   type TracedVenture,
@@ -26,8 +26,18 @@ import {
  * it went next. Below it, the other alumni ventures, each linked. Ventures,
  * quotes and the trace come from the venture slice (the CMS or the code);
  * the section hides when the traced venture or its founder quote is missing.
+ * `gates` are the cohort's gates as the page draws them; `fundingMillions`
+ * is the ventures' funding from the site facts.
  */
-export async function VentureTrace() {
+export async function VentureTrace({
+  copy,
+  gates,
+  fundingMillions,
+}: {
+  copy: ELabCopy["ventures"];
+  gates: readonly Gate[];
+  fundingMillions: number;
+}) {
   const [startups, cards, trace] = await Promise.all([
     getNotableStartups(),
     getTestimonialCards(),
@@ -44,7 +54,7 @@ export async function VentureTrace() {
       <Container>
         <SectionHeader
           id="venture-trace-title"
-          title="One team, all the way through."
+          title={copy.title}
           size="lg"
           layout="stack"
           lead={tracedVentureLead(venture.name, trace)}
@@ -60,18 +70,17 @@ export async function VentureTrace() {
             />
           </Reveal>
           <Reveal delay={120} className="lg:col-span-4 lg:col-start-9">
-            <Trail venture={venture} trace={trace} />
+            <Trail venture={venture} trace={trace} gates={gates} />
           </Reveal>
         </div>
 
         <div className="mt-20 border-hairline-strong border-t pt-10 md:mt-28">
           <h3 className="grid gap-4 lg:grid-cols-12 lg:items-end lg:gap-12">
             <span className="tabular text-display-2xl text-highlight lg:col-span-5">
-              €{eLabConfig.ventureFundingMillions}M
+              €{fundingMillions}M
             </span>
             <span className="max-w-md text-fg text-heading-lg lg:col-span-7 lg:justify-self-end lg:pb-3 lg:text-right">
-              raised so far by ventures from {eLabCompletedIterations} E-Lab
-              cohorts, including these.
+              {copy.fundingNote}
             </span>
           </h3>
           <LogoWall
@@ -84,7 +93,7 @@ export async function VentureTrace() {
             }))}
             columns={6}
             size="md"
-            label="Ventures from the E-Lab"
+            label={copy.logosLabel}
             className="mt-10"
           />
         </div>
@@ -102,9 +111,11 @@ export async function VentureTrace() {
 function Trail({
   venture,
   trace,
+  gates,
 }: {
   venture: NotableStartup;
   trace: TracedVenture;
+  gates: readonly Gate[];
 }) {
   return (
     <div>

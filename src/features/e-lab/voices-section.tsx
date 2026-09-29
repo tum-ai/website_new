@@ -5,6 +5,7 @@ import {
   Section,
   SectionHeader,
 } from "@/components/ds";
+import type { ELabCopy } from "./data/copy";
 import { eLabVoices, type TestimonialCard } from "./data/venture-page";
 import { getTestimonialCards } from "./venture-content";
 
@@ -55,28 +56,29 @@ function VoiceColumn({
 /**
  * Founders from earlier cohorts beside the investors and partners who work
  * with them, as two columns of ruled quotes. The quotes come from the
- * venture slice (the CMS or the code), picked by id (`eLabVoices`).
+ * venture slice (the CMS or the code), picked by id (`eLabVoices`); the
+ * headings from the page copy.
  */
-export async function VoicesSection() {
+export async function VoicesSection({ copy }: { copy: ELabCopy["voices"] }) {
   const cards = await getTestimonialCards();
   return (
     <Section tone="mist" spacing="lg" aria-labelledby="voices-title">
       <Container>
         <SectionHeader
           id="voices-title"
-          title="Founders and investors on the E-Lab."
+          title={copy.title}
           size="lg"
           layout="stack"
-          lead="Founders from earlier cohorts, and investors and partners who work with the E-Lab."
+          lead={copy.lead}
         />
         <div className="grid gap-16 lg:grid-cols-2 lg:gap-24">
           <VoiceColumn
-            label="Founders"
+            label={copy.foundersLabel}
             voices={pick(cards, eLabVoices.founders)}
             delay={0}
           />
           <VoiceColumn
-            label="Investors and partners"
+            label={copy.investorsLabel}
             voices={pick(cards, eLabVoices.investors)}
             delay={100}
           />

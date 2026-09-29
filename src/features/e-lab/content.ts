@@ -9,16 +9,16 @@ import { backfillContentImage } from "@/lib/content-backfill";
 import { fillCmsCopy, fillCodeCopy } from "@/lib/content-copy";
 import { buildFaqBackfill, type FaqEntry, getFaqs } from "@/lib/faq-content";
 import type { ELAB_COPY_QUERY_RESULT } from "@/lib/sanity.types.generated";
-import { type ELabCopy, eLabCopyTemplate } from "./data/copy";
+import { type ELabCopy, eLabCopyTemplate, eLabPageTokens } from "./data/copy";
 import { faqTemplates } from "./data/faq";
 import type { GateFigure, StageCopy } from "./data/selection";
 
 /**
  * The /e-lab content slice: what the page reads through the CMS content
  * source (`lib/cms-content.ts`): the FAQ (`faq`, collection `e-lab`) and
- * the `eLabCopy` singleton (hero, the gates and phases of a cohort). The
- * gates' figures stay facts (`eLabConfig.selection`); the code fallbacks
- * are in `data/`.
+ * the `eLabCopy` singleton (hero, the gates and phases of a cohort, the
+ * section headings and the closing). The gates' figures are site facts
+ * (`facts.eLab.selection`); the code fallbacks are in `data/`.
  */
 
 /** The /e-lab FAQ: the CMS `e-lab` collection, or the code list. */
@@ -46,7 +46,11 @@ export const ELAB_COPY_QUERY = defineQuery(`*[_id == "eLabCopy"][0]{
       "photo": photo${CONTENT_IMAGE_PROJECTION},
       photoCaption
     }
-  }
+  },
+  field{ caption, inviteLabel },
+  ventures{ title, fundingNote, logosLabel },
+  voices{ title, lead, foundersLabel, investorsLabel },
+  closing{ title, followLabel, partnersReader, partnersText }
 }`);
 
 const figures: readonly unknown[] = [
@@ -92,13 +96,18 @@ function toStage({ _type, ...stage }: RawStage): StageCopy | null {
 export async function getELabCopy(): Promise<ELabCopy> {
   const tokens = await getContentTokens();
   return loadContent<ELabCopy, ELAB_COPY_QUERY_RESULT>({
-    fallback: fillCodeCopy(eLabCopyTemplate, tokens),
+    fallback: fillCodeCopy(eLabCopyTemplate, tokens, eLabPageTokens),
     query: ELAB_COPY_QUERY,
     tags: ["content:eLabCopy"],
     label: "the /e-lab copy",
     mockDocuments: buildELabBackfill,
     select: (result) => {
-      const copy = fillCmsCopy(result, tokens, "the /e-lab copy") as {
+      const copy = fillCmsCopy(
+        result,
+        tokens,
+        "the /e-lab copy",
+        eLabPageTokens,
+      ) as {
         gates?: { stages?: RawStage[] };
       } | null;
       if (!copy?.gates) return copy;
