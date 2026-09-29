@@ -1,4 +1,7 @@
+import { applicationWindowType } from "./application-window";
+import { campaignType } from "./campaign";
 import { faqType } from "./faq";
+import { siteSettingsType } from "./site-settings";
 
 /**
  * The document types of the `content` workspace (the content dataset; see
@@ -9,6 +12,9 @@ export const contentSchemaTypes = [
   // Shared page content
   faqType,
   // Phases 1 and 2: campaigns, application windows, site settings
+  siteSettingsType,
+  applicationWindowType,
+  campaignType,
 
   // Phase 3: organizations (logos) and people
 
@@ -21,4 +27,7 @@ export const contentSchemaTypes = [
  * "create" and "duplicate" for them. Add `{ type, title }` when a singleton
  * type (for example `siteSettings`) joins `contentSchemaTypes`.
  */
-export const contentSingletons: readonly { type: string; title: string }[] = [];
+export const contentSingletons: readonly { type: string; title: string }[] = [
+  // Phases 1 and 2
+  { type: "siteSettings", title: "Site settings" },
+];
