@@ -5,6 +5,7 @@ import {
   backfillId,
   backfillImage,
   collectSanityAssets,
+  findUnattachedAssets,
   publicDir,
   publicPathOf,
 } from "./cms-backfill";
@@ -91,4 +92,54 @@ test("collectSanityAssets finds nested assets once", () => {
       },
     ]),
   ).toStrictEqual([logo, photo]);
+});
+
+describe("findUnattachedAssets", () => {
+  const photo = (name: string) => ({
+    _type: "image",
+    _sanityAsset: `image@file:///assets/${name}.webp`,
+    alt: name,
+  });
+  const planned = {
+    _id: "homeCopy",
+    _type: "homeCopy",
+    hero: photo("hero"),
+    people: [
+      { _key: "ada", _type: "entry", portrait: photo("ada") },
+      { _key: "bo", _type: "entry", portrait: photo("bo") },
+    ],
+    gallery: [photo("one"), photo("two")],
+  };
+  const attached = { _type: "image", asset: { _ref: "image-abc-1x1-webp" } };
+
+  test("finds the images the import left without a file", () => {
+    const existing = {
+      ...planned,
+      hero: { _type: "image", alt: "hero" },
+      people: [
+        { _key: "bo", portrait: attached },
+        { _key: "ada", portrait: { _type: "image" } },
+      ],
+      gallery: [attached, { _type: "image" }],
+    };
+    expect(findUnattachedAssets(planned, existing)).toStrictEqual([
+      { path: "hero", sanityAsset: "image@file:///assets/hero.webp" },
+      {
+        path: 'people[_key=="ada"].portrait',
+        sanityAsset: "image@file:///assets/ada.webp",
+      },
+      { path: "gallery[1]", sanityAsset: "image@file:///assets/two.webp" },
+    ]);
+  });
+
+  test("leaves what an editor changed alone", () => {
+    const existing = {
+      hero: attached,
+      // Ada removed and Bo's portrait cleared in the Studio.
+      people: [{ _key: "bo" }],
+      gallery: "not a list any more",
+    };
+    expect(findUnattachedAssets(planned, existing)).toStrictEqual([]);
+    expect(findUnattachedAssets(planned, undefined)).toStrictEqual([]);
+  });
 });

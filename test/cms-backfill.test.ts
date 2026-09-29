@@ -18,6 +18,10 @@ import {
   matchesExtension,
   type SourceDocument,
 } from "../scripts/sanity/production-copy";
+import {
+  type RepairClient,
+  repairUnattachedAssets,
+} from "../scripts/sanity/repair-assets";
 import { backfillSlices, collectBackfill } from "../scripts/sanity/slices";
 import productionFixture from "./fixtures/production-documents.json";
 
@@ -431,5 +435,102 @@ describe("copied images", () => {
         download: async () => jpeg,
       }),
     ).rejects.toThrow(/did not download as a \.webp file/);
+  });
+});
+
+describe("the recovery of images an import left without a file", () => {
+  const image = (file: string) => ({
+    _type: "image",
+    _sanityAsset: `image@file:///backfill/${file}`,
+  });
+  const planned = [
+    { _id: "homeCopy", _type: "homeCopy", hero: image("hero.webp") },
+    { _id: "person-ada", _type: "person", portrait: image("ada.webp") },
+    { _id: "person-bo", _type: "person", portrait: image("hero.webp") },
+    { _id: "faq-one", _type: "faq", question: "No image here?" },
+  ];
+
+  /** A dataset of `stored` documents that records what the repair does. */
+  function dataset(stored: Record<string, unknown>[]) {
+    const uploads: string[] = [];
+    const attached: [string, string, Record<string, string>][] = [];
+    const client: RepairClient = {
+      fetchDocuments: async (ids) =>
+        stored.filter((document) =>
+          ids.includes(String(document._id)),
+        ) as never,
+      uploadImage: async (file) => {
+        uploads.push(file);
+        return `image-${file.split("/").pop()}`;
+      },
+      attach: async (id, rev, assets) => {
+        attached.push([id, rev, assets]);
+      },
+    };
+    return { client, uploads, attached };
+  }
+
+  test("uploads each missing file once and sets only the missing references", async () => {
+    const { client, uploads, attached } = dataset([
+      // Created, then the upload failed; an editor changed the title since.
+      {
+        _id: "homeCopy",
+        _rev: "r1",
+        title: "Edited",
+        hero: { _type: "image" },
+      },
+      { _id: "drafts.homeCopy", _rev: "r2", hero: { _type: "image" } },
+      {
+        _id: "person-ada",
+        _rev: "r3",
+        portrait: { asset: { _ref: "image-x" } },
+      },
+      { _id: "person-bo", _rev: "r4", portrait: { _type: "image" } },
+    ]);
+    const result = await repairUnattachedAssets(planned, client);
+    expect(result).toStrictEqual({ attached: 3, failures: [] });
+    expect(uploads).toStrictEqual(["/backfill/hero.webp"]);
+    expect(attached).toStrictEqual([
+      ["homeCopy", "r1", { hero: "image-hero.webp" }],
+      ["drafts.homeCopy", "r2", { hero: "image-hero.webp" }],
+      ["person-bo", "r4", { portrait: "image-hero.webp" }],
+    ]);
+  });
+
+  test("reports a failed upload and carries on with the others", async () => {
+    const { client, attached } = dataset([
+      { _id: "homeCopy", _rev: "r1", hero: { _type: "image" } },
+      { _id: "person-ada", _rev: "r3", portrait: { _type: "image" } },
+    ]);
+    client.uploadImage = async (file) => {
+      if (file.endsWith("hero.webp")) throw new Error("network down");
+      return "image-ada";
+    };
+    const result = await repairUnattachedAssets(planned, client);
+    expect(result).toStrictEqual({
+      attached: 1,
+      failures: ["homeCopy: network down"],
+    });
+    expect(attached).toStrictEqual([
+      ["person-ada", "r3", { portrait: "image-ada" }],
+    ]);
+  });
+
+  test("asks only for documents that upload images, and their drafts", async () => {
+    const asked: string[] = [];
+    const { client } = dataset([]);
+    client.fetchDocuments = async (ids) => {
+      asked.push(...ids);
+      return [];
+    };
+    await repairUnattachedAssets(planned, client);
+    expect(asked).toStrictEqual([
+      "homeCopy",
+      "drafts.homeCopy",
+      "person-ada",
+      "drafts.person-ada",
+      "person-bo",
+      "drafts.person-bo",
+    ]);
   });
 });

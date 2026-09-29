@@ -49,9 +49,10 @@ Git.
   failing on an entry that matches no event). It needs `NEXT_PUBLIC_SANITY_PROJECT_ID` and
   refuses `production` as a target. Never run `--apply`, `sanity dataset create` or
   `sanity dataset import` as part of a change: importing is a maintainer's launch step. `--apply`
-  only creates missing documents; `--apply --overwrite` replaces existing ones with the code
-  content or the copy and **discards editors' edits**. Backfill ids come from explicit keys in
-  the code data (`id`/`key`), never from text.
+  only creates missing documents, then attaches the images an earlier import left without a
+  file (`scripts/sanity/repair-assets.ts`); `--apply --overwrite` replaces existing ones with
+  the code content or the copy and **discards editors' edits**. Backfill ids come from explicit
+  keys in the code data (`id`/`key`), never from text.
 - **Studio:** one workspace at `/studio` on `NEXT_PUBLIC_SANITY_DATASET` (`studioConfig` in
   `src/sanity/sanity.config.ts`) with Presentation; the content types and the merged desk
   (`siteStructure` in `src/sanity/content-structure.ts`) only when the dataset is not

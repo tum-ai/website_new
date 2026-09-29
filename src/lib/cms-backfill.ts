@@ -119,6 +119,62 @@ export function assetFileOf(sanityAsset: string): string | null {
   return isAbsolute(file) ? file : null;
 }
 
+/**
+ * An image the dataset holds without its file: `sanity dataset import`
+ * creates each document before it uploads the document's images, so an
+ * upload that failed (or an import that stopped) leaves `{_type: "image"}`
+ * with no `asset`, and a re-run with `--missing` skips the document.
+ */
+export type UnattachedAsset = {
+  /** Patch path of the image, e.g. `hero` or `items[_key=="ada"].portrait`. */
+  path: string;
+  /** The planned `_sanityAsset` whose upload belongs there. */
+  sanityAsset: string;
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+/**
+ * The images `planned` (a backfill document) uploads that `existing` (the
+ * dataset's version of it) holds without a file. Only an image object that
+ * is still there and has no `asset` counts: an image an editor removed,
+ * replaced or moved stays as the editor left it. List items are matched by
+ * `_key`, or by position when the plan gives them none.
+ */
+export function findUnattachedAssets(
+  planned: unknown,
+  existing: unknown,
+  path = "",
+): UnattachedAsset[] {
+  if (Array.isArray(planned)) {
+    if (!Array.isArray(existing)) return [];
+    return planned.flatMap((item, index) => {
+      const key = isRecord(item) ? item._key : undefined;
+      if (typeof key === "string") {
+        const match = existing.find(
+          (candidate) => isRecord(candidate) && candidate._key === key,
+        );
+        return findUnattachedAssets(item, match, `${path}[_key=="${key}"]`);
+      }
+      return findUnattachedAssets(item, existing[index], `${path}[${index}]`);
+    });
+  }
+  if (!isRecord(planned) || !isRecord(existing)) return [];
+  if (typeof planned._sanityAsset === "string") {
+    return existing.asset ? [] : [{ path, sanityAsset: planned._sanityAsset }];
+  }
+  return Object.entries(planned).flatMap(([key, value]) =>
+    key.startsWith("_")
+      ? []
+      : findUnattachedAssets(
+          value,
+          existing[key],
+          path ? `${path}.${key}` : key,
+        ),
+  );
+}
+
 /** The `/assets/...` path the site serves `file` under. */
 export function publicPathOf(file: string): string {
   return `/${relative(publicDir, file).split(sep).join("/")}`;

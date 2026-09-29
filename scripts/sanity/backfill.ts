@@ -26,6 +26,13 @@
  *   editors' edits to it. Only for a dataset nobody has edited yet (or to
  *   deliberately reset it); the script warns before it starts.
  *
+ * - After the import, in both modes (and also when it failed), the
+ *   recovery step (`repair-assets.ts`) attaches the images an earlier
+ *   import created without a file: the import creates each document before
+ *   it uploads its images, so a failed upload would otherwise stay missing,
+ *   because `--missing` skips the existing document. It sets only the
+ *   missing references, so the editors' edits stay.
+ *
  * Documents that exist only in the dataset are left alone in both modes.
  * Ids come from explicit keys in the code data (`backfillId`), so a copy
  * edit in code finds the same document instead of adding a second one.
@@ -158,9 +165,26 @@ if (values.overwrite) {
 process.stdout.write(
   `Importing into project "${projectId}", dataset "${dataset}" (${mode})...\n`,
 );
-const result = spawnSync(
-  join(root, "node_modules", ".bin", "sanity"),
+const sanityCli = join(root, "node_modules", ".bin", "sanity");
+const cliDir = join(root, "src", "sanity");
+const imported = spawnSync(
+  sanityCli,
   ["dataset", "import", outFile, "--dataset", dataset, mode],
-  { cwd: join(root, "src", "sanity"), stdio: "inherit" },
+  { cwd: cliDir, stdio: "inherit" },
 );
-process.exit(result.status ?? 1);
+process.stdout.write("Checking that every imported image has its file...\n");
+const repaired = spawnSync(
+  sanityCli,
+  ["exec", join(import.meta.dirname, "repair-assets.ts"), "--with-user-token"],
+  {
+    cwd: cliDir,
+    stdio: "inherit",
+    env: {
+      ...process.env,
+      BACKFILL_FILE: outFile,
+      BACKFILL_DATASET: dataset,
+      NEXT_PUBLIC_SANITY_PROJECT_ID: projectId,
+    },
+  },
+);
+process.exit((imported.status ?? 1) || (repaired.status ?? 1));
