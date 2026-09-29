@@ -1,3 +1,29 @@
+/** Munich calendar dates as "YYYY-MM-DD" (the en-CA order). */
+const berlinIsoDay = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "Europe/Berlin",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+/**
+ * The Munich calendar date that contains `instant`, as "YYYY-MM-DD", e.g.
+ * for `<time dateTime>`: 2026-09-27T22:30:00Z is "2026-09-28".
+ */
+export function munichIsoDate(instant: Date): string {
+  return berlinIsoDay.format(instant);
+}
+
+/**
+ * Days since the epoch of the Munich calendar day that contains `instant`:
+ * consecutive days differ by exactly 1 across daylight saving changes, so
+ * differences count calendar days.
+ */
+export function munichDayNumber(instant: Date): number {
+  const [year, month, day] = munichIsoDate(instant).split("-").map(Number);
+  return Date.UTC(year, month - 1, day) / 86_400_000;
+}
+
 const berlinParts = new Intl.DateTimeFormat("en-US", {
   timeZone: "Europe/Berlin",
   hourCycle: "h23",

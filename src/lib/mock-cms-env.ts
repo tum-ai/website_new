@@ -45,7 +45,19 @@ export function getMockCmsNow(env: Env, fallback: Date = new Date()): Date {
  * follows the same build-time flag as the fixtures.
  */
 export function getCmsNow(): Date {
-  return process.env.USE_MOCK_CMS === "1" && !process.env.VERCEL
-    ? getMockCmsNow(process.env)
-    : new Date();
+  return isMockCmsOn() ? getMockCmsNow(process.env) : new Date();
+}
+
+/**
+ * Whether `getCmsNow()` is pinned by `MOCK_CMS_NOW`. Islands that follow the
+ * clock live (application windows) then keep the server's answer, because
+ * the browser's real clock would disagree with the rest of the page.
+ */
+export function isCmsClockFixed(): boolean {
+  return isMockCmsOn() && Boolean(process.env.MOCK_CMS_NOW?.trim());
+}
+
+/** The mock CMS gate; see {@link getCmsNow} for why it reads env literally. */
+function isMockCmsOn(): boolean {
+  return process.env.USE_MOCK_CMS === "1" && !process.env.VERCEL;
 }

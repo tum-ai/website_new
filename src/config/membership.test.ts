@@ -4,7 +4,6 @@ import {
   isMembershipApplicationOpen,
   type MembershipConfig,
   membershipConfig,
-  munichDayNumber,
   type RecruitingRound,
   recruitingTimeline,
   roundSchedule,
@@ -96,15 +95,6 @@ describe("applicationProgress", () => {
     expect(
       applicationProgress(new Date("2026-11-03T12:00:00Z"), schedule),
     ).toEqual({ totalDays: 29, elapsedDays: 29, daysLeft: -7 });
-  });
-});
-
-describe("munichDayNumber", () => {
-  test("gives consecutive numbers to consecutive Munich days", () => {
-    expect(
-      munichDayNumber(new Date("2026-10-26T12:00:00Z")) -
-        munichDayNumber(new Date("2026-10-25T12:00:00Z")),
-    ).toBe(1);
   });
 });
 

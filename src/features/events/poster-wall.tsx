@@ -8,7 +8,12 @@ import {
 } from "@/components/ds";
 import type { Event } from "@/lib/types";
 import { EventDetailsDialog } from "./event-details";
-import { formatEventDate, hostsBeyondTitle, toEventDetails } from "./events";
+import {
+  formatEventDate,
+  formatHosts,
+  hostsBeyondTitle,
+  toEventDetails,
+} from "./events";
 import { Lockup } from "./lockup";
 
 /**
@@ -96,7 +101,7 @@ function PosterCaption({ event, title }: { event: Event; title: string }) {
       </span>
       <span className="mt-1 line-clamp-1 text-meta text-violet-100">
         {hosts.length > 0
-          ? `With ${hosts.join(", ")}`
+          ? `With ${formatHosts(hosts)}`
           : formatEventDate(event.event_date).long}
       </span>
     </span>

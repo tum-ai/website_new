@@ -22,11 +22,16 @@ import {
   DialogTrigger,
 } from "@/components/ds";
 import {
+  isMembershipApplicationOpen,
+  membershipWindowBoundaries,
+} from "@/config/membership";
+import {
   getHeaderOptions,
   headerConnectLinks,
   mainNavigation,
 } from "@/config/navigation";
 import { cn } from "@/lib/cn";
+import { useClockSwitch } from "@/lib/use-clock-switch";
 import { getHeaderScrollState } from "./header-scroll";
 import { NavAnchor } from "./nav-anchor";
 
@@ -36,11 +41,21 @@ const logo = {
   height: 406,
 } as const;
 
+/** Props for {@link Header}, computed by the site layout on the server. */
+export type HeaderProps = {
+  /**
+   * Whether membership applications are open at render time
+   * (`isMembershipApplicationOpen(getCmsNow())`); must match the server HTML.
+   */
+  initialMembershipOpen: boolean;
+  /** `false` on a fixed render clock (`MOCK_CMS_NOW`); see `useClockSwitch`. */
+  liveClock?: boolean;
+};
+
 /**
  * Site header: a floating pill, always visible. What it shows on a route
- * (frosted from the start, the CTA, the logo over the hero) comes from
- * `getHeaderOptions` in `@/config/navigation`; how it reacts to scrolling
- * from `header-scroll.ts`.
+ * (frosted from the start, the CTA) comes from `getHeaderOptions` in
+ * `@/config/navigation`; how it reacts to scrolling from `header-scroll.ts`.
  *
  * - Transparent over the dark page hero; frosted once the page scrolls.
  * - The fixed element starts 12px below the top edge on purpose: Safari 26
@@ -56,38 +71,31 @@ const logo = {
  *
  * Safari workarounds: docs/browser-quirks.md.
  */
-export const Header = () => {
+export const Header = ({
+  initialMembershipOpen,
+  liveClock = true,
+}: HeaderProps) => {
   const pathname = usePathname();
-  const { solid, cta, hideLogoUntilScroll } = getHeaderOptions(pathname);
+  // The CTA follows the dated membership window: the layout renders it by
+  // the server's clock, and the browser flips it when the form opens and at
+  // the deadline.
+  const membershipOpen = useClockSwitch({
+    isOn: isMembershipApplicationOpen,
+    boundaries: membershipWindowBoundaries,
+    initial: initialMembershipOpen,
+    live: liveClock,
+  });
+  const { solid, cta } = getHeaderOptions(pathname, { membershipOpen });
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [logoRevealed, setLogoRevealed] = useState(false);
-  const headerRef = useRef<HTMLElement>(null);
   const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const header = headerRef.current;
-    if (!header) return;
-    // The theme's `md` breakpoint, exposed on the header by a class below;
-    // media queries can't read custom properties themselves.
-    const breakpoint = getComputedStyle(header)
-      .getPropertyValue("--header-narrow-below")
-      .trim();
-    const narrowQuery = breakpoint
-      ? window.matchMedia(`(width < ${breakpoint})`)
-      : null;
     let frame = 0;
 
     const update = () => {
-      const next = getHeaderScrollState({
-        scrollY: window.scrollY,
-        viewportHeight: window.innerHeight,
-        narrow: narrowQuery?.matches ?? false,
-        hideLogoUntilScroll,
-      });
-      // React skips the re-render when a value is unchanged.
-      setScrolled(next.scrolled);
-      setLogoRevealed(next.showLogo);
+      // React skips the re-render when the value is unchanged.
+      setScrolled(getHeaderScrollState({ scrollY: window.scrollY }).scrolled);
     };
 
     const scheduleUpdate = () => {
@@ -107,7 +115,7 @@ export const Header = () => {
       window.removeEventListener("scroll", scheduleUpdate);
       window.removeEventListener("resize", scheduleUpdate);
     };
-  }, [hideLogoUntilScroll]);
+  }, []);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: pathname isn't read in the body, but is the intended re-run trigger on route change
   useEffect(() => {
@@ -133,9 +141,6 @@ export const Header = () => {
   }, []);
 
   const frosted = solid || scrolled || open;
-  // Until the first scroll measurement, a route that hides the logo keeps it
-  // hidden and every other route shows it.
-  const showLogo = !hideLogoUntilScroll || logoRevealed;
   // An in-page anchor scrolls this page: it keeps its place on phones and
   // needs no arrow.
   const ctaInPage = cta?.href.startsWith("#") ?? false;
@@ -144,10 +149,7 @@ export const Header = () => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <header
-        ref={headerRef}
-        className="pointer-events-none fixed inset-x-0 top-2.5 z-40 [--header-narrow-below:var(--breakpoint-md)] md:top-3"
-      >
+      <header className="pointer-events-none fixed inset-x-0 top-2.5 z-40 md:top-3">
         <div className="mx-auto w-[min(82rem,calc(100%-1.25rem))] md:w-[min(82rem,calc(100%-2*var(--gutter)+2rem))]">
           <div
             className={cn(
@@ -160,15 +162,11 @@ export const Header = () => {
             <Link
               href="/"
               aria-label="TUM.ai home"
-              tabIndex={showLogo ? undefined : -1}
-              aria-hidden={showLogo ? undefined : true}
-              className={cn(
-                "flex shrink-0 items-center rounded-full transition-opacity duration-500 ease-brand",
-                showLogo ? "opacity-100" : "pointer-events-none opacity-0",
-              )}
+              className="flex shrink-0 items-center rounded-full"
             >
-              {/* The page's one image preload (test/perf/homepage.perf.ts). */}
-              <Image {...logo} alt="" priority className="h-6 w-auto md:h-7" />
+              {/* One of the homepage's two image preloads, with the hero
+                  aperture's first photo (test/perf/homepage.perf.ts). */}
+              <Image {...logo} alt="" preload className="h-6 w-auto md:h-7" />
             </Link>
 
             <nav

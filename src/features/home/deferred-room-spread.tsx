@@ -7,7 +7,8 @@ import { ROOM_CELLS, ROOM_GRID } from "./room-layout";
 /*
  * The photo spread loads after hydration (ssr: false). This keeps its photos
  * out of the prerendered HTML and out of the first paint's network queue
- * (test/perf/homepage.perf.ts allows only the logo as an image preload). The
+ * (test/perf/homepage.perf.ts allows only the header logo and the hero
+ * aperture's first photo as image preloads). The
  * skeleton reserves the exact final boxes, so the swap doesn't shift layout.
  */
 

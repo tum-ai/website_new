@@ -1,7 +1,7 @@
 import type { Gate } from "./selection";
 
 /** One team application in the hero's field, in grid units from its centre. */
-export type FieldDot = {
+type FieldDot = {
   x: number;
   y: number;
 };

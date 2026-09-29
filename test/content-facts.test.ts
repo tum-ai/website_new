@@ -17,7 +17,9 @@ import {
 } from "../src/config/organization.ts";
 import { faq as applyFaq } from "../src/features/apply/data/faq.ts";
 import { faq as eLabFaq } from "../src/features/e-lab/data/faq.ts";
+import { testimonialCards } from "../src/features/e-lab/data/venture-page.ts";
 import { partnerStats } from "../src/features/partners/data/partners.ts";
+import { faqs as qandaFaqs } from "../src/features/qanda/data/qanda.ts";
 import { parseMunichDateTime } from "../src/lib/munich-time.ts";
 
 test("Munich wall-clock times resolve summer and winter time", () => {
@@ -74,9 +76,28 @@ test("E-Lab program length and proof points come from the config", () => {
     (item) => item.question === "What is the time commitment for the program?",
   );
   expect(commitment?.answer).toContain(weeks);
+});
 
-  expect(eLabCompletedIterations).toBe(
-    Number.parseInt(eLabConfig.currentIteration, 10) - 1,
+test("E-Lab counts only the cohorts that have finished", () => {
+  expect(Number.isInteger(eLabCompletedIterations)).toBe(true);
+  expect(eLabCompletedIterations).toBeGreaterThan(0);
+  // The current cohort is still running, so it is not among them.
+  expect(Number.parseFloat(eLabConfig.currentIteration)).toBeGreaterThan(
+    eLabCompletedIterations,
+  );
+  // Founders quoted as alumni of a cohort ("E-Lab 3.0") come from one of them.
+  for (const card of testimonialCards) {
+    const cohort = /^E-Lab (\d+)/.exec(card.context ?? "")?.[1];
+    if (cohort) {
+      expect(Number(cohort), card.name).toBeLessThanOrEqual(
+        eLabCompletedIterations,
+      );
+    }
+  }
+  // The Q&A states the count it derives.
+  const startups = qandaFaqs.find((entry) => entry.id === "startups");
+  expect(startups?.evidence?.text).toContain(
+    `has run ${eLabCompletedIterations} cohorts`,
   );
 });
 

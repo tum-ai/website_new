@@ -1,29 +1,11 @@
+import { spellCountCapitalized } from "@/lib/words";
 import { openSeat, taskForces } from "./projects";
-
-const numberWords = [
-  "No",
-  "One",
-  "Two",
-  "Three",
-  "Four",
-  "Five",
-  "Six",
-  "Seven",
-  "Eight",
-  "Nine",
-  "Ten",
-];
-
-/** A count as a sentence-initial word ("Five"), or digits past ten. */
-function countWord(count: number) {
-  return numberWords[count] ?? String(count);
-}
 
 /** The /projects hero. */
 export const hero = {
   eyebrow: "Task forces",
   title: "Where AI meets another field.",
-  lead: `Task forces are small teams of TUM.ai members who take AI into one other field, through research projects, sessions, hackathons and expeditions. ${countWord(taskForces.length)} run today, and one circle is open for the next.`,
+  lead: `Task forces are small teams of TUM.ai members who take AI into one other field, through research projects, sessions, hackathons and expeditions. ${spellCountCapitalized(taskForces.length)} run today, and one circle is open for the next.`,
   figureLabel: "Jump to a task force",
 };
 

@@ -6,7 +6,6 @@
  */
 import { contactEmails, socialLinks } from "./contact";
 import { eLabApplicationCopy } from "./e-lab";
-import { membershipConfig } from "./membership";
 
 export type NavLink = {
   label: string;
@@ -98,7 +97,7 @@ export type HeaderCtaSetting = {
 
 /**
  * The header CTA: `member` while membership applications are open
- * (`membershipConfig.applicationsOpen`), `fallback` otherwise. Change
+ * (`isMembershipApplicationOpen`, dated by the round), `fallback` otherwise. Change
  * `fallback` for a different call to action between recruiting rounds, or
  * set `override` to pin one.
  */
@@ -155,23 +154,17 @@ export type HeaderOptions = {
    * it scrolls the current page instead of leaving it.
    */
   cta: NavLink | null;
-  /**
-   * Hide the logo until the hero scrolls away, for a hero that shows the logo
-   * large itself. No route does at the moment.
-   */
-  hideLogoUntilScroll: boolean;
 };
 
-const defaultHeaderOptions: HeaderOptions = {
-  solid: false,
-  cta: headerCtaLink(
-    selectHeaderCta({
-      ...headerCtaSetting,
-      membershipOpen: membershipConfig.applicationsOpen,
-    }),
-  ),
-  hideLogoUntilScroll: false,
-};
+/** The site-wide header options for a membership state, before route overrides. */
+function defaultHeaderOptions(membershipOpen: boolean): HeaderOptions {
+  return {
+    solid: false,
+    cta: headerCtaLink(
+      selectHeaderCta({ ...headerCtaSetting, membershipOpen }),
+    ),
+  };
+}
 
 /** Per-route overrides, keyed by exact pathname. */
 const routeHeaderOptions: Readonly<Record<string, Partial<HeaderOptions>>> = {
@@ -185,8 +178,16 @@ const routeHeaderOptions: Readonly<Record<string, Partial<HeaderOptions>>> = {
 
 /**
  * The header options for `pathname`: the defaults plus the route's overrides.
- * Matching is exact, so `/partners/x` gets the defaults.
+ * Matching is exact, so `/partners/x` gets the defaults. `membershipOpen` is
+ * the dated membership window (`isMembershipApplicationOpen`), which the
+ * header keeps current in the browser.
  */
-export function getHeaderOptions(pathname: string): HeaderOptions {
-  return { ...defaultHeaderOptions, ...routeHeaderOptions[pathname] };
+export function getHeaderOptions(
+  pathname: string,
+  { membershipOpen }: { membershipOpen: boolean },
+): HeaderOptions {
+  return {
+    ...defaultHeaderOptions(membershipOpen),
+    ...routeHeaderOptions[pathname],
+  };
 }

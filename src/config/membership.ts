@@ -1,4 +1,4 @@
-import { parseMunichDateTime } from "@/lib/munich-time";
+import { munichDayNumber, parseMunichDateTime } from "@/lib/munich-time";
 
 /**
  * Single source for TUM.ai membership recruiting. The Apply page (its
@@ -83,6 +83,16 @@ export function roundSchedule(round: RecruitingRound): RoundSchedule {
 const recruitingSchedule = roundSchedule(membershipConfig.round);
 
 /**
+ * The instants at which {@link isMembershipApplicationOpen} can change for the
+ * current round: the form opening and the deadline. Live switches in the
+ * browser re-check at each.
+ */
+export const membershipWindowBoundaries: readonly Date[] = [
+  recruitingSchedule.opensAt,
+  recruitingSchedule.closesAt,
+];
+
+/**
  * Whether membership applications are open at `now`: switched on, the form
  * has opened, and the deadline has not passed.
  */
@@ -96,19 +106,6 @@ export function isMembershipApplicationOpen(
     now.getTime() >= opensAt.getTime() &&
     now.getTime() < closesAt.getTime()
   );
-}
-
-const berlinDay = new Intl.DateTimeFormat("en-CA", {
-  timeZone: "Europe/Berlin",
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-});
-
-/** Days since the epoch of the Munich calendar day that contains `instant`. */
-export function munichDayNumber(instant: Date): number {
-  const [year, month, day] = berlinDay.format(instant).split("-").map(Number);
-  return Date.UTC(year, month - 1, day) / 86_400_000;
 }
 
 /** How far the application window has run on the Munich calendar. */

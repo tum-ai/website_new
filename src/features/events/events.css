@@ -6,9 +6,10 @@
  * out under a mask (on phones the slot is the row under the logo, from lg
  * the row beside it). The reel holds the index three times, so it wraps
  * without end. It turns once on load (CSS, before hydration), then wherever
- * the reader turns it: the names window is a scroll region of its own
- * (HeroReel turns it on wheel, drag, swipe and arrow keys and sets --roll,
- * in rows within a turn), and the page scrolls as usual elsewhere.
+ * the reader turns it: the names window is a region of its own (HeroReel
+ * turns it on drag, horizontal swipe, wheel and arrow keys and sets --roll,
+ * in rows within a turn). A vertical swipe or wheel still scrolls the page
+ * unless the reel has focus (see `reelWheelDelta`).
  *
  * The load turn runs 2.2s, longer than the usual 1.2s entrance ceiling: a
  * full turn through every name needs the time to read as a roll rather than
@@ -118,11 +119,13 @@
         line-height: var(--row);
       }
 
-      /* The scroll region (focusable); the viewport inside clips and fades. */
+      /* The scroll region (focusable); the viewport inside clips and fades.
+         pan-y: a vertical swipe scrolls the page (no trap on phones); a
+         horizontal one reaches hero-reel.tsx and turns the reel. */
       .events-names-window {
         --visible: 3;
         cursor: grab;
-        touch-action: none;
+        touch-action: pan-y;
         user-select: none;
         border-radius: 0.75rem;
 

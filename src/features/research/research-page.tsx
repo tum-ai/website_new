@@ -57,6 +57,7 @@ export function ResearchPage({
         mark={false}
         titleId="research-title"
         title="Research"
+        emphasis="highlight"
         lead={heroLead}
         actions={
           <>
@@ -75,7 +76,6 @@ export function ResearchPage({
           />
         }
         classNames={{
-          title: "text-highlight",
           grid: "lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-center",
         }}
       >
@@ -192,7 +192,7 @@ export function ResearchPage({
           </p>
           <LogoWall
             layout="strip"
-            logos={rexInstitutions}
+            logos={rexInstitutions.map(({ shortName: _, ...logo }) => logo)}
             label="Offers from labs at institutions like"
             className="mt-8"
           />

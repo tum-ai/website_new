@@ -2,7 +2,6 @@ import { globSync } from "node:fs";
 import { dirname, relative, sep } from "node:path";
 import { describe, expect, test } from "vitest";
 import { eLabConfig } from "@/config/e-lab";
-import { membershipConfig } from "@/config/membership";
 import {
   connectLinks,
   contributeLinks,
@@ -49,39 +48,43 @@ test("the header's connect row is a subset of the footer's", () => {
   }
 });
 
-/** The CTA every route without an override shows. */
-const defaultCta = headerCtaLink(
-  selectHeaderCta({
-    ...headerCtaSetting,
-    membershipOpen: membershipConfig.applicationsOpen,
-  }),
+/** The CTA every route without an override shows, by membership state. */
+const defaultCta = (membershipOpen: boolean) =>
+  headerCtaLink(selectHeaderCta({ ...headerCtaSetting, membershipOpen }));
+
+test.each([true, false])(
+  "the header defaults to the configured CTA with a transparent pill (membership open: %s)",
+  (membershipOpen) => {
+    expect(defaultCta(membershipOpen)).not.toBeNull();
+    expect(getHeaderOptions("/events", { membershipOpen })).toStrictEqual({
+      solid: false,
+      cta: defaultCta(membershipOpen),
+    });
+  },
 );
 
-test("the header defaults to the configured CTA with a transparent pill", () => {
-  expect(defaultCta).not.toBeNull();
-  expect(getHeaderOptions("/events")).toStrictEqual({
-    solid: false,
-    cta: defaultCta,
-    hideLogoUntilScroll: false,
-  });
-});
-
-test("home shows the logo from the start, like every route", () => {
-  expect(getHeaderOptions("/")).toStrictEqual({
-    hideLogoUntilScroll: false,
-    solid: false,
-    cta: defaultCta,
-  });
+test("the default CTA follows the membership window", () => {
+  const open = getHeaderOptions("/", { membershipOpen: true }).cta;
+  const closed = getHeaderOptions("/", { membershipOpen: false }).cta;
+  if (headerCtaSetting.override === undefined) {
+    expect(open).toStrictEqual(headerCtaLink("member"));
+    expect(closed).toStrictEqual(headerCtaLink(headerCtaSetting.fallback));
+  } else {
+    expect(open).toStrictEqual(closed);
+  }
 });
 
 test("partners is solid and links to its own contact section", () => {
-  expect(getHeaderOptions("/partners")).toStrictEqual({
-    solid: true,
-    cta: { label: "Become a partner", href: "#partner-contact" },
-    hideLogoUntilScroll: false,
-  });
+  for (const membershipOpen of [true, false]) {
+    expect(getHeaderOptions("/partners", { membershipOpen })).toStrictEqual({
+      solid: true,
+      cta: { label: "Become a partner", href: "#partner-contact" },
+    });
+  }
   // Exact match only: sub-paths get the defaults.
-  expect(getHeaderOptions("/partners/x").solid).toBe(false);
+  expect(getHeaderOptions("/partners/x", { membershipOpen: true }).solid).toBe(
+    false,
+  );
 });
 
 describe("header CTA selection", () => {

@@ -6,8 +6,9 @@
  * Vercel) and the browser never formats a date.
  */
 import { tz } from "@date-fns/tz";
-import { format } from "date-fns";
+import { endOfDay, format } from "date-fns";
 import type { Event, EventCategory } from "@/lib/types";
+import { formatList } from "@/lib/words";
 
 /** The timezone every /events date is shown and grouped in. */
 const EVENTS_TIME_ZONE = "Europe/Berlin";
@@ -25,11 +26,23 @@ type Dated = Pick<Event, "event_date">;
 const time = (event: Dated) => new Date(event.event_date).getTime();
 
 /**
- * Splits events at `now`: upcoming (starting at or after `now`, soonest
- * first) and past (newest first). The inputs are left untouched.
+ * The last instant an event counts as upcoming: its start, or, for an event
+ * without a start time ({@link hasStartTime}), the end of its Munich day, so
+ * it doesn't turn past at 01:00 or 02:00 on the day itself.
+ */
+function upcomingUntil(event: Dated): number {
+  return hasStartTime(event.event_date)
+    ? time(event)
+    : endOfDay(new Date(event.event_date), { in: inMunich }).getTime();
+}
+
+/**
+ * Splits events at `now`: upcoming (starting at or after `now`, or on
+ * today's Munich date when they have no start time; soonest first) and past
+ * (newest first). The inputs are left untouched.
  *
- * The comparison is between instants, so it needs no timezone; `now` is the
- * server's render time (see the /events route for how stale it can get).
+ * `now` is the server's render time (see the /events route for how stale it
+ * can get).
  */
 export function splitEvents<T extends Dated>(
   events: readonly T[],
@@ -38,10 +51,10 @@ export function splitEvents<T extends Dated>(
   const cutoff = now.getTime();
   return {
     upcoming: events
-      .filter((event) => time(event) >= cutoff)
+      .filter((event) => upcomingUntil(event) >= cutoff)
       .sort((a, b) => time(a) - time(b)),
     past: events
-      .filter((event) => time(event) < cutoff)
+      .filter((event) => upcomingUntil(event) < cutoff)
       .sort((a, b) => time(b) - time(a)),
   };
 }
@@ -239,6 +252,14 @@ export function hostsBeyondTitle(
   );
 }
 
+/**
+ * "Anthropic, Lovable and Hugging Face": co-hosts in running text, the one
+ * format the hero, the register and the poster wall share.
+ */
+export function formatHosts(hosts: readonly string[]): string {
+  return formatList(hosts.map((host) => host.trim()).filter(Boolean));
+}
+
 /** "Location, City", skipping whichever part is missing or repeated. */
 export function formatEventLocation(event: Pick<Event, "location" | "city">) {
   const location = event.location?.trim();
@@ -282,14 +303,15 @@ export function getEventPhotos(
   event: Pick<Event, "title" | "images" | "poster">,
 ): EventPhoto[] {
   const images = [...new Set(event.images)];
+  const title = event.title.trim();
   if (images.length > 0) {
     return images.map((src, index) => ({
       src,
-      alt: `${event.title}, image ${index + 1}`,
+      alt: `${title}, image ${index + 1}`,
     }));
   }
   if (event.poster) {
-    return [{ src: event.poster, alt: `${event.title}, poster` }];
+    return [{ src: event.poster, alt: `${title}, poster` }];
   }
   return [];
 }

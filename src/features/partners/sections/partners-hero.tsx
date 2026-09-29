@@ -45,7 +45,7 @@ export function PartnersHero({ partners }: { partners: Partner[] }) {
             src="/assets/partners/hero.webp"
             alt="A speaker presenting to a packed auditorium at a TUM.ai event"
             fill
-            priority
+            preload
             sizes="(min-width: 1024px) 45vw, 100vw"
             className="zoom-media object-cover object-[center_40%] md:object-[57%_center]"
           />

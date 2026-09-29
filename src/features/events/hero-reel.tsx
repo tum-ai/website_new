@@ -7,6 +7,7 @@ import {
   useRef,
 } from "react";
 import { Section } from "@/components/ds";
+import { useMediaQuery } from "@/lib/use-media-query";
 
 /** Pixels per line, for wheel events that report lines (Firefox). */
 const LINE_PX = 16;
@@ -30,6 +31,26 @@ export function wheelRows(
   return px / (rowPx * 1.4);
 }
 
+/**
+ * The wheel travel the reel takes, or `null` to leave the event to the page.
+ * A mostly horizontal gesture (trackpad swipe, tilt wheel) always turns the
+ * reel: the page has no horizontal scroll to lose. A vertical one turns it
+ * only while the reel is `engaged` (it has focus: the reader clicked, tapped
+ * or tabbed into it), so scrolling the page past the hero never gets caught
+ * in the reel. Blur (click elsewhere, Tab, Escape) hands the wheel back.
+ */
+export function reelWheelDelta(
+  deltaX: number,
+  deltaY: number,
+  engaged: boolean,
+): number | null {
+  if (Math.abs(deltaX) > Math.abs(deltaY)) return deltaX;
+  return engaged ? deltaY : null;
+}
+
+/** Movement in px before a drag commits to an axis. */
+const AXIS_LOCK_PX = 6;
+
 /** Where a drag lands: the nearest name after a short throw in its direction. */
 export function settle(position: number, velocityRows = 0): number {
   return Math.round(position + velocityRows * 0.25);
@@ -42,15 +63,21 @@ const GLIDE = 0.16;
 const WHEEL_REST_MS = 140;
 
 /**
- * The events hero's band and its reel: the names window is a scroll region
- * of its own. Wheel, trackpad, drag and swipe over it turn the reel (without
- * end, in both directions) and it snaps to the nearest name when they stop;
- * with focus, the arrow keys step it. Everywhere else the page scrolls as
- * usual. The markup comes from the server; this writes the position as
- * `--roll` (rows within one turn, so the reel's three copies wrap without a
- * seam), marks the panel of the name in the slot, and moves only a
- * transform. It does nothing under reduced motion, where the hero is a
- * static index (see events.css).
+ * The events hero's band and its reel: the names window turns (without end,
+ * in both directions) and snaps to the nearest name when the input stops.
+ *
+ * - Drag: along either axis with a mouse or pen. On touch the window has
+ *   `touch-action: pan-y` (events.css), so a vertical swipe scrolls the page
+ *   as everywhere else and a horizontal swipe turns the reel.
+ * - Wheel: see {@link reelWheelDelta}; horizontal always, vertical only
+ *   once the reel has focus.
+ * - Keys: with focus, the arrow keys step it.
+ *
+ * The markup comes from the server; this writes the position as `--roll`
+ * (rows within one turn, so the reel's three copies wrap without a seam),
+ * marks the panel of the name in the slot, and moves only a transform. It
+ * does nothing under reduced motion, where the hero is a static index (see
+ * events.css), and follows the setting when it changes.
  */
 export function HeroReel({
   count,
@@ -61,15 +88,13 @@ export function HeroReel({
   count: number;
 }) {
   const ref = useRef<HTMLElement>(null);
+  // The same condition as the reel layout in events.css.
+  const reelMode = useMediaQuery("(prefers-reduced-motion: no-preference)");
 
   useEffect(() => {
     const band = ref.current;
     const region = band?.querySelector<HTMLElement>(".events-names-window");
-    if (!band || !region || count < 2) return;
-    const reelMode = window.matchMedia(
-      "(prefers-reduced-motion: no-preference)",
-    );
-    if (!reelMode.matches) return;
+    if (!band || !region || count < 2 || !reelMode) return;
 
     const panels = [...band.querySelectorAll<HTMLElement>("[data-host-panel]")];
     const rowPx = () =>
@@ -110,9 +135,14 @@ export function HeroReel({
     };
 
     const onWheel = (event: WheelEvent) => {
-      if (Math.abs(event.deltaY) < Math.abs(event.deltaX)) return;
+      const delta = reelWheelDelta(
+        event.deltaX,
+        event.deltaY,
+        region.contains(document.activeElement),
+      );
+      if (delta === null) return;
       event.preventDefault();
-      target += wheelRows(event.deltaY, event.deltaMode, rowPx());
+      target += wheelRows(delta, event.deltaMode, rowPx());
       window.clearTimeout(wheelRest);
       wheelRest = window.setTimeout(() => {
         target = settle(target);
@@ -123,7 +153,10 @@ export function HeroReel({
 
     let drag: {
       id: number;
+      x: number;
       y: number;
+      /** The axis the drag moves along, once it has moved AXIS_LOCK_PX. */
+      axis: "x" | "y" | null;
       from: number;
       t: number;
       v: number;
@@ -132,7 +165,9 @@ export function HeroReel({
       if (event.button !== 0) return;
       drag = {
         id: event.pointerId,
+        x: event.clientX,
         y: event.clientY,
+        axis: null,
         from: target,
         t: event.timeStamp,
         v: 0,
@@ -142,7 +177,13 @@ export function HeroReel({
     };
     const onPointerMove = (event: PointerEvent) => {
       if (!drag || event.pointerId !== drag.id) return;
-      const next = drag.from - (event.clientY - drag.y) / rowPx();
+      const dx = event.clientX - drag.x;
+      const dy = event.clientY - drag.y;
+      if (!drag.axis) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) < AXIS_LOCK_PX) return;
+        drag.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+      }
+      const next = drag.from - (drag.axis === "x" ? dx : dy) / rowPx();
       const dt = Math.max(event.timeStamp - drag.t, 1);
       drag.v = ((next - target) / dt) * 1000;
       drag.t = event.timeStamp;
@@ -197,8 +238,9 @@ export function HeroReel({
       region.removeEventListener("pointerup", onPointerUp);
       region.removeEventListener("pointercancel", onPointerUp);
       region.removeEventListener("keydown", onKeyDown);
+      band.style.removeProperty("--roll");
     };
-  }, [count]);
+  }, [count, reelMode]);
 
   return (
     <Section

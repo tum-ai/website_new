@@ -6,7 +6,9 @@ import { MotionProvider } from "@/components/ds";
 import { Footer } from "@/components/shell/footer";
 import { Header } from "@/components/shell/header";
 import { SkipLink } from "@/components/shell/skip-link";
+import { isMembershipApplicationOpen } from "@/config/membership";
 import { rootMetadata } from "@/config/seo";
+import { getCmsNow, isCmsClockFixed } from "@/lib/mock-cms-env";
 import { isSanityConfigured, SanityLive } from "@/lib/sanity";
 import "@/styles/index.css";
 
@@ -64,7 +66,10 @@ export default async function RootLayout({
         {/* Isolated root so Base UI portals always stack above page content. */}
         <div id="app-root" className="isolate">
           <MotionProvider>
-            <Header />
+            <Header
+              initialMembershipOpen={isMembershipApplicationOpen(getCmsNow())}
+              liveClock={!isCmsClockFixed()}
+            />
             <div
               id="main-content"
               tabIndex={-1}

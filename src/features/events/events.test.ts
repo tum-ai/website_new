@@ -1,8 +1,11 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
+import { getMockEvents } from "@/lib/mock-cms";
+import type { Event } from "@/lib/types";
 import {
   excerpt,
   formatEventDate,
   formatEventLocation,
+  formatHosts,
   getEventPhotos,
   groupEventsBySemester,
   hasStartTime,
@@ -12,6 +15,7 @@ import {
   semesterOf,
   splitEvents,
   summarizeEvents,
+  toEventDetails,
 } from "./events";
 
 const at = (event_date: string, id = event_date) => ({ id, event_date });
@@ -62,6 +66,43 @@ describe.each([
       );
       expect(ids(past)).toEqual(["earlier"]);
       expect(ids(upcoming)).toEqual(["later"]);
+    });
+
+    test("an event without a start time stays upcoming for its whole Munich day", () => {
+      // Stored at 00:00 UTC (02:00 in Munich summer time) on 1 October.
+      const dateOnly = [at("2026-10-01T00:00:00Z", "oct-1")];
+      expect(ids(splitEvents(dateOnly, now).upcoming)).toEqual(["oct-1"]);
+      // 23:59:59.999 in Munich (UTC+2) is the last upcoming instant.
+      const lastMoment = new Date("2026-10-01T21:59:59.999Z");
+      expect(ids(splitEvents(dateOnly, lastMoment).upcoming)).toEqual([
+        "oct-1",
+      ]);
+      const midnight = new Date("2026-10-01T22:00:00Z");
+      expect(ids(splitEvents(dateOnly, midnight).past)).toEqual(["oct-1"]);
+    });
+
+    test("the end of a date-only event's day follows daylight saving time", () => {
+      // 25 October 2026: summer time ends, so the Munich day ends at 23:00 UTC.
+      const autumn = [at("2026-10-25T00:00:00Z", "oct-25")];
+      expect(
+        ids(splitEvents(autumn, new Date("2026-10-25T22:59:59.999Z")).upcoming),
+      ).toEqual(["oct-25"]);
+      expect(
+        ids(splitEvents(autumn, new Date("2026-10-25T23:00:00Z")).past),
+      ).toEqual(["oct-25"]);
+      // 29 March 2026: summer time starts, so the day ends at 22:00 UTC.
+      const spring = [at("2026-03-29T00:00:00Z", "mar-29")];
+      expect(
+        ids(splitEvents(spring, new Date("2026-03-29T21:59:59.999Z")).upcoming),
+      ).toEqual(["mar-29"]);
+      expect(
+        ids(splitEvents(spring, new Date("2026-03-29T22:00:00Z")).past),
+      ).toEqual(["mar-29"]);
+    });
+
+    test("an event with a start time turns past at its start, not at midnight", () => {
+      const timed = [at("2026-10-01T09:00:00Z", "morning")];
+      expect(ids(splitEvents(timed, now).past)).toEqual(["morning"]);
     });
 
     test("sorts upcoming soonest first and past newest first, leaving the input alone", () => {
@@ -329,5 +370,59 @@ describe("getEventPhotos", () => {
         poster: "/a.webp",
       }),
     ).toEqual([{ src: "/a.webp", alt: "Makeathon, image 1" }]);
+  });
+});
+
+describe("formatHosts", () => {
+  test("lists co-hosts in running text, without a serial comma", () => {
+    expect(formatHosts(["Anthropic", "Lovable", "Hugging Face"])).toBe(
+      "Anthropic, Lovable and Hugging Face",
+    );
+    expect(formatHosts(["CDTM"])).toBe("CDTM");
+  });
+
+  test("ignores stray spaces and empty entries from the editors", () => {
+    expect(formatHosts([" Anthropic ", "", "Lovable"])).toBe(
+      "Anthropic and Lovable",
+    );
+  });
+});
+
+describe("toEventDetails", () => {
+  const [base] = getMockEvents(new Date("2026-10-01T12:00:00Z"));
+  if (!base) throw new Error("expected a mock event");
+  const event: Event = {
+    ...base,
+    title: "  Anthropic x Lovable  ",
+    event_date: "2026-10-10T16:30:00Z",
+    location: "Munich Urban Colab",
+    city: "Munich",
+    hosts: ["Anthropic", "Lovable", "CDTM"],
+    description: "An evening of demos.",
+    category: "Hackathon",
+    poster: "/poster.png",
+    images: ["/one.png", "/two.png"],
+  };
+
+  test("shapes plain, pre-formatted props for the dialog", () => {
+    expect(toEventDetails(event)).toEqual({
+      title: "Anthropic x Lovable",
+      date: formatEventDate("2026-10-10T16:30:00Z"),
+      location: "Munich Urban Colab",
+      category: "Hackathon",
+      hosts: ["CDTM"],
+      description: "An evening of demos.",
+      image: { src: "/poster.png", alt: "Anthropic x Lovable, poster" },
+    });
+  });
+
+  test("falls back to the first photo without a poster, and to none", () => {
+    expect(toEventDetails({ ...event, poster: undefined }).image).toEqual({
+      src: "/one.png",
+      alt: "Anthropic x Lovable, image 1",
+    });
+    expect(
+      toEventDetails({ ...event, poster: undefined, images: [] }).image,
+    ).toBeUndefined();
   });
 });

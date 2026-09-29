@@ -42,10 +42,6 @@ export const selectionStages: (Point & { when: StageTiming })[] = [
   },
 ];
 
-/** The partners' fork in the closing band. */
-export const partnerPitch =
-  "Partners meet our members through talent packages, hackathon challenges and company visits.";
-
 /** What we look for in applicants. */
 export const qualities: Point[] = [
   {

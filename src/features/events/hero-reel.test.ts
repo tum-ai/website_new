@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { settle, wheelRows } from "./hero-reel";
+import { reelWheelDelta, settle, wheelRows } from "./hero-reel";
 
 describe("wheelRows", () => {
   test("pixel deltas move a little less than a row per row of travel", () => {
@@ -22,5 +22,17 @@ describe("settle", () => {
   test("a throw carries on in its direction", () => {
     expect(settle(3.4, 8)).toBe(5);
     expect(settle(3.4, -8)).toBe(1);
+  });
+});
+
+describe("reelWheelDelta", () => {
+  test("a horizontal gesture always turns the reel", () => {
+    expect(reelWheelDelta(40, 5, false)).toBe(40);
+    expect(reelWheelDelta(-40, 5, true)).toBe(-40);
+  });
+
+  test("a vertical gesture scrolls the page until the reel has focus", () => {
+    expect(reelWheelDelta(0, 80, false)).toBeNull();
+    expect(reelWheelDelta(0, 80, true)).toBe(80);
   });
 });

@@ -78,6 +78,9 @@ export const selectionStages: SelectionStage[] = [
     selection.admitted,
     "The teams that start the program together.",
   ),
+  // TODO(content): the phases add up to 3 days + 4 weeks + 6 weeks (about
+  // ten weeks), while eLabConfig.programWeeks says 14. Which is right, and
+  // what fills the remaining weeks (Selection Day to the Final Pitch)?
   phase(
     "kickoff",
     "Kickoff and onboarding weekend",

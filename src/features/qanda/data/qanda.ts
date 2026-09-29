@@ -1,6 +1,7 @@
 import { eLabCompletedIterations, eLabProgramSummary } from "@/config/e-lab";
 import { impactFacts, publicationVenuesText } from "@/config/impact";
 import { organizationFacts } from "@/config/organization";
+import { partnerPitch } from "@/features/partners";
 
 /** The question the mission passage answers. */
 export const missionQuestion = "What is TUM.ai's mission?";
@@ -132,7 +133,7 @@ export const forks = [
   },
   {
     reader: "For companies",
-    text: "Partners meet our members through talent packages, hackathon challenges and company visits.",
+    text: partnerPitch,
     label: "Become a Partner",
     href: "/partners",
   },

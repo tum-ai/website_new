@@ -60,6 +60,9 @@ const currentIteration = "6.0";
 
 export const eLabConfig: ELabConfig = {
   currentIteration,
+  // TODO(content): the 27.09.2026 deadline has passed. The site closes the
+  // round by itself at the deadline, but should this switch be set to false
+  // (and nextApplicationWindow confirmed) now that E-Lab 6.0 is selected?
   applicationsOpen: true,
   applicationUrl: "https://tally.so/r/xXBkW9",
   applicationDeadlineDate: "27.09.2026",

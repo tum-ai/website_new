@@ -1,4 +1,5 @@
 import { Container, Section, SectionHeader, Steps } from "@/components/ds";
+import { spellCountCapitalized } from "@/lib/words";
 import { type StageTiming, selectionStages } from "./data/apply";
 import type { RecruitingCall } from "./round";
 
@@ -29,7 +30,7 @@ export function Selection({ call }: { call: RecruitingCall }) {
           title="How selection works"
           size="lg"
           layout="stack"
-          lead="Four stages, from your application to your first weekend as a member."
+          lead={`${spellCountCapitalized(selectionStages.length)} stages, from your application to your first weekend as a member.`}
         />
         <Steps
           layout="rows"

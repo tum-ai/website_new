@@ -7,8 +7,8 @@ import {
   Section,
   TextLink,
 } from "@/components/ds";
+import { partnerPitch } from "@/features/partners";
 import { ApplyAction } from "./apply-action";
-import { partnerPitch } from "./data/apply";
 import {
   closedLabel,
   closingLead,
