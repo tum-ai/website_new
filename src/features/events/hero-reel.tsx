@@ -85,6 +85,9 @@ export function HeroReel({
   names: readonly string[];
 }) {
   const count = names.length;
+  // By value: a live content refresh hands over an equal but new array,
+  // which must not tear the reel down and lose the reader's place.
+  const namesKey = names.join("\n");
   const ref = useRef<HTMLElement>(null);
   // The same condition as the reel layout in events.css.
   const reelMode = useMediaQuery("(prefers-reduced-motion: no-preference)");
@@ -93,6 +96,7 @@ export function HeroReel({
     const band = ref.current;
     const region = band?.querySelector<HTMLElement>(".events-names-window");
     if (!band || !region || count < 2 || !reelMode) return;
+    const hosts = namesKey.split("\n");
 
     const panels = [...band.querySelectorAll<HTMLElement>("[data-host-panel]")];
     const rowPx = () =>
@@ -119,7 +123,7 @@ export function HeroReel({
     const announce = () => {
       if (active === announced) return;
       announced = active;
-      live.textContent = `${names[active]} in the slot`;
+      live.textContent = `${hosts[active]} in the slot`;
     };
 
     const render = () => {
@@ -253,9 +257,13 @@ export function HeroReel({
       region.removeEventListener("pointercancel", onPointerUp);
       region.removeEventListener("keydown", onKeyDown);
       band.style.removeProperty("--roll");
+      // Back to the server markup: the first host's panel, as at --roll 0.
+      for (const panel of panels) panel.removeAttribute("data-active");
+      panels[0]?.setAttribute("data-active", "");
+      delete region.dataset.dragging;
       live.remove();
     };
-  }, [count, names, reelMode]);
+  }, [count, namesKey, reelMode]);
 
   return (
     <Section
