@@ -76,6 +76,7 @@ export type Event = {
   location?: string;
   city?: "Munich" | "Online";
   category?: "Hackathon" | "Speaker" | "Event" | "E-Lab";
+  hosts?: Array<string>;
   poster?: {
     asset?: SanityImageAssetReference;
     media?: unknown;
@@ -236,7 +237,7 @@ export type AllSanitySchemaTypes =
 
 // Source: ../lib/sanity-queries.ts
 // Variable: EVENTS_QUERY
-// Query: *[_type == "event"]{  "id": _id,  title,  "description": coalesce(desc, ""),  event_date,  location,  city,  category,  "poster": poster.asset->url,  "images": array::compact([poster.asset->url, img.asset->url]),  sign_up}
+// Query: *[_type == "event"]{  "id": _id,  title,  "description": coalesce(desc, ""),  event_date,  location,  city,  category,  "hosts": coalesce(hosts, []),  "poster": poster.asset->url,  "images": array::compact([poster.asset->url, img.asset->url]),  sign_up}
 export type EVENTS_QUERY_RESULT = Array<{
   id: string;
   title: string;
@@ -245,6 +246,7 @@ export type EVENTS_QUERY_RESULT = Array<{
   location: string | null;
   city: "Munich" | "Online" | null;
   category: "E-Lab" | "Event" | "Hackathon" | "Speaker" | null;
+  hosts: Array<string> | Array<never>;
   poster: string | null;
   images: Array<string>;
   sign_up: string | null;

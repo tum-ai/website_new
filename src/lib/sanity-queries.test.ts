@@ -80,6 +80,21 @@ test("event query: images compacts poster+img, drops missing, description falls 
   expect(byId["evt-both"].id).toBe("evt-both");
 });
 
+test("event query: hosts stay an array and default to empty", async () => {
+  const [hosted, bare] = await run(EVENTS_QUERY, [
+    {
+      _id: "hosted",
+      _type: "event",
+      title: "Anthropic x Lovable",
+      event_date: "2026-01-01",
+      hosts: ["Anthropic", "Lovable"],
+    },
+    { _id: "bare", _type: "event", title: "Talk", event_date: "2026-02-01" },
+  ]);
+  expect(hosted.hosts).toStrictEqual(["Anthropic", "Lovable"]);
+  expect(bare.hosts).toStrictEqual([]);
+});
+
 test("research query: keywords stay an array, description falls back", async () => {
   const dataset = [
     {
