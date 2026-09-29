@@ -9,7 +9,7 @@ import {
   Section,
   SectionHeader,
 } from "@/components/ds";
-import { testimonialCards } from "@/features/e-lab";
+import { getTestimonialCards } from "@/features/e-lab";
 import {
   getHighlightedPartners,
   getPartnerCaseStudies,
@@ -37,12 +37,15 @@ const partnerLogos = getHighlightedPartners(getPartnerDirectory([])).map(
 /**
  * The partner case on mist: a venture investor's quote, three measured
  * outcomes, then every current partner. Ends with the partner calls to
- * action. The outcomes come from the partners content slice (the CMS or
- * the code).
+ * action. The quote and the outcomes come from the E-Lab and partners
+ * content slices (the CMS or the code).
  */
 export async function PartnersSection() {
-  const caseStudies = await getPartnerCaseStudies();
-  const quote = testimonialCards.find((card) => card.id === partnerQuoteId);
+  const [cards, caseStudies] = await Promise.all([
+    getTestimonialCards(),
+    getPartnerCaseStudies(),
+  ]);
+  const quote = cards.find((card) => card.id === partnerQuoteId);
   /** What partners got out of working with TUM.ai, as ledger rows. */
   const outcomes: LedgerItem[] = caseStudies.map((study) => ({
     label: study.name,

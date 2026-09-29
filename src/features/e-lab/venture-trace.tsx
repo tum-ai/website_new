@@ -10,28 +10,34 @@ import {
 import { eLabCompletedIterations, eLabConfig } from "@/config/e-lab";
 import { gates } from "./data/selection";
 import {
-  notableStartups,
-  testimonialCards,
-  tracedVenture,
+  type NotableStartup,
+  type TracedVenture,
   tracedVentureLead,
 } from "./data/venture-page";
-
-const venture = notableStartups.find(
-  (startup) => startup.id === tracedVenture.startupId,
-);
-const founder = testimonialCards.find(
-  (card) => card.id === tracedVenture.testimonialId,
-);
-const otherVentures = notableStartups.filter(
-  (startup) => startup.id !== tracedVenture.startupId,
-);
+import {
+  getNotableStartups,
+  getTestimonialCards,
+  getTracedVenture,
+} from "./venture-content";
 
 /**
  * One venture followed through the gates (the page's bold element, in
  * miniature): the founder's words beside the gates the team passed and where
- * it went next. Below it, the other alumni ventures, each linked.
+ * it went next. Below it, the other alumni ventures, each linked. Ventures,
+ * quotes and the trace come from the venture slice (the CMS or the code);
+ * the section hides when the traced venture or its founder quote is missing.
  */
-export function VentureTrace() {
+export async function VentureTrace() {
+  const [startups, cards, trace] = await Promise.all([
+    getNotableStartups(),
+    getTestimonialCards(),
+    getTracedVenture(),
+  ]);
+  const venture = startups.find((startup) => startup.id === trace.startupId);
+  const founder = cards.find((card) => card.id === trace.testimonialId);
+  const otherVentures = startups.filter(
+    (startup) => startup.id !== trace.startupId,
+  );
   if (!venture || !founder) return null;
   return (
     <Section tone="ink" spacing="lg" aria-labelledby="venture-trace-title">
@@ -41,7 +47,7 @@ export function VentureTrace() {
           title="One team, all the way through."
           size="lg"
           layout="stack"
-          lead={tracedVentureLead(venture.name)}
+          lead={tracedVentureLead(venture.name, trace)}
         />
         <div className="grid gap-14 lg:grid-cols-12 lg:gap-12">
           <Reveal className="lg:col-span-7 lg:self-start">
@@ -54,7 +60,7 @@ export function VentureTrace() {
             />
           </Reveal>
           <Reveal delay={120} className="lg:col-span-4 lg:col-start-9">
-            <Trail />
+            <Trail venture={venture} trace={trace} />
           </Reveal>
         </div>
 
@@ -93,8 +99,13 @@ export function VentureTrace() {
  * rail is horizontal and whose `rows` layout has no markers; a vertical
  * dot-rail variant of `Steps` is a ds handoff.
  */
-function Trail() {
-  if (!venture) return null;
+function Trail({
+  venture,
+  trace,
+}: {
+  venture: NotableStartup;
+  trace: TracedVenture;
+}) {
   return (
     <div>
       <div className="border-hairline-strong border-b pb-5">
@@ -117,7 +128,7 @@ function Trail() {
             {gate.name}
           </li>
         ))}
-        {tracedVenture.after.map((milestone, index) => (
+        {trace.after.map((milestone, index) => (
           <li
             key={milestone.text}
             className={
