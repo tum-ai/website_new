@@ -6,33 +6,40 @@ import {
   Section,
   TextLink,
 } from "@/components/ds";
-import { contactEmails } from "@/config/contact";
-import { partnerPitch } from "@/features/partners";
+import { callToActionLabels } from "@/config/calls-to-action";
 import type { QandaCopy } from "./data/qanda";
 
-/** A mail to the general inbox, its subject filled in. */
-const askUs = `mailto:${contactEmails.general}?subject=${encodeURIComponent("A question about TUM.ai")}`;
+/** A mail to `email` (the general inbox), its subject filled in. */
+const askUs = (email: string) =>
+  `mailto:${email}?subject=${encodeURIComponent("A question about TUM.ai")}`;
 
 /**
  * The page's close on ink. The page opens with the answers marked in the
  * mission; it ends on the questions the paragraph leaves open, handed to the
- * people who can answer them, with each reader's next step beside it.
+ * people who can answer them, with each reader's next step beside it. The
+ * companies' step is the partner pitch (`partnerPitch`, from the partners
+ * copy); `email` is the general inbox from the site facts.
  */
 export function ClosingSection({
   closing,
   forks: readers,
-}: Pick<QandaCopy, "closing" | "forks">) {
+  partnerPitch,
+  email,
+}: Pick<QandaCopy, "closing" | "forks"> & {
+  partnerPitch: string;
+  email: string;
+}) {
   const forks = [
     {
       reader: readers.students.reader,
       text: readers.students.text,
-      label: "Become a Member",
+      label: callToActionLabels.member,
       href: "/apply",
     },
     {
       reader: readers.companies.reader,
       text: partnerPitch,
-      label: "Become a Partner",
+      label: callToActionLabels.partner,
       href: "/partners",
     },
   ];
@@ -54,7 +61,7 @@ export function ClosingSection({
                 {closing.lead}
               </p>
               <Actions className="mt-10 md:mt-12">
-                <ButtonLink href={askUs} size="lg" arrow>
+                <ButtonLink href={askUs(email)} size="lg" arrow>
                   {closing.action}
                 </ButtonLink>
               </Actions>

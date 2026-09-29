@@ -1,6 +1,8 @@
 import Image from "next/image";
 import { Actions, ButtonLink, Container, TopBlend } from "@/components/ds";
+import { callToActionLabels } from "@/config/calls-to-action";
 import type { Event } from "@/lib/types";
+import { getEventsCopy } from "./content";
 import { type HostArtwork, hostIcon, hostLogo } from "./data/host-logos";
 import { type EventSummary, formatEventDate, type HostEntry } from "./events";
 import { HeroReel } from "./hero-reel";
@@ -31,7 +33,10 @@ export async function EventsHero({
   hasUpcoming: boolean;
 }) {
   const rolls = hosts.length > 1;
-  const artwork = rolls ? await getHostArtwork() : undefined;
+  const [artwork, { hero }] = await Promise.all([
+    rolls ? getHostArtwork() : undefined,
+    getEventsCopy(),
+  ]);
   return (
     <HeroReel
       count={hosts.length}
@@ -91,7 +96,7 @@ export async function EventsHero({
           </div>
 
           <div className="events-hero-footer max-w-2xl [animation-delay:380ms] motion-safe:animate-rise-sm">
-            <Lead summary={summary} />
+            <Lead summary={summary} emptyLead={hero.emptyLead} />
             <Actions className="mt-8">
               {hasUpcoming ? (
                 <>
@@ -103,16 +108,16 @@ export async function EventsHero({
                     size="lg"
                     variant="outline"
                   >
-                    Become a Partner
+                    {callToActionLabels.partner}
                   </ButtonLink>
                 </>
               ) : (
                 <>
                   <ButtonLink href="/partners#partner-contact" size="lg">
-                    Become a Partner
+                    {callToActionLabels.partner}
                   </ButtonLink>
                   <ButtonLink href="/apply" size="lg" variant="outline" arrow>
-                    Become a Member
+                    {callToActionLabels.member}
                   </ButtonLink>
                 </>
               )}
@@ -124,14 +129,21 @@ export async function EventsHero({
   );
 }
 
-function Lead({ summary }: { summary: EventSummary }) {
+/**
+ * The hero's lead: the events counted in one sentence, built from the
+ * summary (its grammar follows the counts, so it stays in code), or the
+ * page copy's `emptyLead` while there are none.
+ */
+function Lead({
+  summary,
+  emptyLead,
+}: {
+  summary: EventSummary;
+  emptyLead: string;
+}) {
   const { total, since, hackathons, withHosts } = summary;
   if (total === 0) {
-    return (
-      <p className="text-fg-muted text-lead">
-        Hackathons, talks and pitch nights in Munich.
-      </p>
-    );
+    return <p className="text-fg-muted text-lead">{emptyLead}</p>;
   }
   return (
     <p className="text-fg-muted text-lead">

@@ -9,7 +9,7 @@ import {
   SectionHeader,
   TextLink,
 } from "@/components/ds";
-import { socialLinks } from "@/config/contact";
+import { getSiteFacts } from "@/config/site-settings-content";
 import type { Event } from "@/lib/types";
 import { getEventsCopy } from "./content";
 import { EventDetailsDialog } from "./event-details";
@@ -30,10 +30,14 @@ import { SignUpAction } from "./sign-up-action";
  * figures, the lockup title, venue and co-hosts, an excerpt, the sign-up and
  * the poster. When nothing is scheduled, the section says so and points to
  * where new dates are announced; most of the year that is the normal state.
- * Reads its copy from the content slice itself: the page passes none.
+ * Reads its copy from the content slice and the social links from the site
+ * facts itself: the page passes neither.
  */
 export async function Upcoming({ events }: { events: Event[] }) {
-  const { upcoming } = await getEventsCopy();
+  const [{ upcoming }, { socialLinks }] = await Promise.all([
+    getEventsCopy(),
+    getSiteFacts(),
+  ]);
   return (
     <Section
       tone="paper"

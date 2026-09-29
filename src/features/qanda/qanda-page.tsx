@@ -1,5 +1,6 @@
 import { PageHero } from "@/components/ds";
-import { brandMission } from "@/config/organization";
+import { getSiteFacts } from "@/config/site-settings-content";
+import { getPartnersCopy } from "@/features/partners/server";
 import { ClosingSection } from "./closing-section";
 import { getQandaContent, type QandaContent } from "./content";
 import { MissionSection } from "./mission-section";
@@ -33,10 +34,15 @@ export async function getQandaMainEntity() {
  * the answer to each question is marked (the page's one bold element), and
  * the close hands whatever the paragraph leaves open to the inbox and each
  * reader's next step. The copy and questions come from the content slice
- * (`content.ts`: the CMS or the code copy).
+ * (`content.ts`), the mission and the inbox from the site facts, and the
+ * partner pitch from the partners copy: each the CMS or the code.
  */
 export async function QandAPage() {
-  const { copy, faqs } = await getQandaContent();
+  const [{ copy, faqs }, facts, { pitch }] = await Promise.all([
+    getQandaContent(),
+    getSiteFacts(),
+    getPartnersCopy(),
+  ]);
   return (
     <main>
       <PageHero
@@ -45,10 +51,15 @@ export async function QandAPage() {
         mark={false}
         emphasis="highlight"
         title={copy.heroTitle}
-        lead={brandMission}
+        lead={facts.brandMission}
       />
       <MissionSection copy={copy} faqs={faqs} />
-      <ClosingSection closing={copy.closing} forks={copy.forks} />
+      <ClosingSection
+        closing={copy.closing}
+        forks={copy.forks}
+        partnerPitch={pitch}
+        email={facts.contactEmails.general}
+      />
     </main>
   );
 }

@@ -14,12 +14,13 @@ import {
 } from "./data/copy";
 
 /**
- * The /events content slice: the `eventsCopy` singleton (section titles and
- * leads, the closing). The events come from the live dataset; the code
+ * The /events content slice: the `eventsCopy` singleton (the hero's empty
+ * lead, section titles and leads, the closing). The events come from the live dataset; the code
  * fallback is `data/copy.ts`.
  */
 
 export const EVENTS_COPY_QUERY = defineQuery(`*[_id == "eventsCopy"][0]{
+  hero{ emptyLead },
   upcoming{ title, empty },
   past{ title, lead },
   posters{ title, lead },

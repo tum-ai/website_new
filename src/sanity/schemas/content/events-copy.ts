@@ -2,8 +2,8 @@ import { defineField, defineType } from "sanity";
 import { copyString, copyText } from "./copy-fields";
 
 /**
- * The /events page's own copy (one document, `_id` `eventsCopy`): section
- * headings and the closing. The events themselves are edited in the live
+ * The /events page's own copy (one document, `_id` `eventsCopy`): the hero's
+ * empty lead, section headings and the closing. The events themselves are edited in the live
  * workspace (events, partners and research). Read by
  * `features/events/content.ts`, over the code copy in
  * `features/events/data/copy.ts`.
@@ -13,6 +13,21 @@ export const eventsCopyType = defineType({
   title: "Events page",
   type: "document",
   fields: [
+    defineField({
+      name: "hero",
+      title: "Hero",
+      type: "object",
+      description:
+        "Beside the co-host lockup. While events are listed, the lead counts them instead.",
+      fields: [
+        copyString({
+          name: "emptyLead",
+          title: "Lead without events",
+          description: "Shown while the page lists no event at all.",
+          max: 80,
+        }),
+      ],
+    }),
     defineField({
       name: "upcoming",
       title: "Upcoming",

@@ -6,6 +6,13 @@
  * page tokens the sections fill (`eventsPageTokens`).
  */
 export type EventsCopy = {
+  hero: {
+    /**
+     * The hero's lead while no event is listed; otherwise the lead counts
+     * the events.
+     */
+    emptyLead: string;
+  };
   upcoming: {
     title: string;
     /**
@@ -36,6 +43,9 @@ export type EventsCopy = {
 export const eventsPageTokens = ["instagram", "linkedin", "since"] as const;
 
 export const eventsCopyTemplate: EventsCopy = {
+  hero: {
+    emptyLead: "Hackathons, talks and pitch nights in Munich.",
+  },
   upcoming: {
     title: "Upcoming",
     // TODO(content): confirm Instagram and LinkedIn are where new event dates go out first.
