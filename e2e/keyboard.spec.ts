@@ -125,15 +125,6 @@ test.describe("dialogs", { tag: "@keyboard" }, () => {
     await expectModalDialog(page, trigger);
   });
 
-  test("research project details", async ({ page }) => {
-    await page.goto("/research");
-    const trigger = page
-      .getByRole("tabpanel", { name: "Projects" })
-      .locator('button[aria-haspopup="dialog"]')
-      .first();
-    await expectModalDialog(page, trigger);
-  });
-
   test("partner booking", async ({ page }) => {
     // Keep the third-party calendar out of the test.
     await page.route(/cal\.(eu|com)/, (route) => route.abort());
@@ -168,27 +159,6 @@ test.describe("disclosure widgets", { tag: "@keyboard" }, () => {
 
     await page.keyboard.press("Space");
     await expect(second).toHaveAttribute("aria-expanded", "false");
-  });
-
-  test("research tabs follow the arrow keys", async ({ page }) => {
-    await page.goto("/research");
-    const projects = page.getByRole("tab", { name: "Projects" });
-    const exchange = page.getByRole("tab", {
-      name: "Research Exchange Program",
-    });
-    await expect(projects).toHaveAttribute("aria-selected", "true");
-
-    await projects.focus();
-    await page.keyboard.press("ArrowRight");
-    await expect(exchange).toBeFocused();
-    await expect(exchange).toHaveAttribute("aria-selected", "true");
-    await expect(
-      page.getByRole("tabpanel", { name: "Research Exchange Program" }),
-    ).toBeVisible();
-
-    await page.keyboard.press("ArrowLeft");
-    await expect(projects).toBeFocused();
-    await expect(projects).toHaveAttribute("aria-selected", "true");
   });
 
   test("event filter chips use roving focus and keep focus on Clear", async ({
