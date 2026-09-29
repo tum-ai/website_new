@@ -133,7 +133,7 @@ process.stdout.write(
 );
 const result = spawnSync(
   join(root, "node_modules", ".bin", "sanity"),
-  ["dataset", "import", outFile, dataset, mode],
+  ["dataset", "import", outFile, "--dataset", dataset, mode],
   { cwd: join(root, "src", "sanity"), stdio: "inherit" },
 );
 process.exit(result.status ?? 1);
