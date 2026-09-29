@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { sanityProjectId } from "./src/lib/sanity-config";
 
 const distDir = process.env.NEXT_DIST_DIR;
 
@@ -22,8 +23,16 @@ const nextConfig: NextConfig = {
   images: {
     qualities: [40, 75],
     // Images from the content dataset (`CMS_CONTENT_SOURCE=sanity`) are
-    // served from Sanity's CDN; code images stay local /assets/ files.
-    remotePatterns: [{ protocol: "https", hostname: "cdn.sanity.io" }],
+    // served from Sanity's CDN; code images stay local /assets/ files. Only
+    // this project's assets (both datasets): the optimizer never fetches
+    // another project's files on the site's behalf.
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "cdn.sanity.io",
+        pathname: `/images/${sanityProjectId}/**`,
+      },
+    ],
   },
   experimental: {
     // The site and /studio are separate root layouts; unmatched URLs render
