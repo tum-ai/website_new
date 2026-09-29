@@ -9,7 +9,7 @@ import { parseMunichDateTime } from "@/lib/munich-time";
  */
 
 /** A span of whole days in Munich, written "DD.MM.YYYY" like the E-Lab dates. */
-export type DateSpan = { from: string; to: string };
+type DateSpan = { from: string; to: string };
 
 /** One recruiting round, in Munich dates ("DD.MM.YYYY") and time ("HH:MM"). */
 export type RecruitingRound = {
@@ -80,7 +80,7 @@ export function roundSchedule(round: RecruitingRound): RoundSchedule {
 }
 
 /** The current round's schedule. */
-export const recruitingSchedule = roundSchedule(membershipConfig.round);
+const recruitingSchedule = roundSchedule(membershipConfig.round);
 
 /**
  * Whether membership applications are open at `now`: switched on, the form

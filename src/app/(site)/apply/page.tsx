@@ -5,8 +5,11 @@ import { getCmsNow } from "@/lib/mock-cms-env";
 
 export const metadata = buildMetadata("apply");
 
-/** Daily, so the initiative's age in the copy turns over without a deploy. */
-export const revalidate = 86400;
+/**
+ * Hourly, so the important dates, the days left and the open state follow
+ * the clock without a deploy (the form itself closes at the deadline).
+ */
+export const revalidate = 3600;
 
 export default function Page() {
   return (

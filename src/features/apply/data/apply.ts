@@ -1,67 +1,67 @@
-import {
-  Book,
-  Dumbbell,
-  Flame,
-  Globe,
-  Handshake,
-  type LucideIcon,
-  MessageCircle,
-  Rocket,
-  Zap,
-} from "lucide-react";
 import { organizationFacts } from "@/config/organization";
 
-/** An icon-led card: icon, title and a paragraph of copy. */
-export type IconItem = {
-  icon: LucideIcon;
-  title: string;
-  text: string;
-};
+/** A named point with one or two sentences of copy. */
+export type Point = { title: string; text: string };
 
-/** "Is TUM.ai the right choice for me?": what we look for in applicants. */
-export const requirements: IconItem[] = [
+/**
+ * The 2026 brand guide's mission (slide "Brand Story & Mission"), quoted as
+ * the call's scope.
+ */
+export const mission =
+  'To bridge the gap between theory and practice by empowering students to build the future of AI. We combine academic rigor with a "make-it-happen" mindset to solve real-world challenges.';
+
+/** What we look for in applicants. */
+export const qualities: Point[] = [
   {
-    icon: Flame,
     title: "Passion for AI",
     text: "A genuine interest in artificial intelligence and its applications.",
   },
   {
-    icon: Dumbbell,
-    title: "Commitment & Motivation",
-    text: "Willingness to invest time and energy to push our initiative forward.",
+    title: "Commitment and motivation",
+    text: "Willingness to invest time and energy to push the initiative forward.",
   },
   {
-    icon: Zap,
     title: "Proactiveness",
-    text: "Taking initiative and being ready to react quickly to new topics and challenges.",
+    text: "Taking initiative, and reacting quickly to new topics and challenges.",
   },
   {
-    icon: MessageCircle,
-    title: "Clear Communication",
-    text: "Open, honest, and effective communication within the team.",
+    title: "Clear communication",
+    text: "Open, honest and effective communication within the team.",
   },
 ];
 
-/** "Our Values". */
-export const values: IconItem[] = [
+/** The four values, shortened from the old "Our Values" cards; every fact kept. */
+export const values: Point[] = [
   {
-    icon: Rocket,
-    title: "Action, Ambition & Leadership",
-    text: "We prioritize setting goals and advancing in all our activities, constantly aiming for excellence. Our commitment to outcomes drives us to take responsibility, even in collaborative settings. We proactively build partnerships with key organizations like 180DC, CDTM, and TUM Blockchain Club, extending our network across TUM, UnternehmerTUM, AppliedAI, ETH Zürich, and beyond.",
+    title: "Action, ambition and leadership",
+    text: "We set goals, aim for excellence and take responsibility for outcomes, also in shared work. We build partnerships with organizations like 180DC, CDTM and TUM Blockchain Club, across TUM, UnternehmerTUM, AppliedAI, ETH Zürich and beyond.",
   },
   {
-    icon: Globe,
-    title: "Diversity & Inclusiveness",
-    text: `Our club consists of students from ${organizationFacts.majors}+ majors and ${organizationFacts.nationalities}+ nationalities worldwide. We recognize and embrace the power of collaborative teams of unique individuals, which help us foster better decision-making and stimulate new ideas.`,
+    title: "Diversity and inclusiveness",
+    text: `Our members study ${organizationFacts.majors}+ majors and come from ${organizationFacts.nationalities}+ nationalities. Teams of different people make better decisions and find new ideas.`,
   },
   {
-    icon: Book,
-    title: "Learn & Grow",
-    text: "We're committed to ongoing learning and staying current with AI advancements. Embracing our diversity, we collaborate to deepen our understanding and maximize AI's potential across all domains. Therefore, we send 10-15 people per semester to institutions such as MIT, Harvard, Stanford, and Berkeley to do research, exchange semesters, and their bachelor's / master's thesis.",
+    title: "Learn and grow",
+    text: "We keep up with AI together. Every semester, 10 to 15 members go to institutions such as MIT, Harvard, Stanford and Berkeley for research, exchange semesters and their theses.",
   },
   {
-    icon: Handshake,
-    title: "Trust & Transparency",
-    text: "We enable everyone to voice their opinions and invite open communication. We aim to support one another and work in harmony together as a whole to reach our goals. As a community, we respect and trust one another, knowing we can rely on each other's honesty. Offer students practical experience through projects with peers from the group.",
+    title: "Trust and transparency",
+    text: "Everyone can voice an opinion. We support one another, rely on each other's honesty, and learn through projects with our peers.",
+  },
+];
+
+/** What every member can join besides their track. */
+export const offerings: Point[] = [
+  {
+    title: "ML discussion groups",
+    text: "Deep-tech sessions on machine learning papers: their implementations, the mathematics behind them and more.",
+  },
+  {
+    title: "AI Academy",
+    text: "Take part in its courses, or teach in them.",
+  },
+  {
+    title: "Workshops and visits",
+    text: "From soft skills to visits at companies like Google, Nvidia and QuantCo.",
   },
 ];

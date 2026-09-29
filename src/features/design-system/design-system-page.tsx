@@ -924,6 +924,7 @@ export function DesignSystemPage() {
               elapsed={3}
               startLabel="Opened 28 Sep"
               endLabel="Deadline 27 Oct"
+              markLabel="Today"
             />
           </div>
           <div>
@@ -940,7 +941,13 @@ export function DesignSystemPage() {
                 },
               ]}
             />
-            <DayRuler className="mt-8" size="lg" days={29} elapsed={22} />
+            <DayRuler
+              className="mt-8"
+              size="lg"
+              days={29}
+              elapsed={22}
+              markLabel="7 days left"
+            />
           </div>
         </div>
       </Block>

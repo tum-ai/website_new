@@ -93,7 +93,7 @@ test("member figures add up and feed the partner stats", () => {
 
 test("the Apply FAQ timeline comes from the recruiting config", () => {
   const timeline = applyFaq.find(
-    (item) => item.question === "How does the application timeline look like?",
+    (item) => item.question === "What does the application timeline look like?",
   );
   for (const window of Object.values(recruitingTimeline)) {
     expect(timeline?.answer, window).toContain(window);

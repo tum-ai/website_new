@@ -162,7 +162,7 @@ Page patterns
 - `StatGrid`: numeric values count up when they scroll into view (sizes `sm`–`xl` on the `text-stat-*` tokens); strings render as they are, or count with `count`.
 - `Ledger`: key figures as an annual-report ledger, one hairline row per figure with its label and a `note` on the left and the figure right-aligned (`size` `md` or `lg`). Same figure rules as `StatGrid`.
 - `KeyDates`: a round's important dates as a call for papers sets them. One hairline row per date, the label (and a `detail` line) on the left and the date in light figures on the right. Each row's `state` (`past`, `next`, `upcoming`) comes from the caller's own clock: past dates are struck through and say "(passed)" to screen readers, and the next one is in the accent with its `note`. `size` `md` or `lg`; `drawIn` draws the strikes once on load (above the fold).
-- `DayRuler`: a window of days as a ruler, with one tick per day, taller week ticks, and a fill and mark up to today (`days`, `elapsed`, optional `startLabel` and `endLabel`, `size` `md` or `lg`, `drawIn`). It is decorative, so say the same thing in text beside it ("26 days left").
+- `DayRuler`: a window of days as a ruler, with one tick per day, taller week ticks, and a fill and mark up to today (`days`, `elapsed`, optional `startLabel`, `endLabel` and a `markLabel` over today's mark, `size` `md` or `lg`, `drawIn`). It is decorative, so say the same thing in text beside it ("26 days left").
 - `IndexList`: a typographic index of destinations. Full-width link rows (large light title, one line of description, optional `detail`, an arrow); from `lg` a sticky photo beside the list follows the hovered or focused row and the other rows dim. Below `lg` each row shows its photo as a thumbnail.
 - `BrandPanel`: the branded placeholder for a missing image.
 - `TopBlend`: eases a dark band's edge into the root canvas (see [browser-quirks.md](browser-quirks.md)).
@@ -752,6 +752,7 @@ No props of its own; see the source file for the root element or Base UI part it
 | `startLabel?` | `ReactNode` | Label under the first tick. |
 | `endLabel?` | `ReactNode` | Label under the last tick. |
 | `size?` | `"md" \| "lg"` | Tick heights: `md` under a register, `lg` when the ruler carries a band. Default `md`. |
+| `markLabel?` | `ReactNode` | Label over today's mark (e.g. "Today", "26 days left"): centred on the mark, flush with the ruler's end near either edge. |
 | `drawIn?` | `boolean` | Draw the fill once on load, for a ruler above the fold. |
 | `className?` | `string` | Classes merged over the root (`aria-hidden`). |
 
