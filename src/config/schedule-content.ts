@@ -53,7 +53,7 @@ export const CAMPAIGNS_QUERY =
   endDate,
   endTime,
   headerCta{ variant, label, notifyUrl, yieldsToRecruiting },
-  featuredEventId
+  "featuredEventId": featuredEvent._ref
 }`);
 
 type Program = "membership" | "e-lab";

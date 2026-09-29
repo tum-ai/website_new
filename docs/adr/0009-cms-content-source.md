@@ -51,8 +51,9 @@ to `redesign`.
   process) and makes no request;
 - `pnpm sanity:backfill` refuses it as a target.
 
-A campaign's featured event stays a plain string (the event's `_id`), not a reference, so the
-campaign never blocks deleting the event.
+A campaign's featured event is a weak reference to the event, so the campaign never blocks
+deleting the event (a deleted one leaves a dangling reference, which the site ignores: /events
+pins the featured event only while it is among the upcoming events).
 
 ### The source gate
 

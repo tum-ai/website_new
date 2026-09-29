@@ -19,8 +19,8 @@ Paths are relative to `src/` unless they start with `public/`.
 ## Target types
 
 All in `sanity/schemas/content/`, registered in the Studio on every dataset except `production`
-(the old site's). A campaign's featured event is the event's `_id` as a string, so the campaign
-never blocks deleting the event; references between content types are normal references.
+(the old site's). A campaign's featured event is a weak reference, so the campaign never blocks
+deleting the event; references between content types are normal references.
 
 The old site's types (`event`, `partner`, `research`) are not in this table: the backfill copies
 their published documents from `production` into `redesign` unchanged (same `_id`s), adding the
@@ -32,7 +32,7 @@ Studio hides `partner` outside `production` (ADR 0009, "Partners are organisatio
 | Type | Kind | Holds | Owner |
 | --- | --- | --- | --- |
 | `faq` | list | `collection` (`apply`, `e-lab`, `qanda`), `order`, `question`, `answer` (plain text with `{{placeholders}}`); Q&A-only `anchor`, `points`, `spans`, `evidence` | done |
-| `campaign` | list | `name`, start and end (Sanity dates plus Munich "HH:MM" times), the header CTA (`variant` key `member`/`partner`/`elab`/`notify`, optional `label`, `yieldsToRecruiting`), `notifyUrl`, `featuredEventId` (an event `_id` as a string); no priority: the latest start wins | done (A) |
+| `campaign` | list | `name`, start and end (Sanity dates plus Munich "HH:MM" times), the header CTA (`variant` key `member`/`partner`/`elab`/`notify`, optional `label`, `yieldsToRecruiting`), `notifyUrl`, `featuredEvent` (a weak reference to an event, read as its `_id`); no priority: the latest start wins | done (A) |
 | `applicationWindow` | list | `program` (`membership`, `e-lab`), `roundName` or cohort, `switchedOn`, `opens`, `deadlineDate`, `deadlineTime` (Munich), `applicationUrl`, `milestones[]` (`key` such as `interviews`/`onboarding`, `from`, `to`), `nextWindowLabel` | done (A) |
 | `siteSettings` | singleton | organization figures, `brandMission`, role emails, social links, booking page and host, community and impact figures, E-Lab program facts (length, funding, selection funnel, hero logo), footer tagline, header CTA fallback | done (A) |
 | `organization` | list | `name`, `key` (kebab-case; pages match its letters and digits), `shortName`, `href`, `logo` and optional `logoOnDark` (image with `alt`, `symbolOnly`, `aspectRatio`); the "Partnership" group: `partnerTier` (set = a partner), `partnerFeatured`, `partnerCategory`, hidden `legacyPartnerId` (the old `partner` document's id, which `/api/getPartners` returns); one document per company, reused by every surface | done (B) |
@@ -57,7 +57,7 @@ fields, and each owner defines its own schema file.
 | Header CTA variants and labels | `config/navigation.ts`: `headerCtas` (member, partner, elab, notify without a target) | `getHeaderOptions` → `components/shell/header.tsx` | **done**: `campaign.headerCta`; variant keys and hrefs stay in code, labels may come from the campaign | A |
 | Header CTA choice | `config/navigation.ts`: `headerCtaSetting`, `selectHeaderCta`, `headerCtaLink` | `app/(site)/layout.tsx`, `header.tsx` | **done**: the dated `campaign` in effect feeds `selectHeaderCta` (already free of config imports); `fallback` from `siteSettings` | A |
 | Per-route header options | `config/navigation.ts`: `routeHeaderOptions` (`/partners`) | `header.tsx` | **keep**: layout behaviour | A |
-| Notify link, featured event | none yet (`notify` has no target, TODO) | – | **done**: `campaign.notifyUrl`, `campaign.featuredEventId` (`getFeaturedEventId()`; no section shows it yet) | A |
+| Notify link, featured event | none yet (`notify` has no target, TODO) | – | **done**: `campaign.notifyUrl`, `campaign.featuredEvent` (`getFeaturedEventId()`; no section shows it yet) | A |
 | Membership round | `config/membership.ts`: `membershipConfig` (switch, form URL, `round` name, opens, deadline, interviews, onboarding) | `apply/round.ts`, `apply/apply-action.tsx`, `community/membership-apply-button.tsx`, header, layout | **done**: `applicationWindow` (`program: membership`, milestones for interviews and onboarding) | A |
 | Round schedule helpers | `config/membership.ts`: `roundSchedule`, `membershipWindowBoundaries`, `isMembershipApplicationOpen`, `applicationProgress`, `recruitingTimeline` | apply, community, header, layout, `{{recruiting.*}}` placeholders | **keep**: logic; they take the render's window as input | A |
 | E-Lab window | `config/e-lab.ts`: `applicationsOpen`, `applicationUrl`, `applicationDeadlineDate`/`Time`, `nextApplicationWindow`, `currentIteration` | `e-lab/application-cta.tsx`, `e-lab-phase*.tsx`, `closing-section.tsx`, `hero.tsx`, header label | **done**: `applicationWindow` (`program: e-lab`; it has no opening date today) | A |

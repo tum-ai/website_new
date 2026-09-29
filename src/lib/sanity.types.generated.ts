@@ -887,6 +887,13 @@ export type Organization = {
   legacyPartnerId?: string;
 };
 
+export type EventReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "event";
+};
+
 export type Campaign = {
   _id: string;
   _type: "campaign";
@@ -904,7 +911,7 @@ export type Campaign = {
     notifyUrl?: string;
     yieldsToRecruiting?: boolean;
   };
-  featuredEventId?: string;
+  featuredEvent?: EventReference;
 };
 
 export type ApplicationWindow = {
@@ -1213,6 +1220,7 @@ export type AllSanitySchemaTypes =
   | Person
   | LogoList
   | Organization
+  | EventReference
   | Campaign
   | ApplicationWindow
   | SiteSettings
@@ -1248,7 +1256,7 @@ export type APPLICATION_WINDOW_QUERY_RESULT = {
 
 // Source: ../config/schedule-content.ts
 // Variable: CAMPAIGNS_QUERY
-// Query: *[_type == "campaign"] | order(startDate desc, _id asc){  "id": _id,  name,  startDate,  startTime,  endDate,  endTime,  headerCta{ variant, label, notifyUrl, yieldsToRecruiting },  featuredEventId}
+// Query: *[_type == "campaign"] | order(startDate desc, _id asc){  "id": _id,  name,  startDate,  startTime,  endDate,  endTime,  headerCta{ variant, label, notifyUrl, yieldsToRecruiting },  "featuredEventId": featuredEvent._ref}
 export type CAMPAIGNS_QUERY_RESULT = Array<{
   id: string;
   name: string;

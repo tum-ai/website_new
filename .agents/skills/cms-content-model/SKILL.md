@@ -140,7 +140,7 @@ proves the CMS path renders the same.
    (`./fields.ts`); an `order` number for editor-sorted lists. Register it in
    `schemas/content/index.ts` (singletons also in `contentSingletons`: one document whose `_id`
    is the type name). Never in `schemas/index.ts`: those types are registered on `production`
-   too. A campaign's featured event is the event's `_id` as a string, so it never blocks
+   too. A campaign's featured event is a weak reference, so it never blocks
    deleting the event.
 3. **Slice.** `src/features/<x>/content.ts` (a second slice in the same feature:
    `<topic>-content.ts`; facts: `src/config/<x>-content.ts`), starting with

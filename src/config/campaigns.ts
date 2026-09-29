@@ -47,8 +47,10 @@ export type Campaign = {
   endTime?: string;
   headerCta?: CampaignHeaderCta;
   /**
-   * The `_id` of an `event` document (a plain string, not a reference, so
-   * the campaign never blocks deleting the event).
+   * The `_id` of the `event` the campaign features: the CMS field is a weak
+   * reference (so the campaign never blocks deleting the event), and the id
+   * may name an event that no longer exists; readers only use it when it
+   * matches an event they have.
    */
   featuredEventId?: string;
 };
