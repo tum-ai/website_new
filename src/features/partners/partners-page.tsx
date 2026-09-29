@@ -1,4 +1,4 @@
-import { admittedPerBatchOf } from "@/config/community";
+import { admittedPerBatchOf } from "@/config/organization";
 import { deriveSiteFacts } from "@/config/site-facts";
 import { getSiteFacts } from "@/config/site-settings-content";
 import {
@@ -37,7 +37,7 @@ export async function PartnersPage() {
       getSiteFacts(),
     ]);
   const { intents, durations, recommendations, prompts, sections } = copy;
-  const admitted = admittedPerBatchOf(facts.community);
+  const admitted = admittedPerBatchOf(facts.organization);
   return (
     <PartnershipProvider
       copy={{ intents, durations, recommendations, prompts }}
@@ -59,8 +59,8 @@ export async function PartnersPage() {
         <ProofSection
           stats={copy.stats}
           selection={{
-            startedApplications: facts.community.startedApplicationsPerBatch,
-            acceptanceRatePercent: facts.community.acceptanceRatePercent,
+            startedApplications: facts.organization.startedApplicationsPerBatch,
+            acceptanceRatePercent: facts.organization.acceptanceRate,
             admitted,
           }}
           copy={sections.proof}

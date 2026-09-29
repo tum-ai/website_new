@@ -262,7 +262,7 @@ Facts that change per semester, cohort or year live once in `src/config/`
 | `site.ts` | site URL, name, tagline, `absoluteUrl()` |
 | `organization.ts` | founding year, member figures, `brandMission`, legal entity, register number, representatives, office |
 | `contact.ts` | role emails, `partnershipContact` (finder CC and booking page), social links |
-| `community.ts` | community figures quoted in copy (Makeathon size, the recruiting selection), `admittedPerBatchOf()`, `yearsSinceFounding()` |
+| `community.ts` | community figures quoted in copy (Makeathon size), `yearsSinceFounding()` |
 | `impact.ts` | research and hackathon record: publications, venues, hackathon participants |
 | `e-lab.ts` | cohort, application URL, deadline (Munich time), program length, funding, the `selection` funnel, phase copy |
 | `membership.ts` | recruiting: open flag, form URL and the current `round` (Munich dates), plus the schedule helpers (`roundSchedule`, `isMembershipApplicationOpen`, `applicationProgress`, `recruitingTimeline`) |

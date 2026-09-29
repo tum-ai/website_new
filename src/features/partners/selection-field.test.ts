@@ -1,9 +1,9 @@
 import { describe, expect, test } from "vitest";
-import { admittedPerBatchOf, communityFacts } from "@/config/community";
+import { admittedPerBatchOf, organizationFacts } from "@/config/organization";
 import { selectionField } from "./selection-field";
 
-const marks = communityFacts.startedApplicationsPerBatch;
-const lit = admittedPerBatchOf(communityFacts);
+const marks = organizationFacts.startedApplicationsPerBatch;
+const lit = admittedPerBatchOf(organizationFacts);
 
 describe("selectionField", () => {
   for (const columns of [70, 42]) {
@@ -47,7 +47,7 @@ describe("selectionField", () => {
     const field = selectionField({ marks, lit, columns: 70 });
     const share = field.lit.length / field.marks;
     expect(
-      Math.abs(share - communityFacts.acceptanceRatePercent / 100),
+      Math.abs(share - organizationFacts.acceptanceRate / 100),
     ).toBeLessThanOrEqual(1 / (2 * field.marks));
   });
 

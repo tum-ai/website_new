@@ -29,11 +29,12 @@ export const SITE_SETTINGS_QUERY =
     universities,
     nationalities,
     acceptanceRate,
+    startedApplicationsPerBatch,
     linkedinAudience
   },
   brandMission,
   impact{ publications, publicationVenues, hackathonParticipants },
-  community{ makeathonSize, startedApplicationsPerBatch, acceptanceRatePercent },
+  community{ makeathonSize },
   contactEmails{ general, partners, venture, recruitment },
   socialLinks{ linkedin, instagram, github, x, youtube, facebook, tiktok, slack },
   partnershipBooking{ bookingUrl, bookingHost },
@@ -59,12 +60,6 @@ const headerCtaFallbacks: readonly string[] = [
 /** The value when it is a finite number, else `undefined` (the code value). */
 const number = (value: unknown) =>
   typeof value === "number" && Number.isFinite(value) ? value : undefined;
-
-/** A share in percent above 0 and at most 100, else `undefined`. */
-const percent = (value: unknown) => {
-  const share = number(value);
-  return share !== undefined && share > 0 && share <= 100 ? share : undefined;
-};
 
 const https = (value: string | null | undefined) =>
   value?.startsWith("https://") ? value : undefined;
@@ -151,10 +146,6 @@ export function selectSiteFacts(result: SITE_SETTINGS_QUERY_RESULT) {
     },
     community: result.community && {
       makeathonSize: number(result.community.makeathonSize),
-      startedApplicationsPerBatch: number(
-        result.community.startedApplicationsPerBatch,
-      ),
-      acceptanceRatePercent: percent(result.community.acceptanceRatePercent),
     },
     contactEmails: fields(
       keysOf(fallback.contactEmails),

@@ -1,5 +1,4 @@
 import type { ContentTokens } from "@/lib/content-tokens";
-import { admittedPerBatchOf } from "./community";
 import {
   type ELabApplicationWindow,
   eLabApplicationCopyOf,
@@ -13,6 +12,7 @@ import {
 } from "./membership";
 import {
   acceptanceRateRoundedOf,
+  admittedPerBatchOf,
   linkedinAudienceLabelOf,
 } from "./organization";
 import { getELabWindow, getMembershipWindow } from "./schedule-content";
@@ -74,6 +74,9 @@ export function contentTokensFor({
       acceptanceRateRoundedOf(org.acceptanceRate),
     ),
     // "20k", followed by "+" in copy.
+    // Ungrouped ("2100"), as the partner stats count it up.
+    "org.startedApplications": String(org.startedApplicationsPerBatch),
+    "org.admittedPerBatch": String(admittedPerBatchOf(org)),
     "org.linkedinAudience": linkedinAudienceLabelOf(org.linkedinAudience),
     "impact.publications": String(impact.publications),
     "impact.publicationVenues": derived.publicationVenuesText,
@@ -81,12 +84,6 @@ export function contentTokensFor({
     "impact.hackathonParticipants":
       impact.hackathonParticipants.toLocaleString("en"),
     "community.makeathonSize": String(facts.community.makeathonSize),
-    // Stat figures: ungrouped ("2100"), as the partner stats count them up.
-    "community.startedApplications": String(
-      facts.community.startedApplicationsPerBatch,
-    ),
-    "community.acceptanceRate": String(facts.community.acceptanceRatePercent),
-    "community.admittedPerBatch": String(admittedPerBatchOf(facts.community)),
   };
 }
 

@@ -1,7 +1,6 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative, sep } from "node:path";
 import { expect, test } from "vitest";
-import { communityFacts } from "../src/config/community.ts";
 import {
   eLabApplicationsCloseAt,
   eLabCompletedIterations,
@@ -111,15 +110,15 @@ test("member figures add up and feed the partner stats", async () => {
   expect(members?.value).toBe(`${officialMembers}+`);
 });
 
-test("the partner selection stats come from the community config", async () => {
+test("the partner selection stats come from the organization facts", async () => {
   const { stats } = await getPartnersCopy();
   const value = (label: string) =>
     stats.find((stat) => stat.label === label)?.value;
   expect(value("Started applications per batch")).toBe(
-    `${communityFacts.startedApplicationsPerBatch}+`,
+    `${organizationFacts.startedApplicationsPerBatch}+`,
   );
   expect(value("Acceptance rate per batch")).toBe(
-    `${communityFacts.acceptanceRatePercent}%`,
+    `${organizationFacts.acceptanceRate}%`,
   );
 });
 
@@ -147,7 +146,7 @@ const hardcodedFacts: [RegExp, string][] = [
   [/\b\d+\+? active members\b/i, "member counts: config/organization.ts"],
   [
     /\b\d{3,}\+?\s+started applications\b|\b\d+(?:\.\d+)?%\s+(?:acceptance|accepted|get in)\b/i,
-    "recruiting selection: communityFacts in config/community.ts",
+    "recruiting selection: organizationFacts in config/organization.ts",
   ],
   [
     /applications open in (january|february|march|april|may|june|july|august|september|october|november|december)/i,

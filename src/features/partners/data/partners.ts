@@ -53,7 +53,7 @@ export type PartnerStat = { value: string; label: string; detail?: string };
 /** The proof figures as templates: facts from the config are placeholders. */
 export const partnerStatTemplates: readonly PartnerStat[] = [
   {
-    value: "{{community.startedApplications}}+",
+    value: "{{org.startedApplications}}+",
     label: "Started applications per batch",
   },
   { value: "{{org.acceptanceRate}}%", label: "Acceptance rate per batch" },
@@ -377,7 +377,7 @@ export const partnersSections: PartnersSections = {
   proof: {
     title: "Small acceptance rate. Outsized potential.",
     caption:
-      "One recruiting round: {{community.startedApplications}}+ started applications, one mark each. The {{community.admittedPerBatch}} lit marks are the {{community.acceptanceRate}}% who become members.",
+      "One recruiting round: {{org.startedApplications}}+ started applications, one mark each. The {{org.admittedPerBatch}} lit marks are the {{org.acceptanceRate}}% who become members.",
   },
   pillars: {
     title: ["Three pillars.", "One ecosystem."],

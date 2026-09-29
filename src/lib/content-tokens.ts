@@ -37,14 +37,13 @@ export const contentTokenNames = [
   "org.nationalities",
   "org.acceptanceRate",
   "org.acceptanceRateRounded",
+  "org.startedApplications",
+  "org.admittedPerBatch",
   "org.linkedinAudience",
   "impact.publications",
   "impact.publicationVenues",
   "impact.hackathonParticipants",
   "community.makeathonSize",
-  "community.startedApplications",
-  "community.acceptanceRate",
-  "community.admittedPerBatch",
 ] as const;
 
 type ContentTokenName = (typeof contentTokenNames)[number];
