@@ -4,6 +4,7 @@ import {
   isMembershipApplicationOpen,
   type MembershipConfig,
   membershipConfig,
+  membershipWindowClock,
   type RecruitingRound,
   recruitingTimeline,
   roundSchedule,
@@ -64,6 +65,17 @@ describe("isMembershipApplicationOpen", () => {
       }),
     ).toBe(false);
   });
+});
+
+test("the window clock carries the switch and the round's instants", () => {
+  expect(membershipWindowClock(config)).toStrictEqual({
+    switchedOn: true,
+    opensAt: Date.parse("2026-09-27T22:00:00Z"),
+    closesAt: Date.parse("2026-10-27T22:59:00Z"),
+  });
+  expect(
+    membershipWindowClock({ ...config, applicationsOpen: false }).switchedOn,
+  ).toBe(false);
 });
 
 describe("applicationProgress", () => {

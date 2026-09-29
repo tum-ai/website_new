@@ -1,4 +1,9 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  type ClockWindow,
+  clockWindowBoundaries,
+  isClockWindowOpen,
+} from "./clock-window";
 
 /** The longest delay setTimeout accepts (about 24.8 days). */
 const MAX_TIMEOUT = 2 ** 31 - 1;
@@ -6,23 +11,24 @@ const MAX_TIMEOUT = 2 ** 31 - 1;
 /** Lands the re-check just after a boundary instant, never on it. */
 const BOUNDARY_MARGIN_MS = 250;
 
-/** Input for {@link useClockSwitch}. */
-export type ClockSwitchOptions = {
+/** Input for {@link useClockState}. */
+export type ClockStateOptions<T> = {
   /**
-   * Whether the switch is on at an instant, e.g. an application window.
-   * Must be a stable reference (a module-level function).
+   * The value at an instant, e.g. which call to action a schedule shows.
+   * Must be a stable reference (a module-level function or a memoized one).
    */
-  isOn: (now: Date) => boolean;
+  at: (now: Date) => T;
   /**
-   * The instants at which `isOn` can change (a window's opening and
-   * closing). Must be a stable reference (a module-level constant).
+   * The instants at which `at` can change (a window's opening and
+   * closing). Must be a stable reference (a module-level constant or a
+   * memoized list).
    */
   boundaries: readonly Date[];
   /**
    * What the server rendered, so hydration matches. Omit it in client-only
    * trees; the clock is read on the first render then.
    */
-  initial?: boolean;
+  initial?: T;
   /**
    * `false` keeps the server's answer: for renders pinned to a fixed clock
    * (`MOCK_CMS_NOW` in E2E and visual runs), where the browser's real clock
@@ -32,28 +38,32 @@ export type ClockSwitchOptions = {
 };
 
 /**
- * A yes/no state that depends on the clock, kept current in the browser:
- * checked right after mount (the HTML may be a cached render from before a
+ * A value that depends on the clock, kept current in the browser: computed
+ * right after mount (the HTML may be a cached render from before a
  * boundary), at each upcoming boundary, and whenever the tab becomes
  * visible again, because background tabs throttle timers.
  */
-export function useClockSwitch({
-  isOn,
+export function useClockState<T>({
+  at,
   boundaries,
   initial,
   live = true,
-}: ClockSwitchOptions): boolean {
-  const [on, setOn] = useState(() => initial ?? isOn(new Date()));
+}: ClockStateOptions<T>): T {
+  const [value, setValue] = useState<T>(() =>
+    initial === undefined ? at(new Date()) : initial,
+  );
 
   useEffect(() => {
     if (!live) return;
     let timer: number | undefined;
     const check = () => {
       const now = Date.now();
-      setOn(isOn(new Date(now)));
+      setValue(at(new Date(now)));
       window.clearTimeout(timer);
       const next = Math.min(
-        ...boundaries.map((at) => at.getTime()).filter((at) => at > now),
+        ...boundaries
+          .map((instant) => instant.getTime())
+          .filter((instant) => instant > now),
       );
       const delay = next - now + BOUNDARY_MARGIN_MS;
       timer =
@@ -67,7 +77,46 @@ export function useClockSwitch({
       window.clearTimeout(timer);
       document.removeEventListener("visibilitychange", check);
     };
-  }, [isOn, boundaries, live]);
+  }, [at, boundaries, live]);
 
-  return on;
+  return value;
+}
+
+/** Input for {@link useClockSwitch}. */
+export type ClockSwitchOptions = Omit<ClockStateOptions<boolean>, "at"> & {
+  /**
+   * Whether the switch is on at an instant, e.g. an application window.
+   * Must be a stable reference (a module-level function).
+   */
+  isOn: (now: Date) => boolean;
+};
+
+/** {@link useClockState} for a yes/no state, such as an open window. */
+export function useClockSwitch({
+  isOn,
+  ...options
+}: ClockSwitchOptions): boolean {
+  return useClockState({ at: isOn, ...options });
+}
+
+/**
+ * Whether a {@link ClockWindow} is open, kept current in the browser. The
+ * window arrives as a prop from a server component; its fields are compared
+ * by value, so a new object with the same instants does not restart the
+ * timers.
+ */
+export function useClockWindow(
+  clock: ClockWindow,
+  options: Pick<ClockStateOptions<boolean>, "initial" | "live"> = {},
+): boolean {
+  const { switchedOn, opensAt, closesAt } = clock;
+  const isOn = useCallback(
+    (now: Date) => isClockWindowOpen({ switchedOn, opensAt, closesAt }, now),
+    [switchedOn, opensAt, closesAt],
+  );
+  const boundaries = useMemo(
+    () => clockWindowBoundaries({ switchedOn, opensAt, closesAt }),
+    [switchedOn, opensAt, closesAt],
+  );
+  return useClockSwitch({ isOn, boundaries, ...options });
 }

@@ -18,8 +18,24 @@ export const impactFacts = {
   hackathonParticipants: 2500,
 } as const;
 
-/** "NeurIPS, ICML, and ICLR". */
-export const publicationVenuesText = new Intl.ListFormat("en", {
+/** The record as the CMS `siteSettings` document holds it; `impactFacts` is the code fallback. */
+export type ImpactFacts = {
+  readonly publications: number;
+  readonly publicationVenues: readonly string[];
+  readonly hackathonParticipants: number;
+};
+
+const venueList = new Intl.ListFormat("en", {
   style: "long",
   type: "conjunction",
-}).format(impactFacts.publicationVenues);
+});
+
+/** The venues as running text: "NeurIPS, ICML, and ICLR". */
+export function publicationVenuesTextOf(venues: readonly string[]): string {
+  return venueList.format(venues);
+}
+
+/** {@link publicationVenuesTextOf} the code venues; per render, derive it from `getSiteFacts()`. */
+export const publicationVenuesText = publicationVenuesTextOf(
+  impactFacts.publicationVenues,
+);

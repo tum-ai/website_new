@@ -1,7 +1,11 @@
 import { describe, expect, test } from "vitest";
 import {
+  isMunichTime,
+  isoDayFromMunichDate,
+  munichDateFromIsoDay,
   munichDayNumber,
   munichIsoDate,
+  nextMunichDate,
   parseMunichDateTime,
 } from "./munich-time";
 
@@ -53,5 +57,32 @@ describe("munichDayNumber", () => {
   test("turns over at Munich midnight", () => {
     const before = munichDayNumber(new Date("2026-09-27T21:59:59Z"));
     expect(munichDayNumber(new Date("2026-09-27T22:00:00Z"))).toBe(before + 1);
+  });
+});
+
+describe("CMS dates", () => {
+  test("convert between Sanity's ISO days and the site's form", () => {
+    expect(munichDateFromIsoDay("2026-10-27")).toBe("27.10.2026");
+    expect(isoDayFromMunichDate("27.10.2026")).toBe("2026-10-27");
+  });
+
+  test("reject days that are not on the calendar", () => {
+    expect(munichDateFromIsoDay("2026-02-30")).toBeNull();
+    expect(munichDateFromIsoDay("27.10.2026")).toBeNull();
+    expect(() => isoDayFromMunichDate("31.04.2026")).toThrow();
+    expect(() => isoDayFromMunichDate("2026-04-01")).toThrow();
+  });
+
+  test("the next day rolls over months and years", () => {
+    expect(nextMunichDate("31.10.2026")).toBe("01.11.2026");
+    expect(nextMunichDate("31.12.2026")).toBe("01.01.2027");
+    expect(nextMunichDate("28.02.2028")).toBe("29.02.2028");
+  });
+
+  test("times are 24-hour HH:MM", () => {
+    expect(isMunichTime("00:00")).toBe(true);
+    expect(isMunichTime("23:59")).toBe(true);
+    expect(isMunichTime("24:00")).toBe(false);
+    expect(isMunichTime("9:30")).toBe(false);
   });
 });

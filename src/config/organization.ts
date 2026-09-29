@@ -22,9 +22,23 @@ export const organizationFacts = {
 export const brandMission =
   "To bridge the gap between theory and practice by empowering students to build the future of AI. We combine academic rigor with a “make-it-happen” mindset to solve real-world challenges.";
 
+/**
+ * The headline figures as the CMS `siteSettings` document holds them (see
+ * `config/site-facts.ts`); `organizationFacts` is the code fallback.
+ */
+export type OrganizationFacts = {
+  readonly [Key in keyof typeof organizationFacts]: number;
+};
+
 /** Everyone who has been an official member: active members plus alumni. */
-export const officialMembers =
-  organizationFacts.activeMembers + organizationFacts.alumni;
+export function officialMembersOf(
+  facts: Pick<OrganizationFacts, "activeMembers" | "alumni">,
+): number {
+  return facts.activeMembers + facts.alumni;
+}
+
+/** {@link officialMembersOf} the code facts; per render, derive it from `getSiteFacts()`. */
+export const officialMembers = officialMembersOf(organizationFacts);
 
 type PostalAddress = {
   streetAddress: string;

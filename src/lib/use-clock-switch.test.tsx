@@ -1,6 +1,11 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { useClockSwitch } from "./use-clock-switch";
+import type { ClockWindow } from "./clock-window";
+import {
+  useClockState,
+  useClockSwitch,
+  useClockWindow,
+} from "./use-clock-switch";
 
 const opensAt = new Date("2026-09-27T22:00:00Z");
 const closesAt = new Date("2026-10-27T22:59:00Z");
@@ -75,5 +80,60 @@ describe("useClockSwitch", () => {
       document.dispatchEvent(new Event("visibilitychange"));
     });
     expect(result.current).toBe(false);
+  });
+});
+
+describe("useClockState", () => {
+  test("re-evaluates any value at each boundary", () => {
+    const labels = (now: Date) =>
+      now < opensAt ? "soon" : now < closesAt ? "open" : "closed";
+    vi.setSystemTime(opensAt.getTime() - 1000);
+    const { result } = renderHook(() =>
+      useClockState({ at: labels, boundaries }),
+    );
+    expect(result.current).toBe("soon");
+    act(() => vi.advanceTimersByTime(1500));
+    expect(result.current).toBe("open");
+  });
+
+  test("keeps the server's value on a fixed clock", () => {
+    vi.setSystemTime(closesAt.getTime() + 60_000);
+    const { result } = renderHook(() =>
+      useClockState({
+        at: () => "now",
+        boundaries,
+        initial: "server",
+        live: false,
+      }),
+    );
+    expect(result.current).toBe("server");
+  });
+});
+
+describe("useClockWindow", () => {
+  const clock: ClockWindow = {
+    switchedOn: true,
+    opensAt: opensAt.getTime(),
+    closesAt: closesAt.getTime(),
+  };
+
+  test("follows a window passed as plain numbers", () => {
+    vi.setSystemTime(closesAt.getTime() - 1000);
+    const { result } = renderHook(() => useClockWindow(clock));
+    expect(result.current).toBe(true);
+    act(() => vi.advanceTimersByTime(1500));
+    expect(result.current).toBe(false);
+  });
+
+  test("an equal window in a new object keeps the timers", () => {
+    vi.setSystemTime(opensAt.getTime() + 1000);
+    const { result, rerender } = renderHook(
+      ({ phase }: { phase: ClockWindow }) => useClockWindow(phase),
+      { initialProps: { phase: clock } },
+    );
+    const timers = vi.getTimerCount();
+    rerender({ phase: { ...clock } });
+    expect(vi.getTimerCount()).toBe(timers);
+    expect(result.current).toBe(true);
   });
 });

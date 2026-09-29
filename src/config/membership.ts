@@ -1,3 +1,4 @@
+import { type ClockWindow, isClockWindowOpen } from "@/lib/clock-window";
 import { munichDayNumber, parseMunichDateTime } from "@/lib/munich-time";
 
 /**
@@ -6,6 +7,11 @@ import { munichDayNumber, parseMunichDateTime } from "@/lib/munich-time";
  * and Community closing bands read it, so a new recruiting round is one edit
  * to `membershipConfig.round`. See "Updating site facts" in
  * docs/contributor-guide.md.
+ *
+ * `membershipConfig` is the code fallback of the membership
+ * `applicationWindow` document (`getMembershipWindow()` in
+ * `config/schedule-content.ts`); the helpers below take the resolved config
+ * as input, so pages can use the window resolved for a render.
  */
 
 /** A span of whole days in Munich, written "DD.MM.YYYY" like the E-Lab dates. */
@@ -79,33 +85,33 @@ export function roundSchedule(round: RecruitingRound): RoundSchedule {
   };
 }
 
-/** The current round's schedule. */
+/** The code round's schedule. */
 const recruitingSchedule = roundSchedule(membershipConfig.round);
 
 /**
- * The instants at which {@link isMembershipApplicationOpen} can change for the
- * current round: the form opening and the deadline. Live switches in the
- * browser re-check at each.
+ * The window as a {@link ClockWindow} for the phase islands and the header:
+ * open from Munich midnight on the opening day until the deadline minute,
+ * while switched on.
  */
-export const membershipWindowBoundaries: readonly Date[] = [
-  recruitingSchedule.opensAt,
-  recruitingSchedule.closesAt,
-];
+export function membershipWindowClock(config: MembershipConfig): ClockWindow {
+  const { opensAt, closesAt } = roundSchedule(config.round);
+  return {
+    switchedOn: config.applicationsOpen,
+    opensAt: opensAt.getTime(),
+    closesAt: closesAt.getTime(),
+  };
+}
 
 /**
  * Whether membership applications are open at `now`: switched on, the form
- * has opened, and the deadline has not passed.
+ * has opened, and the deadline has not passed. `config` defaults to the code
+ * window; pass the one resolved for the render (`getMembershipWindow()`).
  */
 export function isMembershipApplicationOpen(
   now: Date,
   config: MembershipConfig = membershipConfig,
 ): boolean {
-  const { opensAt, closesAt } = roundSchedule(config.round);
-  return (
-    config.applicationsOpen &&
-    now.getTime() >= opensAt.getTime() &&
-    now.getTime() < closesAt.getTime()
-  );
+  return isClockWindowOpen(membershipWindowClock(config), now);
 }
 
 /** How far the application window has run on the Munich calendar. */
@@ -160,13 +166,30 @@ function spoken(instant: Date): string {
   return `${parts.month} ${ordinal(Number(parts.day))}`;
 }
 
+/** The round's three phases as sentences' worth of dates. */
+export type RecruitingTimeline = {
+  readonly application: string;
+  readonly interview: string;
+  readonly onboarding: string;
+};
+
 /**
  * The round's three phases as sentences' worth of dates ("September 28th -
  * October 27th"), for copy that names them: the Apply FAQ and the home and
  * Community closing bands.
  */
-export const recruitingTimeline = {
-  application: `${spoken(recruitingSchedule.opensAt)} - ${spoken(recruitingSchedule.closesAt)}`,
-  interview: `${spoken(recruitingSchedule.interviews.from)} - ${spoken(recruitingSchedule.interviews.to)}`,
-  onboarding: `${spoken(recruitingSchedule.onboarding.from)} - ${spoken(recruitingSchedule.onboarding.to)}`,
-} as const;
+export function recruitingTimelineOf(
+  schedule: RoundSchedule,
+): RecruitingTimeline {
+  return {
+    application: `${spoken(schedule.opensAt)} - ${spoken(schedule.closesAt)}`,
+    interview: `${spoken(schedule.interviews.from)} - ${spoken(schedule.interviews.to)}`,
+    onboarding: `${spoken(schedule.onboarding.from)} - ${spoken(schedule.onboarding.to)}`,
+  };
+}
+
+/**
+ * {@link recruitingTimelineOf} the code round; per render, derive it from
+ * `roundSchedule((await getMembershipWindow()).round)`.
+ */
+export const recruitingTimeline = recruitingTimelineOf(recruitingSchedule);
