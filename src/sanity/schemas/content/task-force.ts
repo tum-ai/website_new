@@ -70,12 +70,14 @@ export const taskForceType = defineType({
       description:
         "Optional: named projects the task force does with one partner, listed under its chapter. The page's closing names the first such partner.",
       fields: [
-        copyString({
+        defineField({
           name: "partner",
           title: "Partner",
+          type: "reference",
+          to: [{ type: "organization" }],
           description:
-            "The organization, as in 'Research projects with … include'.",
-          max: 60,
+            "The organisation, named as in 'Research projects with … include' and in the page's closing.",
+          validation: (Rule) => Rule.required(),
         }),
         copyStringList({
           name: "items",

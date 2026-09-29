@@ -452,7 +452,7 @@ export type TaskForce = {
   description: string;
   detailedDescription: string;
   work?: {
-    partner: string;
+    partner: OrganizationReference;
     items: Array<string>;
   };
   photo?: {
@@ -2298,7 +2298,7 @@ export type PARTNER_CASE_STUDIES_QUERY_RESULT = Array<{
 
 // Source: ../features/projects/content.ts
 // Variable: PROJECTS_CONTENT_QUERY
-// Query: {  "copy": *[_id == "projectsCopy"][0]{    hero{ eyebrow, title, lead, figureLabel },    openSeat{ name, field },    closing{      title,      lead,      student{ audience, text },      partner{ audience, text, textWithoutPartner }    }  },  "taskForces": *[_type == "taskForce"] | order(order asc){    "slug": slug.current,    name,    field,    description,    detailedDescription,    work{ partner, items },    "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},    photoCaption  }}
+// Query: {  "copy": *[_id == "projectsCopy"][0]{    hero{ eyebrow, title, lead, figureLabel },    openSeat{ name, field },    closing{      title,      lead,      student{ audience, text },      partner{ audience, text, textWithoutPartner }    }  },  "taskForces": *[_type == "taskForce"] | order(order asc){    "slug": slug.current,    name,    field,    description,    detailedDescription,    work{ "partner": partner->name, items },    "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},    photoCaption  }}
 export type PROJECTS_CONTENT_QUERY_RESULT = {
   copy:
     | {

@@ -46,7 +46,7 @@ lists instead of `hosts`); the old site's string fields stay.
 | `department` | list | `name`, `description` (placeholders), optional `photo` (`ContentImage` + caption), `order` | done (C) |
 | `journeyStep` | list | `number`, `name`, `description`, `iconKey` (mapped to a Lucide icon in code), `fromSemester`, `span`, `stage`/fork, `evidence` (a `person` reference to a member story and an excerpt) | done (C) |
 | `milestone` | list | `year`, `kind` (`research`, `programs`, `events`, `organization`), `title`, `detail` | done (C) |
-| `taskForce` | list | `slug`, `name`, `field`, `description`, `detailedDescription`, `work` (`partner`, `items[]`), optional `photo` | done (C) |
+| `taskForce` | list | `slug`, `name`, `field`, `description`, `detailedDescription`, `work` (`partner`, a reference to the organisation, and `items[]`), optional `photo` | done (C) |
 | `labSite` | list | `city`, `location` (lat, lng), `home`, `organizations[]` (references: the research projects', research partners' and REX institutions' organisations there) | done (C) |
 | `<page>Copy` | singleton per page | the page's hero, section titles and leads, closings and figure copy: `homeCopy` (its quotes reference `person`), `applyCopy`, `communityCopy`, `eventsCopy`, `eLabCopy`, `projectsCopy`, `qandaCopy`, `researchCopy` (with the REX band's copy) (C); `partnersCopy` (B) | done (C, B) |
 

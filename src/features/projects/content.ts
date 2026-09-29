@@ -2,18 +2,24 @@ import "server-only";
 
 import { defineQuery } from "next-sanity";
 import { getContentTokens } from "@/config/content-tokens";
+import { buildOrganizationBackfill } from "@/features/partners/server";
 import { type BackfillDocument, backfillId } from "@/lib/cms-backfill";
 import { loadContent } from "@/lib/cms-content";
 import { CONTENT_IMAGE_PROJECTION } from "@/lib/cms-content-model";
 import { backfillContentImage } from "@/lib/content-backfill";
 import { fillCmsCopy, fillCodeCopy } from "@/lib/content-copy";
+import { organizationReference } from "@/lib/organization-content";
 import type { PROJECTS_CONTENT_QUERY_RESULT } from "@/lib/sanity.types.generated";
 import {
   type ProjectsCopy,
   projectsCopyTemplate,
   projectsPageTokens,
 } from "./data/copy";
-import { type TaskForce, taskForces } from "./data/projects";
+import {
+  type TaskForce,
+  taskForces,
+  taskForceTemplates,
+} from "./data/projects";
 
 /**
  * The /projects content slice: the `projectsCopy` singleton (hero, open
@@ -38,7 +44,7 @@ export const PROJECTS_CONTENT_QUERY = defineQuery(`{
     field,
     description,
     detailedDescription,
-    work{ partner, items },
+    work{ "partner": partner->name, items },
     "photo": photo${CONTENT_IMAGE_PROJECTION},
     photoCaption
   }
@@ -71,9 +77,12 @@ export async function getProjectsContent(): Promise<ProjectsContent> {
       taskForces: fillCodeCopy(taskForces, tokens),
     },
     query: PROJECTS_CONTENT_QUERY,
-    tags: ["content:projectsCopy", "content:taskForce"],
+    tags: ["content:projectsCopy", "content:taskForce", "content:organization"],
     label: "the /projects content",
-    mockDocuments: buildProjectsBackfill,
+    mockDocuments: () => [
+      ...buildProjectsBackfill(),
+      ...buildOrganizationBackfill(),
+    ],
     select: ({ copy, taskForces: forces }) => {
       const filled = fillCmsCopy(forces, tokens, "the task forces");
       return {
@@ -85,7 +94,8 @@ export async function getProjectsContent(): Promise<ProjectsContent> {
         ),
         taskForces: (Array.isArray(filled) ? filled : [])
           .filter(isTaskForce)
-          // Named work needs its partner and at least one item.
+          // Named work needs its partner (a resolved organisation) and at
+          // least one item.
           .map(({ work, ...taskForce }) =>
             work?.partner && work.items?.length
               ? { ...taskForce, work }
@@ -96,18 +106,26 @@ export async function getProjectsContent(): Promise<ProjectsContent> {
   });
 }
 
-/** The /projects copy and task forces as documents for `pnpm sanity:backfill`. */
+/**
+ * The /projects copy and task forces as documents for `pnpm sanity:backfill`
+ * (a task force's partner references the organisation slice's document).
+ */
 export function buildProjectsBackfill(): BackfillDocument[] {
   return [
     { _id: "projectsCopy", _type: "projectsCopy", ...projectsCopyTemplate },
-    ...taskForces.map(({ slug, photo, work, ...taskForce }, index) => ({
+    ...taskForceTemplates.map(({ slug, photo, work, ...taskForce }, index) => ({
       _id: backfillId("task-force", slug),
       _type: "taskForce",
       order: (index + 1) * 10,
       slug: { _type: "slug", current: slug },
       ...taskForce,
       ...(work
-        ? { work: { partner: work.partner, items: [...work.items] } }
+        ? {
+            work: {
+              partner: organizationReference(work.partner),
+              items: [...work.items],
+            },
+          }
         : {}),
       ...(photo ? { photo: backfillContentImage(photo) } : {}),
     })),

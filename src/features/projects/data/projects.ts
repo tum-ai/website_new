@@ -1,8 +1,9 @@
+import { organizationByKey } from "@/features/partners";
 import type { ContentImage } from "@/lib/cms-content-model";
 
 /** Named work a task force does with a partner, listed under its chapter. */
 interface TaskForceWork {
-  /** The organization the work is done with. */
+  /** The name of the organisation the work is done with. */
   partner: string;
   /** One line per project, in the task force's own words. */
   items: string[];
@@ -31,8 +32,16 @@ export type TaskForce = {
   photoCaption?: string;
 };
 
+/**
+ * A task force as code writes it: the partner of its named work by
+ * organisation key (the `taskForce` document references the organisation).
+ */
+export type TaskForceTemplate = Omit<TaskForce, "work"> & {
+  work?: { partner: string; items: string[] };
+};
+
 // TODO(content): confirm the field labels, one per task force.
-export const taskForces: TaskForce[] = [
+export const taskForceTemplates: readonly TaskForceTemplate[] = [
   {
     slug: "med-ai",
     name: "med.AI",
@@ -41,9 +50,10 @@ export const taskForces: TaskForce[] = [
       "Biomedical AI research and community-building with partners across Munich.",
     detailedDescription:
       "med.AI is a multidisciplinary team dedicated to advancing artificial intelligence in the medical domain. It brings together a biomedical AI community in Munich and works on research projects with Helmholtz Center Munich.",
-    // TODO(content): "Helmholtz Center Munich" or its current name "Helmholtz Munich"?
+    // TODO(content): the partner is shown by its current name, Helmholtz
+    // Munich; the description above still says "Helmholtz Center Munich".
     work: {
-      partner: "Helmholtz Center Munich",
+      partner: "helmholtz-munich",
       items: [
         "A pan-cancer histopathology atlas",
         "Digital pathology foundation tools",
@@ -113,3 +123,17 @@ export const taskForces: TaskForce[] = [
  * Its labels are copy (`openSeat` in `copy.ts`).
  */
 export const openSeatSlug = "your-field";
+
+/** The task forces as the page renders them: each partner by its name. */
+export const taskForces: TaskForce[] = taskForceTemplates.map(
+  ({ work, ...taskForce }) =>
+    work
+      ? {
+          ...taskForce,
+          work: {
+            partner: organizationByKey(work.partner).name,
+            items: [...work.items],
+          },
+        }
+      : taskForce,
+);

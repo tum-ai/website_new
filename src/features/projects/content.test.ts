@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { contentTokens } from "@/config/content-tokens";
+import { organizationByKey } from "@/features/partners";
+import { buildOrganizationBackfill } from "@/features/partners/server";
 import { fetchContent } from "@/lib/cms-content";
 import { fillCodeCopy } from "@/lib/content-copy";
 import type { PROJECTS_CONTENT_QUERY_RESULT } from "@/lib/sanity.types.generated";
@@ -9,7 +11,7 @@ import {
   PROJECTS_CONTENT_QUERY,
 } from "./content";
 import { projectsCopyTemplate, projectsPageTokens } from "./data/copy";
-import { taskForces } from "./data/projects";
+import { taskForces, taskForceTemplates } from "./data/projects";
 
 /**
  * Parity: the backfill documents, read back through the real GROQ query
@@ -53,6 +55,30 @@ describe("the /projects content slice", () => {
   test("sanity source over the backfill: the same copy and task forces", async () => {
     useSource("sanity");
     await expect(getProjectsContent()).resolves.toStrictEqual(code);
+  });
+
+  test("a task force's partner is its organisation, shown by name", async () => {
+    useSource("sanity");
+    const query = (withOrganizations: boolean) =>
+      fetchContent<PROJECTS_CONTENT_QUERY_RESULT>({
+        query: PROJECTS_CONTENT_QUERY,
+        tags: [],
+        mockDocuments: () => [
+          ...buildProjectsBackfill(),
+          ...(withOrganizations ? buildOrganizationBackfill() : []),
+        ],
+        label: "partner",
+      });
+    const template = taskForceTemplates.find(({ work }) => work);
+    if (!template?.work) throw new Error("a task force names a partner");
+    const partnerOf = (result: PROJECTS_CONTENT_QUERY_RESULT | null) =>
+      result?.taskForces.find(({ slug }) => slug === template.slug)?.work
+        ?.partner;
+    expect(partnerOf(await query(true))).toBe(
+      organizationByKey(template.work.partner).name,
+    );
+    // A reference that resolves to nothing names no partner.
+    expect(partnerOf(await query(false))).toBeNull();
   });
 
   test("the backfill holds the copy and one document per task force", () => {
