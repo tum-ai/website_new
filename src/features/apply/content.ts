@@ -1,6 +1,6 @@
 import "server-only";
 
-import { contentTokens } from "@/config/content-tokens";
+import { getContentTokens } from "@/config/content-tokens";
 import type { BackfillDocument } from "@/lib/cms-backfill";
 import { buildFaqBackfill, type FaqEntry, getFaqs } from "@/lib/faq-content";
 import { faqTemplates } from "./data/faq";
@@ -11,8 +11,11 @@ import { faqTemplates } from "./data/faq";
  */
 
 /** The /apply FAQ: the CMS `apply` collection, or the code list. */
-export function getApplyFaqs(): Promise<FaqEntry[]> {
-  return getFaqs("apply", { templates: faqTemplates, tokens: contentTokens });
+export async function getApplyFaqs(): Promise<FaqEntry[]> {
+  return getFaqs("apply", {
+    templates: faqTemplates,
+    tokens: await getContentTokens(),
+  });
 }
 
 /** The /apply FAQ as documents for `pnpm sanity:backfill`. */

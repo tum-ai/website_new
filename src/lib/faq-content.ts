@@ -47,7 +47,7 @@ export const FAQ_QUERY =
 type FaqSource = {
   /** The page's code list, the fallback and the backfill source. */
   templates: readonly FaqTemplate[];
-  /** The placeholder values, `contentTokens` from `config/content-tokens.ts`. */
+  /** The placeholder values for this render, from `getContentTokens()` in `config/content-tokens.ts`. */
   tokens: ContentTokens;
 };
 

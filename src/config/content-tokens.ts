@@ -40,3 +40,13 @@ export const contentTokens: ContentTokens = {
     impactFacts.hackathonParticipants.toLocaleString("en"),
   "community.makeathonSize": String(communityFacts.makeathonSize),
 };
+
+/**
+ * The placeholder values for one render. Content slices fill CMS copy with
+ * these, never with the `contentTokens` constant, so the values can later come
+ * from the CMS `siteSettings` document without touching every slice. Today it
+ * resolves to `contentTokens`.
+ */
+export async function getContentTokens(): Promise<ContentTokens> {
+  return contentTokens;
+}
