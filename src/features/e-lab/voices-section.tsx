@@ -66,7 +66,7 @@ export function VoicesSection() {
           title="Founders and investors on the E-Lab."
           size="lg"
           layout="stack"
-          lead="Founders from earlier cohorts, and the investors and partners who mentor the teams and watch them pitch."
+          lead="Founders from earlier cohorts, and investors and partners who work with the E-Lab."
         />
         <div className="grid gap-16 lg:grid-cols-2 lg:gap-24">
           <VoiceColumn label="Founders" voices={pick(founderIds)} delay={0} />

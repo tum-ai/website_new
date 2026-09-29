@@ -13,17 +13,21 @@ import {
 const TICK_STEP = 100;
 
 /**
- * Two columns from lg: the gate's words (4 parts) and the scale (8 parts).
- * Every bar starts on the scale's left edge, the axis, which runs unbroken
- * through all rows (each row's scale cell draws its stretch and rows carry
- * no vertical padding), so the bars' lengths compare directly and the phases
- * sit on the teams' way from one gate to the next.
+ * Two columns from lg on a 12-track grid with 3rem gaps: the gate's words
+ * (4 tracks) and the scale (8 tracks). Every bar starts on the scale's left
+ * edge, the axis, so the bars' lengths compare directly and the phases sit
+ * on the teams' way from one gate to the next.
  */
 const ROW_GRID = "lg:grid lg:grid-cols-12 lg:gap-x-12";
 const WORDS = "lg:col-span-4";
 const SCALE = "lg:col-span-8";
-/** The axis: the scale column's left edge, from lg. */
-const AXIS = "lg:border-hairline-strong lg:border-l";
+
+/**
+ * The axis's x: the start of track 5, from the ROW_GRID numbers (four
+ * tracks of (100% - 11 gaps) / 12 plus four 3rem gaps). One line for the
+ * whole list, so rows can align by baseline instead of stretching.
+ */
+const AXIS_LEFT = "calc((100% - 33rem) / 3 + 12rem)";
 
 /**
  * "The gates", the page's bold element: one cohort from the application
@@ -50,19 +54,26 @@ export function SelectionGates() {
           lead="Each bar is drawn to scale: the teams that reach a gate, out of every team that applied. Between the gates, you build."
         />
         <Scale />
-        <ol>
-          {selectionStages.map((stage) =>
-            stage.kind === "gate" ? (
-              <GateRow
-                key={stage.id}
-                gate={stage}
-                index={gates.indexOf(stage)}
-              />
-            ) : (
-              <PhaseRow key={stage.id} phase={stage} />
-            ),
-          )}
-        </ol>
+        <div className="relative">
+          <span
+            aria-hidden="true"
+            className="absolute inset-y-0 hidden w-px bg-hairline-strong lg:block"
+            style={{ left: AXIS_LEFT }}
+          />
+          <ol>
+            {selectionStages.map((stage) =>
+              stage.kind === "gate" ? (
+                <GateRow
+                  key={stage.id}
+                  gate={stage}
+                  index={gates.indexOf(stage)}
+                />
+              ) : (
+                <PhaseRow key={stage.id} phase={stage} />
+              ),
+            )}
+          </ol>
+        </div>
       </Container>
     </Section>
   );
@@ -110,31 +121,37 @@ function Scale() {
   );
 }
 
+/** What a gate's figure counts. */
+const unit = (gate: Gate) =>
+  gate.id === "applications" ? "team applications" : "teams";
+
 /** A gate: its name and what happens there, its figure and its bar. */
 function GateRow({ gate, index }: { gate: Gate; index: number }) {
   return (
     <li
-      className={cn("border-hairline-strong border-t py-8 lg:py-0", ROW_GRID)}
+      className={cn(
+        "border-hairline-strong border-t py-8 lg:items-baseline lg:py-10",
+        ROW_GRID,
+      )}
     >
-      <div className={cn("lg:py-10", WORDS)}>
+      <div className={WORDS}>
         <h3 className="text-fg text-heading-lg">{gate.name}</h3>
         <p className="mt-3 max-w-md text-body text-fg-muted">
           {gate.description}
         </p>
       </div>
-      <div className={cn("mt-6 lg:mt-0 lg:py-10", AXIS, SCALE)}>
-        <p className="flex items-baseline gap-3 lg:pl-6">
-          <span className="tabular text-fg text-stat-lg">
-            {gate.approximate ? (
-              <>
-                <span aria-hidden="true">~</span>
-                <span className="sr-only">about </span>
-              </>
-            ) : null}
-            {gate.teams}
+      <div className={cn("mt-6 lg:mt-0", SCALE)}>
+        <p className="lg:pl-6">
+          <span aria-hidden="true" className="flex items-baseline gap-3">
+            <span className="tabular text-fg text-stat-lg">
+              {gate.approximate ? "~" : ""}
+              {gate.teams}
+            </span>
+            <span className="text-fg-muted text-small">{unit(gate)}</span>
           </span>
-          <span className="text-fg-muted text-small">
-            {gate.id === "applications" ? "team applications" : "teams"}
+          <span className="sr-only">
+            {gate.approximate ? "About " : ""}
+            {gate.teams} {unit(gate)}
           </span>
         </p>
         <div
@@ -164,14 +181,14 @@ function PhaseRow({ phase }: { phase: Phase }) {
     <li className={cn("pb-8 lg:pb-0", ROW_GRID)}>
       <div
         className={cn(
-          "border-hairline-strong border-l-2 pl-5 lg:col-start-5 lg:border-l lg:pt-2 lg:pb-6 lg:pl-6",
+          "flex flex-col border-hairline-strong border-l-2 pl-5 lg:col-start-5 lg:border-l-0 lg:pt-2 lg:pb-8 lg:pl-6",
           SCALE,
         )}
       >
-        <p className="font-semibold text-highlight text-small">
+        <h3 className="mt-1 text-fg text-heading-sm">{phase.name}</h3>
+        <p className="order-first font-semibold text-highlight text-small">
           {phase.duration}
         </p>
-        <h3 className="mt-1 text-fg text-heading-sm">{phase.name}</h3>
         <p className="mt-2 max-w-lg text-fg-muted text-small">
           {phase.description}
         </p>

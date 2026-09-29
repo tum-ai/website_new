@@ -27,7 +27,7 @@ export function ClosingSection() {
             <Reveal>
               <h2
                 id="elab-close-title"
-                className="max-w-[12em] text-display-xl text-highlight"
+                className="max-w-[12em] text-display-lg text-highlight"
               >
                 Every Final Pitch starts as one of about{" "}
                 {eLabConfig.selection.applications} applications.
@@ -73,6 +73,8 @@ export function ClosingSection() {
             <p className="font-medium text-fg text-small">
               For investors and companies
             </p>
+            {/* TODO(content): confirm with the Venture team that partners
+                mentor teams and attend the Final Pitch. */}
             <p className="mt-3 text-body text-fg-muted">
               Mentor a team, give feedback and meet the founders at the Final
               Pitch.

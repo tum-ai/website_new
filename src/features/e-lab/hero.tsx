@@ -25,7 +25,7 @@ function LogoLockup() {
         <span className="text-fg-subtle">by</span>
         <Image
           src="/assets/tum_ai_logo_new.svg"
-          alt="TUM.ai Logo"
+          alt="TUM.ai"
           width={100}
           height={25}
           className="h-5 w-auto md:h-6"
@@ -45,7 +45,7 @@ export function Hero() {
     <PageHero
       titleId={HERO_TITLE_ID}
       eyebrow={<LogoLockup />}
-      title={`${eLabConfig.programWeeks} weeks from application to the Final Pitch.`}
+      title={`${eLabConfig.programWeeks} weeks from kickoff to the Final Pitch.`}
       emphasis="highlight"
       size="md"
       mark={false}
