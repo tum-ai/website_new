@@ -36,7 +36,8 @@ export type RegisterSemester = {
  * The register's category chips and its semester groups. The server renders
  * every row; this only holds the selected chip and hides what doesn't match.
  * Chips without events are left out, so every choice has results and the
- * register never empties.
+ * register never empties, and a selection that a live refresh leaves without
+ * events falls back to All.
  */
 export function RegisterFilter({
   semesters,
@@ -44,27 +45,33 @@ export function RegisterFilter({
   /** Semesters, newest first. */
   semesters: RegisterSemester[];
 }) {
-  const [filter, setFilter] = useState<EventFilter>(ALL_EVENTS);
+  const [selected, setSelected] = useState<EventFilter>(ALL_EVENTS);
   const entries = useMemo(
     () => semesters.flatMap((semester) => semester.entries),
     [semesters],
   );
   const counts = useMemo(() => countFilterOptions(entries), [entries]);
+  const options = filterValues.filter((value) => counts[value] > 0);
+  const hasChips = options.length > 2;
+  // A live refresh can take away the selected category's last event, or
+  // every choice but one (and with it the chips): the register then shows
+  // every event, and the selection resets so it doesn't return by itself.
+  const filter = hasChips && options.includes(selected) ? selected : ALL_EVENTS;
+  if (filter !== selected) setSelected(filter);
   const visible = semesters
     .map((semester) => ({
       ...semester,
       entries: semester.entries.filter((entry) => matchesFilter(entry, filter)),
     }))
     .filter((semester) => semester.entries.length > 0);
-  const options = filterValues.filter((value) => counts[value] > 0);
 
   return (
     <>
-      {options.length > 2 ? (
+      {hasChips ? (
         <ChipGroup
           label="Category"
           value={filter}
-          onValueChange={(value) => setFilter(toFilter(value))}
+          onValueChange={(value) => setSelected(toFilter(value))}
           options={options.map((value) => ({
             value,
             label: filterLabel(value),

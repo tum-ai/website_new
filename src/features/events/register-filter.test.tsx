@@ -101,4 +101,53 @@ describe("register filter", () => {
     );
     expect(screen.queryByRole("group")).toBeNull();
   });
+
+  test("falls back to All when a refresh removes the selected category", async () => {
+    const user = userEvent.setup();
+    const { rerender } = renderRegister();
+    await user.click(screen.getByRole("button", { name: /^Talks/ }));
+    expect(rows()).toEqual(["Talk"]);
+
+    // The only talk is recategorised: two categories are left.
+    const withoutTalks = semesters.map((semester) => ({
+      ...semester,
+      entries: semester.entries.map((row) =>
+        row.category === "Speaker" ? entry("Talk", "Event") : row,
+      ),
+    }));
+    rerender(
+      <main>
+        <h2>Past events</h2>
+        <RegisterFilter semesters={withoutTalks} />
+      </main>,
+    );
+    expect(rows()).toHaveLength(4);
+    expect(
+      screen.getByRole("button", { name: /^All/, pressed: true }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("4 events")).toBeInTheDocument();
+  });
+
+  test("shows every event when a refresh leaves one category and no chips", async () => {
+    const user = userEvent.setup();
+    const { rerender } = renderRegister();
+    await user.click(screen.getByRole("button", { name: /^Talks/ }));
+
+    rerender(
+      <main>
+        <h2>Past events</h2>
+        <RegisterFilter
+          semesters={[
+            {
+              key: "k",
+              label: "Summer semester 2026",
+              entries: [entry("A", "Hackathon"), entry("B", "Hackathon")],
+            },
+          ]}
+        />
+      </main>,
+    );
+    expect(screen.queryByRole("group")).toBeNull();
+    expect(rows()).toEqual(["A", "B"]);
+  });
 });
