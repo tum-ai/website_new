@@ -202,9 +202,12 @@ Facts that change per semester, cohort or year live once in `src/config/`
 | `impact.ts` | research and hackathon record: publications, venues, hackathon participants |
 | `e-lab.ts` | cohort, application URL, deadline (Munich time), program length, funding, the `selection` funnel, phase copy |
 | `membership.ts` | recruiting: open flag, form URL and the current `round` (Munich dates), plus the schedule helpers (`roundSchedule`, `isMembershipApplicationOpen`, `applicationProgress`, `recruitingTimeline`) |
-| `navigation.ts` | header, footer and legal links, `headerCtaSetting`, per-route header options |
+| `navigation.ts` | header, footer and legal links, `headerCtaSetting`, the dated header CTA schedule (`headerCtaSchedule`, `headerCtaAt`), per-route header options |
+| `campaigns.ts` | dated campaigns in Munich time, `resolveActiveCampaigns` (the latest start wins) |
+| `site-facts.ts` | `SiteFacts` (what the CMS `siteSettings` singleton holds), its code fallback, `deriveSiteFacts` |
+| `site-settings-content.ts`, `schedule-content.ts` | content slices (server only): `getSiteFacts()`; `getMembershipWindow()`, `getELabWindow()`, `getCampaigns()`, `getFeaturedEventId()` |
 | `seo.ts` | per-page metadata and JSON-LD, `rootMetadata` |
-| `content-tokens.ts` | the values of the `{{placeholders}}` in editable copy, from the facts above |
+| `content-tokens.ts` | the values of the `{{placeholders}}` in editable copy, from the facts above; per render `getContentTokens()` (server only) |
 
 `test/content-facts.test.ts` fails when page code types one of these facts in directly.
 
@@ -225,8 +228,9 @@ Facts that change per semester, cohort or year live once in `src/config/`
 | `cms-backfill.ts` | backfill document ids and `_sanityAsset` images (Node only) |
 | `content-tokens.ts` | `{{placeholder}}` names and filling |
 | `faq-content.ts` | the `faq` type shared by several pages: query, getter, backfill |
-| `munich-time.ts`, `words.ts` | Munich wall-clock parsing, lists and small numbers in running copy |
-| `use-clock-switch.ts`, `use-media-query.ts` | client hooks |
+| `munich-time.ts`, `words.ts` | Munich wall-clock parsing and CMS date conversion, lists and small numbers in running copy |
+| `clock-window.ts` | `ClockWindow`: a dated on/off window as epoch milliseconds, the props shape for phase islands |
+| `use-clock-switch.ts`, `use-media-query.ts` | client hooks (`useClockState`, `useClockSwitch`, `useClockWindow`) |
 | `security.ts`, `redirects.ts`, `public-api.ts` | safe external URLs, host redirects, public API responses |
 
 ## Styling
