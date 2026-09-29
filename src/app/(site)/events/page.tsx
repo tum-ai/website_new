@@ -1,4 +1,5 @@
 import { JsonLd } from "@/components/json-ld";
+import { getFeaturedEventId } from "@/config/schedule-content";
 import { buildMetadata, getJsonLd } from "@/config/seo";
 import { EventsPage } from "@/features/events/events-page";
 import "@/features/events/events.css";
@@ -24,12 +25,16 @@ export const metadata = buildMetadata("events");
 export const revalidate = 300;
 
 export default async function Page() {
-  const events = await getSanityEvents();
+  const now = getCmsNow();
+  const [events, featuredEventId] = await Promise.all([
+    getSanityEvents(),
+    getFeaturedEventId(now),
+  ]);
 
   return (
     <>
       <JsonLd data={getJsonLd("events")} />
-      <EventsPage events={events} now={getCmsNow()} />
+      <EventsPage events={events} now={now} featuredEventId={featuredEventId} />
     </>
   );
 }

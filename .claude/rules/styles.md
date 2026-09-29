@@ -7,7 +7,9 @@ paths:
 # Styles and tokens
 
 `src/styles/index.css` is the only global stylesheet: Tailwind v4 configured in CSS (`@theme`),
-brand anchors, the violet and ink scales, the type scale, motion tokens and the tone surfaces.
+brand anchors, the violet and ink scales, the type scale, motion tokens and the tone surfaces. It
+imports its partials (`partner-rotation.css`: mechanics several routes share, which page CSS
+cannot hold because it loads only on its own route).
 
 - **Cascade layers:** every rule lives in `@layer base`, `@layer components`, `@layer utilities`
   or an `@utility`. Unlayered CSS beats every Tailwind utility and breaks overrides. Page CSS

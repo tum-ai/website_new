@@ -4,12 +4,15 @@
   // where knip can't follow the path. (`pnpm sanity:backfill` runs
   // scripts/sanity/backfill.ts through tsx, which knip finds in package.json
   // by itself.)
-  // scripts/sanity/repair-assets.ts: run by path through `sanity exec`
-  // from backfill.ts.
+  // scripts/sanity/repair-assets.ts, apply-partner-migration.ts and
+  // migrate-content-dedup-apply.ts: run by path through `sanity exec` from
+  // backfill.ts, migrate-partners.ts and migrate-content-dedup.ts.
   "entry": [
     "test/stubs/*.ts",
     "src/sanity/sanity.cli.ts",
-    "scripts/sanity/repair-assets.ts"
+    "scripts/sanity/repair-assets.ts",
+    "scripts/sanity/apply-partner-migration.ts",
+    "scripts/sanity/migrate-content-dedup-apply.ts"
   ],
   // Loaded by path: playwright.config.ts `toHaveScreenshot.stylePath`.
   "ignoreFiles": ["e2e/visual-screenshot.css"],

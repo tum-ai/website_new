@@ -11,6 +11,10 @@ import {
   recruitingTimelineOf,
   roundSchedule,
 } from "./membership";
+import {
+  acceptanceRateRoundedOf,
+  linkedinAudienceLabelOf,
+} from "./organization";
 import { getELabWindow, getMembershipWindow } from "./schedule-content";
 import {
   deriveSiteFacts,
@@ -64,6 +68,13 @@ export function contentTokensFor({
     "org.majors": String(org.majors),
     "org.universities": String(org.universities),
     "org.nationalities": String(org.nationalities),
+    // "2.3" and "2", each followed by "%" in copy.
+    "org.acceptanceRate": String(org.acceptanceRate),
+    "org.acceptanceRateRounded": String(
+      acceptanceRateRoundedOf(org.acceptanceRate),
+    ),
+    // "20k", followed by "+" in copy.
+    "org.linkedinAudience": linkedinAudienceLabelOf(org.linkedinAudience),
     "impact.publications": String(impact.publications),
     "impact.publicationVenues": derived.publicationVenuesText,
     // Grouped as in running text ("2,500"); stat figures stay derived in code.

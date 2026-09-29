@@ -83,7 +83,10 @@ export type ELabCopy = {
       | {
           key: string;
           name: string;
-          duration: string;
+          duration: {
+            amount: number;
+            unit: "days" | "weeks";
+          };
           description: string;
           photo?: {
             asset?: SanityImageAssetReference;
@@ -874,6 +877,22 @@ export type Organization = {
     aspectRatio?: number;
     _type: "image";
   };
+  partnerTier?: "gold" | "silver" | "bronze" | "supporter";
+  partnerFeatured?: boolean;
+  partnerCategory?:
+    | "Industry Partners"
+    | "Technical Partners"
+    | "Research Partners"
+    | "Venture Capital"
+    | "Initiatives";
+  legacyPartnerId?: string;
+};
+
+export type EventReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "event";
 };
 
 export type Campaign = {
@@ -893,7 +912,7 @@ export type Campaign = {
     notifyUrl?: string;
     yieldsToRecruiting?: boolean;
   };
-  featuredEventId?: string;
+  featuredEvent?: EventReference;
 };
 
 export type ApplicationWindow = {
@@ -932,6 +951,8 @@ export type SiteSettings = {
     majors: number;
     universities: number;
     nationalities: number;
+    acceptanceRate: number;
+    linkedinAudience: number;
   };
   brandMission: string;
   impact: {
@@ -1202,6 +1223,7 @@ export type AllSanitySchemaTypes =
   | Person
   | LogoList
   | Organization
+  | EventReference
   | Campaign
   | ApplicationWindow
   | SiteSettings
@@ -1237,7 +1259,7 @@ export type APPLICATION_WINDOW_QUERY_RESULT = {
 
 // Source: ../config/schedule-content.ts
 // Variable: CAMPAIGNS_QUERY
-// Query: *[_type == "campaign"] | order(startDate desc, _id asc){  "id": _id,  name,  startDate,  startTime,  endDate,  endTime,  headerCta{ variant, label, notifyUrl, yieldsToRecruiting },  featuredEventId}
+// Query: *[_type == "campaign"] | order(startDate desc, _id asc){  "id": _id,  name,  startDate,  startTime,  endDate,  endTime,  headerCta{ variant, label, notifyUrl, yieldsToRecruiting },  "featuredEventId": featuredEvent._ref}
 export type CAMPAIGNS_QUERY_RESULT = Array<{
   id: string;
   name: string;
@@ -1256,7 +1278,7 @@ export type CAMPAIGNS_QUERY_RESULT = Array<{
 
 // Source: ../config/site-settings-content.ts
 // Variable: SITE_SETTINGS_QUERY
-// Query: *[_type == "siteSettings" && _id == "siteSettings"][0]{  organization{ foundingYear, activeMembers, alumni, majors, universities, nationalities },  brandMission,  impact{ publications, publicationVenues, hackathonParticipants },  community{ makeathonSize, startedApplicationsPerBatch, acceptanceRatePercent },  contactEmails{ general, partners, venture, recruitment },  socialLinks{ linkedin, instagram, github, x, youtube, facebook, tiktok, slack },  partnershipBooking{ bookingUrl, bookingHost },  eLab{    currentIteration,    programWeeks,    ventureFundingMillions,    selection{ applications, admitted, midterm, selectionDay, finalPitch },    "heroLogo": heroLogo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}  },  footerTagline,  headerCtaFallback}
+// Query: *[_type == "siteSettings" && _id == "siteSettings"][0]{  organization{    foundingYear,    activeMembers,    alumni,    majors,    universities,    nationalities,    acceptanceRate,    linkedinAudience  },  brandMission,  impact{ publications, publicationVenues, hackathonParticipants },  community{ makeathonSize, startedApplicationsPerBatch, acceptanceRatePercent },  contactEmails{ general, partners, venture, recruitment },  socialLinks{ linkedin, instagram, github, x, youtube, facebook, tiktok, slack },  partnershipBooking{ bookingUrl, bookingHost },  eLab{    currentIteration,    programWeeks,    ventureFundingMillions,    selection{ applications, admitted, midterm, selectionDay, finalPitch },    "heroLogo": heroLogo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}  },  footerTagline,  headerCtaFallback}
 export type SITE_SETTINGS_QUERY_RESULT = {
   organization: {
     foundingYear: number;
@@ -1265,6 +1287,8 @@ export type SITE_SETTINGS_QUERY_RESULT = {
     majors: number;
     universities: number;
     nationalities: number;
+    acceptanceRate: number;
+    linkedinAudience: number;
   };
   brandMission: string;
   impact: {
@@ -1612,7 +1636,7 @@ export type COMMUNITY_COPY_QUERY_RESULT =
 
 // Source: ../features/e-lab/content.ts
 // Variable: ELAB_COPY_QUERY
-// Query: *[_id == "eLabCopy"][0]{  hero{ title, lead },  gates{    title,    lead,    scaleLabel,    stages[]{      _type,      figure,      name,      description,      approximate,      "id": key,      duration,      "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},      photoCaption    }  },  field{ caption, inviteLabel },  ventures{ title, fundingNote, logosLabel },  voices{ title, lead, foundersLabel, investorsLabel },  closing{ title, followLabel, partnersReader, partnersText }}
+// Query: *[_id == "eLabCopy"][0]{  hero{ title, lead },  gates{    title,    lead,    scaleLabel,    stages[]{      _type,      figure,      name,      description,      approximate,      "id": key,      duration{ amount, unit },      "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},      photoCaption    }  },  field{ caption, inviteLabel },  ventures{ title, fundingNote, logosLabel },  voices{ title, lead, foundersLabel, investorsLabel },  closing{ title, followLabel, partnersReader, partnersText }}
 export type ELAB_COPY_QUERY_RESULT =
   | {
       hero: null;
@@ -1724,7 +1748,10 @@ export type ELAB_COPY_QUERY_RESULT =
               description: string;
               approximate: null;
               id: string;
-              duration: string;
+              duration: {
+                amount: number;
+                unit: "days" | "weeks";
+              };
               photo: {
                 src: string | null;
                 width: number | null;
@@ -1771,11 +1798,12 @@ export type ELAB_COPY_QUERY_RESULT =
 
 // Source: ../features/e-lab/venture-content.ts
 // Variable: VENTURE_TRACE_QUERY
-// Query: *[_id == "ventureTrace"][0]{  "startupId": venture->key,  "testimonialId": person->key,  cohort,  now,  "after": milestones[]{ text, source }}
+// Query: *[_id == "ventureTrace"][0]{  "startupId": venture->key,  "testimonialId": person->key,  "founderContext": person->context,  cohort,  now,  "after": milestones[]{ text, source }}
 export type VENTURE_TRACE_QUERY_RESULT =
   | {
       startupId: string;
       testimonialId: string;
+      founderContext: string | null;
       cohort: string;
       now: string | null;
       after: Array<{
@@ -1786,6 +1814,7 @@ export type VENTURE_TRACE_QUERY_RESULT =
   | {
       startupId: null;
       testimonialId: null;
+      founderContext: null;
       cohort: null;
       now: null;
       after: null;
@@ -1793,6 +1822,7 @@ export type VENTURE_TRACE_QUERY_RESULT =
   | {
       startupId: null;
       testimonialId: null;
+      founderContext: null;
       cohort: null;
       now: null;
       after: Array<{
@@ -2750,7 +2780,7 @@ export type FAQ_QUERY_RESULT = Array<{
 
 // Source: ../lib/organization-content.ts
 // Variable: LOGO_LISTS_QUERY
-// Query: *[_type == "logoList" && _id in $ids]{  surface,  "organizations": organizations[]->{  key,  name,  shortName,  href,  "logo": logo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "logoSymbolOnly": logo.symbolOnly,  "logoAspectRatio": logo.aspectRatio,  "logoOnDark": logoOnDark{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "logoOnDarkSymbolOnly": logoOnDark.symbolOnly,  "logoOnDarkAspectRatio": logoOnDark.aspectRatio}}
+// Query: *[_type == "logoList" && _id in $ids]{  surface,  "organizations": organizations[]->{  key,  name,  shortName,  href,  "logo": logo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "logoSymbolOnly": logo.symbolOnly,  "logoAspectRatio": logo.aspectRatio,  "logoOnDark": logoOnDark{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "logoOnDarkSymbolOnly": logoOnDark.symbolOnly,  "logoOnDarkAspectRatio": logoOnDark.aspectRatio,  partnerTier,  partnerCategory,  partnerFeatured}}
 export type LOGO_LISTS_QUERY_RESULT = Array<{
   surface:
     | "alumni-destinations"
@@ -2799,7 +2829,71 @@ export type LOGO_LISTS_QUERY_RESULT = Array<{
     } | null;
     logoOnDarkSymbolOnly: boolean | null;
     logoOnDarkAspectRatio: number | null;
+    partnerTier: "bronze" | "gold" | "silver" | "supporter" | null;
+    partnerCategory:
+      | "Industry Partners"
+      | "Initiatives"
+      | "Research Partners"
+      | "Technical Partners"
+      | "Venture Capital"
+      | null;
+    partnerFeatured: boolean | null;
   }>;
+}>;
+
+// Source: ../lib/organization-content.ts
+// Variable: PARTNER_ORGANIZATIONS_QUERY
+// Query: *[_type == "organization" && defined(partnerTier)] | order(key asc){  key,  name,  shortName,  href,  "logo": logo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "logoSymbolOnly": logo.symbolOnly,  "logoAspectRatio": logo.aspectRatio,  "logoOnDark": logoOnDark{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "logoOnDarkSymbolOnly": logoOnDark.symbolOnly,  "logoOnDarkAspectRatio": logoOnDark.aspectRatio,  partnerTier,  partnerCategory,  partnerFeatured}
+export type PARTNER_ORGANIZATIONS_QUERY_RESULT = Array<{
+  key: string;
+  name: string;
+  shortName: string | null;
+  href: string | null;
+  logo: {
+    src: string | null;
+    width: number | null;
+    height: number | null;
+    alt: string | null;
+    hotspot: {
+      x: number;
+      y: number;
+    } | null;
+    crop: {
+      top: number;
+      bottom: number;
+      left: number;
+      right: number;
+    } | null;
+  } | null;
+  logoSymbolOnly: boolean | null;
+  logoAspectRatio: number | null;
+  logoOnDark: {
+    src: string | null;
+    width: number | null;
+    height: number | null;
+    alt: string | null;
+    hotspot: {
+      x: number;
+      y: number;
+    } | null;
+    crop: {
+      top: number;
+      bottom: number;
+      left: number;
+      right: number;
+    } | null;
+  } | null;
+  logoOnDarkSymbolOnly: boolean | null;
+  logoOnDarkAspectRatio: number | null;
+  partnerTier: "bronze" | "gold" | "silver" | "supporter";
+  partnerCategory:
+    | "Industry Partners"
+    | "Initiatives"
+    | "Research Partners"
+    | "Technical Partners"
+    | "Venture Capital"
+    | null;
+  partnerFeatured: boolean | null;
 }>;
 
 // Source: ../lib/person-content.ts
@@ -2881,38 +2975,6 @@ export type RESEARCH_QUERY_RESULT = Array<{
 }>;
 
 // Source: ../lib/sanity-queries.ts
-// Variable: PARTNERS_QUERY
-// Query: *[_type == "partner"]{  "id": _id,  name,  link,  "image": image.asset->url,  category,  tier,  featured}
-export type PARTNERS_QUERY_RESULT = Array<{
-  id: string;
-  name: string;
-  link: string | null;
-  image: string | null;
-  category:
-    | "Industry Partners"
-    | "Initiatives"
-    | "Research Partners"
-    | "Technical Partners"
-    | "Venture Capital"
-    | null;
-  tier: "bronze" | "gold" | "silver" | "supporter" | null;
-  featured: boolean | null;
-}>;
-
-// Source: ../lib/sanity-queries.ts
-// Variable: RESEARCH_PARTNERS_QUERY
-// Query: *[_type == "partner" && category == "Research Partners"]{  "id": _id,  name,  link,  "image": image.asset->url,  category,  tier,  featured}
-export type RESEARCH_PARTNERS_QUERY_RESULT = Array<{
-  id: string;
-  name: string;
-  link: string | null;
-  image: string | null;
-  category: "Research Partners";
-  tier: "bronze" | "gold" | "silver" | "supporter" | null;
-  featured: boolean | null;
-}>;
-
-// Source: ../lib/sanity-queries.ts
 // Variable: PUBLIC_EVENTS_QUERY
 // Query: *[_type == "event"]{  "id": _id,  title,  "description": coalesce(desc, ""),  event_date,  location,  city,  category,  "poster": poster.asset->url,  "images": array::compact([poster.asset->url, img.asset->url]),  sign_up,  detail}
 export type PUBLIC_EVENTS_QUERY_RESULT = Array<{
@@ -2958,5 +3020,24 @@ export type PUBLIC_PARTNERS_QUERY_RESULT = Array<{
     | "Venture Capital"
     | null;
   tier: "bronze" | "gold" | "silver" | "supporter" | null;
+  featured: boolean | null;
+}>;
+
+// Source: ../lib/sanity-queries.ts
+// Variable: PUBLIC_PARTNER_ORGANIZATIONS_QUERY
+// Query: *[_type == "organization" && defined(partnerTier)]{  "id": coalesce(legacyPartnerId, _id),  name,  "link": href,  "image": logo.asset->url,  "category": partnerCategory,  "tier": partnerTier,  "featured": partnerFeatured}
+export type PUBLIC_PARTNER_ORGANIZATIONS_QUERY_RESULT = Array<{
+  id: string;
+  name: string;
+  link: string | null;
+  image: string | null;
+  category:
+    | "Industry Partners"
+    | "Initiatives"
+    | "Research Partners"
+    | "Technical Partners"
+    | "Venture Capital"
+    | null;
+  tier: "bronze" | "gold" | "silver" | "supporter";
   featured: boolean | null;
 }>;

@@ -1,5 +1,7 @@
 import { contentTokens } from "@/config/content-tokens";
+import { memberJourney } from "@/features/community";
 import { fillCodeCopy } from "@/lib/content-copy";
+import { memberJourneyAnswerId, withJourneyTracks } from "../journey-tracks";
 
 /**
  * The /qanda copy as code writes it: the code fallback of the `qandaCopy`
@@ -153,13 +155,10 @@ export const faqTemplates: readonly QandaEntry[] = [
     },
   },
   {
-    id: "member-journey",
+    // Its points are the journey's tracks (`withJourneyTracks`).
+    id: memberJourneyAnswerId,
     question: "What does the member journey look like?",
     answer: "Members can join one of two tracks:",
-    points: [
-      "In the initiative track you will join one of our core departments and become a driving force behind everything that makes TUM.ai stand out.",
-      "In the research track you will join a team on an Impact Project applying AI to real-world challenges. Contribute to research and write academic publications.",
-    ],
     evidence: {
       label: "See the member journey",
       href: "/community#journey",
@@ -167,8 +166,11 @@ export const faqTemplates: readonly QandaEntry[] = [
   },
 ];
 
-/** The questions as rendered without the CMS: placeholders filled. */
-export const faqs: QandaEntry[] = fillCodeCopy(
-  [...faqTemplates],
-  contentTokens,
+/**
+ * The questions as rendered without the CMS: placeholders filled, the
+ * member-journey answer listing the code journey's tracks.
+ */
+export const faqs: QandaEntry[] = withJourneyTracks(
+  fillCodeCopy([...faqTemplates], contentTokens),
+  fillCodeCopy(memberJourney, contentTokens),
 );

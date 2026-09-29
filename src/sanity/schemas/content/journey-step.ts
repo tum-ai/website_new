@@ -2,6 +2,7 @@ import { defineField, defineType, type ValidationContext } from "sanity";
 import { journeyIconKeys } from "../../../lib/community-model";
 import { sanityApiVersion } from "../../../lib/sanity-config";
 import { copyString, copyText, orderField } from "./copy-fields";
+import { storyExcerptField } from "./excerpt-rules";
 
 /** A stage holds one step, or a fork of two parallel tracks. */
 async function validateStage(stage: unknown, context: ValidationContext) {
@@ -58,7 +59,7 @@ export const journeyStepType = defineType({
       name: "description",
       title: "Description",
       description:
-        "One or two sentences. On a fork's tracks, the Q&A page's member-journey answer quotes the first sentence: keep them in step.",
+        "One or two sentences. On a fork's tracks, the Q&A page's member-journey answer lists the first sentence as “In the <name in lower case> you will …”, so start it with a verb (“Join …”).",
       max: 400,
       rows: 4,
     }),
@@ -107,7 +108,7 @@ export const journeyStepType = defineType({
             "One of the member stories; it supplies the name, role and portrait.",
           validation: (Rule) => Rule.required(),
         }),
-        copyText({ name: "excerpt", title: "Quote", max: 200, rows: 2 }),
+        storyExcerptField(),
       ],
     }),
   ],

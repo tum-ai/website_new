@@ -8,32 +8,29 @@ import {
   type LivePerspective,
   resolvePerspectiveFromCookies,
 } from "next-sanity/live";
-import { liveCacheTags } from "./cache-tags";
+import { contentCacheTag, liveCacheTags } from "./cache-tags";
 import { getCmsNow } from "./mock-cms-env";
 import { omitNulls } from "./omit-nulls";
 import type {
   EVENTS_QUERY_RESULT,
-  PARTNERS_QUERY_RESULT,
-  RESEARCH_PARTNERS_QUERY_RESULT,
   RESEARCH_QUERY_RESULT,
 } from "./sanity.types.generated";
 import {
+  hasPageContent,
   isSanityConfigured,
   sanityClientConfig,
   studioPath,
 } from "./sanity-config";
 import {
   EVENTS_QUERY,
-  PARTNERS_QUERY,
   PUBLIC_EVENTS_QUERY,
+  PUBLIC_PARTNER_ORGANIZATIONS_QUERY,
   PUBLIC_PARTNERS_QUERY,
   PUBLIC_RESEARCH_QUERY,
-  RESEARCH_PARTNERS_QUERY,
   RESEARCH_QUERY,
 } from "./sanity-queries";
 import type {
   Event,
-  Partner,
   PublicEvent,
   PublicPartner,
   PublicResearch,
@@ -61,8 +58,8 @@ const browserToken = process.env.SANITY_API_BROWSER_TOKEN || false;
 export { isSanityConfigured };
 
 /**
- * The client for events, partners and research, with draft mode, stega and
- * Sanity Live. Page content from the same dataset goes through
+ * The client for events and research, with draft mode, stega and Sanity
+ * Live (and the public API's partners). Page content from the same dataset goes through
  * `lib/cms-content.ts`, which shares `sanityClientConfig`.
  */
 export const client = createClient({
@@ -183,29 +180,6 @@ export async function getSanityResearchProjects(): Promise<ResearchProject[]> {
   return projects.map(omitNulls);
 }
 
-export async function getSanityPartners(): Promise<Partner[]> {
-  const mock = await loadMockCms();
-  if (mock) return mock.getMockPartners();
-
-  const partners = await fetchSanityList<PARTNERS_QUERY_RESULT[number]>(
-    PARTNERS_QUERY,
-    [...liveCacheTags.partner],
-    "partners",
-  );
-  return partners.map(omitNulls);
-}
-
-/** Partners in the "Research Partners" category, for /research. */
-export async function getSanityResearchPartners(): Promise<Partner[]> {
-  const mock = await loadMockCms();
-  if (mock) return mock.getMockResearchPartners();
-
-  const partners = await fetchSanityList<
-    RESEARCH_PARTNERS_QUERY_RESULT[number]
-  >(RESEARCH_PARTNERS_QUERY, [...liveCacheTags.partner], "research partners");
-  return partners.map(omitNulls);
-}
-
 /**
  * Published content for the public API routes. Unlike the page fetchers,
  * these ignore draft mode (a Studio draft cookie never leaks drafts into the
@@ -229,7 +203,21 @@ export function getPublishedEvents(): Promise<PublicEvent[]> {
   ]);
 }
 
-export function getPublishedPartners(): Promise<PublicPartner[]> {
+/**
+ * `/api/getPartners`: the partner organisations on a dataset with page
+ * content (the new site's), in the frozen `partner` shape. The old site's
+ * `partner` documents answer on `production`, and on the new site's dataset
+ * as long as no organisation has a partner tier, so the API keeps serving
+ * them until `pnpm sanity:migrate-partners` has run there.
+ */
+export async function getPublishedPartners(): Promise<PublicPartner[]> {
+  if (hasPageContent) {
+    const organizations = await fetchPublishedList<PublicPartner>(
+      PUBLIC_PARTNER_ORGANIZATIONS_QUERY,
+      [contentCacheTag("organization")],
+    );
+    if (organizations.length > 0) return organizations;
+  }
   return fetchPublishedList<PublicPartner>(PUBLIC_PARTNERS_QUERY, [
     ...liveCacheTags.partner,
   ]);

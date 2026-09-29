@@ -12,7 +12,8 @@ import {
   Text,
 } from "@/components/ds";
 import { callToActionLabels } from "@/config/calls-to-action";
-import type { Partner, ResearchProject } from "@/lib/types";
+import { getResearchPartners } from "@/features/partners/server";
+import type { ResearchProject } from "@/lib/types";
 import { AffiliationIndex } from "./affiliations";
 import { getLabSiteList, getResearchCopy } from "./content";
 import { getAbstractBody } from "./data/research-copy";
@@ -29,22 +30,24 @@ import { getRexInstitutions } from "./rex-content";
  * references list, REX follows on lavender, and the closing band repeats the
  * affiliation line with one open slot for the next lab. The copy and the
  * lab sites come from the content slice (`content.ts`), the REX
- * institutions from theirs (`rex-content.ts`): each the CMS or the code.
+ * institutions from theirs (`rex-content.ts`) and the research partners
+ * (the partner organisations in the "Research Partners" category) from the
+ * partners' organisation slice: each the CMS or the code.
  */
 export async function ResearchPage({
   projects,
-  researchPartners,
 }: {
   /** Research projects from the CMS, in CMS order. */
   projects: ResearchProject[];
-  /** Partners in the "Research Partners" category. */
-  researchPartners: Partner[];
 }) {
-  const [copy, rexInstitutions, labSites] = await Promise.all([
-    getResearchCopy(),
-    getRexInstitutions(),
-    getLabSiteList(),
-  ]);
+  const [copy, rexInstitutions, labSites, researchPartners] = await Promise.all(
+    [
+      getResearchCopy(),
+      getRexInstitutions(),
+      getLabSiteList(),
+      getResearchPartners(),
+    ],
+  );
   const { closing, rex } = copy;
   const { affiliations, ongoing, completed } = getResearchIndex(projects);
   const partnerLogos = getPartnerLogos(researchPartners);

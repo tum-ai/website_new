@@ -62,7 +62,7 @@ its feature folder:
 | `/community` | `features/community/community-page.tsx` | static + content slices, ISR 1 h (layout) |
 | `/events` | `features/events/events-page.tsx` (+ `events.css`) | Sanity + content slices, ISR 5 min |
 | `/e-lab` | `features/e-lab/e-lab-page.tsx` (+ `e-lab.css`) | static + content slices, ISR 5 min (application phase) |
-| `/partners` | `features/partners/partners-page.tsx` (+ `partners.css`) | Sanity + content slices, ISR 15 min |
+| `/partners` | `features/partners/partners-page.tsx` (+ `partners.css`) | content slices (partners are organisations), ISR 15 min |
 | `/projects` | `features/projects/projects-page.tsx` (+ `projects.css`) | static + content slice, ISR 1 h (layout) |
 | `/qanda` | `features/qanda/qanda-page.tsx` | static + content slices, ISR 1 h (layout) |
 | `/research` | `features/research/research-page.tsx` (+ `research.css`) | Sanity + content slices, ISR 15 min |
@@ -100,7 +100,7 @@ built-in through any chain of imports (Turbopack would fail the production build
 | --- | --- | --- |
 | `community` | `departments`, `memberJourney`, types `JourneyStep`, `MemberStory` | `getMemberStories`, `buildMemberStoriesBackfill`, `MembershipApplyButton` |
 | `e-lab` | | `getTestimonialCards`, `buildVentureBackfill` |
-| `partners` | the directory helpers `getHighlightedPartners`, `getPartnerDirectory`, `getPartnerKey`; `organizationByKey` | `getPartnersCopy` (the pitch), `getPartnerCaseStudies`, `getPartnerLogos`, `buildOrganizationBackfill` |
+| `partners` | the directory helpers `getHighlightedPartners`, `getPartnerKey`; `PartnerRotationGrid` (the rotating partner wall, a client island without CSS: its styles are global, `styles/partner-rotation.css`); `organizationByKey` | `getPartners`, `getResearchPartners`, `getPartnersCopy` (the pitch), `getPartnerCaseStudies`, `getPartnerLogos`, `buildOrganizationBackfill` |
 | `qanda` | | `faqs` (the design-system showcase) |
 | `research` | | `getRexInstitutions` |
 
@@ -151,14 +151,19 @@ content types and the `sanity` source renders the code content. Page content is 
 into the dataset one content slice at a time (below); until a slice exists and the source is
 switched, it is static in Git: facts in `src/config/`, copy in `src/features/<domain>/data/`.
 
-### Events, research projects and partners
+### Events and research projects
+
+(Partners are organisations with a partner tier, read through the organisation content slice:
+`getPartners()` in `features/partners/organization-content.ts`; see ADR 0009, "Partners are
+organisations". The `partner` documents remain only for the old site, the migration and the
+public API's fallback.)
 
 1. **Schemas** in `src/sanity/schemas/` define the documents.
 2. **Queries** in `src/lib/sanity-queries.ts` are wrapped in `defineQuery`. `pnpm sanity:typegen`
    writes `src/lib/sanity.types.generated.ts`, and `src/lib/types.ts` derives the app types from
    it ([ADR 0006](adr/0006-sanity-typegen.md)).
 3. **The fetch layer** in `src/lib/sanity.ts` (`server-only`) exposes `getSanityEvents`,
-   `getSanityResearchProjects`, `getSanityPartners` and friends. A failed fetch is logged and
+   `getSanityResearchProjects` and the public-API getters. A failed fetch is logged and
    returns `[]`, so a CMS outage renders empty states instead of an error page. Without a project
    ID the getters return `[]` and make no request.
 4. **Routes** fetch on the server, set `revalidate`, and pass plain props to the page module.
@@ -279,9 +284,9 @@ Facts that change per semester, cohort or year live once in `src/config/`
 | --- | --- |
 | `cn.ts` | class-name merging for Tailwind |
 | `sanity-config.ts` | project, the one dataset, the shared client config, whether it holds page content, API version, Studio path (browser-safe) |
-| `sanity.ts`, `sanity-queries.ts`, `types.ts`, `omit-nulls.ts` | events, partners and research: client, Sanity Live, page and public-API getters, queries, app types |
+| `sanity.ts`, `sanity-queries.ts`, `types.ts`, `omit-nulls.ts` | events and research: client, Sanity Live, page and public-API getters (the partners' too), queries, app types (`Partner` included) |
 | `sanity.types.generated.ts` | TypeGen output for the Studio's schema (never edit) |
-| `mock-cms.ts`, `mock-cms-env.ts` | event, partner and research fixtures (and `liveEventHosts`, the co-hosts the backfill copies), the mock clock (`getCmsNow`) |
+| `mock-cms.ts`, `mock-cms-env.ts` | event and research fixtures (and `liveEventHosts`, the co-hosts the backfill copies), the mock clock (`getCmsNow`) |
 | `cms-content.ts` | the content source gate, the content client, `fetchContent`, `loadContent` (server only) |
 | `cms-content-model.ts` | `ContentImage`, the image projection, `toContentImage`, `mergeOverFallback` |
 | `cms-content-mock.ts` | page content under the mock CMS (groq-js over backfill documents) |

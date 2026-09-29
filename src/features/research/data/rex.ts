@@ -3,6 +3,7 @@
  * part of the page copy (`research-copy.ts`, `researchCopy.rex`).
  */
 import type { LogoItem } from "@/components/ds";
+import { organizationByKey } from "@/features/partners";
 import type { Organization } from "@/lib/people-and-logos";
 
 /** A REX institution: its logo, and the short name prose uses ("Harvard"). */
@@ -16,12 +17,15 @@ export type RexInstitution = LogoItem & { shortName: string };
  * reports them. The homepage names them by `shortName`.
  *
  * They live here, not in the partners' organisation table, which holds the
- * partners' logo lists; the lead in the page copy names them.
+ * partners' logo lists; the lead in the page copy names them. MIT is also a
+ * research partner, so it is the partners' organisation (by key).
  *
  * TODO(content): confirm we may show these four logos (Harvard, MIT and Inria
  * from Wikimedia Commons, the University of Cambridge from Wikipedia).
  */
-export const rexOrganizations: Organization[] = [
+
+/** The REX institutions only /research has: their `organization` documents. */
+export const rexOwnOrganizations: Organization[] = [
   {
     key: "harvard-university",
     name: "Harvard University",
@@ -32,18 +36,6 @@ export const rexOrganizations: Organization[] = [
       height: 165,
       alt: "Harvard University logo",
       aspectRatio: 600 / 165,
-    },
-  },
-  {
-    key: "mit",
-    name: "MIT",
-    shortName: "MIT",
-    logo: {
-      src: "/assets/research/rex/mit.svg",
-      width: 449,
-      height: 252,
-      alt: "MIT logo",
-      aspectRatio: 1473.281 / 829.367,
     },
   },
   {
@@ -71,6 +63,18 @@ export const rexOrganizations: Organization[] = [
     },
   },
 ];
+
+const rexOwnByKey = new Map(
+  rexOwnOrganizations.map((organization) => [organization.key, organization]),
+);
+
+/** The REX institutions, in the order the band shows them. */
+export const rexOrganizations: Organization[] = [
+  "harvard-university",
+  "mit",
+  "university-of-cambridge",
+  "inria",
+].map((key) => rexOwnByKey.get(key) ?? organizationByKey(key));
 
 /** The REX institutions as logo items with the name prose uses. */
 export function rexInstitutionsOf(

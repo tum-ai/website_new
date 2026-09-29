@@ -33,7 +33,7 @@ rendering; pass values to client islands as props.
 | E-Lab length, money raised | `e-lab.ts` `programWeeks`, `ventureFundingMillions` |
 | E-Lab selection funnel (teams per gate, drawn to scale on /e-lab) | `e-lab.ts` `selection` (`applications`, `admitted`, `midterm`, `selectionDay`, `finalPitch`; each at most the one before) |
 | Membership recruiting round | `src/config/membership.ts` `applicationsOpen` (master switch; applications also close by themselves at the deadline), `applicationUrl`, `round` (`name`, `opens`, `deadlineDate` "27.10.2026" + `deadlineTime` "23:59" in Munich time, `interviews`, `onboarding`) |
-| Founding year, members, alumni, majors, universities, nationalities | `src/config/organization.ts` `organizationFacts` |
+| Founding year, members, alumni, majors, universities, nationalities, acceptance rate (/partners: "2.3%", rounded in "the cracked 2%"), LinkedIn audience (/partners: "20k+") | `src/config/organization.ts` `organizationFacts` |
 | The mission statement (brand guide wording; /apply and /qanda quote it) | `src/config/organization.ts` `brandMission` |
 | Role emails, social links, the Imprint's address line | `src/config/contact.ts` (`contactEmails`, `socialLinks`, `registeredOfficeAddressLine`) |
 | Who handles partnership requests: finder CC addresses, the "Book a call" Cal.eu page and its host | `src/config/contact.ts` `partnershipContact` |

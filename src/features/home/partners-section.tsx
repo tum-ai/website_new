@@ -3,7 +3,6 @@ import {
   Container,
   Ledger,
   type LedgerItem,
-  LogoWall,
   QuoteCard,
   Reveal,
   Section,
@@ -11,49 +10,29 @@ import {
 } from "@/components/ds";
 import { callToActionLabels } from "@/config/calls-to-action";
 import { getTestimonialCards } from "@/features/e-lab/server";
-import {
-  getHighlightedPartners,
-  getPartnerDirectory,
-} from "@/features/partners";
-import {
-  getPartnerCaseStudies,
-  getPartnerLogos,
-} from "@/features/partners/server";
+import { getPartnerCaseStudies } from "@/features/partners/server";
+import type { Partner } from "@/lib/types";
 import type { HomeCopy } from "./data/homepage";
-
-/**
- * Gold, silver and bronze partners in the partner page's order, from the
- * static defaults so the home page stays prerendered without a partner
- * request. `symbolOnlyLogos` is the logo slice's set of symbol-only artwork.
- */
-const partnerLogosOf = (symbolOnlyLogos: ReadonlySet<string>) =>
-  getHighlightedPartners(getPartnerDirectory([])).map((partner) => ({
-    name: partner.name,
-    src: partner.image,
-    // Symbol-only artwork: set the name beside it.
-    wordmark:
-      partner.image && symbolOnlyLogos.has(partner.image)
-        ? partner.name
-        : undefined,
-  }));
+import { PartnerWall } from "./partner-wall";
 
 /**
  * The partner case on mist: a venture investor's quote, three measured
- * outcomes, then every current partner. Ends with the partner calls to
+ * outcomes, then the rotating wall of every current partner. Ends with the partner calls to
  * action. The copy picks the quote; the quote and the outcomes come from the
  * E-Lab and partners content slices (the CMS or the code).
  */
 export async function PartnersSection({
   copy,
+  partners,
 }: {
   copy: HomeCopy["partners"];
+  /** Every partner in directory order (`getPartners()`). */
+  partners: Partner[];
 }) {
-  const [cards, caseStudies, { symbolOnlyLogos }] = await Promise.all([
+  const [cards, caseStudies] = await Promise.all([
     getTestimonialCards(),
     getPartnerCaseStudies(),
-    getPartnerLogos(),
   ]);
-  const partnerLogos = partnerLogosOf(symbolOnlyLogos);
   const quote = cards.find((card) => card.id === copy.quote);
   /** What partners got out of working with TUM.ai, as ledger rows. */
   const outcomes: LedgerItem[] = caseStudies.map((study) => ({
@@ -114,12 +93,7 @@ export async function PartnersSection({
         </div>
 
         <Reveal className="mt-20 md:mt-28">
-          <LogoWall
-            logos={partnerLogos}
-            columns={6}
-            size="md"
-            label="TUM.ai partners"
-          />
+          <PartnerWall partners={partners} />
         </Reveal>
       </Container>
     </Section>

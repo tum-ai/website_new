@@ -194,6 +194,14 @@ const hardcodedFacts: [RegExp, string][] = [
     /\b[a-z]+\.[a-z]+@tum-ai\.com\b/i,
     "personal emails: use a role address from config/contact.ts",
   ],
+  [
+    /\bcracked \d|\d+(?:\.\d+)?%[^\n]*\bacceptance rate\b|\bacceptance rate\b[^\n]*\d+(?:\.\d+)?%/i,
+    "acceptance rate: organizationFacts in config/organization.ts",
+  ],
+  [
+    /\b\d+k\+?\s+linkedin\b/i,
+    "LinkedIn audience: organizationFacts in config/organization.ts",
+  ],
 ];
 
 /**

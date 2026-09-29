@@ -80,7 +80,7 @@ export type DerivedSiteFacts = {
   officialMembers: number;
   /** "NeurIPS, ICML, and ICLR". */
   publicationVenuesText: string;
-  /** "14-week equity-free AI startup incubator". */
+  /** "12-week equity-free AI startup incubator". */
   eLabProgramSummary: string;
   /** Cohorts that have run so far (the current one is still ahead). */
   eLabCompletedIterations: number;

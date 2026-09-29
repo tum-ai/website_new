@@ -99,7 +99,11 @@ const campaignDocuments: BackfillDocument[] = [
       label: "  Get the date  ",
       notifyUrl: "https://example.com/signup",
     },
-    featuredEventId: "event-makeathon",
+    featuredEvent: {
+      _type: "reference",
+      _ref: "event-makeathon",
+      _weak: true,
+    },
   },
   {
     _id: "campaign-broken",

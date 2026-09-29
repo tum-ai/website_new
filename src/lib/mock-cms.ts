@@ -1,7 +1,8 @@
 /**
- * Local-only stand-ins for Sanity content, so the CMS-backed pages (/events,
- * /research and /partners) can be designed and tested without CMS
- * credentials.
+ * Local-only stand-ins for Sanity content, so the CMS-backed pages (/events
+ * and /research) can be designed and tested without CMS credentials. The
+ * partners are organisations, a content slice: under the mock their code
+ * backfill is queried instead (`lib/cms-content-mock.ts`).
  *
  * Used only when `USE_MOCK_CMS=1`, never on Vercel: `lib/sanity.ts` loads
  * this module with a dynamic `import()` behind that gate, so a normal request
@@ -11,7 +12,7 @@
  * neutral example.com links, so nothing leaves the machine. Keep it free of
  * runtime imports: tests load it in plain Node.
  */
-import type { Event, Partner, ResearchProject } from "./types";
+import type { Event, ResearchProject } from "./types";
 
 const DAY = 24 * 60 * 60 * 1000;
 
@@ -474,32 +475,4 @@ export function getMockResearchProjects(): ResearchProject[] {
       image: "/assets/innovation/robotics_discussion.webp",
     },
   ];
-}
-
-export function getMockPartners(): Partner[] {
-  return [
-    { name: "IBM", logo: "ibm.png", link: "https://research.ibm.com" },
-    { name: "NVIDIA", logo: "nvidia.webp", link: "https://www.nvidia.com" },
-    { name: "Google", logo: "google.webp", link: "https://research.google" },
-    { name: "Meta", logo: "meta.svg", link: "https://ai.meta.com" },
-    {
-      name: "Databricks",
-      logo: "databricks.svg",
-      link: "https://www.databricks.com",
-    },
-    { name: "Cohere", logo: "cohere.svg", link: "https://cohere.com" },
-  ].map(({ name, logo, link }) => ({
-    id: `mock-partner-${name.toLowerCase()}`,
-    name,
-    link,
-    image: `/assets/partners/logos/${logo}`,
-    category: name === "IBM" ? "Research Partners" : "Technical Partners",
-  }));
-}
-
-/** The partners `RESEARCH_PARTNERS_QUERY` would return. */
-export function getMockResearchPartners(): Partner[] {
-  return getMockPartners().filter(
-    (partner) => partner.category === "Research Partners",
-  );
 }

@@ -135,6 +135,19 @@ export const siteSettingsType = defineType({
           "Nationalities",
           "Nationalities in the community.",
         ),
+        defineField({
+          name: "acceptanceRate",
+          title: "Acceptance rate (%)",
+          type: "number",
+          description:
+            "Share of applicants a recruiting round accepts, in percent with at most one decimal: 2.3. /partners shows it as “2.3%” and, rounded to a whole percent, in its “cracked …%” headings. Not a count, so no “+”.",
+          validation: (Rule) => Rule.required().min(0).max(100).precision(1),
+        }),
+        countField(
+          "linkedinAudience",
+          "LinkedIn audience",
+          "TUM.ai's LinkedIn audience. /partners shows it in thousands, rounded down: 20000 reads “20k+”.",
+        ),
       ],
     }),
     defineField({

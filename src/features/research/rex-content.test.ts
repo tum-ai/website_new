@@ -1,5 +1,9 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { rexInstitutionsOf, rexOrganizations } from "./data/rex";
+import {
+  rexInstitutionsOf,
+  rexOrganizations,
+  rexOwnOrganizations,
+} from "./data/rex";
 import { buildRexBackfill, getRexInstitutions } from "./rex-content";
 
 const rexInstitutions = rexInstitutionsOf(rexOrganizations);
@@ -29,11 +33,11 @@ describe("the REX slice", () => {
     await expect(getRexInstitutions()).resolves.toStrictEqual(rexInstitutions);
   });
 
-  test("the backfill holds each institution and one ordered list", () => {
+  test("the backfill holds each REX-only institution and one ordered list", () => {
     const documents = buildRexBackfill();
     expect(
       documents.filter(({ _type }) => _type === "organization"),
-    ).toHaveLength(rexInstitutions.length);
+    ).toHaveLength(rexOwnOrganizations.length);
     expect(documents.filter(({ _type }) => _type === "logoList")).toHaveLength(
       1,
     );

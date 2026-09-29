@@ -21,7 +21,16 @@ import { type SiteFacts, siteFactsFallback } from "./site-facts";
 
 export const SITE_SETTINGS_QUERY =
   defineQuery(`*[_type == "siteSettings" && _id == "siteSettings"][0]{
-  organization{ foundingYear, activeMembers, alumni, majors, universities, nationalities },
+  organization{
+    foundingYear,
+    activeMembers,
+    alumni,
+    majors,
+    universities,
+    nationalities,
+    acceptanceRate,
+    linkedinAudience
+  },
   brandMission,
   impact{ publications, publicationVenues, hackathonParticipants },
   community{ makeathonSize, startedApplicationsPerBatch, acceptanceRatePercent },

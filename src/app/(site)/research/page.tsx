@@ -2,24 +2,18 @@ import { JsonLd } from "@/components/json-ld";
 import { buildMetadata, getJsonLd } from "@/config/seo";
 import { ResearchPage } from "@/features/research/research-page";
 import "@/features/research/research.css";
-import {
-  getSanityResearchPartners,
-  getSanityResearchProjects,
-} from "@/lib/sanity";
+import { getSanityResearchProjects } from "@/lib/sanity";
 
 export const metadata = buildMetadata("research");
 export const revalidate = 900;
 
 export default async function Page() {
-  const [projects, researchPartners] = await Promise.all([
-    getSanityResearchProjects(),
-    getSanityResearchPartners(),
-  ]);
+  const projects = await getSanityResearchProjects();
 
   return (
     <>
       <JsonLd data={getJsonLd("research")} />
-      <ResearchPage projects={projects} researchPartners={researchPartners} />
+      <ResearchPage projects={projects} />
     </>
   );
 }

@@ -1,4 +1,9 @@
-import { defineArrayMember, defineField, type StringRule } from "sanity";
+import {
+  type CustomValidator,
+  defineArrayMember,
+  defineField,
+  type StringRule,
+} from "sanity";
 import { placeholderHelp, validatePlaceholders } from "./fields";
 
 /**
@@ -26,6 +31,8 @@ type CopyFieldOptions = {
    * `fillPageTokens` in `lib/content-copy.ts`): name and what it becomes.
    */
   pageTokens?: Readonly<Record<string, string>>;
+  /** A further check of the text, an error when it fails. */
+  validate?: CustomValidator<string | undefined>;
 };
 
 const help = (
@@ -58,14 +65,16 @@ function validateCopy(value: unknown, pageTokens: readonly string[]) {
 }
 
 function textRule(Rule: StringRule, options: CopyFieldOptions) {
-  const { max, required, placeholders, pageTokens = {} } = options;
+  const { max, required, placeholders, pageTokens = {}, validate } = options;
   const limited = (required === false ? Rule : Rule.required()).max(max);
   const names = Object.keys(pageTokens);
   // Without `placeholders`, page tokens are still validated (an unknown
   // name would reach the page as raw braces).
-  return placeholders || names.length > 0
-    ? limited.custom((value) => validateCopy(value, names))
-    : limited;
+  const rule =
+    placeholders || names.length > 0
+      ? limited.custom((value) => validateCopy(value, names))
+      : limited;
+  return validate ? [rule, Rule.custom(validate)] : rule;
 }
 
 /** A single line of copy: a title, a label, a short lead. */

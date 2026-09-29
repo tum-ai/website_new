@@ -1,5 +1,6 @@
 import "server-only";
 
+import { buildOrganizationBackfill } from "@/features/partners/server";
 import type { BackfillDocument } from "@/lib/cms-backfill";
 import {
   buildLogoListDocument,
@@ -10,11 +11,13 @@ import {
   type RexInstitution,
   rexInstitutionsOf,
   rexOrganizations,
+  rexOwnOrganizations,
 } from "./data/rex";
 
 /**
  * The REX slice on /research: the institutions' `organization` documents and
- * the `rex-institutions` logo list. Code fallback: `data/rex.ts`. The REX
+ * the `rex-institutions` logo list. Code fallback: `data/rex.ts`; MIT, a
+ * partner, is the partners' organisation slice's document. The REX
  * copy (lead, process, origin) is part of `researchCopy` (`content.ts`).
  * Other features read the getter through `../server.ts`.
  */
@@ -24,15 +27,21 @@ export async function getRexInstitutions(): Promise<RexInstitution[]> {
   const lists = await getLogoLists({
     lists: { "rex-institutions": rexOrganizations },
     label: "the REX institutions",
-    mockDocuments: buildRexBackfill,
+    mockDocuments: () => [
+      ...buildRexBackfill(),
+      ...buildOrganizationBackfill(),
+    ],
   });
   return rexInstitutionsOf(lists["rex-institutions"]);
 }
 
-/** The REX institutions and their list as documents for `pnpm sanity:backfill`. */
+/**
+ * The REX-only institutions and the list as documents for
+ * `pnpm sanity:backfill` (the list's MIT is the organisation slice's).
+ */
 export function buildRexBackfill(): BackfillDocument[] {
   return [
-    ...rexOrganizations.map(buildOrganizationDocument),
+    ...rexOwnOrganizations.map(buildOrganizationDocument),
     buildLogoListDocument("rex-institutions", rexOrganizations),
   ];
 }

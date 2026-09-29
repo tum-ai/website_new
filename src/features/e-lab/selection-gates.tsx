@@ -6,6 +6,7 @@ import {
   SectionHeader,
 } from "@/components/ds";
 import { cn } from "@/lib/cn";
+import { formatDuration } from "@/lib/program-duration";
 import type { ELabCopy } from "./data/copy";
 import {
   type Gate,
@@ -211,7 +212,7 @@ function PhaseRow({ phase }: { phase: Phase }) {
         <div className="flex flex-col">
           <h3 className="mt-1 text-fg text-heading-sm">{phase.name}</h3>
           <p className="order-first font-semibold text-highlight text-small">
-            {phase.duration}
+            {formatDuration(phase.duration)}
           </p>
           <p className="mt-2 max-w-lg text-fg-muted text-small">
             {phase.description}

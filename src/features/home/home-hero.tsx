@@ -7,23 +7,20 @@ import {
   SplitWords,
 } from "@/components/ds";
 import { callToActionLabels } from "@/config/calls-to-action";
-import {
-  getHighlightedPartners,
-  getPartnerDirectory,
-  getPartnerKey,
-} from "@/features/partners";
+import { getHighlightedPartners, getPartnerKey } from "@/features/partners";
+import type { Partner } from "@/lib/types";
 import type { HomeCopy } from "./data/homepage";
 import { HeroAperture } from "./hero-aperture";
 
 /**
- * Gold partners with artwork verified for dark bands: the partners from the
- * static defaults, so the home page stays prerendered without a partner
- * request, and their artwork from the partner marquee's logo list.
+ * Gold partners with artwork verified for dark bands: the partners in
+ * directory order, and their artwork from the partner marquee's logo list.
  */
 const heroPartnersOf = (
+  partners: Partner[],
   marqueeLogos: Readonly<Record<string, string | undefined>>,
 ) =>
-  getHighlightedPartners(getPartnerDirectory([]))
+  getHighlightedPartners(partners)
     .filter((partner) => partner.tier === "gold")
     .map((partner) => {
       const key = getPartnerKey(partner.name);
@@ -42,13 +39,16 @@ const heroPartnersOf = (
  */
 export function HomeHero({
   hero,
+  partners,
   marqueeLogos,
 }: {
   hero: HomeCopy["hero"];
+  /** Every partner in directory order (`getPartners()`). */
+  partners: Partner[];
   /** Dark-band artwork by partner key (`getPartnerLogos()`). */
   marqueeLogos: Readonly<Record<string, string | undefined>>;
 }) {
-  const heroPartners = heroPartnersOf(marqueeLogos);
+  const heroPartners = heroPartnersOf(partners, marqueeLogos);
   return (
     <Section
       tone="night"

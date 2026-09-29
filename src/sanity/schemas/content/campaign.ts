@@ -167,13 +167,16 @@ export const campaignType = defineType({
       ],
     }),
     defineField({
-      name: "featuredEventId",
+      name: "featuredEvent",
       title: "Featured event",
-      type: "string",
+      type: "reference",
+      to: [{ type: "event" }],
+      // Weak: events are the live type editors delete when they're
+      // cancelled; a strong reference would block that. A deleted event
+      // leaves a dangling reference, which the site ignores.
+      weak: true,
       description:
-        "Optional. The document ID of an event (open it under Events, then copy the ID from the address bar or the document inspector).",
-      validation: (Rule) =>
-        Rule.regex(/^[A-Za-z0-9._-]+$/, { name: "document ID" }).max(128),
+        "Optional. While the campaign runs, /events shows this event first, as long as it is still upcoming. The event can still be deleted; the campaign then features nothing.",
     }),
   ],
   orderings: [

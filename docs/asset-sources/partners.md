@@ -71,3 +71,50 @@ NVIDIA, McKinsey, and AWS card artwork reuse the existing sourced assets above. 
 ### Entire image resilience (2026-09-19)
 
 `logos/entire-lockup.webp` and `marquee/entire-lockup.webp` are lossless 960px-wide renderings of the original sourced black and white SVG lockups. Artwork and proportions are unchanged. New URLs avoid previous cached failures and remove SVG decoding as a runtime dependency for this logo.
+
+## Partner directory (2026-09-29)
+
+Every partner of the old site is an organisation with a partner tier (`src/features/partners/data/organizations.ts`). Retrieved 2026-09-29 from the old site's published `partner` documents in the `production` dataset (the original uploads, TUM.ai's CMS artwork). Raster logos are trimmed of uniform margins, scaled down (never up) to fit 500 × 150 px and encoded as WebP (quality 90); SVG files are unchanged. BKW, Hugging Face, Lovable, n8n and Project A already had dark-band artwork (`docs/asset-sources/events-hosts.md`); these are their light-background logos.
+
+- `logos/10x-founders.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/47daf7f716073c632e34e3d05d2bcf8c9c4f1474-987x303.png
+- `logos/aleph-alpha.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/abbf7081d2afc03ee80f7ed49eebfeca3bd0e357-744x454.png
+- `logos/applied-ai.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/7ba3fb2c611c3e8b8b1bb9c2d955e444d8c6cb46-399x126.png
+- `logos/auswaertiges-amt.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/9cdf491f7ceeac3cc14ebd80dbcbf381fbcb902b-1200x790.png
+- `logos/bkw.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/772794d8967c1b955ebe568d079b179cef07d2bd-2560x578.png
+- `logos/check24.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/6dda3ac30ae3f94ba9976c9e1a1811f4429572d2-9856x2417.png
+- `logos/cobrowser.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/7376a38f04aad47be6cb87df516ca6e5d2312afd-380x74.png
+- `logos/elevenlabs.svg`: https://cdn.sanity.io/images/o9uuv2sq/production/863dff4fbe6fab7654206552b16497d8d86ecca5-694x90.svg
+- `logos/enactus-munich.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/9e817d03a72a2197d479315d2e387156440dc03f-840x478.jpg
+- `logos/entreprenow-community.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/73d23a99b3ff3614a32113e8c5a9e8f58c2b265f-2841x796.jpg
+- `logos/eth-analytics-club.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/bbbe7b5d76a087e12c1977e2f9f318d6466f8938-142x143.jpg
+- `logos/flower-labs.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/72aec67c82cb460f335d50dd06d8895d54411a8c-400x225.webp
+- `logos/gdsc.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/a987aeccee533fa42bac05586a15b68fa2fb9832-818x835.png
+- `logos/harvard-medical-school.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/ab1e75b296bb91c83cd11ac11d2d779f86b12f5c-1024x289.png
+- `logos/heimkapital.svg`: https://cdn.sanity.io/images/o9uuv2sq/production/5f9b8ac7de25f447cd9882a06ac98baf30b5c8a6-142x23.svg
+- `logos/helmholtz.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/b3b814fde9640ec03ac35d172c772a987ee2b9a8-2560x338.png
+- `logos/hugging-face.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/b5716e79a38c41ba36fc555f18f6eaa8c65899d1-1926x512.png
+- `logos/infineon.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/8cd78454c8de6bff9e7a2e51d09b52adf6b07c32-2560x1129.png
+- `logos/initiatives-for-humanity.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/04b4b5f49564801363a7a48bc746e94773e346dd-200x200.jpg
+- `logos/itcs.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/dbd26809f51d75976218b51474ef26ca63129e6c-400x400.png
+- `logos/klinikum-rechts-der-isar.svg`: https://cdn.sanity.io/images/o9uuv2sq/production/c4f235b41b32065c5deb1e6c3fbac38e10ec57df-1024x456.svg
+- `logos/knust-coe-ic.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/24c20084f5a449387c6843256fa6b147e2cb855f-200x125.jpg
+- `logos/lmu.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/906151eab3027c6fbcade174d9b8e545f162cb64-1280x671.png
+- `logos/lovable.svg`: https://cdn.sanity.io/images/o9uuv2sq/production/21b57e300c357bc179137aa4a1585916fffb7680-911x155.svg
+- `logos/mcml.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/3e786edc1677fe6719031e12dc54a72d8b56e810-1524x466.png
+- `logos/mi4people.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/ab069d33570ca3399de6b9e35babf5a22fde3fe6-900x900.png
+- `logos/microsoft.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/d5d6948fadf977bcfe83c8753201a4c869f566fe-512x109.png
+- `logos/ministry-for-digital-affairs.svg`: https://cdn.sanity.io/images/o9uuv2sq/production/16b420e52c042e489c32280d009a2a9d32f89f30-484x139.svg
+- `logos/n8n.svg`: https://cdn.sanity.io/images/o9uuv2sq/production/79583ec75dd0ac9924da52b5246a7c733da58942-296x80.svg
+- `logos/netlight.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/475b96c4ff7fa857099e73d2159a5e5734600725-2560x682.png
+- `logos/project-a.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/cc9d51c4c806c773efccfd84049c5cc32bd1706c-700x650.png
+- `logos/qsummit.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/cf9ad9dd7a2febbc1db8fe7333ff0ee5b8593391-1030x1030.png
+- `logos/rohde-schwarz.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/f648a5005d256b8731a6b72c2c31aee42ed00c03-2560x752.png
+- `logos/siemens.svg`: https://cdn.sanity.io/images/o9uuv2sq/production/3984f4c39ed2c1292fdb7c256a5ff3fbd68ad6ab-1000x159.svg
+- `logos/speedinvest.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/c1b72af02e4fc622c1dbad3dd465c7cdbb8ed563-816x488.png
+- `logos/start-munich.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/5d9c21e24ca1240f596f54a297a91d9a0f341891-333x151.png
+- `logos/tensordyne.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/db41c90b56c1df254cf81850709e89f46c922b01-1457x110.png
+- `logos/tum-venture-labs.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/bec2af906df3ed69d52a66edaa8f1d14bbf23347-500x85.jpg
+- `logos/unternehmertum.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/d866dd63578c9dd8c7c024fa857efa69cfcb41aa-329x210.webp
+- `logos/vercel.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/f8223a454185829d4286ade9a126e8b89efe47ae-2048x407.png
+
+`logos/ministry-for-digital-affairs.svg` is 300 KB, mostly embedded path data; it is served as uploaded.

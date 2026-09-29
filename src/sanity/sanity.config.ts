@@ -23,7 +23,10 @@ import { contentSchemaTypes } from "./schemas/content";
  *
  * On `production`, the old site's dataset, the content types are not
  * registered: an editor can never create page content there, where the old
- * site renders every event, partner and research document.
+ * site renders every event, partner and research document, and partners
+ * are the `partner` documents. Everywhere else partners are organisations
+ * with a partner tier: `partner` stays registered (its copied documents
+ * remain readable) but the desk hides it and offers no way to create one.
  */
 export function studioConfig(dataset: string): Config {
   const pageContent = datasetHoldsPageContent(dataset);

@@ -27,7 +27,7 @@ export const partnerReasons: readonly PartnerReason[] = [
   {
     icon: "users",
     name: "Talent",
-    title: "Hire the cracked 2%.",
+    title: "Hire the cracked {{org.acceptanceRateRounded}}%.",
     description:
       "Curated talent profiles in your dedicated Partner Dashboard, plus access to the TUM.ai Jobboard. Find your next senior engineer or technical co-founder before anyone else.",
   },
@@ -43,7 +43,7 @@ export const partnerReasons: readonly PartnerReason[] = [
     name: "Network & Exposure",
     title: "Your brand, inside the room where AI is built.",
     description:
-      "Your brand in front of a 20k+ LinkedIn audience, our newsletter and the major events we run. Consistent visibility across the community where Europe's next AI companies are being built.",
+      "Your brand in front of a {{org.linkedinAudience}}+ LinkedIn audience, our newsletter and the major events we run. Consistent visibility across the community where Europe's next AI companies are being built.",
   },
 ];
 
@@ -56,10 +56,7 @@ export const partnerStatTemplates: readonly PartnerStat[] = [
     value: "{{community.startedApplications}}+",
     label: "Started applications per batch",
   },
-  {
-    value: "{{community.acceptanceRate}}%",
-    label: "Acceptance rate per batch",
-  },
+  { value: "{{org.acceptanceRate}}%", label: "Acceptance rate per batch" },
   {
     value: "{{org.officialMembers}}+",
     label: "Official members",
@@ -189,7 +186,7 @@ export function fillPartnerPillars(
   }));
 }
 
-/** A member profile on /partners ("The cracked 2%."). */
+/** A member profile in the /partners people band ("The cracked …%."). */
 export type PartnerProfile = {
   /**
    * The `person` document's key (`partner-profile` placement), fixed so a
@@ -387,7 +384,7 @@ export const partnersSections: PartnersSections = {
     lead: "From the first research question to the next venture. Find your place at every stage.",
   },
   people: {
-    title: "The cracked 2%.",
+    title: "The cracked {{org.acceptanceRateRounded}}%.",
     lead: ["Meet the people who turn", "“what if” into what’s next."],
     statLabel: "top tier individuals",
     tagline: ["Different backgrounds.", "Shared ambition."],

@@ -63,9 +63,20 @@ const faqInCollectionTemplate: Template = {
 };
 
 /**
+ * The old site's `partner` type, replaced on the new site's dataset by the
+ * organisations' partnership (`pnpm sanity:migrate-partners`). It stays
+ * registered, so the migration and `/api/getPartners` (until the migration
+ * ran) can read the copied documents, but the desk shows no entry for it and
+ * the Studio offers no way to create one: partners are edited as
+ * organisations ("Partners" lists those with a tier).
+ */
+const retiredTypes = new Set(["partner"]);
+
+/**
  * The Studio's desk on a dataset with page content (everything but
- * `production`): the old site's types first (events latest first, partners,
- * research projects), then the singletons (one fixed document each), the
+ * `production`): the old site's types first (events latest first, the
+ * partners, which are organisations with a partner tier, research
+ * projects), then the singletons (one fixed document each), the
  * dated content (the application window of each program, pinned, and the
  * campaigns, latest first), FAQs grouped by page and sorted as the page
  * shows them, logos and people, then every other type as a plain list.
@@ -150,7 +161,11 @@ export const siteStructure: StructureResolver = (S) =>
       }),
     ]);
 
-/** Events, partners and research: the types the old site also has. */
+/**
+ * Events and research, the types the old site also has, and the partners
+ * between them where the old site's `partner` type was: the organisations
+ * with a partner tier.
+ */
 function liveItems(S: StructureBuilder) {
   return [
     S.listItem()
@@ -162,15 +177,32 @@ function liveItems(S: StructureBuilder) {
           .title("Events, latest first")
           .defaultOrdering([{ field: "event_date", direction: "desc" }]),
       ),
-    S.documentTypeListItem("partner").title("Partners"),
+    S.listItem()
+      .id("partners")
+      .title("Partners")
+      .schemaType("organization")
+      .child(
+        S.documentList()
+          .id("partner-organizations")
+          .title("Partners (organisations with a partner tier)")
+          .schemaType("organization")
+          .filter('_type == "organization" && defined(partnerTier)')
+          .defaultOrdering([{ field: "name", direction: "asc" }]),
+      ),
     S.documentTypeListItem("research").title("Research projects"),
   ];
 }
 
-/** Initial-value templates: no "new" for fixed types, plus the FAQ one. */
+/**
+ * Initial-value templates: no "new" for fixed types or the retired `partner`
+ * type, plus the FAQ one.
+ */
 export function contentTemplates(templates: Template[]): Template[] {
   return [
-    ...templates.filter(({ schemaType }) => !fixedTypes.has(schemaType)),
+    ...templates.filter(
+      ({ schemaType }) =>
+        !fixedTypes.has(schemaType) && !retiredTypes.has(schemaType),
+    ),
     faqInCollectionTemplate,
     personInPlacementTemplate,
   ];

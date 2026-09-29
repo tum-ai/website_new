@@ -1,7 +1,10 @@
+import type { Organization } from "@/lib/people-and-logos";
+import { isPartnerTier, partnerTiers } from "@/lib/people-and-logos";
 import { getSafeExternalUrl } from "@/lib/security";
-import type { Partner, PartnerTier } from "@/lib/types";
-import { featuredPartners } from "./data/partner-logos";
+import type { Partner } from "@/lib/types";
+import { partnerLaunchOrder } from "./data/organizations";
 
+/** Gold, silver and bronze partners: the homepage and the /partners hero. */
 export function getHighlightedPartners(partners: Partner[]) {
   return partners.filter(
     (partner) =>
@@ -11,8 +14,13 @@ export function getHighlightedPartners(partners: Partner[]) {
   );
 }
 
-const tierOrder: PartnerTier[] = ["gold", "silver", "bronze", "supporter"];
+const tierOrder = partnerTiers.map(({ value }) => value);
 
+/**
+ * A company's letters and digits, lower-cased, with the aliases the old
+ * partner documents used: how the site matches partners, organisations and
+ * their artwork by name ("HRT" and "Hudson River Trading" are one company).
+ */
 export function getPartnerKey(name: string) {
   const key = name.toLowerCase().replace(/[^a-z0-9]/g, "");
   const aliases: Record<string, string> = {
@@ -28,49 +36,69 @@ export function getPartnerKey(name: string) {
   return aliases[key] ?? key;
 }
 
-/** Merge CMS records with launch defaults without duplicating cross-category partners. */
-export function getPartnerDirectory(partners: Partner[]) {
-  const defaults = new Map(
-    featuredPartners.map((partner) => [getPartnerKey(partner.name), partner]),
-  );
-  const merged = new Map<string, Partner>(defaults);
-  for (const partner of partners) {
-    if (!partner.name?.trim()) continue;
-    const key = getPartnerKey(partner.name);
-    const previous = merged.get(key);
-    const validTier = tierOrder.includes(partner.tier as PartnerTier)
-      ? partner.tier
-      : undefined;
-    merged.set(key, {
-      ...previous,
-      ...partner,
-      name: defaults.get(key)?.name ?? partner.name,
-      image: partner.image || previous?.image,
-      link:
-        getSafeExternalUrl(partner.link) ??
-        getSafeExternalUrl(previous?.link) ??
-        undefined,
-      tier: validTier ?? previous?.tier ?? "supporter",
-      featured: partner.featured ?? previous?.featured ?? false,
-    });
-  }
-  // The fixed brief order is stable; featured CMS entries lead within their tier.
-  const defaultOrder = new Map(
-    featuredPartners.map((partner, index) => [
-      getPartnerKey(partner.name),
-      index,
-    ]),
-  );
-  return [...merged.values()].sort((a, b) => {
-    const tierDifference =
-      tierOrder.indexOf(a.tier ?? "supporter") -
-      tierOrder.indexOf(b.tier ?? "supporter");
-    return (
-      tierDifference ||
-      Number(Boolean(b.featured)) - Number(Boolean(a.featured)) ||
-      (defaultOrder.get(getPartnerKey(a.name)) ?? 100) -
-        (defaultOrder.get(getPartnerKey(b.name)) ?? 100) ||
-      a.name.localeCompare(b.name)
+/**
+ * A partner organisation as the pages list it: its key as the id, its
+ * website, its logo for light backgrounds and its partnership (no tier
+ * reads as supporter).
+ */
+export function partnerOf({
+  key,
+  name,
+  href,
+  logo,
+  partnership,
+}: Organization): Partner {
+  return {
+    id: key,
+    name,
+    ...(href ? { link: href } : {}),
+    ...(logo ? { image: logo.src } : {}),
+    ...(partnership?.category ? { category: partnership.category } : {}),
+    tier: partnership?.tier ?? "supporter",
+    ...(partnership?.featured ? { featured: true } : {}),
+    ...(logo?.symbolOnly ? { symbolOnly: true } : {}),
+  };
+}
+
+const launchIndex = new Map(
+  partnerLaunchOrder.map((key, index) => [key, index]),
+);
+
+const launchRank = (partner: Partner) =>
+  launchIndex.get(partner.id) ?? partnerLaunchOrder.length;
+
+/**
+ * The partner directory: `partners` in tier order (gold, silver, bronze,
+ * supporter; an unknown or missing tier is a supporter), within a tier the
+ * ones that lead it first, then the launch brief's order
+ * (`partnerLaunchOrder`), then by name. Entries without a name are dropped,
+ * two entries for one company (the same {@link getPartnerKey}) keep the
+ * higher-ranked one, and unsafe links are removed.
+ */
+export function getPartnerDirectory(partners: Partner[]): Partner[] {
+  const sorted = partners
+    .filter((partner) => partner.name?.trim())
+    .map(
+      (partner): Partner => ({
+        ...partner,
+        link: getSafeExternalUrl(partner.link) ?? undefined,
+        tier: isPartnerTier(partner.tier) ? partner.tier : "supporter",
+        featured: partner.featured === true,
+      }),
+    )
+    .sort(
+      (a, b) =>
+        tierOrder.indexOf(a.tier ?? "supporter") -
+          tierOrder.indexOf(b.tier ?? "supporter") ||
+        Number(Boolean(b.featured)) - Number(Boolean(a.featured)) ||
+        launchRank(a) - launchRank(b) ||
+        a.name.localeCompare(b.name),
     );
+  const seen = new Set<string>();
+  return sorted.filter((partner) => {
+    const key = getPartnerKey(partner.name);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
   });
 }

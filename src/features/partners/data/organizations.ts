@@ -9,9 +9,14 @@ import type {
  * and the partner sections' logo lists: the code source of the CMS
  * `organization` and `logoList` documents (`organization-content.ts`). The
  * logo surfaces of other pages (E-Lab ventures and testimonials, events
- * co-hosts) pick their organisations from here by key, so a company that
- * appears on several pages has one entry. The REX institutions are the
- * exception: /research keeps them (`features/research/data/rex.ts`).
+ * co-hosts, the REX institutions) pick their organisations from here by
+ * key, so a company that appears on several pages has one entry. The REX
+ * institutions that are not partners are the exception: /research keeps
+ * them (`features/research/data/rex.ts`).
+ *
+ * Every TUM.ai partner is an organisation with a `partnership` (its tier,
+ * and the old site's category where it had one): the code source of the
+ * partner directory ({@link partnerOrganizations}).
  *
  * Sizes are each file's intrinsic size, as Sanity reports it; SVG sizes are
  * the `viewBox`, rounded. `aspectRatio` records the drawn artwork's ratio
@@ -43,7 +48,7 @@ function defineOrganization({
 }
 
 export const organizations: readonly Organization[] = [
-  // Partners (the directory's launch defaults, `partner-logos.ts`)
+  // Highlighted partners: gold, silver and bronze (in `partnerLaunchOrder`)
   defineOrganization({
     key: "openai",
     name: "OpenAI",
@@ -58,6 +63,7 @@ export const organizations: readonly Organization[] = [
       width: 928,
       height: 308,
     },
+    partnership: { tier: "gold", category: "Technical Partners" },
   }),
   defineOrganization({
     key: "google",
@@ -69,6 +75,7 @@ export const organizations: readonly Organization[] = [
       width: 544,
       height: 184,
     },
+    partnership: { tier: "gold", category: "Technical Partners" },
   }),
   defineOrganization({
     key: "anthropic",
@@ -85,6 +92,7 @@ export const organizations: readonly Organization[] = [
       height: 64,
       aspectRatio: 8.906,
     },
+    partnership: { tier: "gold", category: "Technical Partners" },
   }),
   defineOrganization({
     key: "hudson-river-trading",
@@ -96,6 +104,7 @@ export const organizations: readonly Organization[] = [
       width: 193,
       height: 150,
     },
+    partnership: { tier: "gold", category: "Industry Partners" },
   }),
   defineOrganization({
     key: "jetbrains",
@@ -111,6 +120,7 @@ export const organizations: readonly Organization[] = [
       width: 298,
       height: 64,
     },
+    partnership: { tier: "gold" },
   }),
   defineOrganization({
     key: "unite",
@@ -122,6 +132,7 @@ export const organizations: readonly Organization[] = [
       width: 500,
       height: 122,
     },
+    partnership: { tier: "gold", category: "Industry Partners" },
   }),
   defineOrganization({
     key: "spherecast",
@@ -137,6 +148,7 @@ export const organizations: readonly Organization[] = [
       width: 1588,
       height: 262,
     },
+    partnership: { tier: "silver" },
   }),
   defineOrganization({
     key: "dryft",
@@ -149,6 +161,7 @@ export const organizations: readonly Organization[] = [
       height: 512,
       symbolOnly: true,
     },
+    partnership: { tier: "silver" },
   }),
   defineOrganization({
     key: "reply",
@@ -160,6 +173,7 @@ export const organizations: readonly Organization[] = [
       width: 113,
       height: 56,
     },
+    partnership: { tier: "silver" },
   }),
   defineOrganization({
     key: "mutagent",
@@ -177,6 +191,7 @@ export const organizations: readonly Organization[] = [
       height: 672,
       symbolOnly: true,
     },
+    partnership: { tier: "bronze" },
   }),
   defineOrganization({
     key: "nvidia",
@@ -193,6 +208,7 @@ export const organizations: readonly Organization[] = [
       height: 311,
       aspectRatio: 1.286,
     },
+    partnership: { tier: "gold", category: "Technical Partners" },
   }),
   defineOrganization({
     key: "entire-io",
@@ -208,6 +224,7 @@ export const organizations: readonly Organization[] = [
       width: 960,
       height: 237,
     },
+    partnership: { tier: "gold" },
   }),
   defineOrganization({
     key: "mckinsey-company",
@@ -223,6 +240,7 @@ export const organizations: readonly Organization[] = [
       width: 160,
       height: 50,
     },
+    partnership: { tier: "silver" },
   }),
   defineOrganization({
     key: "jane-street",
@@ -238,6 +256,7 @@ export const organizations: readonly Organization[] = [
       width: 181,
       height: 49,
     },
+    partnership: { tier: "silver", category: "Industry Partners" },
   }),
   defineOrganization({
     key: "bmw",
@@ -250,6 +269,7 @@ export const organizations: readonly Organization[] = [
       height: 2500,
       aspectRatio: 1,
     },
+    partnership: { tier: "silver", category: "Industry Partners" },
   }),
   defineOrganization({
     key: "aws",
@@ -262,6 +282,7 @@ export const organizations: readonly Organization[] = [
       height: 238,
       aspectRatio: 1.672,
     },
+    partnership: { tier: "silver", category: "Technical Partners" },
   }),
   defineOrganization({
     key: "amd",
@@ -273,6 +294,7 @@ export const organizations: readonly Organization[] = [
       width: 140,
       height: 33,
     },
+    partnership: { tier: "bronze" },
   }),
   defineOrganization({
     key: "ibm",
@@ -284,6 +306,396 @@ export const organizations: readonly Organization[] = [
       width: 500,
       height: 200,
     },
+    partnership: { tier: "bronze", category: "Research Partners" },
+  }),
+
+  // Supporters: the old site's other partners (its `partner` documents in
+  // `production`, 2026-09-29; logo sources in docs/asset-sources/partners.md).
+  // The research institutions are in /research's REX list too.
+  defineOrganization({
+    key: "mit",
+    name: "MIT",
+    shortName: "MIT",
+    href: "https://www.mit.edu/",
+    logo: {
+      src: "/assets/research/rex/mit.svg",
+      width: 449,
+      height: 252,
+      alt: "MIT logo",
+      aspectRatio: 1473.281 / 829.367,
+    },
+    partnership: { tier: "supporter", category: "Research Partners" },
+  }),
+  defineOrganization({
+    key: "10x-founders",
+    name: "10x Founders",
+    href: "https://www.10xfounders.com/",
+    logo: {
+      src: "/assets/partners/logos/10x-founders.webp",
+      width: 500,
+      height: 112,
+    },
+    partnership: { tier: "supporter", category: "Venture Capital" },
+  }),
+  defineOrganization({
+    key: "aleph-alpha",
+    name: "Aleph Alpha",
+    href: "https://www.aleph-alpha.com/",
+    logo: {
+      src: "/assets/partners/logos/aleph-alpha.webp",
+      width: 303,
+      height: 150,
+    },
+    partnership: { tier: "supporter", category: "Industry Partners" },
+  }),
+  defineOrganization({
+    key: "applied-ai",
+    name: "Applied AI",
+    href: "https://www.appliedai.de/de/",
+    logo: {
+      src: "/assets/partners/logos/applied-ai.webp",
+      width: 347,
+      height: 64,
+    },
+    partnership: { tier: "supporter", category: "Industry Partners" },
+  }),
+  defineOrganization({
+    key: "auswaertiges-amt",
+    name: "Auswärtiges Amt",
+    href: "https://www.auswaertiges-amt.de",
+    logo: {
+      src: "/assets/partners/logos/auswaertiges-amt.webp",
+      width: 274,
+      height: 150,
+    },
+    partnership: { tier: "supporter", category: "Industry Partners" },
+  }),
+  defineOrganization({
+    key: "check24",
+    name: "CHECK24",
+    href: "https://www.check24.de",
+    logo: {
+      src: "/assets/partners/logos/check24.webp",
+      width: 500,
+      height: 123,
+    },
+    partnership: { tier: "supporter", category: "Industry Partners" },
+  }),
+  defineOrganization({
+    key: "cobrowser",
+    name: "CoBrowser",
+    href: "https://www.cobrowser.com/",
+    logo: {
+      src: "/assets/partners/logos/cobrowser.webp",
+      width: 380,
+      height: 59,
+    },
+    partnership: { tier: "supporter", category: "Technical Partners" },
+  }),
+  defineOrganization({
+    key: "elevenlabs",
+    name: "ElevenLabs",
+    href: "https://elevenlabs.io/",
+    logo: {
+      src: "/assets/partners/logos/elevenlabs.svg",
+      width: 694,
+      height: 90,
+    },
+    partnership: { tier: "supporter", category: "Technical Partners" },
+  }),
+  defineOrganization({
+    key: "enactus-munich",
+    name: "Enactus Munich",
+    href: "https://enactus-muenchen.de/",
+    logo: {
+      src: "/assets/partners/logos/enactus-munich.webp",
+      width: 264,
+      height: 150,
+    },
+    partnership: { tier: "supporter", category: "Initiatives" },
+  }),
+  defineOrganization({
+    key: "entreprenow-community",
+    name: "EntrepreNow Community",
+    href: "https://www.linkedin.com/company/entreprenow-community/",
+    logo: {
+      src: "/assets/partners/logos/entreprenow-community.webp",
+      width: 500,
+      height: 125,
+    },
+    partnership: { tier: "supporter", category: "Initiatives" },
+  }),
+  defineOrganization({
+    key: "eth-analytics-club",
+    name: "ETH Analytics Club",
+    href: "https://analytics-club.org/wordpress/",
+    logo: {
+      src: "/assets/partners/logos/eth-analytics-club.webp",
+      width: 115,
+      height: 143,
+    },
+    partnership: { tier: "supporter", category: "Initiatives" },
+  }),
+  defineOrganization({
+    key: "flower-labs",
+    name: "Flower Labs",
+    href: "https://flower.ai/",
+    logo: {
+      src: "/assets/partners/logos/flower-labs.webp",
+      width: 344,
+      height: 83,
+    },
+    partnership: { tier: "supporter", category: "Research Partners" },
+  }),
+  defineOrganization({
+    key: "gdsc",
+    name: "GDSC",
+    href: "https://gdsc.community.dev/technical-university-of-munich/",
+    logo: { src: "/assets/partners/logos/gdsc.webp", width: 152, height: 150 },
+    partnership: { tier: "supporter", category: "Initiatives" },
+  }),
+  defineOrganization({
+    key: "harvard-medical-school",
+    name: "Harvard Medical School",
+    href: "https://hms.harvard.edu/",
+    logo: {
+      src: "/assets/partners/logos/harvard-medical-school.webp",
+      width: 500,
+      height: 141,
+    },
+    partnership: { tier: "supporter", category: "Research Partners" },
+  }),
+  defineOrganization({
+    key: "heimkapital",
+    name: "Heimkapital",
+    href: "https://www.heimkapital.de/",
+    logo: {
+      src: "/assets/partners/logos/heimkapital.svg",
+      width: 142,
+      height: 23,
+    },
+    partnership: { tier: "supporter", category: "Industry Partners" },
+  }),
+  defineOrganization({
+    key: "helmholtz",
+    name: "Helmholtz",
+    href: "https://www.helmholtz.de/",
+    logo: {
+      src: "/assets/partners/logos/helmholtz.webp",
+      width: 500,
+      height: 66,
+    },
+    partnership: { tier: "supporter", category: "Research Partners" },
+  }),
+  defineOrganization({
+    key: "infineon",
+    name: "Infineon",
+    href: "https://www.infineon.com/cms/de/",
+    logo: {
+      src: "/assets/partners/logos/infineon.webp",
+      width: 343,
+      height: 150,
+    },
+    partnership: { tier: "supporter", category: "Industry Partners" },
+  }),
+  defineOrganization({
+    key: "initiatives-for-humanity",
+    name: "Initiatives for Humanity",
+    href: "https://www.linkedin.com/company/initiatives-for-humanity/",
+    logo: {
+      src: "/assets/partners/logos/initiatives-for-humanity.webp",
+      width: 176,
+      height: 72,
+    },
+    partnership: { tier: "supporter", category: "Initiatives" },
+  }),
+  defineOrganization({
+    key: "itcs",
+    name: "ITCS",
+    href: "https://it-cs.io/",
+    logo: { src: "/assets/partners/logos/itcs.webp", width: 157, height: 150 },
+    partnership: { tier: "supporter", category: "Industry Partners" },
+  }),
+  defineOrganization({
+    key: "klinikum-rechts-der-isar",
+    name: "Klinikum rechts der Isar",
+    href: "https://www.mri.tum.de/",
+    logo: {
+      src: "/assets/partners/logos/klinikum-rechts-der-isar.svg",
+      width: 1024,
+      height: 456,
+    },
+    partnership: { tier: "supporter", category: "Research Partners" },
+  }),
+  defineOrganization({
+    key: "knust-coe-ic",
+    name: "KNUST CoE IC",
+    href: "https://www.linkedin.com/company/knust-coe-ic/about/",
+    logo: {
+      src: "/assets/partners/logos/knust-coe-ic.webp",
+      width: 120,
+      height: 125,
+      symbolOnly: true,
+    },
+    partnership: { tier: "supporter", category: "Initiatives" },
+  }),
+  defineOrganization({
+    key: "lmu",
+    name: "LMU",
+    href: "https://www.lmu.de/",
+    logo: { src: "/assets/partners/logos/lmu.webp", width: 316, height: 150 },
+    partnership: { tier: "supporter", category: "Research Partners" },
+  }),
+  defineOrganization({
+    key: "mcml",
+    name: "MCML",
+    href: "https://www.mcml.ai",
+    logo: { src: "/assets/partners/logos/mcml.webp", width: 500, height: 136 },
+    partnership: { tier: "supporter", category: "Initiatives" },
+  }),
+  defineOrganization({
+    key: "mi4people",
+    name: "MI4People",
+    href: "https://de.mi4people.org/",
+    logo: {
+      src: "/assets/partners/logos/mi4people.webp",
+      width: 150,
+      height: 150,
+      symbolOnly: true,
+    },
+    partnership: { tier: "supporter", category: "Research Partners" },
+  }),
+  defineOrganization({
+    key: "microsoft",
+    name: "Microsoft",
+    href: "https://www.microsoft.com/de-de/about",
+    logo: {
+      src: "/assets/partners/logos/microsoft.webp",
+      width: 500,
+      height: 106,
+    },
+    partnership: { tier: "supporter", category: "Technical Partners" },
+  }),
+  defineOrganization({
+    key: "ministry-for-digital-affairs",
+    name: "Bavarian State Ministry for Digital Affairs",
+    href: "https://www.stmd.bayern.de",
+    logo: {
+      src: "/assets/partners/logos/ministry-for-digital-affairs.svg",
+      width: 484,
+      height: 139,
+    },
+    partnership: { tier: "supporter", category: "Industry Partners" },
+  }),
+  defineOrganization({
+    key: "netlight",
+    name: "Netlight",
+    href: "https://www.netlight.com",
+    logo: {
+      src: "/assets/partners/logos/netlight.webp",
+      width: 500,
+      height: 126,
+    },
+    partnership: { tier: "supporter", category: "Industry Partners" },
+  }),
+  defineOrganization({
+    key: "qsummit",
+    name: "QSummit",
+    href: "https://q-summit.com",
+    logo: {
+      src: "/assets/partners/logos/qsummit.webp",
+      width: 168,
+      height: 150,
+    },
+    partnership: { tier: "supporter", category: "Initiatives" },
+  }),
+  defineOrganization({
+    key: "rohde-schwarz",
+    name: "Rohde & Schwarz",
+    href: "https://www.rohde-schwarz.com/de",
+    logo: {
+      src: "/assets/partners/logos/rohde-schwarz.webp",
+      width: 500,
+      height: 101,
+    },
+    partnership: { tier: "supporter", category: "Industry Partners" },
+  }),
+  defineOrganization({
+    key: "siemens",
+    name: "Siemens",
+    href: "https://www.siemens.com/de/de.html",
+    logo: {
+      src: "/assets/partners/logos/siemens.svg",
+      width: 1000,
+      height: 159,
+    },
+    partnership: { tier: "supporter", category: "Industry Partners" },
+  }),
+  defineOrganization({
+    key: "speedinvest",
+    name: "Speedinvest",
+    href: "https://www.speedinvest.com/",
+    logo: {
+      src: "/assets/partners/logos/speedinvest.webp",
+      width: 242,
+      height: 150,
+    },
+    partnership: { tier: "supporter", category: "Venture Capital" },
+  }),
+  defineOrganization({
+    key: "start-munich",
+    name: "Start Munich",
+    href: "https://www.startmunich.de/",
+    logo: {
+      src: "/assets/partners/logos/start-munich.webp",
+      width: 331,
+      height: 150,
+    },
+    partnership: { tier: "supporter", category: "Initiatives" },
+  }),
+  defineOrganization({
+    key: "tensordyne",
+    name: "Tensordyne",
+    href: "https://www.tensordyne.ai",
+    logo: {
+      src: "/assets/partners/logos/tensordyne.webp",
+      width: 500,
+      height: 36,
+    },
+    partnership: { tier: "supporter", category: "Industry Partners" },
+  }),
+  defineOrganization({
+    key: "tum-venture-labs",
+    name: "TUM Venture Labs",
+    href: "https://www.tum-venture-labs.de",
+    logo: {
+      src: "/assets/partners/logos/tum-venture-labs.webp",
+      width: 464,
+      height: 80,
+    },
+    partnership: { tier: "supporter", category: "Industry Partners" },
+  }),
+  defineOrganization({
+    key: "unternehmertum",
+    name: "UnternehmerTUM",
+    href: "https://www.unternehmertum.de/",
+    logo: {
+      src: "/assets/partners/logos/unternehmertum.webp",
+      width: 250,
+      height: 150,
+    },
+    partnership: { tier: "supporter", category: "Industry Partners" },
+  }),
+  defineOrganization({
+    key: "vercel",
+    name: "Vercel",
+    href: "https://vercel.com/",
+    logo: {
+      src: "/assets/partners/logos/vercel.webp",
+      width: 500,
+      height: 100,
+    },
+    partnership: { tier: "supporter", category: "Technical Partners" },
   }),
 
   // Where alumni go (beyond the partners above)
@@ -392,6 +804,7 @@ export const organizations: readonly Organization[] = [
   defineOrganization({
     key: "cdtm",
     name: "CDTM",
+    href: "https://www.cdtm.de/",
     logo: { src: "/assets/e-lab/partners/cdtm.webp", width: 128, height: 64 },
     logoOnDark: {
       src: "/assets/events/hosts/cdtm.svg",
@@ -399,20 +812,25 @@ export const organizations: readonly Organization[] = [
       height: 64,
       aspectRatio: 1.32,
     },
+    partnership: { tier: "supporter", category: "Initiatives" },
   }),
   defineOrganization({
     key: "ewor",
     name: "EWOR",
+    href: "https://www.ewor.com/",
     logo: { src: "/assets/e-lab/partners/ewor.webp", width: 128, height: 64 },
+    partnership: { tier: "supporter", category: "Venture Capital" },
   }),
   defineOrganization({
     key: "uvc-partners",
     name: "UVC Partners",
+    href: "https://www.uvcpartners.com/",
     logo: {
       src: "/assets/e-lab/partners/uvc-partners.webp",
       width: 128,
       height: 64,
     },
+    partnership: { tier: "supporter", category: "Venture Capital" },
   }),
   defineOrganization({
     key: "google-cloud",
@@ -452,32 +870,49 @@ export const organizations: readonly Organization[] = [
   defineOrganization({
     key: "bkw",
     name: "BKW",
+    href: "https://www.bkw.de/de",
+    logo: { src: "/assets/partners/logos/bkw.webp", width: 500, height: 108 },
     logoOnDark: {
       src: "/assets/events/hosts/bkw.svg",
       width: 1130,
       height: 271,
       aspectRatio: 4.162,
     },
+    partnership: { tier: "supporter", category: "Industry Partners" },
   }),
   defineOrganization({
     key: "hugging-face",
     name: "Hugging Face",
+    href: "https://huggingface.co/",
+    logo: {
+      src: "/assets/partners/logos/hugging-face.webp",
+      width: 500,
+      height: 121,
+    },
     logoOnDark: {
       src: "/assets/events/hosts/hugging-face.svg",
       width: 866,
       height: 192,
       aspectRatio: 4.516,
     },
+    partnership: { tier: "supporter", category: "Technical Partners" },
   }),
   defineOrganization({
     key: "lovable",
     name: "Lovable",
+    href: "https://lovable.dev/",
+    logo: {
+      src: "/assets/partners/logos/lovable.svg",
+      width: 911,
+      height: 155,
+    },
     logoOnDark: {
       src: "/assets/events/hosts/lovable.svg",
       width: 950,
       height: 173,
       aspectRatio: 5.495,
     },
+    partnership: { tier: "supporter", category: "Technical Partners" },
   }),
   defineOrganization({
     key: "manage-and-more",
@@ -502,22 +937,32 @@ export const organizations: readonly Organization[] = [
   defineOrganization({
     key: "n8n",
     name: "n8n",
+    href: "https://n8n.io/",
+    logo: { src: "/assets/partners/logos/n8n.svg", width: 296, height: 80 },
     logoOnDark: {
       src: "/assets/events/hosts/n8n.svg",
       width: 295,
       height: 80,
       aspectRatio: 3.684,
     },
+    partnership: { tier: "supporter", category: "Technical Partners" },
   }),
   defineOrganization({
     key: "project-a",
     name: "Project A",
+    href: "https://www.project-a.vc/",
+    logo: {
+      src: "/assets/partners/logos/project-a.webp",
+      width: 425,
+      height: 150,
+    },
     logoOnDark: {
       src: "/assets/events/hosts/project-a.svg",
       width: 180,
       height: 45,
       aspectRatio: 4.017,
     },
+    partnership: { tier: "supporter", category: "Venture Capital" },
   }),
   defineOrganization({
     key: "red-bull",
@@ -552,6 +997,36 @@ export const organizations: readonly Organization[] = [
 ];
 
 const byKey = new Map(organizations.map((entry) => [entry.key, entry]));
+
+/** Every partner: the organisations with a partnership. */
+export const partnerOrganizations: readonly Organization[] =
+  organizations.filter(({ partnership }) => partnership);
+
+/**
+ * The launch brief's order within each tier, by organisation key: the
+ * directory's tiebreak after "leads its tier". Partners not listed follow
+ * alphabetically.
+ */
+export const partnerLaunchOrder: readonly string[] = [
+  "openai",
+  "google",
+  "anthropic",
+  "hudson-river-trading",
+  "jetbrains",
+  "unite",
+  "spherecast",
+  "dryft",
+  "reply",
+  "mutagent",
+  "nvidia",
+  "entire-io",
+  "mckinsey-company",
+  "jane-street",
+  "bmw",
+  "aws",
+  "amd",
+  "ibm",
+];
 
 /**
  * The organisation with `key`. Throws on an unknown key: code lists name

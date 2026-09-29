@@ -2,11 +2,10 @@ import { evaluate, parse } from "groq-js";
 import { describe, expect, test } from "vitest";
 import {
   EVENTS_QUERY,
-  PARTNERS_QUERY,
   PUBLIC_EVENTS_QUERY,
+  PUBLIC_PARTNER_ORGANIZATIONS_QUERY,
   PUBLIC_PARTNERS_QUERY,
   PUBLIC_RESEARCH_QUERY,
-  RESEARCH_PARTNERS_QUERY,
   RESEARCH_QUERY,
 } from "@/lib/sanity-queries";
 
@@ -14,29 +13,6 @@ async function run(query: string, dataset: unknown[]) {
   const value = await evaluate(parse(query), { dataset });
   return value.get();
 }
-
-test("partner query preserves legacy fields while exposing optional wall settings", async () => {
-  const [legacy, current] = await run(PARTNERS_QUERY, [
-    {
-      _id: "legacy",
-      _type: "partner",
-      name: "IBM",
-      category: "Research Partners",
-    },
-    {
-      _id: "current",
-      _type: "partner",
-      name: "Google",
-      tier: "gold",
-      featured: true,
-    },
-  ]);
-  expect(legacy.id).toBe("legacy");
-  expect(legacy.category).toBe("Research Partners");
-  expect(legacy.tier).toBeNull();
-  expect(current.tier).toBe("gold");
-  expect(current.featured).toBe(true);
-});
 
 type TestEvent = {
   id: string;
@@ -118,17 +94,6 @@ test("research query: keywords stay an array, description falls back", async () 
   expect(bare.keywords).toStrictEqual([]);
 });
 
-test("research partners query filters the category in GROQ", async () => {
-  const partners = await run(RESEARCH_PARTNERS_QUERY, [
-    { _id: "a", _type: "partner", name: "IBM", category: "Research Partners" },
-    { _id: "b", _type: "partner", name: "Acme", category: "Industry" },
-    { _id: "c", _type: "partner", name: "Legacy" },
-  ]);
-  expect(partners.map((partner: { id: string }) => partner.id)).toStrictEqual([
-    "a",
-  ]);
-});
-
 test("the page event query no longer fetches the unused detail text", async () => {
   const [event] = await run(EVENTS_QUERY, [
     {
@@ -193,12 +158,79 @@ describe("public API query shapes are frozen", () => {
     );
   });
 
+  const partnerKeys = [
+    "category",
+    "featured",
+    "id",
+    "image",
+    "link",
+    "name",
+    "tier",
+  ].sort();
+
   test("partners keep their keys", async () => {
     const [partner] = await run(PUBLIC_PARTNERS_QUERY, [
       { _id: "p", _type: "partner", name: "IBM" },
     ]);
-    expect(Object.keys(partner).sort()).toStrictEqual(
-      ["category", "featured", "id", "image", "link", "name", "tier"].sort(),
-    );
+    expect(Object.keys(partner).sort()).toStrictEqual(partnerKeys);
+  });
+
+  test("partner organisations answer in the same shape, with the old partner ids", async () => {
+    const partners = await run(PUBLIC_PARTNER_ORGANIZATIONS_QUERY, [
+      {
+        _id: "image-logo",
+        _type: "sanity.imageAsset",
+        url: "https://cdn/x.png",
+      },
+      {
+        _id: "organization-ibm",
+        _type: "organization",
+        key: "ibm",
+        name: "IBM",
+        href: "https://www.ibm.com/",
+        logo: { asset: { _type: "reference", _ref: "image-logo" } },
+        partnerTier: "bronze",
+        partnerCategory: "Research Partners",
+        legacyPartnerId: "XNCTBM8X9vP2N4tjVziXsW",
+      },
+      {
+        _id: "organization-jetbrains",
+        _type: "organization",
+        key: "jetbrains",
+        name: "JetBrains",
+        partnerTier: "gold",
+        partnerFeatured: true,
+      },
+      {
+        _id: "organization-meta",
+        _type: "organization",
+        key: "meta",
+        name: "Meta",
+      },
+    ]);
+    expect(partners).toHaveLength(2);
+    for (const partner of partners) {
+      expect(Object.keys(partner).sort()).toStrictEqual(partnerKeys);
+    }
+    expect(partners).toStrictEqual([
+      {
+        id: "XNCTBM8X9vP2N4tjVziXsW",
+        name: "IBM",
+        link: "https://www.ibm.com/",
+        image: "https://cdn/x.png",
+        category: "Research Partners",
+        tier: "bronze",
+        featured: null,
+      },
+      {
+        id: "organization-jetbrains",
+        name: "JetBrains",
+        link: null,
+        image: null,
+        category: null,
+        tier: "gold",
+        featured: true,
+      },
+    ]);
   });
 });

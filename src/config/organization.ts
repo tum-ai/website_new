@@ -13,6 +13,18 @@ export const organizationFacts = {
   majors: 20,
   universities: 30,
   nationalities: 35,
+  /**
+   * Share of applicants a recruiting round accepts, in percent with one
+   * decimal. /partners shows it as a figure ("2.3%") and, rounded to a
+   * whole percent ({@link acceptanceRateRoundedOf}), in its "cracked …%"
+   * headings.
+   */
+  acceptanceRate: 2.3,
+  /**
+   * TUM.ai's LinkedIn audience, a lower bound. /partners shows it in
+   * thousands ({@link linkedinAudienceLabelOf}): "20k+".
+   */
+  linkedinAudience: 20000,
 } as const;
 
 /**
@@ -35,6 +47,25 @@ export function officialMembersOf(
   facts: Pick<OrganizationFacts, "activeMembers" | "alumni">,
 ): number {
   return facts.activeMembers + facts.alumni;
+}
+
+/**
+ * The acceptance rate as a whole percent, for copy that rounds it ("the
+ * cracked 2%" for 2.3).
+ */
+export function acceptanceRateRoundedOf(acceptanceRate: number): number {
+  return Math.round(acceptanceRate);
+}
+
+/**
+ * The LinkedIn audience in thousands, rounded down because it is shown as a
+ * lower bound with "+": "20k" for 20000 and for 20999. Below a thousand, the
+ * count itself.
+ */
+export function linkedinAudienceLabelOf(audience: number): string {
+  return audience >= 1000
+    ? `${Math.floor(audience / 1000)}k`
+    : String(audience);
 }
 
 /** {@link officialMembersOf} the code facts; per render, derive it from `getSiteFacts()`. */

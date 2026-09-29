@@ -53,7 +53,7 @@ export const CAMPAIGNS_QUERY =
   endDate,
   endTime,
   headerCta{ variant, label, notifyUrl, yieldsToRecruiting },
-  featuredEventId
+  "featuredEventId": featuredEvent._ref
 }`);
 
 type Program = "membership" | "e-lab";
@@ -209,8 +209,9 @@ export const getCampaigns = cache(
 
 /**
  * The `_id` of the `event` a running campaign features at `now`
- * (the render clock by default), or `null`. No page shows a featured event
- * yet; this is the getter for the section that will.
+ * (the render clock by default), or `null`. /events pins that event first
+ * among its upcoming events and in its closing band (`pinFeaturedEvent`),
+ * as long as it is upcoming.
  */
 export async function getFeaturedEventId(
   now: Date = getCmsNow(),

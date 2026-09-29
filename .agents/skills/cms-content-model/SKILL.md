@@ -10,7 +10,9 @@ One dataset, `NEXT_PUBLIC_SANITY_DATASET` (`redesign` for the new site), two rec
 
 - **The old site's types** (`event`, `partner`, `research`; `redesign` holds copies of the
   documents in `production`, which the old site on `main` reads): steps 1 to 7 below. Never add
-  a type to `schemas/index.ts`: the Studio registers those on `production` too.
+  a type to `schemas/index.ts`: the Studio registers those on `production` too. The new site no
+  longer reads `partner`: a partner is an `organization` with a `partnerTier` (see "Partners"
+  below), and the Studio hides `partner` outside `production`.
 - **Page content types** (content moving out of code: FAQs, campaigns, logos, people, copy): the
   "Content slices" section at the end. The Studio registers them on every dataset except
   `production`.
@@ -21,7 +23,7 @@ Change them in this order and keep each step green.
 
 ## 1. Schema
 
-Edit an event, partner or research field in `src/sanity/schemas/` (`defineType`, `defineField`;
+Edit an event or research field in `src/sanity/schemas/` (`defineType`, `defineField`;
 registered in `src/sanity/schemas/index.ts`). New document types are page content types instead
 (see "Content slices"). Enumerated fields use `options.list` so TypeGen emits a union. Check it
 in the Studio: `pnpm dev`, then `/studio` (needs the Sanity env vars from Vercel;
@@ -69,7 +71,9 @@ to `now`). Fixtures use shipped `/assets/...` files, neutral links and no person
   and missing-field cases visibly (for example `EmptyState` or a brand placeholder).
 - `/api/getNotes` (events), `/api/getPartners`, `/api/getResearch` are a public API used outside
   this repo, with their own frozen `PUBLIC_*` queries: additions are fine, but don't remove or
-  rename response fields without a migration note in the PR.
+  rename response fields without a migration note in the PR. `/api/getPartners` has two queries
+  in the same shape (`PUBLIC_PARTNER_ORGANIZATIONS_QUERY` from the partner organisations,
+  `PUBLIC_PARTNERS_QUERY` from the old `partner` documents): change both together.
 
 ## 7. Verify
 
@@ -83,6 +87,19 @@ that show the data.
 
 Check the draft preview when the change affects what editors see: open `/studio`, use
 Presentation, edit a draft and confirm the page updates (needs `SANITY_API_READ_TOKEN`).
+
+## Partners
+
+A partner is an `organization` with a `partnerTier` (the schema's "Partnership" group:
+`partnerTier`, `partnerFeatured`, `partnerCategory`, hidden `legacyPartnerId`). The code fallback
+is the `partnership` of the organisations in `features/partners/data/organizations.ts`;
+`getPartners()` (the organisation slice, `features/partners/server.ts`) serves the directory
+order to /partners, the homepage and /research. A new partner field goes on `organization`
+(schema, `ORGANIZATION_PROJECTION` and `toOrganization` in `lib/organization-content.ts`,
+`buildOrganizationDocument`, `partnerOf` in `features/partners/partner-directory.ts`), and into
+`scripts/sanity/partner-migration.ts` if the old `partner` documents hold it. Moving the copied
+`partner` documents onto organisations is `pnpm sanity:migrate-partners --dataset redesign` (a
+dry run; `--apply` is a maintainer's launch step, like the backfill's).
 
 ## Content slices (moving hard-coded content into the CMS)
 
@@ -123,7 +140,7 @@ proves the CMS path renders the same.
    (`./fields.ts`); an `order` number for editor-sorted lists. Register it in
    `schemas/content/index.ts` (singletons also in `contentSingletons`: one document whose `_id`
    is the type name). Never in `schemas/index.ts`: those types are registered on `production`
-   too. A campaign's featured event is the event's `_id` as a string, so it never blocks
+   too. A campaign's featured event is a weak reference, so it never blocks
    deleting the event.
 3. **Slice.** `src/features/<x>/content.ts` (a second slice in the same feature:
    `<topic>-content.ts`; facts: `src/config/<x>-content.ts`), starting with

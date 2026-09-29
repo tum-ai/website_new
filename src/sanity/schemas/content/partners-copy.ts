@@ -76,7 +76,9 @@ const recommendationField = (name: string, title: string) =>
         title: "Description",
         type: "text",
         rows: 5,
-        validation: (Rule) => Rule.max(700),
+        description: placeholderHelp,
+        validation: (Rule) =>
+          Rule.max(700).custom((value) => validatePlaceholders(value)),
       }),
     ],
   });
@@ -223,13 +225,22 @@ export const partnersCopyType = defineType({
               validation: (Rule) => Rule.required(),
             }),
             text("name", "Label", "Beside the icon: “Talent”.", 30),
-            text("title", "Title"),
+            defineField({
+              name: "title",
+              title: "Title",
+              type: "string",
+              description: placeholderHelp,
+              validation: (Rule) =>
+                Rule.max(80).custom((value) => validatePlaceholders(value)),
+            }),
             defineField({
               name: "description",
               title: "Description",
               type: "text",
               rows: 3,
-              validation: (Rule) => Rule.max(300),
+              description: placeholderHelp,
+              validation: (Rule) =>
+                Rule.max(300).custom((value) => validatePlaceholders(value)),
             }),
           ],
           preview: { select: { title: "title", subtitle: "name" } },
@@ -252,7 +263,7 @@ export const partnersCopyType = defineType({
               name: "value",
               title: "Figure",
               type: "string",
-              description: `Counts up on the page: “2100+”, “2.3%”. ${placeholderHelp}`,
+              description: `Counts up on the page: “2100+”, “{{org.acceptanceRate}}%”. ${placeholderHelp}`,
               validation: (Rule) =>
                 Rule.required().custom((value) => validatePlaceholders(value)),
             }),
@@ -444,7 +455,13 @@ export const partnersCopyType = defineType({
           }),
         ]),
         band("people", "People", [
-          line("title", "Title", 30),
+          copyString({
+            name: "title",
+            title: "Title",
+            max: 50,
+            required: false,
+            placeholders: true,
+          }),
           lines("lead", "Lead", { max: 32, maxLines: 2 }),
           line("statLabel", "Under the member count", 30),
           lines("tagline", "Tagline", { max: 28, maxLines: 2 }),

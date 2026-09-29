@@ -35,6 +35,7 @@ import {
 const VENTURE_TRACE_QUERY = defineQuery(`*[_id == "ventureTrace"][0]{
   "startupId": venture->key,
   "testimonialId": person->key,
+  "founderContext": person->context,
   cohort,
   now,
   "after": milestones[]{ text, source }
@@ -92,19 +93,27 @@ export function getTestimonialCards(): Promise<TestimonialCard[]> {
 /**
  * The traced venture as a whole: the CMS trace when it is complete (the
  * venture and the founder resolve to keys, a cohort, at least one milestone
- * with an https source), otherwise the code trace. Never mixed: each field
- * describes the one venture, so the code's "and now ..." or milestones
- * under another startup would tell the wrong story.
+ * with an https source) and its cohort is the founder's testimonial
+ * context, otherwise the code trace. Never mixed: each field describes the
+ * one venture, so the code's "and now ..." or milestones under another
+ * startup would tell the wrong story, and a lead naming another cohort than
+ * the founder's quote card would contradict it.
  */
 function selectTracedVenture(result: VENTURE_TRACE_QUERY_RESULT) {
   if (!result) return null;
-  const { startupId, testimonialId, cohort, now } = result;
+  const { startupId, testimonialId, founderContext, cohort, now } = result;
   const after = (result.after ?? []).flatMap(({ text, source }) =>
     text && source && isHttpsUrl(source) ? [{ text, source }] : [],
   );
   if (!startupId || !testimonialId || !cohort || after.length === 0) {
     console.warn(
       "[cms-content] The E-Lab traced venture needs a venture, a founder, a cohort and a sourced milestone; rendering the code trace.",
+    );
+    return null;
+  }
+  if (founderContext?.trim() !== cohort.trim()) {
+    console.warn(
+      `[cms-content] The E-Lab traced venture names the cohort "${cohort}", but its founder's testimonial says "${founderContext ?? ""}"; rendering the code trace.`,
     );
     return null;
   }

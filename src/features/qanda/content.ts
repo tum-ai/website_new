@@ -2,6 +2,7 @@ import "server-only";
 
 import { defineQuery } from "next-sanity";
 import { getContentTokens } from "@/config/content-tokens";
+import { getJourneyStages } from "@/features/community/server";
 import type { BackfillDocument } from "@/lib/cms-backfill";
 import { loadContent } from "@/lib/cms-content";
 import { fillCmsCopy, fillCodeCopy } from "@/lib/content-copy";
@@ -16,6 +17,7 @@ import {
   type QandaEntry,
   qandaCopyTemplate,
 } from "./data/qanda";
+import { withJourneyTracks } from "./journey-tracks";
 
 /**
  * The /qanda content slice: the `qandaCopy` singleton (hero, mission
@@ -121,7 +123,9 @@ function withMarkableSpans(content: QandaContent): QandaContent {
 /**
  * The /qanda copy and questions: the CMS `qandaCopy` and `qanda` entries
  * over the code copy when the source is `sanity`, otherwise the code copy.
- * Spans are guaranteed to mark the passage.
+ * Spans are guaranteed to mark the passage. The member-journey answer lists
+ * the journey's tracks as the same source renders them on /community
+ * (`withJourneyTracks`), so the entry itself holds only its opening.
  */
 export async function getQandaContent(): Promise<QandaContent> {
   const tokens = await getContentTokens();
@@ -139,7 +143,11 @@ export async function getQandaContent(): Promise<QandaContent> {
       faqs: selectFaqs(faqs, tokens),
     }),
   });
-  return withMarkableSpans(content);
+  // After the Q&A read, not beside it: tests that mock the CMS module see
+  // only the first of concurrent imports (docs/testing.md).
+  const journey = await getJourneyStages(tokens);
+  const marked = withMarkableSpans(content);
+  return { ...marked, faqs: withJourneyTracks(marked.faqs, journey) };
 }
 
 /** The /qanda copy and questions as documents for `pnpm sanity:backfill`. */
