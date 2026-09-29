@@ -8,6 +8,7 @@ import type { HeadingLevel } from "./types";
  * in the DOM as `hidden="until-found"`, so find-in-page and crawlers still
  * reach the answers. No "use client" here: the Base UI parts are client
  * components already, so server pages can render an accordion directly.
+ * FaqList (./faq-list) composes these parts into a deep-linkable list.
  */
 
 /** Props for {@link Accordion}: Base UI's root props. */
@@ -122,49 +123,5 @@ export function AccordionPanel({
         {children}
       </div>
     </BaseAccordion.Panel>
-  );
-}
-
-/** One entry of a {@link FaqList}. */
-export type FaqItem = {
-  /** The question; also the item's key, so keep it unique in a list. */
-  question: string;
-  /** The answer, as text or markup. */
-  answer: ReactNode;
-};
-
-/** Props for {@link FaqList}. */
-export type FaqListProps = {
-  /** Questions and answers. Keep the data in the feature's data/ folder. */
-  items: FaqItem[];
-  /**
-   * Questions whose answers start open, e.g. `[items[0].question]` to open
-   * the first. Each item's value is its question.
-   */
-  defaultValue?: string[];
-  /** Heading level of each question. Default `h3`. */
-  headingAs?: HeadingLevel;
-  /** Classes merged over the accordion root. */
-  className?: string;
-};
-
-/** A question and answer list rendered as an accordion. */
-export function FaqList({
-  items,
-  defaultValue,
-  headingAs,
-  className,
-}: FaqListProps) {
-  return (
-    <Accordion defaultValue={defaultValue} className={className}>
-      {items.map((item) => (
-        <AccordionItem key={item.question} value={item.question}>
-          <AccordionTrigger headingAs={headingAs}>
-            {item.question}
-          </AccordionTrigger>
-          <AccordionPanel>{item.answer}</AccordionPanel>
-        </AccordionItem>
-      ))}
-    </Accordion>
   );
 }

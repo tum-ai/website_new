@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
-import { type FaqItem, FaqList, type FaqListProps } from "./accordion";
 import { Container } from "./container";
+import { type FaqItem, FaqList, type FaqListProps } from "./faq-list";
 import { Reveal } from "./reveal";
 import { Section, type Tone } from "./section";
 import { Eyebrow } from "./typography";
@@ -12,9 +12,12 @@ export type FaqSectionProps = {
   items: FaqItem[];
   /** Section title (an `h2`). Default "Frequently asked questions". */
   title?: ReactNode;
-  /** Label above the title. Default "FAQ". */
+  /** Label above the title, when the title needs one. Default none. */
   eyebrow?: ReactNode;
-  /** Editorial counter in the eyebrow, e.g. 2 → "02". */
+  /**
+   * @deprecated No longer rendered: pages don't number their sections. Drop
+   * the prop; it is removed in the next release.
+   */
   index?: string | number;
   /** Questions whose answers start open (see {@link FaqListProps}). */
   defaultValue?: FaqListProps["defaultValue"];
@@ -34,8 +37,7 @@ export type FaqSectionProps = {
 export function FaqSection({
   items,
   title = "Frequently asked questions",
-  eyebrow = "FAQ",
-  index,
+  eyebrow,
   defaultValue,
   lead,
   aside,
@@ -55,8 +57,8 @@ export function FaqSection({
       <Container className="grid gap-12 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.4fr)] lg:gap-20">
         <div className="lg:sticky lg:top-(--header-offset) lg:self-start">
           <Reveal>
-            <Eyebrow index={index}>{eyebrow}</Eyebrow>
-            <h2 id={titleId} className="mt-5 text-display-md text-fg">
+            {eyebrow ? <Eyebrow className="mb-5">{eyebrow}</Eyebrow> : null}
+            <h2 id={titleId} className="text-display-md text-fg">
               {title}
             </h2>
             {lead ? (

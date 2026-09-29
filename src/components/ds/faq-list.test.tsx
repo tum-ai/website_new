@@ -1,8 +1,9 @@
 import { axe } from "@test/axe";
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { FaqList } from "./accordion";
+import { FaqList } from "./faq-list";
 import { FaqSection } from "./faq-section";
 import { stubMatchMedia, stubObservers } from "./testing";
 
@@ -85,9 +86,106 @@ describe("FaqList", () => {
     ).toEqual(["Who can apply?", "Does it cost anything?"]);
   });
 
+  test("keeps one answer open at a time", async () => {
+    const user = userEvent.setup();
+    render(<FaqList items={items} defaultValue={[items[0].question]} />);
+    const [first, second] = screen.getAllByRole("button");
+    await user.click(second);
+    expect(second).toHaveAttribute("aria-expanded", "true");
+    expect(first).toHaveAttribute("aria-expanded", "false");
+  });
+
   test("has no axe violations", async () => {
     const { container } = render(<FaqList items={items} />);
     expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe("FaqList deep links", () => {
+  const linked = [
+    { ...items[0], id: "who" },
+    { ...items[1], id: "cost" },
+  ];
+
+  afterEach(() => {
+    window.history.replaceState(null, "", "/");
+  });
+
+  test("gives each item its anchor id", () => {
+    render(<FaqList items={linked} />);
+    const trigger = screen.getByRole("button", { name: "Who can apply?" });
+    expect(trigger.closest("#who")).not.toBeNull();
+  });
+
+  test("opens the item the URL fragment names on load", () => {
+    window.history.replaceState(null, "", "/#cost");
+    render(<FaqList items={linked} />);
+    expect(
+      screen.getByRole("button", { name: "Does it cost anything?" }),
+    ).toHaveAttribute("aria-expanded", "true");
+  });
+
+  test("opens an item when the fragment changes to it", () => {
+    render(<FaqList items={linked} defaultValue={["Who can apply?"]} />);
+    act(() => {
+      window.history.replaceState(null, "", "/#cost");
+      window.dispatchEvent(new HashChangeEvent("hashchange"));
+    });
+    expect(
+      screen.getByRole("button", { name: "Does it cost anything?" }),
+    ).toHaveAttribute("aria-expanded", "true");
+    expect(
+      screen.getByRole("button", { name: "Who can apply?" }),
+    ).toHaveAttribute("aria-expanded", "false");
+  });
+
+  test("lets the reader close the linked item again", async () => {
+    const user = userEvent.setup();
+    window.history.replaceState(null, "", "/#cost");
+    render(<FaqList items={linked} />);
+    const trigger = screen.getByRole("button", {
+      name: "Does it cost anything?",
+    });
+    await user.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+  });
+});
+
+describe("FaqList controlled", () => {
+  function Controlled({ onValueChange }: { onValueChange: () => void }) {
+    const [open, setOpen] = useState<string[]>([]);
+    return (
+      <>
+        <p data-testid="open">{open.join(",")}</p>
+        <FaqList
+          items={items}
+          value={open}
+          onValueChange={(next) => {
+            setOpen(next);
+            onValueChange();
+          }}
+        />
+      </>
+    );
+  }
+
+  test("reports each change and renders the value it is given", async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    render(<Controlled onValueChange={onValueChange} />);
+    const trigger = screen.getByRole("button", { name: "Who can apply?" });
+    await user.click(trigger);
+    expect(onValueChange).toHaveBeenCalledTimes(1);
+    expect(screen.getByTestId("open")).toHaveTextContent("Who can apply?");
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+  });
+
+  test("stays closed when the parent ignores the change", async () => {
+    const user = userEvent.setup();
+    render(<FaqList items={items} value={[]} onValueChange={() => {}} />);
+    const trigger = screen.getByRole("button", { name: "Who can apply?" });
+    await user.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
   });
 });
 
@@ -101,14 +199,15 @@ describe("FaqSection", () => {
     vi.unstubAllGlobals();
   });
 
-  test("numbers its eyebrow and opens the default answers", async () => {
+  test("opens the default answers under a bare title", async () => {
     const { container } = render(
       <FaqSection items={items} index={2} defaultValue={[items[0].question]} />,
     );
     const section = screen.getByRole("region", {
       name: "Frequently asked questions",
     });
-    expect(section).toHaveTextContent(/^02/);
+    // The deprecated counter and the old default eyebrow no longer render.
+    expect(section).toHaveTextContent(/^Frequently asked questions/);
     expect(
       screen.getByRole("button", { name: "Who can apply?" }),
     ).toHaveAttribute("aria-expanded", "true");

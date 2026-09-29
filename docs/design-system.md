@@ -156,7 +156,7 @@ Page patterns
 - `PageHero`: every page starts with one: a flat ink band (no aurora or grain). It accepts `eyebrow`, `title` (strings rise in word by word, and `<Highlight>` parts work), `lead`, `actions`, an optional `media` column, `children` (for stats or filters under the headline) and `classNames` slots. `emphasis="highlight"` sets the whole title in the tone's accent, as on the brand guide's section slides; keep the default when the title marks words with `<Highlight>`. `size="fit"` caps the title for long single words (the privacy page). It clears the fixed header.
 - `CtaBand`: closing call to action. `variant="panel"` is an inset ink panel; `variant="band"` is full bleed. Takes `children` and `classNames.footer`.
 - `CtaPanel`: the panel surface of `CtaBand` on its own (ink, aurora, grain, logomark), for places a whole band can't go, such as a bento cell.
-- `FaqSection`: sticky heading beside an accordion, with an eyebrow `index` and `defaultValue` (questions that start open). `FaqList` renders the accordion on its own and takes `defaultValue` too.
+- `FaqSection`: sticky heading beside an accordion, with `defaultValue` (questions that start open). No eyebrow by default; `index` is deprecated and no longer renders a counter. `FaqList` renders the accordion on its own (one answer open at a time) and takes `defaultValue` too, or `value` with `onValueChange` when a parent reacts to the open question. An item with an `id` is deep-linkable: a link to `#id` opens it, on load and on later fragment changes.
 - `Timeline`: a vertical rail that fills as you scroll (static under reduced motion). `alternate` zig-zags the items; `rail="dashed"`, `marker="number"` and `continuation` cover the E-Lab program.
 - `Steps`: a numbered process, with `rail` (`solid`, `dashed`, `none`), `marker` (`badge`, `dot`), an optional per-step `number` (e.g. "02A") and a `detail` line under the title (such as the step's dates). `layout="rows"` sets each step as a hairline row with the number beside it, for steps that are sentences.
 - `StatGrid`: numeric values count up when they scroll into view (sizes `sm`–`xl` on the `text-stat-*` tokens); strings render as they are, or count with `count`.
@@ -194,7 +194,7 @@ Content
 - `EmptyState`.
 
 Interactive (Base UI)
-- `Accordion` / `FaqList`: panels use `hidden="until-found"` so find-in-page still works.
+- `Accordion` / `FaqList`: panels use `hidden="until-found"` so find-in-page still works. `FaqList` is a client island (it listens for the URL fragment); the `Accordion` parts stay server-renderable.
 - `Tabs`, `TabsList`, `TabsTab`, `TabsPanel`: the active pill slides between tabs; on phones long labels wrap.
 - `Dialog`, `DialogTrigger`, `DialogContent` (`variant` `modal` or `fullscreen`, `size` `md`, `lg` or `xl`, `tone`), `DialogTitle`, `DialogDescription`, `DialogClose`. An open dialog makes the page inert (`useInertBackground`).
 - `Collapsible`, `CollapsibleTrigger`, `CollapsiblePanel`.
@@ -301,9 +301,13 @@ prop. When this table and the source disagree, the source wins: update the table
 | Prop | Type | Description |
 | --- | --- | --- |
 | `items` | `FaqItem[]` | Questions and answers. Keep the data in the feature's data/ folder. |
-| `defaultValue?` | `string[]` | Questions whose answers start open, e.g. `[items[0].question]` to open the first. Each item's value is its question. |
+| `defaultValue?` | `string[]` | Questions whose answers start open, e.g. `[items[0].question]` to open the first. Each item's value is its question. Ignored when `value` is set. |
+| `value?` | `string[]` | The open questions, for a list whose state lives in the parent (with `onValueChange`). Leave unset to let the list keep its own state. |
+| `onValueChange?` | `(value: string[]) => void` | Called with the open questions whenever the reader opens or closes one. |
 | `headingAs?` | `HeadingLevel` | Heading level of each question. Default `h3`. |
 | `className?` | `string` | Classes merged over the accordion root. |
+
+`FaqItem`: `question` (also the item's key), `answer` (text or markup) and an optional `id`, the item's anchor: a link to `#id` scrolls to the question and opens its answer.
 
 ### `Actions`
 
@@ -520,8 +524,8 @@ No props of its own; see the source file for the root element or Base UI part it
 | --- | --- | --- |
 | `items` | `FaqItem[]` | Questions and answers. Keep the data in the feature's data/ folder. |
 | `title?` | `ReactNode` | Section title (an `h2`). Default "Frequently asked questions". |
-| `eyebrow?` | `ReactNode` | Label above the title. Default "FAQ". |
-| `index?` | `string \| number` | Editorial counter in the eyebrow, e.g. 2 → "02". |
+| `eyebrow?` | `ReactNode` | Label above the title, when the title needs one. Default none. |
+| `index?` | `string \| number` | Deprecated: no longer rendered, as pages don't number their sections. Removed in the next release. |
 | `defaultValue?` | `string[]` | Questions whose answers start open (see `FaqListProps`). |
 | `lead?` | `ReactNode` | A sentence under the title. |
 | `aside?` | `ReactNode` | Extra content under the lead (e.g. a contact link). |

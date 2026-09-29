@@ -882,9 +882,16 @@ export function DesignSystemPage() {
         </div>
         <FaqList
           className="mt-16"
-          items={faqs.slice(0, 3)}
+          items={faqs.slice(0, 3).map((faq, index) => ({
+            ...faq,
+            id: `ds-faq-${index + 1}`,
+          }))}
           defaultValue={faqs[0] ? [faqs[0].question] : undefined}
         />
+        <p className="mt-6 text-fg-muted text-small">
+          Items with an <code>id</code> are deep-linkable:{" "}
+          <TextLink href="#ds-faq-3">open the third question</TextLink>.
+        </p>
         <Accordion className="mt-10">
           <AccordionItem value="parts">
             <AccordionTrigger headingAs="h4">
@@ -1211,10 +1218,9 @@ export function DesignSystemPage() {
       <FaqSection
         id="ds-faq"
         tone="mist"
-        index={9}
         items={faqs.slice(3, 6)}
         defaultValue={faqs[3] ? [faqs[3].question] : undefined}
-        lead="FaqSection: sticky heading column beside the accordion; an eyebrow index and the first answer open."
+        lead="FaqSection: sticky heading column beside the accordion, with the first answer open."
       />
 
       <CtaBand
