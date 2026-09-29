@@ -49,9 +49,7 @@ export const taskForceTemplates: readonly TaskForceTemplate[] = [
     description:
       "Biomedical AI research and community-building with partners across Munich.",
     detailedDescription:
-      "med.AI is a multidisciplinary team dedicated to advancing artificial intelligence in the medical domain. It brings together a biomedical AI community in Munich and works on research projects with Helmholtz Center Munich.",
-    // TODO(content): the partner is shown by its current name, Helmholtz
-    // Munich; the description above still says "Helmholtz Center Munich".
+      "med.AI is a multidisciplinary team dedicated to advancing artificial intelligence in the medical domain. It brings together a biomedical AI community in Munich and works on research projects with Helmholtz Munich.",
     work: {
       partner: "helmholtz-munich",
       items: [
