@@ -1,17 +1,28 @@
 /**
  * `pnpm sanity:backfill --dataset redesign [--apply [--overwrite]]`
  *
- * Turns today's code content into Sanity documents (every slice registered
- * in `slices.ts`) and writes them to `.sanity-backfill/<dataset>.ndjson`
- * (gitignored), with a count per type. Nothing leaves the machine unless
- * `--apply` is given: then it runs `sanity dataset import` with your CLI
- * login (`sanity login`), which uploads the `_sanityAsset` images.
+ * The one migration command for the new site's dataset. It writes
+ * `.sanity-backfill/<dataset>.ndjson` (gitignored) with a count per type:
+ *
+ * - today's code content as Sanity documents (every slice registered in
+ *   `slices.ts`), with their images as local files;
+ * - a copy of the old site's content: every published `event`, `partner`
+ *   and `research` document in `production`, read over the public API with
+ *   the same `_id`s, their images as CDN URLs, and the events' `hosts` from
+ *   the code (`production-copy.ts`).
+ *
+ * Nothing is written to Sanity unless `--apply` is given: then it runs
+ * `sanity dataset import` with your CLI login (`sanity login`), which
+ * uploads the `_sanityAsset` images into the target dataset.
  *
  * - `--apply` imports with `--missing`: it **creates** the documents the
  *   dataset lacks and leaves every existing one as it is, so running it
- *   again never touches what editors changed in the Studio.
- * - `--apply --overwrite` imports with `--replace`: every document with a
- *   backfill `_id` is **replaced by the code content**, discarding the
+ *   again never touches what editors changed in the Studio. A re-run right
+ *   before launch copies only the events, partners and research projects
+ *   added to `production` since; edits there to documents already copied
+ *   are not copied again (the new dataset is the source of truth).
+ * - `--apply --overwrite` imports with `--replace`: every document in the
+ *   file is **replaced**, code content and copies alike, discarding the
  *   editors' edits to it. Only for a dataset nobody has edited yet (or to
  *   deliberately reset it); the script warns before it starts.
  *
@@ -19,12 +30,12 @@
  * Ids come from explicit keys in the code data (`backfillId`), so a copy
  * edit in code finds the same document instead of adding a second one.
  *
- * `--dataset` is required and never the live dataset (`production` or the
- * configured `NEXT_PUBLIC_SANITY_DATASET`; `backfill-target.ts`): the old
- * site renders what is there. The script reads `.env.local` and `.env` like
- * Next (the Sanity CLI runs from `src/sanity` and would not find them) and
- * prints the project and dataset before it writes anything. See
- * docs/adr/0009-cms-content-source.md for the launch runbook.
+ * `--dataset` is required and never `production` (`backfill-target.ts`):
+ * the old site renders what is there, and the backfill only reads it. The
+ * script reads `.env.local` and `.env` like Next (the Sanity CLI runs from
+ * `src/sanity` and would not find them) and prints the project and dataset
+ * before it writes anything. See docs/adr/0009-cms-content-source.md for the
+ * launch runbook.
  */
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
@@ -32,6 +43,7 @@ import { join, relative } from "node:path";
 import { parseArgs } from "node:util";
 import { assetFileOf, collectSanityAssets } from "@/lib/cms-backfill";
 import { backfillTarget } from "./backfill-target";
+import { copyFromProduction } from "./production-copy";
 import { collectBackfill } from "./slices";
 
 const root = join(import.meta.dirname, "..", "..");
@@ -57,7 +69,14 @@ if (values.overwrite && !values.apply) {
   throw new Error("--overwrite only changes how --apply imports; add --apply.");
 }
 
-const documents = collectBackfill();
+if (!projectId) {
+  throw new Error(
+    "Set NEXT_PUBLIC_SANITY_PROJECT_ID (in .env.local): the backfill copies the old site's events, partners and research from that project.",
+  );
+}
+
+const copy = await copyFromProduction({ projectId });
+const documents = [...collectBackfill(), ...copy.documents];
 
 const seen = new Set<string>();
 const duplicates = documents
@@ -68,7 +87,10 @@ if (duplicates.length > 0) {
 }
 
 const assets = collectSanityAssets(documents);
+const cdnAssetPrefix = `image@https://cdn.sanity.io/images/${projectId}/`;
+const copiedAssets = assets.filter((asset) => asset.startsWith(cdnAssetPrefix));
 const missing = assets.filter((asset) => {
+  if (asset.startsWith(cdnAssetPrefix)) return false;
   const file = assetFileOf(asset);
   return !file || !existsSync(file);
 });
@@ -90,10 +112,11 @@ for (const { _type } of documents) {
 }
 const width = Math.max(...[...counts.keys()].map((type) => type.length), 6);
 const lines = [
-  `Backfill for project "${projectId ?? "(NEXT_PUBLIC_SANITY_PROJECT_ID unset)"}", dataset "${dataset}": ${relative(root, outFile)}`,
+  `Backfill for project "${projectId}", dataset "${dataset}": ${relative(root, outFile)}`,
   ...[...counts].map(([type, count]) => `  ${type.padEnd(width)}  ${count}`),
-  `  ${"assets".padEnd(width)}  ${assets.length} file(s) to upload`,
-  `  ${"total".padEnd(width)}  ${documents.length} document(s)`,
+  `  ${"assets".padEnd(width)}  ${assets.length} file(s) to upload: ${assets.length - copiedAssets.length} from public/, ${copiedAssets.length} copied from production`,
+  `  ${"total".padEnd(width)}  ${documents.length} document(s): ${documents.length - copy.documents.length} from code, ${copy.documents.length} copied from production`,
+  `  Event co-hosts: added to ${copy.hostsAdded} event(s)${copy.hostsKept ? `, kept on ${copy.hostsKept} that have their own` : ""}.`,
 ];
 process.stdout.write(`${lines.join("\n")}\n`);
 
@@ -104,20 +127,16 @@ if (!values.apply) {
   process.exit(0);
 }
 
-if (!projectId) {
-  throw new Error(
-    "Set NEXT_PUBLIC_SANITY_PROJECT_ID (in .env.local) before importing.",
-  );
-}
 const mode = values.overwrite ? "--replace" : "--missing";
 if (values.overwrite) {
   process.stderr.write(
     [
       "",
       "!!! --overwrite: every document above that already exists in",
-      `!!! "${dataset}" is REPLACED by the code content. Edits made in the`,
-      "!!! Studio to those documents are lost. Starting in 10 s; Ctrl+C unless",
-      "!!! nobody has edited this dataset yet or you mean to reset it.",
+      `!!! "${dataset}" is REPLACED by the code content or by the copy from`,
+      "!!! production. Edits made in the Studio to those documents are lost.",
+      "!!! Starting in 10 s; Ctrl+C unless nobody has edited this dataset yet",
+      "!!! or you mean to reset it.",
       "",
     ].join("\n"),
   );

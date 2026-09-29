@@ -37,8 +37,8 @@ type PastEvent = Omit<Event, "id" | "images" | "hosts"> & {
  * posters are square social graphics on the Sanity CDN), and descriptions are
  * shortened and free of names.
  *
- * TODO(content): enter these `hosts` in the Studio; the live documents don't
- * have the field yet.
+ * The live documents in `production` have no `hosts`: the backfill adds these
+ * to its copies of them in the new site's dataset ({@link liveEventHosts}).
  */
 const pastEvents: PastEvent[] = [
   {
@@ -270,6 +270,21 @@ const pastEvents: PastEvent[] = [
     poster: "/assets/homepage/Onboarding25.webp",
   },
 ];
+
+/**
+ * The co-hosts of the live events, with the title and start that identify
+ * each event: the `hosts` that `pnpm sanity:backfill` adds to its copies of
+ * the old site's events (scripts/sanity/production-copy.ts, which fails on
+ * an entry that matches no event). After the import, editors keep them in
+ * the Studio.
+ */
+export const liveEventHosts: readonly {
+  title: string;
+  event_date: string;
+  hosts: readonly string[];
+}[] = pastEvents.flatMap(({ title, event_date, hosts }) =>
+  hosts?.length ? [{ title, event_date, hosts }] : [],
+);
 
 const longDescription =
   "Join our E-Lab info session for an inside look at the program: who it is for, how it runs from day one to the final pitch, how to turn an idea into a real venture, and what it takes to get into top accelerators and raise funding. You can ask the team every question you have. Whether you already have a startup idea or just the drive to build something ambitious, this session gives you clarity on your next steps.";

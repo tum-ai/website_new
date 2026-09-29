@@ -1,13 +1,23 @@
 import { existsSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 import { assetFileOf, collectSanityAssets } from "@/lib/cms-backfill";
+import { liveEventHosts } from "@/lib/mock-cms";
 import { pinnedDocuments } from "@/sanity/content-structure";
+import { liveSchemaTypes } from "@/sanity/schemas";
 import {
   contentSchemaTypes,
   contentSingletons,
 } from "@/sanity/schemas/content";
 import { backfillTarget } from "../scripts/sanity/backfill-target";
+import {
+  copiedTypes,
+  copyFromProduction,
+  copyProductionDocuments,
+  imageAssetUrl,
+  type SourceDocument,
+} from "../scripts/sanity/production-copy";
 import { backfillSlices, collectBackfill } from "../scripts/sanity/slices";
+import productionFixture from "./fixtures/production-documents.json";
 
 /**
  * Every registered content slice's backfill (scripts/sanity/slices.ts) is
@@ -86,7 +96,7 @@ describe("the CMS backfill", () => {
     for (const id of ids) expect(id).toMatch(/^[a-zA-Z0-9][a-zA-Z0-9-]*$/);
   });
 
-  test("every type is a content workspace type, never a live dataset one", () => {
+  test("the code content is page content types only", () => {
     const unknown = documents
       .map(({ _type }) => _type)
       .filter((type) => !schemaByName.has(type));
@@ -151,23 +161,208 @@ describe("the backfill target", () => {
     expect(() => backfillTarget("Not a name", {})).toThrow(/dataset name/);
   });
 
-  test("never the live dataset, by name or by configuration", () => {
-    expect(() => backfillTarget("production", {})).toThrow(/live dataset/);
+  test("never production, the old site's dataset", () => {
+    expect(() => backfillTarget("production", {})).toThrow(/old site/);
     expect(() =>
-      backfillTarget("production", { NEXT_PUBLIC_SANITY_DATASET: "live" }),
-    ).toThrow(/live dataset/);
-    expect(() =>
-      backfillTarget("live", { NEXT_PUBLIC_SANITY_DATASET: "live" }),
-    ).toThrow(/live dataset/);
+      backfillTarget("production", { NEXT_PUBLIC_SANITY_DATASET: "redesign" }),
+    ).toThrow(/old site/);
   });
 
-  test("names the content dataset and the configured project", () => {
+  test("names the new site's dataset and the configured project", () => {
     expect(
-      backfillTarget("redesign", { NEXT_PUBLIC_SANITY_PROJECT_ID: "abc123" }),
+      backfillTarget("redesign", {
+        NEXT_PUBLIC_SANITY_PROJECT_ID: "abc123",
+        NEXT_PUBLIC_SANITY_DATASET: "redesign",
+      }),
     ).toStrictEqual({ dataset: "redesign", projectId: "abc123" });
     expect(backfillTarget("redesign", {})).toStrictEqual({
       dataset: "redesign",
       projectId: null,
     });
+  });
+});
+
+/**
+ * The copy of the old site's content, on a snapshot of `production`
+ * (test/fixtures/production-documents.json: every published event and a few
+ * partners and research projects, from the public API, trimmed to the
+ * fields the copy handles) plus the documents a response could also hold.
+ */
+describe("the copy from production", () => {
+  const projectId = "o9uuv2sq";
+  const published = productionFixture as SourceDocument[];
+  const eventId = "XNCTBM8X9vP2N4tjVzgD4y";
+  const extra: SourceDocument[] = [
+    { _id: `drafts.${eventId}`, _type: "event", title: "Draft" },
+    { _id: `versions.r1.${eventId}`, _type: "event", title: "In a release" },
+    { _id: "image-abc-1x1-png", _type: "sanity.imageAsset" },
+    {
+      _id: "partner-with-crop",
+      _type: "partner",
+      name: "Cropped",
+      image: {
+        _type: "image",
+        asset: { _type: "reference", _ref: "image-abc123-640x480-jpg" },
+        hotspot: {
+          _type: "sanity.imageHotspot",
+          x: 0.4,
+          y: 0.5,
+          width: 1,
+          height: 1,
+        },
+        crop: {
+          _type: "sanity.imageCrop",
+          top: 0.1,
+          bottom: 0,
+          left: 0,
+          right: 0.2,
+        },
+      },
+    },
+  ];
+  const copy = copyProductionDocuments([...published, ...extra], { projectId });
+  const byId = new Map(
+    copy.documents.map((document) => [document._id, document]),
+  );
+
+  test("copies the old site's types, the ones the Studio registers everywhere", () => {
+    expect([...copiedTypes]).toStrictEqual(
+      expect.arrayContaining(liveSchemaTypes.map(({ name }) => name)),
+    );
+    expect(copiedTypes).toHaveLength(liveSchemaTypes.length);
+  });
+
+  test("keeps every published _id and skips drafts, versions and other types", () => {
+    expect(copy.documents.map(({ _id }) => _id)).toStrictEqual([
+      ...published.map(({ _id }) => _id),
+      "partner-with-crop",
+    ]);
+    const events = copy.documents.filter(({ _type }) => _type === "event");
+    expect(events).toHaveLength(20);
+  });
+
+  test("drops the source's revision fields and keeps the content", () => {
+    for (const document of copy.documents) {
+      expect(Object.keys(document)).not.toEqual(
+        expect.arrayContaining(["_rev"]),
+      );
+      expect(document).not.toHaveProperty("_updatedAt");
+      expect(document).not.toHaveProperty("_system");
+    }
+    const source = published.find(({ _id }) => _id === eventId);
+    expect(byId.get(eventId)).toMatchObject({
+      _type: "event",
+      _createdAt: source?._createdAt,
+      title: source?.title,
+      event_date: source?.event_date,
+    });
+  });
+
+  test("turns every asset reference into an upload from the CDN", () => {
+    const serialized = JSON.stringify(copy.documents);
+    expect(serialized).not.toContain('"asset"');
+    expect(serialized).not.toContain("_ref");
+    const assets = collectSanityAssets(copy.documents);
+    expect(assets.length).toBeGreaterThan(20);
+    for (const asset of assets) {
+      expect(asset).toMatch(
+        /^image@https:\/\/cdn\.sanity\.io\/images\/o9uuv2sq\/production\/[a-f0-9]+-\d+x\d+\.[a-z]+$/,
+      );
+    }
+    expect(byId.get("partner-with-crop")?.image).toStrictEqual({
+      _type: "image",
+      _sanityAsset:
+        "image@https://cdn.sanity.io/images/o9uuv2sq/production/abc123-640x480.jpg",
+      hotspot: {
+        _type: "sanity.imageHotspot",
+        x: 0.4,
+        y: 0.5,
+        width: 1,
+        height: 1,
+      },
+      crop: {
+        _type: "sanity.imageCrop",
+        top: 0.1,
+        bottom: 0,
+        left: 0,
+        right: 0.2,
+      },
+    });
+  });
+
+  test("refuses an asset it could not upload", () => {
+    expect(() =>
+      imageAssetUrl("file-abc-pdf", projectId, "production"),
+    ).toThrow(/image asset/);
+  });
+
+  // Titles in production carry stray and non-breaking spaces.
+  const titleOf = (document: SourceDocument) =>
+    String(document.title).replace(/\s+/g, " ").trim();
+
+  test("gives every live event its co-hosts, matched by title and start", () => {
+    expect(liveEventHosts.length).toBeGreaterThan(0);
+    expect(copy.hostsAdded).toBe(liveEventHosts.length);
+    for (const { title, event_date, hosts } of liveEventHosts) {
+      const event = copy.documents.find(
+        (document) =>
+          document._type === "event" &&
+          titleOf(document) === title &&
+          Date.parse(String(document.event_date)) === Date.parse(event_date),
+      );
+      expect(event?.hosts, title).toStrictEqual(hosts);
+    }
+    const withHosts = copy.documents.filter(({ hosts }) => hosts !== undefined);
+    expect(withHosts).toHaveLength(liveEventHosts.length);
+  });
+
+  test("keeps the hosts an event already has", () => {
+    const [entry] = liveEventHosts;
+    const own = published.map((document) =>
+      document._type === "event" && titleOf(document) === entry?.title
+        ? { ...document, hosts: ["Their own"] }
+        : document,
+    );
+    const result = copyProductionDocuments(own, { projectId });
+    expect(result.hostsKept).toBe(1);
+    expect(result.hostsAdded).toBe(liveEventHosts.length - 1);
+  });
+
+  test("fails on co-hosts that match no single event", () => {
+    expect(() =>
+      copyProductionDocuments(published, {
+        projectId,
+        eventHosts: [
+          {
+            title: "Google Hackathon",
+            event_date: "2025-09-09T00:00:00Z",
+            hosts: ["X"],
+          },
+          {
+            title: "No such event",
+            event_date: "2025-01-01T00:00:00Z",
+            hosts: ["Y"],
+          },
+        ],
+      }),
+    ).toThrow(/Google Hackathon[\s\S]*No such event/);
+  });
+
+  test("reads production through the fetch it is given", async () => {
+    const sources: unknown[] = [];
+    const result = await copyFromProduction({
+      projectId,
+      fetchDocuments: async (source) => {
+        sources.push(source);
+        return published;
+      },
+    });
+    expect(sources).toStrictEqual([{ projectId, dataset: "production" }]);
+    expect(result.documents).toHaveLength(published.length);
+  });
+
+  test("the copies and the code content never share an _id", () => {
+    const code = new Set(documents.map(({ _id }) => _id));
+    expect(copy.documents.filter(({ _id }) => code.has(_id))).toStrictEqual([]);
   });
 });
