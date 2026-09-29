@@ -1,6 +1,7 @@
 import { communityCopyType } from "./community-copy";
 import { departmentType } from "./department";
 import { faqType } from "./faq";
+import { homeCopyType } from "./home-copy";
 import { journeyStepType } from "./journey-step";
 import { labSiteType } from "./lab-site";
 import { projectsCopyType } from "./projects-copy";
@@ -29,6 +30,7 @@ export const contentSchemaTypes = [
   taskForceType,
   researchCopyType,
   labSiteType,
+  homeCopyType,
 ];
 
 /**
@@ -43,4 +45,5 @@ export const contentSingletons: readonly { type: string; title: string }[] = [
   { type: "communityCopy", title: "Community page" },
   { type: "projectsCopy", title: "Projects page" },
   { type: "researchCopy", title: "Research page" },
+  { type: "homeCopy", title: "Homepage" },
 ];

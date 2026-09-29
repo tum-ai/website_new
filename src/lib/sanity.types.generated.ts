@@ -218,6 +218,97 @@ export type Slug = {
   source?: string;
 };
 
+export type HomeCopy = {
+  _id: string;
+  _type: "homeCopy";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  hero?: {
+    title: string;
+    lead: string;
+    partnersLabel: string;
+    photos: Array<{
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      _type: "image";
+      _key: string;
+    }>;
+  };
+  mission?: {
+    statement: string;
+    body: string;
+  };
+  ledger: Array<{
+    key:
+      | "founded"
+      | "members"
+      | "nationalities"
+      | "funding"
+      | "makeathon"
+      | "publications";
+    label: string;
+    note: string;
+    _type: "ledgerRow";
+    _key: string;
+  }>;
+  programs?: {
+    title: string;
+    lead: string;
+    items: Array<{
+      key: string;
+      title: string;
+      description: string;
+      href: string;
+      image: {
+        asset?: SanityImageAssetReference;
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        alt?: string;
+        _type: "image";
+      };
+      _type: "program";
+      _key: string;
+    }>;
+  };
+  room?: {
+    title: string;
+    lead: string;
+    photos: Array<{
+      image: {
+        asset?: SanityImageAssetReference;
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        alt?: string;
+        _type: "image";
+      };
+      caption: string;
+      _type: "roomPhoto";
+      _key: string;
+    }>;
+  };
+  join?: {
+    title: string;
+    lead: string;
+    stepsTitle: string;
+    steps: Array<{
+      title: string;
+      dates: string;
+      _type: "recruitingStep";
+      _key: string;
+    }>;
+    quote?: {
+      name: string;
+      excerpt: string;
+    };
+  };
+};
+
 export type LabSite = {
   _id: string;
   _type: "labSite";
@@ -490,6 +581,7 @@ export type AllSanitySchemaTypes =
   | SanityImageAsset
   | Geopoint
   | Slug
+  | HomeCopy
   | LabSite
   | ResearchCopy
   | TaskForce
@@ -506,6 +598,17 @@ export type AllSanitySchemaTypes =
 export type COMMUNITY_COPY_QUERY_RESULT =
   | {
       hero: null;
+      journey: null;
+      departments: null;
+      closing: null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+        photo: null;
+        photoCaption: null;
+      } | null;
       journey: null;
       departments: null;
       closing: null;
@@ -582,6 +685,115 @@ export type COMMUNITY_COPY_QUERY_RESULT =
     }
   | null;
 
+// Source: ../features/home/content.ts
+// Variable: HOME_COPY_QUERY
+// Query: *[_id == "homeCopy"][0]{  hero{    title,    lead,    partnersLabel,    "photos": photos[]{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}  },  mission{ statement, body },  ledger[]{ key, label, note },  programs{    title,    lead,    items[]{      "id": key,      title,      description,      href,      "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}    }  },  room{    title,    lead,    "photos": photos[]{ "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}, caption }  },  join{    title,    lead,    stepsTitle,    steps[]{ title, dates },    quote{ name, excerpt }  }}
+export type HOME_COPY_QUERY_RESULT =
+  | {
+      hero: null;
+      mission: null;
+      ledger: null;
+      programs: null;
+      room: null;
+      join: null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+        partnersLabel: null;
+        photos: null;
+      } | null;
+      mission: null;
+      ledger: null;
+      programs: null;
+      room: null;
+      join: null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+        partnersLabel: string;
+        photos: Array<{
+          src: string | null;
+          width: number | null;
+          height: number | null;
+          alt: string | null;
+          hotspot: {
+            x: number;
+            y: number;
+          } | null;
+        }>;
+      } | null;
+      mission: {
+        statement: string;
+        body: string;
+      } | null;
+      ledger: Array<{
+        key:
+          | "founded"
+          | "funding"
+          | "makeathon"
+          | "members"
+          | "nationalities"
+          | "publications";
+        label: string;
+        note: string;
+      }>;
+      programs: {
+        title: string;
+        lead: string;
+        items: Array<{
+          id: string;
+          title: string;
+          description: string;
+          href: string;
+          image: {
+            src: string | null;
+            width: number | null;
+            height: number | null;
+            alt: string | null;
+            hotspot: {
+              x: number;
+              y: number;
+            } | null;
+          };
+        }>;
+      } | null;
+      room: {
+        title: string;
+        lead: string;
+        photos: Array<{
+          image: {
+            src: string | null;
+            width: number | null;
+            height: number | null;
+            alt: string | null;
+            hotspot: {
+              x: number;
+              y: number;
+            } | null;
+          };
+          caption: string;
+        }>;
+      } | null;
+      join: {
+        title: string;
+        lead: string;
+        stepsTitle: string;
+        steps: Array<{
+          title: string;
+          dates: string;
+        }>;
+        quote: {
+          name: string;
+          excerpt: string;
+        } | null;
+      } | null;
+    }
+  | null;
+
 // Source: ../features/projects/content.ts
 // Variable: PROJECTS_CONTENT_QUERY
 // Query: {  "copy": *[_id == "projectsCopy"][0]{    hero{ eyebrow, title, lead, figureLabel },    openSeat{ name, field },    closing{      title,      lead,      student{ audience, text },      partner{ audience, text, textWithoutPartner }    }  },  "taskForces": *[_type == "taskForce"] | order(order asc){    "slug": slug.current,    name,    field,    description,    detailedDescription,    work{ partner, items },    "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }},    photoCaption  }}
@@ -589,6 +801,16 @@ export type PROJECTS_CONTENT_QUERY_RESULT = {
   copy:
     | {
         hero: null;
+        openSeat: null;
+        closing: null;
+      }
+    | {
+        hero: {
+          eyebrow: null;
+          title: string;
+          lead: string;
+          figureLabel: null;
+        } | null;
         openSeat: null;
         closing: null;
       }
@@ -767,6 +989,19 @@ export type QANDA_CONTENT_QUERY_RESULT = {
 export type RESEARCH_COPY_QUERY_RESULT =
   | {
       hero: null;
+      partnersLabel: null;
+      abstract: null;
+      figurePanels: null;
+      ongoing: null;
+      completed: null;
+      rex: null;
+      closing: null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+      } | null;
       partnersLabel: null;
       abstract: null;
       figurePanels: null;

@@ -1,0 +1,61 @@
+import { afterEach, describe, expect, test, vi } from "vitest";
+import { contentTokens } from "@/config/content-tokens";
+import { departments } from "@/features/community";
+import { fetchContent } from "@/lib/cms-content";
+import { fillCodeCopy } from "@/lib/content-copy";
+import type { HOME_COPY_QUERY_RESULT } from "@/lib/sanity.types.generated";
+import { buildHomeBackfill, getHomeContent, HOME_COPY_QUERY } from "./content";
+import { homeCopyTemplate, homePageTokens } from "./data/homepage";
+
+/**
+ * Parity: the backfill document, read back through the real GROQ query
+ * under the mock CMS, renders exactly what the code renders.
+ */
+afterEach(() => {
+  vi.unstubAllEnvs();
+});
+
+function useSource(source: "code" | "sanity") {
+  vi.stubEnv("CMS_CONTENT_SOURCE", source);
+  vi.stubEnv("USE_MOCK_CMS", "1");
+  vi.stubEnv("VERCEL", "");
+}
+
+const code = {
+  copy: fillCodeCopy(homeCopyTemplate, contentTokens, homePageTokens),
+  departmentCount: departments.length,
+};
+
+describe("the homepage content slice", () => {
+  test("code source: the code copy and department count", async () => {
+    useSource("code");
+    await expect(getHomeContent()).resolves.toStrictEqual(code);
+  });
+
+  test("the mock serves the backfill through the real query", async () => {
+    useSource("sanity");
+    const result = await fetchContent<HOME_COPY_QUERY_RESULT>({
+      query: HOME_COPY_QUERY,
+      tags: [],
+      mockDocuments: buildHomeBackfill,
+      label: "parity",
+    });
+    expect(result?.room?.photos).toHaveLength(
+      homeCopyTemplate.room.photos.length,
+    );
+    expect(result?.programs?.items?.map(({ id }) => id)).toStrictEqual(
+      homeCopyTemplate.programs.items.map(({ id }) => id),
+    );
+  });
+
+  test("sanity source over the backfill: the same copy and count", async () => {
+    useSource("sanity");
+    await expect(getHomeContent()).resolves.toStrictEqual(code);
+  });
+
+  test("the backfill holds one homeCopy document", () => {
+    expect(buildHomeBackfill().map(({ _id }) => _id)).toStrictEqual([
+      "homeCopy",
+    ]);
+  });
+});

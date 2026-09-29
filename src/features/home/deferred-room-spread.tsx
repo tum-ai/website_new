@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { cn } from "@/lib/cn";
+import type { RoomPhoto } from "./data/homepage";
 import { ROOM_CELLS, ROOM_GRID } from "./room-layout";
 
 /*
@@ -26,7 +27,7 @@ function RoomSpreadSkeleton() {
 }
 
 /** The "In the room" photo spread (see RoomSpread). */
-export const DeferredRoomSpread = dynamic(
+export const DeferredRoomSpread = dynamic<{ photos: readonly RoomPhoto[] }>(
   () => import("./room-spread").then((m) => m.RoomSpread),
   { ssr: false, loading: RoomSpreadSkeleton },
 );

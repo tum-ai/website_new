@@ -1,6 +1,7 @@
 import { buildApplyBackfill } from "@/features/apply/content";
 import { buildCommunityBackfill } from "@/features/community/content";
 import { buildELabBackfill } from "@/features/e-lab/content";
+import { buildHomeBackfill } from "@/features/home/content";
 import { buildProjectsBackfill } from "@/features/projects/content";
 import { buildQandaBackfill } from "@/features/qanda/content";
 import { buildResearchBackfill } from "@/features/research/content";
@@ -28,6 +29,7 @@ export const backfillSlices: readonly {
   { slice: "features/community/content.ts", build: buildCommunityBackfill },
   { slice: "features/projects/content.ts", build: buildProjectsBackfill },
   { slice: "features/research/content.ts", build: buildResearchBackfill },
+  { slice: "features/home/content.ts", build: buildHomeBackfill },
 ];
 
 /** The documents of every slice, in registry order. */

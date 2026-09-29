@@ -1,8 +1,22 @@
-import { Container, IndexList, Section, SectionHeader } from "@/components/ds";
-import { programs } from "./data/homepage";
+import {
+  Container,
+  IndexList,
+  type IndexListItem,
+  Section,
+  SectionHeader,
+} from "@/components/ds";
 
 /** The five ways into TUM.ai as a typographic index with photo previews. */
-export function ProgramsSection() {
+export function ProgramsSection({
+  title,
+  lead,
+  items,
+}: {
+  title: string;
+  lead: string;
+  /** The programs with their page tokens filled (`homeView`). */
+  items: IndexListItem[];
+}) {
   return (
     <Section
       tone="paper"
@@ -14,11 +28,11 @@ export function ProgramsSection() {
       <Container>
         <SectionHeader
           id="programs-title"
-          title="What we do"
+          title={title}
           size="lg"
-          lead="Every program is organized by members, together with partners from research and industry."
+          lead={lead}
         />
-        <IndexList items={programs} />
+        <IndexList items={items} />
       </Container>
     </Section>
   );
