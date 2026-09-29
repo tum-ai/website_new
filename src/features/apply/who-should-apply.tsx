@@ -67,7 +67,7 @@ export function WhoShouldApply() {
           <Photo
             aspect="panorama"
             src="/assets/apply/new_section_photo_1.webp"
-            alt="About fifty TUM.ai members in winter jackets, gathered in front of a large baroque building"
+            alt="A large group of TUM.ai members in winter jackets, gathered in front of a baroque building"
             // TODO(content): caption. Which batch or event is this, where,
             // and when?
             position="50% 45%"

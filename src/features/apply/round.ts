@@ -223,3 +223,27 @@ export function closedLabel(call: RecruitingCall): string {
     ? `Opens ${call.words.opens}`
     : "Applications closed";
 }
+
+/** The closing statement: the one date that matters now. */
+export function closingTitle(call: RecruitingCall): string {
+  switch (call.phase) {
+    case "open":
+      return `Applications close on ${call.words.deadline}.`;
+    case "upcoming":
+      return `Applications open on ${call.words.opens}.`;
+    default:
+      return "This call is closed.";
+  }
+}
+
+/** The sentence under it: the time left and what follows the deadline. */
+export function closingLead(call: RecruitingCall): string {
+  const next = `Interviews run from ${call.words.interviews}, and the onboarding weekend is ${call.words.onboarding}.`;
+  if (call.phase === "open") {
+    return `${call.daysLeftLabel}. The form closes at ${call.words.deadlineTime}, Munich time. ${next}`;
+  }
+  if (call.phase === "upcoming") {
+    return `The form stays open until ${call.words.deadline}. ${next}`;
+  }
+  return `${next} The next call will be announced on this page.`;
+}

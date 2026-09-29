@@ -8,7 +8,50 @@ export type Point = { title: string; text: string };
  * the call's scope.
  */
 export const mission =
-  'To bridge the gap between theory and practice by empowering students to build the future of AI. We combine academic rigor with a "make-it-happen" mindset to solve real-world challenges.';
+  "To bridge the gap between theory and practice by empowering students to build the future of AI. We combine academic rigor with a “make-it-happen” mindset to solve real-world challenges.";
+
+/** The hero's second paragraph, under the call's status. */
+export const heroLead =
+  "We look for students who want to build the future of AI, whatever they study. You don't need to be an AI expert to apply.";
+
+/** The lead of "What you'll work on". */
+export const tracksLead =
+  "Every member starts at the onboarding weekend. From the first semester, you take one of two tracks.";
+
+/** When a selection stage happens, filled in from the round's dates. */
+export type StageTiming =
+  | "deadline"
+  | "after-deadline"
+  | "interviews"
+  | "onboarding";
+
+/** The round's stages, in order. */
+export const selectionStages: (Point & { when: StageTiming })[] = [
+  {
+    title: "Application",
+    when: "deadline",
+    text: "Fill out the application form before the deadline.",
+  },
+  {
+    title: "Screening",
+    when: "after-deadline",
+    text: "The recruiting team screens the applications.",
+  },
+  {
+    title: "Interview",
+    when: "interviews",
+    text: "If you pass the screening, we invite you to an interview to get to know you better. Prepare by learning what TUM.ai stands for and by following recent developments in AI.",
+  },
+  {
+    title: "Onboarding weekend",
+    when: "onboarding",
+    text: "Accepted applicants join the mandatory onboarding weekend: meet the members, join the social events and get to know TUM.ai.",
+  },
+];
+
+/** The partners' fork in the closing band. */
+export const partnerPitch =
+  "Partners meet our members through talent packages, hackathon challenges and company visits.";
 
 /** What we look for in applicants. */
 export const qualities: Point[] = [

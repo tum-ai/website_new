@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import type { MembershipConfig } from "@/config/membership";
-import { recruitingCall } from "./round";
+import { closingLead, closingTitle, recruitingCall } from "./round";
 
 const config: MembershipConfig = {
   applicationsOpen: true,
@@ -98,5 +98,19 @@ describe("recruitingCall", () => {
     });
     expect(call.phase).toBe("closed");
     expect(call.daysLeftLabel).toBe("");
+  });
+
+  test("the close names the one date that matters in each phase", () => {
+    const open = at("2026-10-20T12:00:00Z");
+    expect(closingTitle(open)).toBe("Applications close on 27 October.");
+    expect(closingLead(open)).toMatch(
+      /^7 days left\. The form closes at 23:59/,
+    );
+    expect(closingTitle(at("2026-09-20T12:00:00Z"))).toBe(
+      "Applications open on 28 September.",
+    );
+    expect(closingTitle(at("2026-11-01T12:00:00Z"))).toBe(
+      "This call is closed.",
+    );
   });
 });

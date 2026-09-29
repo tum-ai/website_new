@@ -1,5 +1,6 @@
 import { ButtonLink, DayRuler, KeyDates, PageHero } from "@/components/ds";
 import { ApplyAction } from "./apply-action";
+import { heroLead } from "./data/apply";
 import { callStatus, closedLabel, type RecruitingCall } from "./round";
 
 /**
@@ -17,10 +18,7 @@ export function Hero({ call }: { call: RecruitingCall }) {
       lead={
         <>
           <p className="text-fg">{callStatus(call)}</p>
-          <p className="mt-4">
-            We look for students who want to build the future of AI, whatever
-            they study. You don't need to be an AI expert to apply.
-          </p>
+          <p className="mt-4">{heroLead}</p>
         </>
       }
       actions={
@@ -31,17 +29,25 @@ export function Hero({ call }: { call: RecruitingCall }) {
             closedLabel={closedLabel(call)}
           />
           <ButtonLink href="#apply-faq" size="lg" variant="outline">
-            Questions and answers
+            Read the FAQ
           </ButtonLink>
         </>
       }
       classNames={{ grid: "lg:items-start" }}
       media={
         <div className="lg:pt-3">
-          <p className="font-medium text-fg-muted text-small">
+          <p
+            id="apply-dates-title"
+            className="font-medium text-fg-muted text-small"
+          >
             Important dates, {call.name.toLowerCase()}
           </p>
-          <KeyDates items={call.keyDates} drawIn className="mt-4" />
+          <KeyDates
+            items={call.keyDates}
+            aria-labelledby="apply-dates-title"
+            drawIn
+            className="mt-4"
+          />
           <DayRuler
             className="mt-8"
             days={call.progress.totalDays}

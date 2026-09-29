@@ -8,31 +8,13 @@ import {
   TextLink,
 } from "@/components/ds";
 import { ApplyAction } from "./apply-action";
-import { closedLabel, type RecruitingCall } from "./round";
-
-/** The closing statement: the one date that matters now. */
-function closingTitle(call: RecruitingCall): string {
-  switch (call.phase) {
-    case "open":
-      return `Applications close on ${call.words.deadline}.`;
-    case "upcoming":
-      return `Applications open on ${call.words.opens}.`;
-    default:
-      return "This call is closed.";
-  }
-}
-
-/** The sentence under it: the time left and what follows the deadline. */
-function closingLead(call: RecruitingCall): string {
-  const next = `Interviews run from ${call.words.interviews}, and the onboarding weekend is ${call.words.onboarding}.`;
-  if (call.phase === "open") {
-    return `${call.daysLeftLabel}. The form closes at ${call.words.deadlineTime}, Munich time. ${next}`;
-  }
-  if (call.phase === "upcoming") {
-    return `The form stays open until ${call.words.deadline}. ${next}`;
-  }
-  return `${next} The next call will be announced on this page.`;
-}
+import { partnerPitch } from "./data/apply";
+import {
+  closedLabel,
+  closingLead,
+  closingTitle,
+  type RecruitingCall,
+} from "./round";
 
 /**
  * The call's submission box, on ink: the hero's register reduced to the one
@@ -83,10 +65,7 @@ export function ClosingSection({ call }: { call: RecruitingCall }) {
             className="border-hairline-strong border-t pt-8 lg:col-span-4 lg:self-end"
           >
             <p className="font-medium text-fg text-small">For companies</p>
-            <p className="mt-3 text-body text-fg-muted">
-              Partners meet our members through talent packages, hackathon
-              challenges and company visits.
-            </p>
+            <p className="mt-3 text-body text-fg-muted">{partnerPitch}</p>
             <p className="mt-5">
               <TextLink href="/partners" arrow className="text-small">
                 Become a Partner

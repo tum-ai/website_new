@@ -25,10 +25,10 @@ export function SinceFounding() {
               key={milestone.year}
               className="grid gap-x-10 gap-y-4 border-hairline border-b py-8 md:grid-cols-12 md:py-10"
             >
-              <h3 className="tabular text-fg text-stat-md md:col-span-3">
+              <h3 className="tabular text-fg text-heading-lg md:col-span-3">
                 {milestone.year}
               </h3>
-              <ul className="grid gap-3 md:col-span-9 md:pt-2">
+              <ul className="grid gap-3 md:col-span-9 md:pt-1.5">
                 {milestone.items.map((item) => (
                   <li key={item} className="flex gap-4 text-body text-fg-muted">
                     <span

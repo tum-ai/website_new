@@ -12,7 +12,7 @@ import {
   memberJourney,
   memberStories,
 } from "@/features/community";
-import { offerings } from "./data/apply";
+import { offerings, tracksLead } from "./data/apply";
 
 /** The fork of the member journey: the two tracks a new member picks from. */
 const tracks: JourneyStep[] =
@@ -67,7 +67,7 @@ export function Tracks() {
           title="What you'll work on"
           size="lg"
           layout="stack"
-          lead="Every member starts at the onboarding weekend. From the first semester, you take one of two tracks."
+          lead={tracksLead}
         />
         <div className="grid gap-14 md:grid-cols-2 md:gap-10 lg:gap-16">
           {tracks.map((step, index) => (
