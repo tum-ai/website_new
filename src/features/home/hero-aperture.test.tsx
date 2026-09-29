@@ -95,6 +95,21 @@ describe("HeroAperture", () => {
     expect(activeSrc(container)).not.toBe(first);
   });
 
+  test("shows a photo when a refresh shortens the list under the current one", () => {
+    vi.useFakeTimers();
+    const { container, rerender } = render(
+      <HeroAperture photos={heroPhotos} />,
+    );
+    const first = activeSrc(container);
+    act(() => vi.advanceTimersByTime(6000));
+    expect(activeSrc(container)).not.toBe(first);
+
+    rerender(<HeroAperture photos={heroPhotos.slice(0, 1)} />);
+    expect(container.querySelectorAll('img[data-active="true"]')).toHaveLength(
+      1,
+    );
+  });
+
   test("holds the first photo under reduced motion", () => {
     vi.useFakeTimers();
     stubBrowser({ reducedMotion: true });

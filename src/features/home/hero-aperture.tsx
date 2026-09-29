@@ -74,7 +74,9 @@ export function HeroAperture({
     const timer = window.setInterval(() => {
       const canCycle =
         visible && !reduced.matches && document.visibilityState === "visible";
-      setIndex((current) => nextPhotoIndex(current, photos.length, canCycle));
+      setIndex((current) =>
+        nextPhotoIndex(current % photos.length, photos.length, canCycle),
+      );
     }, HOLD_MS);
 
     return () => {
@@ -82,6 +84,9 @@ export function HeroAperture({
       window.clearInterval(timer);
     };
   }, [photos.length]);
+
+  // A live refresh can shorten the list under a later photo.
+  const active = photos.length > 0 ? index % photos.length : 0;
 
   return (
     <div
@@ -109,7 +114,7 @@ export function HeroAperture({
               sizes="(min-width: 1024px) 60vw, 90vw"
               loading={photoIndex === 0 ? "eager" : "lazy"}
               onLoad={photoIndex === 0 ? () => setReady(true) : undefined}
-              data-active={photoIndex === index}
+              data-active={photoIndex === active}
               className="object-cover opacity-0 transition-opacity duration-1200 ease-in-out-soft data-[active=true]:opacity-100 motion-reduce:transition-none"
               style={{ objectPosition: photo.objectPosition }}
             />

@@ -49,7 +49,11 @@ export function IndexList({
   headingAs: HeadingTag = "h3",
   className,
 }: IndexListProps) {
-  const [active, setActive] = useState(items[0]?.id);
+  const [hovered, setHovered] = useState(items[0]?.id);
+  // The first row when the chosen one has left the list (a live refresh).
+  const active = items.some((item) => item.id === hovered)
+    ? hovered
+    : items[0]?.id;
   const withMedia = items.some((item) => item.image);
 
   return (
@@ -74,8 +78,8 @@ export function IndexList({
           >
             <Anchor
               href={item.href}
-              onPointerEnter={() => setActive(item.id)}
-              onFocus={() => setActive(item.id)}
+              onPointerEnter={() => setHovered(item.id)}
+              onFocus={() => setHovered(item.id)}
               className="group/row grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-6 gap-y-3 py-7 md:py-9"
             >
               <div className="min-w-0">

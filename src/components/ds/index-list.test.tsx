@@ -52,6 +52,16 @@ describe("IndexList", () => {
     expect(activeRow()).toHaveTextContent("Research");
   });
 
+  test("falls back to the first row when the active one leaves the list", async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(<IndexList items={items} />);
+    await user.hover(screen.getByRole("link", { name: /Events/ }));
+    expect(activeRow()).toHaveTextContent("Events");
+
+    rerender(<IndexList items={items.slice(0, 1)} />);
+    expect(activeRow()).toHaveTextContent("Research");
+  });
+
   test("keeps the preview out of the accessibility tree", () => {
     const { container } = render(<IndexList items={items} />);
     expect(screen.queryAllByRole("img")).toHaveLength(0);
