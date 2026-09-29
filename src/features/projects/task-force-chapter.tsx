@@ -36,7 +36,7 @@ export function TaskForceChapter({
       aria-labelledby={titleId}
       className="grid scroll-mt-header gap-x-12 gap-y-8 border-hairline border-b py-14 last:border-b-0 md:grid-cols-12 lg:py-20"
     >
-      <div className="flex items-center gap-5 md:col-span-12 lg:col-span-3 lg:flex-col lg:items-start">
+      <div className="flex items-center gap-5 md:col-span-12 lg:col-span-3 lg:w-fit lg:flex-col lg:text-center">
         <OverlapsLocator
           count={seatCount}
           index={index}
