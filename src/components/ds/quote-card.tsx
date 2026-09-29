@@ -2,7 +2,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import Image from "next/image";
 import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/cn";
-import { isExternalHref } from "./internal";
+import { isUnoptimizedRemoteImage } from "./internal";
 
 /** Props for {@link QuoteMark}. */
 export type QuoteMarkProps = Omit<
@@ -129,7 +129,7 @@ export function QuoteCard({
               width={52}
               height={52}
               loading={loading}
-              unoptimized={isExternalHref(portrait.src)}
+              unoptimized={isUnoptimizedRemoteImage(portrait.src)}
               className="size-12 shrink-0 rounded-full object-cover ring-2 ring-hairline"
             />
           ) : null}
@@ -146,7 +146,7 @@ export function QuoteCard({
               width={96}
               height={24}
               loading={loading}
-              unoptimized={isExternalHref(logo.src)}
+              unoptimized={isUnoptimizedRemoteImage(logo.src)}
               className={cn(
                 "h-6 w-auto max-w-24 shrink-0 object-contain opacity-80",
                 variant === "editorial" &&

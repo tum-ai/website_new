@@ -3,7 +3,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import { Anchor } from "./anchor";
 import { FallbackImage } from "./fallback-image";
-import { isExternalHref } from "./internal";
+import { isUnoptimizedRemoteImage } from "./internal";
 
 /** One organization in a {@link LogoWall} or {@link LogoTile}. */
 export type LogoItem = {
@@ -228,8 +228,9 @@ export function LogoTile({
         alt={lockup ? "" : (alt ?? name)}
         width={200}
         height={80}
-        // Remote (CMS) artwork is outside next.config's image patterns.
-        unoptimized={unoptimized ?? (src ? isExternalHref(src) : false)}
+        unoptimized={
+          unoptimized ?? (src ? isUnoptimizedRemoteImage(src) : false)
+        }
         loading={eager ? "eager" : "lazy"}
         className={cn(logoImageStyles({ variant, size, responsive, lockup }))}
         fallback={lockup ? null : nameText}

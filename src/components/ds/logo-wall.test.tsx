@@ -75,11 +75,21 @@ describe("LogoTile", () => {
     expect(container.firstElementChild).toHaveClass("h-32", "max-md:h-28");
   });
 
-  test("serves remote CMS artwork without the optimizer", () => {
-    render(<LogoTile name="Lab" src="https://cdn.sanity.io/images/lab.png" />);
+  test("sizes Sanity CDN artwork through the image optimizer", () => {
+    const src = "https://cdn.sanity.io/images/project/dataset/lab-800x320.png";
+    render(<LogoTile name="Lab" src={src} />);
     expect(screen.getByRole("img", { name: "Lab" })).toHaveAttribute(
       "src",
-      "https://cdn.sanity.io/images/lab.png",
+      expect.stringContaining(`/_next/image?url=${encodeURIComponent(src)}`),
+    );
+  });
+
+  test("serves artwork from other hosts as is", () => {
+    const src = "https://example.org/lab.png";
+    render(<LogoTile name="Lab" src={src} />);
+    expect(screen.getByRole("img", { name: "Lab" })).toHaveAttribute(
+      "src",
+      src,
     );
   });
 });

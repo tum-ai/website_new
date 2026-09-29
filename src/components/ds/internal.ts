@@ -54,6 +54,19 @@ export function isExternalHref(href: string): boolean {
 }
 
 /**
+ * Whether next/image must serve a remote image as is. Sanity's image CDN is
+ * in next.config's `images.remotePatterns` (this project only), so CMS
+ * uploads go through the optimizer like local assets and an editor's large
+ * portrait still arrives sized for its slot; any other host is served
+ * unoptimized. SVGs are always served as is by next/image itself.
+ */
+export function isUnoptimizedRemoteImage(src: string): boolean {
+  return (
+    isExternalHref(src) && !src.startsWith("https://cdn.sanity.io/images/")
+  );
+}
+
+/**
  * Whether a link must be a plain `<a>` rather than next/link: other sites,
  * mail and phone links, and in-page anchors.
  */
