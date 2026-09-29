@@ -18,6 +18,8 @@ extend-ignore-re = [
   # Known copy bug (stray German "oder" merging two draft sentences) flagged
   # separately for content review, not silenced as a legitimate word.
   "to the broader community\\. oder The Marketing Department",
+  # The English ordinal suffix for "two" ("22nd"), in config/membership.ts.
+  'two: "nd"',
 ]
 
 [default.extend-words]

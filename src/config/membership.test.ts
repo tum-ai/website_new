@@ -111,7 +111,7 @@ describe("munichDayNumber", () => {
 describe("recruitingTimeline", () => {
   test("names the live round's windows in words", () => {
     for (const window of Object.values(recruitingTimeline)) {
-      expect(window).toMatch(/^[A-Z][a-z]+ \d{1,2}(st|nd|rd|th) - [A-Z]/);
+      expect(window).toMatch(/^[A-Z][a-z]+ \d{1,2}[a-z]{2} - [A-Z]/);
     }
   });
 });

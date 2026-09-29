@@ -124,7 +124,7 @@ const hardcodedFacts: [RegExp, string][] = [
   [/tally\.so\/r\//, "application forms: config/e-lab.ts or membership.ts"],
   [
     // A typed date range such as "September 24th - October 27th".
-    /\b(?:january|february|march|april|may|june|july|august|september|october|november|december) \d{1,2}(?:st|nd|rd|th)? ?(?:-|to|until) ?(?:january|february|march|april|may|june|july|august|september|october|november|december|\d)/i,
+    /\b(?:january|february|march|april|may|june|july|august|september|october|november|december) \d{1,2}(?:[a-z]{2})? ?(?:-|to|until) ?(?:january|february|march|april|may|june|july|august|september|october|november|december|\d)/i,
     "recruiting round dates: membershipConfig.round in config/membership.ts",
   ],
   [

@@ -143,11 +143,17 @@ const longDate = new Intl.DateTimeFormat("en-US", {
   day: "numeric",
 });
 
-const ordinal = (day: number) => {
-  const tens = day % 100;
-  if (tens >= 11 && tens <= 13) return `${day}th`;
-  return `${day}${{ 1: "st", 2: "nd", 3: "rd" }[day % 10] ?? "th"}`;
+const ordinalRules = new Intl.PluralRules("en-US", { type: "ordinal" });
+const ordinalSuffix: Record<string, string> = {
+  one: "st",
+  two: "nd",
+  few: "rd",
+  other: "th",
 };
+
+/** "1st", "22nd", "13th". */
+const ordinal = (day: number) =>
+  `${day}${ordinalSuffix[ordinalRules.select(day)] ?? "th"}`;
 
 /** "September 28th", in Munich. */
 function spoken(instant: Date): string {
