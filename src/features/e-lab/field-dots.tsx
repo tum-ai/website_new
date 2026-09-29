@@ -10,7 +10,7 @@ import {
 } from "react";
 
 /** A venture a lit dot opens into: its name, site and logo artwork. */
-export type FieldVenture = {
+type FieldVenture = {
   name: string;
   href: string;
   logoSrc: string;
