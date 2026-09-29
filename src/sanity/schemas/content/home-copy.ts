@@ -1,5 +1,6 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
 import { copyString, copyText } from "./copy-fields";
+import { storyExcerptField } from "./excerpt-rules";
 import { contentImageField, validateSitePath } from "./fields";
 
 /** The ledger's figures; their values come from the site settings in code. */
@@ -281,7 +282,7 @@ export const homeCopyType = defineType({
               description: "One of the member stories.",
               validation: (Rule) => Rule.required(),
             }),
-            copyText({ name: "excerpt", title: "Quote", max: 200, rows: 2 }),
+            storyExcerptField(),
           ],
         }),
       ],

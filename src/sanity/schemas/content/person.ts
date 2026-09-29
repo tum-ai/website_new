@@ -3,6 +3,7 @@ import {
   type PersonPlacement,
   personPlacements,
 } from "../../../lib/people-and-logos";
+import { validateQuotedStory } from "./excerpt-rules";
 import { kebabKey, portraitField, uniqueKey } from "./image-rules";
 
 type Context = { document?: Record<string, unknown> };
@@ -114,12 +115,14 @@ export const personType = defineType({
       type: "text",
       rows: 6,
       description:
-        "The member's story in their words, one paragraph. The member journey on /community quotes a sentence of some stories word for word: keep that sentence when you edit.",
+        "The member's story in their words, one paragraph. The homepage and the member journey on /community quote a sentence of some stories word for word: keep that sentence when you edit, or update the quote after publishing.",
       hidden: onlyFor("member-story"),
-      validation: (Rule) =>
+      validation: (Rule) => [
         Rule.custom(
           requiredFor("Member stories need a story.", "member-story"),
         ),
+        Rule.custom(validateQuotedStory).warning(),
+      ],
     }),
     portraitField(),
     defineField({

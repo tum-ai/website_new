@@ -77,8 +77,8 @@ src/lib/                          cn, sanity-config, sanity client/queries/fetch
                                   (+ -model, -mock), cms-backfill, content-tokens, content-copy,
                                   content-backfill, faq-content, community-model/-content,
                                   people-and-logos, organization-content, person-content,
-                                  passage-spans, clock-window, munich-time, words, use-clock-switch,
-                                  use-media-query, security, redirects
+                                  passage-spans, quote-excerpt, clock-window, munich-time, words,
+                                  use-clock-switch, use-media-query, security, redirects
 src/sanity/                       Studio config, desk structure and schemas (TypeGen writes
                                   src/lib/sanity.types.generated.ts)
 scripts/sanity/                   backfill script, slice registry, copy from production, partner
