@@ -9,7 +9,8 @@
  * the reader turns it: the names window is a region of its own (HeroReel
  * turns it on drag, horizontal swipe, wheel and arrow keys and sets --roll,
  * in rows within a turn). Over the names the wheel turns the reel; on touch
- * a vertical swipe scrolls the page (`touch-action: pan-y`).
+ * a vertical swipe scrolls the page and a pinch zooms it
+ * (`touch-action: pan-y pinch-zoom`).
  *
  * The load turn runs 2.2s, longer than the usual 1.2s entrance ceiling: a
  * full turn through every name needs the time to read as a roll rather than
