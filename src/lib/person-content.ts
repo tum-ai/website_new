@@ -117,7 +117,7 @@ export function getPeople<T>({
     fallback,
     query: PEOPLE_QUERY,
     params: { placement },
-    tags: ["content:person"],
+    tags: ["content:person", "content:organization"],
     label,
     mockDocuments,
     select: (result) => result.flatMap((person) => select(person) ?? []),

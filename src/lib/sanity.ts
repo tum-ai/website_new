@@ -8,6 +8,7 @@ import {
   type LivePerspective,
   resolvePerspectiveFromCookies,
 } from "next-sanity/live";
+import { liveCacheTags } from "./cache-tags";
 import { getCmsNow } from "./mock-cms-env";
 import { omitNulls } from "./omit-nulls";
 import type {
@@ -169,7 +170,7 @@ export async function getSanityEvents(): Promise<Event[]> {
 
   const events = await fetchSanityList<EVENTS_QUERY_RESULT[number]>(
     EVENTS_QUERY,
-    ["events"],
+    [...liveCacheTags.event],
     "events",
   );
   return events.map(omitNulls);
@@ -181,7 +182,7 @@ export async function getSanityResearchProjects(): Promise<ResearchProject[]> {
 
   const projects = await fetchSanityList<RESEARCH_QUERY_RESULT[number]>(
     RESEARCH_QUERY,
-    ["research-projects"],
+    [...liveCacheTags.research],
     "research projects",
   );
   return projects.map(omitNulls);
@@ -193,7 +194,7 @@ export async function getSanityPartners(): Promise<Partner[]> {
 
   const partners = await fetchSanityList<PARTNERS_QUERY_RESULT[number]>(
     PARTNERS_QUERY,
-    ["partners"],
+    [...liveCacheTags.partner],
     "partners",
   );
   return partners.map(omitNulls);
@@ -206,7 +207,7 @@ export async function getSanityResearchPartners(): Promise<Partner[]> {
 
   const partners = await fetchSanityList<
     RESEARCH_PARTNERS_QUERY_RESULT[number]
-  >(RESEARCH_PARTNERS_QUERY, ["partners"], "research partners");
+  >(RESEARCH_PARTNERS_QUERY, [...liveCacheTags.partner], "research partners");
   return partners.map(omitNulls);
 }
 
@@ -228,15 +229,19 @@ async function fetchPublishedList<T>(
 }
 
 export function getPublishedEvents(): Promise<PublicEvent[]> {
-  return fetchPublishedList<PublicEvent>(PUBLIC_EVENTS_QUERY, ["events"]);
+  return fetchPublishedList<PublicEvent>(PUBLIC_EVENTS_QUERY, [
+    ...liveCacheTags.event,
+  ]);
 }
 
 export function getPublishedPartners(): Promise<PublicPartner[]> {
-  return fetchPublishedList<PublicPartner>(PUBLIC_PARTNERS_QUERY, ["partners"]);
+  return fetchPublishedList<PublicPartner>(PUBLIC_PARTNERS_QUERY, [
+    ...liveCacheTags.partner,
+  ]);
 }
 
 export function getPublishedResearch(): Promise<PublicResearch[]> {
   return fetchPublishedList<PublicResearch>(PUBLIC_RESEARCH_QUERY, [
-    "research-projects",
+    ...liveCacheTags.research,
   ]);
 }
