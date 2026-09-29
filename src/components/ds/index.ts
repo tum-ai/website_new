@@ -135,6 +135,7 @@ export {
   type ScrollProgressProps,
 } from "./parallax";
 export { PersonCard, type PersonCardProps } from "./person-card";
+export { Photo, type PhotoProps } from "./photo";
 export {
   type BadgeStatus,
   Pill,

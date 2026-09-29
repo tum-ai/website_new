@@ -16,6 +16,20 @@ export type JourneyStep = {
   /** One or two sentences. */
   description: string;
   icon: LucideIcon;
+  /**
+   * The semester from which the step is open to a member: 0 is the
+   * recruiting round that ends with onboarding, 1 the first semester. Taken
+   * from the step's own copy ("after your first semester" is 2, "two or
+   * more semesters" is 3).
+   */
+  fromSemester: number;
+  /** `event` happens once (onboarding); `ongoing` stays open from then on. */
+  span: "event" | "ongoing";
+  /**
+   * A member who took this step, in their own words: a verbatim sentence
+   * from their story in `member-stories.ts` (a test checks it is).
+   */
+  evidence?: { name: string; excerpt: string };
 };
 
 /**
@@ -39,6 +53,8 @@ export const memberJourney: JourneyStage[] = [
       description:
         "Kick off your journey at the onboarding weekend! Meet members, join social events, and deepen connections on our getaway.",
       icon: Rocket,
+      fromSemester: 0,
+      span: "event",
     },
   },
   {
@@ -50,6 +66,13 @@ export const memberJourney: JourneyStage[] = [
         description:
           "Join a team on an Impact Project applying AI to real world challenges. Contribute to research, academic publications, or open-source work, and engage with the TUM.ai community through update sessions.",
         icon: Brain,
+        fromSemester: 1,
+        span: "ongoing",
+        evidence: {
+          name: "Marco Lorenz",
+          excerpt:
+            "Joining TUM.ai as part of the MIT project gave me the chance to work on exciting AI research with talented peers and mentors.",
+        },
       },
       {
         step: "02B",
@@ -57,6 +80,13 @@ export const memberJourney: JourneyStage[] = [
         description:
           "Join one of our core departments and become a driving force behind everything that makes TUM.ai stand out. Shape the future of TUM.ai and develop your skills while engaging in trips, events, and learning opportunities.",
         icon: Handshake,
+        fromSemester: 1,
+        span: "ongoing",
+        evidence: {
+          name: "Jasmin El-Wafi",
+          excerpt:
+            "I rebuilt this website for minimal maintenance and developed tools to automate and optimize internal processes.",
+        },
       },
     ],
   },
@@ -66,8 +96,15 @@ export const memberJourney: JourneyStage[] = [
       step: "03",
       name: "Growth Opportunities",
       description:
-        "After your first semester, expand your impact - Join new teams, lead a task force, or take on a Team Lead role.",
+        "After your first semester, expand your impact: join new teams, lead a task force, or take on a Team Lead role.",
       icon: ChartNoAxesColumn,
+      fromSemester: 2,
+      span: "ongoing",
+      evidence: {
+        name: "Simon Huang",
+        excerpt:
+          "Within one semester at TUM.ai, I went from joining the software development team to leading a group of seven.",
+      },
     },
   },
   {
@@ -78,8 +115,10 @@ export const memberJourney: JourneyStage[] = [
       // TODO(content): REX partner school, Berkeley or Cambridge? The Apply
       // page used to name Berkeley; this copy (now on both pages) says Cambridge.
       description:
-        "After one semester, you can join the REX Program - conduct research at top institutions like MIT, Harvard, or Cambridge. With our alumni network, we guide you in finding a topic, navigating applications, and contributing to cutting-edge research.",
+        "After one semester, you can join the REX Program and conduct research at top institutions like MIT, Harvard, or Cambridge. With our alumni network, we guide you in finding a topic, navigating applications, and contributing to cutting-edge research.",
       icon: Globe,
+      fromSemester: 2,
+      span: "ongoing",
     },
   },
   {
@@ -90,6 +129,8 @@ export const memberJourney: JourneyStage[] = [
       description:
         "Having been with TUM.ai for two or more semesters, you can join the Alumni Program, opening up opportunities for continued networking and collaboration.",
       icon: GraduationCap,
+      fromSemester: 3,
+      span: "ongoing",
     },
   },
 ];
@@ -106,3 +147,15 @@ export const journeySteps: (JourneyStep & { stageIndex: number })[] =
 
 /** Anchor id of a step on /community, e.g. "journey-02a". */
 export const stepAnchor = (step: string) => `journey-${step.toLowerCase()}`;
+
+const lastSemester = Math.max(...journeySteps.map((step) => step.fromSemester));
+
+/**
+ * The columns of the membership timetable on /community: the recruiting
+ * round (0), then semesters 1 and 2, and "3+" for everything after, which is
+ * the latest semester any step opens in.
+ */
+export const semesterColumns: string[] = Array.from(
+  { length: lastSemester + 1 },
+  (_, semester) => (semester === lastSemester ? `${semester}+` : `${semester}`),
+);
