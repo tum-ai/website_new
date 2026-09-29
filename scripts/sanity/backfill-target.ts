@@ -1,6 +1,7 @@
 /**
- * Where `pnpm sanity:backfill` may write: the guard behind its `--dataset`
- * flag, kept apart from the script so tests can call it.
+ * Where `pnpm sanity:backfill` and `pnpm sanity:migrate-partners` may write:
+ * the guard behind their `--dataset` flag, kept apart from the scripts so
+ * tests can call it.
  */
 import { legacyDataset } from "@/lib/sanity-config";
 
@@ -19,18 +20,18 @@ type Env = Record<string, string | undefined>;
 export function backfillTarget(
   dataset: string | undefined,
   env: Env,
+  /** The command, for the message when `--dataset` is missing. */
+  command = "pnpm sanity:backfill",
 ): BackfillTarget {
   if (!dataset) {
-    throw new Error(
-      "Name the target dataset: pnpm sanity:backfill --dataset redesign",
-    );
+    throw new Error(`Name the target dataset: ${command} --dataset redesign`);
   }
   if (!/^[a-z0-9][a-z0-9_-]{0,63}$/.test(dataset)) {
     throw new Error(`Not a dataset name: "${dataset}"`);
   }
   if (dataset === legacyDataset) {
     throw new Error(
-      `Refusing "${dataset}": it is the old site's dataset, which the backfill only reads. Import into the new site's dataset (--dataset redesign).`,
+      `Refusing "${dataset}": it is the old site's dataset, which this repository only reads. Target the new site's dataset (--dataset redesign).`,
     );
   }
   return {
