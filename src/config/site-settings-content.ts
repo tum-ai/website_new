@@ -14,7 +14,7 @@ import type { LinkedHeaderCtaVariant } from "./navigation";
 import { type SiteFacts, siteFactsFallback } from "./site-facts";
 
 /**
- * The site-facts slice: the `siteSettings` singleton of the content dataset,
+ * The site-facts slice: the `siteSettings` singleton in the CMS,
  * or the config constants (`siteFactsFallback`). Server only; client islands
  * get the values they need as props.
  */

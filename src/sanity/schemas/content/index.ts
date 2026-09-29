@@ -23,9 +23,9 @@ import { taskForceType } from "./task-force";
 import { ventureTraceType } from "./venture-trace";
 
 /**
- * The document types of the `content` workspace (the content dataset; see
- * src/sanity/sanity.config.ts). Register a new content type here; it must
- * never go into the live workspace, whose dataset the old site renders.
+ * The page content types: registered in the Studio on every dataset except
+ * `production`, the old site's dataset (src/sanity/sanity.config.ts).
+ * Register a new content type here, never in `../index.ts`.
  */
 export const contentSchemaTypes = [
   // Shared page content

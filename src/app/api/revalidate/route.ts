@@ -5,7 +5,7 @@ import { cacheTagsForType } from "@/lib/cache-tags";
 
 /**
  * On-demand revalidation for a Sanity GROQ webhook (sanity.io/manage, API,
- * Webhooks; one per dataset, projection `{_type}`, the secret in
+ * Webhooks; one on the site's dataset, projection `{_type}`, the secret in
  * `SANITY_REVALIDATE_SECRET`). A published change expires the cache tags of
  * its document type (`lib/cache-tags.ts`): every page whose render fetched
  * that type regenerates on its next request, static routes included (Next

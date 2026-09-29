@@ -25,8 +25,8 @@ import {
 /**
  * The /research content slice: the `researchCopy` singleton (hero, abstract,
  * Figure 1, section headings, closing) and the `labSite` documents that
- * place institutions on the hero globe. The projects come from the live
- * dataset and the REX institutions from their logo list (`rex-content.ts`);
+ * place institutions on the hero globe. The projects come from the
+ * `research` documents (`lib/sanity.ts`) and the REX institutions from their logo list (`rex-content.ts`);
  * the code fallbacks are in `data/`.
  */
 

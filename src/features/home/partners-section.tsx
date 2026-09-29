@@ -23,7 +23,7 @@ import type { HomeCopy } from "./data/homepage";
 
 /**
  * Gold, silver and bronze partners in the partner page's order, from the
- * static defaults so the home page stays prerendered without a live-dataset
+ * static defaults so the home page stays prerendered without a partner
  * request. `symbolOnlyLogos` is the logo slice's set of symbol-only artwork.
  */
 const partnerLogosOf = (symbolOnlyLogos: ReadonlySet<string>) =>

@@ -1,7 +1,7 @@
 /**
  * The /events page's own copy as code writes it: the code fallback of the
- * `eventsCopy` singleton (see `../content.ts`). The events come from the live
- * dataset; category and semester labels stay in code (they map schema
+ * `eventsCopy` singleton (see `../content.ts`). The events come from the
+ * `event` documents; category and semester labels stay in code (they map schema
  * values), and so do interface strings such as "Sign up". Some texts hold
  * page tokens the sections fill (`eventsPageTokens`).
  */

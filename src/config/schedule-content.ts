@@ -27,7 +27,7 @@ import type { HeaderCtaVariant } from "./navigation";
 
 /**
  * The dated-content slice: the application windows (membership and E-Lab)
- * and the campaigns of the content dataset, or their code fallbacks
+ * and the campaigns in the CMS, or their code fallbacks
  * (`membershipConfig`, `eLabConfig`, no campaigns). Server only; islands get
  * the resolved windows as props (`ClockWindow`, `lib/clock-window.ts`).
  */
@@ -208,7 +208,7 @@ export const getCampaigns = cache(
 );
 
 /**
- * The `_id` of the live-dataset event a running campaign features at `now`
+ * The `_id` of the `event` a running campaign features at `now`
  * (the render clock by default), or `null`. No page shows a featured event
  * yet; this is the getter for the section that will.
  */

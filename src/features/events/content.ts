@@ -15,7 +15,7 @@ import {
 
 /**
  * The /events content slice: the `eventsCopy` singleton (the hero's empty
- * lead, section titles and leads, the closing). The events come from the live dataset; the code
+ * lead, section titles and leads, the closing). The events come from `lib/sanity.ts`; the code
  * fallback is `data/copy.ts`.
  */
 

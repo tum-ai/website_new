@@ -6,7 +6,7 @@ import {
 import { getSafeSitePath, isHttpsUrl } from "../../../lib/security";
 
 /**
- * Shared field builders for the content workspace's schemas. Keep editor
+ * Shared field builders for the page content schemas. Keep editor
  * help text here, so every type explains the same mechanisms the same way.
  */
 

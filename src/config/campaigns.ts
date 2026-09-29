@@ -47,8 +47,8 @@ export type Campaign = {
   endTime?: string;
   headerCta?: CampaignHeaderCta;
   /**
-   * The `_id` of an `event` document in the live dataset (a string: the free
-   * plan has no cross-dataset references).
+   * The `_id` of an `event` document (a plain string, not a reference, so
+   * the campaign never blocks deleting the event).
    */
   featuredEventId?: string;
 };

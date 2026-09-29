@@ -156,7 +156,7 @@ export const campaignType = defineType({
       title: "Featured event",
       type: "string",
       description:
-        "Optional. The document ID of an event in the “Events, partners and research” workspace (open the event, then copy the ID from the address bar or the document inspector).",
+        "Optional. The document ID of an event (open it under Events, then copy the ID from the address bar or the document inspector).",
       validation: (Rule) =>
         Rule.regex(/^[A-Za-z0-9._-]+$/, { name: "document ID" }).max(128),
     }),

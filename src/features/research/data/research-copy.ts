@@ -139,7 +139,7 @@ export const researchCopyTemplate: ResearchCopy = {
 
 /**
  * The abstract's body for `ongoingCount` running projects (the count comes
- * from the live dataset): the running sentence in the singular or plural,
+ * from the `research` documents): the running sentence in the singular or plural,
  * set into the body. `abstract` is the copy's, with its site facts filled.
  */
 export function getAbstractBody(

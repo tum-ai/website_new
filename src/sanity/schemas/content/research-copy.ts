@@ -21,8 +21,8 @@ const fork = (name: string, title: string) =>
 
 /**
  * The /research page's own copy (one document, `_id` `researchCopy`), set
- * like a paper's first page. The projects come from the live workspace
- * (events, partners and research), the REX band from its own copy, and the
+ * like a paper's first page. The projects come from the `research`
+ * documents, the REX band from its own copy, and the
  * globe from Lab site documents. Read by `features/research/content.ts`, over the code copy in
  * `features/research/data/research-copy.ts`.
  */

@@ -9,7 +9,7 @@ import {
 } from "./cms-backfill";
 
 /**
- * The content dataset under the mock CMS (`USE_MOCK_CMS=1` with
+ * The page content under the mock CMS (`USE_MOCK_CMS=1` with
  * `CMS_CONTENT_SOURCE=sanity`): the slices' backfill documents, queried with
  * the real GROQ through groq-js. So unit, E2E and visual runs are
  * deterministic, and a parity test proves that a query plus its mapping

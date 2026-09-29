@@ -22,10 +22,11 @@ const nextConfig: NextConfig = {
   },
   images: {
     qualities: [40, 75],
-    // Images from the content dataset (`CMS_CONTENT_SOURCE=sanity`) are
-    // served from Sanity's CDN; code images stay local /assets/ files. Only
-    // this project's assets (both datasets): the optimizer never fetches
-    // another project's files on the site's behalf.
+    // CMS images (events, partners, research and, with
+    // `CMS_CONTENT_SOURCE=sanity`, page content) are served from Sanity's
+    // CDN; code images stay local /assets/ files. Only this project's assets
+    // (every dataset): the optimizer never fetches another project's files
+    // on the site's behalf.
     remotePatterns: [
       {
         protocol: "https",

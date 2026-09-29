@@ -17,7 +17,7 @@ import { HeroAperture } from "./hero-aperture";
 
 /**
  * Gold partners with artwork verified for dark bands: the partners from the
- * static defaults, so the home page stays prerendered without a live-dataset
+ * static defaults, so the home page stays prerendered without a partner
  * request, and their artwork from the partner marquee's logo list.
  */
 const heroPartnersOf = (

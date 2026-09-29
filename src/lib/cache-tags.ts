@@ -3,15 +3,15 @@
  * Sanity webhook (`app/api/revalidate/route.ts`) can expire exactly the
  * pages that read a changed document. Isomorphic and pure.
  *
- * - Live dataset (`lib/sanity.ts`): a fixed tag per type, shared by the page
- *   getters and the public API.
- * - Content dataset (content slices, `lib/cms-content.ts`): `content:<type>`
+ * - Events, partners and research (`lib/sanity.ts`): a fixed tag per type,
+ *   shared by the page getters and the public API.
+ * - Page content (content slices, `lib/cms-content.ts`): `content:<type>`
  *   for every type a slice's query reads, including the types it
  *   dereferences (`content:person` on the homepage copy). New content types
  *   need no change here.
  */
 
-/** The live dataset's cache tags, by `_type`. */
+/** The cache tags of events, partners and research, by `_type`. */
 export const liveCacheTags = {
   event: ["events"],
   partner: ["partners"],
