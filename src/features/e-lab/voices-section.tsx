@@ -37,7 +37,10 @@ function VoiceColumn({
               quote={voice.quote}
               name={voice.name}
               byline={voice.role}
-              portrait={{ src: voice.portraitSrc }}
+              portrait={{
+                src: voice.portraitSrc,
+                position: voice.portraitPosition,
+              }}
               context={
                 voice.context ? (
                   <span className="text-fg-subtle text-meta">

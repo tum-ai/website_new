@@ -6,9 +6,27 @@ import { buildMemberStoriesBackfill, getMemberStories } from "./people-content";
 /**
  * Parity for the member stories slice: the `person` documents, read back
  * through the real query under the mock CMS, are exactly the code stories.
+ * Crafted query results (`override`) check what the adapter keeps.
  */
+const override = vi.hoisted(() => ({ result: undefined as unknown }));
+
+vi.mock("@/lib/cms-content-mock", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@/lib/cms-content-mock")>();
+  return {
+    ...actual,
+    evaluateMockQuery: (
+      ...args: Parameters<typeof actual.evaluateMockQuery>
+    ) =>
+      override.result === undefined
+        ? actual.evaluateMockQuery(...args)
+        : override.result,
+  };
+});
+
 afterEach(() => {
   vi.unstubAllEnvs();
+  override.result = undefined;
 });
 
 function useSource(source: "code" | "sanity") {
@@ -41,6 +59,38 @@ describe("the member stories slice", () => {
       const story = cms.find((entry) => entry.name === name);
       expect(story?.story, name).toContain(excerpt);
     }
+  });
+
+  test("a portrait keeps the hotspot set in the Studio", async () => {
+    useSource("sanity");
+    override.result = [
+      {
+        key: "ada",
+        name: "Ada",
+        role: "Informatics, TUM",
+        context: null,
+        quote: null,
+        story: "I built it.",
+        portrait: {
+          src: "https://cdn.sanity.io/ada.webp",
+          width: 800,
+          height: 1000,
+          alt: null,
+          hotspot: { x: 0.5, y: 0.2 },
+        },
+        organization: null,
+      },
+    ];
+    await expect(getMemberStories()).resolves.toStrictEqual([
+      {
+        key: "ada",
+        name: "Ada",
+        role: "Informatics, TUM",
+        story: "I built it.",
+        image: "https://cdn.sanity.io/ada.webp",
+        imagePosition: "50% 20%",
+      },
+    ]);
   });
 
   test("one document per story, keyed by name", () => {

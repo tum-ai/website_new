@@ -43,7 +43,7 @@ export function PeopleSection({
               <PersonCard
                 name={profile.name}
                 byline={profile.role}
-                image={{ src: profile.image }}
+                image={{ src: profile.image, position: profile.position }}
                 sizes="(min-width: 1024px) 25vw, 50vw"
                 // The portraits are lossless artwork; serve them as they are.
                 unoptimized

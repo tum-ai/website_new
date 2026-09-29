@@ -68,6 +68,8 @@ export type QuoteImage = {
   src: string;
   /** Text alternative; "" for a portrait the name already describes. */
   alt?: string;
+  /** Portrait only: CSS `object-position`, e.g. from the Studio hotspot. */
+  position?: string;
 };
 
 /** Props for {@link QuoteCard}. */
@@ -131,6 +133,7 @@ export function QuoteCard({
               loading={loading}
               unoptimized={isUnoptimizedRemoteImage(portrait.src)}
               className="size-12 shrink-0 rounded-full object-cover ring-2 ring-hairline"
+              style={{ objectPosition: portrait.position }}
             />
           ) : null}
           <div className={cn("min-w-0", variant !== "editorial" && "flex-1")}>

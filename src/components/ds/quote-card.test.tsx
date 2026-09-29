@@ -29,4 +29,17 @@ describe("QuoteCard", () => {
       expect(await axe(container)).toHaveNoViolations();
     },
   );
+
+  test("frames the portrait on its focal point", () => {
+    const { container } = render(
+      <QuoteCard
+        quote="Build it here."
+        name="Ada Lovelace"
+        portrait={{ src: "/assets/home_img4.webp", position: "50% 20%" }}
+      />,
+    );
+    expect(container.querySelector("img")).toHaveStyle({
+      objectPosition: "50% 20%",
+    });
+  });
 });

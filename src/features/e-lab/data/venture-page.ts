@@ -19,6 +19,8 @@ export interface TestimonialCard {
   context?: string;
   quote: string;
   portraitSrc: string;
+  /** CSS `object-position` of the portrait, from the Studio hotspot. */
+  portraitPosition?: string;
   organizationLogoSrc: string;
   organizationLogoAlt: string;
 }

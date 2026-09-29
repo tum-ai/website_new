@@ -52,6 +52,7 @@ export function MemberStories({ copy, stories }: MemberStoriesProps) {
                       fill
                       sizes="56px"
                       className="object-cover"
+                      style={{ objectPosition: story.imagePosition }}
                     />
                   </div>
                   <div className="min-w-0">

@@ -79,6 +79,9 @@ export function getTestimonialCards(): Promise<TestimonialCard[]> {
         ...(context ? { context } : {}),
         quote,
         portraitSrc: image.src,
+        ...(image.objectPosition
+          ? { portraitPosition: image.objectPosition }
+          : {}),
         organizationLogoSrc: logo.src,
         organizationLogoAlt: logo.alt,
       };

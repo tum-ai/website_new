@@ -127,6 +127,39 @@ describe("incomplete CMS content", () => {
     expect(console.warn).toHaveBeenCalled();
   });
 
+  test("a testimonial portrait keeps the hotspot set in the Studio", async () => {
+    useSource("sanity");
+    const image = (src: string, hotspot: { x: number; y: number } | null) => ({
+      src,
+      width: 800,
+      height: 1000,
+      alt: "Engines logo",
+      hotspot,
+    });
+    override.result = [
+      {
+        key: "ada",
+        name: "Ada",
+        role: "Founder",
+        context: null,
+        quote: "Great.",
+        story: null,
+        portrait: image("https://cdn.sanity.io/ada.webp", { x: 0.5, y: 0.3 }),
+        organization: {
+          key: "engines",
+          name: "Engines",
+          logo: image("https://cdn.sanity.io/engines.svg", null),
+        },
+      },
+    ];
+    const [card] = await getTestimonialCards();
+    expect(card).toMatchObject({
+      id: "ada",
+      portraitSrc: "https://cdn.sanity.io/ada.webp",
+      portraitPosition: "50% 30%",
+    });
+  });
+
   test("a complete CMS trace replaces the code trace whole, without its `now`", async () => {
     useSource("sanity");
     override.result = {

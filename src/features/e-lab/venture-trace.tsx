@@ -66,7 +66,10 @@ export async function VentureTrace({
               quote={founder.quote}
               name={founder.name}
               byline={founder.role}
-              portrait={{ src: founder.portraitSrc }}
+              portrait={{
+                src: founder.portraitSrc,
+                position: founder.portraitPosition,
+              }}
             />
           </Reveal>
           <Reveal delay={120} className="lg:col-span-4 lg:col-start-9">

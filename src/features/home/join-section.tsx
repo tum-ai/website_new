@@ -124,6 +124,7 @@ export function JoinSection({
                         width={48}
                         height={48}
                         className="size-9 rounded-full object-cover ring-2 ring-canvas sm:size-11"
+                        style={{ objectPosition: story.imagePosition }}
                       />
                     ))}
                   </div>

@@ -95,7 +95,11 @@ export async function PartnersSection({
                 quote={quote.quote}
                 name={quote.name}
                 byline={quote.role}
-                portrait={{ src: quote.portraitSrc, alt: "" }}
+                portrait={{
+                  src: quote.portraitSrc,
+                  alt: "",
+                  position: quote.portraitPosition,
+                }}
                 logo={{
                   src: quote.organizationLogoSrc,
                   alt: quote.organizationLogoAlt,

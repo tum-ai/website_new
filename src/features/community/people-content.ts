@@ -22,7 +22,16 @@ export function getMemberStories(): Promise<MemberStory[]> {
     select: ({ key, name, role, story, portrait }) => {
       const image = toContentImage(portrait);
       return story && image
-        ? { key, name, role, story, image: image.src }
+        ? {
+            key,
+            name,
+            role,
+            story,
+            image: image.src,
+            ...(image.objectPosition
+              ? { imagePosition: image.objectPosition }
+              : {}),
+          }
         : null;
     },
   });

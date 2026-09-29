@@ -11,6 +11,8 @@ export type MemberStory = {
   role: string;
   story: string;
   image: string;
+  /** CSS `object-position` of the portrait, from the Studio hotspot. */
+  imagePosition?: string;
 };
 
 /** Member testimonials shown on /community. */

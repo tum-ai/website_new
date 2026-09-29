@@ -38,6 +38,7 @@ function Track({
               width={40}
               height={40}
               className="size-9 shrink-0 rounded-full object-cover"
+              style={{ objectPosition: story.imagePosition }}
             />
             <span className="text-fg-muted text-meta">
               <span className="font-medium text-fg">{story.name}</span>,{" "}
