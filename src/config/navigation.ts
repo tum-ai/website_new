@@ -259,8 +259,12 @@ export function headerCtaSchedule({
  *   applications are open, else `fallback` ({@link selectHeaderCta});
  * - a campaign running (the latest started one that sets a CTA, see
  *   `resolveActiveCampaigns`): its variant replaces `fallback` when it
- *   yields to recruiting, and `override` otherwise; its label replaces the
- *   variant's, and its `notifyUrl` is the `notify` target.
+ *   yields to recruiting, and `override` otherwise.
+ *
+ * The campaign's label and `notifyUrl` (the `notify` target) apply only when
+ * the campaign wins. One that yields steps back entirely while membership
+ * applications are open or `override` is set, so a `member` campaign with its
+ * own label never relabels the recruiting CTA.
  *
  * A variant without a target is skipped for `member`, as in
  * {@link selectHeaderCta}; `null` means no CTA.
@@ -269,28 +273,35 @@ export function headerCtaAt(
   schedule: HeaderCtaSchedule,
   now: Date,
 ): NavLink | null {
+  const { fallback, override, ctas } = schedule;
   const membershipOpen = isClockWindowOpen(schedule.membership, now);
   const [campaign] = resolveActiveCampaigns(schedule.campaigns, now);
-  if (!campaign) {
-    const { fallback, override, ctas } = schedule;
+  const campaignWins =
+    campaign !== undefined &&
+    (!campaign.cta.yieldsToRecruiting ||
+      (!membershipOpen && override === undefined));
+  if (!campaignWins) {
     return headerCtaLink(
       selectHeaderCta({ membershipOpen, fallback, override }, ctas),
       ctas,
     );
   }
-  const { variant, label, notifyUrl, yieldsToRecruiting } = campaign.cta;
-  const base = schedule.ctas[variant];
-  const ctas: HeaderCtaTable = {
-    ...schedule.ctas,
+  const { variant, label, notifyUrl } = campaign.cta;
+  const base = ctas[variant];
+  const campaignCtas: HeaderCtaTable = {
+    ...ctas,
     [variant]: {
       label: label ?? base.label,
       href: variant === "notify" ? (notifyUrl ?? null) : base.href,
     },
   };
-  const choice: HeaderCtaChoice = yieldsToRecruiting
-    ? { membershipOpen, fallback: variant, override: schedule.override }
-    : { membershipOpen, fallback: schedule.fallback, override: variant };
-  return headerCtaLink(selectHeaderCta(choice, ctas), ctas);
+  return headerCtaLink(
+    selectHeaderCta(
+      { membershipOpen, fallback, override: variant },
+      campaignCtas,
+    ),
+    campaignCtas,
+  );
 }
 
 /** The instants at which {@link headerCtaAt} can change. */

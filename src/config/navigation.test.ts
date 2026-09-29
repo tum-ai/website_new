@@ -278,6 +278,23 @@ describe("the dated header CTA schedule", () => {
     });
   });
 
+  test("a yielding member campaign keeps its label off the recruiting CTA", () => {
+    const schedule = scheduleWith(
+      campaign({
+        variant: "member",
+        label: "Next round soon",
+        yieldsToRecruiting: true,
+      }),
+    );
+    expect(headerCtaAt(schedule, during)).toStrictEqual(
+      headerCtaLink("member"),
+    );
+    expect(headerCtaAt(schedule, between)).toStrictEqual({
+      label: "Next round soon",
+      href: headerCtas.member.href,
+    });
+  });
+
   test("a campaign that does not yield shows for its whole run, with its label", () => {
     const schedule = scheduleWith(
       campaign({
