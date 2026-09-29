@@ -18,6 +18,8 @@ export type RecruitingCall = {
   phase: CallPhase;
   /** Who the round recruits for ("Winter semester 2026/27"). */
   name: string;
+  /** The application form, for the apply action while the call is open. */
+  applicationUrl: string;
   /** The round's dates as the important-dates register rows. */
   keyDates: KeyDateItem[];
   progress: ApplicationProgress;
@@ -92,7 +94,9 @@ function startsIn(count: number): string {
 /**
  * The recruiting round at `now`: its phase, the register rows with each
  * date's state, and the progress of the application window, all on the
- * Munich calendar. Server only: pass the render's "now" (`getCmsNow()`).
+ * Munich calendar. Server only: pass the render's "now" (`getCmsNow()`) and
+ * the window resolved for the render (`await getMembershipWindow()`); the
+ * default is the code window.
  */
 export function recruitingCall(
   now: Date,
@@ -182,6 +186,7 @@ export function recruitingCall(
   return {
     phase,
     name: config.round.name,
+    applicationUrl: config.applicationUrl,
     keyDates,
     progress,
     words: {

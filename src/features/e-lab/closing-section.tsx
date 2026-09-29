@@ -6,8 +6,9 @@ import {
   Section,
   TextLink,
 } from "@/components/ds";
-import { socialLinks } from "@/config/contact";
-import { eLabConfig, eLabPhaseCopy } from "@/config/e-lab";
+import { eLabPhaseCopyOf, eLabWindowClock } from "@/config/e-lab";
+import { getELabWindow } from "@/config/schedule-content";
+import { getSiteFacts } from "@/config/site-settings-content";
 import { ELabApplicationCta } from "./application-cta";
 import { ELabPhase } from "./e-lab-phase";
 
@@ -15,10 +16,19 @@ import { ELabPhase } from "./e-lab-phase";
  * The close on ink, back at the widest gate: the application round, drawn
  * as the full-length bar it is on the scale above. The round's status and
  * action follow the application phase: apply while open, and a way to hear
- * about the next round while closed. Beside it, the partners' way in.
+ * about the next round while closed. Beside it, the partners' way in. Facts,
+ * phase and copy come from the render's `getSiteFacts()` and `getELabWindow()`.
  */
-export function ClosingSection() {
-  const { open, closed } = eLabPhaseCopy;
+export async function ClosingSection() {
+  const [facts, eLabWindow] = await Promise.all([
+    getSiteFacts(),
+    getELabWindow(),
+  ]);
+  const { open, closed } = eLabPhaseCopyOf(
+    facts.eLab.currentIteration,
+    eLabWindow,
+  );
+  const clock = eLabWindowClock(eLabWindow);
   return (
     <Section tone="ink" spacing="xl" aria-labelledby="elab-close-title">
       <Container>
@@ -30,7 +40,7 @@ export function ClosingSection() {
                 className="max-w-[12em] text-display-lg text-highlight"
               >
                 Every Final Pitch starts as one of about{" "}
-                {eLabConfig.selection.applications} applications.
+                {facts.eLab.selection.applications} applications.
               </h2>
             </Reveal>
             <div
@@ -46,16 +56,18 @@ export function ClosingSection() {
             <Reveal delay={120}>
               <p className="mt-8 max-w-xl text-fg-muted text-lead md:mt-10">
                 <ELabPhase
+                  clock={clock}
                   open={open.roundStatus}
                   closed={closed.roundStatus}
                 />
               </p>
               <Actions className="mt-10 md:mt-12">
                 <ELabPhase
+                  clock={clock}
                   open={<ELabApplicationCta />}
                   closed={
                     <ButtonLink
-                      href={socialLinks.linkedin}
+                      href={facts.socialLinks.linkedin}
                       size="lg"
                       arrow="external"
                     >

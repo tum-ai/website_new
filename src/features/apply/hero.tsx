@@ -25,6 +25,7 @@ export function Hero({ call }: { call: RecruitingCall }) {
         <>
           <ApplyAction
             phase={call.phase}
+            href={call.applicationUrl}
             statusId="apply-hero-status"
             closedLabel={closedLabel(call)}
           />

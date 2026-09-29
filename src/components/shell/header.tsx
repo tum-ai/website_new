@@ -9,6 +9,7 @@ import {
   type PointerEvent,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -22,16 +23,15 @@ import {
   DialogTrigger,
 } from "@/components/ds";
 import {
-  isMembershipApplicationOpen,
-  membershipWindowBoundaries,
-} from "@/config/membership";
-import {
   getHeaderOptions,
-  headerConnectLinks,
+  type HeaderCtaSchedule,
+  headerCtaAt,
+  headerCtaBoundaries,
   mainNavigation,
+  type NavLink,
 } from "@/config/navigation";
 import { cn } from "@/lib/cn";
-import { useClockSwitch } from "@/lib/use-clock-switch";
+import { useClockState } from "@/lib/use-clock-switch";
 import { getHeaderScrollState } from "./header-scroll";
 import { NavAnchor } from "./nav-anchor";
 
@@ -44,11 +44,18 @@ const logo = {
 /** Props for {@link Header}, computed by the site layout on the server. */
 export type HeaderProps = {
   /**
-   * Whether membership applications are open at render time
-   * (`isMembershipApplicationOpen(getCmsNow())`); must match the server HTML.
+   * What the site-wide CTA depends on (the membership window, the fallback,
+   * the campaigns), resolved for the render: `headerCtaSchedule(...)`.
    */
-  initialMembershipOpen: boolean;
-  /** `false` on a fixed render clock (`MOCK_CMS_NOW`); see `useClockSwitch`. */
+  ctaSchedule: HeaderCtaSchedule;
+  /**
+   * The site-wide CTA at render time (`headerCtaAt(ctaSchedule,
+   * getCmsNow())`); must match the server HTML.
+   */
+  initialCta: NavLink | null;
+  /** The menu's "Connect" row (`headerConnectLinksFor(await getSiteFacts())`). */
+  connectLinks: readonly NavLink[];
+  /** `false` on a fixed render clock (`MOCK_CMS_NOW`); see `useClockState`. */
   liveClock?: boolean;
 };
 
@@ -72,20 +79,30 @@ export type HeaderProps = {
  * Safari workarounds: docs/browser-quirks.md.
  */
 export const Header = ({
-  initialMembershipOpen,
+  ctaSchedule,
+  initialCta,
+  connectLinks,
   liveClock = true,
 }: HeaderProps) => {
   const pathname = usePathname();
-  // The CTA follows the dated membership window: the layout renders it by
-  // the server's clock, and the browser flips it when the form opens and at
-  // the deadline.
-  const membershipOpen = useClockSwitch({
-    isOn: isMembershipApplicationOpen,
-    boundaries: membershipWindowBoundaries,
-    initial: initialMembershipOpen,
+  // The CTA follows the dated schedule: the layout renders it by the
+  // server's clock, and the browser re-evaluates it when the membership form
+  // opens, at the deadline, and when a campaign starts or ends.
+  const ctaAt = useCallback(
+    (now: Date) => headerCtaAt(ctaSchedule, now),
+    [ctaSchedule],
+  );
+  const boundaries = useMemo(
+    () => headerCtaBoundaries(ctaSchedule),
+    [ctaSchedule],
+  );
+  const siteCta = useClockState({
+    at: ctaAt,
+    boundaries,
+    initial: initialCta,
     live: liveClock,
   });
-  const { solid, cta } = getHeaderOptions(pathname, { membershipOpen });
+  const { solid, cta } = getHeaderOptions(pathname, { cta: siteCta });
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const navRef = useRef<HTMLElement>(null);
@@ -314,7 +331,7 @@ export const Header = ({
               </ButtonLink>
             ) : null}
             <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-fg-muted text-small">
-              {headerConnectLinks.map((link) => (
+              {connectLinks.map((link) => (
                 <li key={link.href}>
                   <NavAnchor
                     {...link}

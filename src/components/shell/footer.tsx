@@ -8,23 +8,28 @@ import {
   TopBlend,
 } from "@/components/ds";
 import {
-  connectLinks,
-  contributeLinks,
+  connectLinksFor,
+  contributeLinksFor,
   legalLinks,
   mainNavigation,
   type NavLink,
 } from "@/config/navigation";
+import { getSiteFacts } from "@/config/site-settings-content";
 import { NavAnchor } from "./nav-anchor";
 
-const columns: { title: string; links: readonly NavLink[] }[] = [
-  { title: "Explore", links: mainNavigation },
-  { title: "Connect", links: connectLinks },
-  { title: "Legal", links: legalLinks },
-  { title: "Contribute", links: contributeLinks },
-];
-
-/** Site footer on every page: logo, tagline, both CTAs and the link columns. */
-export function Footer() {
+/**
+ * Site footer on every page: logo, tagline, both CTAs and the link columns.
+ * The tagline and the contact links come from the render's `getSiteFacts()`;
+ * the column titles are navigation structure and stay here.
+ */
+export async function Footer() {
+  const facts = await getSiteFacts();
+  const columns: { title: string; links: readonly NavLink[] }[] = [
+    { title: "Explore", links: mainNavigation },
+    { title: "Connect", links: connectLinksFor(facts) },
+    { title: "Legal", links: legalLinks },
+    { title: "Contribute", links: contributeLinksFor(facts) },
+  ];
   return (
     <footer data-tone="night" className="relative isolate overflow-clip">
       <div aria-hidden className="grain -z-10" />
@@ -52,7 +57,7 @@ export function Footer() {
               className="h-8 w-auto"
             />
             <p className="mt-10 max-w-lg text-display-md text-fg">
-              Empowering students to build the future of AI.
+              {facts.footerTagline}
             </p>
             <Actions className="mt-10">
               <ButtonLink href="/apply" arrow>

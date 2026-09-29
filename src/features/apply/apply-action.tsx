@@ -1,10 +1,11 @@
 import { Button, ButtonLink, StatusBadge } from "@/components/ds";
-import { membershipConfig } from "@/config/membership";
 import type { CallPhase } from "./round";
 
 type ApplyActionProps = {
   /** The call's phase at render time (`recruitingCall(now).phase`). */
   phase: CallPhase;
+  /** The application form (`recruitingCall(now).applicationUrl`). */
+  href: string;
   /** id of the status line, unique per instance on the page. */
   statusId: string;
   /** Status line while the call isn't open, e.g. "Opens 28 September". */
@@ -18,16 +19,13 @@ type ApplyActionProps = {
  */
 export function ApplyAction({
   phase,
+  href,
   statusId,
   closedLabel,
 }: ApplyActionProps) {
   if (phase === "open") {
     return (
-      <ButtonLink
-        href={membershipConfig.applicationUrl}
-        size="lg"
-        arrow="external"
-      >
+      <ButtonLink href={href} size="lg" arrow="external">
         Apply now
       </ButtonLink>
     );

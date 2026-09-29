@@ -1,14 +1,13 @@
 "use client";
 
 import type { ReactNode } from "react";
-import {
-  isMembershipApplicationOpen,
-  membershipWindowBoundaries,
-} from "@/config/membership";
-import { useClockSwitch } from "@/lib/use-clock-switch";
+import type { ClockWindow } from "@/lib/clock-window";
+import { useClockWindow } from "@/lib/use-clock-switch";
 
 /** Props for {@link MembershipPhaseSwitch}. */
 export type MembershipPhaseSwitchProps = {
+  /** The membership window, resolved on the server (code or CMS). */
+  clock: ClockWindow;
   /** What the server rendered; must match for hydration. */
   initialOpen?: boolean;
   /** `false` on a fixed render clock (`MOCK_CMS_NOW`); see `useClockSwitch`. */
@@ -24,16 +23,12 @@ export type MembershipPhaseSwitchProps = {
  * `initialOpen`.
  */
 export function MembershipPhaseSwitch({
+  clock,
   initialOpen,
   live,
   open,
   closed,
 }: MembershipPhaseSwitchProps) {
-  const isOpen = useClockSwitch({
-    isOn: isMembershipApplicationOpen,
-    boundaries: membershipWindowBoundaries,
-    initial: initialOpen,
-    live,
-  });
+  const isOpen = useClockWindow(clock, { initial: initialOpen, live });
   return <>{isOpen ? open : closed}</>;
 }

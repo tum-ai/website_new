@@ -6,8 +6,15 @@ import { MotionProvider } from "@/components/ds";
 import { Footer } from "@/components/shell/footer";
 import { Header } from "@/components/shell/header";
 import { SkipLink } from "@/components/shell/skip-link";
-import { isMembershipApplicationOpen } from "@/config/membership";
+import { eLabCohortNameOf } from "@/config/e-lab";
+import {
+  headerConnectLinksFor,
+  headerCtaAt,
+  headerCtaSchedule,
+} from "@/config/navigation";
+import { getCampaigns, getMembershipWindow } from "@/config/schedule-content";
 import { rootMetadata } from "@/config/seo";
+import { getSiteFacts } from "@/config/site-settings-content";
 import { getCmsNow, isCmsClockFixed } from "@/lib/mock-cms-env";
 import { isSanityConfigured, SanityLive } from "@/lib/sanity";
 import "@/styles/index.css";
@@ -57,6 +64,19 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const { isEnabled: isDraftMode } = await draftMode();
+  const [facts, membership, campaigns] = await Promise.all([
+    getSiteFacts(),
+    getMembershipWindow(),
+    getCampaigns(),
+  ]);
+  // The header's CTA follows the membership window and the campaigns: the
+  // schedule goes to the browser, which re-evaluates it at each boundary.
+  const ctaSchedule = headerCtaSchedule({
+    membership,
+    fallback: facts.headerCtaFallback,
+    eLabCohortName: eLabCohortNameOf(facts.eLab.currentIteration),
+    campaigns,
+  });
 
   return (
     <html lang="en" className={manrope.variable}>
@@ -67,7 +87,9 @@ export default async function RootLayout({
         <div id="app-root" className="isolate">
           <MotionProvider>
             <Header
-              initialMembershipOpen={isMembershipApplicationOpen(getCmsNow())}
+              ctaSchedule={ctaSchedule}
+              initialCta={headerCtaAt(ctaSchedule, getCmsNow())}
+              connectLinks={headerConnectLinksFor(facts)}
               liveClock={!isCmsClockFixed()}
             />
             <div

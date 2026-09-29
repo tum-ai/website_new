@@ -52,6 +52,7 @@ export function ClosingSection({ call }: { call: RecruitingCall }) {
             <Actions className="mt-10">
               <ApplyAction
                 phase={call.phase}
+                href={call.applicationUrl}
                 statusId="apply-close-status"
                 closedLabel={closedLabel(call)}
               />
