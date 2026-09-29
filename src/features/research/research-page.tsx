@@ -1,4 +1,3 @@
-import Image from "next/image";
 import {
   ButtonLink,
   Container,
@@ -15,15 +14,17 @@ import {
 import type { Partner, ResearchProject } from "@/lib/types";
 import { AffiliationIndex } from "./affiliations";
 import {
-  abstractFigure,
   abstractStatement,
   closing,
+  figurePanels,
   getAbstractBody,
   heroLead,
 } from "./data/research-copy";
 import { rexInstitutions, rexLead, rexOrigin, rexProcess } from "./data/rex";
 import { ProjectList, ReferenceList } from "./project-list";
-import { getPartnerLogos, getResearchIndex } from "./research";
+import { getLabSites, getPartnerLogos, getResearchIndex } from "./research";
+import { ResearchFigure } from "./research-figure";
+import { ResearchGlobe } from "./research-globe";
 
 /**
  * The /research page, set like a paper's first page. The hero is the title
@@ -43,6 +44,11 @@ export function ResearchPage({
 }) {
   const { affiliations, ongoing, completed } = getResearchIndex(projects);
   const partnerLogos = getPartnerLogos(researchPartners);
+  const { sites } = getLabSites([
+    ...affiliations,
+    ...researchPartners.map(({ name }) => name),
+    ...rexInstitutions.map(({ name }) => name),
+  ]);
 
   return (
     <main>
@@ -63,7 +69,16 @@ export function ResearchPage({
             </ButtonLink>
           </>
         }
-        classNames={{ title: "text-highlight" }}
+        media={
+          <ResearchGlobe
+            sites={sites}
+            className="mx-auto w-full max-w-md lg:max-w-none"
+          />
+        }
+        classNames={{
+          title: "text-highlight",
+          grid: "lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-center",
+        }}
       >
         {affiliations.length > 0 ? (
           <AffiliationIndex
@@ -109,19 +124,8 @@ export function ResearchPage({
               {getAbstractBody(ongoing.length)}
             </Text>
           </div>
-          <Reveal as="figure" className="lg:col-span-5 lg:col-start-8">
-            <Image
-              src={abstractFigure.src}
-              width={abstractFigure.width}
-              height={abstractFigure.height}
-              alt={abstractFigure.alt}
-              sizes="(min-width: 1024px) 36vw, 100vw"
-              className="aspect-[4/3] w-full rounded-4xl object-cover"
-            />
-            <figcaption className="mt-4 text-fg-muted text-small">
-              <span className="font-semibold text-fg">Figure 1.</span>{" "}
-              {abstractFigure.caption}
-            </figcaption>
+          <Reveal className="lg:col-span-5 lg:col-start-8 lg:self-end">
+            <ResearchFigure panels={figurePanels} />
           </Reveal>
         </Container>
       </Section>
@@ -183,11 +187,15 @@ export function ResearchPage({
             layout="stack"
             lead={rexLead}
           />
-          <AffiliationIndex
-            id="rex-institutions"
-            numbered={false}
+          {/* The list below carries the same name for assistive tech. */}
+          <p aria-hidden="true" className="text-fg-subtle text-meta">
+            Offers from labs at institutions like
+          </p>
+          <LogoWall
+            layout="strip"
+            logos={rexInstitutions}
             label="Offers from labs at institutions like"
-            affiliations={rexInstitutions}
+            className="mt-8"
           />
 
           <div className="mt-20 grid gap-14 md:mt-28 lg:grid-cols-12 lg:gap-12">

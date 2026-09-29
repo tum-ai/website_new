@@ -17,15 +17,48 @@ export function getAbstractBody(ongoingCount: number): string {
   return `In the research track, members join a team working on a question with a partner lab, contribute to the research and write it up for publication. ${running}, and our members have published ${impactFacts.publications}+ papers so far.`;
 }
 
-/** The abstract's photo, set as the page's one figure. */
-export const abstractFigure = {
-  src: "/assets/innovation/robotics_discussion.webp",
-  width: 1920,
-  height: 1440,
-  alt: "Four members around a table of laptops and robot arm parts, one of them sketching a diagram on a whiteboard, a paper open on the screen beside them.",
-  // TODO(content): name the project and year so the caption can say which team this is.
-  caption: "A research team working through a paper.",
+/** One panel of Figure 1: a photo with its intrinsic size. */
+export type FigurePanel = {
+  src: string;
+  width: number;
+  height: number;
+  alt: string;
+  /** The panel's part of the figure caption, after its "(a)" label. */
+  caption: string;
+  /** `object-position` when the panel crops the photo. */
+  position?: string;
 };
+
+/**
+ * Figure 1 in the abstract: research as it happens, in three panels.
+ *
+ * TODO(content): name the projects and years so the captions can say which
+ * teams these are.
+ */
+export const figurePanels: FigurePanel[] = [
+  {
+    src: "/assets/innovation/robotics_arm.webp",
+    width: 1533,
+    height: 921,
+    alt: "A 3D-printed robot arm holding a small object in its gripper, a member watching from beside it.",
+    caption: "Testing a robot arm's grasp.",
+  },
+  {
+    src: "/assets/innovation/robotics_discussion.webp",
+    width: 1920,
+    height: 1440,
+    alt: "Four members around a table of laptops and robot arm parts, one of them sketching a diagram on a whiteboard, a paper open on the screen beside them.",
+    caption: "Working through a paper at the whiteboard.",
+  },
+  {
+    src: "/assets/homepage/IBM_visit.webp",
+    width: 1920,
+    height: 1440,
+    alt: "About fifty members standing together in front of the IBM Innovation Studio sign.",
+    caption: "Members at the IBM Innovation Studio.",
+    position: "50% 55%",
+  },
+];
 
 /** The closing band: the affiliation line gets one more slot. */
 export const closing = {

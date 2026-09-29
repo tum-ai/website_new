@@ -46,7 +46,6 @@ function IndexNumber({ index }: { index: number }) {
 export function AffiliationIndex({
   affiliations,
   openSlot,
-  numbered = true,
   id,
   label,
   className,
@@ -55,8 +54,6 @@ export function AffiliationIndex({
   affiliations: string[];
   /** The label of an extra, highlighted last entry ("Your lab"). */
   openSlot?: string;
-  /** Number the entries. Off for a list nothing on the page cites. */
-  numbered?: boolean;
   /** Unique id prefix; the label's id is derived from it. */
   id: string;
   /** Visible label above the list; it also names the list. */
@@ -81,7 +78,7 @@ export function AffiliationIndex({
               openSlot && "text-fg-muted",
             )}
           >
-            {numbered ? <IndexNumber index={position + 1} /> : null}
+            <IndexNumber index={position + 1} />
             {name}
           </li>
         ))}
