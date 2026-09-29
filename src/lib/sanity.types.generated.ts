@@ -218,6 +218,55 @@ export type Slug = {
   source?: string;
 };
 
+export type ELabCopy = {
+  _id: string;
+  _type: "eLabCopy";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  hero?: {
+    title: string;
+    lead: string;
+  };
+  gates?: {
+    title: string;
+    lead: string;
+    scaleLabel: string;
+    stages: Array<
+      | {
+          figure:
+            | "applications"
+            | "admitted"
+            | "midterm"
+            | "selectionDay"
+            | "finalPitch";
+          name: string;
+          description: string;
+          approximate?: boolean;
+          _type: "gateStage";
+          _key: string;
+        }
+      | {
+          key: string;
+          name: string;
+          duration: string;
+          description: string;
+          photo?: {
+            asset?: SanityImageAssetReference;
+            media?: unknown;
+            hotspot?: SanityImageHotspot;
+            crop?: SanityImageCrop;
+            alt?: string;
+            _type: "image";
+          };
+          photoCaption?: string;
+          _type: "phaseStage";
+          _key: string;
+        }
+    >;
+  };
+};
+
 export type Milestone = {
   _id: string;
   _type: "milestone";
@@ -670,6 +719,7 @@ export type AllSanitySchemaTypes =
   | SanityImageAsset
   | Geopoint
   | Slug
+  | ELabCopy
   | Milestone
   | ApplyCopy
   | HomeCopy
@@ -857,6 +907,72 @@ export type COMMUNITY_COPY_QUERY_RESULT =
         title: string;
         lead: string;
         companiesReader: string;
+      } | null;
+    }
+  | null;
+
+// Source: ../features/e-lab/content.ts
+// Variable: ELAB_COPY_QUERY
+// Query: *[_id == "eLabCopy"][0]{  hero{ title, lead },  gates{    title,    lead,    scaleLabel,    stages[]{      _type,      figure,      name,      description,      approximate,      "id": key,      duration,      "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }},      photoCaption    }  }}
+export type ELAB_COPY_QUERY_RESULT =
+  | {
+      hero: null;
+      gates: null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+      } | null;
+      gates: null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+      } | null;
+      gates: {
+        title: string;
+        lead: string;
+        scaleLabel: string;
+        stages: Array<
+          | {
+              _type: "gateStage";
+              figure:
+                | "admitted"
+                | "applications"
+                | "finalPitch"
+                | "midterm"
+                | "selectionDay";
+              name: string;
+              description: string;
+              approximate: boolean | null;
+              id: null;
+              duration: null;
+              photo: null;
+              photoCaption: null;
+            }
+          | {
+              _type: "phaseStage";
+              figure: null;
+              name: string;
+              description: string;
+              approximate: null;
+              id: string;
+              duration: string;
+              photo: {
+                src: string | null;
+                width: number | null;
+                height: number | null;
+                alt: string | null;
+                hotspot: {
+                  x: number;
+                  y: number;
+                } | null;
+              } | null;
+              photoCaption: string | null;
+            }
+        >;
       } | null;
     }
   | null;

@@ -3,6 +3,7 @@ import { PageHero } from "@/components/ds";
 import { eLabConfig } from "@/config/e-lab";
 import { ELabApplicationCta, ELabApplicationStatus } from "./application-cta";
 import { ApplicationField } from "./application-field";
+import type { ELabCopy } from "./data/copy";
 
 const HERO_TITLE_ID = "elab-hero-title";
 
@@ -42,16 +43,16 @@ function LogoLockup() {
  * applications thinning to the teams that reach the Final Pitch (the page's
  * idea, which the gates band then draws to scale).
  */
-export function Hero() {
+export function Hero({ copy }: { copy: ELabCopy["hero"] }) {
   return (
     <PageHero
       titleId={HERO_TITLE_ID}
       eyebrow={<LogoLockup />}
-      title={`${eLabConfig.programWeeks} weeks from kickoff to the Final Pitch.`}
+      title={copy.title}
       emphasis="highlight"
       size="md"
       mark={false}
-      lead={`The E-Lab is TUM.ai's equity-free AI startup incubator, in person in Munich; its ventures have raised €${eLabConfig.ventureFundingMillions}M so far. Apply alone or as a team, with or without an idea. You don't need to be enrolled anywhere.`}
+      lead={copy.lead}
       actions={
         <>
           <ELabApplicationCta />
