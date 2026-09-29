@@ -17,6 +17,13 @@ import type {
   RESEARCH_QUERY_RESULT,
 } from "./sanity.types.generated";
 import {
+  isSanityConfigured,
+  sanityApiVersion,
+  sanityDataset,
+  sanityProjectId,
+  studioPaths,
+} from "./sanity-config";
+import {
   EVENTS_QUERY,
   PARTNERS_QUERY,
   PUBLIC_EVENTS_QUERY,
@@ -33,11 +40,6 @@ import type {
   PublicResearch,
   ResearchProject,
 } from "./types";
-
-const projectId =
-  process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "test-project-id";
-const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
-const apiVersion = "2024-03-01";
 
 /**
  * Server-side read token (Viewer rights): fetches drafts in draft mode and
@@ -57,18 +59,20 @@ export function getSanityReadToken(): string | undefined {
  */
 const browserToken = process.env.SANITY_API_BROWSER_TOKEN || false;
 
-export const isSanityConfigured = Boolean(
-  process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-);
+export { isSanityConfigured };
 
+/**
+ * The live dataset's client (events, partners, research). Page content from
+ * the content dataset goes through `lib/cms-content.ts` instead.
+ */
 export const client = createClient({
-  projectId,
-  dataset,
-  apiVersion,
+  projectId: sanityProjectId,
+  dataset: sanityDataset,
+  apiVersion: sanityApiVersion,
   useCdn: true,
   perspective: "published",
   stega: {
-    studioUrl: "/studio",
+    studioUrl: studioPaths.live,
   },
 });
 

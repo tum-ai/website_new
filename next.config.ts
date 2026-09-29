@@ -21,6 +21,9 @@ const nextConfig: NextConfig = {
   },
   images: {
     qualities: [40, 75],
+    // Images from the content dataset (`CMS_CONTENT_SOURCE=sanity`) are
+    // served from Sanity's CDN; code images stay local /assets/ files.
+    remotePatterns: [{ protocol: "https", hostname: "cdn.sanity.io" }],
   },
   experimental: {
     // The site and /studio are separate root layouts; unmatched URLs render
