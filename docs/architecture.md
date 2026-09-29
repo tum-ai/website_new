@@ -20,6 +20,7 @@ the test wins. Decisions behind the layout are recorded in [`docs/adr/`](adr/REA
 ├── playwright.config.ts    E2E, accessibility and visual projects
 ├── vitest.config.ts        unit and component tests (node and jsdom projects)
 ├── vitest.perf.config.ts   the homepage budget against the production build
+├── vitest.aliases.ts       module aliases and stubs shared by both Vitest configs
 ├── biome.json              lint and format rules, including import layering
 └── knip.json               unused files, exports and dependencies
 ```

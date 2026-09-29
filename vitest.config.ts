@@ -1,9 +1,6 @@
-import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vitest/config";
-
-const fromRoot = (path: string) =>
-  fileURLToPath(new URL(path, import.meta.url));
+import { vitestAliases } from "./vitest.aliases";
 
 /**
  * Unit and component tests. `pnpm test` never builds the app; the
@@ -16,14 +13,7 @@ const fromRoot = (path: string) =>
  * Tests may live next to the code under `src/` or in `test/`.
  */
 export default defineConfig({
-  resolve: {
-    alias: [
-      { find: /^@\//, replacement: `${fromRoot("./src")}/` },
-      { find: /^@test\//, replacement: `${fromRoot("./test")}/` },
-      // `server-only` throws outside the React Server Components bundler.
-      { find: /^server-only$/, replacement: fromRoot("./test/stubs/empty.ts") },
-    ],
-  },
+  resolve: { alias: vitestAliases },
   test: {
     exclude: ["**/node_modules/**", "**/.next*/**", "e2e/**"],
     server: {
