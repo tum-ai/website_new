@@ -119,59 +119,166 @@ export function assetFileOf(sanityAsset: string): string | null {
   return isAbsolute(file) ? file : null;
 }
 
-/**
- * An image the dataset holds without its file: `sanity dataset import`
- * creates each document before it uploads the document's images, so an
- * upload that failed (or an import that stopped) leaves `{_type: "image"}`
- * with no `asset`, and a re-run with `--missing` skips the document.
- */
-export type UnattachedAsset = {
+/** An image a backfill document uploads: where it goes and which file. */
+export type PlannedAsset = {
   /** Patch path of the image, e.g. `hero` or `items[_key=="ada"].portrait`. */
   path: string;
-  /** The planned `_sanityAsset` whose upload belongs there. */
+  /** The `_sanityAsset` the import uploads there. */
   sanityAsset: string;
+};
+
+/**
+ * An image upload an `--apply` import on this machine started and nobody has
+ * seen finish: `sanity dataset import` creates each document before it
+ * uploads the document's images, so a failed upload (or an import that
+ * stopped) leaves `{_type: "image"}` with no `asset`, and a re-run with
+ * `--missing` skips the document. The backfill keeps these in a ledger
+ * (`.sanity-backfill/<dataset>.pending-assets.json`) because the dataset
+ * alone cannot tell such an image from one an editor removed: the Studio's
+ * Remove also drops only `asset` and keeps `alt`.
+ */
+export type PendingAsset = PlannedAsset & {
+  /** The published document's `_id`. */
+  documentId: string;
 };
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
 
 /**
- * The images `planned` (a backfill document) uploads that `existing` (the
- * dataset's version of it) holds without a file. Only an image object that
- * is still there and has no `asset` counts: an image an editor removed,
- * replaced or moved stays as the editor left it. List items are matched by
- * `_key`, or by position when the plan gives them none.
+ * Every image `planned` (a backfill document) uploads, with its patch path.
+ * List items are addressed by `_key`, or by position when they have none.
  */
-export function findUnattachedAssets(
-  planned: unknown,
-  existing: unknown,
-  path = "",
-): UnattachedAsset[] {
+export function plannedAssets(planned: unknown, path = ""): PlannedAsset[] {
   if (Array.isArray(planned)) {
-    if (!Array.isArray(existing)) return [];
     return planned.flatMap((item, index) => {
       const key = isRecord(item) ? item._key : undefined;
-      if (typeof key === "string") {
-        const match = existing.find(
-          (candidate) => isRecord(candidate) && candidate._key === key,
-        );
-        return findUnattachedAssets(item, match, `${path}[_key=="${key}"]`);
-      }
-      return findUnattachedAssets(item, existing[index], `${path}[${index}]`);
+      return plannedAssets(
+        item,
+        typeof key === "string"
+          ? `${path}[_key=="${key}"]`
+          : `${path}[${index}]`,
+      );
     });
   }
-  if (!isRecord(planned) || !isRecord(existing)) return [];
+  if (!isRecord(planned)) return [];
   if (typeof planned._sanityAsset === "string") {
-    return existing.asset ? [] : [{ path, sanityAsset: planned._sanityAsset }];
+    return [{ path, sanityAsset: planned._sanityAsset }];
   }
   return Object.entries(planned).flatMap(([key, value]) =>
     key.startsWith("_")
       ? []
-      : findUnattachedAssets(
-          value,
-          existing[key],
-          path ? `${path}.${key}` : key,
-        ),
+      : plannedAssets(value, path ? `${path}.${key}` : key),
+  );
+}
+
+/**
+ * The ledger an `--apply` import starts from: the `previous` entries (still
+ * unconfirmed, their file refreshed from the plan when it still has that
+ * image) plus every image of each planned document the import is about to
+ * create, which is every planned document with `overwrite` (`--replace`
+ * recreates them all) and otherwise those not among `existingIds`
+ * (`--missing` skips the rest). One entry per document and path.
+ */
+export function pendingAssetsBeforeImport(
+  documents: readonly BackfillDocument[],
+  options: {
+    existingIds: ReadonlySet<string>;
+    previous: readonly PendingAsset[];
+    overwrite: boolean;
+  },
+): PendingAsset[] {
+  const planned = new Map(
+    documents.map((document) => [document._id, plannedAssets(document)]),
+  );
+  const entries = new Map<string, PendingAsset>();
+  const add = (entry: PendingAsset) =>
+    entries.set(`${entry.documentId}\n${entry.path}`, entry);
+  for (const entry of options.previous) {
+    const current = planned
+      .get(entry.documentId)
+      ?.find(({ path }) => path === entry.path);
+    add(current ? { ...entry, sanityAsset: current.sanityAsset } : entry);
+  }
+  for (const [documentId, assets] of planned) {
+    if (!options.overwrite && options.existingIds.has(documentId)) continue;
+    for (const asset of assets) add({ documentId, ...asset });
+  }
+  return [...entries.values()];
+}
+
+/** The value at a patch path from {@link plannedAssets}, if there is one. */
+function valueAt(document: unknown, path: string): unknown {
+  const segment = /(?:^|\.)([^.[\]]+)|\[_key=="([^"]*)"\]|\[(\d+)\]/y;
+  let value = document;
+  while (segment.lastIndex < path.length) {
+    const match = segment.exec(path);
+    if (!match) throw new Error(`Unsupported image path "${path}"`);
+    const [, field, key, index] = match;
+    if (field !== undefined) {
+      value = isRecord(value) ? value[field] : undefined;
+    } else if (!Array.isArray(value)) {
+      value = undefined;
+    } else if (key !== undefined) {
+      value = value.find((item) => isRecord(item) && item._key === key);
+    } else {
+      value = value[Number(index)];
+    }
+  }
+  return value;
+}
+
+const isUnattached = (document: unknown, path: string) => {
+  const image = valueAt(document, path);
+  return isRecord(image) && !image.asset;
+};
+
+/**
+ * Which ledger entries still need their file, given the dataset's `stored`
+ * published documents and drafts. An entry is `open` while its published
+ * document holds the image without `asset`; the repair then sets it there
+ * and on the draft if the draft lacks it too. Every other entry is settled:
+ * the import (or an earlier repair) attached it, or the image or document is
+ * gone. An image without `asset` that is not in `pending` is an editor's
+ * removal and never appears here.
+ */
+export function findUnattachedAssets<Stored extends { _id: string }>(
+  pending: readonly PendingAsset[],
+  stored: readonly Stored[],
+): {
+  open: PendingAsset[];
+  repairs: { document: Stored; assets: PendingAsset[] }[];
+} {
+  const byId = new Map(stored.map((document) => [document._id, document]));
+  const repairs = new Map<Stored, PendingAsset[]>();
+  const open = pending.filter((entry) => {
+    const published = byId.get(entry.documentId);
+    if (!isUnattached(published, entry.path)) return false;
+    const draft = byId.get(`drafts.${entry.documentId}`);
+    for (const document of [published, draft]) {
+      if (document && isUnattached(document, entry.path)) {
+        repairs.set(document, [...(repairs.get(document) ?? []), entry]);
+      }
+    }
+    return true;
+  });
+  return {
+    open,
+    repairs: [...repairs].map(([document, assets]) => ({ document, assets })),
+  };
+}
+
+/**
+ * The ledger after a repair: the `open` entries of a document (published or
+ * draft) whose repair failed, so the next run retries them.
+ */
+export function settlePendingAssets(
+  open: readonly PendingAsset[],
+  failedIds: ReadonlySet<string>,
+): PendingAsset[] {
+  return open.filter(
+    ({ documentId }) =>
+      failedIds.has(documentId) || failedIds.has(`drafts.${documentId}`),
   );
 }
 

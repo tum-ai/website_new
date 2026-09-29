@@ -6,8 +6,11 @@ import {
   backfillImage,
   collectSanityAssets,
   findUnattachedAssets,
+  pendingAssetsBeforeImport,
+  plannedAssets,
   publicDir,
   publicPathOf,
+  settlePendingAssets,
 } from "./cms-backfill";
 
 describe("backfillId", () => {
@@ -94,12 +97,13 @@ test("collectSanityAssets finds nested assets once", () => {
   ).toStrictEqual([logo, photo]);
 });
 
-describe("findUnattachedAssets", () => {
+describe("the pending-assets ledger", () => {
   const photo = (name: string) => ({
     _type: "image",
     _sanityAsset: `image@file:///assets/${name}.webp`,
     alt: name,
   });
+  const asset = (name: string) => `image@file:///assets/${name}.webp`;
   const planned = {
     _id: "homeCopy",
     _type: "homeCopy",
@@ -110,36 +114,151 @@ describe("findUnattachedAssets", () => {
     ],
     gallery: [photo("one"), photo("two")],
   };
+  const heroPaths = [
+    { path: "hero", sanityAsset: asset("hero") },
+    { path: 'people[_key=="ada"].portrait', sanityAsset: asset("ada") },
+    { path: 'people[_key=="bo"].portrait', sanityAsset: asset("bo") },
+    { path: "gallery[0]", sanityAsset: asset("one") },
+    { path: "gallery[1]", sanityAsset: asset("two") },
+  ];
   const attached = { _type: "image", asset: { _ref: "image-abc-1x1-webp" } };
-
-  test("finds the images the import left without a file", () => {
-    const existing = {
-      ...planned,
-      hero: { _type: "image", alt: "hero" },
-      people: [
-        { _key: "bo", portrait: attached },
-        { _key: "ada", portrait: { _type: "image" } },
-      ],
-      gallery: [attached, { _type: "image" }],
-    };
-    expect(findUnattachedAssets(planned, existing)).toStrictEqual([
-      { path: "hero", sanityAsset: "image@file:///assets/hero.webp" },
-      {
-        path: 'people[_key=="ada"].portrait',
-        sanityAsset: "image@file:///assets/ada.webp",
-      },
-      { path: "gallery[1]", sanityAsset: "image@file:///assets/two.webp" },
-    ]);
+  const pending = (documentId: string, path: string, name: string) => ({
+    documentId,
+    path,
+    sanityAsset: asset(name),
   });
 
-  test("leaves what an editor changed alone", () => {
-    const existing = {
-      hero: attached,
-      // Ada removed and Bo's portrait cleared in the Studio.
-      people: [{ _key: "bo" }],
-      gallery: "not a list any more",
+  test("plannedAssets lists every image with its patch path", () => {
+    expect(plannedAssets(planned)).toStrictEqual(heroPaths);
+    expect(plannedAssets({ _id: "faq", question: "?" })).toStrictEqual([]);
+  });
+
+  describe("before the import", () => {
+    const person = {
+      _id: "person-ada",
+      _type: "person",
+      portrait: photo("ada"),
     };
-    expect(findUnattachedAssets(planned, existing)).toStrictEqual([]);
-    expect(findUnattachedAssets(planned, undefined)).toStrictEqual([]);
+
+    test("adds the images of the documents the import creates", () => {
+      expect(
+        pendingAssetsBeforeImport([planned, person], {
+          existingIds: new Set(["homeCopy"]),
+          previous: [],
+          overwrite: false,
+        }),
+      ).toStrictEqual([pending("person-ada", "portrait", "ada")]);
+    });
+
+    test("adds every image with --overwrite, which recreates every document", () => {
+      expect(
+        pendingAssetsBeforeImport([planned, person], {
+          existingIds: new Set(["homeCopy", "person-ada"]),
+          previous: [],
+          overwrite: true,
+        }),
+      ).toStrictEqual([
+        ...heroPaths.map((entry) => ({ documentId: "homeCopy", ...entry })),
+        pending("person-ada", "portrait", "ada"),
+      ]);
+    });
+
+    test("keeps the unconfirmed entries, once each, with the planned file", () => {
+      const previous = [
+        pending("homeCopy", "hero", "old-hero"),
+        pending("person-gone", "portrait", "gone"),
+      ];
+      expect(
+        pendingAssetsBeforeImport([planned, person], {
+          existingIds: new Set(["homeCopy"]),
+          previous,
+          overwrite: false,
+        }),
+      ).toStrictEqual([
+        pending("homeCopy", "hero", "hero"),
+        pending("person-gone", "portrait", "gone"),
+        pending("person-ada", "portrait", "ada"),
+      ]);
+    });
+  });
+
+  describe("after the import", () => {
+    const entries = [
+      pending("homeCopy", "hero", "hero"),
+      pending("homeCopy", 'people[_key=="ada"].portrait', "ada"),
+      pending("homeCopy", "gallery[1]", "two"),
+    ];
+
+    test("repairs the entries whose image has no file, on the document and its draft", () => {
+      const published = {
+        _id: "homeCopy",
+        hero: { _type: "image", alt: "hero" },
+        people: [
+          { _key: "bo", portrait: attached },
+          { _key: "ada", portrait: { _type: "image" } },
+        ],
+        gallery: [attached, attached],
+      };
+      const draft = {
+        _id: "drafts.homeCopy",
+        hero: attached,
+        people: [{ _key: "ada", portrait: { _type: "image" } }],
+      };
+      expect(findUnattachedAssets(entries, [published, draft])).toStrictEqual({
+        open: entries.slice(0, 2),
+        repairs: [
+          { document: published, assets: entries.slice(0, 2) },
+          { document: draft, assets: [entries[1]] },
+        ],
+      });
+    });
+
+    test("leaves an image an editor removed alone: it is not in the ledger", () => {
+      // The Studio's Remove keeps alt: only the ledger tells the two apart.
+      const removed = { _type: "image", alt: "hero" };
+      const stored = [
+        { _id: "homeCopy", hero: removed },
+        { _id: "drafts.homeCopy", hero: removed },
+      ];
+      expect(findUnattachedAssets([], stored)).toStrictEqual({
+        open: [],
+        repairs: [],
+      });
+      const other = [pending("homeCopy", "gallery[0]", "one")];
+      expect(findUnattachedAssets(other, stored).repairs).toStrictEqual([]);
+    });
+
+    test("settles entries that have their file or are gone", () => {
+      const stored = [
+        {
+          _id: "homeCopy",
+          hero: attached,
+          people: [{ _key: "bo", portrait: attached }],
+          gallery: "not a list any more",
+        },
+        // A draft without the file does not reopen an entry.
+        { _id: "drafts.homeCopy", hero: { _type: "image" } },
+      ];
+      expect(findUnattachedAssets(entries, stored)).toStrictEqual({
+        open: [],
+        repairs: [],
+      });
+      expect(findUnattachedAssets(entries, [])).toStrictEqual({
+        open: [],
+        repairs: [],
+      });
+    });
+
+    test("keeps the open entries of a document whose repair failed", () => {
+      const open = [
+        pending("homeCopy", "hero", "hero"),
+        pending("person-ada", "portrait", "ada"),
+        pending("person-bo", "portrait", "bo"),
+      ];
+      expect(
+        settlePendingAssets(open, new Set(["homeCopy", "drafts.person-bo"])),
+      ).toStrictEqual([open[0], open[2]]);
+      expect(settlePendingAssets(open, new Set())).toStrictEqual([]);
+    });
   });
 });

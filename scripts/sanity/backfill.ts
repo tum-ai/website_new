@@ -26,12 +26,16 @@
  *   editors' edits to it. Only for a dataset nobody has edited yet (or to
  *   deliberately reset it); the script warns before it starts.
  *
- * - After the import, in both modes (and also when it failed), the
- *   recovery step (`repair-assets.ts`) attaches the images an earlier
- *   import created without a file: the import creates each document before
- *   it uploads its images, so a failed upload would otherwise stay missing,
- *   because `--missing` skips the existing document. It sets only the
- *   missing references, so the editors' edits stay.
+ * - Around the import, in both modes, the recovery step (`repair-assets.ts`)
+ *   attaches the images an import created without a file: the import
+ *   creates each document before it uploads its images, so a failed upload
+ *   would otherwise stay missing, because `--missing` skips the existing
+ *   document. Before the import it records the images of the documents the
+ *   import creates in `.sanity-backfill/<dataset>.pending-assets.json`
+ *   (gitignored); after it (also when it failed) it attaches only those,
+ *   setting only the missing references, so the editors' edits stay and an
+ *   image an editor removed stays removed. If recording fails, nothing is
+ *   imported.
  *
  * Documents that exist only in the dataset are left alone in both modes.
  * Ids come from explicit keys in the code data (`backfillId`), so a copy
@@ -162,29 +166,47 @@ if (values.overwrite) {
     "Creating missing documents only (--missing): existing ones, and the edits in them, stay as they are.\n",
   );
 }
+const sanityCli = join(root, "node_modules", ".bin", "sanity");
+const cliDir = join(root, "src", "sanity");
+const pendingFile = join(outDir, `${dataset}.pending-assets.json`);
+const repairAssets = (stage: "before" | "after") =>
+  spawnSync(
+    sanityCli,
+    [
+      "exec",
+      join(import.meta.dirname, "repair-assets.ts"),
+      "--with-user-token",
+    ],
+    {
+      cwd: cliDir,
+      stdio: "inherit",
+      env: {
+        ...process.env,
+        BACKFILL_STAGE: stage,
+        BACKFILL_FILE: outFile,
+        BACKFILL_PENDING_FILE: pendingFile,
+        BACKFILL_OVERWRITE: values.overwrite ? "1" : "",
+        BACKFILL_DATASET: dataset,
+        NEXT_PUBLIC_SANITY_PROJECT_ID: projectId,
+      },
+    },
+  );
+process.stdout.write("Recording the images the import uploads...\n");
+const recorded = repairAssets("before");
+if (recorded.status !== 0) {
+  process.stderr.write(
+    `Could not record the images the import uploads (${relative(root, pendingFile)}); nothing was imported.\n`,
+  );
+  process.exit(recorded.status || 1);
+}
 process.stdout.write(
   `Importing into project "${projectId}", dataset "${dataset}" (${mode})...\n`,
 );
-const sanityCli = join(root, "node_modules", ".bin", "sanity");
-const cliDir = join(root, "src", "sanity");
 const imported = spawnSync(
   sanityCli,
   ["dataset", "import", outFile, "--dataset", dataset, mode],
   { cwd: cliDir, stdio: "inherit" },
 );
 process.stdout.write("Checking that every imported image has its file...\n");
-const repaired = spawnSync(
-  sanityCli,
-  ["exec", join(import.meta.dirname, "repair-assets.ts"), "--with-user-token"],
-  {
-    cwd: cliDir,
-    stdio: "inherit",
-    env: {
-      ...process.env,
-      BACKFILL_FILE: outFile,
-      BACKFILL_DATASET: dataset,
-      NEXT_PUBLIC_SANITY_PROJECT_ID: projectId,
-    },
-  },
-);
+const repaired = repairAssets("after");
 process.exit((imported.status ?? 1) || (repaired.status ?? 1));

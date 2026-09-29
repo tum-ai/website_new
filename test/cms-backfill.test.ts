@@ -1,6 +1,12 @@
 import { existsSync } from "node:fs";
 import { describe, expect, test } from "vitest";
-import { assetFileOf, collectSanityAssets } from "@/lib/cms-backfill";
+import {
+  assetFileOf,
+  collectSanityAssets,
+  findUnattachedAssets,
+  pendingAssetsBeforeImport,
+  plannedAssets,
+} from "@/lib/cms-backfill";
 import { liveEventHosts } from "@/lib/mock-cms";
 import { pinnedDocuments } from "@/sanity/content-structure";
 import { liveSchemaTypes } from "@/sanity/schemas";
@@ -20,7 +26,8 @@ import {
 } from "../scripts/sanity/production-copy";
 import {
   type RepairClient,
-  repairUnattachedAssets,
+  recordPendingAssets,
+  repairPendingAssets,
 } from "../scripts/sanity/repair-assets";
 import { backfillSlices, collectBackfill } from "../scripts/sanity/slices";
 import productionFixture from "./fixtures/production-documents.json";
@@ -439,22 +446,40 @@ describe("copied images", () => {
 });
 
 describe("the recovery of images an import left without a file", () => {
-  const image = (file: string) => ({
+  const image = (file: string, alt?: string) => ({
     _type: "image",
     _sanityAsset: `image@file:///backfill/${file}`,
+    ...(alt ? { alt } : {}),
   });
   const planned = [
     { _id: "homeCopy", _type: "homeCopy", hero: image("hero.webp") },
     { _id: "person-ada", _type: "person", portrait: image("ada.webp") },
     { _id: "person-bo", _type: "person", portrait: image("hero.webp") },
+    {
+      _id: "organization-acme",
+      _type: "organization",
+      logo: image("acme.svg", "Acme"),
+    },
     { _id: "faq-one", _type: "faq", question: "No image here?" },
   ];
+  const pending = (documentId: string, path: string, file: string) => ({
+    documentId,
+    path,
+    sanityAsset: `image@file:///backfill/${file}`,
+  });
 
-  /** A dataset of `stored` documents that records what the repair does. */
+  /** A dataset of `stored` documents that records what the recovery does. */
   function dataset(stored: Record<string, unknown>[]) {
+    const asked: string[] = [];
     const uploads: string[] = [];
     const attached: [string, string, Record<string, string>][] = [];
     const client: RepairClient = {
+      existingIds: async (ids) => {
+        asked.push(...ids);
+        return stored
+          .map(({ _id }) => String(_id))
+          .filter((id) => ids.includes(id));
+      },
       fetchDocuments: async (ids) =>
         stored.filter((document) =>
           ids.includes(String(document._id)),
@@ -467,10 +492,47 @@ describe("the recovery of images an import left without a file", () => {
         attached.push([id, rev, assets]);
       },
     };
-    return { client, uploads, attached };
+    return { client, asked, uploads, attached };
   }
 
-  test("uploads each missing file once and sets only the missing references", async () => {
+  test("before the import, records the images of the documents it creates", async () => {
+    const { client, asked } = dataset([
+      { _id: "homeCopy", _rev: "r1" },
+      { _id: "organization-acme", _rev: "r2" },
+    ]);
+    const previous = [pending("homeCopy", "hero", "hero.webp")];
+    expect(
+      await recordPendingAssets(planned, previous, client, {
+        overwrite: false,
+      }),
+    ).toStrictEqual([
+      pending("homeCopy", "hero", "hero.webp"),
+      pending("person-ada", "portrait", "ada.webp"),
+      pending("person-bo", "portrait", "hero.webp"),
+    ]);
+    // Only the documents that upload images.
+    expect(asked).toStrictEqual([
+      "homeCopy",
+      "person-ada",
+      "person-bo",
+      "organization-acme",
+    ]);
+  });
+
+  test("before an --overwrite import, records every image", async () => {
+    const { client, asked } = dataset([{ _id: "homeCopy", _rev: "r1" }]);
+    expect(
+      await recordPendingAssets(planned, [], client, { overwrite: true }),
+    ).toStrictEqual([
+      pending("homeCopy", "hero", "hero.webp"),
+      pending("person-ada", "portrait", "ada.webp"),
+      pending("person-bo", "portrait", "hero.webp"),
+      pending("organization-acme", "logo", "acme.svg"),
+    ]);
+    expect(asked).toStrictEqual([]);
+  });
+
+  test("uploads each pending file once, sets only those references and drops them", async () => {
     const { client, uploads, attached } = dataset([
       // Created, then the upload failed; an editor changed the title since.
       {
@@ -480,6 +542,7 @@ describe("the recovery of images an import left without a file", () => {
         hero: { _type: "image" },
       },
       { _id: "drafts.homeCopy", _rev: "r2", hero: { _type: "image" } },
+      // The import attached this one.
       {
         _id: "person-ada",
         _rev: "r3",
@@ -487,8 +550,15 @@ describe("the recovery of images an import left without a file", () => {
       },
       { _id: "person-bo", _rev: "r4", portrait: { _type: "image" } },
     ]);
-    const result = await repairUnattachedAssets(planned, client);
-    expect(result).toStrictEqual({ attached: 3, failures: [] });
+    const result = await repairPendingAssets(
+      [
+        pending("homeCopy", "hero", "hero.webp"),
+        pending("person-ada", "portrait", "ada.webp"),
+        pending("person-bo", "portrait", "hero.webp"),
+      ],
+      client,
+    );
+    expect(result).toStrictEqual({ attached: 3, failures: [], pending: [] });
     expect(uploads).toStrictEqual(["/backfill/hero.webp"]);
     expect(attached).toStrictEqual([
       ["homeCopy", "r1", { hero: "image-hero.webp" }],
@@ -497,40 +567,97 @@ describe("the recovery of images an import left without a file", () => {
     ]);
   });
 
-  test("reports a failed upload and carries on with the others", async () => {
+  test("leaves an image an editor removed in the Studio removed", async () => {
+    // Remove keeps the custom fields: alt stays, only asset goes.
+    const removed = { _type: "image", alt: "Acme" };
     const { client, attached } = dataset([
+      { _id: "organization-acme", _rev: "r1", logo: removed },
+      { _id: "drafts.organization-acme", _rev: "r2", logo: removed },
+    ]);
+    const before = await recordPendingAssets(planned, [], client, {
+      overwrite: false,
+    });
+    expect(before.map(({ documentId }) => documentId)).not.toContain(
+      "organization-acme",
+    );
+    expect(await repairPendingAssets(before, client)).toStrictEqual({
+      attached: 0,
+      failures: [],
+      pending: [],
+    });
+    expect(attached).toStrictEqual([]);
+  });
+
+  test("keeps a failed upload for the next run and carries on with the others", async () => {
+    const stored = [
       { _id: "homeCopy", _rev: "r1", hero: { _type: "image" } },
       { _id: "person-ada", _rev: "r3", portrait: { _type: "image" } },
-    ]);
+    ];
+    const entries = [
+      pending("homeCopy", "hero", "hero.webp"),
+      pending("person-ada", "portrait", "ada.webp"),
+    ];
+    const { client, attached } = dataset(stored);
     client.uploadImage = async (file) => {
       if (file.endsWith("hero.webp")) throw new Error("network down");
       return "image-ada";
     };
-    const result = await repairUnattachedAssets(planned, client);
+    const result = await repairPendingAssets(entries, client);
     expect(result).toStrictEqual({
       attached: 1,
       failures: ["homeCopy: network down"],
+      pending: [entries[0]],
     });
     expect(attached).toStrictEqual([
       ["person-ada", "r3", { portrait: "image-ada" }],
     ]);
+
+    // The next run retries it.
+    const retry = dataset(stored);
+    expect(
+      await repairPendingAssets(result.pending, retry.client),
+    ).toStrictEqual({ attached: 1, failures: [], pending: [] });
+    expect(retry.attached).toStrictEqual([
+      ["homeCopy", "r1", { hero: "image-hero.webp" }],
+    ]);
   });
 
-  test("asks only for documents that upload images, and their drafts", async () => {
+  test("finds every image of the real backfill by the path it records", () => {
+    // As an import that created the documents and uploaded nothing.
+    const created = JSON.parse(JSON.stringify(documents), (key, value) =>
+      key === "_sanityAsset" ? undefined : value,
+    ) as { _id: string }[];
+    const entries = pendingAssetsBeforeImport(documents, {
+      existingIds: new Set(),
+      previous: [],
+      overwrite: false,
+    });
+    expect(entries.length).toBe(
+      documents.flatMap((document) => plannedAssets(document)).length,
+    );
+    expect(entries.length).toBeGreaterThan(0);
+    expect(findUnattachedAssets(entries, created).open).toStrictEqual(entries);
+  });
+
+  test("asks only for the pending documents and their drafts", async () => {
     const asked: string[] = [];
     const { client } = dataset([]);
     client.fetchDocuments = async (ids) => {
       asked.push(...ids);
       return [];
     };
-    await repairUnattachedAssets(planned, client);
+    await repairPendingAssets(
+      [
+        pending("homeCopy", "hero", "hero.webp"),
+        pending("person-ada", "portrait", "ada.webp"),
+      ],
+      client,
+    );
     expect(asked).toStrictEqual([
       "homeCopy",
       "drafts.homeCopy",
       "person-ada",
       "drafts.person-ada",
-      "person-bo",
-      "drafts.person-bo",
     ]);
   });
 });

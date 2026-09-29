@@ -165,13 +165,20 @@ write token in the repository or CI.
   is replaced by the code content or the copy from `production`, and the editors' edits to it are
   lost.** It prints a warning and waits 10 seconds before it starts. Use it only on a dataset
   nobody has edited, or to reset one on purpose.
-- After either import, even a failed one, a recovery step (`scripts/sanity/repair-assets.ts`,
-  through `sanity exec --with-user-token`) attaches the images an earlier import left without a
-  file. The import creates each document before it uploads its images, so a failed upload or an
-  interrupted import leaves `{_type: "image"}`, and `--missing` would skip that document on every
-  re-run. The step uploads those files and sets only the missing `asset` references on the
-  document and its draft, guarded by the revision, so running the backfill again recovers
-  without `--overwrite` and keeps the editors' edits.
+- Around either import, a recovery step (`scripts/sanity/repair-assets.ts`, through
+  `sanity exec --with-user-token`) attaches the images an import left without a file. The import
+  creates each document before it uploads its images, so a failed upload or an interrupted import
+  leaves `{_type: "image"}`, and `--missing` would skip that document on every re-run. The
+  dataset cannot tell that from an editor's Remove in the Studio (which keeps `alt`), so before
+  the import the step records the images of the documents the import creates (every document
+  with `--overwrite`) in a per-machine ledger, `.sanity-backfill/<dataset>.pending-assets.json`
+  (gitignored); if that fails, nothing is imported. After the import, even a failed one, it
+  uploads only the ledger's images that still lack a file and sets those `asset` references on
+  the document and its draft, guarded by the revision. Entries drop once the image has its file
+  or is gone; failed ones stay, so running the backfill again recovers without `--overwrite`,
+  keeps the editors' edits and never restores an image an editor removed. Images an import left
+  without a file before the ledger existed, or on another machine, are not repaired: attach them
+  in the Studio.
 
 `--dataset` is required (no default), and `production` is always refused
 (`scripts/sanity/backfill-target.ts`; there is no override). The script loads `.env.local` and
@@ -243,8 +250,8 @@ exists (public) and already holds the page content from the first backfill.
    `partner` and `research` copied from `production`), then
    `pnpm sanity:backfill --dataset redesign --apply`. It imports everything in one file, so the
    references between documents (logo lists, testimonials, the traced venture, the homepage
-   quotes, the journey evidence) resolve; asset files upload with the import (a re-run attaches
-   any whose upload failed). It creates missing
+   quotes, the journey evidence) resolve; asset files upload with the import (a re-run on the
+   same machine attaches any whose upload failed; keep `.sanity-backfill/` between runs). It creates missing
    documents only (`--missing`); never add `--overwrite` once editors have started, because it
    replaces their documents. **Re-run it right before launch** to copy the events, partners and
    research projects added to `production` since (edits to copied ones are not re-copied).

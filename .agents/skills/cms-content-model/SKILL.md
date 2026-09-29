@@ -181,7 +181,8 @@ proves the CMS path renders the same.
 
    Never run `--apply`, `sanity dataset create` or `sanity dataset import`: importing is a launch
    step for a maintainer (the runbook in ADR 0009). `--apply` creates missing documents only
-   (and attaches images an earlier import left without a file);
+   (and attaches the images its imports left without a file, from the ledger
+   `.sanity-backfill/<dataset>.pending-assets.json`, never ones an editor removed);
    `--apply --overwrite` replaces existing documents with the code content and discards what
    editors changed.
 
