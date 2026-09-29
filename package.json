@@ -24,6 +24,7 @@
     "knip": "knip",
     "sanity:typegen": "cd src/sanity && DO_NOT_TRACK=1 sanity schemas extract --enforce-required-fields --workspace live --path ../../node_modules/.cache/sanity/schema.live.json && DO_NOT_TRACK=1 sanity schemas extract --enforce-required-fields --workspace content --path ../../node_modules/.cache/sanity/schema.content.json && node ../../scripts/sanity/merge-schemas.mjs ../../node_modules/.cache/sanity/schema.json ../../node_modules/.cache/sanity/schema.live.json ../../node_modules/.cache/sanity/schema.content.json && DO_NOT_TRACK=1 sanity typegen generate && cd ../.. && biome format --write src/lib/sanity.types.generated.ts",
     "sanity:typegen:check": "pnpm sanity:typegen && git diff --exit-code -- src/lib/sanity.types.generated.ts",
+    "sanity:backfill": "tsx --tsconfig scripts/sanity/tsconfig.json scripts/sanity/backfill.ts",
     "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm test:perf"
   },
   "dependencies": {
@@ -68,6 +69,7 @@
     "knip": "^6.38.0",
     "lefthook": "^2.1.14",
     "schema-dts": "^2.0.0",
+    "tsx": "^4.23.15",
     "typescript": "^5.9.3",
     "vercel": "^54.21.1",
     "vite": "^8.1.2",

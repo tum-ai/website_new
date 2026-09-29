@@ -28,3 +28,6 @@ blob-report/
 .env
 .vercel
 .env*.local
+
+# Sanity backfill output (pnpm sanity:backfill)
+.sanity-backfill/
