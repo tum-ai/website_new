@@ -192,7 +192,7 @@ export function ResearchPage({
           </p>
           <LogoWall
             layout="strip"
-            logos={rexInstitutions}
+            logos={rexInstitutions.map(({ shortName: _, ...logo }) => logo)}
             label="Offers from labs at institutions like"
             className="mt-8"
           />

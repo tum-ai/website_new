@@ -5,31 +5,39 @@ import type { LogoItem } from "@/components/ds";
 export const rexLead =
   "Our Research Exchange (REX) Program gives TUM.ai members the chance to do research abroad. Offers range from final theses to research internships with leading labs.";
 
+/** A REX institution: its logo, and the short name prose uses ("Harvard"). */
+export type RexInstitution = LogoItem & { shortName: string };
+
 /**
  * Institutions the REX offers come from, as the lead's examples, with their
- * official logos (ratios from each SVG's viewBox).
+ * official logos (ratios from each SVG's viewBox). The homepage names them
+ * by `shortName`.
  *
  * TODO(content): confirm we may show these four logos (Harvard, MIT and Inria
  * from Wikimedia Commons, the University of Cambridge from Wikipedia).
  */
-export const rexInstitutions: LogoItem[] = [
+export const rexInstitutions: RexInstitution[] = [
   {
     name: "Harvard University",
+    shortName: "Harvard",
     src: "/assets/research/rex/harvard.svg",
     aspectRatio: 600 / 165,
   },
   {
     name: "MIT",
+    shortName: "MIT",
     src: "/assets/research/rex/mit.svg",
     aspectRatio: 1473.281 / 829.367,
   },
   {
     name: "University of Cambridge",
+    shortName: "Cambridge",
     src: "/assets/research/rex/cambridge.svg",
     aspectRatio: 65.974 / 13.978,
   },
   {
     name: "Inria",
+    shortName: "Inria",
     src: "/assets/research/rex/inria.svg",
     aspectRatio: 283.46 / 82.75,
   },

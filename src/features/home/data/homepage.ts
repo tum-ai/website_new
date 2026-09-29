@@ -1,8 +1,11 @@
-import type { LedgerItem } from "@/components/ds";
+import type { IndexListItem, LedgerItem } from "@/components/ds";
 import { communityFacts } from "@/config/community";
 import { eLabCompletedIterations, eLabConfig } from "@/config/e-lab";
 import { impactFacts, publicationVenuesText } from "@/config/impact";
 import { officialMembers, organizationFacts } from "@/config/organization";
+import { departments } from "@/features/community";
+import { rexInstitutions } from "@/features/research";
+import { formatList, spellCount } from "@/lib/words";
 
 /** A photo with its intrinsic size (for next/image) and a crop focus. */
 export type HomePhoto = {
@@ -84,21 +87,12 @@ export const ledgerFacts: LedgerItem[] = [
   },
 ];
 
-/** A destination in the "What we do" index. */
-export type Program = {
-  id: string;
-  title: string;
-  description: string;
-  href: string;
-  image: { src: string; position?: string };
-};
-
 /** The five ways into TUM.ai, each with one concrete proof point. */
-export const programs: Program[] = [
+export const programs: IndexListItem[] = [
   {
     id: "research",
     title: "Research",
-    description: `Research projects with universities and labs, papers at ${publicationVenuesText}, and exchanges with MIT, Harvard and Cambridge.`,
+    description: `Research projects with universities and labs, papers at ${publicationVenuesText}, and exchanges with ${formatList(rexInstitutions.map((institution) => institution.shortName))}.`,
     href: "/research",
     image: { src: "/assets/innovation/robotics_discussion.webp" },
   },
@@ -130,7 +124,7 @@ export const programs: Program[] = [
   {
     id: "community",
     title: "Community",
-    description: `${organizationFacts.activeMembers}+ active members in seven departments, who run all of the above themselves.`,
+    description: `${organizationFacts.activeMembers}+ active members in ${spellCount(departments.length)} departments, who run all of the above themselves.`,
     href: "/community",
     image: { src: "/assets/homepage/Onboarding25.webp" },
   },
