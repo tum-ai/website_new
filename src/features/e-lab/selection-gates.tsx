@@ -28,12 +28,15 @@ const ROW_GRID = "lg:grid lg:grid-cols-12 lg:gap-x-12";
 const WORDS = "lg:col-span-4";
 const SCALE = "lg:col-span-8";
 
+/** ROW_GRID's column gap (`gap-x-12`) in theme spacing steps. */
+const GAP = "var(--spacing) * 12";
+
 /**
  * The axis's x: the start of track 5, from the ROW_GRID numbers (four
- * tracks of (100% - 11 gaps) / 12 plus four 3rem gaps). One line for the
- * whole list, so rows can align by baseline instead of stretching.
+ * tracks of (100% - 11 gaps) / 12 plus four gaps). One line for the whole
+ * list, so rows can align by baseline instead of stretching.
  */
-const AXIS_LEFT = "calc((100% - 33rem) / 3 + 12rem)";
+const AXIS_LEFT = `calc((100% - 11 * ${GAP}) / 3 + 4 * ${GAP})`;
 
 /**
  * "The gates", the page's bold element: one cohort from the application

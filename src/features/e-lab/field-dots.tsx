@@ -54,7 +54,27 @@ const STIFFNESS = 180;
 const DAMPING = 16;
 /** Pointer catch radius around a lit dot, in lattice units. */
 const CATCH = 1.1;
+/** Extra reach past an open dot's edge before the pointer leaves it. */
+const HIT_SLOP = 0.2;
+/**
+ * Below this summed speed and distance to target (lattice units and scale
+ * per second) every dot counts as settled and the loop stops: finer motion
+ * is under a hundredth of a pixel.
+ */
 const REST = 0.002;
+/**
+ * The longest step the spring integrates, in seconds: after a dropped frame
+ * or a background tab the field resumes instead of jumping.
+ */
+const MAX_STEP_S = 1 / 30;
+/** A dot this much above its rest size still pushes its neighbours aside. */
+const GROWN_SCALE = 1.02;
+/** Smallest drawn scale, so the spring's overshoot never inverts a dot. */
+const MIN_SCALE = 0.2;
+/** A logo may overshoot with its dot's spring, up to this scale. */
+const LOGO_MAX_SCALE = 1.2;
+/** A logo is fully opaque once its dot is 1 / this of the way open. */
+const LOGO_FADE_RATE = 1.4;
 
 /**
  * The field's dots as a small spring simulation. Pointing at a lit dot opens
@@ -102,12 +122,12 @@ export function FieldDots({
       const reduced = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
-      const dt = Math.min((now - (last.current || now)) / 1000, 1 / 30);
+      const dt = Math.min((now - (last.current || now)) / 1000, MAX_STEP_S);
       last.current = now;
 
       const grown: number[] = [];
       for (let index = 0; index < dots.length; index++) {
-        if ((state.s[index] ?? 1) > 1.02 || index === target.current) {
+        if ((state.s[index] ?? 1) > GROWN_SCALE || index === target.current) {
           grown.push(index);
         }
       }
@@ -173,7 +193,7 @@ export function FieldDots({
         const circle = dotRefs.current[index];
         const ox = state.ox[index] ?? 0;
         const oy = state.oy[index] ?? 0;
-        const s = Math.max(state.s[index] ?? 1, 0.2);
+        const s = Math.max(state.s[index] ?? 1, MIN_SCALE);
         if (circle) {
           circle.setAttribute(
             "transform",
@@ -185,13 +205,13 @@ export function FieldDots({
         if (logo) {
           const open = Math.min(
             Math.max((s - 1) / ((peaks[index] ?? 2) - 1), 0),
-            1.2,
+            LOGO_MAX_SCALE,
           );
           logo.setAttribute(
             "transform",
             `translate(${(dot.x + ox).toFixed(3)} ${(dot.y + oy).toFixed(3)}) scale(${open.toFixed(3)})`,
           );
-          logo.style.opacity = Math.min(open * 1.4, 1).toFixed(3);
+          logo.style.opacity = Math.min(open * LOGO_FADE_RATE, 1).toFixed(3);
         }
       }
 
@@ -246,7 +266,7 @@ export function FieldDots({
     if (current >= 0) {
       const at = position(current);
       const size = radius * (state?.s[current] ?? 1);
-      if (Math.hypot(point.x - at.x, point.y - at.y) < size + 0.2) {
+      if (Math.hypot(point.x - at.x, point.y - at.y) < size + HIT_SLOP) {
         return current;
       }
     }

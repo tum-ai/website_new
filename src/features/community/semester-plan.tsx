@@ -31,10 +31,11 @@ const columnLeft = (semester: number) =>
   `calc((100% - 3rem) * 5 / 12 + 3rem + (100% - 3rem) * 7 / 12 * ${semester} / ${semesterColumns.length})`;
 
 /**
- * Vertical centre of a row's marker from the row's top: the row's lg top
- * padding (lg:py-14) plus half the rule's height (h-10).
+ * Vertical centre of a row's marker from the row's top, in theme spacing
+ * steps so it follows the classes it mirrors: the row's lg top padding
+ * (`lg:py-14`) plus half the rule's height (`h-10`).
  */
-const MARKER_TOP = "4.75rem";
+const MARKER_TOP = "calc(var(--spacing) * (14 + 10 / 2))";
 
 /** One grid track per timetable column, so the columns follow the data. */
 const COLUMNS: CSSProperties = {
