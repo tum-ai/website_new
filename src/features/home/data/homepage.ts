@@ -192,3 +192,6 @@ export const memberQuote = {
   excerpt:
     "The breadth of responsibilities and leadership opportunities here is truly unmatched.",
 };
+
+/** The venture partner quoted for the partner audience (a `testimonialCards` id from @/features/e-lab). */
+export const partnerQuoteId = "alexandra-reinert";

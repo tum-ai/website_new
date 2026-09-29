@@ -13,6 +13,7 @@ import {
   notableStartups,
   testimonialCards,
   tracedVenture,
+  tracedVentureLead,
 } from "./data/venture-page";
 
 const venture = notableStartups.find(
@@ -40,7 +41,7 @@ export function VentureTrace() {
           title="One team, all the way through."
           size="lg"
           layout="stack"
-          lead={`${venture.name} came out of ${tracedVenture.cohort}, went on to ${tracedVenture.after[0]?.text ?? ""}, and now plans supply chains for consumer brands.`}
+          lead={tracedVentureLead(venture.name)}
         />
         <div className="grid gap-14 lg:grid-cols-12 lg:gap-12">
           <Reveal className="lg:col-span-7 lg:self-start">

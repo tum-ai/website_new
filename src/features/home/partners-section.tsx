@@ -15,14 +15,12 @@ import {
   getPartnerDirectory,
   partnerCaseStudies,
 } from "@/features/partners";
+import { partnerQuoteId } from "./data/homepage";
 
 /** Partners whose artwork is a symbol without the name. */
 const LOCKUP_NAMES = new Set(["Mutagent"]);
 
-/** The venture partner quoted for the partner audience. */
-const QUOTE_ID = "alexandra-reinert";
-
-const quote = testimonialCards.find((card) => card.id === QUOTE_ID);
+const quote = testimonialCards.find((card) => card.id === partnerQuoteId);
 
 /**
  * Gold, silver and bronze partners in the partner page's order, from the

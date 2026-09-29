@@ -1,4 +1,7 @@
-/** A community quote and the local imagery used to attribute it. */
+/**
+ * A community quote and the local imagery used to attribute it. The portrait
+ * is decorative (`alt=""`): it always sits beside the person's name.
+ */
 export interface TestimonialCard {
   id: string;
   name: string;
@@ -6,8 +9,6 @@ export interface TestimonialCard {
   context?: string;
   quote: string;
   portraitSrc: string;
-  portraitAlt: string;
-  organizationLabel: string;
   organizationLogoSrc: string;
   organizationLogoAlt: string;
 }
@@ -31,8 +32,6 @@ export const testimonialCards = [
     quote:
       "The E-Lab gave us the foundation to build Spherecast from idea to YC. The community and mentorship were game-changing.",
     portraitSrc: "/assets/e-lab/testimonials/leon_hergert.png",
-    portraitAlt: "Portrait of Leon Hergert",
-    organizationLabel: "Y Combinator S24",
     organizationLogoSrc: "/assets/e-lab/partners/y-combinator.webp",
     organizationLogoAlt: "Y Combinator logo",
   },
@@ -44,8 +43,6 @@ export const testimonialCards = [
     quote:
       "The E-Lab is probably the best program for creating top-end entrepreneurs out there. It's simply incredible.",
     portraitSrc: "/assets/e-lab/testimonials/benedikt_wieser.png",
-    portraitAlt: "Portrait of Benedikt Wieser",
-    organizationLabel: "CDTM Alumni",
     organizationLogoSrc: "/assets/e-lab/partners/cdtm.webp",
     organizationLogoAlt: "CDTM logo",
   },
@@ -57,8 +54,6 @@ export const testimonialCards = [
     quote:
       "Structured, fast, and insanely effective. Every founder should experience this.",
     portraitSrc: "/assets/e-lab/testimonials/leonardo_benini.png",
-    portraitAlt: "Portrait of Leonardo Benini",
-    organizationLabel: "EWOR Fellow",
     organizationLogoSrc: "/assets/e-lab/partners/ewor.webp",
     organizationLogoAlt: "EWOR logo",
   },
@@ -70,8 +65,6 @@ export const testimonialCards = [
     quote:
       "The quality of founders coming out of E-Lab is exceptional. We're proud to be part of this community.",
     portraitSrc: "/assets/e-lab/testimonials/oliver_schoppe.png",
-    portraitAlt: "Portrait of Oliver Schoppe",
-    organizationLabel: "UVC Partners",
     organizationLogoSrc: "/assets/e-lab/partners/uvc-partners.webp",
     organizationLogoAlt: "UVC Partners logo",
   },
@@ -83,8 +76,6 @@ export const testimonialCards = [
     quote:
       "We went from zero to being a funded startup - the E-Lab accelerated our journey far beyond what we thought was possible.",
     portraitSrc: "/assets/e-lab/testimonials/viktor_shen.jpeg",
-    portraitAlt: "Portrait of Viktor Shen",
-    organizationLabel: "Tenmin AI",
     organizationLogoSrc: "/assets/e-lab/startups/Tenmin.svg",
     organizationLogoAlt: "Tenmin AI logo",
   },
@@ -95,8 +86,6 @@ export const testimonialCards = [
     quote:
       "Truly impressive what the team has built. 🚀 We’re just getting started",
     portraitSrc: "/assets/e-lab/testimonials/axel_taeubert.webp",
-    portraitAlt: "Portrait of Axel Täubert",
-    organizationLabel: "Google Cloud",
     organizationLogoSrc: "/assets/e-lab/partners/google.svg",
     organizationLogoAlt: "Google logo",
   },
@@ -107,12 +96,16 @@ export const testimonialCards = [
     quote:
       "The density of real builders at the E-Lab Final Pitch is exactly what Tier-1 venture funds look for at the pre-seed stage",
     portraitSrc: "/assets/e-lab/testimonials/alexandra_reinert.webp",
-    portraitAlt: "Portrait of Alexandra Reinert",
-    organizationLabel: "Accel",
     organizationLogoSrc: "/assets/e-lab/partners/accel.svg",
     organizationLogoAlt: "Accel logo",
   },
 ] satisfies readonly TestimonialCard[];
+
+/** The quotes of the /e-lab voices band, by `testimonialCards` id. */
+export const eLabVoices = {
+  founders: ["viktor-shen", "benedikt-wieser", "leonardo-benini"],
+  investors: ["alexandra-reinert", "oliver-schoppe", "axel-taeubert"],
+} as const;
 
 export const notableStartups = [
   {
@@ -191,6 +184,10 @@ export const tracedVenture = {
   // TODO(content): E-Lab 1.0 may not have had every gate the current program
   // has (Midterm Pitch, Selection Day). Confirm before tracing all of them.
   cohort: "E-Lab 1.0",
+  /** What the company does today, completing "... and now ...". */
+  // Spherecast's site: Agnes, "an AI supply chain manager for consumer
+  // goods brands" (the second milestone below).
+  now: "plans supply chains for consumer brands",
   after: [
     {
       text: "Y Combinator, Summer 2024 batch",
@@ -213,5 +210,28 @@ export const tracedVenture = {
   startupId: string;
   testimonialId: string;
   cohort: string;
+  now?: string;
   after: VentureMilestone[];
 };
+
+/**
+ * The trace's lead sentence: "Spherecast came out of E-Lab 1.0, went on to
+ * Y Combinator, Summer 2024 batch, and now plans supply chains for consumer
+ * brands." Clauses without data are left out rather than left empty.
+ */
+export function tracedVentureLead(
+  ventureName: string,
+  trace: {
+    cohort: string;
+    now?: string;
+    after: readonly Pick<VentureMilestone, "text">[];
+  } = tracedVenture,
+): string {
+  const next = trace.after[0]?.text.trim();
+  const clauses = [
+    `${ventureName} came out of ${trace.cohort}`,
+    next ? `went on to ${next}` : null,
+    trace.now ? `and now ${trace.now}` : null,
+  ].filter(Boolean);
+  return `${clauses.join(", ")}.`;
+}

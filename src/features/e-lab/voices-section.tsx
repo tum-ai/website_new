@@ -5,12 +5,13 @@ import {
   Section,
   SectionHeader,
 } from "@/components/ds";
-import { type TestimonialCard, testimonialCards } from "./data/venture-page";
+import {
+  eLabVoices,
+  type TestimonialCard,
+  testimonialCards,
+} from "./data/venture-page";
 
-const founderIds = ["viktor-shen", "benedikt-wieser", "leonardo-benini"];
-const investorIds = ["alexandra-reinert", "oliver-schoppe", "axel-taeubert"];
-
-const pick = (ids: string[]) =>
+const pick = (ids: readonly string[]) =>
   ids.flatMap((id) => {
     const card = testimonialCards.find((entry) => entry.id === id);
     return card ? [card] : [];
@@ -69,10 +70,14 @@ export function VoicesSection() {
           lead="Founders from earlier cohorts, and investors and partners who work with the E-Lab."
         />
         <div className="grid gap-16 lg:grid-cols-2 lg:gap-24">
-          <VoiceColumn label="Founders" voices={pick(founderIds)} delay={0} />
+          <VoiceColumn
+            label="Founders"
+            voices={pick(eLabVoices.founders)}
+            delay={0}
+          />
           <VoiceColumn
             label="Investors and partners"
-            voices={pick(investorIds)}
+            voices={pick(eLabVoices.investors)}
             delay={100}
           />
         </div>
