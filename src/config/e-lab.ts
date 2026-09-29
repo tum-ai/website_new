@@ -85,7 +85,7 @@ export const eLabConfig: ELabConfig = {
   applicationDeadlineDate: "27.09.2026",
   applicationDeadlineTime: "22:00",
   nextApplicationWindow: "August",
-  programWeeks: 14,
+  programWeeks: 12,
   ventureFundingMillions: 8,
   selection: {
     applications: 500,
@@ -174,7 +174,7 @@ export function isELabApplicationOpen(now: Date): boolean {
   return isClockWindowOpen(eLabWindowClock(eLabWindowFallback), now);
 }
 
-/** "14-week equity-free AI startup incubator". */
+/** "12-week equity-free AI startup incubator". */
 export function eLabProgramSummaryOf(programWeeks: number): string {
   return `${programWeeks}-week equity-free AI startup incubator`;
 }

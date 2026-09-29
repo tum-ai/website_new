@@ -75,10 +75,10 @@ export const stageCopy: StageCopy[] = [
     name: "Admitted to the cohort",
     description: "The teams that start the program together.",
   },
-  // TODO(content): the phases add up to 3 days + 4 weeks + 6 weeks (about
-  // ten weeks), while eLabConfig.programWeeks says 14. Which is right, and
-  // what fills the remaining weeks (Selection Day to the Final Pitch)? The
-  // Studio warns about the same gap on the E-Lab page's phases.
+  // TODO(content): the program runs about 12 weeks (eLabConfig.programWeeks),
+  // but the phases add up to 3 days + 4 weeks + 6 weeks (about ten). What
+  // fills the remaining weeks (Selection Day to the Final Pitch)? The Studio
+  // warns about the same gap on the E-Lab page's phases.
   {
     kind: "phase",
     id: "kickoff",
