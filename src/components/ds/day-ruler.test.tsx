@@ -36,9 +36,31 @@ describe("DayRuler", () => {
     ).toBe("100%");
   });
 
+  test("sets the mark's label over the mark, flush near the edges", () => {
+    const label = (elapsed: number) => {
+      const { container, unmount } = render(
+        <DayRuler days={20} elapsed={elapsed} markLabel="Today" />,
+      );
+      const node = container.querySelector<HTMLElement>("[data-mark-label]");
+      const result = { left: node?.style.left, className: node?.className };
+      unmount();
+      return result;
+    };
+    expect(label(10)).toMatchObject({ left: "50%" });
+    expect(label(10).className).toContain("-translate-x-1/2");
+    expect(label(1).className).not.toContain("-translate-x-1/2");
+    expect(label(19).className).toContain("-translate-x-full");
+  });
+
   test("is hidden from assistive tech, labels included", async () => {
     const { container } = render(
-      <DayRuler days={29} elapsed={3} startLabel="28 Sep" endLabel="27 Oct" />,
+      <DayRuler
+        days={29}
+        elapsed={3}
+        startLabel="28 Sep"
+        endLabel="27 Oct"
+        markLabel="Today"
+      />,
     );
     expect(container.firstElementChild).toHaveAttribute("aria-hidden", "true");
     expect(await axe(container)).toHaveNoViolations();
