@@ -22,11 +22,16 @@ import {
   DialogTrigger,
 } from "@/components/ds";
 import {
+  isMembershipApplicationOpen,
+  membershipWindowBoundaries,
+} from "@/config/membership";
+import {
   getHeaderOptions,
   headerConnectLinks,
   mainNavigation,
 } from "@/config/navigation";
 import { cn } from "@/lib/cn";
+import { useClockSwitch } from "@/lib/use-clock-switch";
 import { getHeaderScrollState } from "./header-scroll";
 import { NavAnchor } from "./nav-anchor";
 
@@ -35,6 +40,17 @@ const logo = {
   width: 1640,
   height: 406,
 } as const;
+
+/** Props for {@link Header}, computed by the site layout on the server. */
+export type HeaderProps = {
+  /**
+   * Whether membership applications are open at render time
+   * (`isMembershipApplicationOpen(getCmsNow())`); must match the server HTML.
+   */
+  initialMembershipOpen: boolean;
+  /** `false` on a fixed render clock (`MOCK_CMS_NOW`); see `useClockSwitch`. */
+  liveClock?: boolean;
+};
 
 /**
  * Site header: a floating pill, always visible. What it shows on a route
@@ -56,9 +72,23 @@ const logo = {
  *
  * Safari workarounds: docs/browser-quirks.md.
  */
-export const Header = () => {
+export const Header = ({
+  initialMembershipOpen,
+  liveClock = true,
+}: HeaderProps) => {
   const pathname = usePathname();
-  const { solid, cta, hideLogoUntilScroll } = getHeaderOptions(pathname);
+  // The CTA follows the dated membership window: the layout renders it by
+  // the server's clock, and the browser flips it when the form opens and at
+  // the deadline.
+  const membershipOpen = useClockSwitch({
+    isOn: isMembershipApplicationOpen,
+    boundaries: membershipWindowBoundaries,
+    initial: initialMembershipOpen,
+    live: liveClock,
+  });
+  const { solid, cta, hideLogoUntilScroll } = getHeaderOptions(pathname, {
+    membershipOpen,
+  });
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [logoRevealed, setLogoRevealed] = useState(false);

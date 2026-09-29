@@ -3,6 +3,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { usePathname } from "next/navigation";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { membershipWindowBoundaries } from "@/config/membership";
 import {
   getHeaderOptions,
   headerConnectLinks,
@@ -12,12 +13,15 @@ import { Header } from "./header";
 
 vi.mock("next/navigation", () => ({ usePathname: vi.fn(() => "/events") }));
 
-function renderHeader(pathname: string) {
+function renderHeader(
+  pathname: string,
+  { membershipOpen = true, liveClock = false } = {},
+) {
   vi.mocked(usePathname).mockReturnValue(pathname);
   // The ds Dialog makes `#app-root` inert while the menu is open.
   return render(
     <div id="app-root">
-      <Header />
+      <Header initialMembershipOpen={membershipOpen} liveClock={liveClock} />
     </div>,
   );
 }
@@ -31,12 +35,17 @@ afterEach(() => {
 });
 
 describe("header CTA", () => {
-  test.each(["/events", "/", "/partners"])(
-    "shows the configured call to action on %s",
-    (pathname) => {
-      renderHeader(pathname);
+  test.each([
+    ["/events", true],
+    ["/events", false],
+    ["/", true],
+    ["/partners", false],
+  ] as const)(
+    "shows the configured call to action on %s (membership open: %s)",
+    (pathname, membershipOpen) => {
+      renderHeader(pathname, { membershipOpen });
       const banner = within(screen.getByRole("banner"));
-      const { cta } = getHeaderOptions(pathname);
+      const { cta } = getHeaderOptions(pathname, { membershipOpen });
       if (!cta) {
         // Only the logo and the main links.
         expect(banner.getAllByRole("link", { hidden: true })).toHaveLength(
@@ -50,6 +59,31 @@ describe("header CTA", () => {
       );
     },
   );
+
+  test("switches to the closed-round CTA once the deadline passes", () => {
+    const [, closesAt] = membershipWindowBoundaries;
+    const open = getHeaderOptions("/events", { membershipOpen: true }).cta;
+    const closed = getHeaderOptions("/events", { membershipOpen: false }).cta;
+    vi.useFakeTimers({ toFake: ["Date"] });
+    try {
+      vi.setSystemTime(closesAt.getTime() + 60_000);
+      // A cached render from before the deadline: corrected after mount.
+      renderHeader("/events", { membershipOpen: true, liveClock: true });
+      const banner = within(screen.getByRole("banner"));
+      if (!closed) throw new Error("the closed-round CTA has no target");
+      expect(banner.getByRole("link", { name: closed.label })).toHaveAttribute(
+        "href",
+        closed.href,
+      );
+      if (open && open.label !== closed.label) {
+        expect(
+          banner.queryByRole("link", { name: open.label }),
+        ).not.toBeInTheDocument();
+      }
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });
 
 describe("logo", () => {

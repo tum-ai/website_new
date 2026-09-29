@@ -6,16 +6,16 @@ import {
   Section,
   TextLink,
 } from "@/components/ds";
-import { membershipConfig, recruitingTimeline } from "@/config/membership";
+import { recruitingTimeline } from "@/config/membership";
+import { MembershipApplyButton } from "./membership-apply-button";
 
 /**
  * The page's close on ink: back to column 0 of the timetable, the recruiting
  * round, with its dates from the membership config and the apply action that
- * follows `membershipConfig.applicationsOpen`; beside it, the partners' way
- * to meet the members.
+ * follows the dated application window; beside it, the partners' way to meet
+ * the members.
  */
 export function ClosingSection() {
-  const { applicationsOpen, applicationUrl } = membershipConfig;
   const timeline = recruitingTimeline;
   return (
     <Section tone="ink" spacing="xl" aria-labelledby="community-close-title">
@@ -37,15 +37,7 @@ export function ClosingSection() {
                 {timeline.onboarding}.
               </p>
               <Actions className="mt-10 md:mt-12">
-                {applicationsOpen ? (
-                  <ButtonLink href={applicationUrl} size="lg" arrow="external">
-                    Apply now
-                  </ButtonLink>
-                ) : (
-                  <ButtonLink href="/apply" size="lg" arrow>
-                    Become a Member
-                  </ButtonLink>
-                )}
+                <MembershipApplyButton />
                 <ButtonLink href="/qanda" size="lg" variant="outline">
                   Questions and answers
                 </ButtonLink>

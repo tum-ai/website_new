@@ -83,6 +83,16 @@ export function roundSchedule(round: RecruitingRound): RoundSchedule {
 const recruitingSchedule = roundSchedule(membershipConfig.round);
 
 /**
+ * The instants at which {@link isMembershipApplicationOpen} can change for the
+ * current round: the form opening and the deadline. Live switches in the
+ * browser re-check at each.
+ */
+export const membershipWindowBoundaries: readonly Date[] = [
+  recruitingSchedule.opensAt,
+  recruitingSchedule.closesAt,
+];
+
+/**
  * Whether membership applications are open at `now`: switched on, the form
  * has opened, and the deadline has not passed.
  */

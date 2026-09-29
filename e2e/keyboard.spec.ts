@@ -1,6 +1,7 @@
 import type { Locator, Page } from "@playwright/test";
+import { isMembershipApplicationOpen } from "@/config/membership";
 import { getHeaderOptions } from "@/config/navigation";
-import { expect, test } from "./fixtures";
+import { expect, MOCK_CMS_NOW, test } from "./fixtures";
 
 /*
  * Keyboard access. `@keyboard` tests run on desktop Chromium and desktop
@@ -190,7 +191,11 @@ test.describe("disclosure widgets", { tag: "@keyboard" }, () => {
 test.describe("header call to action", () => {
   for (const path of ["/events", "/partners"]) {
     test(path, async ({ page }) => {
-      const { cta } = getHeaderOptions(path);
+      // The server renders by the mock clock, and the header keeps that
+      // answer (the clock is fixed), so the expectation uses the same instant.
+      const { cta } = getHeaderOptions(path, {
+        membershipOpen: isMembershipApplicationOpen(new Date(MOCK_CMS_NOW)),
+      });
       test.skip(!cta, "no CTA configured for this route");
       if (!cta) return;
       await page.goto(path);

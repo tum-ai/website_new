@@ -8,9 +8,9 @@ import {
   Section,
   TextLink,
 } from "@/components/ds";
-import { membershipConfig, recruitingTimeline } from "@/config/membership";
+import { recruitingTimeline } from "@/config/membership";
 import { organizationFacts } from "@/config/organization";
-import { memberStories } from "@/features/community";
+import { MembershipApplyButton, memberStories } from "@/features/community";
 import { ConstructionLines } from "./construction-lines";
 import { memberQuote } from "./data/homepage";
 
@@ -31,11 +31,10 @@ const quoted = memberStories.find((story) => story.name === memberQuote.name);
  * logomark and its construction sheet in the background, running on into
  * the footer, a large invitation, a
  * member's own words and the faces of the people who run TUM.ai, beside the
- * steps of a recruiting round. The apply button follows
- * `membershipConfig.applicationsOpen`.
+ * steps of a recruiting round. The apply button follows the dated
+ * application window (`MembershipApplyButton`).
  */
 export function JoinSection() {
-  const { applicationsOpen, applicationUrl } = membershipConfig;
   return (
     <Section
       tone="ink"
@@ -78,15 +77,7 @@ export function JoinSection() {
               startups and hackathons themselves.
             </p>
             <Actions className="mt-10 md:mt-12">
-              {applicationsOpen ? (
-                <ButtonLink href={applicationUrl} size="lg" arrow="external">
-                  Apply now
-                </ButtonLink>
-              ) : (
-                <ButtonLink href="/apply" size="lg" arrow>
-                  Become a Member
-                </ButtonLink>
-              )}
+              <MembershipApplyButton />
               <ButtonLink href="/qanda" size="lg" variant="outline">
                 Questions and answers
               </ButtonLink>
