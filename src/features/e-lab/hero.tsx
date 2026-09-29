@@ -19,7 +19,7 @@ function LogoLockup() {
         alt={eLabConfig.heroLogo.alt}
         width={287}
         height={56}
-        priority
+        preload
         className="-ml-[1.17rem] h-10 w-auto md:-ml-[1.64rem] md:h-14"
       />
       <span className="flex items-center gap-3 pb-0.5 md:pb-1">

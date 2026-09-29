@@ -66,6 +66,7 @@ export function SemesterPlan() {
       spacing="lg"
       id={SECTION_ID}
       aria-labelledby="journey-title"
+      className="scroll-mt-header"
     >
       <Container>
         <SectionHeader

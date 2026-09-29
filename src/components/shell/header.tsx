@@ -198,7 +198,7 @@ export const Header = ({
               )}
             >
               {/* The page's one image preload (test/perf/homepage.perf.ts). */}
-              <Image {...logo} alt="" priority className="h-6 w-auto md:h-7" />
+              <Image {...logo} alt="" preload className="h-6 w-auto md:h-7" />
             </Link>
 
             <nav
