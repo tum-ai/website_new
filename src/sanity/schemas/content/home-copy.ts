@@ -1,6 +1,6 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
 import { copyString, copyText } from "./copy-fields";
-import { contentImageField } from "./fields";
+import { contentImageField, validateSitePath } from "./fields";
 
 /** The ledger's figures; their values come from the site settings in code. */
 const ledgerFigures = [
@@ -172,9 +172,7 @@ export const homeCopyType = defineType({
                   type: "string",
                   description: "The page it leads to, like /research.",
                   validation: (Rule) =>
-                    Rule.required().regex(/^\/[a-z0-9\-/#]*$/, {
-                      name: "site path",
-                    }),
+                    Rule.required().custom((value) => validateSitePath(value)),
                 }),
                 contentImageField({
                   name: "image",

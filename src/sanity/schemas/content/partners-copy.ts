@@ -1,6 +1,10 @@
 import { defineField, defineType } from "sanity";
 import { copyString, copyStringList, copyText } from "./copy-fields";
-import { placeholderHelp, validatePlaceholders } from "./fields";
+import {
+  placeholderHelp,
+  validatePlaceholders,
+  validateSitePath,
+} from "./fields";
 import { photoField } from "./image-rules";
 
 const text = (name: string, title: string, description?: string, max = 80) =>
@@ -313,7 +317,7 @@ export const partnersCopyType = defineType({
               type: "string",
               description: "The page the card links to: “/research”.",
               validation: (Rule) =>
-                Rule.regex(/^\/[a-z0-9/#-]*$/, { name: "site path" }),
+                Rule.required().custom((value) => validateSitePath(value)),
             }),
           ],
           preview: {

@@ -2,6 +2,8 @@ import { expect, test } from "vitest";
 import {
   getCalBooking,
   getSafeExternalUrl,
+  getSafeSitePath,
+  isHttpsUrl,
   serializeJsonLd,
 } from "@/lib/security";
 
@@ -56,4 +58,30 @@ test("getCalBooking takes Cal booking pages only", () => {
   ]) {
     expect(getCalBooking(value), String(value)).toBeNull();
   }
+});
+
+test("getSafeSitePath keeps paths on the site, as written", () => {
+  for (const path of ["/", "/research", "/community#journey", "/a?b=c"]) {
+    expect(getSafeSitePath(path)).toBe(path);
+  }
+  for (const value of [
+    undefined,
+    null,
+    "",
+    "research",
+    "//evil.example",
+    "/\\evil.example",
+    "/\t/evil.example",
+    "https://evil.example/",
+    "javascript:alert(1)",
+  ]) {
+    expect(getSafeSitePath(value), String(value)).toBeNull();
+  }
+});
+
+test("isHttpsUrl takes absolute https URLs only", () => {
+  expect(isHttpsUrl("https://tenmin.ai")).toBe(true);
+  expect(isHttpsUrl("http://tenmin.ai")).toBe(false);
+  expect(isHttpsUrl("/research")).toBe(false);
+  expect(isHttpsUrl("javascript:alert(1)")).toBe(false);
 });

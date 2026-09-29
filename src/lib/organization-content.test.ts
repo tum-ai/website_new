@@ -35,6 +35,13 @@ describe("toOrganization", () => {
     expect(toOrganization({ key: "acme", name: null })).toBeNull();
   });
 
+  test("keeps a website only when it is https", () => {
+    const org = (href: string) => toOrganization({ key: "a", name: "A", href });
+    expect(org("https://a.example/")?.href).toBe("https://a.example/");
+    expect(org("http://a.example/")?.href).toBeUndefined();
+    expect(org("javascript:alert(1)")?.href).toBeUndefined();
+  });
+
   test("leaves out empty fields and keeps set flags only", () => {
     expect(
       toOrganization({

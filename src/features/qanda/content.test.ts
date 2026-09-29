@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
+import { contentTokens } from "@/config/content-tokens";
 import { fetchContent } from "@/lib/cms-content";
 import { spanProblems } from "@/lib/passage-spans";
 import type { QANDA_CONTENT_QUERY_RESULT } from "@/lib/sanity.types.generated";
@@ -6,6 +7,7 @@ import {
   buildQandaBackfill,
   getQandaContent,
   QANDA_CONTENT_QUERY,
+  selectFaqs,
 } from "./content";
 import { faqs, qandaCopy } from "./data/qanda";
 
@@ -124,5 +126,49 @@ describe("the /qanda content slice", () => {
     expect(new Set(entries.map(({ collection }) => collection))).toStrictEqual(
       new Set(["qanda"]),
     );
+  });
+});
+
+describe("CMS entries", () => {
+  const entry = (id: string, href = "/research") => ({
+    id,
+    question: `About ${id}?`,
+    answer: "Yes.",
+    points: null,
+    spans: null,
+    evidence: { text: null, label: "See it", href },
+  });
+
+  test("drop an anchor that is malformed, reserved or already used", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const served = selectFaqs(
+      [entry("one"), entry("main-content"), entry("one"), entry("Two Words")],
+      contentTokens,
+    );
+    expect(served.map(({ id }) => id)).toStrictEqual(["one"]);
+    expect(warn).toHaveBeenCalledTimes(3);
+    warn.mockRestore();
+  });
+
+  test("render evidence only with a link on the site or https", () => {
+    const served = selectFaqs(
+      [
+        entry("site", "/community#journey"),
+        entry("web", "https://example.com/"),
+        entry("protocol-relative", "//evil.example"),
+        entry("backslash", "/\\evil.example"),
+        entry("script", "javascript:alert(1)"),
+      ],
+      contentTokens,
+    );
+    expect(
+      served.map(({ id, evidence }) => [id, evidence?.href ?? null]),
+    ).toStrictEqual([
+      ["site", "/community#journey"],
+      ["web", "https://example.com/"],
+      ["protocol-relative", null],
+      ["backslash", null],
+      ["script", null],
+    ]);
   });
 });

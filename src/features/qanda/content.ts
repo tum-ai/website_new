@@ -6,8 +6,10 @@ import type { BackfillDocument } from "@/lib/cms-backfill";
 import { loadContent } from "@/lib/cms-content";
 import { fillCmsCopy, fillCodeCopy } from "@/lib/content-copy";
 import { buildFaqBackfill } from "@/lib/faq-content";
+import { anchorIdPattern, reservedQandaIds } from "@/lib/page-anchors";
 import { spanProblems } from "@/lib/passage-spans";
 import type { QANDA_CONTENT_QUERY_RESULT } from "@/lib/sanity.types.generated";
+import { getSafeSitePath, isHttpsUrl } from "@/lib/security";
 import {
   faqTemplates,
   type QandaCopy,
@@ -49,17 +51,43 @@ const isEntry = (entry: unknown): entry is QandaEntry => {
   return Boolean(id && question && answer);
 };
 
-/** CMS entries shaped like the code list; incomplete ones are dropped. */
-function selectFaqs(
+/** A link the evidence may render: a path on this site or an https URL. */
+const isEvidenceHref = (href: string) =>
+  getSafeSitePath(href) !== null || isHttpsUrl(href);
+
+/**
+ * CMS entries shaped like the code list. Dropped (and logged): incomplete
+ * entries, and entries whose anchor id is malformed, taken by the layout or
+ * the page (`reservedQandaIds`) or used by an earlier entry, because the id
+ * is the element's `id` and the page's links point at it. Evidence renders
+ * only with a label and a link that stays on the site or is https.
+ * Exported for tests.
+ */
+export function selectFaqs(
   faqs: QANDA_CONTENT_QUERY_RESULT["faqs"],
   tokens: Awaited<ReturnType<typeof getContentTokens>>,
 ): QandaEntry[] {
   const filled = fillCmsCopy(faqs, tokens, "the Q&A entries");
+  const seen = new Set<string>();
   return (Array.isArray(filled) ? filled : []).flatMap((entry) => {
     if (!isEntry(entry)) return [];
+    if (
+      !anchorIdPattern.test(entry.id) ||
+      reservedQandaIds.includes(entry.id) ||
+      seen.has(entry.id)
+    ) {
+      console.warn(
+        `[cms-content] Skipping the Q&A entry "${entry.question}": its anchor id "${entry.id}" is malformed, reserved or already used.`,
+      );
+      return [];
+    }
+    seen.add(entry.id);
     const { evidence, ...rest } = entry;
-    // An evidence link needs both its label and its target.
-    return [evidence?.label && evidence.href ? entry : rest];
+    return [
+      evidence?.label && evidence.href && isEvidenceHref(evidence.href)
+        ? entry
+        : rest,
+    ];
   });
 }
 

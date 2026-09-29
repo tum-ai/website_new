@@ -47,7 +47,7 @@ export const organizationType = defineType({
       title: "Website",
       type: "url",
       description: "Where the logo links to, when the section links logos.",
-      validation: (Rule) => Rule.uri({ scheme: ["https", "http"] }),
+      validation: (Rule) => Rule.uri({ scheme: ["https"] }),
     }),
     logoArtworkField({
       name: "logo",

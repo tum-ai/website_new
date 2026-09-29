@@ -102,4 +102,18 @@ describe("CMS copy over the code copy", () => {
     const { join } = merged({ join: { quote: { excerpt: "CMS words" } } });
     expect(join.quote).toStrictEqual(code.copy.join.quote);
   });
+
+  test("a program links only to a page of this site", () => {
+    const [first] = code.copy.programs.items;
+    const { programs } = merged({
+      programs: {
+        items: [
+          { ...first, id: "kept", href: "/research" },
+          { ...first, id: "away", href: "//evil.example" },
+          { ...first, id: "backslash", href: "/\\evil.example" },
+        ],
+      },
+    });
+    expect(programs.items.map(({ id }) => id)).toStrictEqual(["kept"]);
+  });
 });

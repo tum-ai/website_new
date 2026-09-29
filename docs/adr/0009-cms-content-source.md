@@ -65,6 +65,22 @@ So a failed request, an empty collection or a half-filled singleton renders the 
 whatever is missing. The cost: the CMS cannot clear a value that code fills; remove it from the
 fallback instead.
 
+### Links, ids and scripts from the CMS
+
+CMS values that become links, element ids or script sources are checked on the page, not only in
+the Studio (a document can be written without the Studio's rules), with the helpers in
+`lib/security.ts` and `lib/page-anchors.ts`; a value that fails keeps the code value or drops the
+item:
+
+- links inside the site (home programs, partner pillars, Q&A evidence) must resolve to the site's
+  origin (`getSafeSitePath`: `//host`, backslashes and tabs are refused); links out
+  (organisation websites, Q&A evidence, the traced venture's sources) must be `https:`
+  (`isHttpsUrl`);
+- the partnership booking page must be a Cal page on `cal.eu` or `cal.com` (`getCalBooking`),
+  because the dialog loads the embed script from its origin;
+- a Q&A anchor id must be well formed, unique and not an id the layout or /qanda renders
+  (`reservedQandaIds`), because it is the question's element id.
+
 ### Content slices
 
 Each domain owns a slice next to its data: `features/<x>/content.ts` (or

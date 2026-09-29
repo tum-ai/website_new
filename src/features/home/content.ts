@@ -16,6 +16,7 @@ import { backfillContentImage, keyedItems } from "@/lib/content-backfill";
 import { fillCmsCopy, fillCodeCopy } from "@/lib/content-copy";
 import { personId } from "@/lib/person-content";
 import type { HOME_COPY_QUERY_RESULT } from "@/lib/sanity.types.generated";
+import { getSafeSitePath } from "@/lib/security";
 import {
   type HomeCopy,
   homeCopyTemplate,
@@ -119,7 +120,11 @@ export function selectHomeCopy(copy: Filled | null) {
         >[]
       ).filter(
         (item) =>
-          item.id && item.title && item.description && item.href && item.image,
+          item.id &&
+          item.title &&
+          item.description &&
+          getSafeSitePath(item.href) &&
+          item.image,
       ),
     },
     room: copy.room && {

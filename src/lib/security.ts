@@ -16,6 +16,26 @@ export function getSafeExternalUrl(value?: string) {
   }
 }
 
+const siteOrigin = "https://site.invalid";
+
+/**
+ * `value` when it is a path on this site (`/research`, `/community#journey`,
+ * `/`), else `null`. For CMS links rendered with next/link: a value such as
+ * `//evil.example`, `/\evil.example` or `/\t/evil.example` starts with a
+ * slash but leaves the site (browsers read a backslash as a slash and drop
+ * tabs and newlines), so the WHATWG URL parser decides: the value must
+ * resolve to this site's origin. Returned as written, so it renders exactly
+ * like the code link.
+ */
+export function getSafeSitePath(value?: string | null): string | null {
+  if (!value?.startsWith("/")) return null;
+  try {
+    return new URL(value, siteOrigin).origin === siteOrigin ? value : null;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Whether `value` is an absolute `https:` URL, for CMS links that leave the
  * site. Callers keep `value` as written (unlike {@link getSafeExternalUrl},

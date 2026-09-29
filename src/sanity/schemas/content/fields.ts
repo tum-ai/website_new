@@ -3,6 +3,7 @@ import {
   contentTokenNames,
   unknownTokenNames,
 } from "../../../lib/content-tokens";
+import { getSafeSitePath, isHttpsUrl } from "../../../lib/security";
 
 /**
  * Shared field builders for the content workspace's schemas. Keep editor
@@ -22,6 +23,29 @@ export function validatePlaceholders(value: unknown): true | string {
   return unknown.length === 0
     ? true
     : `Unknown placeholder ${unknown.map((name) => `{{${name}}}`).join(", ")}. Available: ${tokenList}.`;
+}
+
+/**
+ * A link to a page of this site (`/research`, `/community#journey`), as the
+ * page checks it (`getSafeSitePath`): `//host` and backslashes leave the
+ * site and are refused.
+ */
+export function validateSitePath(value: unknown): true | string {
+  if (typeof value !== "string" || value === "") return true;
+  return getSafeSitePath(value) && /^\/[a-z0-9\-/#]*$/.test(value)
+    ? true
+    : "Use a path on this site in lowercase, like /research or /community#journey.";
+}
+
+/**
+ * A link that is either a page of this site or an https URL, as the Q&A
+ * evidence accepts it.
+ */
+export function validateSiteOrHttpsLink(value: unknown): true | string {
+  if (typeof value !== "string" || value === "") return true;
+  return getSafeSitePath(value) || isHttpsUrl(value)
+    ? true
+    : "Use a path on this site (/research) or an https:// address.";
 }
 
 /** Help text for fields that accept placeholders. */

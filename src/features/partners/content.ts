@@ -20,6 +20,7 @@ import type {
   PARTNER_CASE_STUDIES_QUERY_RESULT,
   PARTNERS_COPY_QUERY_RESULT,
 } from "@/lib/sanity.types.generated";
+import { getSafeSitePath } from "@/lib/security";
 import {
   fillPartnerPillars,
   fillPartnerStats,
@@ -218,8 +219,11 @@ function selectStats(
   });
 }
 
-/** CMS pillars, complete ones only, with the figure of their key. */
-function selectPillars(
+/**
+ * CMS pillars, complete ones only (their link a page of this site), with
+ * the figure of their key. Exported for tests.
+ */
+export function selectPillars(
   pillars: CopyResult["pillars"],
   tokens: ContentTokens,
   metrics: PillarMetrics,
@@ -228,13 +232,14 @@ function selectPillars(
     ({ key, title, metricLabel, description, image, href }) => {
       const photo = toContentImage(image);
       const filled = fillTemplate(description ?? "", tokens);
+      const link = getSafeSitePath(href);
       if (
         !isPillarKey(key) ||
         !title ||
         !metricLabel ||
         !filled ||
         !photo ||
-        !href
+        !link
       ) {
         return [];
       }
@@ -246,7 +251,7 @@ function selectPillars(
           metricLabel,
           description: filled,
           image: photo,
-          href,
+          href: link,
         },
       ];
     },

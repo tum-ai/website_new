@@ -13,6 +13,7 @@ import {
   getPartnersCopy,
   PARTNER_CASE_STUDIES_QUERY,
   PARTNERS_COPY_QUERY,
+  selectPillars,
 } from "./content";
 import {
   fillPartnerPillars,
@@ -346,4 +347,26 @@ describe("the pillar figures", () => {
       venture: "99M",
     });
   });
+});
+
+test("a pillar links only to a page of this site", () => {
+  const metrics = partnerPillarMetricsOf(siteFactsFallback);
+  const [pillar] = partnerPillarTemplates;
+  const image = {
+    src: "https://cdn.sanity.io/images/p/d/a.jpg",
+    width: 10,
+    height: 10,
+    alt: "",
+    hotspot: null,
+  };
+  const pillars = selectPillars(
+    ["/research", "//evil.example", "/\\evil.example", null].map((href) => ({
+      ...pillar,
+      image,
+      href,
+    })) as Parameters<typeof selectPillars>[0],
+    contentTokens,
+    metrics,
+  );
+  expect(pillars?.map(({ href }) => href)).toStrictEqual(["/research"]);
 });

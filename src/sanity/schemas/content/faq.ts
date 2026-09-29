@@ -1,5 +1,11 @@
 import { defineField, defineType } from "sanity";
-import { placeholderHelp, validatePlaceholders } from "./fields";
+import { anchorIdPattern, reservedQandaIds } from "../../../lib/page-anchors";
+import { sanityApiVersion } from "../../../lib/sanity-config";
+import {
+  placeholderHelp,
+  validatePlaceholders,
+  validateSiteOrHttpsLink,
+} from "./fields";
 import { validateEntrySpans } from "./qanda-spans";
 
 /** The pages a FAQ entry can appear on. */
@@ -12,6 +18,31 @@ export const faqCollections = [
 /** Hides the Q&A-only fields on entries of other pages. */
 const unlessQanda = ({ document }: { document?: Record<string, unknown> }) =>
   document?.collection !== "qanda";
+
+/**
+ * What is wrong with a Q&A entry's anchor id, without asking the dataset:
+ * missing, malformed, or an id the layout or /qanda already renders
+ * (`reservedQandaIds`). Entries of other pages need none.
+ */
+export function anchorProblem(
+  value: unknown,
+  collection: unknown,
+): true | string {
+  if (collection !== "qanda") return true;
+  if (typeof value !== "string" || value === "") {
+    return "The Q&A page needs an anchor id for every entry.";
+  }
+  if (!anchorIdPattern.test(value)) {
+    return "Use lowercase letters, digits and hyphens.";
+  }
+  if (reservedQandaIds.includes(value)) {
+    return `The page itself uses the id “${value}”; pick another anchor id.`;
+  }
+  return true;
+}
+
+/** Other Q&A entries (drafts included) that use `anchor`. */
+const ANCHOR_TAKEN_QUERY = `count(*[_type == "faq" && collection == "qanda" && anchor == $anchor && !(_id in [$id, $draft])])`;
 
 /**
  * One question and answer on a page's FAQ. A page shows the entries of its
@@ -65,13 +96,26 @@ export const faqType = defineType({
       description:
         "Q&A only: the link target, as in /qanda#<anchor>. Lowercase letters, digits and hyphens.",
       hidden: unlessQanda,
+      // The anchor is the question's element id and link target on /qanda,
+      // so it must be unique there; the page also drops a duplicate.
       validation: (Rule) =>
-        Rule.regex(/^[a-z0-9-]+$/, { name: "anchor id" }).custom(
-          (value, { document }) =>
-            document?.collection === "qanda" && !value
-              ? "The Q&A page needs an anchor id for every entry."
-              : true,
-        ),
+        Rule.custom(async (value, { document, getClient }) => {
+          const problem = anchorProblem(value, document?.collection);
+          if (problem !== true || document?.collection !== "qanda") {
+            return problem;
+          }
+          const id = document._id.replace(/^drafts\./, "");
+          const taken = await getClient({
+            apiVersion: sanityApiVersion,
+          }).fetch<number>(ANCHOR_TAKEN_QUERY, {
+            anchor: value,
+            id,
+            draft: `drafts.${id}`,
+          });
+          return taken > 0
+            ? "Another Q&A entry already uses this anchor id."
+            : true;
+        }),
     }),
     defineField({
       name: "points",
@@ -114,7 +158,15 @@ export const faqType = defineType({
             Rule.custom((value) => validatePlaceholders(value)),
         }),
         defineField({ name: "label", title: "Link label", type: "string" }),
-        defineField({ name: "href", title: "Link", type: "string" }),
+        defineField({
+          name: "href",
+          title: "Link",
+          type: "string",
+          description:
+            "A page of this site (/research) or an https:// address.",
+          validation: (Rule) =>
+            Rule.custom((value) => validateSiteOrHttpsLink(value)),
+        }),
       ],
     }),
   ],

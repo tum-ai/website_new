@@ -21,6 +21,7 @@ import {
   type Organization,
 } from "./people-and-logos";
 import type { LOGO_LISTS_QUERY_RESULT } from "./sanity.types.generated";
+import { isHttpsUrl } from "./security";
 
 /**
  * The `organization` and `logoList` content types, shared by every page that
@@ -113,7 +114,7 @@ export function toOrganization(
   const shortName = projected.shortName?.trim();
   if (shortName) organization.shortName = shortName;
   const href = projected.href?.trim();
-  if (href) organization.href = href;
+  if (href && isHttpsUrl(href)) organization.href = href;
   const logo = toArtwork(
     projected.logo,
     projected.logoSymbolOnly,
