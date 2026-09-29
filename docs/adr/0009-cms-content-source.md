@@ -139,7 +139,14 @@ datasets; a type name used in both workspaces with different fields fails the me
   without a visible difference until the environment flips.
 - Drafts, Presentation and live updates cover the live dataset only; content edits appear when a
   page revalidates, which the Sanity webhook on `/api/revalidate` triggers on publish by
-  expiring the changed type's `content:<type>` tag (static routes included).
+  expiring the changed type's `content:<type>` tag (static routes included). As a safety net
+  for a missed delivery, the site layout sets `revalidate = 3600`: every route renders again at
+  least hourly (the ISR routes keep their shorter windows), and pages stay prerendered at build.
+- **Clock islands act on the window they were rendered with.** The header CTA, the membership
+  and E-Lab phase switches and the apply buttons receive the application windows and campaigns
+  as instants in their props and switch in the browser at those instants. If an editor moves a
+  deadline, a page that has not regenerated yet still switches at the old instant, in the
+  browser too; the webhook (or at the latest the hourly timer) regenerates it with the new one.
 - Code fallbacks remain the source of truth for shape and the safety net for content, so they are
   kept up to date until the CMS content is reviewed; after launch they can shrink to minimal
   defaults, slice by slice.
@@ -187,7 +194,7 @@ redirects to `/studio/live`.
 5. Add the Vercel preview and production domains as Sanity CORS origins with credentials allowed
    (sanity.io/manage, API, CORS origins) if they are missing; the embedded Studio needs them.
 6. Create the revalidation webhooks (the free plan allows two), so edits show on the next
-   request instead of at the next deploy:
+   request instead of within the pages' `revalidate` windows (up to an hour):
    1. Generate a secret (`openssl rand -hex 32`) and set it as `SANITY_REVALIDATE_SECRET` on
       Vercel **Preview** and **Production**; redeploy. Until it is set, `/api/revalidate`
       answers 503.
@@ -204,9 +211,8 @@ redirects to `/studio/live`.
 
    Preview deployments are not covered (one webhook per dataset, pointed at production); they
    refresh on their `revalidate` timers or a redeploy. Without the webhooks, a content edit
-   shows within an hour on `/apply`, 5 minutes on `/e-lab` and `/events`, 15 minutes on
-   `/partners` and `/research`, and at the next deploy on the static routes (`/`,
-   `/community`, `/projects`, `/qanda`, the legal pages).
+   shows within 5 minutes on `/e-lab` and `/events`, 15 minutes on `/partners` and
+   `/research`, and within an hour everywhere else (the layout's `revalidate = 3600`).
 7. After launch, fill `hosts` on the live events in `production` with the new Studio
    (`/studio/live`; see the `TODO(content)` in `lib/mock-cms.ts`).
 

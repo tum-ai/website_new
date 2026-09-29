@@ -157,8 +157,7 @@ Figures, dates and emails inside editable text are placeholders such as `{{eLab.
 windows at render. A few texts take page tokens, like `{{count}}`, which the page fills from what
 it lists; the field's help text names them. A published edit shows on the next request a few
 seconds later: a Sanity webhook calls `/api/revalidate`, which expires the pages that read the
-changed type (without the webhook: within the page's `revalidate` time, or at the next deploy
-for fully static pages). There is no draft preview for the content dataset yet.
+changed type (without the webhook: within the page's `revalidate` time, at most an hour). There is no draft preview for the content dataset yet.
 
 Until launch, and in the code fallback, the repository is the source: copy in
 `src/features/<domain>/data/`, facts in `src/config/`.

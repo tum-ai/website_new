@@ -57,16 +57,16 @@ its feature folder:
 
 | Route | Page module | Data |
 | --- | --- | --- |
-| `/` | `features/home/home-page.tsx` (+ `home.css`) | static + content slices |
+| `/` | `features/home/home-page.tsx` (+ `home.css`) | static + content slices, ISR 1 h (layout) |
 | `/apply` | `features/apply/apply-page.tsx` | static + content slices, ISR 1 h (render date) |
-| `/community` | `features/community/community-page.tsx` | static + content slices |
+| `/community` | `features/community/community-page.tsx` | static + content slices, ISR 1 h (layout) |
 | `/events` | `features/events/events-page.tsx` (+ `events.css`) | Sanity + content slices, ISR 5 min |
 | `/e-lab` | `features/e-lab/e-lab-page.tsx` (+ `e-lab.css`) | static + content slices, ISR 5 min (application phase) |
 | `/partners` | `features/partners/partners-page.tsx` (+ `partners.css`) | Sanity + content slices, ISR 15 min |
-| `/projects` | `features/projects/projects-page.tsx` (+ `projects.css`) | static + content slice |
-| `/qanda` | `features/qanda/qanda-page.tsx` | static + content slices |
+| `/projects` | `features/projects/projects-page.tsx` (+ `projects.css`) | static + content slice, ISR 1 h (layout) |
+| `/qanda` | `features/qanda/qanda-page.tsx` | static + content slices, ISR 1 h (layout) |
 | `/research` | `features/research/research-page.tsx` (+ `research.css`) | Sanity + content slices, ISR 15 min |
-| `/imprint`, `/data-privacy`, `/disclaimer` | `features/legal/*-page.tsx` | static |
+| `/imprint`, `/data-privacy`, `/disclaimer` | `features/legal/*-page.tsx` | static, ISR 1 h (layout) |
 | `/design-system` | `features/design-system/design-system-page.tsx` | dev and Vercel previews only; 404 in production |
 | `/studio` | `app/studio/[[...tool]]/page.tsx` | the embedded Studio: `/studio/live`, `/studio/content` (`/studio` redirects to `/studio/live`) |
 
@@ -212,6 +212,16 @@ of its tags is revalidated, so the next request renders it again. The Sanity cli
 route, so a Site settings edit refreshes every page. With `CMS_CONTENT_SOURCE=code` (and under
 the mock CMS) the slices make no request, so pages carry no content tags and the webhook has
 nothing to expire.
+
+**Hourly safety net.** The site layout exports `revalidate = 3600`, so every route renders again
+at least hourly (shorter route values win). The webhook stays the mechanism; the timer bounds
+the damage of a missed delivery and how long server-rendered, time-dependent parts (the header
+CTA, the apply buttons) lag the clock.
+
+**Clock islands.** The islands that switch at a date (the header CTA, `MembershipPhase`,
+`ELabPhase`) get the window's instants as props and act on the window the page was rendered
+with. An edited deadline reaches them only when the page regenerates (webhook, timer or deploy);
+until then the browser switches at the old instant.
 
 ### Mock CMS and previews
 

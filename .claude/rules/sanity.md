@@ -36,7 +36,8 @@ moving out of code, read through content slices (`lib/cms-content.ts`) behind
 - **Cache tags:** a slice's `tags` name `content:<type>` for every type its query reads,
   dereferenced ones included (`lib/cache-tags.ts`); the live getters use `liveCacheTags`.
   `/api/revalidate` (a Sanity webhook, `SANITY_REVALIDATE_SECRET`) expires them on publish; a
-  missing tag means that page ignores the type's edits until its timer or the next deploy.
+  missing tag means that page ignores the type's edits until its timer (at most an hour: the site
+  layout's `revalidate = 3600` safety net).
 - **Backfill:** `pnpm sanity:backfill --dataset redesign` is a dry run that writes `.sanity-backfill/<dataset>.ndjson`.
   Never run `--apply`, `sanity dataset create` or `sanity dataset import` as part of a change:
   importing is a maintainer's launch step. `--apply` only creates missing documents;

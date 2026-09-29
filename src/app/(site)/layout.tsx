@@ -50,6 +50,21 @@ export const metadata: Metadata = {
 };
 
 /**
+ * Every site route renders again at least hourly (routes with a shorter
+ * `revalidate` keep theirs). A safety net: the Sanity webhook
+ * (`/api/revalidate`) regenerates pages on publish, but a missed delivery
+ * would otherwise leave a formerly static route (`/`, `/community`,
+ * `/projects`, `/qanda`, the legal pages) on its old content until the next
+ * deploy. It also bounds how long a page's server-rendered phase (header
+ * CTA, apply buttons) and baked schedule lag the clock: the browser
+ * islands switch at the instants they were rendered with, so an edited
+ * deadline reaches them only when the page regenerates. Pages stay
+ * prerendered at build (the homepage budget reads that output), and an
+ * hourly render per route is cheap next to the 5 to 15 minute ISR routes.
+ */
+export const revalidate = 3600;
+
+/**
  * Browser chrome that still reads theme-color (e.g. Chrome on Android) uses the
  * same brand black as the root canvas, the hero tops and the footer
  * (`--color-black` in src/styles/index.css; metadata needs a literal color).
