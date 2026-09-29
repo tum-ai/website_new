@@ -21,8 +21,9 @@ export type ELabCopy = {
   /** The hero's dot field. */
   field: {
     /**
-     * The figure caption. `{{finalists}}`: the dots still lit; `{{ventures}}`:
-     * those that open into ventures; `{{open}}`: those left for new teams.
+     * The figure caption. It may use `{{finalists}}`: the dots still lit;
+     * `{{ventures}}`: those that open into ventures; `{{open}}`: those left
+     * for new teams.
      */
     caption: string;
     /** A lit dot without a venture, before the cohort's name. */
@@ -74,8 +75,7 @@ export const eLabCopyTemplate: ELabCopy = {
     stages: stageCopy,
   },
   field: {
-    caption:
-      "Each dot is one team application in a round. The {{finalists}} still lit pitch at the Final Pitch: {{ventures}} open into ventures from earlier cohorts, and {{open}} are left for new teams.",
+    caption: "Every dot is a team that applied. Be the one that stands out.",
     inviteLabel: "Your team",
   },
   ventures: {
