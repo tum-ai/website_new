@@ -8,7 +8,7 @@ import {
   TextLink,
 } from "@/components/ds";
 import { callToActionLabels } from "@/config/calls-to-action";
-import { LiveApplyAction } from "./apply-action";
+import { LiveApplyAction, LiveCallPhase } from "./apply-action";
 import type { ApplyCopy } from "./data/apply";
 import { closingLead, closingTitle, type RecruitingCall } from "./round";
 
@@ -35,7 +35,10 @@ export function ClosingSection({
             id="apply-close-title"
             className="max-w-[12em] text-display-xl text-highlight"
           >
-            {closingTitle(call)}
+            <LiveCallPhase
+              call={call}
+              render={(variant) => closingTitle(variant)}
+            />
           </h2>
         </Reveal>
         <Reveal variant="fade" delay={100}>
@@ -51,9 +54,14 @@ export function ClosingSection({
         </Reveal>
         <div className="mt-12 grid gap-16 md:mt-16 lg:grid-cols-12 lg:gap-12">
           <Reveal delay={160} className="lg:col-span-8">
-            <p className="max-w-xl text-fg-muted text-lead">
-              {closingLead(call)}
-            </p>
+            <LiveCallPhase
+              call={call}
+              render={(variant) => (
+                <p className="max-w-xl text-fg-muted text-lead">
+                  {closingLead(variant)}
+                </p>
+              )}
+            />
             <Actions className="mt-10">
               <LiveApplyAction call={call} statusId="apply-close-status" />
               <ButtonLink href="/qanda" size="lg" variant="outline">

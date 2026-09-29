@@ -1,6 +1,11 @@
 import { describe, expect, test } from "vitest";
 import type { MembershipConfig } from "@/config/membership";
-import { closingLead, closingTitle, recruitingCall } from "./round";
+import {
+  callInPhase,
+  closingLead,
+  closingTitle,
+  recruitingCall,
+} from "./round";
 
 const config: MembershipConfig = {
   applicationsOpen: true,
@@ -112,5 +117,19 @@ describe("recruitingCall", () => {
     expect(closingTitle(at("2026-11-01T12:00:00Z"))).toBe(
       "This call is closed.",
     );
+  });
+
+  test("a call rendered before the opening reads, once open, as on the opening day", () => {
+    const upcoming = at("2026-09-20T12:00:00Z");
+    const openingDay = at("2026-09-27T22:00:00Z");
+    expect(upcoming.phase).toBe("upcoming");
+    expect(openingDay.phase).toBe("open");
+    expect(callInPhase(upcoming, "open").daysLeftLabel).toBe(
+      openingDay.daysLeftLabel,
+    );
+    expect(closingLead(callInPhase(upcoming, "open"))).toBe(
+      closingLead(openingDay),
+    );
+    expect(callInPhase(openingDay, "closed").daysLeftLabel).toBe("");
   });
 });

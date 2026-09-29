@@ -1,34 +1,40 @@
 "use client";
 
 import type { ReactNode } from "react";
-import type { ClockWindow } from "@/lib/clock-window";
-import { useClockWindow } from "@/lib/use-clock-switch";
+import type { ClockPhase, ClockWindow } from "@/lib/clock-window";
+import { useClockWindowPhase } from "@/lib/use-clock-switch";
 
 /** Props for {@link MembershipPhaseSwitch}. */
 export type MembershipPhaseSwitchProps = {
   /** The membership window, resolved on the server (code or CMS). */
   clock: ClockWindow;
   /** What the server rendered; must match for hydration. */
-  initialOpen?: boolean;
+  initialPhase?: ClockPhase;
   /** `false` on a fixed render clock (`MOCK_CMS_NOW`); see `useClockSwitch`. */
   live?: boolean;
   open: ReactNode;
   closed: ReactNode;
+  /** Before the form opens; `closed` when omitted. */
+  upcoming?: ReactNode;
 };
 
 /**
- * Shows `open` while membership applications are open and `closed` before
- * the form opens and after the deadline, switching live in the browser at
- * both instants. Server trees use <MembershipPhase>, which supplies
- * `initialOpen`.
+ * Shows `open` while membership applications are open, `upcoming` before
+ * the form opens (when given) and `closed` otherwise, switching live in the
+ * browser at both instants. Server trees use <MembershipPhase>, which
+ * supplies `initialPhase`.
  */
 export function MembershipPhaseSwitch({
   clock,
-  initialOpen,
+  initialPhase,
   live,
   open,
   closed,
+  upcoming,
 }: MembershipPhaseSwitchProps) {
-  const isOpen = useClockWindow(clock, { initial: initialOpen, live });
-  return <>{isOpen ? open : closed}</>;
+  const phase = useClockWindowPhase(clock, { initial: initialPhase, live });
+  if (phase === "open") return <>{open}</>;
+  return (
+    <>{phase === "upcoming" && upcoming !== undefined ? upcoming : closed}</>
+  );
 }

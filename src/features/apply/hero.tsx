@@ -1,6 +1,6 @@
 import { ButtonLink, DayRuler, KeyDates, PageHero } from "@/components/ds";
 import { fillPageTokens } from "@/lib/content-copy";
-import { LiveApplyAction } from "./apply-action";
+import { LiveApplyAction, LiveCallPhase } from "./apply-action";
 import type { ApplyCopy } from "./data/apply";
 import { callStatus, type RecruitingCall } from "./round";
 
@@ -25,7 +25,12 @@ export function Hero({
       mark={false}
       lead={
         <>
-          <p className="text-fg">{callStatus(call)}</p>
+          <LiveCallPhase
+            call={call}
+            render={(variant) => (
+              <p className="text-fg">{callStatus(variant)}</p>
+            )}
+          />
           <p className="mt-4">{copy.heroLead}</p>
         </>
       }

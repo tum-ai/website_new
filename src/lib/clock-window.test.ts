@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   type ClockWindow,
   clockWindowBoundaries,
+  clockWindowPhase,
   isClockWindowOpen,
 } from "./clock-window";
 
@@ -40,4 +41,24 @@ test("the boundaries are the instants that are set", () => {
   expect(clockWindowBoundaries({ ...clock, opensAt: null })).toStrictEqual([
     at(closesAt),
   ]);
+});
+
+describe("clockWindowPhase", () => {
+  test("is upcoming before the opening, open inside, closed after", () => {
+    expect(clockWindowPhase(clock, at(opensAt - 1))).toBe("upcoming");
+    expect(clockWindowPhase(clock, at(opensAt))).toBe("open");
+    expect(clockWindowPhase(clock, at(closesAt))).toBe("closed");
+  });
+
+  test("is closed at every instant while switched off", () => {
+    const off = { ...clock, switchedOn: false };
+    expect(clockWindowPhase(off, at(opensAt - 1))).toBe("closed");
+    expect(clockWindowPhase(off, at(opensAt))).toBe("closed");
+  });
+
+  test("is never upcoming without an opening instant", () => {
+    const always = { ...clock, opensAt: null };
+    expect(clockWindowPhase(always, at(opensAt - 1))).toBe("open");
+    expect(clockWindowPhase(always, at(closesAt))).toBe("closed");
+  });
 });

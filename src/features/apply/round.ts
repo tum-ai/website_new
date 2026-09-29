@@ -2,18 +2,21 @@ import type { KeyDateItem } from "@/components/ds";
 import {
   type ApplicationProgress,
   applicationProgress,
-  isMembershipApplicationOpen,
   type MembershipConfig,
   membershipConfig,
   membershipWindowClock,
   type RoundSchedule,
   roundSchedule,
 } from "@/config/membership";
-import type { ClockWindow } from "@/lib/clock-window";
+import {
+  type ClockPhase,
+  type ClockWindow,
+  clockWindowPhase,
+} from "@/lib/clock-window";
 import { munichDayNumber, munichIsoDate } from "@/lib/munich-time";
 
 /** Where the call stands: not yet open, taking applications, or closed. */
-export type CallPhase = "upcoming" | "open" | "closed";
+export type CallPhase = ClockPhase;
 
 /** Everything /apply shows about the recruiting round at one instant. */
 export type RecruitingCall = {
@@ -91,6 +94,10 @@ function longSpan(from: Date, to: Date): string {
 
 const days = (count: number) => `${count} ${count === 1 ? "day" : "days"}`;
 
+/** The days-left label with `daysLeft` calendar days to the deadline day. */
+const daysLeftText = (daysLeft: number) =>
+  daysLeft === 0 ? "Closes today" : `${days(daysLeft)} left`;
+
 /** "in 5 days", "tomorrow", "today" for a start `count` Munich days away. */
 function startsIn(count: number): string {
   if (count <= 0) return "Today";
@@ -112,12 +119,8 @@ export function recruitingCall(
   const schedule: RoundSchedule = roundSchedule(config.round);
   const progress = applicationProgress(now, schedule);
   const today = munichDayNumber(now);
-  const open = isMembershipApplicationOpen(now, config);
-  const phase: CallPhase = open
-    ? "open"
-    : now < schedule.opensAt && config.applicationsOpen
-      ? "upcoming"
-      : "closed";
+  const clock = membershipWindowClock(config);
+  const phase: CallPhase = clockWindowPhase(clock, now);
 
   const dayAfter = (instant: Date) => munichDayNumber(instant) + 1;
   const rows: (Omit<KeyDateItem, "state"> & {
@@ -167,12 +170,7 @@ export function recruitingCall(
   const isPast = (row: (typeof rows)[number]) =>
     row.pastAt ? now >= row.pastAt : today >= row.pastFrom;
   const nextIndex = rows.findIndex((row) => !isPast(row));
-  const daysLeftLabel =
-    phase !== "open"
-      ? ""
-      : progress.daysLeft === 0
-        ? "Closes today"
-        : `${days(progress.daysLeft)} left`;
+  const daysLeftLabel = phase === "open" ? daysLeftText(progress.daysLeft) : "";
 
   const keyDates: KeyDateItem[] = rows.map(
     ({ pastFrom: _from, pastAt: _at, startsOn, ...row }, index) => {
@@ -192,7 +190,7 @@ export function recruitingCall(
 
   return {
     phase,
-    clock: membershipWindowClock(config),
+    clock,
     name: config.round.name,
     applicationUrl: config.applicationUrl,
     keyDates,
@@ -210,6 +208,23 @@ export function recruitingCall(
     },
     daysLeftLabel,
   };
+}
+
+/**
+ * `call` as it reads in `phase`, for the variants the page switches between
+ * live (<LiveCallPhase>). Only the phase and the days-left label depend on
+ * it; a call rendered before the form opens counts the whole window on the
+ * opening day.
+ */
+export function callInPhase(
+  call: RecruitingCall,
+  phase: CallPhase,
+): RecruitingCall {
+  const daysLeftLabel =
+    phase !== "open"
+      ? ""
+      : call.daysLeftLabel || daysLeftText(call.progress.totalDays);
+  return { ...call, phase, daysLeftLabel };
 }
 
 /** The call's opening sentence for each phase. */

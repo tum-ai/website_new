@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  type ClockPhase,
   type ClockWindow,
   clockWindowBoundaries,
+  clockWindowPhase,
   isClockWindowOpen,
 } from "./clock-window";
 
@@ -119,4 +121,25 @@ export function useClockWindow(
     [switchedOn, opensAt, closesAt],
   );
   return useClockSwitch({ isOn, boundaries, ...options });
+}
+
+/**
+ * The {@link ClockPhase} of a {@link ClockWindow}, kept current in the
+ * browser like {@link useClockWindow}, for islands that tell "not yet
+ * open" from "closed".
+ */
+export function useClockWindowPhase(
+  clock: ClockWindow,
+  options: Pick<ClockStateOptions<ClockPhase>, "initial" | "live"> = {},
+): ClockPhase {
+  const { switchedOn, opensAt, closesAt } = clock;
+  const at = useCallback(
+    (now: Date) => clockWindowPhase({ switchedOn, opensAt, closesAt }, now),
+    [switchedOn, opensAt, closesAt],
+  );
+  const boundaries = useMemo(
+    () => clockWindowBoundaries({ switchedOn, opensAt, closesAt }),
+    [switchedOn, opensAt, closesAt],
+  );
+  return useClockState({ at, boundaries, ...options });
 }

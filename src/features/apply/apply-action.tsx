@@ -1,8 +1,10 @@
+import type { ReactNode } from "react";
 import { Button, ButtonLink, StatusBadge } from "@/components/ds";
 import { callToActionLabels } from "@/config/calls-to-action";
 import { MembershipPhase } from "@/features/community";
 import {
   type CallPhase,
+  callInPhase,
   closedLabel as closedLabelOf,
   type RecruitingCall,
 } from "./round";
@@ -60,11 +62,35 @@ export function ApplyAction({
 }
 
 /**
- * The apply action for the render's call, kept current in the browser: it
- * becomes the form link when the form opens and the inert button at the
- * deadline, through the same membership window island as the header CTA
- * and the closing bands (<MembershipPhase>), so the /apply page (hourly
- * ISR) never offers a closed form or hides an open one in between.
+ * What `render` shows for the call, kept current in the browser: the
+ * variants for "not yet open", "open" and "closed" all ship with the page,
+ * and the membership window island (<MembershipPhase>, as the header CTA
+ * and the closing bands use) switches between them when the form opens and
+ * at the deadline, so the /apply page (hourly ISR) never shows a phase that
+ * has passed. `render` runs on the server, once per phase.
+ */
+export function LiveCallPhase({
+  call,
+  render,
+}: {
+  call: RecruitingCall;
+  render: (call: RecruitingCall) => ReactNode;
+}) {
+  return (
+    <MembershipPhase
+      clock={call.clock}
+      upcoming={render(callInPhase(call, "upcoming"))}
+      open={render(callInPhase(call, "open"))}
+      closed={render(callInPhase(call, "closed"))}
+    />
+  );
+}
+
+/**
+ * The apply action for the render's call, kept current in the browser
+ * (<LiveCallPhase>): the form link while the form is open, otherwise the
+ * inert button with "Opens ..." before the form opens and "Applications
+ * closed" after the deadline.
  */
 export function LiveApplyAction({
   call,
@@ -73,27 +99,17 @@ export function LiveApplyAction({
   call: RecruitingCall;
   statusId: string;
 }) {
-  // While open, the closed variant is what the deadline turns it into.
-  const closedPhase = call.phase === "open" ? "closed" : call.phase;
   return (
-    <MembershipPhase
-      clock={call.clock}
-      open={
+    <LiveCallPhase
+      call={call}
+      render={(variant) => (
         <ApplyAction
-          phase="open"
-          href={call.applicationUrl}
+          phase={variant.phase}
+          href={variant.applicationUrl}
           statusId={statusId}
-          closedLabel=""
+          closedLabel={variant.phase === "open" ? "" : closedLabelOf(variant)}
         />
-      }
-      closed={
-        <ApplyAction
-          phase={closedPhase}
-          href={call.applicationUrl}
-          statusId={statusId}
-          closedLabel={closedLabelOf({ ...call, phase: closedPhase })}
-        />
-      }
+      )}
     />
   );
 }

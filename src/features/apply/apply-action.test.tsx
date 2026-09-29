@@ -92,4 +92,18 @@ describe("LiveApplyAction", () => {
       form,
     );
   });
+
+  test("an upcoming call's badge says closed once the window has passed", () => {
+    renderAt("2026-09-27T12:00:00Z", "2026-10-27T22:59:00Z");
+    const button = screen.getByRole("button", { name: "Apply now" });
+    expect(button).toHaveAttribute("aria-disabled", "true");
+    expect(button).toHaveAccessibleDescription("Applications closed");
+  });
+
+  test("an upcoming call's badge names the opening day until then", () => {
+    renderAt("2026-09-27T12:00:00Z", "2026-09-27T21:59:00Z");
+    expect(
+      screen.getByRole("button", { name: "Apply now" }),
+    ).toHaveAccessibleDescription("Opens 28 September");
+  });
 });

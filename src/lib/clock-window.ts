@@ -27,6 +27,23 @@ export function isClockWindowOpen(window: ClockWindow, now: Date): boolean {
   );
 }
 
+/** Where a {@link ClockWindow} stands: before it opens, open, or closed. */
+export type ClockPhase = "upcoming" | "open" | "closed";
+
+/**
+ * The phase of `window` at `now`: `open` as {@link isClockWindowOpen};
+ * `upcoming` while switched on and before `opensAt`; `closed` otherwise
+ * (switched off, or past `closesAt`).
+ */
+export function clockWindowPhase(window: ClockWindow, now: Date): ClockPhase {
+  if (isClockWindowOpen(window, now)) return "open";
+  return window.switchedOn &&
+    window.opensAt !== null &&
+    now.getTime() < window.opensAt
+    ? "upcoming"
+    : "closed";
+}
+
 /** The instants at which {@link isClockWindowOpen} can change. */
 export function clockWindowBoundaries(window: ClockWindow): Date[] {
   return [window.opensAt, window.closesAt]

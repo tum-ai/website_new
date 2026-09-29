@@ -76,4 +76,28 @@ describe("MembershipPhaseSwitch", () => {
     });
     shows("Become a Member");
   });
+
+  test("shows the upcoming variant before the opening, then open, then closed", () => {
+    vi.setSystemTime(opensAt - 1);
+    render(
+      <MembershipPhaseSwitch
+        clock={clock}
+        upcoming={<p>Opens soon</p>}
+        open={<p>Apply now</p>}
+        closed={<p>Applications closed</p>}
+      />,
+    );
+    shows("Opens soon");
+
+    for (const [instant, label] of [
+      [opensAt, "Apply now"],
+      [closesAt, "Applications closed"],
+    ] as const) {
+      vi.setSystemTime(instant);
+      act(() => {
+        document.dispatchEvent(new Event("visibilitychange"));
+      });
+      shows(label);
+    }
+  });
 });
