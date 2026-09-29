@@ -55,7 +55,10 @@ Pages are static or ISR, so a change takes effect with the next build or revalid
 - lists: replaced wholesale when the fetched list has items;
 - plain objects (singletons, field groups): merged field by field, recursively; set fields the
   fallback lacks are added;
-- images (`ContentImage`, objects with a `src`): atomic, never mixed with the code image;
+- images (`ContentImage`, objects with a `src`): atomic, never mixed with the code image. The
+  Studio's image fields have `options.hotspot`, which also offers the crop tool; the crop is
+  honoured, not ignored: `toContentImage` requests the cropped area from the CDN (`rect=`), states
+  the cropped size, and measures the hotspot (`objectPosition`) within it;
 - whole groups (`whole(group)` from a slice's `select`): fields that describe one thing (a quote
   and its person, the traced venture and its story, the booking page and its host) are taken
   complete or not at all, so a CMS quote is never attributed to the code person;

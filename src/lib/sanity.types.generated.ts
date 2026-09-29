@@ -849,7 +849,7 @@ export type PartnersCopy = {
       alt: string;
       _type: "image";
     };
-    href?: string;
+    href: string;
     _type: "pillar";
     _key: string;
   }>;
@@ -1253,7 +1253,7 @@ export type CAMPAIGNS_QUERY_RESULT = Array<{
 
 // Source: ../config/site-settings-content.ts
 // Variable: SITE_SETTINGS_QUERY
-// Query: *[_type == "siteSettings" && _id == "siteSettings"][0]{  organization{ foundingYear, activeMembers, alumni, majors, universities, nationalities },  brandMission,  impact{ publications, publicationVenues, hackathonParticipants },  community{ makeathonSize },  contactEmails{ general, partners, venture, recruitment },  socialLinks{ linkedin, instagram, github, x, youtube, facebook, tiktok, slack },  partnershipBooking{ bookingUrl, bookingHost },  eLab{    currentIteration,    programWeeks,    ventureFundingMillions,    selection{ applications, admitted, midterm, selectionDay, finalPitch },    "heroLogo": heroLogo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}  },  footerTagline,  headerCtaFallback}
+// Query: *[_type == "siteSettings" && _id == "siteSettings"][0]{  organization{ foundingYear, activeMembers, alumni, majors, universities, nationalities },  brandMission,  impact{ publications, publicationVenues, hackathonParticipants },  community{ makeathonSize },  contactEmails{ general, partners, venture, recruitment },  socialLinks{ linkedin, instagram, github, x, youtube, facebook, tiktok, slack },  partnershipBooking{ bookingUrl, bookingHost },  eLab{    currentIteration,    programWeeks,    ventureFundingMillions,    selection{ applications, admitted, midterm, selectionDay, finalPitch },    "heroLogo": heroLogo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}  },  footerTagline,  headerCtaFallback}
 export type SITE_SETTINGS_QUERY_RESULT = {
   organization: {
     foundingYear: number;
@@ -1312,6 +1312,12 @@ export type SITE_SETTINGS_QUERY_RESULT = {
         x: number;
         y: number;
       } | null;
+      crop: {
+        top: number;
+        bottom: number;
+        left: number;
+        right: number;
+      } | null;
     };
   };
   footerTagline: string;
@@ -1320,7 +1326,7 @@ export type SITE_SETTINGS_QUERY_RESULT = {
 
 // Source: ../features/apply/content.ts
 // Variable: APPLY_CONTENT_QUERY
-// Query: {  "copy": *[_id == "applyCopy"][0]{    heroTitle,    heroLead,    faqLabel,    datesTitle,    scope{      title,      inScopeTitle,      notRequiredTitle,      valuesTitle,      qualities[]{ title, text },      notRequired[]{ title, text },      values[]{ title, text },      "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}    },    tracks{      title,      lead,      offeringsTitle,      offerings[]{ title, text },      "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }},      journeyLink    },    selection{ title, lead, stages[]{ title, when, text } },    history{ title, lead },    closing{ companiesReader }  },  "milestones": *[_type == "milestone"] | order(year asc, order asc){    year,    kind,    title,    detail  }}
+// Query: {  "copy": *[_id == "applyCopy"][0]{    heroTitle,    heroLead,    faqLabel,    datesTitle,    scope{      title,      inScopeTitle,      notRequiredTitle,      valuesTitle,      qualities[]{ title, text },      notRequired[]{ title, text },      values[]{ title, text },      "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}    },    tracks{      title,      lead,      offeringsTitle,      offerings[]{ title, text },      "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},      journeyLink    },    selection{ title, lead, stages[]{ title, when, text } },    history{ title, lead },    closing{ companiesReader }  },  "milestones": *[_type == "milestone"] | order(year asc, order asc){    year,    kind,    title,    detail  }}
 export type APPLY_CONTENT_QUERY_RESULT = {
   copy:
     | {
@@ -1404,6 +1410,12 @@ export type APPLY_CONTENT_QUERY_RESULT = {
               x: number;
               y: number;
             } | null;
+            crop: {
+              top: number;
+              bottom: number;
+              left: number;
+              right: number;
+            } | null;
           };
         } | null;
         tracks: {
@@ -1422,6 +1434,12 @@ export type APPLY_CONTENT_QUERY_RESULT = {
             hotspot: {
               x: number;
               y: number;
+            } | null;
+            crop: {
+              top: number;
+              bottom: number;
+              left: number;
+              right: number;
             } | null;
           };
           journeyLink: string;
@@ -1454,7 +1472,7 @@ export type APPLY_CONTENT_QUERY_RESULT = {
 
 // Source: ../features/community/content.ts
 // Variable: COMMUNITY_COPY_QUERY
-// Query: *[_id == "communityCopy"][0]{  hero{ title, lead, "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}, photoCaption },  journey{ title, lead },  departments{ title, lead },  stories{ title, lead },  closing{ title, lead, companiesReader }}
+// Query: *[_id == "communityCopy"][0]{  hero{ title, lead, "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}, photoCaption },  journey{ title, lead },  departments{ title, lead },  stories{ title, lead },  closing{ title, lead, companiesReader }}
 export type COMMUNITY_COPY_QUERY_RESULT =
   | {
       hero: null;
@@ -1558,6 +1576,12 @@ export type COMMUNITY_COPY_QUERY_RESULT =
             x: number;
             y: number;
           } | null;
+          crop: {
+            top: number;
+            bottom: number;
+            left: number;
+            right: number;
+          } | null;
         };
         photoCaption: string;
       } | null;
@@ -1583,7 +1607,7 @@ export type COMMUNITY_COPY_QUERY_RESULT =
 
 // Source: ../features/e-lab/content.ts
 // Variable: ELAB_COPY_QUERY
-// Query: *[_id == "eLabCopy"][0]{  hero{ title, lead },  gates{    title,    lead,    scaleLabel,    stages[]{      _type,      figure,      name,      description,      approximate,      "id": key,      duration,      "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }},      photoCaption    }  },  field{ caption, inviteLabel },  ventures{ title, fundingNote, logosLabel },  voices{ title, lead, foundersLabel, investorsLabel },  closing{ title, followLabel, partnersReader, partnersText }}
+// Query: *[_id == "eLabCopy"][0]{  hero{ title, lead },  gates{    title,    lead,    scaleLabel,    stages[]{      _type,      figure,      name,      description,      approximate,      "id": key,      duration,      "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},      photoCaption    }  },  field{ caption, inviteLabel },  ventures{ title, fundingNote, logosLabel },  voices{ title, lead, foundersLabel, investorsLabel },  closing{ title, followLabel, partnersReader, partnersText }}
 export type ELAB_COPY_QUERY_RESULT =
   | {
       hero: null;
@@ -1704,6 +1728,12 @@ export type ELAB_COPY_QUERY_RESULT =
                 hotspot: {
                   x: number;
                   y: number;
+                } | null;
+                crop: {
+                  top: number;
+                  bottom: number;
+                  left: number;
+                  right: number;
                 } | null;
               } | null;
               photoCaption: string | null;
@@ -1871,7 +1901,7 @@ export type EVENTS_COPY_QUERY_RESULT =
 
 // Source: ../features/home/content.ts
 // Variable: HOME_COPY_QUERY
-// Query: *[_id == "homeCopy"][0]{  hero{    title,    lead,    partnersLabel,    "photos": photos[]{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}  },  mission{ statement, body },  ledger[]{ key, label, note },  programs{    title,    lead,    items[]{      "id": key,      title,      description,      href,      "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}    }  },  room{    title,    lead,    "photos": photos[]{ "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}, caption }  },  join{    title,    lead,    stepsTitle,    steps[]{ title, dates },    quote{ "name": person->name, excerpt }  },  partners{ title, lead, moreLabel, "quote": quote->key }}
+// Query: *[_id == "homeCopy"][0]{  hero{    title,    lead,    partnersLabel,    "photos": photos[]{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}  },  mission{ statement, body },  ledger[]{ key, label, note },  programs{    title,    lead,    items[]{      "id": key,      title,      description,      href,      "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}    }  },  room{    title,    lead,    "photos": photos[]{ "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}, caption }  },  join{    title,    lead,    stepsTitle,    steps[]{ title, dates },    quote{ "name": person->name, excerpt }  },  partners{ title, lead, moreLabel, "quote": quote->key }}
 export type HOME_COPY_QUERY_RESULT =
   | {
       hero: null;
@@ -1924,6 +1954,12 @@ export type HOME_COPY_QUERY_RESULT =
             x: number;
             y: number;
           } | null;
+          crop: {
+            top: number;
+            bottom: number;
+            left: number;
+            right: number;
+          } | null;
         }>;
       } | null;
       mission: {
@@ -1958,6 +1994,12 @@ export type HOME_COPY_QUERY_RESULT =
               x: number;
               y: number;
             } | null;
+            crop: {
+              top: number;
+              bottom: number;
+              left: number;
+              right: number;
+            } | null;
           };
         }>;
       } | null;
@@ -1973,6 +2015,12 @@ export type HOME_COPY_QUERY_RESULT =
             hotspot: {
               x: number;
               y: number;
+            } | null;
+            crop: {
+              top: number;
+              bottom: number;
+              left: number;
+              right: number;
             } | null;
           };
           caption: string;
@@ -2002,7 +2050,7 @@ export type HOME_COPY_QUERY_RESULT =
 
 // Source: ../features/partners/content.ts
 // Variable: PARTNERS_COPY_QUERY
-// Query: *[_id == "partnersCopy"][0]{  pitch,  intents{    talent{ label, shortLabel, detail },    hackathon{ label, shortLabel, detail },    brand{ label, shortLabel, detail },    research{ label, shortLabel, detail }  },  durations{    oneOff{ label, detail },    ongoing{ label, detail }  },  recommendations{    longTerm{ name, description },    hackathon{ name, description },    talent{ name, description },    brand{ name, description },    research{ name, description }  },  reasons[]{ icon, name, title, description },  stats[]{ value, label, detail },  pillars[]{    key,    title,    metricLabel,    description,    "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }},    href  },  prompts{    intentQuestion,    durationQuestion,    resultQuestion,    firstChoice,    bookingTitle,    bookingLead,    bookingSlow  },  sections{    hero{ eyebrow, title, lead, contactLabel, fitLabel, caption },    marquee{ label, link },    finder{ eyebrow, title, lead, note },    reasons{ title, lead, contact },    proof{ title },    pillars{ title, lead },    people{ title, lead, statLabel, tagline, alumniTitle },    directory{ title, lead, supportersTitle },    cases{ title, lead, contact },    contact{ title, lead, emailLabel }  }}
+// Query: *[_id == "partnersCopy"][0]{  pitch,  intents{    talent{ label, shortLabel, detail },    hackathon{ label, shortLabel, detail },    brand{ label, shortLabel, detail },    research{ label, shortLabel, detail }  },  durations{    oneOff{ label, detail },    ongoing{ label, detail }  },  recommendations{    longTerm{ name, description },    hackathon{ name, description },    talent{ name, description },    brand{ name, description },    research{ name, description }  },  reasons[]{ icon, name, title, description },  stats[]{ value, label, detail },  pillars[]{    key,    title,    metricLabel,    description,    "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},    href  },  prompts{    intentQuestion,    durationQuestion,    resultQuestion,    firstChoice,    bookingTitle,    bookingLead,    bookingSlow  },  sections{    hero{ eyebrow, title, lead, contactLabel, fitLabel, caption },    marquee{ label, link },    finder{ eyebrow, title, lead, note },    reasons{ title, lead, contact },    proof{ title },    pillars{ title, lead },    people{ title, lead, statLabel, tagline, alumniTitle },    directory{ title, lead, supportersTitle },    cases{ title, lead, contact },    contact{ title, lead, emailLabel }  }}
 export type PARTNERS_COPY_QUERY_RESULT =
   | {
       pitch: null;
@@ -2096,8 +2144,14 @@ export type PARTNERS_COPY_QUERY_RESULT =
             x: number;
             y: number;
           } | null;
+          crop: {
+            top: number;
+            bottom: number;
+            left: number;
+            right: number;
+          } | null;
         };
-        href: string | null;
+        href: string;
       }> | null;
       prompts: {
         intentQuestion: string | null;
@@ -2167,7 +2221,7 @@ export type PARTNERS_COPY_QUERY_RESULT =
 
 // Source: ../features/partners/content.ts
 // Variable: PARTNER_CASE_STUDIES_QUERY
-// Query: *[_type == "caseStudy"] | order(order asc){  "organization": organization->key,  "name": organization->name,  metric,  label,  summary,  copy,  attribution,  "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}}
+// Query: *[_type == "caseStudy"] | order(order asc){  "organization": organization->key,  "name": organization->name,  metric,  label,  summary,  copy,  attribution,  "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}}
 export type PARTNER_CASE_STUDIES_QUERY_RESULT = Array<{
   organization: string;
   name: string;
@@ -2185,12 +2239,18 @@ export type PARTNER_CASE_STUDIES_QUERY_RESULT = Array<{
       x: number;
       y: number;
     } | null;
+    crop: {
+      top: number;
+      bottom: number;
+      left: number;
+      right: number;
+    } | null;
   };
 }>;
 
 // Source: ../features/projects/content.ts
 // Variable: PROJECTS_CONTENT_QUERY
-// Query: {  "copy": *[_id == "projectsCopy"][0]{    hero{ eyebrow, title, lead, figureLabel },    openSeat{ name, field },    closing{      title,      lead,      student{ audience, text },      partner{ audience, text, textWithoutPartner }    }  },  "taskForces": *[_type == "taskForce"] | order(order asc){    "slug": slug.current,    name,    field,    description,    detailedDescription,    work{ partner, items },    "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }},    photoCaption  }}
+// Query: {  "copy": *[_id == "projectsCopy"][0]{    hero{ eyebrow, title, lead, figureLabel },    openSeat{ name, field },    closing{      title,      lead,      student{ audience, text },      partner{ audience, text, textWithoutPartner }    }  },  "taskForces": *[_type == "taskForce"] | order(order asc){    "slug": slug.current,    name,    field,    description,    detailedDescription,    work{ partner, items },    "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},    photoCaption  }}
 export type PROJECTS_CONTENT_QUERY_RESULT = {
   copy:
     | {
@@ -2340,6 +2400,12 @@ export type PROJECTS_CONTENT_QUERY_RESULT = {
         x: number;
         y: number;
       } | null;
+      crop: {
+        top: number;
+        bottom: number;
+        left: number;
+        right: number;
+      } | null;
     } | null;
     photoCaption: string | null;
   }>;
@@ -2431,7 +2497,7 @@ export type QANDA_CONTENT_QUERY_RESULT = {
 
 // Source: ../features/research/content.ts
 // Variable: RESEARCH_COPY_QUERY
-// Query: *[_id == "researchCopy"][0]{  hero{ title, lead },  partnersLabel,  abstract{ label, statement, body, runningOne, runningMany },  "figurePanels": figurePanels[]{ "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}, caption },  ongoing{ title, empty },  completed{ title, lead },  rex{ title, lead, logosLabel, processTitle, process, origin },  closing{    title,    openSlot,    partner{ audience, text },    student{ audience, text }  }}
+// Query: *[_id == "researchCopy"][0]{  hero{ title, lead },  partnersLabel,  abstract{ label, statement, body, runningOne, runningMany },  "figurePanels": figurePanels[]{ "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}, caption },  ongoing{ title, empty },  completed{ title, lead },  rex{ title, lead, logosLabel, processTitle, process, origin },  closing{    title,    openSlot,    partner{ audience, text },    student{ audience, text }  }}
 export type RESEARCH_COPY_QUERY_RESULT =
   | {
       hero: null;
@@ -2569,6 +2635,12 @@ export type RESEARCH_COPY_QUERY_RESULT =
             x: number;
             y: number;
           } | null;
+          crop: {
+            top: number;
+            bottom: number;
+            left: number;
+            right: number;
+          } | null;
         };
         caption: string;
       }>;
@@ -2639,7 +2711,7 @@ export type JOURNEY_QUERY_RESULT = Array<{
 
 // Source: ../lib/community-content.ts
 // Variable: DEPARTMENTS_QUERY
-// Query: *[_type == "department"] | order(order asc){  name,  description,  "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }},  photoCaption}
+// Query: *[_type == "department"] | order(order asc){  name,  description,  "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  photoCaption}
 export type DEPARTMENTS_QUERY_RESULT = Array<{
   name: string;
   description: string;
@@ -2651,6 +2723,12 @@ export type DEPARTMENTS_QUERY_RESULT = Array<{
     hotspot: {
       x: number;
       y: number;
+    } | null;
+    crop: {
+      top: number;
+      bottom: number;
+      left: number;
+      right: number;
     } | null;
   } | null;
   photoCaption: string | null;
@@ -2666,7 +2744,7 @@ export type FAQ_QUERY_RESULT = Array<{
 
 // Source: ../lib/organization-content.ts
 // Variable: LOGO_LISTS_QUERY
-// Query: *[_type == "logoList" && _id in $ids]{  surface,  "organizations": organizations[]->{  key,  name,  shortName,  href,  "logo": logo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }},  "logoSymbolOnly": logo.symbolOnly,  "logoAspectRatio": logo.aspectRatio,  "logoOnDark": logoOnDark{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }},  "logoOnDarkSymbolOnly": logoOnDark.symbolOnly,  "logoOnDarkAspectRatio": logoOnDark.aspectRatio}}
+// Query: *[_type == "logoList" && _id in $ids]{  surface,  "organizations": organizations[]->{  key,  name,  shortName,  href,  "logo": logo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "logoSymbolOnly": logo.symbolOnly,  "logoAspectRatio": logo.aspectRatio,  "logoOnDark": logoOnDark{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "logoOnDarkSymbolOnly": logoOnDark.symbolOnly,  "logoOnDarkAspectRatio": logoOnDark.aspectRatio}}
 export type LOGO_LISTS_QUERY_RESULT = Array<{
   surface:
     | "alumni-destinations"
@@ -2688,6 +2766,12 @@ export type LOGO_LISTS_QUERY_RESULT = Array<{
         x: number;
         y: number;
       } | null;
+      crop: {
+        top: number;
+        bottom: number;
+        left: number;
+        right: number;
+      } | null;
     } | null;
     logoSymbolOnly: boolean | null;
     logoAspectRatio: number | null;
@@ -2700,6 +2784,12 @@ export type LOGO_LISTS_QUERY_RESULT = Array<{
         x: number;
         y: number;
       } | null;
+      crop: {
+        top: number;
+        bottom: number;
+        left: number;
+        right: number;
+      } | null;
     } | null;
     logoOnDarkSymbolOnly: boolean | null;
     logoOnDarkAspectRatio: number | null;
@@ -2708,7 +2798,7 @@ export type LOGO_LISTS_QUERY_RESULT = Array<{
 
 // Source: ../lib/person-content.ts
 // Variable: PEOPLE_QUERY
-// Query: *[_type == "person" && placement == $placement] | order(order asc){  key,  name,  role,  context,  quote,  story,  "portrait": portrait{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }},  "organization": organization->{    key,    name,    "logo": logo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}  }}
+// Query: *[_type == "person" && placement == $placement] | order(order asc){  key,  name,  role,  context,  quote,  story,  "portrait": portrait{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "organization": organization->{    key,    name,    "logo": logo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}  }}
 export type PEOPLE_QUERY_RESULT = Array<{
   key: string;
   name: string;
@@ -2725,6 +2815,12 @@ export type PEOPLE_QUERY_RESULT = Array<{
       x: number;
       y: number;
     } | null;
+    crop: {
+      top: number;
+      bottom: number;
+      left: number;
+      right: number;
+    } | null;
   };
   organization: {
     key: string;
@@ -2737,6 +2833,12 @@ export type PEOPLE_QUERY_RESULT = Array<{
       hotspot: {
         x: number;
         y: number;
+      } | null;
+      crop: {
+        top: number;
+        bottom: number;
+        left: number;
+        right: number;
       } | null;
     } | null;
   } | null;

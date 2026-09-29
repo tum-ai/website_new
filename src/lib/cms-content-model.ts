@@ -32,14 +32,17 @@ export type ContentImage = {
  * defineQuery(`*[_type == "organization"]{ name, "logo": logo${CONTENT_IMAGE_PROJECTION} }`)
  * ```
  *
- * The schema field needs an `alt` string subfield and `options.hotspot`.
+ * The schema field needs an `alt` string subfield and `options.hotspot`
+ * (which also gives editors the crop tool; {@link toContentImage} applies
+ * the crop).
  */
 export const CONTENT_IMAGE_PROJECTION = `{
   "src": asset->url,
   "width": asset->metadata.dimensions.width,
   "height": asset->metadata.dimensions.height,
   alt,
-  "hotspot": hotspot{ x, y }
+  "hotspot": hotspot{ x, y },
+  "crop": crop{ top, bottom, left, right }
 }`;
 
 /** The result of {@link CONTENT_IMAGE_PROJECTION}, as TypeGen types it. */
@@ -50,30 +53,80 @@ export type ProjectedImage =
       height: number | null;
       alt?: string | null;
       hotspot?: { x: number | null; y: number | null } | null;
+      crop?: {
+        top: number | null;
+        bottom: number | null;
+        left: number | null;
+        right: number | null;
+      } | null;
     }
   | null
   | undefined;
 
 const percent = (fraction: number) => `${Number((fraction * 100).toFixed(2))}%`;
 
+const fraction = (value: number | null | undefined) =>
+  typeof value === "number" && value > 0 && value < 1 ? value : 0;
+
+const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
+
+/**
+ * The Studio crop as a pixel rectangle of the file, or `null` when nothing
+ * is cropped (or the crop leaves no area). Rounded like Sanity's image URL
+ * builder does it.
+ */
+function cropRect(
+  crop: NonNullable<ProjectedImage>["crop"],
+  width: number,
+  height: number,
+) {
+  const left = Math.round(fraction(crop?.left) * width);
+  const top = Math.round(fraction(crop?.top) * height);
+  const cropWidth = Math.round(width - fraction(crop?.right) * width - left);
+  const cropHeight = Math.round(height - fraction(crop?.bottom) * height - top);
+  if (cropWidth <= 0 || cropHeight <= 0) return null;
+  if (left === 0 && top === 0 && cropWidth === width && cropHeight === height) {
+    return null;
+  }
+  return { left, top, width: cropWidth, height: cropHeight };
+}
+
 /**
  * A projected image as a {@link ContentImage}, or `undefined` when the field
  * is empty or its asset has no URL or size yet (the merge then keeps the
- * code image). A hotspot becomes `objectPosition`.
+ * code image).
+ *
+ * - The Studio **crop** is applied through the CDN (`rect=` on the image
+ *   URL), and `width`/`height` become the cropped size, so the page shows
+ *   what the editor cropped to.
+ * - The **hotspot** becomes `objectPosition`, measured within the cropped
+ *   image (Sanity stores it relative to the whole file).
  */
 export function toContentImage(
   image: ProjectedImage,
 ): ContentImage | undefined {
   if (!image?.src || !image.width || !image.height) return undefined;
+  const rect = cropRect(image.crop, image.width, image.height);
+  const src = rect
+    ? `${image.src}${image.src.includes("?") ? "&" : "?"}rect=${rect.left},${rect.top},${rect.width},${rect.height}`
+    : image.src;
   const result: ContentImage = {
-    src: image.src,
-    width: image.width,
-    height: image.height,
+    src,
+    width: rect?.width ?? image.width,
+    height: rect?.height ?? image.height,
     alt: image.alt ?? "",
   };
   const { x, y } = image.hotspot ?? {};
   if (typeof x === "number" && typeof y === "number") {
-    result.objectPosition = `${percent(x)} ${percent(y)}`;
+    const relative = (
+      at: number,
+      offset: number,
+      size: number,
+      full: number,
+    ) => (rect ? clamp01((at * full - offset) / size) : at);
+    result.objectPosition = `${percent(
+      relative(x, rect?.left ?? 0, rect?.width ?? 1, image.width),
+    )} ${percent(relative(y, rect?.top ?? 0, rect?.height ?? 1, image.height))}`;
   }
   return result;
 }
