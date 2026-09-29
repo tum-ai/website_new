@@ -5,10 +5,10 @@ import {
   isMembershipApplicationOpen,
   type MembershipConfig,
   membershipConfig,
-  munichDayNumber,
   type RoundSchedule,
   roundSchedule,
 } from "@/config/membership";
+import { munichDayNumber, munichIsoDate } from "@/lib/munich-time";
 
 /** Where the call stands: not yet open, taking applications, or closed. */
 export type CallPhase = "upcoming" | "open" | "closed";
@@ -39,12 +39,6 @@ const longDate = new Intl.DateTimeFormat("en-GB", {
   timeZone: "Europe/Berlin",
   day: "numeric",
   month: "long",
-});
-const isoDay = new Intl.DateTimeFormat("en-CA", {
-  timeZone: "Europe/Berlin",
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
 });
 
 const parts = (format: Intl.DateTimeFormat, instant: Date) =>
@@ -126,7 +120,7 @@ export function recruitingCall(
       id: "opens",
       label: "Applications open",
       date: shortDate.format(schedule.opensAt),
-      dateTime: isoDay.format(schedule.opensAt),
+      dateTime: munichIsoDate(schedule.opensAt),
       pastFrom: munichDayNumber(schedule.opensAt),
       startsOn: munichDayNumber(schedule.opensAt),
     },
@@ -144,7 +138,7 @@ export function recruitingCall(
       id: "interviews",
       label: "Interviews",
       date: shortSpan(schedule.interviews.from, schedule.interviews.to),
-      dateTime: isoDay.format(schedule.interviews.from),
+      dateTime: munichIsoDate(schedule.interviews.from),
       pastFrom: dayAfter(schedule.interviews.to),
       startsOn: munichDayNumber(schedule.interviews.from),
     },
@@ -153,7 +147,7 @@ export function recruitingCall(
       label: "Onboarding weekend",
       detail: "Mandatory for new members",
       date: shortSpan(schedule.onboarding.from, schedule.onboarding.to),
-      dateTime: isoDay.format(schedule.onboarding.from),
+      dateTime: munichIsoDate(schedule.onboarding.from),
       pastFrom: dayAfter(schedule.onboarding.to),
       startsOn: munichDayNumber(schedule.onboarding.from),
     },
