@@ -83,7 +83,9 @@ export function IndexList({
               className="group/row grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-6 gap-y-3 py-7 md:py-9"
             >
               <div className="min-w-0">
-                <HeadingTag className="text-display-md text-fg transition-transform duration-500 ease-brand group-hover/row:translate-x-2 motion-reduce:transition-none">
+                {/* A word wider than the column (a long title beside the
+                    thumbnail at 320px) breaks instead of running under it. */}
+                <HeadingTag className="wrap-break-word text-display-md text-fg transition-transform duration-500 ease-brand group-hover/row:translate-x-2 motion-reduce:transition-none">
                   {item.title}
                 </HeadingTag>
                 <p className="mt-3 max-w-xl text-fg-muted text-small md:text-body">
