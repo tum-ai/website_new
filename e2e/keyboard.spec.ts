@@ -1,6 +1,14 @@
 import type { Locator, Page } from "@playwright/test";
-import { isMembershipApplicationOpen } from "@/config/membership";
-import { getHeaderOptions } from "@/config/navigation";
+import { campaignsFallback } from "@/config/campaigns";
+import { eLabCohortNameOf } from "@/config/e-lab";
+import { membershipConfig } from "@/config/membership";
+import {
+  getHeaderOptions,
+  headerCtaAt,
+  headerCtaSchedule,
+  mainNavigation,
+} from "@/config/navigation";
+import { siteFactsFallback } from "@/config/site-facts";
 import { expect, MOCK_CMS_NOW, test } from "./fixtures";
 
 /*
@@ -20,6 +28,23 @@ async function pressTab(page: Page, backwards = false) {
   const option = browser === "webkit" && process.platform === "darwin";
   const key = `${option ? "Alt+" : ""}${backwards ? "Shift+" : ""}Tab`;
   await page.keyboard.press(key);
+}
+
+/**
+ * The header CTA the server renders on `path` at the mock clock, computed
+ * the way the site layout does (`headerCtaAt(headerCtaSchedule(…))`, with
+ * campaigns), from the code facts the E2E build serves.
+ */
+function headerCtaOn(path: string) {
+  const schedule = headerCtaSchedule({
+    membership: membershipConfig,
+    fallback: siteFactsFallback.headerCtaFallback,
+    eLabCohortName: eLabCohortNameOf(siteFactsFallback.eLab.currentIteration),
+    campaigns: campaignsFallback,
+  });
+  return getHeaderOptions(path, {
+    cta: headerCtaAt(schedule, new Date(MOCK_CMS_NOW)),
+  }).cta;
 }
 
 /** Presses Tab until `target` has focus (at most `limit` presses). */
@@ -185,8 +210,8 @@ test.describe("disclosure widgets", { tag: "@keyboard" }, () => {
 });
 
 /*
- * The header CTA per route, from `getHeaderOptions` (untagged: runs on the
- * desktop and phone projects). A page CTA shows in the pill from `sm` and in
+ * The header CTA per route, as the server renders it (`headerCtaOn`;
+ * untagged: runs on the desktop and phone projects). A page CTA shows in the pill from `sm` and in
  * the menu everywhere; an in-page anchor stays in the pill on phones too.
  */
 test.describe("header call to action", () => {
@@ -194,9 +219,7 @@ test.describe("header call to action", () => {
     test(path, async ({ page }) => {
       // The server renders by the mock clock, and the header keeps that
       // answer (the clock is fixed), so the expectation uses the same instant.
-      const { cta } = getHeaderOptions(path, {
-        membershipOpen: isMembershipApplicationOpen(new Date(MOCK_CMS_NOW)),
-      });
+      const cta = headerCtaOn(path);
       test.skip(!cta, "no CTA configured for this route");
       if (!cta) return;
       await page.goto(path);
@@ -232,7 +255,7 @@ test.describe("header navigation", { tag: "@keyboard" }, () => {
     await page.goto("/events");
     const nav = page.getByRole("navigation", { name: "Main" });
     const links = nav.getByRole("link");
-    await expect(links).toHaveCount(7);
+    await expect(links).toHaveCount(mainNavigation.length);
     await tabTo(page, links.last());
     await expect(links.last()).toBeFocused();
   });
