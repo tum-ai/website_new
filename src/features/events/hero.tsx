@@ -3,7 +3,7 @@ import { Actions, ButtonLink, Container, TopBlend } from "@/components/ds";
 import type { Event } from "@/lib/types";
 import { hostLogo } from "./data/host-logos";
 import { type EventSummary, formatEventDate, type HostEntry } from "./events";
-import { HeroScroll } from "./hero-scroll";
+import { HeroReel } from "./hero-reel";
 import { Lockup } from "./lockup";
 
 /**
@@ -30,7 +30,7 @@ export function EventsHero({
 }) {
   const rolls = hosts.length > 1;
   return (
-    <HeroScroll
+    <HeroReel
       count={hosts.length}
       aria-labelledby="events-hero-title"
       className="events-hero"
@@ -59,18 +59,20 @@ export function EventsHero({
             </h1>
             {hosts.length > 0 ? (
               <div className="events-names-window">
-                <ul
-                  aria-label="Co-hosts, sponsors and challenge partners"
-                  className="events-names"
-                >
-                  {hosts.map((host) => (
-                    <li key={host.name} className="events-name">
-                      <span className="min-w-0">{host.name}</span>
-                      <Count count={host.events.length} />
-                    </li>
-                  ))}
-                </ul>
-                {rolls ? <Reel hosts={hosts} /> : null}
+                <div className="events-names-viewport">
+                  <ul
+                    aria-label="Co-hosts, sponsors and challenge partners"
+                    className="events-names"
+                  >
+                    {hosts.map((host) => (
+                      <li key={host.name} className="events-name">
+                        <span className="min-w-0">{host.name}</span>
+                        <Count count={host.events.length} />
+                      </li>
+                    ))}
+                  </ul>
+                  {rolls ? <Reel hosts={hosts} /> : null}
+                </div>
               </div>
             ) : null}
             {rolls ? (
@@ -112,7 +114,7 @@ export function EventsHero({
           </div>
         </Container>
       </div>
-    </HeroScroll>
+    </HeroReel>
   );
 }
 

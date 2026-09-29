@@ -1,14 +1,18 @@
 /*
  * /events only: the hero's lockup. By default (reduced motion, or no
- * JavaScript) "TUM.ai ×" sits beside a two-column index of the co-hosts.
- * With motion allowed and scripts running, the band grows a scroll track,
- * its stage pins to the viewport, and the names become a reel in the slot
- * after the ×: one row at full strength, its neighbours fading out under a
- * mask (on phones the slot is the row under the title, from lg the row
- * beside it). The load turn runs 2.2s, longer than the usual 1.2s entrance
- * ceiling: a full turn through every name needs the time to read as a roll
- * rather than a flicker, and it is the page's only load moment. The reel rolls once on load (CSS, before hydration) and then
- * follows the scroll (HeroScroll sets --roll, in rows). Only transforms and
+ * JavaScript) the TUM.ai logo and × sit beside a two-column index of the
+ * co-hosts. With motion allowed and scripts running, the names become a reel
+ * in the slot after the ×: one row at full strength, its neighbours fading
+ * out under a mask (on phones the slot is the row under the logo, from lg
+ * the row beside it). The reel holds the index three times, so it wraps
+ * without end. It turns once on load (CSS, before hydration), then wherever
+ * the reader turns it: the names window is a scroll region of its own
+ * (HeroReel turns it on wheel, drag, swipe and arrow keys and sets --roll,
+ * in rows within a turn), and the page scrolls as usual elsewhere.
+ *
+ * The load turn runs 2.2s, longer than the usual 1.2s entrance ceiling: a
+ * full turn through every name needs the time to read as a roll rather than
+ * a flicker, and it is the page's only load moment. Only transforms and
  * opacity move.
  */
 
@@ -94,19 +98,10 @@
 
   @media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
     .events-hero[data-roll] {
-      height: calc(100svh + var(--names) * 7rem);
-
-      .events-hero-stage {
-        position: sticky;
-        top: 0;
-        height: 100svh;
-        overflow: clip;
-      }
-
       .events-hero-inner {
         display: flex;
         flex-direction: column;
-        height: 100%;
+        min-height: min(100svh, 64rem);
       }
 
       .events-lockup {
@@ -123,8 +118,20 @@
         line-height: var(--row);
       }
 
+      /* The scroll region (focusable); the viewport inside clips and fades. */
       .events-names-window {
         --visible: 3;
+        cursor: grab;
+        touch-action: none;
+        user-select: none;
+        border-radius: 0.75rem;
+
+        &[data-dragging] {
+          cursor: grabbing;
+        }
+      }
+
+      .events-names-viewport {
         height: calc(var(--row) * var(--visible));
         overflow: clip;
         letter-spacing: var(--text-display-lg--letter-spacing);
@@ -134,6 +141,11 @@
           black calc(100% / var(--visible)),
           transparent
         );
+      }
+
+      .events-reel img {
+        pointer-events: none;
+        -webkit-user-drag: none;
       }
 
       /* The list stays for assistive technology; the reel shows the names. */
@@ -205,6 +217,9 @@
 
       .events-names-window {
         --visible: 5;
+      }
+
+      .events-names-viewport {
         mask-image: linear-gradient(
           to bottom,
           transparent,
