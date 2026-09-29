@@ -24,7 +24,6 @@
  * revision it read. `--dataset` is required and never `production`
  * (`backfill-target.ts`).
  */
-import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { parseArgs } from "node:util";
@@ -37,6 +36,7 @@ import {
   type StoredDocument,
   singletonIds,
 } from "./content-dedup-plan";
+import { sanityExec } from "./sanity-exec";
 
 const root = join(import.meta.dirname, "..", "..");
 
@@ -66,22 +66,9 @@ if (values.apply) {
   process.stdout.write(
     `Migrating project "${projectId}", dataset "${dataset}" (published documents and drafts)...\n`,
   );
-  const applied = spawnSync(
-    join(root, "node_modules", ".bin", "sanity"),
-    [
-      "exec",
-      join(import.meta.dirname, "migrate-content-dedup-apply.ts"),
-      "--with-user-token",
-    ],
-    {
-      cwd: join(root, "src", "sanity"),
-      stdio: "inherit",
-      env: {
-        ...process.env,
-        MIGRATE_DATASET: dataset,
-        NEXT_PUBLIC_SANITY_PROJECT_ID: projectId,
-      },
-    },
+  const applied = sanityExec(
+    join(import.meta.dirname, "migrate-content-dedup-apply.ts"),
+    { MIGRATE_DATASET: dataset, NEXT_PUBLIC_SANITY_PROJECT_ID: projectId },
   );
   process.exit(applied.status ?? 1);
 }

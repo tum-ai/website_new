@@ -55,6 +55,7 @@ import { parseArgs } from "node:util";
 import { assetFileOf, collectSanityAssets } from "@/lib/cms-backfill";
 import { backfillTarget } from "./backfill-target";
 import { copyFromProduction, localizeCdnAssets } from "./production-copy";
+import { sanityExec } from "./sanity-exec";
 import { collectBackfill } from "./slices";
 
 const root = join(import.meta.dirname, "..", "..");
@@ -170,27 +171,14 @@ const sanityCli = join(root, "node_modules", ".bin", "sanity");
 const cliDir = join(root, "src", "sanity");
 const pendingFile = join(outDir, `${dataset}.pending-assets.json`);
 const repairAssets = (stage: "before" | "after") =>
-  spawnSync(
-    sanityCli,
-    [
-      "exec",
-      join(import.meta.dirname, "repair-assets.ts"),
-      "--with-user-token",
-    ],
-    {
-      cwd: cliDir,
-      stdio: "inherit",
-      env: {
-        ...process.env,
-        BACKFILL_STAGE: stage,
-        BACKFILL_FILE: outFile,
-        BACKFILL_PENDING_FILE: pendingFile,
-        BACKFILL_OVERWRITE: values.overwrite ? "1" : "",
-        BACKFILL_DATASET: dataset,
-        NEXT_PUBLIC_SANITY_PROJECT_ID: projectId,
-      },
-    },
-  );
+  sanityExec(join(import.meta.dirname, "repair-assets.ts"), {
+    BACKFILL_STAGE: stage,
+    BACKFILL_FILE: outFile,
+    BACKFILL_PENDING_FILE: pendingFile,
+    BACKFILL_OVERWRITE: values.overwrite ? "1" : "",
+    BACKFILL_DATASET: dataset,
+    NEXT_PUBLIC_SANITY_PROJECT_ID: projectId,
+  });
 process.stdout.write("Recording the images the import uploads...\n");
 const recorded = repairAssets("before");
 if (recorded.status !== 0) {

@@ -29,7 +29,6 @@
  * safe: organisations it migrated keep what editors changed. See
  * docs/adr/0009-cms-content-source.md.
  */
-import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { parseArgs } from "node:util";
@@ -42,6 +41,7 @@ import {
   describePlan,
   planPartnerMigration,
 } from "./partner-migration";
+import { sanityExec } from "./sanity-exec";
 import { collectBackfill } from "./slices";
 
 const root = join(import.meta.dirname, "..", "..");
@@ -136,22 +136,12 @@ if (plan.steps.length === 0) {
 process.stdout.write(
   `Applying ${plan.steps.length} step(s) to project "${projectId}", dataset "${dataset}"...\n`,
 );
-const applied = spawnSync(
-  join(root, "node_modules", ".bin", "sanity"),
-  [
-    "exec",
-    join(import.meta.dirname, "apply-partner-migration.ts"),
-    "--with-user-token",
-  ],
+const applied = sanityExec(
+  join(import.meta.dirname, "apply-partner-migration.ts"),
   {
-    cwd: join(root, "src", "sanity"),
-    stdio: "inherit",
-    env: {
-      ...process.env,
-      PARTNER_MIGRATION_PLAN: planFile,
-      PARTNER_MIGRATION_DATASET: dataset,
-      NEXT_PUBLIC_SANITY_PROJECT_ID: projectId,
-    },
+    PARTNER_MIGRATION_PLAN: planFile,
+    PARTNER_MIGRATION_DATASET: dataset,
+    NEXT_PUBLIC_SANITY_PROJECT_ID: projectId,
   },
 );
 process.exit(applied.status ?? 1);
