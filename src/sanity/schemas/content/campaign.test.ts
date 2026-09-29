@@ -1,5 +1,9 @@
 import { expect, test } from "vitest";
-import { validateCampaignEnd, validateNotifyUrl } from "./campaign";
+import {
+  validateCampaignEnd,
+  validateHeaderCtaVariant,
+  validateNotifyUrl,
+} from "./campaign";
 
 test("a campaign ends after it starts", () => {
   const document = { startDate: "2026-10-01" };
@@ -25,6 +29,21 @@ test("Get Notified needs a signup link", () => {
     validateNotifyUrl("https://example.com", { parent: { variant: "notify" } }),
   ).toBe(true);
   expect(validateNotifyUrl(undefined, { parent: { variant: "partner" } })).toBe(
+    true,
+  );
+});
+
+test("the header button stays optional until it has a label or a link", () => {
+  expect(validateHeaderCtaVariant(undefined, { parent: undefined })).toBe(true);
+  expect(
+    validateHeaderCtaVariant(undefined, {
+      parent: { yieldsToRecruiting: false },
+    }),
+  ).toBe(true);
+  expect(
+    validateHeaderCtaVariant(undefined, { parent: { label: "Join" } }),
+  ).toMatch(/Choose which button/);
+  expect(validateHeaderCtaVariant("elab", { parent: { label: "Join" } })).toBe(
     true,
   );
 });

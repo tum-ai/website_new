@@ -59,6 +59,21 @@ export function validateNotifyUrl(
     : true;
 }
 
+/**
+ * The header button needs a choice of button once it has a label or a
+ * signup link. Without either it stays optional: the site ignores a header
+ * button with no choice.
+ */
+export function validateHeaderCtaVariant(
+  value: unknown,
+  { parent }: ValidationContext,
+): true | string {
+  const cta = parent as { label?: unknown; notifyUrl?: unknown } | undefined;
+  return !value && (cta?.label || cta?.notifyUrl)
+    ? "Choose which button the header shows."
+    : true;
+}
+
 export const campaignType = defineType({
   name: "campaign",
   title: "Campaign",
@@ -119,7 +134,7 @@ export const campaignType = defineType({
           title: "Button",
           type: "string",
           options: { list: [...campaignCtaVariants], layout: "radio" },
-          validation: (Rule) => Rule.required(),
+          validation: (Rule) => Rule.custom(validateHeaderCtaVariant),
         }),
         defineField({
           name: "label",
@@ -145,9 +160,9 @@ export const campaignType = defineType({
           title: "Give way to membership recruiting",
           type: "boolean",
           description:
-            "On: while membership applications are open, the header still says “Become a Member”, and this button shows the rest of the time. Off: this button shows for the whole campaign.",
-          initialValue: true,
-          validation: (Rule) => Rule.required(),
+            "On (the default when left empty): while membership applications are open, the header still says “Become a Member”, and this button shows the rest of the time. Off: this button shows for the whole campaign.",
+          // No initialValue: it would create the optional header button on
+          // every new campaign. The site reads empty as on.
         }),
       ],
     }),
