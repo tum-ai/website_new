@@ -7,6 +7,7 @@ import {
   SectionHeader,
 } from "@/components/ds";
 import type { Event } from "@/lib/types";
+import { getEventsCopy } from "./content";
 import { EventDetailsDialog } from "./event-details";
 import {
   formatEventDate,
@@ -24,12 +25,14 @@ import { Lockup } from "./lockup";
  * Dark Indigo) that keeps the wall one tone; hovering or focusing a tile
  * fades the layer, shows the poster as it was and names the event and its
  * co-hosts, and a click opens the event. Events without a poster are left out.
+ * Reads its copy from the content slice itself.
  */
-export function PosterWall({ events }: { events: Event[] }) {
+export async function PosterWall({ events }: { events: Event[] }) {
   const posters = events.filter((event): event is Event & { poster: string } =>
     Boolean(event.poster),
   );
   if (posters.length === 0) return null;
+  const copy = (await getEventsCopy()).posters;
 
   return (
     <Section tone="paper" aria-labelledby="posters-title">
@@ -37,8 +40,8 @@ export function PosterWall({ events }: { events: Event[] }) {
         <SectionHeader
           id="posters-title"
           layout="stack"
-          title="As announced"
-          lead="The poster of every past event, newest first."
+          title={copy.title}
+          lead={copy.lead}
         />
         <Reveal variant="fade">
           <ul className="grid grid-cols-3 gap-px md:grid-cols-4 lg:grid-cols-6">

@@ -218,6 +218,33 @@ export type Slug = {
   source?: string;
 };
 
+export type EventsCopy = {
+  _id: string;
+  _type: "eventsCopy";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  upcoming?: {
+    title: string;
+    empty: string;
+  };
+  past?: {
+    title: string;
+    lead: string;
+  };
+  posters?: {
+    title: string;
+    lead: string;
+  };
+  closing?: {
+    title: string;
+    lead: string;
+    studentsReader: string;
+    nextUp: string;
+    membership: string;
+  };
+};
+
 export type ELabCopy = {
   _id: string;
   _type: "eLabCopy";
@@ -719,6 +746,7 @@ export type AllSanitySchemaTypes =
   | SanityImageAsset
   | Geopoint
   | Slug
+  | EventsCopy
   | ELabCopy
   | Milestone
   | ApplyCopy
@@ -973,6 +1001,63 @@ export type ELAB_COPY_QUERY_RESULT =
               photoCaption: string | null;
             }
         >;
+      } | null;
+    }
+  | null;
+
+// Source: ../features/events/content.ts
+// Variable: EVENTS_COPY_QUERY
+// Query: *[_id == "eventsCopy"][0]{  upcoming{ title, empty },  past{ title, lead },  posters{ title, lead },  closing{ title, lead, studentsReader, nextUp, membership }}
+export type EVENTS_COPY_QUERY_RESULT =
+  | {
+      upcoming: null;
+      past: null;
+      posters: null;
+      closing: null;
+    }
+  | {
+      upcoming: null;
+      past: null;
+      posters: null;
+      closing: {
+        title: string;
+        lead: null;
+        studentsReader: null;
+        nextUp: null;
+        membership: null;
+      } | null;
+    }
+  | {
+      upcoming: null;
+      past: null;
+      posters: null;
+      closing: {
+        title: string;
+        lead: string;
+        studentsReader: null;
+        nextUp: null;
+        membership: null;
+      } | null;
+    }
+  | {
+      upcoming: {
+        title: string;
+        empty: string;
+      } | null;
+      past: {
+        title: string;
+        lead: string;
+      } | null;
+      posters: {
+        title: string;
+        lead: string;
+      } | null;
+      closing: {
+        title: string;
+        lead: string;
+        studentsReader: string;
+        nextUp: string;
+        membership: string;
       } | null;
     }
   | null;

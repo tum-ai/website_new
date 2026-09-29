@@ -2,6 +2,7 @@ import { applyCopyType } from "./apply-copy";
 import { communityCopyType } from "./community-copy";
 import { departmentType } from "./department";
 import { eLabCopyType } from "./e-lab-copy";
+import { eventsCopyType } from "./events-copy";
 import { faqType } from "./faq";
 import { homeCopyType } from "./home-copy";
 import { journeyStepType } from "./journey-step";
@@ -37,6 +38,7 @@ export const contentSchemaTypes = [
   applyCopyType,
   milestoneType,
   eLabCopyType,
+  eventsCopyType,
 ];
 
 /**
@@ -54,4 +56,5 @@ export const contentSingletons: readonly { type: string; title: string }[] = [
   { type: "homeCopy", title: "Homepage" },
   { type: "applyCopy", title: "Apply page" },
   { type: "eLabCopy", title: "E-Lab page" },
+  { type: "eventsCopy", title: "Events page" },
 ];
