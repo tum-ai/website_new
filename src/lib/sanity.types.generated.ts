@@ -224,6 +224,9 @@ export type EventsCopy = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
+  hero?: {
+    emptyLead: string;
+  };
   upcoming?: {
     title: string;
     empty: string;
@@ -292,6 +295,27 @@ export type ELabCopy = {
         }
     >;
   };
+  field?: {
+    caption: string;
+    inviteLabel: string;
+  };
+  ventures?: {
+    title: string;
+    fundingNote: string;
+    logosLabel: string;
+  };
+  voices?: {
+    title: string;
+    lead: string;
+    foundersLabel: string;
+    investorsLabel: string;
+  };
+  closing?: {
+    title: string;
+    followLabel: string;
+    partnersReader: string;
+    partnersText: string;
+  };
 };
 
 export type Milestone = {
@@ -313,7 +337,10 @@ export type ApplyCopy = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
+  heroTitle: string;
   heroLead: string;
+  faqLabel: string;
+  datesTitle: string;
   scope?: {
     title: string;
     inScopeTitle: string;
@@ -381,6 +408,16 @@ export type ApplyCopy = {
     title: string;
     lead: string;
   };
+  closing?: {
+    companiesReader: string;
+  };
+};
+
+export type PersonReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "person";
 };
 
 export type HomeCopy = {
@@ -468,9 +505,15 @@ export type HomeCopy = {
       _key: string;
     }>;
     quote?: {
-      name: string;
+      person: PersonReference;
       excerpt: string;
     };
+  };
+  partners?: {
+    title: string;
+    lead: string;
+    moreLabel: string;
+    quote: PersonReference;
   };
 };
 
@@ -529,8 +572,11 @@ export type ResearchCopy = {
   };
   rex?: {
     title: string;
+    lead: string;
     logosLabel: string;
     processTitle: string;
+    process: Array<string>;
+    origin: string;
   };
   closing?: {
     title: string;
@@ -645,7 +691,7 @@ export type JourneyStep = {
   fromSemester: number;
   span: "event" | "ongoing";
   evidence?: {
-    name: string;
+    person: PersonReference;
     excerpt: string;
   };
 };
@@ -674,6 +720,10 @@ export type CommunityCopy = {
     lead: string;
   };
   departments?: {
+    title: string;
+    lead: string;
+  };
+  stories?: {
     title: string;
     lead: string;
   };
@@ -810,13 +860,6 @@ export type OrganizationReference = {
   _type: "reference";
   _weak?: boolean;
   [internalGroqTypeReferenceTo]?: "organization";
-};
-
-export type PersonReference = {
-  _ref: string;
-  _type: "reference";
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: "person";
 };
 
 export type VentureTrace = {
@@ -1086,6 +1129,7 @@ export type AllSanitySchemaTypes =
   | ELabCopy
   | Milestone
   | ApplyCopy
+  | PersonReference
   | HomeCopy
   | LabSite
   | ResearchCopy
@@ -1097,7 +1141,6 @@ export type AllSanitySchemaTypes =
   | QandaCopy
   | PartnersCopy
   | OrganizationReference
-  | PersonReference
   | VentureTrace
   | CaseStudy
   | Person
@@ -1214,18 +1257,64 @@ export type SITE_SETTINGS_QUERY_RESULT = {
 
 // Source: ../features/apply/content.ts
 // Variable: APPLY_CONTENT_QUERY
-// Query: {  "copy": *[_id == "applyCopy"][0]{    heroLead,    scope{      title,      inScopeTitle,      notRequiredTitle,      valuesTitle,      qualities[]{ title, text },      notRequired[]{ title, text },      values[]{ title, text },      "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}    },    tracks{      title,      lead,      offeringsTitle,      offerings[]{ title, text },      "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }},      journeyLink    },    selection{ title, lead, stages[]{ title, when, text } },    history{ title, lead }  },  "milestones": *[_type == "milestone"] | order(year asc, order asc){    year,    kind,    title,    detail  }}
+// Query: {  "copy": *[_id == "applyCopy"][0]{    heroTitle,    heroLead,    faqLabel,    datesTitle,    scope{      title,      inScopeTitle,      notRequiredTitle,      valuesTitle,      qualities[]{ title, text },      notRequired[]{ title, text },      values[]{ title, text },      "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}    },    tracks{      title,      lead,      offeringsTitle,      offerings[]{ title, text },      "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }},      journeyLink    },    selection{ title, lead, stages[]{ title, when, text } },    history{ title, lead },    closing{ companiesReader }  },  "milestones": *[_type == "milestone"] | order(year asc, order asc){    year,    kind,    title,    detail  }}
 export type APPLY_CONTENT_QUERY_RESULT = {
   copy:
     | {
+        heroTitle: null;
         heroLead: null;
+        faqLabel: null;
+        datesTitle: null;
         scope: null;
         tracks: null;
         selection: null;
         history: null;
+        closing: null;
       }
     | {
+        heroTitle: null;
+        heroLead: null;
+        faqLabel: null;
+        datesTitle: null;
+        scope: null;
+        tracks: null;
+        selection: null;
+        history: null;
+        closing: {
+          companiesReader: null;
+        } | null;
+      }
+    | {
+        heroTitle: string;
+        heroLead: null;
+        faqLabel: null;
+        datesTitle: null;
+        scope: null;
+        tracks: null;
+        selection: null;
+        history: null;
+        closing: {
+          companiesReader: null;
+        } | null;
+      }
+    | {
+        heroTitle: null;
+        heroLead: null;
+        faqLabel: null;
+        datesTitle: null;
+        scope: null;
+        tracks: null;
+        selection: null;
+        history: null;
+        closing: {
+          companiesReader: string;
+        } | null;
+      }
+    | {
+        heroTitle: string;
         heroLead: string;
+        faqLabel: string;
+        datesTitle: string;
         scope: {
           title: string;
           inScopeTitle: string;
@@ -1287,6 +1376,9 @@ export type APPLY_CONTENT_QUERY_RESULT = {
           title: string;
           lead: string;
         } | null;
+        closing: {
+          companiesReader: string;
+        } | null;
       }
     | null;
   milestones: Array<{
@@ -1299,12 +1391,13 @@ export type APPLY_CONTENT_QUERY_RESULT = {
 
 // Source: ../features/community/content.ts
 // Variable: COMMUNITY_COPY_QUERY
-// Query: *[_id == "communityCopy"][0]{  hero{ title, lead, "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}, photoCaption },  journey{ title, lead },  departments{ title, lead },  closing{ title, lead, companiesReader }}
+// Query: *[_id == "communityCopy"][0]{  hero{ title, lead, "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}, photoCaption },  journey{ title, lead },  departments{ title, lead },  stories{ title, lead },  closing{ title, lead, companiesReader }}
 export type COMMUNITY_COPY_QUERY_RESULT =
   | {
       hero: null;
       journey: null;
       departments: null;
+      stories: null;
       closing: null;
     }
   | {
@@ -1316,6 +1409,7 @@ export type COMMUNITY_COPY_QUERY_RESULT =
       } | null;
       journey: null;
       departments: null;
+      stories: null;
       closing: null;
     }
   | {
@@ -1327,6 +1421,7 @@ export type COMMUNITY_COPY_QUERY_RESULT =
       } | null;
       journey: null;
       departments: null;
+      stories: null;
       closing: {
         title: string;
         lead: null;
@@ -1337,6 +1432,23 @@ export type COMMUNITY_COPY_QUERY_RESULT =
       hero: null;
       journey: null;
       departments: null;
+      stories: null;
+      closing: {
+        title: string;
+        lead: string;
+        companiesReader: null;
+      } | null;
+    }
+  | {
+      hero: {
+        title: null;
+        lead: null;
+        photo: null;
+        photoCaption: null;
+      } | null;
+      journey: null;
+      departments: null;
+      stories: null;
       closing: {
         title: string;
         lead: string;
@@ -1352,10 +1464,22 @@ export type COMMUNITY_COPY_QUERY_RESULT =
       } | null;
       journey: null;
       departments: null;
+      stories: null;
       closing: {
         title: string;
         lead: string;
         companiesReader: null;
+      } | null;
+    }
+  | {
+      hero: null;
+      journey: null;
+      departments: null;
+      stories: null;
+      closing: {
+        title: null;
+        lead: null;
+        companiesReader: string;
       } | null;
     }
   | {
@@ -1382,6 +1506,10 @@ export type COMMUNITY_COPY_QUERY_RESULT =
         title: string;
         lead: string;
       } | null;
+      stories: {
+        title: string;
+        lead: string;
+      } | null;
       closing: {
         title: string;
         lead: string;
@@ -1392,11 +1520,15 @@ export type COMMUNITY_COPY_QUERY_RESULT =
 
 // Source: ../features/e-lab/content.ts
 // Variable: ELAB_COPY_QUERY
-// Query: *[_id == "eLabCopy"][0]{  hero{ title, lead },  gates{    title,    lead,    scaleLabel,    stages[]{      _type,      figure,      name,      description,      approximate,      "id": key,      duration,      "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }},      photoCaption    }  }}
+// Query: *[_id == "eLabCopy"][0]{  hero{ title, lead },  gates{    title,    lead,    scaleLabel,    stages[]{      _type,      figure,      name,      description,      approximate,      "id": key,      duration,      "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }},      photoCaption    }  },  field{ caption, inviteLabel },  ventures{ title, fundingNote, logosLabel },  voices{ title, lead, foundersLabel, investorsLabel },  closing{ title, followLabel, partnersReader, partnersText }}
 export type ELAB_COPY_QUERY_RESULT =
   | {
       hero: null;
       gates: null;
+      field: null;
+      ventures: null;
+      voices: null;
+      closing: null;
     }
   | {
       hero: {
@@ -1404,6 +1536,68 @@ export type ELAB_COPY_QUERY_RESULT =
         lead: string;
       } | null;
       gates: null;
+      field: null;
+      ventures: null;
+      voices: null;
+      closing: null;
+    }
+  | {
+      hero: null;
+      gates: null;
+      field: null;
+      ventures: null;
+      voices: null;
+      closing: {
+        title: null;
+        followLabel: null;
+        partnersReader: null;
+        partnersText: null;
+      } | null;
+    }
+  | {
+      hero: null;
+      gates: null;
+      field: null;
+      ventures: null;
+      voices: null;
+      closing: {
+        title: string;
+        followLabel: null;
+        partnersReader: null;
+        partnersText: null;
+      } | null;
+    }
+  | {
+      hero: {
+        title: null;
+        lead: null;
+      } | null;
+      gates: null;
+      field: null;
+      ventures: null;
+      voices: null;
+      closing: {
+        title: string;
+        followLabel: null;
+        partnersReader: null;
+        partnersText: null;
+      } | null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+      } | null;
+      gates: null;
+      field: null;
+      ventures: null;
+      voices: null;
+      closing: {
+        title: string;
+        followLabel: null;
+        partnersReader: null;
+        partnersText: null;
+      } | null;
     }
   | {
       hero: {
@@ -1453,6 +1647,27 @@ export type ELAB_COPY_QUERY_RESULT =
             }
         >;
       } | null;
+      field: {
+        caption: string;
+        inviteLabel: string;
+      } | null;
+      ventures: {
+        title: string;
+        fundingNote: string;
+        logosLabel: string;
+      } | null;
+      voices: {
+        title: string;
+        lead: string;
+        foundersLabel: string;
+        investorsLabel: string;
+      } | null;
+      closing: {
+        title: string;
+        followLabel: string;
+        partnersReader: string;
+        partnersText: string;
+      } | null;
     }
   | null;
 
@@ -1491,15 +1706,41 @@ export type VENTURE_TRACE_QUERY_RESULT =
 
 // Source: ../features/events/content.ts
 // Variable: EVENTS_COPY_QUERY
-// Query: *[_id == "eventsCopy"][0]{  upcoming{ title, empty },  past{ title, lead },  posters{ title, lead },  closing{ title, lead, studentsReader, nextUp, membership }}
+// Query: *[_id == "eventsCopy"][0]{  hero{ emptyLead },  upcoming{ title, empty },  past{ title, lead },  posters{ title, lead },  closing{ title, lead, studentsReader, nextUp, membership }}
 export type EVENTS_COPY_QUERY_RESULT =
   | {
+      hero: null;
       upcoming: null;
       past: null;
       posters: null;
       closing: null;
     }
   | {
+      hero: {
+        emptyLead: null;
+      } | null;
+      upcoming: null;
+      past: null;
+      posters: null;
+      closing: null;
+    }
+  | {
+      hero: null;
+      upcoming: null;
+      past: null;
+      posters: null;
+      closing: {
+        title: null;
+        lead: null;
+        studentsReader: null;
+        nextUp: null;
+        membership: null;
+      } | null;
+    }
+  | {
+      hero: {
+        emptyLead: null;
+      } | null;
       upcoming: null;
       past: null;
       posters: null;
@@ -1512,6 +1753,7 @@ export type EVENTS_COPY_QUERY_RESULT =
       } | null;
     }
   | {
+      hero: null;
       upcoming: null;
       past: null;
       posters: null;
@@ -1524,6 +1766,24 @@ export type EVENTS_COPY_QUERY_RESULT =
       } | null;
     }
   | {
+      hero: {
+        emptyLead: null;
+      } | null;
+      upcoming: null;
+      past: null;
+      posters: null;
+      closing: {
+        title: string;
+        lead: string;
+        studentsReader: null;
+        nextUp: null;
+        membership: null;
+      } | null;
+    }
+  | {
+      hero: {
+        emptyLead: string;
+      } | null;
       upcoming: {
         title: string;
         empty: string;
@@ -1548,7 +1808,7 @@ export type EVENTS_COPY_QUERY_RESULT =
 
 // Source: ../features/home/content.ts
 // Variable: HOME_COPY_QUERY
-// Query: *[_id == "homeCopy"][0]{  hero{    title,    lead,    partnersLabel,    "photos": photos[]{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}  },  mission{ statement, body },  ledger[]{ key, label, note },  programs{    title,    lead,    items[]{      "id": key,      title,      description,      href,      "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}    }  },  room{    title,    lead,    "photos": photos[]{ "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}, caption }  },  join{    title,    lead,    stepsTitle,    steps[]{ title, dates },    quote{ name, excerpt }  }}
+// Query: *[_id == "homeCopy"][0]{  hero{    title,    lead,    partnersLabel,    "photos": photos[]{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}  },  mission{ statement, body },  ledger[]{ key, label, note },  programs{    title,    lead,    items[]{      "id": key,      title,      description,      href,      "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}    }  },  room{    title,    lead,    "photos": photos[]{ "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}, caption }  },  join{    title,    lead,    stepsTitle,    steps[]{ title, dates },    quote{ "name": person->name, excerpt }  },  partners{ title, lead, moreLabel, "quote": quote->key }}
 export type HOME_COPY_QUERY_RESULT =
   | {
       hero: null;
@@ -1557,6 +1817,21 @@ export type HOME_COPY_QUERY_RESULT =
       programs: null;
       room: null;
       join: null;
+      partners: null;
+    }
+  | {
+      hero: {
+        title: null;
+        lead: null;
+        partnersLabel: null;
+        photos: null;
+      } | null;
+      mission: null;
+      ledger: null;
+      programs: null;
+      room: null;
+      join: null;
+      partners: null;
     }
   | {
       hero: {
@@ -1570,6 +1845,7 @@ export type HOME_COPY_QUERY_RESULT =
       programs: null;
       room: null;
       join: null;
+      partners: null;
     }
   | {
       hero: {
@@ -1651,6 +1927,12 @@ export type HOME_COPY_QUERY_RESULT =
           name: string;
           excerpt: string;
         } | null;
+      } | null;
+      partners: {
+        title: string;
+        lead: string;
+        moreLabel: string;
+        quote: string;
       } | null;
     }
   | null;
@@ -1799,6 +2081,31 @@ export type PROJECTS_CONTENT_QUERY_RESULT = {
         closing: null;
       }
     | {
+        hero: null;
+        openSeat: null;
+        closing: {
+          title: null;
+          lead: null;
+          student: null;
+          partner: null;
+        } | null;
+      }
+    | {
+        hero: {
+          eyebrow: null;
+          title: string;
+          lead: string;
+          figureLabel: null;
+        } | null;
+        openSeat: null;
+        closing: {
+          title: string;
+          lead: null;
+          student: null;
+          partner: null;
+        } | null;
+      }
+    | {
         hero: {
           eyebrow: null;
           title: string;
@@ -1822,6 +2129,21 @@ export type PROJECTS_CONTENT_QUERY_RESULT = {
       }
     | {
         hero: null;
+        openSeat: null;
+        closing: {
+          title: string;
+          lead: string;
+          student: null;
+          partner: null;
+        } | null;
+      }
+    | {
+        hero: {
+          eyebrow: null;
+          title: null;
+          lead: null;
+          figureLabel: null;
+        } | null;
         openSeat: null;
         closing: {
           title: string;
@@ -1909,6 +2231,18 @@ export type QANDA_CONTENT_QUERY_RESULT = {
         forks: null;
       }
     | {
+        heroTitle: string;
+        missionQuestion: null;
+        missionLead: null;
+        missionPassage: null;
+        closing: {
+          title: null;
+          lead: null;
+          action: null;
+        } | null;
+        forks: null;
+      }
+    | {
         heroTitle: null;
         missionQuestion: null;
         missionLead: null;
@@ -1969,7 +2303,7 @@ export type QANDA_CONTENT_QUERY_RESULT = {
 
 // Source: ../features/research/content.ts
 // Variable: RESEARCH_COPY_QUERY
-// Query: *[_id == "researchCopy"][0]{  hero{ title, lead },  partnersLabel,  abstract{ label, statement, body, runningOne, runningMany },  "figurePanels": figurePanels[]{ "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}, caption },  ongoing{ title, empty },  completed{ title, lead },  rex{ title, logosLabel, processTitle },  closing{    title,    openSlot,    partner{ audience, text },    student{ audience, text }  }}
+// Query: *[_id == "researchCopy"][0]{  hero{ title, lead },  partnersLabel,  abstract{ label, statement, body, runningOne, runningMany },  "figurePanels": figurePanels[]{ "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }}, caption },  ongoing{ title, empty },  completed{ title, lead },  rex{ title, lead, logosLabel, processTitle, process, origin },  closing{    title,    openSlot,    partner{ audience, text },    student{ audience, text }  }}
 export type RESEARCH_COPY_QUERY_RESULT =
   | {
       hero: null;
@@ -1996,6 +2330,39 @@ export type RESEARCH_COPY_QUERY_RESULT =
     }
   | {
       hero: null;
+      partnersLabel: null;
+      abstract: null;
+      figurePanels: null;
+      ongoing: null;
+      completed: null;
+      rex: null;
+      closing: {
+        title: null;
+        openSlot: null;
+        partner: null;
+        student: null;
+      } | null;
+    }
+  | {
+      hero: null;
+      partnersLabel: null;
+      abstract: null;
+      figurePanels: null;
+      ongoing: null;
+      completed: null;
+      rex: null;
+      closing: {
+        title: string;
+        openSlot: null;
+        partner: null;
+        student: null;
+      } | null;
+    }
+  | {
+      hero: {
+        title: null;
+        lead: null;
+      } | null;
       partnersLabel: null;
       abstract: null;
       figurePanels: null;
@@ -2087,8 +2454,11 @@ export type RESEARCH_COPY_QUERY_RESULT =
       } | null;
       rex: {
         title: string;
+        lead: string;
         logosLabel: string;
         processTitle: string;
+        process: Array<string>;
+        origin: string;
       } | null;
       closing: {
         title: string;
@@ -2118,7 +2488,7 @@ export type LAB_SITES_QUERY_RESULT = Array<{
 
 // Source: ../lib/community-content.ts
 // Variable: JOURNEY_QUERY
-// Query: *[_type == "journeyStep"] | order(order asc){  "step": number,  name,  description,  iconKey,  fromSemester,  span,  stage,  evidence{ name, excerpt }}
+// Query: *[_type == "journeyStep"] | order(order asc){  "step": number,  name,  description,  iconKey,  fromSemester,  span,  stage,  evidence{ "name": person->name, excerpt }}
 export type JOURNEY_QUERY_RESULT = Array<{
   step: string;
   name: string;
