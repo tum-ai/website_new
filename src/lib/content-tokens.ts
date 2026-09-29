@@ -25,6 +25,20 @@ export const contentTokenNames = [
   "contact.recruitmentEmail",
   "eLab.programWeeks",
   "eLab.deadline",
+  "eLab.programSummary",
+  "eLab.completedCohorts",
+  "eLab.ventureFundingMillions",
+  "org.foundingYear",
+  "org.activeMembers",
+  "org.alumni",
+  "org.officialMembers",
+  "org.majors",
+  "org.universities",
+  "org.nationalities",
+  "impact.publications",
+  "impact.publicationVenues",
+  "impact.hackathonParticipants",
+  "community.makeathonSize",
 ] as const;
 
 type ContentTokenName = (typeof contentTokenNames)[number];

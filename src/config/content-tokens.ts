@@ -1,7 +1,15 @@
 import type { ContentTokens } from "@/lib/content-tokens";
+import { communityFacts } from "./community";
 import { contactEmails } from "./contact";
-import { eLabApplicationCopy, eLabConfig } from "./e-lab";
+import {
+  eLabApplicationCopy,
+  eLabCompletedIterations,
+  eLabConfig,
+  eLabProgramSummary,
+} from "./e-lab";
+import { impactFacts, publicationVenuesText } from "./impact";
 import { recruitingTimeline } from "./membership";
+import { officialMembers, organizationFacts } from "./organization";
 
 /**
  * The values of the `{{name}}` placeholders in editable copy (the names and
@@ -15,4 +23,20 @@ export const contentTokens: ContentTokens = {
   "contact.recruitmentEmail": contactEmails.recruitment,
   "eLab.programWeeks": String(eLabConfig.programWeeks),
   "eLab.deadline": eLabApplicationCopy.deadlineLabel,
+  "eLab.programSummary": eLabProgramSummary,
+  "eLab.completedCohorts": String(eLabCompletedIterations),
+  "eLab.ventureFundingMillions": String(eLabConfig.ventureFundingMillions),
+  "org.foundingYear": String(organizationFacts.foundingYear),
+  "org.activeMembers": String(organizationFacts.activeMembers),
+  "org.alumni": String(organizationFacts.alumni),
+  "org.officialMembers": String(officialMembers),
+  "org.majors": String(organizationFacts.majors),
+  "org.universities": String(organizationFacts.universities),
+  "org.nationalities": String(organizationFacts.nationalities),
+  "impact.publications": String(impactFacts.publications),
+  "impact.publicationVenues": publicationVenuesText,
+  // Grouped as in running text ("2,500"); stat figures stay derived in code.
+  "impact.hackathonParticipants":
+    impactFacts.hackathonParticipants.toLocaleString("en"),
+  "community.makeathonSize": String(communityFacts.makeathonSize),
 };

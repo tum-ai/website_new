@@ -5,7 +5,15 @@ import { faqType } from "./faq";
  * src/sanity/sanity.config.ts). Register a new content type here; it must
  * never go into the live workspace, whose dataset the old site renders.
  */
-export const contentSchemaTypes = [faqType];
+export const contentSchemaTypes = [
+  // Shared page content
+  faqType,
+  // Phases 1 and 2: campaigns, application windows, site settings
+
+  // Phase 3: organizations (logos) and people
+
+  // Phase 4: page copy
+];
 
 /**
  * Singleton types: exactly one document each, with the type name as its

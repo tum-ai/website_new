@@ -12,8 +12,14 @@ export const backfillSlices: readonly {
   slice: string;
   build: () => BackfillDocument[];
 }[] = [
+  // Shared page content (FAQs)
   { slice: "features/apply/content.ts", build: buildApplyBackfill },
   { slice: "features/e-lab/content.ts", build: buildELabBackfill },
+  // Phases 1 and 2: campaigns, application windows, site settings
+
+  // Phase 3: organizations (logos) and people
+
+  // Phase 4: page copy
 ];
 
 /** The documents of every slice, in registry order. */
