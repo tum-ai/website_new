@@ -125,7 +125,7 @@
       .events-names-window {
         --visible: 3;
         cursor: grab;
-        touch-action: pan-y;
+        touch-action: pan-y pinch-zoom;
         user-select: none;
         border-radius: 0.75rem;
 

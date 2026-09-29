@@ -139,3 +139,13 @@ test("keeps its place when a refresh hands over the same names", async () => {
   expect(band?.style.getPropertyValue("--roll")).toBe("1.0000");
   expect(activePanels()).toStrictEqual(["1"]);
 });
+
+test("leaves Ctrl-wheel and pinch zoom to the browser", async () => {
+  render(<Reel names={["Acme", "Globex", "Initech"]} />);
+  const reel = screen.getByRole("group", { name: /Co-hosts/ });
+
+  // Browsers report a trackpad pinch as a wheel event with ctrlKey set.
+  expect(fireEvent.wheel(reel, { deltaY: 120, ctrlKey: true })).toBe(true);
+  // A plain wheel still turns the reel.
+  expect(fireEvent.wheel(reel, { deltaY: 120 })).toBe(false);
+});
