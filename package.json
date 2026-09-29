@@ -26,6 +26,7 @@
     "sanity:typegen:check": "pnpm sanity:typegen && git diff --exit-code -- src/lib/sanity.types.generated.ts",
     "sanity:backfill": "tsx --tsconfig scripts/sanity/tsconfig.json scripts/sanity/backfill.ts",
     "sanity:migrate-partners": "tsx --tsconfig scripts/sanity/tsconfig.json scripts/sanity/migrate-partners.ts",
+    "sanity:migrate-content-dedup": "tsx --tsconfig scripts/sanity/tsconfig.json scripts/sanity/migrate-content-dedup.ts",
     "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm test:perf"
   },
   "dependencies": {

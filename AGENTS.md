@@ -82,8 +82,8 @@ src/lib/                          cn, sanity-config, sanity client/queries/fetch
                                   redirects
 src/sanity/                       Studio config, desk structure and schemas (TypeGen writes
                                   src/lib/sanity.types.generated.ts)
-scripts/sanity/                   backfill script, slice registry, copy from production, partner
-                                  migration
+scripts/sanity/                   backfill script, slice registry, copy from production, content
+                                  migrations (migrate-partners, migrate-content-dedup)
 src/styles/index.css              tokens, tones, cascade layers, utilities
 src/proxy.ts                      host redirects (join.tum-ai.com to /apply)
 test/                             repo-wide fitness tests (content facts, assets, perf budget)

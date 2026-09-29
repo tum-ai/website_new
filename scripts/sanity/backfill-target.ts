@@ -1,7 +1,8 @@
 /**
- * Where `pnpm sanity:backfill` and `pnpm sanity:migrate-partners` may write:
- * the guard behind their `--dataset` flag, kept apart from the scripts so
- * tests can call it.
+ * Where `pnpm sanity:backfill` and the content migrations
+ * (`pnpm sanity:migrate-partners`, `pnpm sanity:migrate-content-dedup`) may
+ * write: the guard behind their `--dataset` flag, kept apart from the scripts
+ * so tests can call it.
  */
 import { legacyDataset } from "@/lib/sanity-config";
 
@@ -31,7 +32,7 @@ export function backfillTarget(
   }
   if (dataset === legacyDataset) {
     throw new Error(
-      `Refusing "${dataset}": it is the old site's dataset, which this repository only reads. Target the new site's dataset (--dataset redesign).`,
+      `Refusing "${dataset}": it is the old site's dataset, which these scripts only read. Write to the new site's dataset (--dataset redesign).`,
     );
   }
   return {

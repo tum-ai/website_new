@@ -8,7 +8,7 @@
 /** The units a duration is written in. */
 export const durationUnits = ["days", "weeks"] as const;
 
-export type DurationUnit = (typeof durationUnits)[number];
+type DurationUnit = (typeof durationUnits)[number];
 
 /** A whole number of days or weeks, at least one. */
 export type Duration = { amount: number; unit: DurationUnit };

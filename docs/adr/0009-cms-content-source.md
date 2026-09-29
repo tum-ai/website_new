@@ -226,6 +226,15 @@ write token in the repository or CI.
   without a file before the ledger existed, or on another machine, are not repaired: attach them
   in the Studio.
 
+**Content migrations.** `--missing` never updates a document that already exists, so a model
+change that reshapes existing content ships a migration script instead:
+`pnpm sanity:migrate-content-dedup --dataset redesign` (the content-dedup changes of #287: phase
+durations, the partner figures' placeholders, the Q&A journey points, the campaigns' featured
+event) prints each planned change as before and after; `--apply` writes it with the editor's CLI
+login (`sanity exec --with-user-token`), drafts included, patching only fields that still hold
+the value the backfill wrote and only at the revision it read. Like `--apply` above, it is a
+maintainer's step, never part of a change.
+
 `--dataset` is required (no default), and `production` is always refused
 (`scripts/sanity/backfill-target.ts`; there is no override). The script loads `.env.local` and
 `.env` like Next, because the Sanity CLI runs from `src/sanity` and would not find them, needs
@@ -306,6 +315,9 @@ exists (public) and already holds the page content from the first backfill.
    Then move the partners onto organisations: `pnpm sanity:migrate-partners --dataset redesign`
    (a dry run; review the plan it prints), then the same with `--apply`. Run it again after the
    re-run before launch, for partners added since; it only fills what is missing.
+   `redesign` was filled before the content-dedup changes: run
+   `pnpm sanity:migrate-content-dedup --dataset redesign` (dry run), then with `--apply`, once
+   (see "Content migrations").
 2. **Review.** Editors review and correct the content at `/studio` on a preview deployment with
    `NEXT_PUBLIC_SANITY_DATASET=redesign` (or locally with it in `.env.local`): the Site settings
    and both Application windows first (the open `TODO(content)` facts: the E-Lab window's open
