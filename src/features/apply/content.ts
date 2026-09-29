@@ -3,6 +3,7 @@ import "server-only";
 import { defineQuery } from "next-sanity";
 import { getContentTokens } from "@/config/content-tokens";
 import { memberJourney } from "@/features/community";
+import { buildMemberStoriesBackfill } from "@/features/community/server";
 import { type BackfillDocument, backfillId } from "@/lib/cms-backfill";
 import { loadContent } from "@/lib/cms-content";
 import { CONTENT_IMAGE_PROJECTION } from "@/lib/cms-content-model";
@@ -40,7 +41,10 @@ export async function getApplyFaqs(): Promise<FaqEntry[]> {
 
 export const APPLY_CONTENT_QUERY = defineQuery(`{
   "copy": *[_id == "applyCopy"][0]{
+    heroTitle,
     heroLead,
+    faqLabel,
+    datesTitle,
     scope{
       title,
       inScopeTitle,
@@ -60,7 +64,8 @@ export const APPLY_CONTENT_QUERY = defineQuery(`{
       journeyLink
     },
     selection{ title, lead, stages[]{ title, when, text } },
-    history{ title, lead }
+    history{ title, lead },
+    closing{ companiesReader }
   },
   "milestones": *[_type == "milestone"] | order(year asc, order asc){
     year,
@@ -155,7 +160,9 @@ export async function getApplyContent(): Promise<ApplyContent> {
         };
       },
     }),
-    getMemberJourney(memberJourney, tokens),
+    getMemberJourney(memberJourney, tokens, {
+      people: buildMemberStoriesBackfill,
+    }),
   ]);
   return { ...content, journey };
 }

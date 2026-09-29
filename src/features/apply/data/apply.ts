@@ -27,8 +27,13 @@ export const stageTimings: readonly StageTiming[] = [
 ];
 
 export type ApplyCopy = {
+  heroTitle: string;
   /** The hero's second paragraph, under the call's status. */
   heroLead: string;
+  /** The hero's second button, to the FAQ. */
+  faqLabel: string;
+  /** Over the important dates; `{{round}}` is the round's name. */
+  datesTitle: string;
   scope: {
     title: string;
     inScopeTitle: string;
@@ -66,20 +71,21 @@ export type ApplyCopy = {
     /** `{{count}}` milestones in `{{years}}` years, in digits. */
     lead: string;
   };
+  closing: {
+    /** The label over the partners' pitch beside the submission box. */
+    companiesReader: string;
+  };
 };
 
 /** The page tokens of the /apply copy (see `fillPageTokens`). */
-export const applyPageTokens = ["count", "years"] as const;
-
-/**
- * The hero's second paragraph. Also exported on its own: `hero.tsx` renders
- * it until the integration pass passes the CMS copy in.
- */
-export const heroLead =
-  "We look for students who want to build the future of AI, whatever they study. You don't need to be an AI expert to apply.";
+export const applyPageTokens = ["count", "years", "round"] as const;
 
 export const applyCopyTemplate: ApplyCopy = {
-  heroLead,
+  heroTitle: "Call for members.",
+  heroLead:
+    "We look for students who want to build the future of AI, whatever they study. You don't need to be an AI expert to apply.",
+  faqLabel: "Read the FAQ",
+  datesTitle: "Important dates, {{round}}",
   scope: {
     title: "Who should apply",
     inScopeTitle: "In scope",
@@ -197,5 +203,8 @@ export const applyCopyTemplate: ApplyCopy = {
   history: {
     title: "Since {{org.foundingYear}}",
     lead: "What TUM.ai's members have started, by kind and year: {{count}} milestones in {{years}} years.",
+  },
+  closing: {
+    companiesReader: "For companies",
   },
 };

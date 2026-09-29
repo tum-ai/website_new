@@ -58,6 +58,13 @@ export const applyCopyType = defineType({
   title: "Apply page",
   type: "document",
   fields: [
+    copyString({
+      name: "heroTitle",
+      title: "Hero title",
+      description:
+        "The page's headline, above the call's status (which follows the membership round).",
+      max: 40,
+    }),
     copyText({
       name: "heroLead",
       title: "Hero lead",
@@ -65,6 +72,21 @@ export const applyCopyType = defineType({
       max: 200,
       rows: 2,
       placeholders: true,
+    }),
+    copyString({
+      name: "faqLabel",
+      title: "FAQ button",
+      description: "The hero's second button, beside “Apply now”.",
+      max: 30,
+    }),
+    copyString({
+      name: "datesTitle",
+      title: "Dates heading",
+      description: "Over the round's important dates.",
+      max: 60,
+      pageTokens: {
+        round: "the round's name in lower case (winter semester 2026/27)",
+      },
     }),
     defineField({
       name: "scope",
@@ -227,6 +249,22 @@ export const applyCopyType = defineType({
             count: "the number of milestones, in digits",
             years: "the number of years the grid spans, in digits",
           },
+        }),
+      ],
+    }),
+    defineField({
+      name: "closing",
+      title: "Closing",
+      type: "object",
+      description:
+        "The submission box at the end; its statement and dates follow the membership round.",
+      fields: [
+        copyString({
+          name: "companiesReader",
+          title: "Label for companies",
+          description:
+            "Over the partners' pitch beside the box (the pitch is edited on the partners page).",
+          max: 30,
         }),
       ],
     }),

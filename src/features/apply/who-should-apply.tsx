@@ -5,15 +5,21 @@ import {
   Section,
   SectionHeader,
 } from "@/components/ds";
-import { brandMission } from "@/config/organization";
 import type { ApplyCopy } from "./data/apply";
 
 /**
  * The call's scope, as a call for papers states it: what is in scope (the
  * four qualities, set large) beside what is not required, then how members
- * work together in one line per value, and a batch photo.
+ * work together in one line per value, and a batch photo. The lead is the
+ * brand mission (`mission`, from the site facts).
  */
-export function WhoShouldApply({ copy }: { copy: ApplyCopy["scope"] }) {
+export function WhoShouldApply({
+  copy,
+  mission,
+}: {
+  copy: ApplyCopy["scope"];
+  mission: string;
+}) {
   const { qualities, notRequired, values, photo } = copy;
   return (
     <Section tone="paper" spacing="lg" aria-labelledby="apply-scope-title">
@@ -23,7 +29,7 @@ export function WhoShouldApply({ copy }: { copy: ApplyCopy["scope"] }) {
           title={copy.title}
           size="lg"
           layout="stack"
-          lead={brandMission}
+          lead={mission}
         />
 
         <div className="grid gap-14 lg:grid-cols-12 lg:gap-12">

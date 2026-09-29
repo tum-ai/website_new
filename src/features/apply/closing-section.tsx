@@ -7,8 +7,9 @@ import {
   Section,
   TextLink,
 } from "@/components/ds";
-import { partnerPitch } from "@/features/partners";
+import { callToActionLabels } from "@/config/calls-to-action";
 import { ApplyAction } from "./apply-action";
+import type { ApplyCopy } from "./data/apply";
 import {
   closedLabel,
   closingLead,
@@ -19,9 +20,18 @@ import {
 /**
  * The call's submission box, on ink: the hero's register reduced to the one
  * date that matters, over the same day ruler at full width, with the apply
- * action. Beside it, the partners' way to meet the members.
+ * action. Beside it, the partners' way to meet the members
+ * (`partnerPitch`, from the partners copy).
  */
-export function ClosingSection({ call }: { call: RecruitingCall }) {
+export function ClosingSection({
+  call,
+  copy,
+  partnerPitch,
+}: {
+  call: RecruitingCall;
+  copy: ApplyCopy["closing"];
+  partnerPitch: string;
+}) {
   return (
     <Section tone="ink" spacing="xl" aria-labelledby="apply-close-title">
       <Container>
@@ -57,7 +67,7 @@ export function ClosingSection({ call }: { call: RecruitingCall }) {
                 closedLabel={closedLabel(call)}
               />
               <ButtonLink href="/qanda" size="lg" variant="outline">
-                Questions and answers
+                {callToActionLabels.questions}
               </ButtonLink>
             </Actions>
           </Reveal>
@@ -65,11 +75,13 @@ export function ClosingSection({ call }: { call: RecruitingCall }) {
             delay={220}
             className="border-hairline-strong border-t pt-8 lg:col-span-4 lg:self-end"
           >
-            <p className="font-medium text-fg text-small">For companies</p>
+            <p className="font-medium text-fg text-small">
+              {copy.companiesReader}
+            </p>
             <p className="mt-3 text-body text-fg-muted">{partnerPitch}</p>
             <p className="mt-5">
               <TextLink href="/partners" arrow className="text-small">
-                Become a Partner
+                {callToActionLabels.partner}
               </TextLink>
             </p>
           </Reveal>

@@ -7,15 +7,19 @@ import {
   SectionHeader,
   TextLink,
 } from "@/components/ds";
-import { type JourneyStep, memberStories } from "@/features/community";
+import type { JourneyStep, MemberStory } from "@/features/community";
 import type { JourneyStage } from "@/lib/community-model";
 import type { ApplyCopy } from "./data/apply";
 
 /** One track: what it is, and a member who took it, in their own words. */
-function Track({ step }: { step: JourneyStep }) {
-  const story = memberStories.find(
-    (entry) => entry.name === step.evidence?.name,
-  );
+function Track({
+  step,
+  stories,
+}: {
+  step: JourneyStep;
+  stories: readonly MemberStory[];
+}) {
+  const story = stories.find((entry) => entry.name === step.evidence?.name);
   return (
     <article className="border-hairline-strong border-t pt-8">
       <h3 className="text-display-md text-fg">{step.name}</h3>
@@ -49,14 +53,17 @@ function Track({ step }: { step: JourneyStep }) {
 /**
  * What a new member works on: the journey's two tracks from /community's
  * single source, each with a member's own words, then what every member can
- * join besides, and the hackathon photo.
+ * join besides, and the hackathon photo. `stories` are the member stories
+ * the tracks' evidence quotes by name.
  */
 export function Tracks({
   copy,
   journey,
+  stories,
 }: {
   copy: ApplyCopy["tracks"];
   journey: readonly JourneyStage[];
+  stories: readonly MemberStory[];
 }) {
   /** The fork of the member journey: the two tracks a new member picks from. */
   const tracks: JourneyStep[] =
@@ -74,7 +81,7 @@ export function Tracks({
         <div className="grid gap-14 md:grid-cols-2 md:gap-10 lg:gap-16">
           {tracks.map((step, index) => (
             <Reveal key={step.step} delay={index * 100}>
-              <Track step={step} />
+              <Track step={step} stories={stories} />
             </Reveal>
           ))}
         </div>

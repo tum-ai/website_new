@@ -1,4 +1,5 @@
 import { Button, ButtonLink, StatusBadge } from "@/components/ds";
+import { callToActionLabels } from "@/config/calls-to-action";
 import type { CallPhase } from "./round";
 
 type ApplyActionProps = {
@@ -26,7 +27,7 @@ export function ApplyAction({
   if (phase === "open") {
     return (
       <ButtonLink href={href} size="lg" arrow="external">
-        Apply now
+        {callToActionLabels.apply}
       </ButtonLink>
     );
   }
@@ -39,7 +40,7 @@ export function ApplyAction({
         focusableWhenDisabled
         aria-describedby={statusId}
       >
-        Apply now
+        {callToActionLabels.apply}
       </Button>
       <span id={statusId} className="grid">
         <StatusBadge

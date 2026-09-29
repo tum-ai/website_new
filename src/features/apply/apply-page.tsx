@@ -1,4 +1,8 @@
 import { FaqSection } from "@/components/ds";
+import { getMembershipWindow } from "@/config/schedule-content";
+import { getSiteFacts } from "@/config/site-settings-content";
+import { getMemberStories } from "@/features/community/server";
+import { getPartnersCopy } from "@/features/partners/server";
 import { ClosingSection } from "./closing-section";
 import { getApplyContent, getApplyFaqs } from "./content";
 import { Hero } from "./hero";
@@ -19,24 +23,37 @@ type ApplyPageProps = {
  * should apply (paper), what you'll work on (mist), how selection works
  * (paper), what members started since the founding (lavender), the FAQ
  * (mist), and the submission box (ink). Every date and the open state come
- * from `membershipConfig` at `now`; the copy, milestones, journey and FAQ
- * come from the content slice (`content.ts`: the CMS or the code copy).
+ * from the render's membership window (`getMembershipWindow()`) at `now`;
+ * the copy, milestones, journey and FAQ from the content slice
+ * (`content.ts`), the mission from the site facts, and the member stories
+ * and partner pitch from their slices: each the CMS or the code.
  */
 export async function ApplyPage({ now }: ApplyPageProps) {
-  const call = recruitingCall(now);
-  const [faq, { copy, milestones, journey }] = await Promise.all([
+  const [
+    membership,
+    faq,
+    { copy, milestones, journey },
+    facts,
+    stories,
+    { pitch },
+  ] = await Promise.all([
+    getMembershipWindow(),
     getApplyFaqs(),
     getApplyContent(),
+    getSiteFacts(),
+    getMemberStories(),
+    getPartnersCopy(),
   ]);
+  const call = recruitingCall(now, membership);
   return (
     <main>
-      <Hero call={call} />
-      <WhoShouldApply copy={copy.scope} />
-      <Tracks copy={copy.tracks} journey={journey} />
+      <Hero call={call} copy={copy} />
+      <WhoShouldApply copy={copy.scope} mission={facts.brandMission} />
+      <Tracks copy={copy.tracks} journey={journey} stories={stories} />
       <Selection copy={copy.selection} call={call} />
       <SinceFounding copy={copy.history} milestones={milestones} />
       <FaqSection id="apply-faq" tone="mist" items={faq} />
-      <ClosingSection call={call} />
+      <ClosingSection call={call} copy={copy.closing} partnerPitch={pitch} />
     </main>
   );
 }

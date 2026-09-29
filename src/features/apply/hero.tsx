@@ -1,24 +1,32 @@
 import { ButtonLink, DayRuler, KeyDates, PageHero } from "@/components/ds";
+import { fillPageTokens } from "@/lib/content-copy";
 import { ApplyAction } from "./apply-action";
-import { heroLead } from "./data/apply";
+import type { ApplyCopy } from "./data/apply";
 import { callStatus, closedLabel, type RecruitingCall } from "./round";
 
 /**
  * The call for members: the title and status on the left, and the page's
  * bold element on the right, the round's important dates with passed dates
- * struck through, over a ruler of the application window's days.
+ * struck through, over a ruler of the application window's days. The words
+ * come from the page copy; the status and dates from the round.
  */
-export function Hero({ call }: { call: RecruitingCall }) {
+export function Hero({
+  call,
+  copy,
+}: {
+  call: RecruitingCall;
+  copy: Pick<ApplyCopy, "heroTitle" | "heroLead" | "faqLabel" | "datesTitle">;
+}) {
   return (
     <PageHero
       titleId="apply-hero-title"
-      title="Call for members."
+      title={copy.heroTitle}
       emphasis="highlight"
       mark={false}
       lead={
         <>
           <p className="text-fg">{callStatus(call)}</p>
-          <p className="mt-4">{heroLead}</p>
+          <p className="mt-4">{copy.heroLead}</p>
         </>
       }
       actions={
@@ -30,7 +38,7 @@ export function Hero({ call }: { call: RecruitingCall }) {
             closedLabel={closedLabel(call)}
           />
           <ButtonLink href="#apply-faq" size="lg" variant="outline">
-            Read the FAQ
+            {copy.faqLabel}
           </ButtonLink>
         </>
       }
@@ -41,7 +49,9 @@ export function Hero({ call }: { call: RecruitingCall }) {
             id="apply-dates-title"
             className="font-medium text-fg-muted text-small"
           >
-            Important dates, {call.name.toLowerCase()}
+            {fillPageTokens(copy.datesTitle, {
+              round: call.name.toLowerCase(),
+            })}
           </p>
           <KeyDates
             items={call.keyDates}
