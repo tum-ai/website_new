@@ -1,5 +1,5 @@
-import { expect, test } from "vitest";
-import { validateStages } from "./e-lab-copy";
+import { describe, expect, test } from "vitest";
+import { phaseWeeksProblem, validateStages } from "./e-lab-copy";
 
 const gate = (figure: string) => ({ _type: "gateStage", figure });
 const phase = { _type: "phaseStage" };
@@ -46,4 +46,41 @@ test("gates out of funnel order are refused: the field needs decreasing counts",
       gate("finalPitch"),
     ]),
   ).toMatch(/funnel order/);
+});
+
+describe("the phases against the program length", () => {
+  const phases = (...durations: [number, string][]) => [
+    gate("applications"),
+    ...durations.map(([amount, unit]) => ({
+      _type: "phaseStage",
+      duration: { amount, unit },
+    })),
+    gate("finalPitch"),
+  ];
+
+  test("phases that fill the program pass, within a week", () => {
+    expect(phaseWeeksProblem(phases([4, "weeks"], [10, "weeks"]), 14)).toBe(
+      true,
+    );
+    expect(
+      phaseWeeksProblem(phases([3, "days"], [4, "weeks"], [9, "weeks"]), 14),
+    ).toBe(true);
+  });
+
+  test("a gap is reported with the phases' sum and the program length", () => {
+    expect(
+      phaseWeeksProblem(phases([3, "days"], [4, "weeks"], [6, "weeks"]), 14),
+    ).toBe(
+      "The phases add up to about 10.4 weeks (3 days + 4 weeks + 6 weeks), but the site settings give the program 14 weeks. The page states both: adjust a phase or the program length.",
+    );
+    expect(phaseWeeksProblem(phases([16, "weeks"]), 14)).toMatch(
+      /add up to 16 weeks/,
+    );
+  });
+
+  test("nothing to compare: no program length or no timed phase", () => {
+    expect(phaseWeeksProblem(phases([4, "weeks"]), null)).toBe(true);
+    expect(phaseWeeksProblem(all, 14)).toBe(true);
+    expect(phaseWeeksProblem(undefined, 14)).toBe(true);
+  });
 });

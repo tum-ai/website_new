@@ -143,6 +143,13 @@ describe("the CMS stages", () => {
       raw.length,
     ],
     [
+      "a phase whose duration is text, not an amount and a unit",
+      raw.map((stage) =>
+        "duration" in stage ? { ...stage, duration: "4 weeks" } : stage,
+      ),
+      raw.length,
+    ],
+    [
       "an incomplete stage",
       raw.map((stage, index) => (index === 0 ? { ...stage, name: "" } : stage)),
       raw.length,

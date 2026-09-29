@@ -83,7 +83,10 @@ export type ELabCopy = {
       | {
           key: string;
           name: string;
-          duration: string;
+          duration: {
+            amount: number;
+            unit: "days" | "weeks";
+          };
           description: string;
           photo?: {
             asset?: SanityImageAssetReference;
@@ -1616,7 +1619,7 @@ export type COMMUNITY_COPY_QUERY_RESULT =
 
 // Source: ../features/e-lab/content.ts
 // Variable: ELAB_COPY_QUERY
-// Query: *[_id == "eLabCopy"][0]{  hero{ title, lead },  gates{    title,    lead,    scaleLabel,    stages[]{      _type,      figure,      name,      description,      approximate,      "id": key,      duration,      "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},      photoCaption    }  },  field{ caption, inviteLabel },  ventures{ title, fundingNote, logosLabel },  voices{ title, lead, foundersLabel, investorsLabel },  closing{ title, followLabel, partnersReader, partnersText }}
+// Query: *[_id == "eLabCopy"][0]{  hero{ title, lead },  gates{    title,    lead,    scaleLabel,    stages[]{      _type,      figure,      name,      description,      approximate,      "id": key,      duration{ amount, unit },      "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},      photoCaption    }  },  field{ caption, inviteLabel },  ventures{ title, fundingNote, logosLabel },  voices{ title, lead, foundersLabel, investorsLabel },  closing{ title, followLabel, partnersReader, partnersText }}
 export type ELAB_COPY_QUERY_RESULT =
   | {
       hero: null;
@@ -1728,7 +1731,10 @@ export type ELAB_COPY_QUERY_RESULT =
               description: string;
               approximate: null;
               id: string;
-              duration: string;
+              duration: {
+                amount: number;
+                unit: "days" | "weeks";
+              };
               photo: {
                 src: string | null;
                 width: number | null;

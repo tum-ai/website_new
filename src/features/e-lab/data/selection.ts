@@ -1,5 +1,6 @@
 import { eLabConfig } from "@/config/e-lab";
 import type { ContentImage } from "@/lib/cms-content-model";
+import type { Duration } from "@/lib/program-duration";
 
 /** The selection figures in `eLabConfig.selection`, one per gate. */
 export type GateFigure = keyof typeof eLabConfig.selection;
@@ -27,8 +28,8 @@ export type Phase = {
   kind: "phase";
   id: string;
   name: string;
-  /** How long it runs, as shown ("4 weeks"). */
-  duration: string;
+  /** How long it runs; the page shows it as "4 weeks" (`formatDuration`). */
+  duration: Duration;
   description: string;
   /** A real photo from this phase. */
   photo?: ContentImage;
@@ -76,12 +77,13 @@ export const stageCopy: StageCopy[] = [
   },
   // TODO(content): the phases add up to 3 days + 4 weeks + 6 weeks (about
   // ten weeks), while eLabConfig.programWeeks says 14. Which is right, and
-  // what fills the remaining weeks (Selection Day to the Final Pitch)?
+  // what fills the remaining weeks (Selection Day to the Final Pitch)? The
+  // Studio warns about the same gap on the E-Lab page's phases.
   {
     kind: "phase",
     id: "kickoff",
     name: "Kickoff and onboarding weekend",
-    duration: "3 days",
+    duration: { amount: 3, unit: "days" },
     description:
       "An intensive start: team alignment and ideation. Solo founders find co-founders here.",
     photo: {
@@ -97,7 +99,7 @@ export const stageCopy: StageCopy[] = [
     kind: "phase",
     id: "phase-one",
     name: "Phase I: MVP build",
-    duration: "4 weeks",
+    duration: { amount: 4, unit: "weeks" },
     description:
       "Rapid prototyping, problem fit and core tech, from desks at TUM.ai's headquarters, with weekly sessions from founders who have done it before.",
   },
@@ -112,7 +114,7 @@ export const stageCopy: StageCopy[] = [
     kind: "phase",
     id: "phase-two",
     name: "Phase II: traction and growth",
-    duration: "6 weeks",
+    duration: { amount: 6, unit: "weeks" },
     description:
       "User testing, go-to-market, legal and pitch polish, with warm intros and real feedback from European funds.",
   },

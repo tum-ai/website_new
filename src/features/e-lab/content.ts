@@ -8,6 +8,7 @@ import { CONTENT_IMAGE_PROJECTION } from "@/lib/cms-content-model";
 import { backfillContentImage } from "@/lib/content-backfill";
 import { fillCmsCopy, fillCodeCopy } from "@/lib/content-copy";
 import { buildFaqBackfill, type FaqEntry, getFaqs } from "@/lib/faq-content";
+import { isDuration } from "@/lib/program-duration";
 import type { ELAB_COPY_QUERY_RESULT } from "@/lib/sanity.types.generated";
 import { type ELabCopy, eLabCopyTemplate, eLabPageTokens } from "./data/copy";
 import { faqTemplates } from "./data/faq";
@@ -42,7 +43,7 @@ export const ELAB_COPY_QUERY = defineQuery(`*[_id == "eLabCopy"][0]{
       description,
       approximate,
       "id": key,
-      duration,
+      duration{ amount, unit },
       "photo": photo${CONTENT_IMAGE_PROJECTION},
       photoCaption
     }
@@ -79,12 +80,12 @@ function toStage({ _type, ...stage }: RawStage): StageCopy | null {
   }
   if (_type === "phaseStage") {
     const { id, name, duration, description, photo, photoCaption } = stage;
-    if (!id || !name || !duration || !description) return null;
+    if (!id || !name || !isDuration(duration) || !description) return null;
     return {
       kind: "phase",
       id: String(id),
       name: String(name),
-      duration: String(duration),
+      duration: { amount: duration.amount, unit: duration.unit },
       description: String(description),
       ...(photo ? { photo: photo as never } : {}),
       ...(photo && photoCaption ? { photoCaption: String(photoCaption) } : {}),
