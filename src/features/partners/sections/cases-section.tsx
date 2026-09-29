@@ -6,11 +6,15 @@ import {
   Section,
   SectionHeader,
 } from "@/components/ds";
-import { partnerCaseStudies } from "../data/partners";
+import type { PartnerCaseStudy } from "../data/partners";
 import { ContactRow } from "./contact-row";
 
 /** Partner testimonials: one outcome figure and quote per case, then a booking row. */
-export function CasesSection() {
+export function CasesSection({
+  caseStudies,
+}: {
+  caseStudies: readonly PartnerCaseStudy[];
+}) {
   return (
     <Section tone="paper" aria-labelledby="partner-cases-title">
       <Container>
@@ -32,7 +36,7 @@ export function CasesSection() {
           }
         />
         <div className="grid gap-5 lg:grid-cols-3 lg:gap-6">
-          {partnerCaseStudies.map((study, index) => (
+          {caseStudies.map((study, index) => (
             <Reveal key={study.name} delay={index * 90} className="h-full">
               <article className="group/zoom flex h-full flex-col overflow-hidden rounded-3xl border border-hairline bg-raised shadow-soft md:max-lg:grid md:max-lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
                 <div className="relative aspect-[2/1] overflow-hidden bg-sunken md:max-lg:aspect-auto md:max-lg:min-h-64">
@@ -55,7 +59,7 @@ export function CasesSection() {
                   </p>
                   <blockquote className="mt-5 border-violet-500/40 border-l-2 pl-4 text-fg-muted text-small">
                     <p>{study.copy}</p>
-                    {"attribution" in study ? (
+                    {study.attribution ? (
                       <cite className="mt-3 flex items-center gap-2.5 font-medium text-highlight text-meta not-italic">
                         <span
                           aria-hidden

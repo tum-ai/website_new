@@ -1,148 +1,184 @@
-import { communityFacts } from "@/config/community";
 import { eLabConfig } from "@/config/e-lab";
 import { impactFacts } from "@/config/impact";
-import { officialMembers, organizationFacts } from "@/config/organization";
+import type { ContentImage } from "@/lib/cms-content-model";
+import { type ContentTokens, fillCodeTemplate } from "@/lib/content-tokens";
+import type { PartnershipFinderCopy } from "./partnership-finder";
 
-export const partnershipIntents = [
-  {
-    id: "talent",
-    label: "Hiring top AI talent",
-    shortLabel: "Hiring top AI talent",
-    detail: "Meet your next exceptional hire.",
-  },
-  {
-    id: "hackathon",
-    label: "Running a hackathon or challenge",
-    shortLabel: "Hackathon challenge",
-    detail: "Put a real challenge in brilliant hands.",
-  },
-  {
-    id: "brand",
-    label: "Brand visibility in the community",
-    shortLabel: "Brand visibility",
-    detail: "Be part of the conversation.",
-  },
-  {
-    id: "research",
-    label: "A research collaboration",
-    shortLabel: "Research collaboration",
-    detail: "Explore what comes next, together.",
-  },
-] as const;
+/**
+ * The /partners copy: the code source of the CMS `partnersCopy` singleton,
+ * `caseStudy` and the partner-profile `person` documents
+ * (`features/partners/content.ts`). Figures that are site facts are
+ * `{{placeholders}}` (`lib/content-tokens.ts`) or derived from the config.
+ * The slice fills placeholders per render with `getContentTokens()`; this
+ * module never imports the token values, which are server-only.
+ */
 
-export type PartnershipIntent = (typeof partnershipIntents)[number]["id"];
-export type PartnershipDuration = "one-off" | "ongoing";
+/** The icon beside a reason, mapped to a Lucide icon by the section. */
+export type PartnerReasonIcon = "users" | "briefcase" | "network";
 
-export const partnershipDurations = [
-  {
-    id: "one-off",
-    label: "A one-off activation",
-    detail: "One focused opportunity to make an impact.",
-  },
-  {
-    id: "ongoing",
-    label: "An ongoing, strategic relationship",
-    detail: "Build a lasting presence across our ecosystem.",
-  },
-] as const;
+/** A reason to partner: an icon, a label, a title and a paragraph. */
+export type PartnerReason = {
+  icon: PartnerReasonIcon;
+  name: string;
+  title: string;
+  description: string;
+};
 
-export const recommendations = {
-  longTerm: {
-    name: "Long-Term Partnership",
-    description:
-      "A year-long relationship across our whole ecosystem, built around your goals. What you can pack into it: curated talent profiles in a dedicated Partner Dashboard and Jobboard access, co-organized events, workshops and exclusive company visits, brand visibility across our LinkedIn, newsletter and major events, and first choice on hackathon slots. Scales from a lightweight setup all the way to founding-partner level.",
-  },
-  hackathon: {
-    name: "Hackathon Participation",
-    description:
-      "Bring your challenge to one of our hackathons (our signature Makeathon or a European Hackathon League stop in Munich, Berlin, Zurich or Paris). What you can pack into it: your own challenge track, the participant list including CVs, on-site branding and a booth, a company pitch, and optional add-ons like a workshop slot or catering sponsorship.",
-  },
-  talent: {
-    name: "Talent Activation",
-    description:
-      "The fastest way to get in front of our talent for hiring. What you can pack into it: job postings to our community, access to the CV database, and a targeted mail to the community. Easy to upgrade into a Long-Term Partnership later.",
-  },
-  brand: {
-    name: "Community & Brand Activation",
-    description:
-      "Put your brand in front of the community where Europe's next AI companies are being built. What you can pack into it: visibility across our 20k+ LinkedIn audience and newsletter, a networking event invitation, and a custom mail to the community.",
-  },
-  research: {
-    name: "Research Collaboration",
-    description:
-      "Work directly with our research teams and frontier-lab network (MIT, IBM, Cambridge, Harvard). What you can pack into it: shaping the research agenda, joint projects, and a path to NeurIPS, ICML and ICLR publications.",
-  },
-} as const;
-
-export const partnerReasons = [
+export const partnerReasons: readonly PartnerReason[] = [
   {
+    icon: "users",
     name: "Talent",
     title: "Hire the cracked 2%.",
     description:
       "Curated talent profiles in your dedicated Partner Dashboard, plus access to the TUM.ai Jobboard. Find your next senior engineer or technical co-founder before anyone else.",
   },
   {
+    icon: "briefcase",
     name: "Decision Makers",
     title: "Direct access to future founders & leaders.",
     description:
       "Host exclusive company visits, workshops and co-organized events. Get in front of the people who'll be deciding tool budgets in three years in the fastest-growing industries in Europe.",
   },
   {
+    icon: "network",
     name: "Network & Exposure",
     title: "Your brand, inside the room where AI is built.",
     description:
       "Your brand in front of a 20k+ LinkedIn audience, our newsletter and the major events we run. Consistent visibility across the community where Europe's next AI companies are being built.",
   },
-] as const;
+];
 
-export const partnerStats = [
+/** A proof figure on violet; `value` counts up to its exact text. */
+export type PartnerStat = { value: string; label: string; detail?: string };
+
+/** The proof figures as templates: facts from the config are placeholders. */
+export const partnerStatTemplates: readonly PartnerStat[] = [
   { value: "2100+", label: "Started applications per batch" },
   { value: "2.3%", label: "Acceptance rate per batch" },
   {
-    value: `${officialMembers}+`,
+    value: "{{org.officialMembers}}+",
     label: "Official members",
-    detail: `${organizationFacts.activeMembers} active, ${organizationFacts.alumni} alumni`,
+    detail: "{{org.activeMembers}} active, {{org.alumni}} alumni",
   },
   {
     value: "1.2M+",
     label: "LinkedIn impressions (last 12 months)",
     detail: "30%+ engagement",
   },
-] as const;
+];
 
-export const partnerPillars = [
-  {
-    title: "Research",
-    metric: `${impactFacts.publications}+`,
-    metricLabel: "Publications",
-    description:
-      "At top-tier conferences (MIT, Cambridge, Harvard, IBM Research). Collabs with frontier AI labs, path to NeurIPS, ICML and ICLR papers, partners shape the research agenda directly.",
-    image: "/assets/homepage/IBM_visit.webp",
-    alt: "TUM.ai members visiting IBM",
-    href: "/research",
-  },
-  {
-    title: "Venture (E-Lab)",
-    metric: `${eLabConfig.ventureFundingMillions}M`,
-    metricLabel: "Raised",
-    description:
-      "Raised by alumni and counting (YC, EWOR, Spherecast, Mercura, dryft). 25 teams each incubator iteration, alumni backed by YC, EWOR and top VCs, partners join exclusive demo days early.",
-    image: "/assets/homepage/venture_onboarding25.webp",
-    alt: "TUM.ai E-Lab venture community",
-    href: "/e-lab",
-  },
-  {
-    title: "Hackathons",
-    metric: `${impactFacts.hackathonParticipants}+`,
-    metricLabel: "Hackers",
-    description: `Over all our hackathons (OpenAI, AWS, Anthropic, Google). ${communityFacts.makeathonSize}+ hackers at our signature Makeathon, European Hackathon League across 4 cities (Munich, Berlin, Zurich, Paris), partners host challenges, booths and company pitches.`,
-    image: "/assets/homepage/Makeathon.webp",
-    alt: "The TUM.ai Makeathon team",
-    href: "/events",
-  },
-] as const;
+/** Stat templates with their placeholders filled. */
+export function fillPartnerStats(
+  templates: readonly PartnerStat[],
+  tokens: ContentTokens,
+): PartnerStat[] {
+  return templates.map(({ value, label, detail }) => ({
+    value: fillCodeTemplate(value, tokens),
+    label,
+    ...(detail === undefined
+      ? {}
+      : { detail: fillCodeTemplate(detail, tokens) }),
+  }));
+}
 
-export const partnerProfiles = [
+/** Which pillar a card is; it picks the card's figure. */
+export type PartnerPillarKey = "research" | "venture" | "hackathons";
+
+/**
+ * Each pillar's headline figure: a site fact, so it is derived from the
+ * config rather than written as copy (the hackathon count reads "2500+",
+ * without the grouping the `{{impact.hackathonParticipants}}` placeholder
+ * has in running text).
+ */
+export const partnerPillarMetrics: Readonly<Record<PartnerPillarKey, string>> =
+  {
+    research: `${impactFacts.publications}+`,
+    venture: `${eLabConfig.ventureFundingMillions}M`,
+    hackathons: `${impactFacts.hackathonParticipants}+`,
+  };
+
+/** A pillar card as the page renders it. */
+export type PartnerPillar = {
+  key: PartnerPillarKey;
+  title: string;
+  metric: string;
+  metricLabel: string;
+  description: string;
+  image: ContentImage;
+  href: string;
+};
+
+/** The pillar cards as templates: descriptions may hold placeholders. */
+export const partnerPillarTemplates: readonly Omit<PartnerPillar, "metric">[] =
+  [
+    {
+      key: "research",
+      title: "Research",
+      metricLabel: "Publications",
+      description:
+        "At top-tier conferences (MIT, Cambridge, Harvard, IBM Research). Collabs with frontier AI labs, path to NeurIPS, ICML and ICLR papers, partners shape the research agenda directly.",
+      image: {
+        src: "/assets/homepage/IBM_visit.webp",
+        width: 1920,
+        height: 1440,
+        alt: "TUM.ai members visiting IBM",
+      },
+      href: "/research",
+    },
+    {
+      key: "venture",
+      title: "Venture (E-Lab)",
+      metricLabel: "Raised",
+      description:
+        "Raised by alumni and counting (YC, EWOR, Spherecast, Mercura, dryft). 25 teams each incubator iteration, alumni backed by YC, EWOR and top VCs, partners join exclusive demo days early.",
+      image: {
+        src: "/assets/homepage/venture_onboarding25.webp",
+        width: 1440,
+        height: 1920,
+        alt: "TUM.ai E-Lab venture community",
+      },
+      href: "/e-lab",
+    },
+    {
+      key: "hackathons",
+      title: "Hackathons",
+      metricLabel: "Hackers",
+      description:
+        "Over all our hackathons (OpenAI, AWS, Anthropic, Google). {{community.makeathonSize}}+ hackers at our signature Makeathon, European Hackathon League across 4 cities (Munich, Berlin, Zurich, Paris), partners host challenges, booths and company pitches.",
+      image: {
+        src: "/assets/homepage/Makeathon.webp",
+        width: 1920,
+        height: 1280,
+        alt: "The TUM.ai Makeathon team",
+      },
+      href: "/events",
+    },
+  ];
+
+/** Pillar templates with placeholders filled and their figures derived. */
+export function fillPartnerPillars(
+  templates: readonly Omit<PartnerPillar, "metric">[],
+  tokens: ContentTokens,
+): PartnerPillar[] {
+  return templates.map((pillar) => ({
+    ...pillar,
+    metric: partnerPillarMetrics[pillar.key],
+    description: fillCodeTemplate(pillar.description, tokens),
+  }));
+}
+
+/** A member profile on /partners ("The cracked 2%."). */
+export type PartnerProfile = {
+  name: string;
+  role: string;
+  /** One line under the role; empty for none. */
+  detail: string;
+  image: string;
+  /** CSS `object-position` of the portrait. */
+  position: string;
+};
+
+export const partnerProfiles: readonly PartnerProfile[] = [
   {
     name: "Leonie Freisinger",
     role: "Co-Founder & CTO @Dryft",
@@ -164,7 +200,7 @@ export const partnerProfiles = [
     image: "/assets/partners/people/jasmin-portrait.webp",
     position: "55% 35%",
   },
-] as const;
+];
 
 /**
  * How partners meet the members, in one sentence: the partner fork in the
@@ -173,8 +209,27 @@ export const partnerProfiles = [
 export const partnerPitch =
   "Partners meet our members through talent packages, hackathon challenges and company visits.";
 
-export const partnerCaseStudies = [
+/** A partner case: one measured outcome, its story and a photo. */
+export type PartnerCaseStudy = {
+  /** The partner's organisation key (`data/organizations.ts`). */
+  organization: string;
+  name: string;
+  metric: string;
+  label: string;
+  /** The outcome in a few words, for the homepage ledger. */
+  summary: string;
+  copy: string;
+  /** Who said it, when `copy` is a quote. */
+  attribution?: string;
+  image: string;
+  alt: string;
+  /** CSS `object-position` of the photo. */
+  imagePosition: string;
+};
+
+export const partnerCaseStudies: readonly PartnerCaseStudy[] = [
   {
+    organization: "quantco",
     name: "QuantCo",
     metric: "75%",
     label: "From collaboration to colleagues",
@@ -185,6 +240,7 @@ export const partnerCaseStudies = [
     imagePosition: "center",
   },
   {
+    organization: "bmw",
     name: "BMW",
     metric: "48h",
     label: "Real challenges. Tangible results.",
@@ -196,6 +252,7 @@ export const partnerCaseStudies = [
     imagePosition: "center",
   },
   {
+    organization: "osapiens",
     name: "Osapiens",
     metric: "20+",
     label: "Applications into the hiring pipeline",
@@ -205,4 +262,12 @@ export const partnerCaseStudies = [
     alt: "Hackathon participants collaborating on their laptops",
     imagePosition: "center",
   },
-] as const;
+];
+
+/** The /partners copy as the page renders it, from code or the CMS. */
+export type PartnersCopy = PartnershipFinderCopy & {
+  pitch: string;
+  reasons: readonly PartnerReason[];
+  stats: readonly PartnerStat[];
+  pillars: readonly PartnerPillar[];
+};

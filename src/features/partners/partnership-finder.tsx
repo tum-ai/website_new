@@ -15,7 +15,6 @@ import { type ReactNode, useEffect, useRef } from "react";
 import { Button, Highlight, IconBadge, Text } from "@/components/ds";
 import { cn } from "@/lib/cn";
 import { ContactActions } from "./contact-actions";
-import { partnershipDurations, partnershipIntents } from "./data/partners";
 import { usePartnership } from "./partnership-context";
 import { getPartnershipRecommendation } from "./partnerships";
 
@@ -80,13 +79,13 @@ function FinderOption({
  * and scrolls the panel below the fixed header. Needs a PartnershipProvider.
  */
 export function PartnershipFinder() {
-  const { selection, dispatch } = usePartnership();
+  const { selection, dispatch, copy } = usePartnership();
   const { step, intent } = selection;
   const heading = useRef<HTMLHeadingElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const previousStep = useRef(step);
-  const recommendation = getPartnershipRecommendation(selection);
-  const selectedIntent = partnershipIntents.find((item) => item.id === intent);
+  const recommendation = getPartnershipRecommendation(selection, copy);
+  const selectedIntent = copy.intents.find((item) => item.id === intent);
   const activeIndex = step === "intent" ? 0 : step === "duration" ? 1 : 2;
 
   useEffect(() => {
@@ -174,7 +173,7 @@ export function PartnershipFinder() {
               What matters most to you right now?
             </h3>
             <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-              {partnershipIntents.map((item) => (
+              {copy.intents.map((item) => (
                 <FinderOption
                   key={item.id}
                   icon={icons[item.id]}
@@ -193,7 +192,7 @@ export function PartnershipFinder() {
               relationship?
             </h3>
             <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-              {partnershipDurations.map((item) => (
+              {copy.durations.map((item) => (
                 <FinderOption
                   key={item.id}
                   label={item.label}

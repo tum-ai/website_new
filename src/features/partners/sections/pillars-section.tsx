@@ -8,10 +8,14 @@ import {
   Section,
   SectionHeader,
 } from "@/components/ds";
-import { partnerPillars } from "../data/partners";
+import type { PartnerPillar } from "../data/partners";
 
 /** Research, venture and hackathons: one linked card per pillar with its headline figure. */
-export function PillarsSection() {
+export function PillarsSection({
+  pillars,
+}: {
+  pillars: readonly PartnerPillar[];
+}) {
   return (
     <Section tone="paper" aria-labelledby="partner-pillars-title">
       <Container>
@@ -27,15 +31,20 @@ export function PillarsSection() {
           lead="From the first research question to the next venture. Find your place at every stage."
         />
         <div className="grid gap-5 lg:grid-cols-3 lg:gap-6">
-          {partnerPillars.map((pillar, index) => (
+          {pillars.map((pillar, index) => (
             <Reveal key={pillar.title} delay={index * 90} className="h-full">
               <article className="group/zoom relative flex h-full flex-col overflow-hidden rounded-3xl border border-hairline bg-raised shadow-soft transition-[translate,box-shadow,border-color] duration-500 ease-brand hover:border-hairline-strong hover:shadow-lift motion-safe:hover:-translate-y-1 md:max-lg:grid md:max-lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
                 <div className="relative aspect-[16/10] overflow-hidden bg-sunken md:max-lg:aspect-auto md:max-lg:min-h-64">
                   <Image
-                    src={pillar.image}
-                    alt={pillar.alt}
+                    src={pillar.image.src}
+                    alt={pillar.image.alt}
                     fill
                     sizes="(min-width: 1024px) 33vw, (min-width: 768px) 40vw, 100vw"
+                    style={
+                      pillar.image.objectPosition
+                        ? { objectPosition: pillar.image.objectPosition }
+                        : undefined
+                    }
                     className="zoom-media object-cover"
                   />
                 </div>

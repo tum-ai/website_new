@@ -2,6 +2,7 @@ import Image from "next/image";
 import { ButtonLink, PageHero, SplitWords } from "@/components/ds";
 import type { Partner } from "@/lib/types";
 import { HeroContact } from "../contact-actions";
+import type { PartnerLogos } from "../organization-content";
 import { getHighlightedPartners } from "../partner-directory";
 import { PartnerMarquee } from "../partner-marquee";
 
@@ -9,7 +10,14 @@ import { PartnerMarquee } from "../partner-marquee";
 const heroActionSize = "max-sm:h-11 max-sm:px-5 max-sm:text-label";
 
 /** Opening band: the pitch and contact actions beside a photo, then the partner rail. */
-export function PartnersHero({ partners }: { partners: Partner[] }) {
+export function PartnersHero({
+  partners,
+  logos,
+}: {
+  partners: Partner[];
+  /** The dark-band artwork and symbol-only files for the rail. */
+  logos: Pick<PartnerLogos, "marqueeLogos" | "symbolOnlyLogos">;
+}) {
   return (
     <PageHero
       titleId="partner-hero-title"
@@ -67,7 +75,11 @@ export function PartnersHero({ partners }: { partners: Partner[] }) {
       }
       classNames={{ lead: "max-w-md" }}
     >
-      <PartnerMarquee partners={getHighlightedPartners(partners)} />
+      <PartnerMarquee
+        partners={getHighlightedPartners(partners)}
+        marqueeLogos={logos.marqueeLogos}
+        symbolOnlyLogos={logos.symbolOnlyLogos}
+      />
     </PageHero>
   );
 }

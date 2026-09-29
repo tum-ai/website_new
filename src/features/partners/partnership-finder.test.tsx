@@ -6,7 +6,7 @@ import {
   partnershipDurations,
   partnershipIntents,
   recommendations,
-} from "./data/partners";
+} from "./data/partnership-finder";
 import { PartnershipProvider } from "./partnership-context";
 import { PartnershipFinder } from "./partnership-finder";
 import { getPartnershipEmailUrl } from "./partnerships";

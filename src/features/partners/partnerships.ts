@@ -1,11 +1,10 @@
 import { contactEmails, partnershipContact } from "@/config/contact";
 import {
   type PartnershipDuration,
+  type PartnershipFinderCopy,
   type PartnershipIntent,
-  partnershipDurations,
-  partnershipIntents,
-  recommendations,
-} from "./data/partners";
+  partnershipFinderCopy,
+} from "./data/partnership-finder";
 
 /** The role address partnership requests go to (also the booking guest). */
 export const PARTNER_EMAIL = contactEmails.partners;
@@ -53,24 +52,30 @@ export function partnershipFunnelReducer(
   }
 }
 
-export function getPartnershipRecommendation({
-  intent,
-  duration,
-}: PartnershipSelection) {
+/**
+ * The format for the answers: research goals get the research format, any
+ * other ongoing goal the long-term partnership, a one-off goal its own.
+ */
+export function getPartnershipRecommendation(
+  { intent, duration }: PartnershipSelection,
+  { recommendations }: PartnershipFinderCopy = partnershipFinderCopy,
+) {
   if (!intent || !duration) return null;
   if (intent === "research") return recommendations.research;
   if (duration === "ongoing") return recommendations.longTerm;
   return recommendations[intent];
 }
 
-export function getPartnershipContext(selection: PartnershipSelection) {
-  const intent = partnershipIntents.find(
-    (item) => item.id === selection.intent,
-  );
-  const duration = partnershipDurations.find(
+/** The answers as lines for the email body and the booking notes. */
+export function getPartnershipContext(
+  selection: PartnershipSelection,
+  copy: PartnershipFinderCopy = partnershipFinderCopy,
+) {
+  const intent = copy.intents.find((item) => item.id === selection.intent);
+  const duration = copy.durations.find(
     (item) => item.id === selection.duration,
   );
-  const result = getPartnershipRecommendation(selection);
+  const result = getPartnershipRecommendation(selection, copy);
   return [
     intent
       ? `Interest: ${intent.label}`
@@ -86,19 +91,21 @@ export function getPartnershipContext(selection: PartnershipSelection) {
 
 export function getPartnershipEmailUrl(
   selection: PartnershipSelection = { intent: null, duration: null },
+  copy: PartnershipFinderCopy = partnershipFinderCopy,
 ) {
-  const intent = partnershipIntents.find(
-    (item) => item.id === selection.intent,
-  );
+  const intent = copy.intents.find((item) => item.id === selection.intent);
   const subject = intent
     ? `Partnership request: ${intent.shortLabel}`
     : "Partnership request: TUM.ai";
-  return `mailto:${PARTNER_EMAIL}?cc=${encodeURIComponent(partnershipContact.cc.join(","))}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Hi TUM.ai team,\n\n${getPartnershipContext(selection)}\n\n`)}`;
+  return `mailto:${PARTNER_EMAIL}?cc=${encodeURIComponent(partnershipContact.cc.join(","))}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Hi TUM.ai team,\n\n${getPartnershipContext(selection, copy)}\n\n`)}`;
 }
 
-export function getPartnershipBookingUrl(selection: PartnershipSelection) {
+export function getPartnershipBookingUrl(
+  selection: PartnershipSelection,
+  copy: PartnershipFinderCopy = partnershipFinderCopy,
+) {
   const url = new URL(PARTNER_BOOKING_URL);
   url.searchParams.append("guest", PARTNER_EMAIL);
-  url.searchParams.set("notes", getPartnershipContext(selection));
+  url.searchParams.set("notes", getPartnershipContext(selection, copy));
   return url.toString();
 }

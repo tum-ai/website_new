@@ -19,11 +19,11 @@ export function ContactActions({
   align?: "start" | "center";
   className?: string;
 }) {
-  const { selection, openBooking } = usePartnership();
+  const { selection, openBooking, copy } = usePartnership();
   const email = (
     <ButtonLink
       key="email"
-      href={getPartnershipEmailUrl(selection)}
+      href={getPartnershipEmailUrl(selection, copy)}
       variant={bookingFirst ? "outline" : "primary"}
       size={size}
     >
@@ -50,10 +50,10 @@ export function ContactActions({
 }
 
 export function HeroContact({ className }: { className?: string }) {
-  const { selection } = usePartnership();
+  const { selection, copy } = usePartnership();
   return (
     <ButtonLink
-      href={getPartnershipEmailUrl(selection)}
+      href={getPartnershipEmailUrl(selection, copy)}
       size="lg"
       arrow="external"
       className={className}
