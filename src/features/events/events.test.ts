@@ -1,9 +1,17 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import {
+  excerpt,
   formatEventDate,
+  formatEventLocation,
   getEventPhotos,
-  groupEventsByMonth,
+  groupEventsBySemester,
+  hasStartTime,
+  hostsBeyondTitle,
+  indexHosts,
+  lockupParts,
+  semesterOf,
   splitEvents,
+  summarizeEvents,
 } from "./events";
 
 const at = (event_date: string, id = event_date) => ({ id, event_date });
@@ -71,69 +79,52 @@ describe.each([
     });
   });
 
-  describe("groupEventsByMonth", () => {
-    test("23:30 UTC on the last day of a month is the next month in Munich", () => {
-      const months = groupEventsByMonth([
-        at("2026-10-31T22:59:00Z", "oct"), // 23:59 CET, 31 October
-        at("2026-10-31T23:30:00Z", "nov"), // 00:30 CET, 1 November
-      ]);
-      expect(
-        months.map((month) => [
-          month.key,
-          month.monthName,
-          month.year,
-          ids(month.events),
-        ]),
-      ).toEqual([
-        ["2026-10", "October", "2026", ["oct"]],
-        ["2026-11", "November", "2026", ["nov"]],
-      ]);
+  describe("semesterOf", () => {
+    test("April to September is the summer semester", () => {
+      expect(semesterOf("2026-04-01T10:00:00Z")).toEqual({
+        key: "2026-summer",
+        label: "Summer semester 2026",
+      });
+      expect(semesterOf("2026-09-30T10:00:00Z").key).toBe("2026-summer");
     });
 
-    test("the year boundary follows Munich too", () => {
-      const [month] = groupEventsByMonth([at("2026-12-31T23:15:00Z")]);
-      expect([month.monthName, month.year]).toEqual(["January", "2027"]);
+    test("October to March is the winter semester, named after both years", () => {
+      expect(semesterOf("2025-10-01T10:00:00Z")).toEqual({
+        key: "2025-winter",
+        label: "Winter semester 2025/26",
+      });
+      expect(semesterOf("2026-03-31T10:00:00Z").key).toBe("2025-winter");
+      expect(semesterOf("2099-12-01T10:00:00Z").label).toBe(
+        "Winter semester 2099/00",
+      );
     });
 
-    test("summer time: 22:30 UTC on 31 March 2026 is already April in Munich", () => {
-      // Clocks went forward on 29 March 2026, so Munich is UTC+2.
-      const months = groupEventsByMonth([
-        at("2026-03-31T21:30:00Z", "march"), // 23:30 CEST
-        at("2026-03-31T22:30:00Z", "april"), // 00:30 CEST
-      ]);
-      expect(months.map((month) => [month.key, ids(month.events)])).toEqual([
-        ["2026-03", ["march"]],
-        ["2026-04", ["april"]],
-      ]);
+    test("the boundary follows the Munich calendar day", () => {
+      // 00:30 CEST on 1 April 2026 is still 31 March in UTC.
+      expect(semesterOf("2026-03-31T22:30:00Z").key).toBe("2026-summer");
+      // 01:30 CEST on 1 October is 30 September in UTC.
+      expect(semesterOf("2026-09-30T23:30:00Z").key).toBe("2026-winter");
     });
+  });
 
-    test("the DST switch dates themselves stay in their month", () => {
-      const months = groupEventsByMonth([
-        at("2026-03-29T00:30:00Z", "spring"), // 01:30 CET, before the switch
-        at("2026-03-29T01:30:00Z", "spring-after"), // 03:30 CEST
-        at("2026-10-25T00:30:00Z", "autumn"), // 02:30 CEST
-        at("2026-10-25T01:30:00Z", "autumn-after"), // 02:30 CET, the repeated hour
+  describe("groupEventsBySemester", () => {
+    test("keeps semesters in first-appearance order and events in input order", () => {
+      const groups = groupEventsBySemester([
+        at("2026-06-12T14:00:00Z", "jun"),
+        at("2026-04-10T14:00:00Z", "apr"),
+        at("2026-03-06T00:00:00Z", "mar"),
+        at("2025-12-13T00:00:00Z", "dec"),
+        at("2025-09-24T00:00:00Z", "sep"),
       ]);
-      expect(months.map((month) => [month.key, ids(month.events)])).toEqual([
-        ["2026-03", ["spring", "spring-after"]],
-        ["2026-10", ["autumn", "autumn-after"]],
-      ]);
-    });
-
-    test("keeps months in first-appearance order and events in input order", () => {
-      const months = groupEventsByMonth([
-        at("2026-11-20T10:00:00Z", "nov-20"),
-        at("2026-10-03T10:00:00Z", "oct-3"),
-        at("2026-11-02T10:00:00Z", "nov-2"),
-      ]);
-      expect(months.map((month) => [month.key, ids(month.events)])).toEqual([
-        ["2026-11", ["nov-20", "nov-2"]],
-        ["2026-10", ["oct-3"]],
+      expect(groups.map((group) => [group.key, ids(group.events)])).toEqual([
+        ["2026-summer", ["jun", "apr"]],
+        ["2025-winter", ["mar", "dec"]],
+        ["2025-summer", ["sep"]],
       ]);
     });
 
     test("is empty for no events", () => {
-      expect(groupEventsByMonth([])).toEqual([]);
+      expect(groupEventsBySemester([])).toEqual([]);
     });
   });
 
@@ -141,21 +132,168 @@ describe.each([
     test("labels the Munich calendar day, not the UTC one", () => {
       expect(formatEventDate("2026-10-31T23:30:00Z")).toEqual({
         dateTime: "2026-10-31T23:30:00Z",
-        long: "November 1st, 2026",
-        day: "01",
-        monthShort: "Nov",
-        weekday: "Sun",
+        long: "1 November 2026",
+        short: "1 Nov",
+        day: "1",
+        month: "November",
+        weekday: "Sunday",
+        time: "00:30",
       });
     });
 
-    test("an evening event in summer time keeps its day", () => {
-      expect(formatEventDate("2026-07-15T21:30:00Z").long).toBe(
-        "July 15th, 2026",
-      );
-      expect(formatEventDate("2026-07-15T22:30:00Z").long).toBe(
-        "July 16th, 2026",
-      );
+    test("an evening event in summer time keeps its day and local time", () => {
+      const date = formatEventDate("2026-07-15T17:30:00Z");
+      expect([date.long, date.time]).toEqual(["15 July 2026", "19:30"]);
     });
+
+    test("an event stored at midnight UTC has a date but no start time", () => {
+      const date = formatEventDate("2026-04-17T00:00:00.000Z");
+      expect([date.long, date.time]).toEqual(["17 April 2026", undefined]);
+    });
+  });
+});
+
+describe("hasStartTime", () => {
+  test("midnight UTC means the time isn't known", () => {
+    expect(hasStartTime("2025-09-24T00:00:00.000Z")).toBe(false);
+    expect(hasStartTime("2025-09-17T17:00:00.000Z")).toBe(true);
+    expect(hasStartTime("2025-09-17T00:00:30.000Z")).toBe(true);
+  });
+});
+
+describe("indexHosts", () => {
+  const event = (event_date: string, hosts: string[], id = event_date) => ({
+    id,
+    event_date,
+    hosts,
+  });
+
+  test("ranks by events, then by the latest one, then by name", () => {
+    const index = indexHosts([
+      event("2025-09-24T00:00:00Z", ["Anthropic", "Lovable", "CDTM"]),
+      event("2025-12-13T00:00:00Z", ["Anthropic"]),
+      event("2025-09-08T00:00:00Z", ["Google Cloud", "CDTM"]),
+      event("2026-04-30T14:00:00Z", ["Yellow", "Project A"]),
+    ]);
+    expect(index.map((host) => [host.name, host.events.length])).toEqual([
+      ["Anthropic", 2],
+      ["CDTM", 2],
+      ["Project A", 1],
+      ["Yellow", 1],
+      ["Lovable", 1],
+      ["Google Cloud", 1],
+    ]);
+  });
+
+  test("lists each host's events newest first", () => {
+    const [anthropic] = indexHosts([
+      event("2025-09-24T00:00:00Z", ["Anthropic"], "sep"),
+      event("2025-12-13T00:00:00Z", ["Anthropic"], "dec"),
+    ]);
+    expect(ids(anthropic.events)).toEqual(["dec", "sep"]);
+  });
+
+  test("merges spellings that differ in case and spaces, keeping the latest", () => {
+    const index = indexHosts([
+      event("2025-01-01T10:00:00Z", ["hugging  face"]),
+      event("2026-01-01T10:00:00Z", [" Hugging Face", "Hugging face"]),
+    ]);
+    expect(index).toHaveLength(1);
+    expect(index[0].name).toBe("Hugging Face");
+    expect(index[0].events).toHaveLength(2);
+  });
+
+  test("ignores blank names", () => {
+    expect(indexHosts([event("2026-01-01T10:00:00Z", [" ", ""])])).toEqual([]);
+  });
+});
+
+describe("summarizeEvents", () => {
+  test("counts every event, the hackathons and the co-hosted ones", () => {
+    expect(
+      summarizeEvents([
+        {
+          event_date: "2026-04-17T00:00:00Z",
+          category: "Hackathon",
+          hosts: [],
+        },
+        {
+          event_date: "2025-03-09T00:00:00Z",
+          category: "Speaker",
+          hosts: ["CDTM"],
+        },
+        {
+          event_date: "2025-12-13T00:00:00Z",
+          category: "Hackathon",
+          hosts: ["Anthropic"],
+        },
+      ]),
+    ).toEqual({ total: 3, since: "March 2025", hackathons: 2, withHosts: 2 });
+  });
+
+  test("has no start month without events", () => {
+    expect(summarizeEvents([]).since).toBeUndefined();
+  });
+});
+
+describe("lockupParts", () => {
+  test.each([
+    [
+      "Anthropic x Lovable x Hugging Face",
+      ["Anthropic", "Lovable", "Hugging Face"],
+    ],
+    ["AI × Life Sciences", ["AI", "Life Sciences"]],
+    [
+      "TUM.ai X Anthropic Christmas Hackathon",
+      ["TUM.ai", "Anthropic Christmas Hackathon"],
+    ],
+    ["Makeathon 2026", ["Makeathon 2026"]],
+    ["n8n Xmas x-ray", ["n8n Xmas x-ray"]],
+  ])("%s", (title, parts) => {
+    expect(lockupParts(title)).toEqual(parts);
+  });
+});
+
+describe("hostsBeyondTitle", () => {
+  test("drops the hosts the title already names", () => {
+    expect(
+      hostsBeyondTitle({
+        title: "Anthropic x Lovable x Hugging Face",
+        hosts: ["Anthropic", "Lovable", "Hugging Face", "CDTM"],
+      }),
+    ).toEqual(["CDTM"]);
+  });
+});
+
+describe("formatEventLocation", () => {
+  test("joins location and city, without repeating the city", () => {
+    expect(
+      formatEventLocation({ location: "BMW Office", city: "Munich" }),
+    ).toBe("BMW Office, Munich");
+    expect(
+      formatEventLocation({ location: "Mark, Munich", city: "Munich" }),
+    ).toBe("Mark, Munich");
+    expect(formatEventLocation({ city: "Online" })).toBe("Online");
+    expect(formatEventLocation({})).toBe("");
+  });
+});
+
+describe("excerpt", () => {
+  test("keeps a short description whole, reading line breaks as spaces", () => {
+    expect(excerpt("Line one.\n\nLine two.")).toBe("Line one. Line two.");
+  });
+
+  test("cuts a long description after the last sentence that fits", () => {
+    const first = `${"a".repeat(150)}.`;
+    const second = `${"b".repeat(150)}.`;
+    expect(excerpt(`${first} ${second}`)).toBe(first);
+  });
+
+  test("cuts a single long sentence at a word, with an ellipsis", () => {
+    const text = Array.from({ length: 60 }, () => "word").join(" ");
+    const result = excerpt(text);
+    expect(result.endsWith("word…")).toBe(true);
+    expect(result.length).toBeLessThanOrEqual(221);
   });
 });
 
@@ -170,14 +308,14 @@ describe("getEventPhotos", () => {
         poster: "/p.webp",
       }),
     ).toEqual([
-      { src: "/a.webp", alt: "Makeathon Image 1" },
-      { src: "/b.webp", alt: "Makeathon Image 2" },
+      { src: "/a.webp", alt: "Makeathon, image 1" },
+      { src: "/b.webp", alt: "Makeathon, image 2" },
     ]);
   });
 
   test("falls back to the poster, then to nothing", () => {
     expect(getEventPhotos({ ...base, images: [], poster: "/p.webp" })).toEqual([
-      { src: "/p.webp", alt: "Makeathon Poster" },
+      { src: "/p.webp", alt: "Makeathon, poster" },
     ]);
     expect(getEventPhotos({ ...base, images: [] })).toEqual([]);
   });
@@ -190,6 +328,6 @@ describe("getEventPhotos", () => {
         images: ["/a.webp", "/a.webp"],
         poster: "/a.webp",
       }),
-    ).toEqual([{ src: "/a.webp", alt: "Makeathon Image 1" }]);
+    ).toEqual([{ src: "/a.webp", alt: "Makeathon, image 1" }]);
   });
 });

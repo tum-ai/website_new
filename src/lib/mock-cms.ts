@@ -22,22 +22,277 @@ function daysFrom(now: Date, days: number) {
   return date.toISOString();
 }
 
-const longDescription =
-  "Our flagship Makeathon brings together 150 students, researchers and engineers for 48 hours of building with state-of-the-art models. Teams tackle challenges from industry partners across healthcare, mobility and climate, get mentoring from domain experts, and pitch working prototypes to a jury of founders and investors. Workshops on agents, evaluation and deployment run throughout the weekend, and every participant leaves with a network that lasts well beyond the event.";
+/** A past event with its fixed date; only the fields /events reads. */
+type PastEvent = Omit<Event, "id" | "images" | "hosts"> & {
+  id: string;
+  images?: string[];
+  hosts?: string[];
+};
 
+/**
+ * The live events as of 2026-09 (titles, dates, venues, categories), with
+ * `hosts` filled from each event's title and description: the co-hosts,
+ * sponsors and challenge partners the CMS text names. Speakers and jury
+ * members are left out. Posters and photos are local stand-ins (the live
+ * posters are square social graphics on the Sanity CDN), and descriptions are
+ * shortened and free of names.
+ *
+ * TODO(content): enter these `hosts` in the Studio; the live documents don't
+ * have the field yet.
+ */
+const pastEvents: PastEvent[] = [
+  {
+    id: "mock-event-ai-entrepreneurship",
+    title: "AI & Entrepreneurship Speaker Event",
+    description:
+      "Speakers from OpenAI, Google, SPRIND and Project A on turning AI research into companies, followed by a discussion on the future of AI in business. Co-hosted with CDTM and made possible by Project A, Beyond Presence, Mercura and Red Bull.",
+    event_date: "2025-03-09T00:00:00.000Z",
+    location: "TUM Audimax",
+    city: "Munich",
+    category: "Speaker",
+    hosts: ["CDTM", "Project A", "Beyond Presence", "Mercura", "Red Bull"],
+    poster: "/assets/open_ai_speaker_event.webp",
+    images: ["/assets/open_ai_speaker_event.webp", "/assets/martin_talk.webp"],
+  },
+  {
+    id: "mock-event-aws-lovable-n8n",
+    title: "AWS x Lovable x n8n Hackathon",
+    description:
+      "Zero to product in one day: turn an idea into a working product with tools from Lovable, AWS and n8n.",
+    event_date: "2025-08-29T07:00:00.000Z",
+    location: "CDTM Offices / TUM",
+    city: "Munich",
+    category: "Hackathon",
+    hosts: ["AWS", "Lovable", "n8n"],
+    poster: "/assets/innovation/robotics_writing.webp",
+  },
+  {
+    id: "mock-event-google",
+    title: "Google Hackathon",
+    description:
+      "A two-day hackathon with CDTM and Google Cloud: build agents with Vertex AI and the Agent Development Kit.",
+    event_date: "2025-09-08T00:00:00.000Z",
+    location: "Google Office",
+    city: "Munich",
+    category: "Hackathon",
+    hosts: ["Google Cloud", "CDTM"],
+    poster: "/assets/homepage/nvidia-5.webp",
+    images: ["/assets/homepage/nvidia-5.webp", "/assets/home_img2.webp"],
+  },
+  {
+    id: "mock-event-cofounder-matching",
+    title: "Co-founder Matching - TUM.ai x Manage & More x CDTM x Tacto",
+    description:
+      "Looking for a co-founder, or curious to meet other builders? Learn about the TUM.ai E-Lab and Tacto, pitch your idea and find teammates. Representatives from TUM.ai, Manage & More and CDTM join to widen your network. Seats are limited and go first come, first served, so fill out the questions when you register to help us make the best matches.",
+    event_date: "2025-09-17T17:00:00.000Z",
+    location: "Tacto Office",
+    city: "Munich",
+    category: "Event",
+    hosts: ["Manage & More", "CDTM", "Tacto"],
+    poster: "/assets/homepage/venture_onboarding25.webp",
+  },
+  {
+    id: "mock-event-anthropic-lovable-hf",
+    title: "Anthropic x Lovable x Hugging Face",
+    description:
+      "A three-day hackathon with CDTM and our partners Anthropic, Lovable and Hugging Face.",
+    event_date: "2025-09-24T00:00:00.000Z",
+    location: "TUM Audimax",
+    city: "Munich",
+    category: "Hackathon",
+    hosts: ["Anthropic", "Lovable", "Hugging Face", "CDTM"],
+    poster: "/assets/apply/new_section_photo_4.webp",
+  },
+  {
+    id: "mock-event-bkw",
+    title: "BKW Hackathon",
+    description:
+      "Powered by BKW Engineering: 40 students and engineers from across the DACH region, 24 hours of building, testing and creating.",
+    event_date: "2025-10-18T00:00:00.000Z",
+    location: "Mark, Munich",
+    city: "Munich",
+    category: "Hackathon",
+    hosts: ["BKW"],
+  },
+  {
+    id: "mock-event-bmw",
+    title: "BMW Hackathon",
+    description:
+      "BMW's Open Innovation Robotics AI Hackathon: build AI systems that act, not just answer, with BMW experts and 40 students.",
+    event_date: "2025-10-24T00:00:00.000Z",
+    location: "BMW Office",
+    city: "Munich",
+    category: "Hackathon",
+    hosts: ["BMW"],
+    poster: "/assets/innovation/robotics_arm.webp",
+  },
+  {
+    id: "mock-event-anthropic-christmas",
+    title: "TUM.ai x Anthropic Christmas Hackathon",
+    description:
+      "An end-of-year hackathon to build intelligent systems with Anthropic's models.",
+    event_date: "2025-12-13T00:00:00.000Z",
+    location: "Munich",
+    city: "Munich",
+    category: "Hackathon",
+    hosts: ["Anthropic"],
+    poster: "/assets/innovation/robotics_discussion.webp",
+  },
+  {
+    id: "mock-event-elab-final-winter",
+    title: "E-Lab Final Pitch",
+    description:
+      "After 14 weeks in our equity-free, student-led AI startup incubator, the E-Lab founders present their ventures. An evening of ideas and real products, with speakers from OpenAI, Google and Lovable and a jury of investors including UVC Partners, Speedinvest and Balderton. Join founders, investors, operators and everyone curious about AI startups in Munich. Free tickets are limited and go first come, first served.",
+    event_date: "2026-01-23T17:30:00.000Z",
+    location: "Freiheitshalle",
+    city: "Munich",
+    category: "Event",
+    poster: "/assets/homepage/elab.webp",
+  },
+  {
+    id: "mock-event-data-mining",
+    title: "Data Mining Hackathon",
+    description:
+      "Ship systems, not prototypes: 48 hours to design high-throughput, cost-efficient data systems, judged by concrete metrics and product impact.",
+    event_date: "2026-03-06T00:00:00.000Z",
+    location: "TUM.ai Homebase",
+    city: "Munich",
+    category: "Hackathon",
+    poster: "/assets/innovation/accelerated_computing.webp",
+  },
+  {
+    id: "mock-event-elab-info",
+    title: "Info Session E-Lab",
+    description:
+      "Learn how the AI E-Lab turns an idea into a venture, from the first concept to pitching in front of a jury.",
+    event_date: "2026-03-09T17:30:00.000Z",
+    location: "TUM.ai Office, Rosenheimer Straße 116A",
+    city: "Munich",
+    category: "E-Lab",
+    poster: "/assets/homepage/Antler25.webp",
+  },
+  {
+    id: "mock-event-women-in-startups",
+    title: "E-Lab: Women in Startups",
+    description:
+      "A women-only founder evening with founders and investors from YC-backed startups and venture capital, to encourage more women to start their own venture.",
+    event_date: "2026-03-16T17:30:00.000Z",
+    location: "TUM.ai Office, Rosenheimer Straße 116A - 7th floor",
+    city: "Munich",
+    category: "Speaker",
+    poster: "/assets/innovation/women_at_tumai.jpg",
+  },
+  {
+    id: "mock-event-elab-online-info",
+    title: "E-Lab: Online Info Session",
+    description:
+      "An inside look at the E-Lab: who it is for, how it runs from day one to the final pitch, and what it takes to get into top accelerators.",
+    event_date: "2026-03-25T00:00:00.000Z",
+    location: "Online",
+    city: "Online",
+    category: "E-Lab",
+    poster: "/assets/home_img4.webp",
+  },
+  {
+    id: "mock-event-agora",
+    title: "Agora Hacks",
+    description:
+      "Build solutions for better public discourse in 48 hours, and rethink how we debate, share and decide online.",
+    event_date: "2026-04-10T16:00:00.000Z",
+    location: "Cafe Luitpold",
+    city: "Munich",
+    category: "Hackathon",
+    poster: "/assets/apply/new_section_photo_3.webp",
+  },
+  {
+    id: "mock-event-life-sciences",
+    title: "AI × Life Sciences",
+    description:
+      "An evening at the intersection of AI and the life sciences: talks on AI in bioinformatics, an open Q&A and networking with MSc and PhD students.",
+    event_date: "2026-04-15T16:30:00.000Z",
+    location: "TUM.ai Office, Rosenheimer Straße 116A - 7th floor",
+    city: "Munich",
+    category: "Speaker",
+    poster: "/assets/innovation/med_ai.webp",
+  },
+  {
+    id: "mock-event-makeathon",
+    title: "Makeathon 2026",
+    description: "Less talking, more building: the TUM.ai Makeathon 2026.",
+    event_date: "2026-04-17T00:00:00.000Z",
+    location: "TUM Main Campus",
+    city: "Munich",
+    category: "Hackathon",
+    poster: "/assets/homepage/Makeathon.webp",
+  },
+  {
+    id: "mock-event-project-a-yellow",
+    title: "Project A x Yellow x TUM.ai E-Lab - Hackathon",
+    description:
+      "Got a startup idea you can't stop thinking about? Project A, Yellow and the TUM.ai E-Lab join forces for an evening of building.",
+    event_date: "2026-04-30T16:00:00.000Z",
+    location: "TUM.ai Office, Rosenheimer Straße 116A - 7th floor",
+    city: "Munich",
+    category: "Hackathon",
+    hosts: ["Project A", "Yellow"],
+    poster: "/assets/home_img2.webp",
+  },
+  {
+    id: "mock-event-elab-midterm",
+    title: "E-Lab Midterm Pitch",
+    description:
+      "After seven weeks in the program, the E-Lab startups present their progress to a jury.",
+    event_date: "2026-06-04T00:00:00.000Z",
+    location: "Cafe Luitpold",
+    city: "Munich",
+    category: "Event",
+    poster: "/assets/partners_pic.webp",
+  },
+  {
+    id: "mock-event-energy",
+    title: "Energy Hack",
+    description:
+      "A 24-hour hackathon on the energy industry: renewables, the grid, storage and AI for energy.",
+    event_date: "2026-06-12T16:00:00.000Z",
+    location: "Location TBA on signup",
+    city: "Munich",
+    category: "Hackathon",
+    poster: "/assets/apply/new_section_photo_1.webp",
+  },
+  {
+    id: "mock-event-elab-final-summer",
+    title: "E-Lab Final Pitch",
+    description:
+      "The E-Lab startups take the stage after 12 weeks in the program and present their ventures to a jury.",
+    event_date: "2026-07-10T00:00:00.000Z",
+    location: "TBA",
+    category: "Event",
+    poster: "/assets/homepage/Onboarding25.webp",
+  },
+];
+
+const longDescription =
+  "Join our E-Lab info session for an inside look at the program: who it is for, how it runs from day one to the final pitch, how to turn an idea into a real venture, and what it takes to get into top accelerators and raise funding. You can ask the team every question you have. Whether you already have a startup idea or just the drive to build something ambitious, this session gives you clarity on your next steps.";
+
+/**
+ * The /events fixtures: the live past events above, at their real dates, and
+ * three upcoming ones placed relative to `now` so the page always has a
+ * "next" (E2E pins `now` with MOCK_CMS_NOW).
+ */
 export function getMockEvents(now: Date = new Date()): Event[] {
-  return [
+  const upcoming: Event[] = [
     {
-      id: "mock-event-makeathon",
-      title: "TUM.ai Makeathon 2026",
+      id: "mock-event-elab-info-next",
+      title: "E-Lab Info Session",
       description: longDescription,
       event_date: daysFrom(now, 9),
-      location: "TUM Campus Garching, Galileo",
+      location: "TUM.ai Office, Rosenheimer Straße 116A",
       city: "Munich",
-      category: "Hackathon",
-      poster: "/assets/homepage/Makeathon.webp",
-      images: ["/assets/homepage/Makeathon.webp"],
-      sign_up: "https://example.com/sign-up/makeathon",
+      category: "E-Lab",
+      hosts: [],
+      poster: "/assets/homepage/venture_onboarding25.webp",
+      images: ["/assets/homepage/venture_onboarding25.webp"],
+      sign_up: "https://example.com/sign-up/e-lab-info-session",
     },
     {
       id: "mock-event-speaker-nvidia",
@@ -48,6 +303,7 @@ export function getMockEvents(now: Date = new Date()): Event[] {
       location: "Munich Urban Colab",
       city: "Munich",
       category: "Speaker",
+      hosts: ["NVIDIA"],
       poster: "/assets/homepage/nvidia-5.webp",
       images: ["/assets/homepage/nvidia-5.webp"],
       sign_up: "https://example.com/sign-up/nvidia-talk",
@@ -61,82 +317,18 @@ export function getMockEvents(now: Date = new Date()): Event[] {
       location: "Zoom",
       city: "Online",
       category: "Event",
+      hosts: [],
       images: [],
     },
-    {
-      id: "mock-event-elab-demo-day",
-      title: "E-Lab Final Pitch",
-      description:
-        "Teams from the current E-Lab batch present their ventures to investors, founders and the TUM.ai community.",
-      event_date: daysFrom(now, 58),
-      location: "UnternehmerTUM",
-      city: "Munich",
-      category: "E-Lab",
-      poster: "/assets/homepage/venture_onboarding25.webp",
-      images: ["/assets/homepage/venture_onboarding25.webp"],
-      sign_up: "https://example.com/sign-up/e-lab-final-pitch",
-    },
-    {
-      id: "mock-event-openai-talk",
-      title: "OpenAI Speaker Night",
-      description:
-        "Over 1,000 attendees joined us for a talk on the state of AI in Germany and what builders should focus on next.",
-      event_date: daysFrom(now, -40),
-      location: "Audimax, TUM Main Campus",
-      city: "Munich",
-      category: "Speaker",
-      poster: "/assets/open_ai_speaker_event.webp",
-      images: [
-        "/assets/open_ai_speaker_event.webp",
-        "/assets/martin_talk.webp",
-      ],
-    },
-    {
-      id: "mock-event-ibm-visit",
-      title: "Research Visit at IBM",
-      description:
-        "Members visited the IBM lab to see current work on foundation models for science and enterprise.",
-      event_date: daysFrom(now, -75),
-      location: "IBM Watson Center",
-      city: "Munich",
-      category: "Event",
-      poster: "/assets/homepage/IBM_visit.webp",
-      images: ["/assets/homepage/IBM_visit.webp"],
-    },
-    {
-      id: "mock-event-antler",
-      title: "Founders Fireside with Antler",
-      description:
-        "A candid conversation about going from research idea to venture-backed startup.",
-      event_date: daysFrom(now, -110),
-      location: "Online",
-      city: "Online",
-      category: "E-Lab",
-      poster: "/assets/homepage/Antler25.webp",
-      images: ["/assets/homepage/Antler25.webp", "/assets/homepage/elab.webp"],
-    },
-    {
-      id: "mock-event-getaway",
-      title: "Member Getaway",
-      description:
-        "Two days in the mountains with talks, strategy sessions and plenty of time to get to know each other.",
-      event_date: daysFrom(now, -160),
-      location: "Bavarian Alps",
-      city: "Munich",
-      category: "Event",
-      poster: "/assets/homepage/getaway24.webp",
-      images: ["/assets/homepage/getaway24.webp"],
-    },
-    {
-      id: "mock-event-onboarding",
-      title: "Semester Onboarding",
-      description: "Welcoming the new generation of TUM.ai members.",
-      event_date: daysFrom(now, -200),
-      location: "TUM Main Campus",
-      city: "Munich",
-      category: "Event",
-      images: ["/assets/homepage/Onboarding25.webp"],
-    },
+  ];
+
+  return [
+    ...upcoming,
+    ...pastEvents.map((event) => ({
+      ...event,
+      hosts: event.hosts ?? [],
+      images: event.images ?? (event.poster ? [event.poster] : []),
+    })),
   ];
 }
 

@@ -64,6 +64,9 @@ test("mock events cover upcoming and past events across filters", () => {
     ).toBe(true);
   }
   expect(events.some((event) => event.description.length > 300)).toBe(true);
+  expect(events.some((event) => event.hosts.length > 1)).toBe(true);
+  expect(events.some((event) => event.hosts.length === 0)).toBe(true);
+  expect(past.some((event) => !event.poster)).toBe(true);
   expect(events.some((event) => event.sign_up)).toBe(true);
   expect(upcoming.some((event) => !event.sign_up)).toBe(true);
 });

@@ -1,119 +1,65 @@
-import type { EventCategory, EventCity } from "@/lib/types";
+import type { EventCategory } from "@/lib/types";
 
 /*
- * The chip options mirror the event schema's `options.list`, in the Studio's
- * order. `satisfies Record<…>` makes a category or city that the schema adds
- * or drops (after `pnpm sanity:typegen`) a type error here, so the filters
- * never drift from what editors can pick.
+ * The chips mirror the event schema's category `options.list`, in the
+ * Studio's order, with the name of one event and the chip's plural. `satisfies
+ * Record<…>` makes a category that the schema adds or drops (after `pnpm
+ * sanity:typegen`) a type error here, so the filters never drift from what
+ * editors can pick.
  */
-const categories = {
-  Hackathon: true,
-  Speaker: true,
-  Event: true,
-  "E-Lab": true,
-} satisfies Record<EventCategory, true>;
-
-const cities = {
-  Munich: true,
-  Online: true,
-} satisfies Record<EventCity, true>;
+const categoryNames = {
+  Hackathon: { one: "Hackathon", many: "Hackathons" },
+  Speaker: { one: "Talk", many: "Talks" },
+  "E-Lab": { one: "E-Lab", many: "E-Lab" },
+  Event: { one: "Event", many: "Other events" },
+} satisfies Record<EventCategory, { one: string; many: string }>;
 
 /** Every event category, in the Studio's order. */
-export const eventCategories = Object.keys(categories) as EventCategory[];
+export const eventCategories = Object.keys(categoryNames) as EventCategory[];
 
-/** Every event city, in the Studio's order. */
-export const eventCities = Object.keys(cities) as EventCity[];
+/** What one event of a category is called: "Hackathon", "Talk". */
+export function categoryLabel(category: EventCategory): string {
+  return categoryNames[category].one;
+}
 
-/** The category chip that matches every event. */
-export const ALL_CATEGORIES = "All Categories";
+/** The chip that matches every event. */
+export const ALL_EVENTS = "All";
 
-/** The city chip that matches every event. */
-export const ALL_CITIES = "All Cities";
+/** The register's filter: one category, or every event. */
+export type EventFilter = EventCategory | typeof ALL_EVENTS;
 
-/** The /events filter chips: one category and one city, or "All …". */
-export type EventFilters = {
-  category: EventCategory | typeof ALL_CATEGORIES;
-  city: EventCity | typeof ALL_CITIES;
-};
+/** The chips in order: "All", then every category. */
+export const filterValues: EventFilter[] = [ALL_EVENTS, ...eventCategories];
 
-/** The category chips in order: "All Categories", then every category. */
-export const categoryFilterValues: EventFilters["category"][] = [
-  ALL_CATEGORIES,
-  ...eventCategories,
-];
+/** A chip's label. */
+export function filterLabel(value: EventFilter): string {
+  return value === ALL_EVENTS ? "All" : categoryNames[value].many;
+}
 
-/** The city chips in order: "All Cities", then every city. */
-export const cityFilterValues: EventFilters["city"][] = [
-  ALL_CITIES,
-  ...eventCities,
-];
+/** The field the filter reads. */
+export type FilterableEvent = { category?: EventCategory };
 
-/** No filter: every event matches. */
-export const DEFAULT_EVENT_FILTERS: EventFilters = {
-  category: ALL_CATEGORIES,
-  city: ALL_CITIES,
-};
-
-/** The fields the filters read. */
-export type FilterableEvent = { category?: EventCategory; city?: EventCity };
-
-/** Whether an event passes both the category and the city filter. */
-export function matchesFilters(
+/** Whether an event passes the filter. */
+export function matchesFilter(
   event: FilterableEvent,
-  filters: EventFilters,
+  filter: EventFilter,
 ): boolean {
-  return (
-    (filters.category === ALL_CATEGORIES ||
-      event.category === filters.category) &&
-    (filters.city === ALL_CITIES || event.city === filters.city)
-  );
+  return filter === ALL_EVENTS || event.category === filter;
 }
 
-/** Whether any filter differs from "All …". */
-export function hasActiveFilters(filters: EventFilters): boolean {
-  return (
-    filters.category !== DEFAULT_EVENT_FILTERS.category ||
-    filters.city !== DEFAULT_EVENT_FILTERS.city
-  );
+/** A chip value as a filter; unknown values select "All". */
+export function toFilter(value: string): EventFilter {
+  return eventCategories.find((category) => category === value) ?? ALL_EVENTS;
 }
 
-/** A chip value as a category filter; unknown values select "All". */
-export function toCategoryFilter(value: string): EventFilters["category"] {
-  return (
-    eventCategories.find((category) => category === value) ?? ALL_CATEGORIES
-  );
-}
-
-/** A chip value as a city filter; unknown values select "All". */
-export function toCityFilter(value: string): EventFilters["city"] {
-  return eventCities.find((city) => city === value) ?? ALL_CITIES;
-}
-
-/** Per-chip result counts, keyed by chip value (including "All …"). */
-export type FilterCounts = {
-  category: Record<string, number>;
-  city: Record<string, number>;
-};
-
-/**
- * Faceted counts: each category chip counts the events it would show under
- * the current city filter, and each city chip under the current category.
- */
+/** The result count of every chip, keyed by its value. */
 export function countFilterOptions(
   events: readonly FilterableEvent[],
-  filters: EventFilters,
-): FilterCounts {
-  const count = (next: EventFilters) =>
-    events.filter((event) => matchesFilters(event, next)).length;
-  return {
-    category: Object.fromEntries(
-      categoryFilterValues.map((category) => [
-        category,
-        count({ ...filters, category }),
-      ]),
-    ),
-    city: Object.fromEntries(
-      cityFilterValues.map((city) => [city, count({ ...filters, city })]),
-    ),
-  };
+): Record<EventFilter, number> {
+  return Object.fromEntries(
+    filterValues.map((value) => [
+      value,
+      events.filter((event) => matchesFilter(event, value)).length,
+    ]),
+  ) as Record<EventFilter, number>;
 }
