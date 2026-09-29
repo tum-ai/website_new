@@ -40,9 +40,10 @@ src/
 │   ├── ds/                        design system, imported only through `@/components/ds`
 │   ├── shell/                     header, footer, skip link, header scroll logic
 │   └── json-ld.tsx                the JSON-LD script tag
-├── config/                        site facts, navigation and SEO
-├── lib/                           cn, Sanity config, fetch layers and queries, content source, mock CMS,
-│                                  time, security, redirects
+├── config/                        site facts and their content slices, navigation, CTA labels, SEO
+├── lib/                           cn, Sanity config, fetch layers and queries, content source and its
+│                                  shared slices (FAQ, people and logos, community), copy filling,
+│                                  mock CMS, time, security, redirects
 ├── sanity/                        Studio config (live + content workspaces), CLI config, schemas
 ├── styles/index.css               tokens, tones, cascade layers, utilities
 ├── proxy.ts                       host redirects (Next 16's replacement for middleware)
@@ -56,18 +57,21 @@ its feature folder:
 
 | Route | Page module | Data |
 | --- | --- | --- |
-| `/` | `features/home/home-page.tsx` (+ `home.css`) | static |
-| `/apply` | `features/apply/apply-page.tsx` | static + content slice (FAQ), ISR 1 h (render date) |
-| `/community` | `features/community/community-page.tsx` | static |
-| `/events` | `features/events/events-page.tsx` (+ `events.css`) | Sanity, ISR 5 min |
-| `/e-lab` | `features/e-lab/e-lab-page.tsx` (+ `e-lab.css`) | static + content slice (FAQ), ISR 5 min (application phase) |
-| `/partners` | `features/partners/partners-page.tsx` (+ `partners.css`) | Sanity, ISR 15 min |
-| `/projects` | `features/projects/projects-page.tsx` (+ `projects.css`) | static |
-| `/qanda` | `features/qanda/qanda-page.tsx` | static |
-| `/research` | `features/research/research-page.tsx` (+ `research.css`) | Sanity, ISR 15 min |
+| `/` | `features/home/home-page.tsx` (+ `home.css`) | static + content slices |
+| `/apply` | `features/apply/apply-page.tsx` | static + content slices, ISR 1 h (render date) |
+| `/community` | `features/community/community-page.tsx` | static + content slices |
+| `/events` | `features/events/events-page.tsx` (+ `events.css`) | Sanity + content slices, ISR 5 min |
+| `/e-lab` | `features/e-lab/e-lab-page.tsx` (+ `e-lab.css`) | static + content slices, ISR 5 min (application phase) |
+| `/partners` | `features/partners/partners-page.tsx` (+ `partners.css`) | Sanity + content slices, ISR 15 min |
+| `/projects` | `features/projects/projects-page.tsx` (+ `projects.css`) | static + content slice |
+| `/qanda` | `features/qanda/qanda-page.tsx` | static + content slices |
+| `/research` | `features/research/research-page.tsx` (+ `research.css`) | Sanity + content slices, ISR 15 min |
 | `/imprint`, `/data-privacy`, `/disclaimer` | `features/legal/*-page.tsx` | static |
 | `/design-system` | `features/design-system/design-system-page.tsx` | dev and Vercel previews only; 404 in production |
-| `/studio` | `app/studio/[[...tool]]/page.tsx` | the embedded Studio: `/studio/live`, `/studio/content` |
+| `/studio` | `app/studio/[[...tool]]/page.tsx` | the embedded Studio: `/studio/live`, `/studio/content` (`/studio` redirects to `/studio/live`) |
+
+Every page also renders the site layout, whose header and footer read the site facts, the
+membership window and the campaigns (`config/*-content.ts`).
 
 A feature folder holds everything that belongs to one page domain:
 
@@ -76,22 +80,29 @@ src/features/<domain>/
 ├── <domain>-page.tsx      the page component the route renders (one <main>)
 ├── *.tsx | sections/      sections and small "use client" islands
 ├── data/                  static copy for this domain (.ts, no JSX); the code fallback of a slice
-├── content.ts             optional content slice: CMS or code content for this page (server only)
+├── content.ts             optional content slice: CMS or code content for this page (server only);
+│                          more slices as <topic>-content.ts (people-content.ts, rex-content.ts)
 ├── *.ts                   domain logic (for example partners/partnerships.ts)
 ├── *.test.ts(x)           colocated unit and component tests
 ├── <domain>.css           page CSS, only when unavoidable; imported by the route
-└── index.ts               optional: what other features may use; never a page
+├── index.ts               optional: what other features may use, isomorphic; never a page
+└── server.ts              optional: what other features may use on the server only; never a page
 ```
 
-Feature indexes exist today for `community` (`departments`, `memberJourney`, `memberStories`,
-`MembershipApplyButton`), `e-lab` (`testimonialCards`, `getTestimonialCards`), `partners`
-(`marqueeLogos`, `partnerPitch`, `symbolOnlyLogos`, the directory helpers
-`getHighlightedPartners`, `getPartnerDirectory`, `getPartnerKey`, the organisation table's
-`organizationByKey` and `buildOrganizationBackfill`, and the content getters
-`getPartnerCaseStudies`, `getPartnersCopy`, `getPartnerLogos`), `qanda` (`faqs`) and
-`research` (`rexInstitutions`). The `e-lab` and `partners` indexes export server-only getters,
-so only server modules may import them; the `community` and `research` indexes are reachable
-from a homepage client island and export no getters.
+A feature has two optional entries for other features. `index.ts` is isomorphic: nothing it
+reaches imports `server-only`, so any module, client islands included, may import it.
+`server.ts` starts with `import "server-only"` and holds what reads the CMS content source: the
+content getters, their backfill builders and async server components. `src/architecture.test.ts`
+enforces both, and fails when any `"use client"` module reaches a server-only module or a Node
+built-in through any chain of imports (Turbopack would fail the production build on it).
+
+| Feature | `index.ts` | `server.ts` |
+| --- | --- | --- |
+| `community` | `departments`, `memberJourney`, types `JourneyStep`, `MemberStory` | `getMemberStories`, `buildMemberStoriesBackfill`, `MembershipApplyButton` |
+| `e-lab` | | `getTestimonialCards`, `buildVentureBackfill` |
+| `partners` | the directory helpers `getHighlightedPartners`, `getPartnerDirectory`, `getPartnerKey`; `organizationByKey` | `getPartnersCopy` (the pitch), `getPartnerCaseStudies`, `getPartnerLogos`, `buildOrganizationBackfill` |
+| `qanda` | | `faqs` (the design-system showcase) |
+| `research` | | `getRexInstitutions` |
 
 ## Import rules
 
@@ -99,8 +110,8 @@ from a homepage client island and export no getters.
 | --- | --- |
 | `app`, `src/*.ts` | `features/<x>/<name>-page.tsx` and page `.css`, components, config, lib, sanity, styles, app |
 | `app/studio` | sanity, lib (no site shell, CSS or features) |
-| `features/<x>` | its own files except `.css`, `features/<y>` through its `index.ts`, `components/{ds,shell}`, `components/json-ld`, config, lib |
-| `features/<x>/index.ts` | its own feature's files except pages |
+| `features/<x>` | its own files except `.css`, `features/<y>` through its `index.ts` or `server.ts`, `components/{ds,shell}`, `components/json-ld`, config, lib |
+| `features/<x>/index.ts`, `server.ts` | its own feature's files except pages; an index reaches no server-only module |
 | `components/ds` | its own files and `lib/cn` |
 | `components/shell` | its own files, ds, config, lib |
 | `components/*.tsx` | ds, config, lib |
@@ -164,8 +175,12 @@ is static in Git: facts in `src/config/`, copy in `src/features/<domain>/data/`.
    with `sanity` it runs the slice's `defineQuery` against the content dataset (published, CDN)
    and merges the result over the fallback (`mergeOverFallback` in `lib/cms-content-model.ts`),
    so a missing or empty value renders the code content. Facts inside copy are
-   `{{placeholders}}` (`lib/content-tokens.ts`) filled from `config/content-tokens.ts`.
-4. **Pages** await the getters in their server page component and pass plain props down.
+   `{{placeholders}}` (`lib/content-tokens.ts`), filled per render from
+   `await getContentTokens()` (`config/content-tokens.ts`, which reads the site facts and the
+   windows); figures only a page knows are page tokens (`fillPageTokens` in
+   `lib/content-copy.ts`). Facts a page renders directly come from `await getSiteFacts()`.
+4. **Pages** await the getters in their server page component (or an async server section) and
+   pass plain props down. Client islands never import a slice: they get values as props.
 5. **Backfill:** `pnpm sanity:backfill` turns every registered slice
    (`scripts/sanity/slices.ts`) into NDJSON for `sanity dataset import`; images point at the
    shipped files (`_sanityAsset`).
@@ -207,6 +222,7 @@ Facts that change per semester, cohort or year live once in `src/config/`
 | `e-lab.ts` | cohort, application URL, deadline (Munich time), program length, funding, the `selection` funnel, phase copy |
 | `membership.ts` | recruiting: open flag, form URL and the current `round` (Munich dates), plus the schedule helpers (`roundSchedule`, `isMembershipApplicationOpen`, `applicationProgress`, `recruitingTimeline`) |
 | `navigation.ts` | header, footer and legal links, `headerCtaSetting`, the dated header CTA schedule (`headerCtaSchedule`, `headerCtaAt`), per-route header options |
+| `calls-to-action.ts` | `callToActionLabels`: "Become a Member", "Become a Partner", "Apply now", "Questions and answers", the one owner of the standing CTA labels |
 | `campaigns.ts` | dated campaigns in Munich time, `resolveActiveCampaigns` (the latest start wins) |
 | `site-facts.ts` | `SiteFacts` (what the CMS `siteSettings` singleton holds), its code fallback, `deriveSiteFacts` |
 | `site-settings-content.ts`, `schedule-content.ts` | content slices (server only): `getSiteFacts()`; `getMembershipWindow()`, `getELabWindow()`, `getCampaigns()`, `getFeaturedEventId()` |
@@ -231,7 +247,11 @@ Facts that change per semester, cohort or year live once in `src/config/`
 | `cms-content-mock.ts` | the content dataset under the mock CMS (groq-js over backfill documents) |
 | `cms-backfill.ts` | backfill document ids and `_sanityAsset` images (Node only) |
 | `content-tokens.ts` | `{{placeholder}}` names and filling |
+| `content-copy.ts` | filling whole copy objects: `fillCodeCopy`, `fillCmsCopy`, page tokens (`fillPageTokens`) |
+| `content-backfill.ts` | backfill helpers for copy: `backfillContentImage`, `keyedItems` (Node only) |
 | `faq-content.ts` | the `faq` type shared by several pages: query, getter, backfill |
+| `community-model.ts`, `community-content.ts` | the member journey and departments, shared by /community, /apply and the homepage: types (isomorphic), queries, getters, backfill (server only) |
+| `passage-spans.ts` | the /qanda mission passage's answer spans, shared by the page and the Studio |
 | `people-and-logos.ts` | `Organization`, `LogoArtwork`, logo-list sections and person placements (isomorphic) |
 | `organization-content.ts`, `person-content.ts` | the `organization`/`logoList` and `person` types shared by several pages: queries, getters, backfill builders (server only) |
 | `munich-time.ts`, `words.ts` | Munich wall-clock parsing and CMS date conversion, lists and small numbers in running copy |

@@ -7,7 +7,8 @@ recipe for moving one piece is the "Content slices" section of the `cms-content-
 - **Decision:** the target type in the content dataset, or **keep** (stays in code, with the
   reason).
 - **Phase:** 1 campaigns and application windows; 2 `siteSettings` singleton facts; 3 logos and
-  people; 4 page copy. **Done** is already served by a slice.
+  people; 4 page copy. **Done** is served by a slice and rendered from it (all phases, after the
+  integration pass below); **open** is not moved yet.
 - **Owner:** the follow-up stream that moves it. **A** campaigns, windows and site settings;
   **B** logos and people; **C** page copy. File ownership is disjoint (see "Who owns which
   files"); a row whose content is rendered in another owner's file is listed under
@@ -23,21 +24,21 @@ references between content types are normal references.
 
 | Type | Kind | Holds | Owner |
 | --- | --- | --- | --- |
-| `faq` | list | `collection` (`apply`, `e-lab`, `qanda`), `order`, `question`, `answer` (plain text with `{{placeholders}}`); Q&A-only `anchor`, `points`, `spans`, `evidence` | done (Q&A wiring: C) |
-| `campaign` | list | `name`, `startsAt`/`endsAt` (Munich wall-clock strings, like the config), the header CTA (`variant` key `member`/`partner`/`elab`/`notify`, optional `label`), `notifyUrl`, `featuredEventId` (a live event `_id` as a string), `priority` | A |
-| `applicationWindow` | list | `program` (`membership`, `e-lab`), `roundName` or cohort, `switchedOn`, `opens`, `deadlineDate`, `deadlineTime` (Munich), `applicationUrl`, `milestones[]` (`key` such as `interviews`/`onboarding`, `from`, `to`), `nextWindowLabel` | A |
-| `siteSettings` | singleton | organization figures, `brandMission`, role emails, social links, booking page and host, community and impact figures, E-Lab program facts (length, funding, selection funnel, hero logo), footer tagline, header CTA fallback | A |
-| `organization` | list | `name`, `key` (kebab-case; pages match its letters and digits), `shortName`, `href`, `logo` and optional `logoOnDark` (image with `alt`, `symbolOnly`, `aspectRatio`); one document per company, reused by every surface | B |
-| `logoList` | list, fixed ids | `surface` (`alumni-destinations`, `partner-marquee`, `e-lab-ventures`, `event-hosts`, `rex-institutions`), `organizations[]` (references, in page order); one document per section, `_id` `logolist-<surface>`. Membership and order live here, not on the organisation, because one organisation appears in several sections in different places | B |
-| `person` | list | `placement` (`member-story`, `partner-profile`, `e-lab-testimonial`; one per document, since role and portrait differ per page), `key` (the id code picks by), `order`, `name`, `role`, `context`, `quote` or `story`, `portrait` (hotspot = position), `organization` (reference, testimonials) | B |
-| `caseStudy` | list | partner case studies: `organization`, `metric`, `label`, `summary`, `copy`, `attribution`, `image` | B |
-| `ventureTrace` | singleton | the traced E-Lab venture: `venture` and `person` references, `cohort`, `now`, `milestones[]` with source URLs | B |
-| `department` | list | `name`, `description` (placeholders), optional `photo` (`ContentImage` + caption), `order` | C |
-| `journeyStep` | list | `number`, `name`, `description`, `iconKey` (mapped to a Lucide icon in code), `fromSemester`, `span`, `stage`/fork, `evidence` (a `person` story excerpt, as text) | C |
-| `milestone` | list | `year`, `kind` (`research`, `programs`, `events`, `organization`), `title`, `detail` | C |
-| `taskForce` | list | `slug`, `name`, `field`, `description`, `detailedDescription`, `work` (`partner`, `items[]`), optional `photo` | C |
-| `labSite` | list | `city`, `location` (lat, lng), `home`, `institutions[]` (aliases matched against research titles) | C |
-| `<page>Copy` | singleton per page | the page's hero, section titles and leads, closings and figure copy: `homeCopy`, `applyCopy`, `communityCopy`, `eventsCopy`, `eLabCopy`, `projectsCopy`, `qandaCopy`, `researchCopy` (C); `partnersCopy` (B) | C, B |
+| `faq` | list | `collection` (`apply`, `e-lab`, `qanda`), `order`, `question`, `answer` (plain text with `{{placeholders}}`); Q&A-only `anchor`, `points`, `spans`, `evidence` | done |
+| `campaign` | list | `name`, start and end (Sanity dates plus Munich "HH:MM" times), the header CTA (`variant` key `member`/`partner`/`elab`/`notify`, optional `label`, `yieldsToRecruiting`), `notifyUrl`, `featuredEventId` (a live event `_id` as a string); no priority: the latest start wins | done (A) |
+| `applicationWindow` | list | `program` (`membership`, `e-lab`), `roundName` or cohort, `switchedOn`, `opens`, `deadlineDate`, `deadlineTime` (Munich), `applicationUrl`, `milestones[]` (`key` such as `interviews`/`onboarding`, `from`, `to`), `nextWindowLabel` | done (A) |
+| `siteSettings` | singleton | organization figures, `brandMission`, role emails, social links, booking page and host, community and impact figures, E-Lab program facts (length, funding, selection funnel, hero logo), footer tagline, header CTA fallback | done (A) |
+| `organization` | list | `name`, `key` (kebab-case; pages match its letters and digits), `shortName`, `href`, `logo` and optional `logoOnDark` (image with `alt`, `symbolOnly`, `aspectRatio`); one document per company, reused by every surface | done (B) |
+| `logoList` | list, fixed ids | `surface` (`alumni-destinations`, `partner-marquee`, `e-lab-ventures`, `event-hosts`, `rex-institutions`), `organizations[]` (references, in page order); one document per section, `_id` `logolist-<surface>`. Membership and order live here, not on the organisation, because one organisation appears in several sections in different places | done (B) |
+| `person` | list | `placement` (`member-story`, `partner-profile`, `e-lab-testimonial`; one per document, since role and portrait differ per page), `key` (the id code picks by), `order`, `name`, `role`, `context`, `quote` or `story`, `portrait` (hotspot = position), `organization` (reference, testimonials) | done (B) |
+| `caseStudy` | list | partner case studies: `organization`, `metric`, `label`, `summary`, `copy`, `attribution`, `image` | done (B) |
+| `ventureTrace` | singleton | the traced E-Lab venture: `venture` and `person` references, `cohort`, `now`, `milestones[]` with source URLs | done (B) |
+| `department` | list | `name`, `description` (placeholders), optional `photo` (`ContentImage` + caption), `order` | done (C) |
+| `journeyStep` | list | `number`, `name`, `description`, `iconKey` (mapped to a Lucide icon in code), `fromSemester`, `span`, `stage`/fork, `evidence` (a `person` reference to a member story and an excerpt) | done (C) |
+| `milestone` | list | `year`, `kind` (`research`, `programs`, `events`, `organization`), `title`, `detail` | done (C) |
+| `taskForce` | list | `slug`, `name`, `field`, `description`, `detailedDescription`, `work` (`partner`, `items[]`), optional `photo` | done (C) |
+| `labSite` | list | `city`, `location` (lat, lng), `home`, `institutions[]` (aliases matched against research titles) | done (C) |
+| `<page>Copy` | singleton per page | the page's hero, section titles and leads, closings and figure copy: `homeCopy` (its quotes reference `person`), `applyCopy`, `communityCopy`, `eventsCopy`, `eLabCopy`, `projectsCopy`, `qandaCopy`, `researchCopy` (with the REX band's copy) (C); `partnersCopy` (B) | done (C, B) |
 
 `pageCopy` is one singleton type per page, not one generic type: TypeGen then types each page's
 fields, and each owner defines its own schema file.
@@ -46,32 +47,32 @@ fields, and each owner defines its own schema file.
 
 | Content | Source | Consumers | Decision | Owner |
 | --- | --- | --- | --- | --- |
-| Header CTA variants and labels | `config/navigation.ts`: `headerCtas` (member, partner, elab, notify without a target) | `getHeaderOptions` → `components/shell/header.tsx` | `campaign.headerCta`; variant keys and hrefs stay in code, labels may come from the campaign | A |
-| Header CTA choice | `config/navigation.ts`: `headerCtaSetting`, `selectHeaderCta`, `headerCtaLink` | `app/(site)/layout.tsx`, `header.tsx` | the dated `campaign` in effect feeds `selectHeaderCta` (already free of config imports); `fallback` from `siteSettings` | A |
-| Per-route header options | `config/navigation.ts`: `routeHeaderOptions` (`/partners`) | `header.tsx` | keep: layout behaviour | A |
-| Notify link, featured event | none yet (`notify` has no target, TODO) | – | `campaign.notifyUrl`, `campaign.featuredEventId` | A |
-| Membership round | `config/membership.ts`: `membershipConfig` (switch, form URL, `round` name, opens, deadline, interviews, onboarding) | `apply/round.ts`, `apply/apply-action.tsx`, `community/membership-apply-button.tsx`, header, layout | `applicationWindow` (`program: membership`, milestones for interviews and onboarding) | A |
-| Round schedule helpers | `config/membership.ts`: `roundSchedule`, `membershipWindowBoundaries`, `isMembershipApplicationOpen`, `applicationProgress`, `recruitingTimeline` | apply, community, header, layout, `{{recruiting.*}}` placeholders | keep: logic; they take the window as input | A |
-| E-Lab window | `config/e-lab.ts`: `applicationsOpen`, `applicationUrl`, `applicationDeadlineDate`/`Time`, `nextApplicationWindow`, `currentIteration` | `e-lab/application-cta.tsx`, `e-lab-phase*.tsx`, `closing-section.tsx`, `hero.tsx`, header label | `applicationWindow` (`program: e-lab`; it has no opening date today) | A |
-| E-Lab phase copy | `config/e-lab.ts`: `eLabPhaseCopy` (`teaserStatus` unused, `ctaLabel`, `roundStatus`), `eLabApplicationCopy` | `e-lab/application-cta.tsx`, `e-lab/closing-section.tsx`, navigation, placeholders | keep derived from the window (template strings); wording into `eLabCopy` later | A |
-| Inline copy in phase-driven sections | `apply/hero.tsx` ("Call for members.", "Read the FAQ"), `apply/closing-section.tsx`, `apply/apply-action.tsx` ("Apply now"), `e-lab/application-cta.tsx`, `e-lab/closing-section.tsx` (title, investor fork), `community/membership-apply-button.tsx` | apply, e-lab, community | stays inline in A's files; titles and leads join the page's `<page>Copy` in the integration pass | A |
-| Recruiting call copy | `features/apply/round.ts`: key-date labels, `callStatus`, `closedLabel`, `closingTitle`, `closingLead`, day notes | `apply/hero.tsx`, `apply/closing-section.tsx` | keep: date logic with ~20 templates; the fixed labels may move to `applyCopy` in phase 4 | A |
+| Header CTA variants and labels | `config/navigation.ts`: `headerCtas` (member, partner, elab, notify without a target) | `getHeaderOptions` → `components/shell/header.tsx` | **done**: `campaign.headerCta`; variant keys and hrefs stay in code, labels may come from the campaign | A |
+| Header CTA choice | `config/navigation.ts`: `headerCtaSetting`, `selectHeaderCta`, `headerCtaLink` | `app/(site)/layout.tsx`, `header.tsx` | **done**: the dated `campaign` in effect feeds `selectHeaderCta` (already free of config imports); `fallback` from `siteSettings` | A |
+| Per-route header options | `config/navigation.ts`: `routeHeaderOptions` (`/partners`) | `header.tsx` | **keep**: layout behaviour | A |
+| Notify link, featured event | none yet (`notify` has no target, TODO) | – | **done**: `campaign.notifyUrl`, `campaign.featuredEventId` (`getFeaturedEventId()`; no section shows it yet) | A |
+| Membership round | `config/membership.ts`: `membershipConfig` (switch, form URL, `round` name, opens, deadline, interviews, onboarding) | `apply/round.ts`, `apply/apply-action.tsx`, `community/membership-apply-button.tsx`, header, layout | **done**: `applicationWindow` (`program: membership`, milestones for interviews and onboarding) | A |
+| Round schedule helpers | `config/membership.ts`: `roundSchedule`, `membershipWindowBoundaries`, `isMembershipApplicationOpen`, `applicationProgress`, `recruitingTimeline` | apply, community, header, layout, `{{recruiting.*}}` placeholders | **keep**: logic; they take the render's window as input | A |
+| E-Lab window | `config/e-lab.ts`: `applicationsOpen`, `applicationUrl`, `applicationDeadlineDate`/`Time`, `nextApplicationWindow`, `currentIteration` | `e-lab/application-cta.tsx`, `e-lab-phase*.tsx`, `closing-section.tsx`, `hero.tsx`, header label | **done**: `applicationWindow` (`program: e-lab`; it has no opening date today) | A |
+| E-Lab phase copy | `config/e-lab.ts`: `eLabPhaseCopy` (`teaserStatus` unused, `ctaLabel`, `roundStatus`), `eLabApplicationCopy` | `e-lab/application-cta.tsx`, `e-lab/closing-section.tsx`, navigation, placeholders | **keep**: derived per render from the window and the facts (`eLabPhaseCopyOf`); the FAQ reads the same values through placeholders | A |
+| Inline copy in phase-driven sections | `apply/hero.tsx` ("Call for members.", "Read the FAQ"), `apply/closing-section.tsx`, `apply/apply-action.tsx` ("Apply now"), `e-lab/application-cta.tsx`, `e-lab/closing-section.tsx` (title, investor fork), `community/membership-apply-button.tsx` | apply, e-lab, community | **done** (integration): titles, labels and the closings' reader lines in `applyCopy` and `eLabCopy`; "Apply now", "Become a Member/Partner" and "Questions and answers" from `config/calls-to-action.ts`; the status badge wording stays in the component | A |
+| Recruiting call copy | `features/apply/round.ts`: key-date labels, `callStatus`, `closedLabel`, `closingTitle`, `closingLead`, day notes | `apply/hero.tsx`, `apply/closing-section.tsx` | **keep**: date logic with ~20 templates whose grammar follows the phase (the key-date row labels map the round's milestones) | A |
 
 ## Phase 2: site settings (A)
 
 | Content | Source | Consumers | Decision | Owner |
 | --- | --- | --- | --- | --- |
-| Organization figures | `config/organization.ts`: `organizationFacts` (founding year, active members, alumni, majors, universities, nationalities), `officialMembers` (derived) | seo, home, apply, community, partners, qanda data and sections; `{{org.*}}` | `siteSettings`; derived values stay computed in code | A |
-| Mission statement | `config/organization.ts`: `brandMission` | `apply/who-should-apply.tsx`, `qanda/qanda-page.tsx` | `siteSettings.brandMission` | A |
+| Organization figures | `config/organization.ts`: `organizationFacts` (founding year, active members, alumni, majors, universities, nationalities), `officialMembers` (derived) | seo, home, apply, community, partners, qanda data and sections; `{{org.*}}` | **done**: `siteSettings`; derived values stay computed in code | A |
+| Mission statement | `config/organization.ts`: `brandMission` | `apply/who-should-apply.tsx`, `qanda/qanda-page.tsx` | **done**: `siteSettings.brandMission` | A |
 | Legal entity | `config/organization.ts`: `legalEntity`, `registeredOfficeLinesDe`; `config/contact.ts`: `registeredOfficeAddressLine` | legal pages, seo, contact | **keep**: legal wording needs the board | – |
-| Role emails | `config/contact.ts`: `contactEmails` | seo, navigation, imprint, qanda closing, partnerships, `{{contact.recruitmentEmail}}` | `siteSettings` (the imprint keeps reading code) | A |
-| Social links | `config/contact.ts`: `socialLinks` | seo, navigation, events upcoming, e-lab closing, design system | `siteSettings.socialLinks` | A |
-| Partnership booking | `config/contact.ts`: `partnershipContact` (`bookingUrl`, `bookingHost`; `cc` holds personal addresses) | `partners/partnerships.ts`, `booking-dialog.tsx` | booking URL and host to `siteSettings`; **keep** `cc` in code (personal data) | A |
-| Community figure | `config/community.ts`: `communityFacts.makeathonSize` | departments, homepage, milestones, partners; `{{community.makeathonSize}}` | `siteSettings` | A |
-| Research and hackathon record | `config/impact.ts`: `impactFacts`, `publicationVenuesText` | research, partners, home, qanda; `{{impact.*}}` | `siteSettings` | A |
-| E-Lab program facts | `config/e-lab.ts`: `programWeeks`, `ventureFundingMillions`, `selection` funnel, `heroLogo`; derived `eLabProgramSummary`, `eLabCompletedIterations` | e-lab sections, home, partners, qanda, seo | `siteSettings` (the funnel is drawn to scale: validate each gate ≤ the one before) | A |
-| Footer tagline and bottom line | `components/shell/footer.tsx` inline ("Empowering students…", "Student Initiative at…", column titles) | footer | tagline to `siteSettings`; **keep** column titles (navigation structure) | A |
-| Placeholder values | `config/content-tokens.ts`, names in `lib/content-tokens.ts` | every slice | keep: code; values follow `siteSettings` once it exists | A |
+| Role emails | `config/contact.ts`: `contactEmails` | seo, navigation, imprint, qanda closing, partnerships, `{{contact.recruitmentEmail}}` | **done**: `siteSettings` (the imprint keeps reading code) | A |
+| Social links | `config/contact.ts`: `socialLinks` | seo, navigation, events upcoming, e-lab closing, design system | **done**: `siteSettings.socialLinks` | A |
+| Partnership booking | `config/contact.ts`: `partnershipContact` (`bookingUrl`, `bookingHost`; `cc` holds personal addresses) | `partners/partnerships.ts`, `booking-dialog.tsx` | **done**: booking URL and host to `siteSettings`; **keep** `cc` in code (personal data) | A |
+| Community figure | `config/community.ts`: `communityFacts.makeathonSize` | departments, homepage, milestones, partners; `{{community.makeathonSize}}` | **done**: `siteSettings` | A |
+| Research and hackathon record | `config/impact.ts`: `impactFacts`, `publicationVenuesText` | research, partners, home, qanda; `{{impact.*}}` | **done**: `siteSettings` | A |
+| E-Lab program facts | `config/e-lab.ts`: `programWeeks`, `ventureFundingMillions`, `selection` funnel, `heroLogo`; derived `eLabProgramSummary`, `eLabCompletedIterations` | e-lab sections, home, partners, qanda, seo | **done**: `siteSettings` (the funnel is drawn to scale: validate each gate ≤ the one before) | A |
+| Footer tagline and bottom line | `components/shell/footer.tsx` inline ("Empowering students…", "Student Initiative at…", column titles) | footer | **done**: tagline to `siteSettings`; **keep** column titles (navigation structure) and the bottom line (content question) | A |
+| Placeholder values | `config/content-tokens.ts`, names in `lib/content-tokens.ts` | every slice | **done**: `getContentTokens()` fills them per render from `siteSettings` and the windows; names stay code | A |
 | Site identity and SEO | `config/site.ts` (`siteConfig`, `absoluteUrl`), `config/seo.ts` (page titles, descriptions, JSON-LD) | routes, layout | **keep**: site URL and SEO structure | – |
 | Navigation | `config/navigation.ts`: `mainNavigation`, `connectLinks`, `headerConnectLinks`, `legalLinks`, `contributeLinks` | header, footer | **keep**: navigation structure (hrefs from `socialLinks`) | – |
 
@@ -80,21 +81,21 @@ fields, and each owner defines its own schema file.
 | Content | Source | Consumers | Decision | Owner |
 | --- | --- | --- | --- | --- |
 | Partner directory fallback | `partners/data/partner-logos.ts`: `featuredPartners` (18) | `partners/partner-directory.ts` → home hero, home partners, partners page | **keep** as the fallback of the live `partner` type (never add `partner` documents to production); logo overrides by `key` via `organization` if needed | B |
-| Symbol-only logos | `partners/data/partner-logos.ts`: `symbolOnlyLogos` | `partner-tile.tsx`, `partner-marquee.tsx`, home partners | `organization.symbolOnly` | B |
-| Alumni destinations | `partners/data/partner-logos.ts`: `alumniDestinations` (11) | `partners/sections/people-section.tsx` | `organization` (`roles: alumniDestination`) | B |
-| Marquee logos (on dark) | `partners/data/partner-marquee-logos.ts`: `marqueeLogos` (18) | `partner-marquee.tsx`, home hero | `organization.logoOnDark` (`roles: marquee`) | B |
-| Partner directory logic | `partners/partner-directory.ts` (alias map, tier order, merge), `partner-rotation.ts` | partners, home | keep: logic | B |
-| Partner profiles | `partners/data/partners.ts`: `partnerProfiles` (3) | `people-section.tsx` | `person` (`placements: partnerProfile`) | B |
-| Case studies | `partners/data/partners.ts`: `partnerCaseStudies` (3) | `cases-section.tsx`, home partners | `caseStudy` | B |
-| Partners page copy and funnel | `partners/data/partners.ts`: `partnershipIntents`, `partnershipDurations`, `recommendations`, `partnerReasons`, `partnerStats`, `partnerPillars`, `partnerPitch`; inline copy in `partners/sections/*`, `partnership-finder.tsx`, `booking-dialog.tsx`, `contact-actions.tsx`, `partner-marquee.tsx`, `partner-tier.tsx`, `partner-supporters.tsx`; mail texts in `partnerships.ts` | partners page; `partnerPitch` also in apply, community, qanda closings | `partnersCopy` (stat figures stay derived in code: they are facts; icons as keys); keep mail templates in code | B |
-| E-Lab testimonials | `e-lab/data/venture-page.ts`: `testimonialCards` (7), `eLabVoices` | `voices-section.tsx`, `venture-trace.tsx`, home partners (`partnerQuoteId`) | `person` (`placements: eLabFounder`/`eLabInvestor`) with `organization` logos | B |
-| E-Lab ventures | `e-lab/data/venture-page.ts`: `notableStartups` (7) | `venture-trace.tsx`, `application-field.tsx` | `organization` (`roles: eLabVenture`) | B |
-| Traced venture | `e-lab/data/venture-page.ts`: `tracedVenture`, `tracedVentureLead` | `venture-trace.tsx` | `ventureTrace`; the lead sentence stays built in code | B |
-| E-Lab venture copy | inline in `e-lab/venture-trace.tsx`, `voices-section.tsx`, `application-field.tsx` (figcaption), `field-dots.tsx` (aria) | e-lab | B keeps the section titles and leads inline for now (page copy is C's `eLabCopy`; moved in the integration pass); aria strings stay | B |
-| Event host logos | `events/data/host-logos.ts` (17 keys, dynamic `/assets/events/hosts/`, `/assets/partners/`) | `events/hero.tsx` | `organization` (`roles: eventHost`, `key` = the normalised host name) | B |
-| Events hero lockup and reel | inline in `events/hero.tsx`, `hero-reel.tsx`, `lockup.tsx` (lead "Hackathons, talks and pitch nights…", generated summary) | /events | logos from `organization`; the lead stays inline for now (see integration points) | B |
-| REX institutions | `research/data/rex.ts`: `rexInstitutions` (4), `rexLead`, `rexProcess`, `rexOrigin` | `research/research-page.tsx`, home `programs` text | `organization` (`roles: rexInstitution`); REX copy into `researchCopy` via integration | B |
-| Member stories | `community/data/member-stories.ts`: `stories` (6) | `community-page.tsx`, `member-stories.tsx`, `semester-plan.tsx`, apply `tracks.tsx`, home `join-section.tsx` | `person` (`placements: memberStory`); journey excerpts must stay verbatim substrings | B |
+| Symbol-only logos | `partners/data/partner-logos.ts`: `symbolOnlyLogos` | `partner-tile.tsx`, `partner-marquee.tsx`, home partners | **done**: `organization.symbolOnly` | B |
+| Alumni destinations | `partners/data/partner-logos.ts`: `alumniDestinations` (11) | `partners/sections/people-section.tsx` | **done**: `organization` (`roles: alumniDestination`) | B |
+| Marquee logos (on dark) | `partners/data/partner-marquee-logos.ts`: `marqueeLogos` (18) | `partner-marquee.tsx`, home hero | **done**: `organization.logoOnDark` (`roles: marquee`) | B |
+| Partner directory logic | `partners/partner-directory.ts` (alias map, tier order, merge), `partner-rotation.ts` | partners, home | **keep**: logic | B |
+| Partner profiles | `partners/data/partners.ts`: `partnerProfiles` (3) | `people-section.tsx` | **done**: `person` (`placements: partnerProfile`) | B |
+| Case studies | `partners/data/partners.ts`: `partnerCaseStudies` (3) | `cases-section.tsx`, home partners | **done**: `caseStudy` | B |
+| Partners page copy and funnel | `partners/data/partners.ts`: `partnershipIntents`, `partnershipDurations`, `recommendations`, `partnerReasons`, `partnerStats`, `partnerPillars`, `partnerPitch`; inline copy in `partners/sections/*`, `partnership-finder.tsx`, `booking-dialog.tsx`, `contact-actions.tsx`, `partner-marquee.tsx`, `partner-tier.tsx`, `partner-supporters.tsx`; mail texts in `partnerships.ts` | partners page; `partnerPitch` also in apply, community, qanda closings | **done**: `partnersCopy` for the pitch (read by every closing), finder answers, reasons, stats and pillars (pillar figures derived from the site facts; icons as keys); **open**: the section headings and leads inline in `partners/sections/*`, the finder questions, `partner-marquee.tsx` and `booking-dialog.tsx` (many set with line breaks); mail templates stay in code | B |
+| E-Lab testimonials | `e-lab/data/venture-page.ts`: `testimonialCards` (7), `eLabVoices` | `voices-section.tsx`, `venture-trace.tsx`, home partners (`partnerQuoteId`) | **done**: `person` (`placements: eLabFounder`/`eLabInvestor`) with `organization` logos | B |
+| E-Lab ventures | `e-lab/data/venture-page.ts`: `notableStartups` (7) | `venture-trace.tsx`, `application-field.tsx` | **done**: `organization` (`roles: eLabVenture`) | B |
+| Traced venture | `e-lab/data/venture-page.ts`: `tracedVenture`, `tracedVentureLead` | `venture-trace.tsx` | **done**: `ventureTrace`; the lead sentence stays built in code | B |
+| E-Lab venture copy | inline in `e-lab/venture-trace.tsx`, `voices-section.tsx`, `application-field.tsx` (figcaption), `field-dots.tsx` (aria) | e-lab | **done** (integration): `eLabCopy.ventures`, `.voices`, `.field` (the caption's drawn figures are page tokens); the founder and investor picks (`eLabVoices`) and aria strings stay in code | B |
+| Event host logos | `events/data/host-logos.ts` (17 keys, dynamic `/assets/events/hosts/`, `/assets/partners/`) | `events/hero.tsx` | **done**: `organization` (`roles: eventHost`, `key` = the normalised host name) | B |
+| Events hero lockup and reel | inline in `events/hero.tsx`, `hero-reel.tsx`, `lockup.tsx` (lead "Hackathons, talks and pitch nights…", generated summary) | /events | **done**: logos from `organization`; the lead without events in `eventsCopy.hero.emptyLead` (integration); the counted lead stays built in code | B |
+| REX institutions | `research/data/rex.ts`: `rexInstitutions` (4), `rexLead`, `rexProcess`, `rexOrigin` | `research/research-page.tsx`, home `programs` text | **done**: `organization` in the `rex-institutions` logo list; the REX lead, process and origin in `researchCopy.rex` (integration) | B |
+| Member stories | `community/data/member-stories.ts`: `stories` (6) | `community-page.tsx`, `member-stories.tsx`, `semester-plan.tsx`, apply `tracks.tsx`, home `join-section.tsx` | **done**: `person` (`placements: memberStory`); journey excerpts must stay verbatim substrings | B |
 
 ## Phase 4: page copy (C)
 
@@ -105,7 +106,7 @@ fields, and each owner defines its own schema file.
 | Q&A entries | `qanda/data/qanda.ts`: `faqs` (7; `spans`, `points`, `evidence` with facts) | `qanda-page.tsx` (+ FAQPage JSON-LD), `mission-section.tsx`, design system | **done**: `faq` (`qanda`; `anchor` = today's `id`; evidence text with `{{org.*}}`, `{{impact.*}}`, `{{eLab.*}}`); `spans` stay exact substrings of the passage | C |
 | Mission passage | `qanda/data/qanda.ts`: `missionQuestion`, `missionPassage` | qanda page | **done**: `qandaCopy` (edit together with the spans; the span test must run on CMS data) | C |
 | Q&A forks and closing | `qanda/data/qanda.ts`: `forks`; inline in `qanda-page.tsx`, `mission-section.tsx`, `mission-answers.tsx`, `closing-section.tsx` | qanda | **done**: `qandaCopy` (the companies fork is `partnerPitch`) | C |
-| Apply page copy | `apply/data/apply.ts`: `heroLead`, `tracksLead`, `selectionStages`, `qualities`, `notRequired`, `values`, `offerings`; inline in `selection.tsx`, `since-founding.tsx`, `tracks.tsx`, `who-should-apply.tsx` (titles, photo alts) | apply | **done** (the hero lead renders in A's `hero.tsx`, see integration points): `applyCopy` (`{{org.majors}}` etc. for facts; stage `when` keys stay code) | C |
+| Apply page copy | `apply/data/apply.ts`: `heroLead`, `tracksLead`, `selectionStages`, `qualities`, `notRequired`, `values`, `offerings`; inline in `selection.tsx`, `since-founding.tsx`, `tracks.tsx`, `who-should-apply.tsx` (titles, photo alts) | apply | **done**: `applyCopy` (`{{org.majors}}` etc. for facts; stage `when` keys stay code) | C |
 | Apply milestones | `apply/data/milestones.ts`: `milestones` (22), `milestoneKinds` | `since-founding.tsx` | **done**: `milestone` (kinds stay code) | C |
 | Departments | `community/data/departments.ts` (7, 4 photos) | `departments-section.tsx`, home `programs` (count) | **done**: `department` | C |
 | Member journey | `community/data/member-journey.ts`: `memberJourney` (Lucide icons) | `semester-plan.tsx`, apply `tracks.tsx` | **done**: `journeyStep` (`iconKey`); `semesterColumns`, `stepAnchor` stay code | C |
@@ -114,7 +115,7 @@ fields, and each owner defines its own schema file.
 | Projects copy | `projects/data/copy.ts`: `hero`, `figureSeats`, `closing` | `projects-page.tsx`, `closing-section.tsx` | **done**: `projectsCopy` | C |
 | Task forces | `projects/data/projects.ts`: `taskForces` (5), `openSeat` | projects page, `copy.ts` | **done**: `taskForce` (`openSeat` into `projectsCopy`) | C |
 | Research copy | `research/data/research-copy.ts`: `heroLead`, `abstractStatement`, `getAbstractBody`, `figurePanels`, `closing`; inline in `research-page.tsx` (~15 strings), `research-figure.tsx`, `project-list.tsx`, `research-globe.tsx` (aria) | research | **done**: `researchCopy` (the body stays a template with the live project count) | C |
-| Lab sites | `research/data/lab-sites.ts`: `labSites` (6) | `research/research.ts` → globe, affiliations | **done** as a slice (`getLabSiteList`); not rendered until `research.ts` takes the list, see integration points: `labSite` | C |
+| Lab sites | `research/data/lab-sites.ts`: `labSites` (6) | `research/research.ts` → globe, affiliations | **done**: `labSite`; `research-page.tsx` passes `getLabSiteList()` to `getLabSites` | C |
 | E-Lab selection copy | `e-lab/data/selection.ts`: `selectionStages` (gates and phases; team counts from config); inline in `selection-gates.tsx`, `hero.tsx` | e-lab | **done**: `eLabCopy` (gate counts stay facts) | C |
 | Events copy | inline in `events/closing-section.tsx`, `upcoming.tsx`, `register.tsx`, `register-filter.tsx`, `poster-wall.tsx`, `sign-up-action.tsx`, `host-line.tsx`; labels in `events/filters.ts` (`categoryNames`), `events/events.ts` (semester labels) | events | **done** (each section awaits the getter; `events-page.tsx` is untouched): `eventsCopy` for titles, leads and the closing; category and semester labels stay in code (they map schema enums) | C |
 | Page titles and descriptions | `config/seo.ts` | metadata | **keep**: SEO structure | – |
@@ -130,8 +131,10 @@ fields, and each owner defines its own schema file.
 | Site URL, SEO, JSON-LD | `config/site.ts`, `config/seo.ts` | structure and canonical URLs |
 | Navigation structure | `config/navigation.ts` links, footer column titles | structure; labels follow routes |
 | Icons | Lucide components in `member-journey.ts`, `partnership-finder.tsx`, `reasons-section.tsx` | the CMS stores an icon key, code maps it |
-| UI and accessibility strings | aria labels, screen-reader text, "Read More", "Back", "Zoom in", "Sign up", chip labels, repeated CTA labels ("Become a Partner", "Become a Member") | interface, not content |
-| Logic with embedded wording | `apply/round.ts` date notes, `events/events.ts`, `events/filters.ts`, `partners/partnerships.ts` mail templates, `research/research.ts`, `qanda/mission-spans.ts` | tied to code paths and tests |
+| UI and accessibility strings | aria labels, screen-reader text, "Read More", "Back", "Zoom in", "Sign up", chip labels, the default "Frequently asked questions" title | interface, not content |
+| Standing CTA labels | `config/calls-to-action.ts` ("Become a Member", "Become a Partner", "Apply now", "Questions and answers") | they name destinations, like the menu; one owner keeps every page consistent |
+| Logic with embedded wording | `apply/round.ts` status lines and date notes, `config/e-lab.ts` phase copy, the events hero's counted lead, `e-lab/data/venture-page.ts` `tracedVentureLead`, `events/events.ts`, `events/filters.ts`, `partners/partnerships.ts` mail templates, `research/research.ts` | grammar follows dates and counts; tied to code paths and tests |
+| JSON-LD facts | `config/seo.ts` (emails, social links, E-Lab summary, organisation figures) | SEO structure and synchronous metadata; reads the code facts (a follow-up could pass the render's facts) |
 | Live-dataset mock fixtures | `lib/mock-cms.ts` | test data for events, research, partners |
 | Design system showcase | `features/design-system/*` | development only |
 
@@ -201,27 +204,29 @@ Files nobody edits in this migration: `config/seo.ts`, `config/site.ts`, `featur
 `events/filters.ts`, `events/event-details.tsx`, `events/events-page.tsx`,
 `research/research.ts`, `lib/mock-cms.ts`.
 
-### Integration points (after the three streams merge)
+### Integration pass (done)
 
-Content that one stream moves but another stream's file renders. Until this pass the consumer keeps
-importing the code data (same shape, so nothing breaks), which means the CMS value does not show
-there yet:
+Content one stream moved but another stream's file rendered, wired after the three streams merged
+(branch `chore/cms-integration`):
 
-- Member stories (B) in `community/semester-plan.tsx`, `apply/tracks.tsx`, `home/join-section.tsx`
-  (C): await B's getter in those server sections.
-- `testimonialCards`, `partnerCaseStudies`, partner logos (B) in `home/home-hero.tsx` (C).
-- REX institutions and copy (B) in `research/research-page.tsx` and home `programs` (C).
-- `partnerPitch` (B) in the apply, community and qanda closings (C, A).
-- Site-settings facts (A) behind the `{{placeholders}}` and in derived config values used
-  everywhere: once `siteSettings` exists, `config/content-tokens.ts` must read the fetched
-  values on the server, and client islands that import config facts (`components/shell/header.tsx`,
-  `e-lab/e-lab-phase-switch.tsx`, `community/membership-phase-switch.tsx`) need them as props.
-- Header CTA labels repeated inline ("Become a Partner", "Become a Member") across B and C files.
-- Lab sites (C) in `research/research.ts` (nobody's file): `getLabSites` reads the code
-  `labSites`; give it the list as a parameter and pass `getLabSiteList()` from
-  `research-page.tsx`.
-- The /apply hero lead (C, `applyCopy.heroLead`) in `apply/hero.tsx` (A): pass it from
-  `ApplyPage` instead of importing `heroLead` from `data/apply.ts`.
+- Site facts (A) everywhere a page rendered a config constant: the home ledger, `brandMission`
+  (/apply, /qanda), the E-Lab funnel, hero logo, cohort name and funding (gates, dot field,
+  trace, closing), the /qanda inbox, the /events social links, the partners pillar figures,
+  member counts and contact (as `PartnershipProvider` props for the islands). `/apply` renders
+  `recruitingCall(now, await getMembershipWindow())`.
+- Member stories (B) in `semester-plan.tsx`, `member-stories.tsx`, `apply/tracks.tsx` and
+  `home/join-section.tsx`, passed from the page components.
+- REX institutions (B) on /research and in the home programs; the REX copy in `researchCopy`.
+- Partner artwork (B) in the home hero and partner wall (`getPartnerLogos()`), `partnerPitch` as
+  `getPartnersCopy().pitch` in the apply, community and qanda closings.
+- Lab sites (C): `getLabSites(names, await getLabSiteList())`.
+- Inline copy in A's and B's files into `applyCopy`, `eLabCopy`, `communityCopy.stories`,
+  `homeCopy.partners` and `eventsCopy.hero`; the standing CTA labels into
+  `config/calls-to-action.ts`.
+- `person` references for the home quotes and the journey evidence.
+
+Server-only getters reach other features through `features/<x>/server.ts`; `index.ts` stays
+isomorphic, and `src/architecture.test.ts` fails on a client path to `server-only`.
 
 Rules that keep the streams independent: keep the exported shape of code data that other files
 import; await a getter in the server section that renders the content (sections are server

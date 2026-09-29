@@ -85,8 +85,14 @@ dataset. The reference is the FAQ slice: `src/features/apply/content.ts`,
 `src/sanity/schemas/content/faq.ts`, `src/features/apply/content.test.ts`. The APIs are in
 `src/lib/cms-content.ts` (`loadContent`, `fetchContent`, `getContentSource`),
 `src/lib/cms-content-model.ts` (`ContentImage`, `CONTENT_IMAGE_PROJECTION`, `toContentImage`,
-`mergeOverFallback`), `src/lib/cms-backfill.ts` (`backfillId`, `backfillImage`) and
-`src/lib/content-tokens.ts` (`{{placeholders}}`). What moves, and who owns it:
+`mergeOverFallback`), `src/lib/cms-backfill.ts` (`backfillId`, `backfillImage`),
+`src/lib/content-tokens.ts` (`{{placeholders}}`), `src/lib/content-copy.ts` (`fillCodeCopy`,
+`fillCmsCopy`, page tokens with `fillPageTokens`), `src/lib/content-backfill.ts`
+(`backfillContentImage`, `keyedItems`) and the Studio field builders in
+`src/sanity/schemas/content/copy-fields.ts` (`copyString`, `copyText`, `copyStringList`,
+`orderField`; limits, placeholders and page tokens). Page copy singletons follow
+`src/features/apply/content.ts` (`applyCopy`); people and logos follow
+`src/lib/person-content.ts` and `src/lib/organization-content.ts`. What moves, and who owns it:
 `docs/cms-content-inventory.md`.
 
 Nothing a visitor sees may change: `CMS_CONTENT_SOURCE` defaults to `code`, and the parity test
@@ -96,9 +102,15 @@ proves the CMS path renders the same.
    (facts), shaped exactly as the page renders it: images as `ContentImage` (`src`, intrinsic
    `width`/`height` of the file, `alt`, optional `objectPosition` as `"<x>% <y>%"`), icons as a
    string key mapped to a Lucide component in the component, facts in copy as `{{name}}`
-   placeholders filled with `fillCodeTemplate(template, contentTokens)`. A new placeholder goes
-   into `contentTokenNames` (`lib/content-tokens.ts`) and `contentTokens`
-   (`config/content-tokens.ts`) together; never rename one.
+   placeholders kept in the template. The slice fills them per render with
+   `await getContentTokens()` (`fillCodeCopy(template, tokens, pageTokens)` for the fallback);
+   never fill a template at module load with the `contentTokens` constant, which would freeze
+   the code facts and, in a `data/` file, pull the server-only token source into client
+   bundles. A new placeholder goes into `contentTokenNames` (`lib/content-tokens.ts`) and
+   `contentTokensFor` (`config/content-tokens.ts`) together; never rename one. A figure only the
+   page knows (a count of what it renders) is a page token: list it in the copy's
+   `<page>PageTokens`, declare it on the field (`pageTokens` in `copy-fields.ts`) and fill it in
+   the section with `fillPageTokens`.
 2. **Schema.** `src/sanity/schemas/content/<type>.ts` with `defineType`/`defineField`;
    `Rule.required()` on what the page cannot do without; enums with `options.list`; images with
    `contentImageField` and text with facts with `validatePlaceholders` + `placeholderHelp`
@@ -114,8 +126,12 @@ proves the CMS path renders the same.
    - a getter per thing the page needs, via
      `loadContent({ fallback, query, params, tags: ["content:<type>"], label, mockDocuments: build<X>Backfill, select })`,
      where `select` shapes the result like the fallback (drop empty items, `toContentImage`,
-     `fillTemplate` for placeholders) and leaves anything it cannot use empty so the fallback
-     wins;
+     `fillCmsCopy(result, tokens, label, pageTokens)` for placeholders) and leaves anything it
+     cannot use empty so the fallback wins;
+   - a field that names a person or organisation is a `reference`, projected to the code
+     shape's key (`quote->key`, `person->name`); its backfill uses the target's deterministic id
+     (`personId`, `organizationId`), and `mockDocuments` adds the target documents (the other
+     slice's builder) so the mock resolves it;
    - one `build<X>Backfill(): BackfillDocument[]` for everything the slice owns, from the code
      fallback: `_id` from `backfillId(type, stable key)` (only `[a-z0-9-]`; a `.` makes the
      document private), images with `backfillImage("/assets/...", { alt, objectPosition })`,
@@ -132,11 +148,18 @@ proves the CMS path renders the same.
    in the generated file.
 6. **Page.** The server page component awaits the getter (it may become `async`; routes may not
    import feature modules other than the page) and passes plain props to sections and islands.
-   Client components never import `content.ts` or `lib/cms-content`.
+   Site facts the page renders directly come from `await getSiteFacts()`, never from the
+   `config/` constants. Client components never import a slice, `config/*-content.ts`,
+   `config/content-tokens.ts` or `lib/cms-content`. Another feature reaches a slice through the
+   owning feature's `server.ts` entry (server only), never its `index.ts`, which must stay safe
+   for client islands; `src/architecture.test.ts` fails on any client path to `server-only`.
+   The standing CTA labels come from `config/calls-to-action.ts`, never from page copy.
 7. **Tests.** Copy `src/features/apply/content.test.ts`: the `code` source returns the fallback;
    under `USE_MOCK_CMS=1` with `CMS_CONTENT_SOURCE=sanity` the getter returns exactly the same
    value (`toStrictEqual`), and `fetchContent` over the backfill is not empty (so the parity is
-   not vacuous). Keep the existing data and content-facts tests green.
+   not vacuous). Keep the existing data and content-facts tests green. A test that edits the
+   documents with `vi.mock("@/lib/cms-content-mock")` calls one getter at a time: Vitest gives
+   the mock only to the first of several concurrent dynamic imports (`docs/testing.md`).
 8. **Verify.**
 
    ```bash

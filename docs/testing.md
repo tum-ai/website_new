@@ -65,6 +65,18 @@ Playwright's axe run covers them on real pages.
 `pnpm test` never builds the app. Anything that needs build output goes in `test/perf/` and runs
 with `pnpm test:perf` after `pnpm build`.
 
+**Content slices under the mock CMS.** A slice's tests stub `CMS_CONTENT_SOURCE` and
+`USE_MOCK_CMS=1`; `fetchContent` then imports `lib/cms-content-mock` dynamically and queries the
+backfill documents with groq-js. A test that edits those documents with
+`vi.mock("@/lib/cms-content-mock", ...)` must call one getter at a time, never several loads
+concurrently (`Promise.all`, or a getter that runs several `loadContent` calls at once): Vitest
+resolves only the first of several concurrent dynamic imports of a mocked module to the mock,
+and the others to the real module, so their edits silently don't apply (checked with Vitest
+5.0.2: two concurrent `fetchContent` calls return the mock's value and the real module's). This
+is a Vitest artefact, not a bug in the loader: without `vi.mock` every concurrent import gets the
+same module, as in Node and Next, and whole pages render identically in both sources
+(`lib/community-content.test.ts` and the Q&A slice's tests show the pattern).
+
 ### Playwright
 
 `playwright.config.ts` builds and starts the production app with `USE_MOCK_CMS=1` and
@@ -118,6 +130,7 @@ keeps them in `knownIssues`; the list is empty today.
 | Visible UI change | intended visual diffs accepted with the `update-snapshots` label (below) and listed in the PR |
 | Homepage markup or images | the homepage budget (`test:perf`) in CI's Build job |
 | New folder or import path | `src/architecture.test.ts` passes without new exceptions |
+| A content slice or a page reading one | the slice's parity test (code and mock `sanity` sources equal); `test/cms-backfill.test.ts`; `src/architecture.test.ts` (no client island reaches `server-only`) |
 
 Test behaviour, not source text: no reading source files to grep for strings, and no
 change-detector assertions on literals. A documented config edit (a new deadline, a new cohort)

@@ -10,8 +10,10 @@ in [testing.md](testing.md).
 - `src/features/<domain>/`: everything a page owns: `<domain>-page.tsx`, sections, islands,
   `data/` (static copy), domain logic and tests.
 - `src/components/ds/`: the design system; `src/components/shell/`: header, footer, skip link.
-- `src/config/`: site facts, navigation and SEO.
-- `src/lib/`: the Sanity fetch layer and queries, mock CMS, Munich time, security, redirects.
+- `src/config/`: site facts (the code fallback of the CMS site settings), navigation, CTA labels
+  and SEO.
+- `src/lib/`: the Sanity fetch layer and queries, the content source and shared content slices,
+  mock CMS, Munich time, security, redirects.
 - `src/sanity/schemas/`: the CMS content model. `src/styles/index.css`: tokens and tones.
 
 If you're unsure where to edit, start at the route in `src/app/(site)/`, follow its import to the
@@ -78,16 +80,20 @@ Everything is in `src/config/navigation.ts`:
   (`isMembershipApplicationOpen`, the dated window in `membershipConfig`) it shows `member`;
   otherwise `fallback`. Set `override` to pin one variant. The variants and their labels are in
   `headerCtas`. The site layout decides on the server and the header switches live at the
-  window's boundaries.
+  window's boundaries. After launch, the fallback and dated campaigns are edited in the Studio.
+- `callToActionLabels` in `src/config/calls-to-action.ts`: the labels every page, the header and
+  the footer use for the standing calls to action ("Become a Member", "Become a Partner",
+  "Apply now", "Questions and answers"). They name destinations, so they stay in code.
 - `getHeaderOptions(pathname, { membershipOpen })`: per-route header behaviour (frosted from the
   start, route-specific CTA).
 
 ### Updating site facts
 
 Facts that change per semester, cohort or year live once in `src/config/`. Pages, FAQs and JSON-LD
-read them, so one edit updates every page. `test/content-facts.test.ts` fails when page code types
-one of them in directly, and the tests derive their expectations from config, so a documented edit
-keeps them green.
+read them, so one edit updates every page. After launch, most of them are edited in the Studio
+instead (see "Editing content" below), and the config values are the fallback.
+`test/content-facts.test.ts` fails when page code types one of them in directly, and the tests
+derive their expectations from config, so a documented edit keeps them green.
 
 | Update | Edit |
 | --- | --- |
@@ -114,26 +120,47 @@ change the base fact, not the derived one. The `site-facts` skill lists the guar
 Legal facts and figures without a source are not changed on a guess: keep the current text, add
 `// TODO(content): <question>` and flag it in the PR.
 
-### Who owns content: editors or code
+### Editing content: the Studio or code
 
-Content is moving from the repository into Sanity, one content slice at a time
-([ADR 0009](adr/0009-cms-content-source.md); the plan and owners are in
-[cms-content-inventory.md](cms-content-inventory.md)). Until launch, and for anything not moved
-yet, the repository is the source:
+Page content lives in Sanity's content dataset, with the repository's copy as its fallback
+([ADR 0009](adr/0009-cms-content-source.md); the model and owners are in
+[cms-content-inventory.md](cms-content-inventory.md)). Which one the site renders is
+`CMS_CONTENT_SOURCE`: `code` (the default, and the site until launch) renders the repository and
+never calls Sanity; `sanity` (after launch) renders the CMS and falls back to the code content
+for anything empty, invalid or missing, so a page never breaks on an unfinished document.
 
-| Content | Edited by | Where |
-| --- | --- | --- |
-| Events, research projects, partners | editors | `/studio/live` (the live dataset, shared with the old site) |
-| Content served by a slice (today: the /apply and /e-lab FAQs) | editors once `CMS_CONTENT_SOURCE=sanity`; code until then | `/studio/content` (the content dataset); the code copy in `data/` stays as the fallback |
-| Everything else: copy, logos, people, campaigns, site facts | code | `src/features/<domain>/data/`, `src/config/` |
-| Legal pages, `legalEntity`, the site URL, SEO structure, navigation structure, layout geometry | code, always | `src/features/legal/`, `src/config/` |
+After launch, editors change these in the Studio:
 
-With `CMS_CONTENT_SOURCE=code` (the default) a slice renders its code content and never calls
-Sanity. With `sanity` it renders the CMS content and falls back to the code content for anything
-empty or missing, so a page never breaks on an unfinished document. Dates, deadlines and role
-emails inside editable text are placeholders such as `{{eLab.deadline}}`: editors keep them, the
-config fills them. CMS content edits show when the page revalidates (at most an hour on `/apply`,
-five minutes on `/e-lab`); there is no draft preview for the content dataset yet.
+| Content | Where in the Studio |
+| --- | --- |
+| Events, research projects, partner logos in the directory | `/studio/live` (the live dataset, shared with the old site) |
+| Organisation and impact figures, the mission, role emails, social links, the partnership booking page, the E-Lab program facts and selection funnel, the footer tagline, the header CTA fallback | `/studio/content`: Site settings |
+| The membership round (dates, form, open switch) and the E-Lab application window (deadline, form, next window) | `/studio/content`: Application windows |
+| Dated header CTAs and featured events | `/studio/content`: Campaigns |
+| Every page's headings, leads, captions, photos and section copy | `/studio/content`: the page's singleton (Homepage, Apply page, E-Lab page, Community page, Events page, Projects page, Research page, Q&A page, Partners page) |
+| FAQs, milestones, the member journey, departments, task forces, lab sites | `/studio/content`: their lists |
+| Organisations and their logos, the logo lists' order, people (member stories, partner profiles, E-Lab testimonials), case studies, the traced E-Lab venture | `/studio/content`: Logos and people |
+
+These stay in code, always:
+
+| Content | Where |
+| --- | --- |
+| Legal pages, `legalEntity`, the Imprint's address and email | `src/features/legal/`, `src/config/organization.ts`, `src/config/contact.ts` |
+| Site URL, SEO metadata and JSON-LD | `src/config/site.ts`, `src/config/seo.ts` |
+| Navigation structure and the standing CTA labels ("Become a Member", "Become a Partner", "Apply now", "Questions and answers") | `src/config/navigation.ts`, `src/config/calls-to-action.ts` |
+| Partnership CC addresses (they name people) | `src/config/contact.ts` `partnershipContact.cc` |
+| Sentences built from dates or counts (the round's status lines, the events hero's count, the traced venture's lead) and interface labels (buttons such as "Book a call", badges, screen-reader text) | the section's component, or `src/features/apply/round.ts` and `src/config/e-lab.ts` |
+| Layout geometry, the E-Lab dot field, the Projects overlaps | the feature's geometry files |
+
+Figures, dates and emails inside editable text are placeholders such as `{{eLab.deadline}}` or
+`{{org.activeMembers}}`: editors keep them, and the page fills them from the site settings and
+windows at render. A few texts take page tokens, like `{{count}}`, which the page fills from what
+it lists; the field's help text names them. Content edits show when the page revalidates (at
+most an hour on `/apply`, five minutes on `/e-lab`, the next build for fully static pages until a
+revalidation webhook exists); there is no draft preview for the content dataset yet.
+
+Until launch, and in the code fallback, the repository is the source: copy in
+`src/features/<domain>/data/`, facts in `src/config/`.
 
 ### Change static copy
 

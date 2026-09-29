@@ -20,16 +20,24 @@ write to it). The **content dataset** (`NEXT_PUBLIC_SANITY_CONTENT_DATASET`) hol
 moving out of code, read through content slices (`lib/cms-content.ts`) behind
 `CMS_CONTENT_SOURCE` (`code` by default). Everything not yet moved is static in Git.
 
-- **Content slices:** `features/<x>/content.ts` (server only) with `get<Thing>()` via
-  `loadContent` and `build<X>Backfill()`, registered in `scripts/sanity/slices.ts`; schemas in
-  `src/sanity/schemas/content/` (the `content` workspace only); a parity test per slice. The
-  `cms-content-model` skill ("Content slices") has the steps. Never import `lib/cms-content` or a
-  `content.ts` from a client component.
+- **Content slices:** `features/<x>/content.ts` (or `<topic>-content.ts`, server only) with
+  `get<Thing>()` via `loadContent` and `build<X>Backfill()`, registered in
+  `scripts/sanity/slices.ts`; schemas in `src/sanity/schemas/content/` (the `content` workspace
+  only); a parity test per slice. The `cms-content-model` skill ("Content slices") has the steps.
+  Facts in copy are filled per render with `await getContentTokens()`, never with the module
+  constant `contentTokens`. Never import `lib/cms-content`, a slice or `config/content-tokens`
+  from a client component: other features reach a slice through the feature's `server.ts`, and
+  `src/architecture.test.ts` fails when a `"use client"` module reaches `server-only`.
+- **References:** a copy field that names a person or organisation is a `reference`
+  (`homeCopy.partners.quote`, `journeyStep.evidence.person`), projected to what the code shape
+  holds (`quote->key`, `person->name`). Its backfill uses the target's deterministic id
+  (`personId`, `organizationId`), and the slice's `mockDocuments` include the target documents so
+  the mock resolves it.
 - **Backfill:** `pnpm sanity:backfill` is a dry run that writes `.sanity-backfill/<dataset>.ndjson`.
   Never run `--apply`, `sanity dataset create` or `sanity dataset import` as part of a change:
   importing is a maintainer's launch step.
 - **Studio:** two workspaces, `live` (`/studio/live`, Presentation) and `content`
-  (`/studio/content`); `/studio` redirects to the first.
+  (`/studio/content`); `/studio` redirects to `/studio/live`.
 
 - **Change flow** (the `cms-content-model` skill has the steps): schema in `src/sanity/schemas/`,
   then the GROQ query in `src/lib/sanity-queries.ts` (wrapped in `defineQuery`), then
@@ -60,3 +68,5 @@ moving out of code, read through content slices (`lib/cms-content.ts`) behind
   fixtures. Mock `next/headers` and `next-sanity` with `vi.mock` when testing the fetch layer.
   Content slices need no fixtures: under the mock their backfill documents are queried with the
   real GROQ (`lib/cms-content-mock.ts`), and each slice's parity test compares that with code.
+  A test that `vi.mock`s `lib/cms-content-mock` calls one getter at a time: Vitest hands the mock
+  only to the first of several concurrent dynamic imports (`docs/testing.md`).

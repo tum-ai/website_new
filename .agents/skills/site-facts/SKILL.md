@@ -8,6 +8,20 @@ description: Where every changeable fact on the TUM.ai website lives and which t
 Facts that change per semester, cohort or year live once in `src/config/`. Pages, FAQs and JSON-LD
 read them, so one edit updates the whole site, and tests fail if a page types a fact in directly.
 
+Two sources (docs/adr/0009-cms-content-source.md). With `CMS_CONTENT_SOURCE=sanity` (after
+launch), editors change the editable facts in `/studio/content`: the Site settings singleton
+(organisation and impact figures, mission, role emails, social links, booking page, E-Lab
+program facts and selection funnel, footer tagline, header CTA fallback), the two Application
+windows (membership round, E-Lab deadline and form) and Campaigns. The config files below are
+then the code fallback: a value the CMS leaves empty or invalid renders the config value. Legal
+facts, the site URL, SEO, navigation and the standing CTA labels (`config/calls-to-action.ts`)
+stay in code only.
+
+Pages read the render's facts: `await getSiteFacts()` (`config/site-settings-content.ts`),
+`await getMembershipWindow()` / `await getELabWindow()` (`config/schedule-content.ts`), and copy
+placeholders through `await getContentTokens()`. Never import a fact constant into page code for
+rendering; pass values to client islands as props.
+
 ## Which file
 
 | Fact | File and field |
@@ -29,16 +43,20 @@ read them, so one edit updates the whole site, and tests fail if a page types a 
 | Site URL, name, tagline, `absoluteUrl()` | `src/config/site.ts` `siteConfig` |
 | Legal identity, registered office, register number, representatives | `src/config/organization.ts` `legalEntity` |
 | Header and footer links | `src/config/navigation.ts` |
-| Header call to action between recruiting rounds | `src/config/navigation.ts` `headerCtaSetting` (`fallback`, optional `override`); `member` shows automatically while `isMembershipApplicationOpen` (the dated round window) |
+| Header call to action between recruiting rounds | `src/config/navigation.ts` `headerCtaSetting` (`fallback`, optional `override`); `member` shows automatically while `isMembershipApplicationOpen` (the dated round window); campaigns in `src/config/campaigns.ts` (CMS `campaign`) |
+| The standing CTA labels ("Become a Member", "Become a Partner", "Apply now", "Questions and answers") | `src/config/calls-to-action.ts` `callToActionLabels` (code only) |
 
 Derived values (`officialMembers`, `recruitingTimeline`, `isMembershipApplicationOpen`, `applicationProgress`, `eLabProgramSummary`, `eLabCompletedIterations`,
-`eLabApplicationsCloseAt`, `eLabPhaseCopy`) are computed in the same files; change the base fact,
-not the derived one.
+`eLabApplicationsCloseAt`, `eLabPhaseCopy`) are computed in the same files, each also as a
+function of the facts (`deriveSiteFacts(facts)`, `officialMembersOf`, `eLabPhaseCopyOf`, ...)
+that pages call on the render's facts; change the base fact, not the derived one.
 
 ## Change a fact
 
-1. Edit the field in the config file. Keep the documented format (German date and 24-hour time
-   for E-Lab deadlines, which `parseMunichDateTime` parses in Europe/Berlin).
+1. After launch, an editable fact changes in the Studio (`/studio/content`), not here. For the
+   code value (the fallback, and the site before launch), edit the field in the config file.
+   Keep the documented format (German date and 24-hour time for E-Lab deadlines, which
+   `parseMunichDateTime` parses in Europe/Berlin).
 2. Run `pnpm exec vitest run test/content-facts.test.ts src/features/e-lab/e-lab-content.test.ts`
    (plus the config file's own test, if any). They must pass without editing tests: the tests
    derive expectations from config. CI runs the full suite and E2E on the PR.
@@ -48,7 +66,10 @@ not the derived one.
 ## Add a new fact
 
 1. Add it to the fitting config file with TSDoc (what it is, its format, who updates it).
-2. Replace every literal copy in pages and `data/` with an import and a template string.
+2. Replace every literal copy in pages and `data/`: pages read it from the render's facts
+   (add it to `SiteFacts`, the `siteSettings` schema and its query when editors should own it),
+   and copy uses a `{{placeholder}}` (`lib/content-tokens.ts` and `contentTokensFor` in
+   `config/content-tokens.ts`).
 3. If the fact has a recognizable shape, add a pattern to `hardcodedFacts` in
    `test/content-facts.test.ts` so future literals fail with a pointer to the config file.
 4. Add a row to "Updating site facts" in `docs/contributor-guide.md` and to the table above.

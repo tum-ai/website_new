@@ -68,8 +68,12 @@ features (the `faq` type) keep their shared part in `lib` (`lib/faq-content.ts`)
 fallback passed in. Schemas live in `src/sanity/schemas/content/`.
 
 Facts that copy states (recruiting dates, deadlines, role emails) stay derived: the text holds a
-`{{placeholder}}` (`lib/content-tokens.ts`), filled from `config/content-tokens.ts` at render time,
-in code and CMS text alike. The Studio validates the names; an unknown one drops that entry.
+`{{placeholder}}` (`lib/content-tokens.ts`), filled per render from `await getContentTokens()`
+(`config/content-tokens.ts`, which reads the `siteSettings` singleton and the application
+windows), in code and CMS text alike. The Studio validates the names; an unknown one drops that
+entry. Facts a page renders outside copy come from `await getSiteFacts()`; client islands get
+them as props. Server-only slices reach other features through a feature's `server.ts` entry,
+never its isomorphic `index.ts` (`src/architecture.test.ts`).
 
 ### Mock and parity
 
@@ -138,17 +142,34 @@ datasets; a type name used in both workspaces with different fields fails the me
 
 ## Launch runbook
 
+The Studio is at `/studio/content` (content dataset) and `/studio/live` (live dataset); `/studio`
+redirects to `/studio/live`.
+
 1. Create the content dataset: `sanity dataset create redesign --visibility public` (from
    `src/sanity`, logged in with `sanity login`).
-2. `pnpm sanity:backfill --dataset redesign`, review `.sanity-backfill/redesign.ndjson` and the
-   counts, then `pnpm sanity:backfill --dataset redesign --apply`.
-3. Editors review and correct the content in `/studio/content` (locally or on a preview
-   deployment with the env below).
+2. `pnpm sanity:backfill --dataset redesign` (a dry run; in the Claude sandbox, unsandboxed),
+   review `.sanity-backfill/redesign.ndjson` and the per-type counts, then
+   `pnpm sanity:backfill --dataset redesign --apply`. It imports every slice in one file with
+   `--replace`, so the references between them (logo lists, testimonials, the traced venture, the
+   homepage quotes, the journey evidence) resolve; asset files upload with the import.
+3. Editors review and correct the content in `/studio/content` (locally, or on a preview
+   deployment with the env below): the Site settings and both Application windows first (the
+   open `TODO(content)` facts: the E-Lab window's open switch and next window, the membership
+   round's placeholder dates, the selection funnel), then Campaigns, the page singletons, the
+   lists and Logos and people. Open the Studio in a real browser once: the pinned documents, the
+   references' pickers and the date fields have only been checked by schema extraction.
 4. Vercel **Preview**: `NEXT_PUBLIC_SANITY_CONTENT_DATASET=redesign` and
-   `CMS_CONTENT_SOURCE=sanity`; check the preview. At launch, set both on **Production**.
+   `CMS_CONTENT_SOURCE=sanity`, then redeploy (the source is read on the server at render, and
+   static routes render at build); check the preview. At launch, set both on **Production** and
+   redeploy.
 5. Add the Vercel preview and production domains as Sanity CORS origins with credentials allowed
    (sanity.io/manage, API, CORS origins) if they are missing; the embedded Studio needs them.
-6. After launch, fill `hosts` on the live events in `production` with the new Studio
+6. Until a `revalidateTag` webhook for the `content:*` tags exists, a content edit shows when its
+   route revalidates: within an hour on `/apply`, 5 minutes on `/e-lab` and `/events`, 15
+   minutes on `/partners` and `/research`, and at the next deploy on the static routes (`/`,
+   `/community`, `/projects`, `/qanda`, the legal pages); the header and footer refresh with the
+   route they render on. Tell editors, or redeploy after a batch of edits.
+7. After launch, fill `hosts` on the live events in `production` with the new Studio
    (`/studio/live`; see the `TODO(content)` in `lib/mock-cms.ts`).
 
 ## Sources

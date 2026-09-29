@@ -43,7 +43,9 @@ batch the fixes into one push. Never close and reopen a PR to re-run CI. Details
 change (CI fails when it's stale; `pnpm sanity:typegen:check` shows it locally).
 `pnpm sanity:backfill [--dataset redesign]` writes the content slices' documents to
 `.sanity-backfill/<dataset>.ndjson` (a dry run); its `--apply` imports them into Sanity and is a
-maintainer's launch step, never part of a change (docs/adr/0009-cms-content-source.md).
+maintainer's launch step, never part of a change (docs/adr/0009-cms-content-source.md). In the
+Claude sandbox, run `sanity:typegen` and `sanity:backfill` unsandboxed (tsx and the Sanity CLI
+fail with EPERM there).
 
 ## Architecture
 
@@ -56,16 +58,21 @@ src/app/studio/[[...tool]]/       Sanity Studio (workspaces /studio/live, /studi
 src/app/global-not-found.tsx      404 for unmatched URLs (there are two root layouts)
 src/app/api/                      getNotes | getPartners | getResearch (public JSON API), draft-mode
 src/features/<domain>/            <domain>-page.tsx, sections, data/ (static copy), logic, tests,
-                                  content.ts (CMS content slice, server only), optional index.ts
-                                  (the only entry for other features)
+                                  content.ts and <topic>-content.ts (CMS content slices, server
+                                  only), optional index.ts (isomorphic) and server.ts (server
+                                  only): the only entries for other features
 src/components/ds/                design system (Base UI + tone tokens), barrel `@/components/ds`
 src/components/shell/             header, footer, skip link
 src/components/json-ld.tsx        JSON-LD script tag
-src/config/                       site facts, navigation (incl. header CTA) and SEO
+src/config/                       site facts and their slices (site-settings-content,
+                                  schedule-content), content-tokens, navigation (incl. header CTA),
+                                  calls-to-action (CTA labels), campaigns and SEO
 src/lib/                          cn, sanity-config, sanity client/queries/fetch, mock-cms, cms-content
-                                  (+ -model, -mock), cms-backfill, content-tokens, faq-content,
-                                  munich-time, words, use-clock-switch, use-media-query, security,
-                                  redirects
+                                  (+ -model, -mock), cms-backfill, content-tokens, content-copy,
+                                  content-backfill, faq-content, community-model/-content,
+                                  people-and-logos, organization-content, person-content,
+                                  passage-spans, clock-window, munich-time, words, use-clock-switch,
+                                  use-media-query, security, redirects
 src/sanity/                       Studio config (live + content workspaces) and schemas (TypeGen
                                   writes src/lib/sanity.types.generated.ts)
 scripts/sanity/                   backfill script and slice registry, schema merge for TypeGen
@@ -82,7 +89,7 @@ the rules it can express.
 |---|---|
 | `app` | one `features/<x>/<x>-page.tsx` and that feature's CSS only, plus components, config, lib, styles |
 | `app/studio` | sanity, lib |
-| `features/<x>` | own files, `features/<y>` via its `index.ts`, ds, shell, `components/json-ld`, config, lib |
+| `features/<x>` | own files, `features/<y>` via its `index.ts` (isomorphic) or `server.ts` (server only), ds, shell, `components/json-ld`, config, lib |
 | `components/ds` | own files, `lib/cn` |
 | `components/shell` | own files, ds, config, lib |
 | `components/*.tsx` | ds, config, lib |
@@ -93,9 +100,12 @@ Outside the design system, import it through its barrel `@/components/ds`. The t
 exceptions.
 
 Every feature folder has a `<name>-page.tsx`, and routes import exactly that module. A feature
-`index.ts` never re-exports a page, and features never import CSS (the route imports page CSS).
-Reason: Turbopack keeps every re-exported module that has client islands or CSS, so a page in an
-index ships its islands and styles to every page importing that index.
+`index.ts` or `server.ts` never re-exports a page, and features never import CSS (the route
+imports page CSS). Reason: Turbopack keeps every re-exported module that has client islands or
+CSS, so a page in an index ships its islands and styles to every page importing that index.
+A feature `index.ts` reaches no `server-only` module, so client islands may import it; what reads
+the CMS (content getters, async server components) goes in `server.ts`. The architecture test
+also fails when any `"use client"` module reaches a `server-only` module or a Node built-in.
 
 ## Conventions
 
@@ -107,7 +117,10 @@ index ships its islands and styles to every page importing that index.
   `slate-*`, `purple-*`) outside `src/styles/`. Use the type-scale utilities, not arbitrary sizes.
   Biome sorts classes inside `className`, `cn()` and `cva()`.
 - Site facts (dates, counts, emails, links, URLs) come from `src/config`, never from page code
-  (`test/content-facts.test.ts` enforces this).
+  (`test/content-facts.test.ts` enforces this). Pages read them per render: `await
+  getSiteFacts()`, the windows (`getMembershipWindow()`, `getELabWindow()`), and
+  `await getContentTokens()` for `{{placeholders}}` in copy; the config constants are only the
+  code fallback. Client islands get them as props.
 - TSDoc on exported APIs and non-obvious contracts; no comments that restate the code.
 - Tests live next to the code (`x.test.ts`, `x.test.tsx`); `test/` is for repo-wide checks only.
 - Every Biome rule is an error (`--error-on-warnings`); a `biome-ignore` needs a reason.
@@ -117,8 +130,9 @@ index ships its islands and styles to every page importing that index.
 | Task | Where | Skill |
 |---|---|---|
 | Add a page | route + feature folder + `config/seo.ts` + nav + `siteRoutes` in `e2e/fixtures.ts` | `add-page` |
-| Change a site fact | the matching file in `src/config/` (`e-lab`, `membership`, `organization`, `contact`, `community`, `impact`, `site`) | `site-facts` |
-| Change static copy | `src/features/<domain>/data/` (the code fallback when a `content.ts` slice serves it) | |
+| Change a site fact | after launch: the Studio (`/studio/content`, Site settings or an application window); in code, the matching file in `src/config/` (`e-lab`, `membership`, `organization`, `contact`, `community`, `impact`, `site`), the fallback | `site-facts` |
+| Change static copy | after launch: the page's singleton in `/studio/content`; in code, `src/features/<domain>/data/` (the fallback a slice serves) | |
+| Change a standing CTA label | `src/config/calls-to-action.ts` | |
 | Change a CMS type or field | `src/sanity/schemas/` then query, types, mock, UI | `cms-content-model` |
 | Move hard-coded content to the CMS | a content slice: schema in `src/sanity/schemas/content/`, `features/<x>/content.ts`, `scripts/sanity/slices.ts`, parity test; owners in `docs/cms-content-inventory.md` | `cms-content-model` |
 | Add or change a ds component | `src/components/ds/` + showcase + docs table | `ds-component` |
@@ -205,6 +219,9 @@ Hard rules:
   them and the code comments tagged Safari (`rg -n Safari src`). Verify on a real iPhone
   (`ui-verify`).
 - **`server-only`** modules (`lib/sanity.ts`) are stubbed in Vitest; mock `next/headers` in tests.
+  Vitest resolves only the first of several concurrent dynamic imports of a `vi.mock`ed module
+  to the mock: a test that mocks `lib/cms-content-mock` calls one getter at a time
+  (`docs/testing.md`).
 
 ## Agent setup
 
