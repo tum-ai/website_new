@@ -1,0 +1,160 @@
+# 0009: Page content from a second dataset, behind a source gate
+
+- **Status:** Accepted (foundation; content moves slice by slice)
+- **Date:** 2026-09-29 (#286, on the redesign branch #287)
+
+## Context
+
+Everything on the site except events, partners and research is typed into the repository: FAQs,
+campaigns and application windows, logos, people, page copy. Editors need a pull request to change
+a sentence or swap a logo. Issue #286 moves that content into Sanity.
+
+Three constraints shape how:
+
+- **The old site shares the dataset.** The site on `main` embeds its own Studio at `/studio` and
+  reads the `production` dataset, rendering every `event`, `partner` and `research` document it
+  finds. The redesign must keep showing that live data, and nothing may add documents of those
+  types or write to `production` before the switch.
+- **The free plan** allows two public datasets and no cross-dataset references. The project
+  (`o9uuv2sq`) has only `production` today.
+- **Nothing may change for visitors** until the content is migrated and reviewed, and a CMS outage
+  or an empty field must never break a page.
+
+## Decision
+
+### Two datasets
+
+- `NEXT_PUBLIC_SANITY_DATASET` (`production`) stays the **live dataset**: `event`, `partner`,
+  `research`, read by `lib/sanity.ts` with draft mode, Presentation and `<SanityLive>` as before.
+- `NEXT_PUBLIC_SANITY_CONTENT_DATASET` (planned `redesign`) is the **content dataset** for the new
+  types. It defaults to the live dataset, so the same code also works with the content types added
+  to one dataset. Both live in `lib/sanity-config.ts`.
+- References between the datasets are plain strings (for example a campaign's featured event is
+  the event's `_id`), because cross-dataset references need a paid plan.
+
+### The source gate
+
+`CMS_CONTENT_SOURCE` (server only, read at render time; `lib/cms-content.ts`):
+
+- `code` (default): every slice returns its code fallback and makes no request. This is the site
+  as it was, byte for byte.
+- `sanity`: slices query the content dataset (published perspective, CDN, no token) and lay the
+  result over the code fallback.
+- Anything else throws, so a typo fails the build instead of silently serving code.
+
+Pages are static or ISR, so a change takes effect with the next build or revalidation.
+
+### The fallback merge
+
+`mergeOverFallback(fallback, fetched)` (`lib/cms-content-model.ts`) decides per value:
+
+- not set (`null`, missing, blank string, empty list): the code value;
+- lists: replaced wholesale when the fetched list has items;
+- plain objects (singletons, field groups): merged field by field, recursively; set fields the
+  fallback lacks are added;
+- images (`ContentImage`, objects with a `src`): atomic, never mixed with the code image;
+- primitives: the fetched value when its type matches.
+
+So a failed request, an empty collection or a half-filled singleton renders the code content for
+whatever is missing. The cost: the CMS cannot clear a value that code fills; remove it from the
+fallback instead.
+
+### Content slices
+
+Each domain owns a slice next to its data: `features/<x>/content.ts` (or
+`config/<x>-content.ts` for facts), server only, exporting typed getters (`getApplyFaqs()`), and
+`build<X>Backfill()`. Queries use `defineQuery` so TypeGen types them. Types shared by several
+features (the `faq` type) keep their shared part in `lib` (`lib/faq-content.ts`), with the
+fallback passed in. Schemas live in `src/sanity/schemas/content/`.
+
+Facts that copy states (recruiting dates, deadlines, role emails) stay derived: the text holds a
+`{{placeholder}}` (`lib/content-tokens.ts`), filled from `config/content-tokens.ts` at render time,
+in code and CMS text alike. The Studio validates the names; an unknown one drops that entry.
+
+### Mock and parity
+
+With `USE_MOCK_CMS=1` and `CMS_CONTENT_SOURCE=sanity`, `fetchContent` evaluates the real GROQ
+query with groq-js over the slice's backfill documents, their `_sanityAsset` images turned into
+`sanity.imageAsset` documents whose `url` is the shipped `/assets/...` path and whose dimensions
+are read from the file. The module and groq-js (a devDependency) load behind the same build-time
+gate as `lib/mock-cms.ts`. Each slice has a **parity test**: under the mock, the `sanity` source
+returns exactly the `code` source's value. That proves the schema, backfill, query and mapping
+lose nothing, and keeps E2E and visual runs deterministic.
+
+Image sizes in the mock come from the file header, as Sanity reports them, not from sizes typed in
+code: a slice whose code image states another size fails its parity test, which is the mismatch
+production would show.
+
+### Backfill by NDJSON import
+
+`pnpm sanity:backfill [--dataset redesign]` runs every builder registered in
+`scripts/sanity/slices.ts` and writes `.sanity-backfill/<dataset>.ndjson` (gitignored) with a
+count per type. Documents have deterministic, public `_id`s (`[a-z0-9-]`; a `.` would make them
+private). Images use the import convention
+`{"_type":"image","_sanityAsset":"image@file://<abs path>"}`, so `--apply` runs
+`sanity dataset import <file> <dataset> --replace` with the editor's CLI login and uploads the
+files: no write token in the repository or CI. `production` is refused without
+`--allow-production`. `test/cms-backfill.test.ts` checks the registry (unique ids, registered
+types, required fields, existing files).
+
+### Studio workspaces
+
+`src/sanity/sanity.config.ts` has two workspaces, served by the one catch-all route
+`src/app/studio/[[...tool]]`:
+
+- `live` at `/studio/live`: the live dataset, the three existing types, Presentation.
+- `content` at `/studio/content`: the content dataset, the content types, a structure that pins
+  singletons (fixed `_id`, no create, duplicate or delete) and groups FAQs by page.
+
+Sanity requires workspace base paths of equal depth, so `/studio` itself now redirects to the
+first workspace, and stega's `studioUrl` points at `/studio/live`. TypeGen extracts both
+workspaces and merges them (`scripts/sanity/merge-schemas.mjs`), so one generated file covers both
+datasets; a type name used in both workspaces with different fields fails the merge.
+
+## Consequences
+
+- The `code` source is the default everywhere, so this change and every slice that follows ship
+  without a visible difference until the environment flips.
+- Drafts, Presentation and live updates cover the live dataset only; content edits appear when a
+  page revalidates (or after a `revalidateTag` webhook on the `content:*` tags, not built yet).
+- Code fallbacks remain the source of truth for shape and the safety net for content, so they are
+  kept up to date until the CMS content is reviewed; after launch they can shrink to minimal
+  defaults, slice by slice.
+- `test/content-facts.test.ts` guards literals in source files. Content that moves to the CMS is
+  guarded instead by placeholders and parity tests; the fact patterns stay for code.
+- Nothing here changes `main`'s Studio: until launch, editors keep using the old site's Studio for
+  events, partners and research.
+
+### Risks
+
+- **Legal text stays in code.** Imprint, privacy and disclaimer, and `legalEntity`, are not moved:
+  their wording needs the board, and a CMS edit would bypass review.
+- **Editor permissions.** Both workspaces use the project's roles; the free plan has no
+  per-dataset roles, so anyone who can edit events can edit page content. Review who has access
+  before launch.
+- **Placeholders are a contract.** Renaming one breaks CMS text that uses it (the entry is
+  dropped and logged); names are append-only.
+- **A second dataset doubles what editors must keep in sync** until the live types move too.
+
+## Launch runbook
+
+1. Create the content dataset: `sanity dataset create redesign --visibility public` (from
+   `src/sanity`, logged in with `sanity login`).
+2. `pnpm sanity:backfill --dataset redesign`, review `.sanity-backfill/redesign.ndjson` and the
+   counts, then `pnpm sanity:backfill --dataset redesign --apply`.
+3. Editors review and correct the content in `/studio/content` (locally or on a preview
+   deployment with the env below).
+4. Vercel **Preview**: `NEXT_PUBLIC_SANITY_CONTENT_DATASET=redesign` and
+   `CMS_CONTENT_SOURCE=sanity`; check the preview. At launch, set both on **Production**.
+5. Add the Vercel preview and production domains as Sanity CORS origins with credentials allowed
+   (sanity.io/manage, API, CORS origins) if they are missing; the embedded Studio needs them.
+6. After launch, fill `hosts` on the live events in `production` with the new Studio
+   (`/studio/live`; see the `TODO(content)` in `lib/mock-cms.ts`).
+
+## Sources
+
+- #286 (move hard-coded content to Sanity), #287 (redesign)
+- `lib/sanity-config.ts`, `lib/cms-content.ts`, `lib/cms-content-model.ts`,
+  `lib/cms-content-mock.ts`, `lib/cms-backfill.ts`, `lib/content-tokens.ts`,
+  `lib/faq-content.ts`, `src/sanity/sanity.config.ts`, `scripts/sanity/`
+- [cms-content-inventory.md](../cms-content-inventory.md): what moves, when and by whom

@@ -16,6 +16,7 @@ inventing one.
 | [0006](0006-sanity-typegen.md) | Sanity TypeGen for query result types | Accepted |
 | [0007](0007-facts-in-config.md) | Site facts live once in `src/config/`, guarded by a test | Accepted |
 | [0008](0008-dist-dir-isolation.md) | Separate Next.js dist dirs for dev and production | Accepted |
+| [0009](0009-cms-content-source.md) | Page content from a second Sanity dataset, behind `CMS_CONTENT_SOURCE`, merged over code fallbacks | Accepted |
 
 ## Writing a new ADR
 
