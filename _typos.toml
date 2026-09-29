@@ -31,3 +31,9 @@ Academicus = "Academicus"
 Subtile = "Subtile"
 Elemente = "Elemente"
 Fokus = "Fokus"
+
+# Sanity document identifiers (`_id`, `_rev`, `_ref`, `_key`) are opaque
+# random strings, e.g. in test/fixtures/production-documents.json, the old
+# site's documents kept with their real ids.
+[type.json]
+extend-ignore-re = ['"_(?:id|rev|ref|key)":\s*"[^"]*"']
