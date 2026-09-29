@@ -22,13 +22,14 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-function renderHero(events: ReturnType<typeof getMockEvents>) {
+/** The hero is an async server component: await its element, then render it. */
+async function renderHero(events: ReturnType<typeof getMockEvents>) {
   return render(
-    <EventsHero
-      summary={summarizeEvents(events)}
-      hosts={indexHosts(events)}
-      hasUpcoming={false}
-    />,
+    await EventsHero({
+      summary: summarizeEvents(events),
+      hosts: indexHosts(events),
+      hasUpcoming: false,
+    }),
   );
 }
 
@@ -37,7 +38,7 @@ describe("EventsHero", () => {
     const events = getMockEvents(new Date("2026-10-01T12:00:00Z")).map(
       (event) => ({ ...event, hosts: [] }),
     );
-    const { container } = renderHero(events);
+    const { container } = await renderHero(events);
     const title = screen.getByRole("heading", { level: 1 });
     // jsdom drops the space before " events" that browsers keep.
     expect(title).toHaveAccessibleName(/^TUM\.ai\s*events$/);
@@ -48,11 +49,11 @@ describe("EventsHero", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
-  test("sets the × before the co-host index when there are co-hosts", () => {
+  test("sets the × before the co-host index when there are co-hosts", async () => {
     const events = getMockEvents(new Date("2026-10-01T12:00:00Z"));
     const hosts = indexHosts(events);
     expect(hosts.length).toBeGreaterThan(0);
-    renderHero(events);
+    await renderHero(events);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("×");
     expect(
       screen.getByRole("list", { name: /co-hosts/i }).children,

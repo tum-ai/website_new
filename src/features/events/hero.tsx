@@ -1,9 +1,10 @@
 import Image from "next/image";
 import { Actions, ButtonLink, Container, TopBlend } from "@/components/ds";
 import type { Event } from "@/lib/types";
-import { hostIcon, hostLogo } from "./data/host-logos";
+import { type HostArtwork, hostIcon, hostLogo } from "./data/host-logos";
 import { type EventSummary, formatEventDate, type HostEntry } from "./events";
 import { HeroReel } from "./hero-reel";
+import { getHostArtwork } from "./host-content";
 import { Lockup } from "./lockup";
 
 /**
@@ -15,8 +16,9 @@ import { Lockup } from "./lockup";
  * then wherever the reader turns the reel, and the events of the name in the
  * slot show beside it. Otherwise (reduced motion, no JavaScript) it is a
  * static two-column index. Mechanics: `events.css` and {@link HeroReel}.
+ * Co-host artwork comes from the co-host slice (the CMS or the code list).
  */
-export function EventsHero({
+export async function EventsHero({
   summary,
   hosts,
   hasUpcoming,
@@ -29,6 +31,7 @@ export function EventsHero({
   hasUpcoming: boolean;
 }) {
   const rolls = hosts.length > 1;
+  const artwork = rolls ? await getHostArtwork() : undefined;
   return (
     <HeroReel
       count={hosts.length}
@@ -74,7 +77,7 @@ export function EventsHero({
                       </li>
                     ))}
                   </ul>
-                  {rolls ? <Reel hosts={hosts} /> : null}
+                  {artwork ? <Reel hosts={hosts} artwork={artwork} /> : null}
                 </div>
               </div>
             ) : null}
@@ -163,13 +166,19 @@ function Count({ count }: { count: number }) {
  * verified dark-band artwork show their logo, sized to one optical area.
  * Decorative: the list above carries the names for assistive technology.
  */
-function Reel({ hosts }: { hosts: HostEntry<Event>[] }) {
+function Reel({
+  hosts,
+  artwork,
+}: {
+  hosts: HostEntry<Event>[];
+  artwork: HostArtwork;
+}) {
   return (
     <div aria-hidden="true" className="events-reel">
       {[0, 1, 2].map((copy) =>
         hosts.map((host) => {
-          const logo = hostLogo(host.name);
-          const icon = logo ? undefined : hostIcon(host.name);
+          const logo = hostLogo(host.name, artwork);
+          const icon = logo ? undefined : hostIcon(host.name, artwork);
           const height = logo ? Math.min(0.9, Math.sqrt(1.5 / logo.aspect)) : 0;
           return (
             <div key={`${copy}-${host.name}`} className="events-name">

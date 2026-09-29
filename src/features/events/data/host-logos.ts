@@ -1,54 +1,94 @@
-/** A file in the co-host artwork folder. */
-const host = (file: string) => `/assets/events/hosts/${file}`;
+import { organizationByKey } from "@/features/partners";
+import type { LogoLists, Organization } from "@/lib/people-and-logos";
 
-/** Artwork the partner pages already ship, reused rather than copied. */
-const partner = (path: string) => `/assets/partners/${path}`;
+/** A co-host's dark-band logo and the drawn artwork's width over height. */
+export type HostLogo = { src: string; aspect: number };
 
 /**
- * Official artwork of the events' co-hosts in its dark-background variant
- * (brand colours unchanged; sources in public/assets/events/hosts/SOURCES.md),
- * keyed by the name's letters and digits, lower-cased, with the artwork's
- * width over height. The hero sizes each logo to one optical area from it. A
- * co-host missing here is set as its name.
+ * The co-host artwork the hero reads, by host key (the name's letters and
+ * digits, lower-cased): wordmark logos, and app icons for co-hosts whose
+ * official artwork is an icon only (the name is set beside it as text, the
+ * way their own site composes its header).
  */
-const logos: Readonly<Record<string, { src: string; aspect: number }>> = {
-  anthropic: { src: partner("marquee/anthropic.svg"), aspect: 8.906 },
-  aws: { src: partner("marquee/aws.webp"), aspect: 1.672 },
-  beyondpresence: { src: host("beyond-presence.svg"), aspect: 10.752 },
-  bkw: { src: host("bkw.svg"), aspect: 4.162 },
-  bmw: { src: partner("logos/bmw.svg"), aspect: 1 },
-  cdtm: { src: host("cdtm.svg"), aspect: 1.32 },
-  googlecloud: { src: host("google-cloud.svg"), aspect: 6.137 },
-  huggingface: { src: host("hugging-face.svg"), aspect: 4.516 },
-  lovable: { src: host("lovable.svg"), aspect: 5.495 },
-  managemore: { src: host("manage-and-more.svg"), aspect: 4.299 },
-  manageandmore: { src: host("manage-and-more.svg"), aspect: 4.299 },
-  n8n: { src: host("n8n.svg"), aspect: 3.684 },
-  nvidia: { src: partner("marquee/nvidia.webp"), aspect: 1.286 },
-  projecta: { src: host("project-a.svg"), aspect: 4.017 },
-  redbull: { src: host("red-bull.svg"), aspect: 224.189 / 36 },
-  tacto: { src: host("tacto.svg"), aspect: 3.08 },
-  yellow: { src: host("yellow.svg"), aspect: 3.435 },
+export type HostArtwork = {
+  logos: Readonly<Record<string, HostLogo>>;
+  icons: Readonly<Record<string, string>>;
 };
 
 /**
- * Co-hosts whose official artwork is an app icon only, with the name set
- * beside it as text, the way their own site composes its header.
+ * The events co-hosts with official artwork for the hero's dark band, from
+ * the organisation table (brand colours unchanged; sources in
+ * public/assets/events/hosts/SOURCES.md): the code source of the
+ * `event-hosts` logo list (`features/events/host-content.ts`). A co-host
+ * missing here is set as its name.
  */
-const icons: Readonly<Record<string, string>> = {
-  mercura: host("mercura-icon.webp"),
+export const eventHostLists: LogoLists<"event-hosts"> = {
+  "event-hosts": [
+    "anthropic",
+    "aws",
+    "beyond-presence",
+    "bkw",
+    "bmw",
+    "cdtm",
+    "google-cloud",
+    "hugging-face",
+    "lovable",
+    "manage-and-more",
+    "n8n",
+    "nvidia",
+    "project-a",
+    "red-bull",
+    "tacto",
+    "yellow",
+    "mercura",
+  ].map(organizationByKey),
 };
 
 const key = (name: string) => name.toLowerCase().replace(/[^a-z0-9]/g, "");
 
+/**
+ * The hero's artwork from a list: each organisation's dark logo under its
+ * key and its name ("manage-and-more" and "Manage & More" both match), sized
+ * by its drawn aspect ratio (else the file's). Symbol-only artwork is an
+ * icon.
+ */
+export function hostArtworkOf(list: readonly Organization[]): HostArtwork {
+  const logos: Record<string, HostLogo> = {};
+  const icons: Record<string, string> = {};
+  for (const organization of list) {
+    const artwork = organization.logoOnDark;
+    if (!artwork) continue;
+    for (const hostKey of new Set([
+      key(organization.key),
+      key(organization.name),
+    ])) {
+      if (artwork.symbolOnly) {
+        icons[hostKey] = artwork.src;
+      } else {
+        logos[hostKey] = {
+          src: artwork.src,
+          aspect: artwork.aspectRatio ?? artwork.width / artwork.height,
+        };
+      }
+    }
+  }
+  return { logos, icons };
+}
+
+const codeArtwork = hostArtworkOf(eventHostLists["event-hosts"]);
+
 /** The co-host's dark-band logo, if the site has one. */
 export function hostLogo(
   name: string,
-): { src: string; aspect: number } | undefined {
-  return logos[key(name)];
+  artwork: HostArtwork = codeArtwork,
+): HostLogo | undefined {
+  return artwork.logos[key(name)];
 }
 
 /** The co-host's app icon, for co-hosts without a wordmark file. */
-export function hostIcon(name: string): string | undefined {
-  return icons[key(name)];
+export function hostIcon(
+  name: string,
+  artwork: HostArtwork = codeArtwork,
+): string | undefined {
+  return artwork.icons[key(name)];
 }
