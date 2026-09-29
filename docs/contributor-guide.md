@@ -122,24 +122,28 @@ Legal facts and figures without a source are not changed on a guess: keep the cu
 
 ### Editing content: the Studio or code
 
-Page content lives in Sanity's content dataset, with the repository's copy as its fallback
+Page content lives in the site's Sanity dataset (`redesign`), with the repository's copy as its
+fallback
 ([ADR 0009](adr/0009-cms-content-source.md); the model and owners are in
-[cms-content-inventory.md](cms-content-inventory.md)). Which one the site renders is
+[cms-content-inventory.md](cms-content-inventory.md)). The same dataset holds the events,
+partners and research, copied from the old site's `production` dataset before launch. Which one the site renders is
 `CMS_CONTENT_SOURCE`: `code` (the default, and the site until launch) renders the repository and
 never calls Sanity; `sanity` (after launch) renders the CMS and falls back to the code content
 for anything empty, invalid or missing, so a page never breaks on an unfinished document.
 
-After launch, editors change these in the Studio:
+After launch, editors change these in the Studio at `/studio` (on a deployment with
+`NEXT_PUBLIC_SANITY_DATASET=redesign`; on `production` it shows events, partners and research
+only):
 
 | Content | Where in the Studio |
 | --- | --- |
-| Events, research projects, partner logos in the directory | `/studio/live` (the live dataset, shared with the old site) |
-| Organisation and impact figures, the mission, role emails, social links, the partnership booking page, the E-Lab program facts and selection funnel, the footer tagline, the header CTA fallback | `/studio/content`: Site settings |
-| The membership round (dates, form, open switch) and the E-Lab application window (deadline, form, next window) | `/studio/content`: Application windows |
-| Dated header CTAs and featured events | `/studio/content`: Campaigns |
-| Every page's headings, leads, captions, photos and section copy | `/studio/content`: the page's singleton (Homepage, Apply page, E-Lab page, Community page, Events page, Projects page, Research page, Q&A page, Partners page) |
-| FAQs, milestones, the member journey, departments, task forces, lab sites | `/studio/content`: their lists |
-| Organisations and their logos, the logo lists' order, people (member stories, partner profiles, E-Lab testimonials), case studies, the traced E-Lab venture | `/studio/content`: Logos and people |
+| Events (with their co-hosts), research projects, partner logos in the directory | Events, Partners, Research projects |
+| Organisation and impact figures, the mission, role emails, social links, the partnership booking page, the E-Lab program facts and selection funnel, the footer tagline, the header CTA fallback | Site settings |
+| The membership round (dates, form, open switch) and the E-Lab application window (deadline, form, next window) | Application windows |
+| Dated header CTAs and featured events | Campaigns |
+| Every page's headings, leads, captions, photos and section copy | the page's singleton (Homepage, Apply page, E-Lab page, Community page, Events page, Projects page, Research page, Q&A page, Partners page) |
+| FAQs, milestones, the member journey, departments, task forces, lab sites | their lists |
+| Organisations and their logos, the logo lists' order, people (member stories, partner profiles, E-Lab testimonials), case studies, the traced E-Lab venture | Logos and people |
 
 These stay in code, always:
 
@@ -157,7 +161,8 @@ Figures, dates and emails inside editable text are placeholders such as `{{eLab.
 windows at render. A few texts take page tokens, like `{{count}}`, which the page fills from what
 it lists; the field's help text names them. A published edit shows on the next request a few
 seconds later: a Sanity webhook calls `/api/revalidate`, which expires the pages that read the
-changed type (without the webhook: within the page's `revalidate` time, at most an hour). There is no draft preview for the content dataset yet.
+changed type (without the webhook: within the page's `revalidate` time, at most an hour). There
+is no draft preview for page content yet (only for events, partners and research).
 
 Until launch, and in the code fallback, the repository is the source: copy in
 `src/features/<domain>/data/`, facts in `src/config/`.
@@ -187,7 +192,7 @@ Follow the "Content slices" section of the `cms-content-model` skill: schema in
 
 ### Change events, research or partners data
 
-Content is edited in `/studio/live` (locally or on a preview deployment). To change the shape of the
+Content is edited in `/studio` (locally or on a preview deployment). To change the shape of the
 data, follow the order in the `cms-content-model` skill:
 
 1. schema in `src/sanity/schemas/`;
@@ -237,7 +242,7 @@ Today every path on `join.tum-ai.com` redirects to `/apply`.
 Use a Vercel preview deployment as staging for CMS changes. With `SANITY_API_READ_TOKEN` set for
 Preview and Development:
 
-1. Open `/studio/live` on the preview deployment.
+1. Open `/studio` on the preview deployment.
 2. Use the Presentation tool. It calls `/api/draft-mode/enable` and loads the page in an iframe.
 3. The site reads Sanity's draft perspective, and `<SanityLive>` refreshes it as you edit.
 

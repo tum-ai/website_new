@@ -1,16 +1,19 @@
 ---
 name: cms-content-model
-description: End-to-end recipe for changing the Sanity content model of the TUM.ai website (events, research projects, partners, a content-dataset type such as faq, or a new document type), and for moving hard-coded content into the CMS as a content slice. Use whenever a task adds, renames or removes a CMS field or type, changes a GROQ query or projection, touches Sanity TypeGen output, the mock CMS fixtures, a content slice (`content.ts`, `build*Backfill`, `scripts/sanity/slices.ts`), or the public /api/getNotes, getPartners or getResearch responses, even if it looks like "just show one more field on the events page".
+description: End-to-end recipe for changing the Sanity content model of the TUM.ai website (events, research projects, partners, a page content type such as faq, or a new document type), and for moving hard-coded content into the CMS as a content slice. Use whenever a task adds, renames or removes a CMS field or type, changes a GROQ query or projection, touches Sanity TypeGen output, the mock CMS fixtures, a content slice (`content.ts`, `build*Backfill`, `scripts/sanity/slices.ts`), or the public /api/getNotes, getPartners or getResearch responses, even if it looks like "just show one more field on the events page".
 ---
 
 # Change the CMS content model
 
-Two datasets, two recipes (docs/adr/0009-cms-content-source.md):
+One dataset, `NEXT_PUBLIC_SANITY_DATASET` (`redesign` for the new site), two recipes
+(docs/adr/0009-cms-content-source.md):
 
-- **Live dataset** (`event`, `partner`, `research`; the old site on `main` reads it too): steps 1
-  to 7 below. Never add a type to it.
-- **Content dataset** (page content moving out of code: FAQs, campaigns, logos, people, copy):
-  the "Content slices" section at the end.
+- **The old site's types** (`event`, `partner`, `research`; `redesign` holds copies of the
+  documents in `production`, which the old site on `main` reads): steps 1 to 7 below. Never add
+  a type to `schemas/index.ts`: the Studio registers those on `production` too.
+- **Page content types** (content moving out of code: FAQs, campaigns, logos, people, copy): the
+  "Content slices" section at the end. The Studio registers them on every dataset except
+  `production`.
 
 Sanity data crosses five layers, and each one fails differently when it drifts: the Studio schema,
 the GROQ query, the generated types, the mock fixtures used for local work and E2E, and the UI.
@@ -18,11 +21,15 @@ Change them in this order and keep each step green.
 
 ## 1. Schema
 
-Edit a live type in `src/sanity/schemas/` (`defineType`, `defineField`; registered in
-`src/sanity/schemas/index.ts`, the `live` workspace). New document types go into the content
-dataset instead (see "Content slices"). Enumerated fields use `options.list` so TypeGen emits a
-union. Check it in the Studio: `pnpm dev`, then `/studio/live` (needs the Sanity env vars from
-Vercel).
+Edit an event, partner or research field in `src/sanity/schemas/` (`defineType`, `defineField`;
+registered in `src/sanity/schemas/index.ts`). New document types are page content types instead
+(see "Content slices"). Enumerated fields use `options.list` so TypeGen emits a union. Check it
+in the Studio: `pnpm dev`, then `/studio` (needs the Sanity env vars from Vercel;
+`NEXT_PUBLIC_SANITY_DATASET=redesign` for the page content types too).
+
+A new field on these types starts empty in `redesign` and in `production`: the backfill copies
+documents as they are (`scripts/sanity/production-copy.ts`), so fill it in the Studio or, before
+launch, add it to the copy (as `hosts` is, from `liveEventHosts` in `lib/mock-cms.ts`).
 
 Removing or renaming a field breaks existing documents and the public API: keep the old field
 readable (or alias it in the projection) until the content is migrated.
@@ -74,13 +81,12 @@ pnpm exec vitest run src/lib/sanity-queries.test.ts src/lib/mock-cms.test.ts <do
 CI runs the full suite, the TypeGen freshness check, the build and the E2E specs for the routes
 that show the data.
 
-Check the draft preview when the change affects what editors see: open `/studio/live`, use
+Check the draft preview when the change affects what editors see: open `/studio`, use
 Presentation, edit a draft and confirm the page updates (needs `SANITY_API_READ_TOKEN`).
 
-## Content slices (moving hard-coded content into the content dataset)
+## Content slices (moving hard-coded content into the CMS)
 
-A slice is one `content.ts` module that serves a domain's content from code or from the content
-dataset. The reference is the FAQ slice: `src/features/apply/content.ts`,
+A slice is one `content.ts` module that serves a domain's content from code or from the CMS. The reference is the FAQ slice: `src/features/apply/content.ts`,
 `src/features/apply/data/faq.ts`, `src/lib/faq-content.ts`,
 `src/sanity/schemas/content/faq.ts`, `src/features/apply/content.test.ts`. The APIs are in
 `src/lib/cms-content.ts` (`loadContent`, `fetchContent`, `getContentSource`),
@@ -116,8 +122,9 @@ proves the CMS path renders the same.
    `contentImageField` and text with facts with `validatePlaceholders` + `placeholderHelp`
    (`./fields.ts`); an `order` number for editor-sorted lists. Register it in
    `schemas/content/index.ts` (singletons also in `contentSingletons`: one document whose `_id`
-   is the type name). Never in `schemas/index.ts`: that is the live dataset. References to live
-   documents (an event) are `_id` strings: no cross-dataset references on the free plan.
+   is the type name). Never in `schemas/index.ts`: those types are registered on `production`
+   too. A campaign's featured event is the event's `_id` as a string, so it never blocks
+   deleting the event.
 3. **Slice.** `src/features/<x>/content.ts` (a second slice in the same feature:
    `<topic>-content.ts`; facts: `src/config/<x>-content.ts`), starting with
    `import "server-only"`:
@@ -183,4 +190,4 @@ page draws as a whole, like the E-Lab gates or the journey's fork) must fall bac
 when `select` or `fillCmsCopy` drops any item, and check its invariants (every gate figure once,
 a two-step fork); lists replace wholesale
 (no per-item merge); the CMS cannot clear a value the fallback sets; content edits show after
-revalidation (no drafts or `SanityLive` for the content dataset yet).
+revalidation (no drafts or `SanityLive` for page content yet).

@@ -7,7 +7,7 @@ import { fillPageTokens } from "@/lib/content-copy";
  * placeholders for site facts, filled when the page renders; the abstract
  * body also holds page tokens (`researchPageTokens`) that
  * {@link getAbstractBody} fills from the running projects. The REX copy
- * (`rex.ts`) and the projects themselves (the live dataset) are separate.
+ * (`rex.ts`) and the projects themselves (`research` documents) are separate.
  */
 
 /** One panel of Figure 1: a photo and its part of the caption. */

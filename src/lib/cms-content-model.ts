@@ -1,6 +1,6 @@
 /**
  * Shapes and pure helpers for page content that can come from code or from
- * the content dataset (see `lib/cms-content.ts` and
+ * the CMS (see `lib/cms-content.ts` and
  * docs/adr/0009-cms-content-source.md). Isomorphic and free of Next or
  * Sanity runtime imports, so client components may import the types and
  * tests need no mocks.

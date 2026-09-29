@@ -41,9 +41,11 @@ batch the fixes into one push. Never close and reopen a PR to re-run CI. Details
 `pnpm build` writes `.next-prod`; `pnpm start` serves it. `test:perf` reads that build.
 `pnpm sanity:typegen` regenerates `src/lib/sanity.types.generated.ts` after a schema or query
 change (CI fails when it's stale; `pnpm sanity:typegen:check` shows it locally).
-`pnpm sanity:backfill --dataset redesign` (required; never the live dataset) writes the content slices' documents to
-`.sanity-backfill/<dataset>.ndjson` (a dry run); its `--apply` imports them into Sanity and is a
-maintainer's launch step, never part of a change (docs/adr/0009-cms-content-source.md). In the
+`pnpm sanity:backfill --dataset redesign` (required; never `production`) is the one migration
+command: it writes the content slices' documents plus a read-only copy of `production`'s published
+events, partners and research (with the events' co-hosts) to `.sanity-backfill/<dataset>.ndjson`
+(a dry run; needs `NEXT_PUBLIC_SANITY_PROJECT_ID`); its `--apply` imports them into Sanity and is
+a maintainer's launch step, never part of a change (docs/adr/0009-cms-content-source.md). In the
 Claude sandbox, run `sanity:typegen` and `sanity:backfill` unsandboxed (tsx and the Sanity CLI
 fail with EPERM there).
 
@@ -54,7 +56,7 @@ Full description, data flow and rationale: `docs/architecture.md` and `docs/adr/
 ```
 src/app/(site)/<route>/page.tsx   thin route: metadata + JsonLd + the feature's page component
 src/app/(site)/layout.tsx         site root layout: skip link, header, #main-content, footer, SanityLive
-src/app/studio/[[...tool]]/       Sanity Studio (workspaces /studio/live, /studio/content), own root layout
+src/app/studio/[[...tool]]/       Sanity Studio (one workspace at /studio), own root layout
 src/app/global-not-found.tsx      404 for unmatched URLs (there are two root layouts)
 src/app/api/                      getNotes | getPartners | getResearch (public JSON API), draft-mode,
                                   revalidate (Sanity webhook → revalidateTag)
@@ -74,9 +76,9 @@ src/lib/                          cn, sanity-config, sanity client/queries/fetch
                                   people-and-logos, organization-content, person-content,
                                   passage-spans, clock-window, munich-time, words, use-clock-switch,
                                   use-media-query, security, redirects
-src/sanity/                       Studio config (live + content workspaces) and schemas (TypeGen
-                                  writes src/lib/sanity.types.generated.ts)
-scripts/sanity/                   backfill script and slice registry, schema merge for TypeGen
+src/sanity/                       Studio config, desk structure and schemas (TypeGen writes
+                                  src/lib/sanity.types.generated.ts)
+scripts/sanity/                   backfill script, slice registry, copy from production
 src/styles/index.css              tokens, tones, cascade layers, utilities
 src/proxy.ts                      host redirects (join.tum-ai.com to /apply)
 test/                             repo-wide fitness tests (content facts, assets, perf budget)
@@ -132,8 +134,8 @@ also fails when any `"use client"` module reaches a `server-only` module, `next/
 | Task | Where | Skill |
 |---|---|---|
 | Add a page | route + feature folder + `config/seo.ts` + nav + `siteRoutes` in `e2e/fixtures.ts` | `add-page` |
-| Change a site fact | after launch: the Studio (`/studio/content`, Site settings or an application window); in code, the matching file in `src/config/` (`e-lab`, `membership`, `organization`, `contact`, `community`, `impact`, `site`), the fallback | `site-facts` |
-| Change static copy | after launch: the page's singleton in `/studio/content`; in code, `src/features/<domain>/data/` (the fallback a slice serves) | |
+| Change a site fact | after launch: the Studio (`/studio`, Site settings or an application window); in code, the matching file in `src/config/` (`e-lab`, `membership`, `organization`, `contact`, `community`, `impact`, `site`), the fallback | `site-facts` |
+| Change static copy | after launch: the page's singleton in `/studio`; in code, `src/features/<domain>/data/` (the fallback a slice serves) | |
 | Change a standing CTA label | `src/config/calls-to-action.ts` | |
 | Change a CMS type or field | `src/sanity/schemas/` then query, types, mock, UI | `cms-content-model` |
 | Move hard-coded content to the CMS | a content slice: schema in `src/sanity/schemas/content/`, `features/<x>/content.ts`, `scripts/sanity/slices.ts`, parity test; owners in `docs/cms-content-inventory.md` | `cms-content-model` |
@@ -205,14 +207,15 @@ Hard rules:
   offset) fixes the "now" the fixtures and the `/events` and `/apply` render dates use; E2E sets
   `2026-10-01T12:00:00Z`. Without Sanity env vars, CMS pages render empty lists.
 - **CMS content source.** `CMS_CONTENT_SOURCE` (server only) is `code` by default: content slices
-  return their code fallbacks and make no request. `sanity` reads the content dataset
-  (`NEXT_PUBLIC_SANITY_CONTENT_DATASET`; no default: unset, or naming the live dataset, the Studio
-  has no `content` workspace and `sanity` renders the code content, logged once) and merges it
-  over the fallbacks; with `USE_MOCK_CMS=1` it queries the backfill documents locally. Drafts and
-  `SanityLive` cover the live dataset only. A slice tags its query `content:<type>` for every
+  return their code fallbacks and make no request. `sanity` reads the page content of the one
+  dataset, `NEXT_PUBLIC_SANITY_DATASET` (`redesign` for the new site), and merges it over the
+  fallbacks; with `USE_MOCK_CMS=1` it queries the backfill documents locally. On `production`
+  (the default, the old site's dataset) the Studio has no content types and `sanity` renders the
+  code content, logged once: page content never goes there. Drafts and `SanityLive` cover events,
+  partners and research only. A slice tags its query `content:<type>` for every
   type it reads (`lib/cache-tags.ts`): the Sanity webhook at `/api/revalidate`
   (`SANITY_REVALIDATE_SECRET`) expires those tags on publish.
-- **Draft mode and Studio.** Presentation in `/studio/live` enables drafts via `/api/draft-mode/enable`,
+- **Draft mode and Studio.** Presentation in `/studio` enables drafts via `/api/draft-mode/enable`,
   which needs `SANITY_API_READ_TOKEN` (server only; never expose it to the browser; 503 without
   it). `/api/draft-mode/disable` leaves draft mode. `SANITY_API_BROWSER_TOKEN` is a separate,
   optional token for live drafts outside Presentation. `/studio` must never import the site shell

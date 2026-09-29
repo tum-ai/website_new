@@ -6,7 +6,7 @@ import type { ContentImage } from "./cms-content-model";
  * the departments (/community lists them, the homepage counts them). The
  * Studio schemas (`journeyStep`, `department`) use the icon keys, so this
  * lives in `lib`. The content itself is in `features/community/data/` (code)
- * or the content dataset (`lib/community-content.ts`). Isomorphic.
+ * or the CMS (`lib/community-content.ts`). Isomorphic.
  */
 
 /** One core department. */

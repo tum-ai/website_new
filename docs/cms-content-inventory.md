@@ -1,10 +1,10 @@
 # CMS content inventory
 
 Every piece of hard-coded content on the site, where it is used, and what happens to it as content
-moves into the Sanity content dataset (issue #286, [ADR 0009](adr/0009-cms-content-source.md)). The
+moves into the site's Sanity dataset, `redesign` (issue #286, [ADR 0009](adr/0009-cms-content-source.md)). The
 recipe for moving one piece is the "Content slices" section of the `cms-content-model` skill.
 
-- **Decision:** the target type in the content dataset, or **keep** (stays in code, with the
+- **Decision:** the target content type, or **keep** (stays in code, with the
   reason).
 - **Phase:** 1 campaigns and application windows; 2 `siteSettings` singleton facts; 3 logos and
   people; 4 page copy. **Done** is served by a slice and rendered from it (all phases, after the
@@ -18,14 +18,18 @@ Paths are relative to `src/` unless they start with `public/`.
 
 ## Target types
 
-All in `sanity/schemas/content/`, registered only in the `content` workspace. References to live
-documents (events) are `_id` strings, because the free plan has no cross-dataset references;
-references between content types are normal references.
+All in `sanity/schemas/content/`, registered in the Studio on every dataset except `production`
+(the old site's). A campaign's featured event is the event's `_id` as a string, so the campaign
+never blocks deleting the event; references between content types are normal references.
+
+The old site's types (`event`, `partner`, `research`) are not in this table: the backfill copies
+their published documents from `production` into `redesign` unchanged (same `_id`s), adding the
+events' `hosts` from `liveEventHosts` in `lib/mock-cms.ts`.
 
 | Type | Kind | Holds | Owner |
 | --- | --- | --- | --- |
 | `faq` | list | `collection` (`apply`, `e-lab`, `qanda`), `order`, `question`, `answer` (plain text with `{{placeholders}}`); Q&A-only `anchor`, `points`, `spans`, `evidence` | done |
-| `campaign` | list | `name`, start and end (Sanity dates plus Munich "HH:MM" times), the header CTA (`variant` key `member`/`partner`/`elab`/`notify`, optional `label`, `yieldsToRecruiting`), `notifyUrl`, `featuredEventId` (a live event `_id` as a string); no priority: the latest start wins | done (A) |
+| `campaign` | list | `name`, start and end (Sanity dates plus Munich "HH:MM" times), the header CTA (`variant` key `member`/`partner`/`elab`/`notify`, optional `label`, `yieldsToRecruiting`), `notifyUrl`, `featuredEventId` (an event `_id` as a string); no priority: the latest start wins | done (A) |
 | `applicationWindow` | list | `program` (`membership`, `e-lab`), `roundName` or cohort, `switchedOn`, `opens`, `deadlineDate`, `deadlineTime` (Munich), `applicationUrl`, `milestones[]` (`key` such as `interviews`/`onboarding`, `from`, `to`), `nextWindowLabel` | done (A) |
 | `siteSettings` | singleton | organization figures, `brandMission`, role emails, social links, booking page and host, community and impact figures, E-Lab program facts (length, funding, selection funnel, hero logo), footer tagline, header CTA fallback | done (A) |
 | `organization` | list | `name`, `key` (kebab-case; pages match its letters and digits), `shortName`, `href`, `logo` and optional `logoOnDark` (image with `alt`, `symbolOnly`, `aspectRatio`); one document per company, reused by every surface | done (B) |
@@ -80,7 +84,7 @@ fields, and each owner defines its own schema file.
 
 | Content | Source | Consumers | Decision | Owner |
 | --- | --- | --- | --- | --- |
-| Partner directory fallback | `partners/data/partner-logos.ts`: `featuredPartners` (18) | `partners/partner-directory.ts` → home hero, home partners, partners page | **keep** as the fallback of the live `partner` type (never add `partner` documents to production); logo overrides by `key` via `organization` if needed | B |
+| Partner directory fallback | `partners/data/partner-logos.ts`: `featuredPartners` (18) | `partners/partner-directory.ts` → home hero, home partners, partners page | **keep** as the fallback of the `partner` type (never add `partner` documents to production); logo overrides by `key` via `organization` if needed | B |
 | Symbol-only logos | `partners/data/partner-logos.ts`: `symbolOnlyLogos` | `partner-tile.tsx`, `partner-marquee.tsx`, home partners | **done**: `organization.symbolOnly` | B |
 | Alumni destinations | `partners/data/partner-logos.ts`: `alumniDestinations` (11) | `partners/sections/people-section.tsx` | **done**: `organization` (`roles: alumniDestination`) | B |
 | Marquee logos (on dark) | `partners/data/partner-marquee-logos.ts`: `marqueeLogos` (18) | `partner-marquee.tsx`, home hero | **done**: `organization.logoOnDark` (`roles: marquee`) | B |
@@ -135,7 +139,7 @@ fields, and each owner defines its own schema file.
 | Standing CTA labels | `config/calls-to-action.ts` ("Become a Member", "Become a Partner", "Apply now", "Questions and answers") | they name destinations, like the menu; one owner keeps every page consistent |
 | Logic with embedded wording | `apply/round.ts` status lines and date notes, `config/e-lab.ts` phase copy, the events hero's counted lead, `e-lab/data/venture-page.ts` `tracedVentureLead`, `events/events.ts`, `events/filters.ts`, `partners/partnerships.ts` mail templates, `research/research.ts` | grammar follows dates and counts; tied to code paths and tests |
 | JSON-LD facts | `config/seo.ts` (emails, social links, E-Lab summary, organisation figures) | SEO structure and synchronous metadata; reads the code facts (a follow-up could pass the render's facts) |
-| Live-dataset mock fixtures | `lib/mock-cms.ts` | test data for events, research, partners |
+| Event, partner and research mock fixtures | `lib/mock-cms.ts` | test data for events, research, partners; its `liveEventHosts` is the source of the co-hosts the backfill adds to the copied events |
 | Design system showcase | `features/design-system/*` | development only |
 
 ## Assets (`public/assets/`)

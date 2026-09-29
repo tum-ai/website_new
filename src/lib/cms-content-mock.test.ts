@@ -66,7 +66,7 @@ describe("readImageSize", () => {
   });
 });
 
-describe("the mock content dataset", () => {
+describe("the mock page content", () => {
   const logo = "/assets/logo_new_white_standard.png";
   const documents = [
     {

@@ -106,8 +106,8 @@ What the specs check:
 - `motion`: under reduced motion every section is visible and nothing is pending or looping.
 - `no-js`: content is visible without JavaScript.
 - `partners`: anchors land below the header, the finder flow, the booking fallback.
-- `routing`: `/design-system` and unknown paths return 404 in production; `/studio` (which redirects
-  to `/studio/live`) has no site shell.
+- `routing`: `/design-system` and unknown paths return 404 in production; `/studio` has no site
+  shell.
 - `visual`: a full-page screenshot per route at 390 and 1440 px.
 
 Use the helpers in `e2e/fixtures.ts` (route list, console and image collectors, lazy-content

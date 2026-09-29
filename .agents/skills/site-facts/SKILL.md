@@ -9,10 +9,10 @@ Facts that change per semester, cohort or year live once in `src/config/`. Pages
 read them, so one edit updates the whole site, and tests fail if a page types a fact in directly.
 
 Two sources (docs/adr/0009-cms-content-source.md). With `CMS_CONTENT_SOURCE=sanity` (after
-launch), editors change the editable facts in `/studio/content`: the Site settings singleton
-(organisation and impact figures, mission, role emails, social links, booking page, E-Lab
-program facts and selection funnel, footer tagline, header CTA fallback), the two Application
-windows (membership round, E-Lab deadline and form) and Campaigns. The config files below are
+launch, on `NEXT_PUBLIC_SANITY_DATASET=redesign`), editors change the editable facts in `/studio`:
+the Site settings singleton (organisation and impact figures, mission, role emails, social links,
+booking page, E-Lab program facts and selection funnel, footer tagline, header CTA fallback), the
+two Application windows (membership round, E-Lab deadline and form) and Campaigns. The config files below are
 then the code fallback: a value the CMS leaves empty or invalid renders the config value. Legal
 facts, the site URL, SEO, navigation and the standing CTA labels (`config/calls-to-action.ts`)
 stay in code only.
@@ -53,7 +53,7 @@ that pages call on the render's facts; change the base fact, not the derived one
 
 ## Change a fact
 
-1. After launch, an editable fact changes in the Studio (`/studio/content`), not here. For the
+1. After launch, an editable fact changes in the Studio (`/studio`), not here. For the
    code value (the fallback, and the site before launch), edit the field in the config file.
    Keep the documented format (German date and 24-hour time for E-Lab deadlines, which
    `parseMunichDateTime` parses in Europe/Berlin).

@@ -44,7 +44,7 @@ src/
 ├── lib/                           cn, Sanity config, fetch layers and queries, content source and its
 │                                  shared slices (FAQ, people and logos, community), copy filling,
 │                                  mock CMS, time, security, redirects
-├── sanity/                        Studio config (live + content workspaces), CLI config, schemas
+├── sanity/                        Studio config (one workspace), desk structure, CLI config, schemas
 ├── styles/index.css               tokens, tones, cascade layers, utilities
 ├── proxy.ts                       host redirects (Next 16's replacement for middleware)
 └── architecture.test.ts           the import-rule fitness test
@@ -68,7 +68,7 @@ its feature folder:
 | `/research` | `features/research/research-page.tsx` (+ `research.css`) | Sanity + content slices, ISR 15 min |
 | `/imprint`, `/data-privacy`, `/disclaimer` | `features/legal/*-page.tsx` | static, ISR 1 h (layout) |
 | `/design-system` | `features/design-system/design-system-page.tsx` | dev and Vercel previews only; 404 in production |
-| `/studio` | `app/studio/[[...tool]]/page.tsx` | the embedded Studio: `/studio/live`, `/studio/content` (`/studio` redirects to `/studio/live`) |
+| `/studio` | `app/studio/[[...tool]]/page.tsx` | the embedded Studio (one workspace on `NEXT_PUBLIC_SANITY_DATASET`) |
 
 Every page also renders the site layout, whose header and footer read the site facts, the
 membership window and the campaigns (`config/*-content.ts`).
@@ -143,12 +143,15 @@ The site and the Studio are separate root layouts:
 
 ## Data flow
 
-Events, research projects and partners come from Sanity's live dataset. Page content is moving
-from Git to a second, content dataset, one content slice at a time (below and
-[ADR 0009](adr/0009-cms-content-source.md)); until a slice exists and the source is switched, it
-is static in Git: facts in `src/config/`, copy in `src/features/<domain>/data/`.
+Everything comes from one Sanity dataset, `NEXT_PUBLIC_SANITY_DATASET` (`lib/sanity-config.ts`):
+`redesign` for the new site, holding copies of the old site's events, partners and research plus
+the page content ([ADR 0009](adr/0009-cms-content-source.md)). Unset, it defaults to
+`production`, the old site's dataset, which never gets page content: there the Studio has no
+content types and the `sanity` source renders the code content. Page content is moving from Git
+into the dataset one content slice at a time (below); until a slice exists and the source is
+switched, it is static in Git: facts in `src/config/`, copy in `src/features/<domain>/data/`.
 
-### The live dataset (events, research, partners)
+### Events, research projects and partners
 
 1. **Schemas** in `src/sanity/schemas/` define the documents.
 2. **Queries** in `src/lib/sanity-queries.ts` are wrapped in `defineQuery`. `pnpm sanity:typegen`
@@ -163,17 +166,16 @@ is static in Git: facts in `src/config/`, copy in `src/features/<domain>/data/`.
 5. **Live updates:** `<SanityLive>` in the site layout refreshes rendered pages when content
    changes.
 
-### The content dataset (content slices)
+### Page content (content slices)
 
-1. **Config:** `lib/sanity-config.ts` names both datasets: `NEXT_PUBLIC_SANITY_DATASET` (live)
-   and `NEXT_PUBLIC_SANITY_CONTENT_DATASET` (content; no default: unset or equal to the live one,
-   the Studio has no `content` workspace and the `sanity` source renders the code content).
-2. **Schemas** in `src/sanity/schemas/content/`, registered only in the Studio's `content`
-   workspace (`/studio/content`).
+1. **Config:** `lib/sanity-config.ts` holds the dataset, `sanityClientConfig` (shared with
+   `lib/sanity.ts`) and `datasetHoldsPageContent`, false for `production` only.
+2. **Schemas** in `src/sanity/schemas/content/`, registered in the Studio (`/studio`) on every
+   dataset except `production`.
 3. **Slices:** `features/<x>/content.ts` (server only) exports getters such as `getApplyFaqs()`
    and a `build<X>Backfill()`. A getter calls `loadContent` (`lib/cms-content.ts`): with
    `CMS_CONTENT_SOURCE=code` (the default) it returns the code fallback and makes no request;
-   with `sanity` it runs the slice's `defineQuery` against the content dataset (published, CDN)
+   with `sanity` it runs the slice's `defineQuery` against the dataset (published, CDN)
    and merges the result over the fallback (`mergeOverFallback` in `lib/cms-content-model.ts`),
    so a missing or empty value renders the code content. Facts inside copy are
    `{{placeholders}}` (`lib/content-tokens.ts`), filled per render from
@@ -182,26 +184,29 @@ is static in Git: facts in `src/config/`, copy in `src/features/<domain>/data/`.
    `lib/content-copy.ts`). Facts a page renders directly come from `await getSiteFacts()`.
 4. **Pages** await the getters in their server page component (or an async server section) and
    pass plain props down. Client islands never import a slice: they get values as props.
-5. **Backfill:** `pnpm sanity:backfill` turns every registered slice
-   (`scripts/sanity/slices.ts`) into NDJSON for `sanity dataset import`; images point at the
-   shipped files (`_sanityAsset`).
+5. **Backfill:** `pnpm sanity:backfill --dataset redesign` turns every registered slice
+   (`scripts/sanity/slices.ts`) into NDJSON for `sanity dataset import`, images pointing at the
+   shipped files (`_sanityAsset`), and adds a copy of the old site's published events, partners
+   and research from `production` (same `_id`s, images as CDN URLs, events with their `hosts`;
+   `scripts/sanity/production-copy.ts`).
 6. **Mock:** under `USE_MOCK_CMS=1` the `sanity` source queries the backfill documents with
    groq-js (`lib/cms-content-mock.ts`), and each slice's parity test checks that this renders
    exactly the code content.
 
-No drafts, Presentation or `<SanityLive>` for this dataset yet: edits show when a page
-revalidates, which the revalidation webhook (below) triggers on every publish.
+No drafts, Presentation click-to-edit or `<SanityLive>` for page content yet: edits show when a
+page revalidates, which the revalidation webhook (below) triggers on every publish.
 
 ### On-demand revalidation (`/api/revalidate`)
 
-A Sanity GROQ webhook per dataset (projection `{_type}`) posts every published change to
-`POST /api/revalidate`. The route checks the `sanity-webhook-signature` header against
+A Sanity GROQ webhook on the site's dataset (projection `{_type}`) posts every published change
+to `POST /api/revalidate`. The route checks the `sanity-webhook-signature` header against
 `SANITY_REVALIDATE_SECRET` with `parseBody` (`next-sanity/webhook`; 401 on a missing or wrong
 signature, 503 while the secret is unset), waits about 3 seconds for the API CDN, and calls
-`revalidateTag(tag, { expire: 0 })` for the type's tags (`lib/cache-tags.ts`): the live types'
-getter tags (`event` → `events`, `partner` → `partners`, `research` → `research-projects`), and
+`revalidateTag(tag, { expire: 0 })` for the type's tags (`lib/cache-tags.ts`): the event,
+partner and research getter tags (`event` → `events`, `partner` → `partners`, `research` → `research-projects`), and
 `content:<type>` for everything else. Every slice tags its query with `content:<type>` for each
-type it reads, dereferenced ones included, and the live getters use `liveCacheTags`
+type it reads, dereferenced ones included, and the event, partner and research getters use
+`liveCacheTags`
 (`test/cache-tags.test.ts` checks that every Studio type maps).
 
 This reaches static routes too, without a route `revalidate` or fetch cache setting: Next
@@ -230,12 +235,12 @@ until then the browser switches at the old instant.
 the flag into server code, so a build without it contains no fixture code, and the gate is off on
 Vercel regardless ([ADR 0005](adr/0005-mock-cms.md)).
 
-**Draft preview.** Presentation in `/studio/live` calls `/api/draft-mode/enable`, which needs
+**Draft preview.** Presentation in `/studio` calls `/api/draft-mode/enable`, which needs
 `SANITY_API_READ_TOKEN` on the server (503 without it). The token never reaches the browser; an
 optional, separate `SANITY_API_BROWSER_TOKEN` can enable live draft updates outside Presentation.
 `/api/draft-mode/disable` leaves draft mode and redirects to same-origin paths only.
 
-**Revalidation.** `/api/revalidate` takes the Sanity webhooks (see "On-demand revalidation"
+**Revalidation.** `/api/revalidate` takes the Sanity webhook (see "On-demand revalidation"
 above).
 
 **Public API.** `/api/getNotes` (events; legacy name), `/api/getPartners` and `/api/getResearch`
@@ -273,13 +278,13 @@ Facts that change per semester, cohort or year live once in `src/config/`
 | Module | Holds |
 | --- | --- |
 | `cn.ts` | class-name merging for Tailwind |
-| `sanity-config.ts` | project, live and content dataset, API version, Studio paths (browser-safe) |
-| `sanity.ts`, `sanity-queries.ts`, `types.ts`, `omit-nulls.ts` | the live dataset: client, Sanity Live, page and public-API getters, queries, app types |
-| `sanity.types.generated.ts` | TypeGen output for both workspaces (never edit) |
-| `mock-cms.ts`, `mock-cms-env.ts` | live-dataset fixtures and the mock clock (`getCmsNow`) |
-| `cms-content.ts` | the content source gate, content-dataset client, `fetchContent`, `loadContent` (server only) |
+| `sanity-config.ts` | project, the one dataset, the shared client config, whether it holds page content, API version, Studio path (browser-safe) |
+| `sanity.ts`, `sanity-queries.ts`, `types.ts`, `omit-nulls.ts` | events, partners and research: client, Sanity Live, page and public-API getters, queries, app types |
+| `sanity.types.generated.ts` | TypeGen output for the Studio's schema (never edit) |
+| `mock-cms.ts`, `mock-cms-env.ts` | event, partner and research fixtures (and `liveEventHosts`, the co-hosts the backfill copies), the mock clock (`getCmsNow`) |
+| `cms-content.ts` | the content source gate, the content client, `fetchContent`, `loadContent` (server only) |
 | `cms-content-model.ts` | `ContentImage`, the image projection, `toContentImage`, `mergeOverFallback` |
-| `cms-content-mock.ts` | the content dataset under the mock CMS (groq-js over backfill documents) |
+| `cms-content-mock.ts` | page content under the mock CMS (groq-js over backfill documents) |
 | `cms-backfill.ts` | backfill document ids and `_sanityAsset` images (Node only) |
 | `content-tokens.ts` | `{{placeholder}}` names and filling |
 | `cache-tags.ts` | the Next cache tags per Sanity type (`liveCacheTags`, `content:<type>`), for the getters and `/api/revalidate` |
@@ -306,8 +311,8 @@ cascade layer or an `@utility`, so utilities always win without `!important`
 ## Build output and scripts
 
 `scripts/sanity/` holds the CMS tooling: `backfill.ts` (`pnpm sanity:backfill`, run with tsx and
-a tsconfig that stubs `server-only`), `slices.ts` (the backfill registry) and `merge-schemas.mjs`
-(joins the two workspaces' schema extracts for TypeGen).
+a tsconfig that stubs `server-only`), `slices.ts` (the backfill registry), `production-copy.ts`
+(the copy of the old site's content) and `backfill-target.ts` (the `--dataset` guard).
 
 `pnpm dev` writes `.next-dev`; `pnpm build`, `pnpm start` and `pnpm typecheck` use `.next-prod`
 through `scripts/run-next-command.mjs`, which leaves `NEXT_DIST_DIR` unset on Vercel. Before a
