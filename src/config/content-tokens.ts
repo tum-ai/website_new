@@ -69,6 +69,11 @@ export function contentTokensFor({
     "impact.hackathonParticipants":
       impact.hackathonParticipants.toLocaleString("en"),
     "community.makeathonSize": String(facts.community.makeathonSize),
+    // Stat figures: ungrouped ("2100"), as the partner stats count them up.
+    "community.startedApplications": String(
+      facts.community.startedApplicationsPerBatch,
+    ),
+    "community.acceptanceRate": String(facts.community.acceptanceRatePercent),
   };
 }
 

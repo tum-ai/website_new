@@ -187,6 +187,22 @@ export const siteSettingsType = defineType({
           "Makeathon size",
           "Size of the signature Makeathon; shown with “+” or “over”.",
         ),
+        defineField({
+          name: "startedApplicationsPerBatch",
+          title: "Started applications per round",
+          type: "number",
+          description:
+            "Membership applications started in one recruiting round; shown with “+”. /partners draws the round from it.",
+          validation: (Rule) => Rule.integer().min(1),
+        }),
+        defineField({
+          name: "acceptanceRatePercent",
+          title: "Acceptance rate (%)",
+          type: "number",
+          description:
+            "Share of started applications that become members, in percent (2.3 means 2.3%). /partners derives the batch size from both figures.",
+          validation: (Rule) => Rule.positive().max(100),
+        }),
       ],
     }),
     defineField({

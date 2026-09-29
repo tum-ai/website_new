@@ -37,7 +37,7 @@ rendering; pass values to client islands as props.
 | The mission statement (brand guide wording; /apply and /qanda quote it) | `src/config/organization.ts` `brandMission` |
 | Role emails, social links, the Imprint's address line | `src/config/contact.ts` (`contactEmails`, `socialLinks`, `registeredOfficeAddressLine`) |
 | Who handles partnership requests: finder CC addresses, the "Book a call" Cal.eu page and its host | `src/config/contact.ts` `partnershipContact` |
-| Community figures quoted in copy (Makeathon size) | `src/config/community.ts` `communityFacts` (the initiative's age comes from `yearsSinceFounding()`) |
+| Community figures quoted in copy (Makeathon size; started applications per round and acceptance rate, drawn as the /partners selection field) | `src/config/community.ts` `communityFacts` (the batch size comes from `admittedPerBatchOf()`, the initiative's age comes from `yearsSinceFounding()`) |
 | Research output and hackathon reach (publications, venues, hackathon participants) | `src/config/impact.ts` `impactFacts` |
 | Page titles, descriptions, canonical URLs, JSON-LD | `src/config/seo.ts` |
 | Site URL, name, tagline, `absoluteUrl()` | `src/config/site.ts` `siteConfig` |

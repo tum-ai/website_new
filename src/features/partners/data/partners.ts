@@ -52,8 +52,14 @@ export type PartnerStat = { value: string; label: string; detail?: string };
 
 /** The proof figures as templates: facts from the config are placeholders. */
 export const partnerStatTemplates: readonly PartnerStat[] = [
-  { value: "2100+", label: "Started applications per batch" },
-  { value: "2.3%", label: "Acceptance rate per batch" },
+  {
+    value: "{{community.startedApplications}}+",
+    label: "Started applications per batch",
+  },
+  {
+    value: "{{community.acceptanceRate}}%",
+    label: "Acceptance rate per batch",
+  },
   {
     value: "{{org.officialMembers}}+",
     label: "Official members",

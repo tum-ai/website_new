@@ -106,7 +106,7 @@ derive their expectations from config, so a documented edit keeps them green.
 | Founding year, member counts, majors, universities, nationalities | `src/config/organization.ts`: `organizationFacts` |
 | The mission statement (the brand guide's wording, quoted on `/apply` and `/qanda`) | `src/config/organization.ts`: `brandMission` |
 | Legal name, registered office, register entry, representatives | `src/config/organization.ts`: `legalEntity` (legal content: confirm with the board first) |
-| Community figures quoted in copy (Makeathon size) | `src/config/community.ts`: `communityFacts` |
+| Community figures quoted in copy (Makeathon size; started applications per round and acceptance rate, which /partners draws as its selection field) | `src/config/community.ts`: `communityFacts` |
 | Research output and hackathon reach (publications, venues, hackathon participants) | `src/config/impact.ts`: `impactFacts` |
 | Role emails and social links | `src/config/contact.ts`: `contactEmails`, `socialLinks` |
 | Who handles partnership requests (CC addresses, booking page) | `src/config/contact.ts`: `partnershipContact` |

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { yearsSinceFounding } from "./community";
+import { admittedPerBatchOf, yearsSinceFounding } from "./community";
 import { organizationFacts } from "./organization";
 
 describe("yearsSinceFounding", () => {
@@ -19,5 +19,22 @@ describe("yearsSinceFounding", () => {
     expect(yearsSinceFounding(new Date("2026-12-31T22:30:00Z"))).toBe(
       2026 - foundingYear,
     );
+  });
+});
+
+describe("admittedPerBatchOf", () => {
+  test("rounds the accepted share of a batch to whole people", () => {
+    expect(
+      admittedPerBatchOf({
+        startedApplicationsPerBatch: 2100,
+        acceptanceRatePercent: 2.3,
+      }),
+    ).toBe(48);
+    expect(
+      admittedPerBatchOf({
+        startedApplicationsPerBatch: 1000,
+        acceptanceRatePercent: 5,
+      }),
+    ).toBe(50);
   });
 });
