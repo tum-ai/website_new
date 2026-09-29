@@ -52,6 +52,29 @@ describe("the CMS backfill", () => {
     }
   });
 
+  test("every reference points at a backfilled document", () => {
+    const ids = new Set(documents.map(({ _id }) => _id));
+    const dangling: string[] = [];
+    const walk = (value: unknown, path: string) => {
+      if (Array.isArray(value)) {
+        for (const [index, item] of value.entries()) {
+          walk(item, `${path}[${index}]`);
+        }
+      } else if (value && typeof value === "object") {
+        const { _ref } = value as { _ref?: unknown };
+        if (typeof _ref === "string" && !ids.has(_ref)) {
+          dangling.push(`${path} → ${_ref}`);
+        }
+        for (const [key, item] of Object.entries(value)) {
+          walk(item, `${path}.${key}`);
+        }
+      }
+    };
+    for (const document of documents) walk(document, document._id);
+    // Strong references to a missing document fail the whole import.
+    expect(dangling).toStrictEqual([]);
+  });
+
   test("ids are unique and public (no dots, no drafts prefix)", () => {
     const ids = documents.map(({ _id }) => _id);
     expect(ids.filter((id, index) => ids.indexOf(id) !== index)).toStrictEqual(
