@@ -73,23 +73,38 @@ export const qualities: Point[] = [
   },
 ];
 
-/** The four values, shortened from the old "Our Values" cards; every fact kept. */
+/**
+ * What an applicant doesn't need, the call's "out of scope": both from the
+ * FAQ's answer on AI proficiency and the members' majors.
+ */
+export const notRequired: Point[] = [
+  {
+    title: "Being an AI expert",
+    text: "Your first-semester projects match your area and level of expertise.",
+  },
+  {
+    title: "A computer science degree",
+    text: `Our members study ${organizationFacts.majors}+ majors.`,
+  },
+];
+
+/** The four values in one sentence each, every fact kept. */
 export const values: Point[] = [
   {
     title: "Action, ambition and leadership",
-    text: "We set goals, aim for excellence and take responsibility for outcomes, also in shared work. We build partnerships with organizations like 180DC, CDTM and TUM Blockchain Club, across TUM, UnternehmerTUM, AppliedAI, ETH Zürich and beyond.",
+    text: "We set goals, own outcomes and build partnerships with 180DC, CDTM, TUM Blockchain Club, TUM, UnternehmerTUM, AppliedAI, ETH Zürich and beyond.",
   },
   {
     title: "Diversity and inclusiveness",
-    text: `Our members study ${organizationFacts.majors}+ majors and come from ${organizationFacts.nationalities}+ nationalities. Teams of different people make better decisions and find new ideas.`,
+    text: `${organizationFacts.majors}+ majors and ${organizationFacts.nationalities}+ nationalities, because different people decide better together.`,
   },
   {
     title: "Learn and grow",
-    text: "We keep up with AI together. Every semester, 10 to 15 members go to institutions such as MIT, Harvard, Stanford and Berkeley for research, exchange semesters and their theses.",
+    text: "Every semester, 10 to 15 members go to MIT, Harvard, Stanford or Berkeley for research, exchanges and theses.",
   },
   {
     title: "Trust and transparency",
-    text: "Everyone can voice an opinion. We support one another, rely on each other's honesty, and learn through projects with our peers.",
+    text: "Everyone can voice an opinion, and we rely on each other's honesty.",
   },
 ];
 
