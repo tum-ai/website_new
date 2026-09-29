@@ -62,7 +62,7 @@ export function VentureTrace() {
             <span className="tabular text-display-2xl text-highlight lg:col-span-5">
               €{eLabConfig.ventureFundingMillions}M
             </span>
-            <span className="max-w-md text-fg text-heading-lg lg:col-span-7 lg:pb-3">
+            <span className="max-w-md text-fg text-heading-lg lg:col-span-7 lg:justify-self-end lg:pb-3 lg:text-right">
               raised so far by ventures from {eLabCompletedIterations} E-Lab
               cohorts, including these.
             </span>
