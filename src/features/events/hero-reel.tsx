@@ -32,20 +32,27 @@ export function wheelRows(
 }
 
 /**
- * The wheel travel the reel takes, or `null` to leave the event to the page.
- * A mostly horizontal gesture (trackpad swipe, tilt wheel) always turns the
- * reel: the page has no horizontal scroll to lose. A vertical one turns it
- * only while the reel is `engaged` (it has focus: the reader clicked, tapped
- * or tabbed into it), so scrolling the page past the hero never gets caught
- * in the reel. Blur (click elsewhere, Tab, Escape) hands the wheel back.
+ * Whether a wheel event turns the reel (`true`) or scrolls the page. A mostly
+ * horizontal gesture (trackpad swipe, tilt wheel) always turns it: the page
+ * has no horizontal scroll to lose. A vertical one turns it for one lap
+ * through the `count` names per gesture (`lapRows` is how far this gesture
+ * has already turned it), then scrolls the page, so the endless reel never
+ * catches a reader scrolling past the hero. The lap starts over once the
+ * wheel rests.
  */
-export function reelWheelDelta(
-  deltaX: number,
-  deltaY: number,
-  engaged: boolean,
-): number | null {
-  if (Math.abs(deltaX) > Math.abs(deltaY)) return deltaX;
-  return engaged ? deltaY : null;
+export function reelTakesWheel({
+  deltaX,
+  deltaY,
+  lapRows,
+  count,
+}: {
+  deltaX: number;
+  deltaY: number;
+  lapRows: number;
+  count: number;
+}): boolean {
+  if (Math.abs(deltaX) > Math.abs(deltaY)) return true;
+  return lapRows < count;
 }
 
 /** Movement in px before a drag commits to an axis. */
@@ -69,8 +76,8 @@ const WHEEL_REST_MS = 140;
  * - Drag: along either axis with a mouse or pen. On touch the window has
  *   `touch-action: pan-y` (events.css), so a vertical swipe scrolls the page
  *   as everywhere else and a horizontal swipe turns the reel.
- * - Wheel: see {@link reelWheelDelta}; horizontal always, vertical only
- *   once the reel has focus.
+ * - Wheel: see {@link reelTakesWheel}; horizontal always, vertical for one
+ *   lap through the names per gesture, then the page scrolls on.
  * - Keys: with focus, the arrow keys step it.
  *
  * The markup comes from the server; this writes the position as `--roll`
@@ -112,6 +119,10 @@ export function HeroReel({
     let last = 0;
     let active = 0;
     let wheelRest = 0;
+    /** Rows the current vertical wheel gesture has turned the reel. */
+    let lapRows = 0;
+    /** The current gesture finished its lap and now scrolls the page. */
+    let handedOff = false;
 
     // Rendered by the effect, like the reel itself: the static index needs
     // no announcements.
@@ -157,19 +168,36 @@ export function HeroReel({
     };
 
     const onWheel = (event: WheelEvent) => {
-      const delta = reelWheelDelta(
-        event.deltaX,
-        event.deltaY,
-        region.contains(document.activeElement),
-      );
-      if (delta === null) return;
-      event.preventDefault();
-      target += wheelRows(delta, event.deltaMode, rowPx());
+      // A gesture ends when the wheel rests: the reel snaps to a name and the
+      // next gesture gets a new lap.
       window.clearTimeout(wheelRest);
       wheelRest = window.setTimeout(() => {
+        lapRows = 0;
+        handedOff = false;
         target = settle(target);
         glide();
       }, WHEEL_REST_MS);
+      const horizontal = Math.abs(event.deltaX) > Math.abs(event.deltaY);
+      if (
+        handedOff ||
+        !reelTakesWheel({
+          deltaX: event.deltaX,
+          deltaY: event.deltaY,
+          lapRows,
+          count,
+        })
+      ) {
+        handedOff = !horizontal;
+        return;
+      }
+      event.preventDefault();
+      const rows = wheelRows(
+        horizontal ? event.deltaX : event.deltaY,
+        event.deltaMode,
+        rowPx(),
+      );
+      if (!horizontal) lapRows += Math.abs(rows);
+      target += rows;
       glide();
     };
 

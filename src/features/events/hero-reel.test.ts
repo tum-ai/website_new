@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { reelWheelDelta, settle, wheelRows } from "./hero-reel";
+import { reelTakesWheel, settle, wheelRows } from "./hero-reel";
 
 describe("wheelRows", () => {
   test("pixel deltas move a little less than a row per row of travel", () => {
@@ -25,14 +25,22 @@ describe("settle", () => {
   });
 });
 
-describe("reelWheelDelta", () => {
+describe("reelTakesWheel", () => {
+  const wheel = (deltaX: number, deltaY: number, lapRows: number) =>
+    reelTakesWheel({ deltaX, deltaY, lapRows, count: 9 });
+
   test("a horizontal gesture always turns the reel", () => {
-    expect(reelWheelDelta(40, 5, false)).toBe(40);
-    expect(reelWheelDelta(-40, 5, true)).toBe(-40);
+    expect(wheel(40, 5, 0)).toBe(true);
+    expect(wheel(-40, 5, 50)).toBe(true);
   });
 
-  test("a vertical gesture scrolls the page until the reel has focus", () => {
-    expect(reelWheelDelta(0, 80, false)).toBeNull();
-    expect(reelWheelDelta(0, 80, true)).toBe(80);
+  test("a vertical gesture turns the reel without a click first", () => {
+    expect(wheel(0, 80, 0)).toBe(true);
+    expect(wheel(0, -80, 8.5)).toBe(true);
+  });
+
+  test("after one lap through the names the page scrolls on", () => {
+    expect(wheel(0, 80, 9)).toBe(false);
+    expect(wheel(0, -80, 12)).toBe(false);
   });
 });
