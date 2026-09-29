@@ -1,9 +1,11 @@
 import { ButtonLink, PageHero, Photo } from "@/components/ds";
+import { callToActionLabels } from "@/config/calls-to-action";
+import { getPartnersCopy } from "@/features/partners/server";
 import { ClosingSection } from "./closing-section";
 import { getCommunityContent } from "./content";
-import { stories } from "./data/member-stories";
 import { DepartmentsSection } from "./departments-section";
 import { MemberStories } from "./member-stories";
+import { getMemberStories } from "./people-content";
 import { SemesterPlan } from "./semester-plan";
 
 /**
@@ -11,10 +13,17 @@ import { SemesterPlan } from "./semester-plan";
  * TUM.ai, then the membership as a semester timetable (the page's one bold
  * element), the departments behind the initiative track, the members' own
  * stories, and a close that returns to semester zero. The copy, journey and
- * departments come from the content slice (`content.ts`: the CMS or code).
+ * departments come from the content slice (`content.ts`), the member stories
+ * from theirs (`people-content.ts`) and the partner pitch from the partners
+ * copy: each the CMS or the code.
  */
 export async function CommunityPage() {
-  const { copy, journey, departments } = await getCommunityContent();
+  const [{ copy, journey, departments }, stories, { pitch }] =
+    await Promise.all([
+      getCommunityContent(),
+      getMemberStories(),
+      getPartnersCopy(),
+    ]);
   const { photo } = copy.hero;
   return (
     <main>
@@ -26,10 +35,10 @@ export async function CommunityPage() {
         actions={
           <>
             <ButtonLink href="/apply" size="lg" arrow>
-              Become a Member
+              {callToActionLabels.member}
             </ButtonLink>
             <ButtonLink href="/partners" size="lg" variant="outline">
-              Become a Partner
+              {callToActionLabels.partner}
             </ButtonLink>
           </>
         }
@@ -44,10 +53,10 @@ export async function CommunityPage() {
           />
         }
       />
-      <SemesterPlan copy={copy.journey} journey={journey} />
+      <SemesterPlan copy={copy.journey} journey={journey} stories={stories} />
       <DepartmentsSection copy={copy.departments} departments={departments} />
-      <MemberStories stories={stories} />
-      <ClosingSection copy={copy.closing} />
+      <MemberStories copy={copy.stories} stories={stories} />
+      <ClosingSection copy={copy.closing} partnerPitch={pitch} />
     </main>
   );
 }

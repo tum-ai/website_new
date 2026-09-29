@@ -2,6 +2,7 @@ import { afterEach, describe, expect, test, vi } from "vitest";
 import { getDepartments, getMemberJourney } from "./community-content";
 import type { Department, JourneyStage } from "./community-model";
 import { type ContentTokens, contentTokenNames } from "./content-tokens";
+import { personId } from "./person-content";
 
 const contentTokens = Object.fromEntries(
   contentTokenNames.map((name) => [name, `<${name}>`]),
@@ -81,12 +82,32 @@ const departments: Department[] = [
   },
 ];
 
+/** The member story the evidence of step 03 references. */
+const people = () => [
+  {
+    _id: personId("member-story", "ada"),
+    _type: "person",
+    placement: "member-story",
+    key: "ada",
+    name: "Ada",
+  },
+];
+
 describe("getMemberJourney", () => {
   test("rebuilds the stages from the CMS steps", async () => {
     useSanity();
     await expect(
-      getMemberJourney(journey, contentTokens),
+      getMemberJourney(journey, contentTokens, { people }),
     ).resolves.toStrictEqual(journey);
+  });
+
+  test("keeps a step whose evidence references no member, without it", async () => {
+    useSanity();
+    const served = await getMemberJourney(journey, contentTokens);
+    expect(served[2]).toStrictEqual({
+      kind: "single",
+      step: step("03"),
+    });
   });
 
   test("serves an edited step", async () => {
@@ -111,7 +132,7 @@ describe("getMemberJourney", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     tamper.edit = (document) => ({ ...document, stage: 1 });
     await expect(
-      getMemberJourney(journey, contentTokens),
+      getMemberJourney(journey, contentTokens, { people }),
     ).resolves.toStrictEqual(journey);
     expect(warn).toHaveBeenCalled();
   });

@@ -6,10 +6,12 @@ import {
   Section,
   SectionHeader,
 } from "@/components/ds";
+import type { CommunityCopy } from "./data/copy";
 import type { MemberStory } from "./data/member-stories";
 
 interface MemberStoriesProps {
-  stories: MemberStory[];
+  copy: CommunityCopy["stories"];
+  stories: readonly MemberStory[];
 }
 
 /**
@@ -17,7 +19,7 @@ interface MemberStoriesProps {
  * The band keeps `id="memberStories"`: the homepage links to
  * /community#memberStories.
  */
-export function MemberStories({ stories }: MemberStoriesProps) {
+export function MemberStories({ copy, stories }: MemberStoriesProps) {
   return (
     <Section
       tone="lavender"
@@ -29,10 +31,10 @@ export function MemberStories({ stories }: MemberStoriesProps) {
       <Container>
         <SectionHeader
           id="member-stories-title"
-          title="In their own words"
+          title={copy.title}
           size="lg"
           layout="stack"
-          lead="Members on what they did with their time at TUM.ai."
+          lead={copy.lead}
         />
         <ul className="grid gap-x-16 gap-y-14 md:grid-cols-2 md:gap-y-20 xl:gap-x-24">
           {stories.map((story, index) => (

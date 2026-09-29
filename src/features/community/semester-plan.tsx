@@ -10,7 +10,7 @@ import {
   semesterColumnsOf,
   stepAnchor,
 } from "./data/member-journey";
-import { stories } from "./data/member-stories";
+import type { MemberStory } from "./data/member-stories";
 
 const SECTION_ID = "journey";
 
@@ -64,9 +64,12 @@ const opensIn = (step: JourneyStep) =>
 export function SemesterPlan({
   copy,
   journey,
+  stories,
 }: {
   copy: CommunityCopy["journey"];
   journey: readonly JourneyStage[];
+  /** The member stories the steps' evidence quotes by name. */
+  stories: readonly MemberStory[];
 }) {
   const columns = semesterColumnsOf(journey);
   return (
@@ -92,7 +95,11 @@ export function SemesterPlan({
             {journey.map((stage) =>
               stage.kind === "single" ? (
                 <li key={stage.step.step} className="border-hairline border-b">
-                  <StepRow step={stage.step} columns={columns} />
+                  <StepRow
+                    step={stage.step}
+                    columns={columns}
+                    stories={stories}
+                  />
                 </li>
               ) : (
                 <li
@@ -102,12 +109,14 @@ export function SemesterPlan({
                   <StepRow
                     step={stage.steps[0]}
                     columns={columns}
+                    stories={stories}
                     connect="down"
                   />
                   <ForkDivider step={stage.steps[0]} columns={columns} />
                   <StepRow
                     step={stage.steps[1]}
                     columns={columns}
+                    stories={stories}
                     connect="up"
                   />
                 </li>
@@ -171,9 +180,11 @@ function ColumnHeads({ columns }: Columns) {
 function StepRow({
   step,
   columns,
+  stories,
   connect,
 }: Columns & {
   step: JourneyStep;
+  stories: readonly MemberStory[];
   /**
    * In a fork: draw the tracks' shared connector from this row's marker
    * down to the row's end (the first track) or from its top (the second).

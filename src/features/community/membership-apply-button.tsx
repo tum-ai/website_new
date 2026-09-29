@@ -1,4 +1,5 @@
 import { ButtonLink } from "@/components/ds";
+import { callToActionLabels } from "@/config/calls-to-action";
 import { membershipWindowClock } from "@/config/membership";
 import { getMembershipWindow } from "@/config/schedule-content";
 import { MembershipPhase } from "./membership-phase";
@@ -17,12 +18,12 @@ export async function MembershipApplyButton() {
       clock={membershipWindowClock(membership)}
       open={
         <ButtonLink href={membership.applicationUrl} size="lg" arrow="external">
-          Apply now
+          {callToActionLabels.apply}
         </ButtonLink>
       }
       closed={
         <ButtonLink href="/apply" size="lg" arrow>
-          Become a Member
+          {callToActionLabels.member}
         </ButtonLink>
       }
     />

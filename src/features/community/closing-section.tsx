@@ -6,7 +6,7 @@ import {
   Section,
   TextLink,
 } from "@/components/ds";
-import { partnerPitch } from "@/features/partners";
+import { callToActionLabels } from "@/config/calls-to-action";
 import type { CommunityCopy } from "./data/copy";
 import { MembershipApplyButton } from "./membership-apply-button";
 
@@ -15,9 +15,15 @@ import { MembershipApplyButton } from "./membership-apply-button";
  * round, with its dates from the membership config (placeholders in the
  * copy) and the apply action that
  * follows the dated application window; beside it, the partners' way to meet
- * the members.
+ * the members (`partnerPitch`, from the partners copy).
  */
-export function ClosingSection({ copy }: { copy: CommunityCopy["closing"] }) {
+export function ClosingSection({
+  copy,
+  partnerPitch,
+}: {
+  copy: CommunityCopy["closing"];
+  partnerPitch: string;
+}) {
   return (
     <Section tone="ink" spacing="xl" aria-labelledby="community-close-title">
       <Container>
@@ -38,7 +44,7 @@ export function ClosingSection({ copy }: { copy: CommunityCopy["closing"] }) {
               <Actions className="mt-10 md:mt-12">
                 <MembershipApplyButton />
                 <ButtonLink href="/qanda" size="lg" variant="outline">
-                  Questions and answers
+                  {callToActionLabels.questions}
                 </ButtonLink>
               </Actions>
             </Reveal>
@@ -53,7 +59,7 @@ export function ClosingSection({ copy }: { copy: CommunityCopy["closing"] }) {
             <p className="mt-3 text-body text-fg-muted">{partnerPitch}</p>
             <p className="mt-5">
               <TextLink href="/partners" arrow className="text-small">
-                Become a Partner
+                {callToActionLabels.partner}
               </TextLink>
             </p>
           </Reveal>

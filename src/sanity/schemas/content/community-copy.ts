@@ -67,6 +67,17 @@ export const communityCopyType = defineType({
       ],
     }),
     defineField({
+      name: "stories",
+      title: "Member stories",
+      type: "object",
+      description:
+        "The member stories band's heading; the stories are People with the placement “Member story”.",
+      fields: [
+        copyString({ name: "title", title: "Title", max: 50 }),
+        copyText({ name: "lead", title: "Lead", max: 160, placeholders: true }),
+      ],
+    }),
+    defineField({
       name: "closing",
       title: "Closing",
       type: "object",

@@ -18,6 +18,7 @@ import type { COMMUNITY_COPY_QUERY_RESULT } from "@/lib/sanity.types.generated";
 import { type CommunityCopy, communityCopyTemplate } from "./data/copy";
 import { departments as departmentTemplates } from "./data/departments";
 import { memberJourney } from "./data/member-journey";
+import { buildMemberStoriesBackfill } from "./people-content";
 
 /**
  * The /community content slice: the `communityCopy` singleton, the member
@@ -30,6 +31,7 @@ export const COMMUNITY_COPY_QUERY = defineQuery(`*[_id == "communityCopy"][0]{
   hero{ title, lead, "photo": photo${CONTENT_IMAGE_PROJECTION}, photoCaption },
   journey{ title, lead },
   departments{ title, lead },
+  stories{ title, lead },
   closing{ title, lead, companiesReader }
 }`);
 
@@ -52,7 +54,9 @@ export async function getCommunityContent(): Promise<CommunityContent> {
       mockDocuments: buildCommunityBackfill,
       select: (result) => fillCmsCopy(result, tokens, "the /community copy"),
     }),
-    getMemberJourney(memberJourney, tokens),
+    getMemberJourney(memberJourney, tokens, {
+      people: buildMemberStoriesBackfill,
+    }),
     getDepartments(departmentTemplates, tokens),
   ]);
   return { copy, journey, departments };

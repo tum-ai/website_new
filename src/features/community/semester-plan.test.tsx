@@ -35,7 +35,11 @@ afterEach(() => {
 });
 
 const Plan = () => (
-  <SemesterPlan copy={communityCopyTemplate.journey} journey={memberJourney} />
+  <SemesterPlan
+    copy={communityCopyTemplate.journey}
+    journey={memberJourney}
+    stories={stories}
+  />
 );
 
 describe("SemesterPlan", () => {

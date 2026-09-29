@@ -97,11 +97,15 @@ export const journeyStepType = defineType({
       description:
         "Optional: a member who took this step, quoted beside it. The quote must be a sentence from their member story, word for word.",
       fields: [
-        copyString({
-          name: "name",
+        defineField({
+          name: "person",
           title: "Member",
-          description: "The member's name, exactly as in their member story.",
-          max: 60,
+          type: "reference",
+          to: [{ type: "person" }],
+          options: { filter: 'placement == "member-story"' },
+          description:
+            "One of the member stories; it supplies the name, role and portrait.",
+          validation: (Rule) => Rule.required(),
         }),
         copyText({ name: "excerpt", title: "Quote", max: 200, rows: 2 }),
       ],

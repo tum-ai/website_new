@@ -15,6 +15,7 @@ import {
 import { backfillContentImage } from "./content-backfill";
 import { fillCmsCopy, fillCodeCopy } from "./content-copy";
 import type { ContentTokens } from "./content-tokens";
+import { personId, personKey } from "./person-content";
 import type {
   DEPARTMENTS_QUERY_RESULT,
   JOURNEY_QUERY_RESULT,
@@ -37,7 +38,7 @@ export const JOURNEY_QUERY =
   fromSemester,
   span,
   stage,
-  evidence{ name, excerpt }
+  evidence{ "name": person->name, excerpt }
 }`);
 
 export const DEPARTMENTS_QUERY =
@@ -63,24 +64,37 @@ const isJourneyStep = (
   );
 };
 
+/** A step's evidence only when its person reference resolved to a name. */
+function withResolvedEvidence<T extends Partial<JourneyStep>>({
+  evidence,
+  ...step
+}: T): Omit<T, "evidence"> | T {
+  return evidence?.name && evidence.excerpt ? { ...step, evidence } : step;
+}
+
 /**
  * The member journey: the CMS steps, grouped into stages by their stage
  * number, when the source is `sanity` and they form a journey the timetable
- * can draw; otherwise `journey`, the code journey.
+ * can draw; otherwise `journey`, the code journey. A step's evidence
+ * references a member story's `person`; `people` are those documents for
+ * the mock CMS (the member stories' backfill).
  */
 export function getMemberJourney(
   journey: readonly JourneyStage[],
   tokens: ContentTokens,
+  { people = () => [] }: { people?: () => readonly BackfillDocument[] } = {},
 ): Promise<JourneyStage[]> {
   return loadContent<JourneyStage[], JOURNEY_QUERY_RESULT>({
     fallback: fillCodeCopy([...journey], tokens),
     query: JOURNEY_QUERY,
-    tags: ["content:journeyStep"],
+    tags: ["content:journeyStep", "content:person"],
     label: "the member journey",
-    mockDocuments: () => buildJourneyBackfill(journey),
+    mockDocuments: () => [...buildJourneyBackfill(journey), ...people()],
     select: (result) => {
       const filled = fillCmsCopy(result, tokens, "the member journey");
-      const steps = (Array.isArray(filled) ? filled : []).filter(isJourneyStep);
+      const steps = (Array.isArray(filled) ? filled : [])
+        .map((step: Partial<JourneyStep>) => withResolvedEvidence(step))
+        .filter(isJourneyStep);
       const stages = groupJourneyStages(steps);
       if (!stages) {
         console.warn(
@@ -113,7 +127,10 @@ export function getDepartments(
   });
 }
 
-/** The journey as `journeyStep` documents: one per step, with its stage. */
+/**
+ * The journey as `journeyStep` documents: one per step, with its stage. A
+ * step's evidence references the member story's `person` by the name's key.
+ */
 export function buildJourneyBackfill(
   journey: readonly JourneyStage[],
 ): BackfillDocument[] {
@@ -132,7 +149,17 @@ export function buildJourneyBackfill(
       iconKey: step.iconKey,
       fromSemester: step.fromSemester,
       span: step.span,
-      ...(step.evidence ? { evidence: { ...step.evidence } } : {}),
+      ...(step.evidence
+        ? {
+            evidence: {
+              person: {
+                _type: "reference",
+                _ref: personId("member-story", personKey(step.evidence.name)),
+              },
+              excerpt: step.evidence.excerpt,
+            },
+          }
+        : {}),
     }));
 }
 

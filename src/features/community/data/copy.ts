@@ -17,6 +17,8 @@ export type CommunityCopy = {
   };
   journey: { title: string; lead: string };
   departments: { title: string; lead: string };
+  /** The member stories band; the stories are `person` documents. */
+  stories: { title: string; lead: string };
   closing: {
     title: string;
     /** The latest recruiting round, with its dates as placeholders. */
@@ -47,6 +49,10 @@ export const communityCopyTemplate: CommunityCopy = {
   departments: {
     title: "The departments that run TUM.ai",
     lead: "On the initiative track, you join one of these teams. Together they organize everything TUM.ai does, from the Makeathon to the contracts.",
+  },
+  stories: {
+    title: "In their own words",
+    lead: "Members on what they did with their time at TUM.ai.",
   },
   closing: {
     title: "Semester zero starts with your application.",
