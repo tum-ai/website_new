@@ -1,8 +1,8 @@
 import { axe } from "@test/axe";
 import { render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { hero } from "./data/copy";
-import { openSeat, taskForces } from "./data/projects";
+import { projectsCopyTemplate } from "./data/copy";
+import { openSeatSlug, taskForces } from "./data/projects";
 import { ProjectsPage } from "./projects-page";
 
 /*
@@ -30,18 +30,20 @@ afterEach(() => {
 });
 
 test("the page has one h1 and passes axe", async () => {
-  const { container } = render(<ProjectsPage />);
+  const { container } = render(await ProjectsPage());
   expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
   expect(await axe(container)).toHaveNoViolations();
 });
 
-test("every circle in the hero links to a place on the page, clockwise with the open one last", () => {
-  const { container } = render(<ProjectsPage />);
-  const index = screen.getByRole("list", { name: hero.figureLabel });
+test("every circle in the hero links to a place on the page, clockwise with the open one last", async () => {
+  const { container } = render(await ProjectsPage());
+  const index = screen.getByRole("list", {
+    name: projectsCopyTemplate.hero.figureLabel,
+  });
   const links = within(index).getAllByRole("link");
   expect(links.map((link) => link.getAttribute("href"))).toEqual([
     ...taskForces.map((taskForce) => `#${taskForce.slug}`),
-    `#${openSeat.slug}`,
+    `#${openSeatSlug}`,
   ]);
   for (const link of links) {
     const target = link.getAttribute("href")?.slice(1) ?? "";
@@ -49,8 +51,8 @@ test("every circle in the hero links to a place on the page, clockwise with the 
   }
 });
 
-test("each task force has a chapter headed by its name, in the figure's order", () => {
-  render(<ProjectsPage />);
+test("each task force has a chapter headed by its name, in the figure's order", async () => {
+  render(await ProjectsPage());
   const chapters = screen.getAllByRole("article");
   expect(chapters.map((chapter) => chapter.id)).toEqual(
     taskForces.map((taskForce) => taskForce.slug),
@@ -67,8 +69,8 @@ test("each task force has a chapter headed by its name, in the figure's order", 
   });
 });
 
-test("the close offers both audiences a way in", () => {
-  render(<ProjectsPage />);
+test("the close offers both audiences a way in", async () => {
+  render(await ProjectsPage());
   const close = screen.getByRole("region", { name: /open circle/i });
   expect(
     within(close).getByRole("link", { name: /Become a Member/ }),

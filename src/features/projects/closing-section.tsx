@@ -5,21 +5,26 @@ import {
   Reveal,
   Section,
 } from "@/components/ds";
-import { closing, figureSeats } from "./data/copy";
-import { openSeat } from "./data/projects";
+import { openSeatSlug } from "./data/projects";
 import { OverlapsFigure } from "./overlaps-figure";
+import type { projectsView } from "./projects-view";
+
+type View = ReturnType<typeof projectsView>;
 
 /**
  * The close on ink resolves the hero: the same figure, with the open circle
  * drawn solid, and the two ways in. Students found the next task force;
  * partners bring a problem from their field.
  */
-export function ClosingSection() {
+export function ClosingSection({
+  closing,
+  figureSeats,
+}: Pick<View, "closing" | "figureSeats">) {
   return (
     <Section
       tone="ink"
       spacing="xl"
-      id={openSeat.slug}
+      id={openSeatSlug}
       aria-labelledby="projects-close-title"
       className="scroll-mt-header overflow-clip"
     >

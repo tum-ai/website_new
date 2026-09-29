@@ -218,6 +218,64 @@ export type Slug = {
   source?: string;
 };
 
+export type TaskForce = {
+  _id: string;
+  _type: "taskForce";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  order: number;
+  name: string;
+  slug: Slug;
+  field: string;
+  description: string;
+  detailedDescription: string;
+  work?: {
+    partner: string;
+    items: Array<string>;
+  };
+  photo?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  photoCaption?: string;
+};
+
+export type ProjectsCopy = {
+  _id: string;
+  _type: "projectsCopy";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  hero?: {
+    eyebrow: string;
+    title: string;
+    lead: string;
+    figureLabel: string;
+  };
+  openSeat?: {
+    name: string;
+    field: string;
+  };
+  closing?: {
+    title: string;
+    lead: string;
+    student?: {
+      audience: string;
+      text: string;
+    };
+    partner?: {
+      audience: string;
+      text: string;
+      textWithoutPartner: string;
+    };
+  };
+};
+
 export type Department = {
   _id: string;
   _type: "department";
@@ -360,6 +418,8 @@ export type AllSanitySchemaTypes =
   | SanityImageAsset
   | Geopoint
   | Slug
+  | TaskForce
+  | ProjectsCopy
   | Department
   | JourneyStep
   | CommunityCopy
@@ -378,6 +438,21 @@ export type COMMUNITY_COPY_QUERY_RESULT =
     }
   | {
       hero: null;
+      journey: null;
+      departments: null;
+      closing: {
+        title: string;
+        lead: string;
+        companiesReader: null;
+      } | null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+        photo: null;
+        photoCaption: null;
+      } | null;
       journey: null;
       departments: null;
       closing: {
@@ -417,6 +492,91 @@ export type COMMUNITY_COPY_QUERY_RESULT =
       } | null;
     }
   | null;
+
+// Source: ../features/projects/content.ts
+// Variable: PROJECTS_CONTENT_QUERY
+// Query: {  "copy": *[_id == "projectsCopy"][0]{    hero{ eyebrow, title, lead, figureLabel },    openSeat{ name, field },    closing{      title,      lead,      student{ audience, text },      partner{ audience, text, textWithoutPartner }    }  },  "taskForces": *[_type == "taskForce"] | order(order asc){    "slug": slug.current,    name,    field,    description,    detailedDescription,    work{ partner, items },    "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y }},    photoCaption  }}
+export type PROJECTS_CONTENT_QUERY_RESULT = {
+  copy:
+    | {
+        hero: null;
+        openSeat: null;
+        closing: null;
+      }
+    | {
+        hero: null;
+        openSeat: null;
+        closing: {
+          title: string;
+          lead: string;
+          student: null;
+          partner: null;
+        } | null;
+      }
+    | {
+        hero: {
+          eyebrow: null;
+          title: string;
+          lead: string;
+          figureLabel: null;
+        } | null;
+        openSeat: null;
+        closing: {
+          title: string;
+          lead: string;
+          student: null;
+          partner: null;
+        } | null;
+      }
+    | {
+        hero: {
+          eyebrow: string;
+          title: string;
+          lead: string;
+          figureLabel: string;
+        } | null;
+        openSeat: {
+          name: string;
+          field: string;
+        } | null;
+        closing: {
+          title: string;
+          lead: string;
+          student: {
+            audience: string;
+            text: string;
+          } | null;
+          partner: {
+            audience: string;
+            text: string;
+            textWithoutPartner: string;
+          } | null;
+        } | null;
+      }
+    | null;
+  taskForces: Array<{
+    slug: string;
+    name: string;
+    field: string;
+    description: string;
+    detailedDescription: string;
+    work: {
+      partner: string;
+      items: Array<string>;
+    } | null;
+    photo: {
+      src: string | null;
+      width: number | null;
+      height: number | null;
+      alt: string | null;
+      hotspot: {
+        x: number;
+        y: number;
+      } | null;
+    } | null;
+    photoCaption: string | null;
+  }>;
+};
 
 // Source: ../features/qanda/content.ts
 // Variable: QANDA_CONTENT_QUERY

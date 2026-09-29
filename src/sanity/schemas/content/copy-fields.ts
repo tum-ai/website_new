@@ -21,24 +21,50 @@ type CopyFieldOptions = {
   required?: boolean;
   /** Allows `{{placeholders}}` for site facts, validated by name. */
   placeholders?: boolean;
+  /**
+   * Placeholders only this text accepts, which the page fills itself (see
+   * `fillPageTokens` in `lib/content-copy.ts`): name and what it becomes.
+   */
+  pageTokens?: Readonly<Record<string, string>>;
 };
 
 const help = (
   description: string | undefined,
   limit: string,
-  placeholders: boolean | undefined,
+  { placeholders, pageTokens }: CopyFieldOptions,
 ) =>
-  [description, limit, placeholders ? placeholderHelp : undefined]
+  [
+    description,
+    limit,
+    pageTokens &&
+      Object.entries(pageTokens)
+        .map(([name, meaning]) => `{{${name}}} becomes ${meaning}.`)
+        .join(" "),
+    placeholders ? placeholderHelp : undefined,
+  ]
     .filter(Boolean)
     .join(" ");
 
-function textRule(
-  Rule: StringRule,
-  { max, required, placeholders }: CopyFieldOptions,
-) {
+/** Placeholder validation that also accepts the field's page tokens. */
+function validateCopy(value: unknown, pageTokens: readonly string[]) {
+  if (typeof value !== "string" || pageTokens.length === 0) {
+    return validatePlaceholders(value);
+  }
+  return validatePlaceholders(
+    value.replace(/\{\{\s*([\w.-]+)\s*\}\}/g, (match, name: string) =>
+      pageTokens.includes(name) ? "" : match,
+    ),
+  );
+}
+
+function textRule(Rule: StringRule, options: CopyFieldOptions) {
+  const { max, required, placeholders, pageTokens = {} } = options;
   const limited = (required === false ? Rule : Rule.required()).max(max);
-  return placeholders
-    ? limited.custom((value) => validatePlaceholders(value))
+  const names = Object.keys(pageTokens);
+  // Without `placeholders`, page tokens are still validated (an unknown
+  // name would reach the page as raw braces).
+  return placeholders || names.length > 0
+    ? limited.custom((value) => validateCopy(value, names))
     : limited;
 }
 
@@ -51,7 +77,7 @@ export function copyString(options: CopyFieldOptions) {
     description: help(
       options.description,
       `At most ${options.max} characters.`,
-      options.placeholders,
+      options,
     ),
     validation: (Rule) => textRule(Rule, options),
   });
@@ -67,7 +93,7 @@ export function copyText(options: CopyFieldOptions & { rows?: number }) {
     description: help(
       options.description,
       `At most ${options.max} characters.`,
-      options.placeholders,
+      options,
     ),
     validation: (Rule) => textRule(Rule, options),
   });
@@ -90,7 +116,7 @@ export function copyStringList(
     description: help(
       options.description,
       `Each at most ${options.max} characters.`,
-      options.placeholders,
+      options,
     ),
     validation: (Rule) => {
       let rule = options.required === false ? Rule : Rule.required();

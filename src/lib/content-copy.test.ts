@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { fillCmsCopy, fillCodeCopy } from "./content-copy";
+import { fillCmsCopy, fillCodeCopy, fillPageTokens } from "./content-copy";
 import { type ContentTokens, contentTokenNames } from "./content-tokens";
 
 const tokens = Object.fromEntries(
@@ -105,5 +105,33 @@ describe("fillCmsCopy", () => {
     expect(fillCmsCopy({ a: null }, tokens, "test")).toBeNull();
     expect(fillCmsCopy("{{nope}}", tokens, "test")).toBeNull();
     expect(fillCmsCopy(["{{nope}}", "a"], tokens, "test")).toStrictEqual(["a"]);
+  });
+});
+
+describe("page tokens", () => {
+  test("filling leaves the kept names for the page, and rejects others", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    expect(
+      fillCodeCopy("{{count}} since {{org.foundingYear}}", tokens, ["count"]),
+    ).toBe("{{count}} since <org.foundingYear>");
+    expect(() => fillCodeCopy("{{count}}", tokens)).toThrow(/count/);
+    expect(
+      fillCmsCopy(
+        { lead: "{{count}} teams", title: "{{other}}" },
+        tokens,
+        "test",
+        ["count"],
+      ),
+    ).toStrictEqual({ lead: "{{count}} teams" });
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining("other"));
+  });
+
+  test("the page fills its own tokens and nothing else", () => {
+    expect(
+      fillPageTokens("{{count}} teams, {{partner}}, {{other}}", {
+        count: "Five",
+        partner: "Helmholtz",
+      }),
+    ).toBe("Five teams, Helmholtz, {{other}}");
   });
 });

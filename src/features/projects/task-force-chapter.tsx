@@ -19,8 +19,16 @@ export function TaskForceChapter({
   /** Seats in the figure, the open one included. */
   seatCount: number;
 }) {
-  const { slug, name, field, description, detailedDescription, work, photo } =
-    taskForce;
+  const {
+    slug,
+    name,
+    field,
+    description,
+    detailedDescription,
+    work,
+    photo,
+    photoCaption,
+  } = taskForce;
   const titleId = `${slug}-title`;
   return (
     <article
@@ -75,8 +83,8 @@ export function TaskForceChapter({
           <Photo
             src={photo.src}
             alt={photo.alt}
-            caption={photo.caption}
-            position={photo.position}
+            caption={photoCaption}
+            position={photo.objectPosition}
             aspect="4/3"
             sizes="(min-width: 1024px) 28vw, (min-width: 768px) 38vw, 100vw"
           />
