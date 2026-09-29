@@ -1,6 +1,7 @@
 import {
   Container,
   LogoTile,
+  LogoWall,
   QuoteCard,
   Reveal,
   Section,
@@ -66,20 +67,19 @@ export function VentureTrace() {
               {eLabConfig.ventureFundingMillions}M so far.
             </p>
           </div>
-          <ul className="mt-10 flex flex-wrap gap-3">
-            {otherVentures.map((startup) => (
-              <li key={startup.id}>
-                <LogoTile
-                  variant="chip"
-                  name={startup.name}
-                  src={startup.logoSrc}
-                  alt={startup.logoAlt}
-                  href={startup.href}
-                  wordmark={startup.wordmarkLabel}
-                />
-              </li>
-            ))}
-          </ul>
+          <LogoWall
+            logos={otherVentures.map((startup) => ({
+              name: startup.name,
+              src: startup.logoSrc,
+              alt: startup.logoAlt,
+              href: startup.href,
+              wordmark: startup.wordmarkLabel,
+            }))}
+            columns={6}
+            size="md"
+            label="Ventures from the E-Lab"
+            className="mt-10"
+          />
         </div>
       </Container>
     </Section>
