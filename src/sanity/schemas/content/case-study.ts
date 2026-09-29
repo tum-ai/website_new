@@ -2,6 +2,30 @@ import { defineField, defineType } from "sanity";
 import { photoField } from "./image-rules";
 
 /**
+ * A warning when neither the summary nor the story mentions the figure's
+ * number. The three fields state one outcome for three places (the card's
+ * counter, the homepage ledger, the card's story), and a figure changed
+ * without its words leaves the page with two different numbers. Figures
+ * without digits pass. Exported for tests.
+ */
+export function metricProblem(
+  metric: unknown,
+  { summary, copy }: Record<string, unknown>,
+): true | string {
+  const number = typeof metric === "string" && /\d+(?:[.,]\d+)?/.exec(metric);
+  if (!number) return true;
+  const digits = number[0].replace(/[.,]/g, "\\$&");
+  const mentions = new RegExp(`(?<![\\d.,])${digits}(?![\\d])`);
+  const texts = [summary, copy].filter(
+    (text): text is string => typeof text === "string",
+  );
+  if (texts.length === 0 || texts.some((text) => mentions.test(text))) {
+    return true;
+  }
+  return `Neither the summary nor the story mentions ${number[0]}. They describe the same outcome: when the figure changes, update them too.`;
+}
+
+/**
  * A partner case on /partners ("Real partnerships. Real outcomes.") and a
  * row of the homepage's partner ledger: one measured outcome per
  * partnership. Read by `features/partners/content.ts`.
@@ -33,8 +57,13 @@ export const caseStudyType = defineType({
       title: "Figure",
       type: "string",
       description:
-        "The outcome as a number with a short unit: “75%”, “48h”, “20+”. It counts up on the page, so keep it short.",
-      validation: (Rule) => Rule.required().max(8),
+        "The outcome as a number with a short unit: “75%”, “48h”, “20+”. It counts up on the card and leads the homepage ledger row, so keep it short. The summary and the story describe the same outcome in words: change them together.",
+      validation: (Rule) => [
+        Rule.required().max(8),
+        Rule.custom((metric, { document }) =>
+          metricProblem(metric, document ?? {}),
+        ).warning(),
+      ],
     }),
     defineField({
       name: "label",
@@ -47,7 +76,8 @@ export const caseStudyType = defineType({
       name: "summary",
       title: "Summary",
       type: "string",
-      description: "The outcome in a few words, for the homepage ledger.",
+      description:
+        "The outcome in a few words, beside the figure in the homepage ledger (“3 of 4 project members hired full-time”). The figure already shows there, so add what it means rather than repeating it.",
       validation: (Rule) => Rule.required().max(60),
     }),
     defineField({
@@ -56,7 +86,7 @@ export const caseStudyType = defineType({
       type: "text",
       rows: 3,
       description:
-        "Two or three sentences, or the partner's quote in quote marks.",
+        "The story behind the figure on the /partners card: two or three sentences, or the partner's quote in quote marks.",
       validation: (Rule) => Rule.required().max(240),
     }),
     defineField({
