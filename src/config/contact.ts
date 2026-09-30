@@ -4,7 +4,7 @@
  * partner flows and JSON-LD read them. See "Updating site facts" in
  * docs/contributor-guide.md.
  */
-import { legalEntity } from "./organization";
+import { registeredOfficeLinesDe } from "./organization";
 
 export const contactEmails = {
   general: "contact@tum-ai.com",
@@ -62,6 +62,7 @@ export type PartnershipBooking = {
 
 /**
  * German one-line form of the registered office for the Imprint ("Arcisstraße
- * 21, 80333 München"). The address itself lives in config/organization.ts.
+ * 21, 80333 München"), joined from `registeredOfficeLinesDe` in
+ * config/organization.ts.
  */
-export const registeredOfficeAddressLine = `${legalEntity.registeredOffice.streetAddress}, ${legalEntity.registeredOffice.postalCode} München`;
+export const registeredOfficeAddressLine = registeredOfficeLinesDe.join(", ");

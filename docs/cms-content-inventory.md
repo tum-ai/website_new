@@ -91,7 +91,7 @@ fields, and each owner defines its own schema file.
 | Content | Source | Consumers | Decision | Owner |
 | --- | --- | --- | --- | --- |
 | Partner directory | `partners/data/organizations.ts`: every organisation with a `partnership` (62: the 18 highlighted with tiers, the old site's other partners as supporters); `partnerLaunchOrder` | `getPartners()` → home hero, home partners, partners page, /research (research partners), `/api/getPartners` from the CMS | **done**: `organization` (`partnerTier`, `partnerFeatured`, `partnerCategory`); replaces `featuredPartners` and, on the new dataset, the `partner` type | B |
-| Symbol-only logos | `partners/data/partner-logos.ts`: `symbolOnlyLogos` | `partner-tile.tsx`, `partner-marquee.tsx`, home partners | **done**: `organization.symbolOnly` | B |
+| Symbol-only logos | `partners/data/partner-logos.ts`: `symbolOnlyLogos` | `partner-tile.tsx`, `partner-marquee.tsx`, the E-Lab ventures, the event host logos | **done**: `organization.symbolOnly` | B |
 | Alumni destinations | `partners/data/partner-logos.ts`: `alumniDestinations` (11) | `partners/sections/people-section.tsx` | **done**: `organization` (`roles: alumniDestination`) | B |
 | Marquee logos (on dark) | `partners/data/partner-marquee-logos.ts`: `marqueeLogos` (18) | `partner-marquee.tsx`, home hero | **done**: `organization.logoOnDark` (`roles: marquee`) | B |
 | Partner directory logic | `partners/partner-directory.ts` (alias map, `partnerOf`, tier and launch order), `partner-rotation.ts` | partners, home | **keep**: logic | B |

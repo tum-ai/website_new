@@ -31,7 +31,7 @@ Read a failure with `gh run view --job <job id> --log-failed`.
 
 1. Look at the diffs, don't just count them. Either compare baseline PNG files from git
    (`git show "origin/<base>:e2e/__screenshots__/linux/visual-webkit/<route>-390.png" > before.png`)
-   or download the `visual-report` artifact (large; it can stall).
+   or download the `visual-report-1`/`-2` artifacts, one per shard (large; they can stall).
 2. Every diff must be intended: wrapping, stacked actions, nested corners, alignment, contrast on
    each band, nothing hidden behind the fixed header. Layout breaks, lost content or unlisted copy
    changes are regressions; fix them.
