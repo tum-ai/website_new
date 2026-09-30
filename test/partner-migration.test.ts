@@ -315,11 +315,15 @@ function fakeClient(existing: Record<string, Record<string, unknown>>) {
       return true;
     },
     exists: async (id) => documents.has(id),
-    setIfMissing: async (id, fields) => {
-      const document = documents.get(id);
-      if (!document) throw new Error(`no document ${id}`);
-      for (const [field, value] of Object.entries(fields)) {
-        if (document[field] === undefined) document[field] = value;
+    // One transaction: every document exists, or nothing changes.
+    setIfMissing: async (ids, fields) => {
+      const missing = ids.find((id) => !documents.has(id));
+      if (missing) throw new Error(`no document ${missing}`);
+      for (const id of ids) {
+        const document = documents.get(id) ?? {};
+        for (const [field, value] of Object.entries(fields)) {
+          if (document[field] === undefined) document[field] = value;
+        }
       }
     },
   };
@@ -415,6 +419,43 @@ describe("applying the plan", () => {
       "organization-gone: no document organization-gone",
     ]);
     expect(documents.get("organization-x")?.name).toBe("Edited");
+  });
+
+  test("patches the published document and its draft together, so a failed draft leaves both for the next run", async () => {
+    const { client, documents } = fakeClient({
+      "organization-y": { _id: "organization-y" },
+      "drafts.organization-y": { _id: "drafts.organization-y" },
+    });
+    const transactions: string[][] = [];
+    client.setIfMissing = async (ids) => {
+      transactions.push(ids);
+      throw new Error("revision changed");
+    };
+    const result = await applyPartnerMigration(
+      [
+        {
+          action: "update",
+          id: "organization-y",
+          key: "y",
+          name: "Y",
+          partnerId: "p-y",
+          set: { partnerTier: "gold", legacyPartnerId: "p-y" },
+        },
+      ],
+      client,
+    );
+    expect(result).toStrictEqual({
+      created: 0,
+      updated: 0,
+      failures: ["organization-y: revision changed"],
+    });
+    expect(transactions).toStrictEqual([
+      ["organization-y", "drafts.organization-y"],
+    ]);
+    // The dry run plans from published documents: this one still lacks the fields.
+    expect(documents.get("organization-y")).toStrictEqual({
+      _id: "organization-y",
+    });
   });
 
   test("an image that is not a local file is refused", async () => {

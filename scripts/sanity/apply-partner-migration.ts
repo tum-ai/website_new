@@ -10,8 +10,10 @@
  * - `create`: uploads the document's logo files, then `createIfNotExists`,
  *   so an organisation created since the dry run is left alone.
  * - `update`: uploads a planned logo file, then `setIfMissing` on the
- *   published document and, if there is one, its draft: fields an editor
- *   set in the meantime win.
+ *   published document and, if there is one, its draft, in one transaction:
+ *   fields an editor set in the meantime win, and a failure leaves both
+ *   untouched, so the next dry run plans the step again (it reads only
+ *   published documents and would not see a draft left behind).
  *
  * Every step runs on its own; a failure is reported and the others go on.
  */
@@ -30,8 +32,8 @@ export type MigrationClient = {
   createIfNotExists(document: Record<string, unknown>): Promise<boolean>;
   /** Whether a document with this id exists. */
   exists(id: string): Promise<boolean>;
-  /** Sets the fields the document lacks. */
-  setIfMissing(id: string, fields: Record<string, unknown>): Promise<void>;
+  /** Sets the fields each document lacks, in one transaction. */
+  setIfMissing(ids: string[], fields: Record<string, unknown>): Promise<void>;
 };
 
 /**
@@ -87,11 +89,11 @@ export async function applyPartnerMigration(
           string,
           unknown
         >;
-        await client.setIfMissing(step.id, fields);
         const draft = `drafts.${step.id}`;
-        if (await client.exists(draft)) {
-          await client.setIfMissing(draft, fields);
-        }
+        await client.setIfMissing(
+          (await client.exists(draft)) ? [step.id, draft] : [step.id],
+          fields,
+        );
         updated++;
       }
     } catch (error) {
@@ -145,8 +147,12 @@ async function main() {
     },
     exists: async (id) =>
       (await sanity.fetch<number>("count(*[_id == $id])", { id })) > 0,
-    setIfMissing: async (id, fields) => {
-      await sanity.patch(id).setIfMissing(fields).commit();
+    setIfMissing: async (ids, fields) => {
+      const transaction = sanity.transaction();
+      for (const id of ids) {
+        transaction.patch(id, (patch) => patch.setIfMissing(fields));
+      }
+      await transaction.commit();
     },
   };
   const { created, updated, failures } = await applyPartnerMigration(
