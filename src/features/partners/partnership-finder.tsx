@@ -11,7 +11,7 @@ import {
   Users,
   Zap,
 } from "lucide-react";
-import { type ReactNode, useEffect, useRef } from "react";
+import { Fragment, type ReactNode, useEffect, useRef } from "react";
 import { Button, Highlight, IconBadge, Text } from "@/components/ds";
 import { cn } from "@/lib/cn";
 import { splitAtPageToken } from "@/lib/content-copy";
@@ -74,20 +74,20 @@ function FinderOption({
 }
 
 /**
- * The result question with `{{format}}` (or `{{ format }}`, as the Studio
- * allows) replaced by `format`, the highlighted format name; without the
- * token, the text alone.
+ * The result question with every `{{format}}` (or `{{ format }}`, as the
+ * Studio allows) replaced by `format`, the highlighted format name; without
+ * the token, the text alone.
  */
 function withFormat(template: string, format: ReactNode): ReactNode {
-  const [before, ...rest] = splitAtPageToken(template, "format");
-  if (rest.length === 0) return template;
-  return (
-    <>
-      {before}
-      {format}
-      {rest.join("")}
-    </>
-  );
+  const parts = splitAtPageToken(template, "format");
+  if (parts.length === 1) return template;
+  return parts.map((part, index) => (
+    // biome-ignore lint/suspicious/noArrayIndexKey: the parts are static and may repeat; their position is their identity.
+    <Fragment key={index}>
+      {index > 0 ? format : null}
+      {part}
+    </Fragment>
+  ));
 }
 
 /**

@@ -170,3 +170,30 @@ test.each(["Try {{format}} first.", "Try {{ format }} first."])(
     expect(within(result).getByText(recommendations.talent.name)).toBeVisible();
   },
 );
+
+test("puts the recommended format at every {{format}} of the result question", async () => {
+  const user = userEvent.setup();
+  render(
+    <PartnershipProvider
+      copy={{
+        ...partnershipFinderCopy,
+        prompts: {
+          ...partnershipFinderCopy.prompts,
+          resultQuestion: "Try {{format}}. Ready for {{ format }}?",
+        },
+      }}
+    >
+      <PartnershipFinder />
+    </PartnershipProvider>,
+  );
+  await user.click(
+    screen.getByRole("button", { name: new RegExp(talent.label) }),
+  );
+  await user.click(
+    screen.getByRole("button", { name: new RegExp(oneOff.label) }),
+  );
+  const { name } = recommendations.talent;
+  const result = screen.getByRole("heading", { level: 3 });
+  expect(result).toHaveTextContent(`Try ${name}. Ready for ${name}?`);
+  expect(within(result).getAllByText(name)).toHaveLength(2);
+});
