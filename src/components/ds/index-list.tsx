@@ -38,9 +38,9 @@ export type IndexListProps = {
 
 /* The parts of a row that recede while another row is active (see IndexList). */
 const recedingTitle =
-  "[@media(hover:hover)]:group-hover/index:group-data-[active=false]/item:text-fg-muted group-has-[a:focus-visible]/index:group-data-[active=false]/item:text-fg-muted";
+  "group-hover/index:group-data-[active=false]/item:text-fg-muted group-has-[a:focus-visible]/index:group-data-[active=false]/item:text-fg-muted";
 const recedingMark =
-  "[@media(hover:hover)]:group-hover/index:group-data-[active=false]/item:opacity-45 group-has-[a:focus-visible]/index:group-data-[active=false]/item:opacity-45";
+  "group-hover/index:group-data-[active=false]/item:opacity-45 group-has-[a:focus-visible]/index:group-data-[active=false]/item:opacity-45";
 
 /**
  * A typographic index of destinations: full-width link rows with a large
@@ -131,7 +131,7 @@ export function IndexList({
                 <span
                   aria-hidden="true"
                   className={cn(
-                    "hidden size-12 shrink-0 place-items-center rounded-full border border-hairline-strong text-fg transition-[color,background-color,border-color,opacity] duration-300 group-hover/row:border-fg group-hover/row:bg-fg group-hover/row:text-canvas sm:grid",
+                    "hidden size-12 shrink-0 place-items-center rounded-full border border-hairline-strong text-fg transition-[color,background-color,border-color,opacity] duration-300 ease-brand group-hover/row:border-fg group-hover/row:bg-fg group-hover/row:text-canvas sm:grid",
                     recedingMark,
                   )}
                 >
