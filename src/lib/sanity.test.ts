@@ -22,6 +22,7 @@ vi.mock("next/headers", () => ({
 vi.mock("next-sanity", () => ({
   createClient: vi.fn((config: unknown) => ({ config })),
   defineQuery: (query: string) => query,
+  stegaClean: <T>(value: T) => value,
 }));
 
 vi.mock("next-sanity/live", () => ({
@@ -147,6 +148,36 @@ describe("page fetchers", () => {
     expect(mocks.sanityFetch).toHaveBeenCalledWith(
       expect.objectContaining({ perspective: "drafts", stega: true }),
     );
+  });
+
+  test("leave out event drafts without a title or a valid date", async () => {
+    mocks.draftModeEnabled = true;
+    mocks.resolvePerspectiveFromCookies.mockResolvedValue("drafts");
+    const draft = {
+      description: "",
+      location: null,
+      city: null,
+      category: null,
+      hosts: [],
+      coHosts: null,
+      poster: null,
+      images: [],
+      sign_up: null,
+    };
+    mocks.sanityFetch.mockResolvedValue({
+      data: [
+        { ...draft, id: "untitled", title: null, event_date: "2026-10-04" },
+        { ...draft, id: "blank", title: "  ", event_date: "2026-10-04" },
+        { ...draft, id: "undated", title: "Talk", event_date: null },
+        { ...draft, id: "invalid", title: "Talk", event_date: "soon" },
+        { ...draft, id: "ready", title: "Talk", event_date: "2026-10-04" },
+      ],
+    });
+    const sanity = await loadSanity({ SANITY_API_READ_TOKEN: "t" });
+
+    const events = await sanity.getSanityEvents();
+
+    expect(events.map(({ id }) => id)).toStrictEqual(["ready"]);
   });
 
   test("stay on published content in draft mode without a token", async () => {

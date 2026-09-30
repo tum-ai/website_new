@@ -2,7 +2,7 @@ import "server-only";
 
 import { cookies, draftMode } from "next/headers";
 import { unstable_rethrow } from "next/navigation";
-import { createClient } from "next-sanity";
+import { createClient, stegaClean } from "next-sanity";
 import {
   defineLive,
   type LivePerspective,
@@ -156,6 +156,25 @@ function loadMockCms() {
   return null;
 }
 
+/**
+ * Whether an event has what every page needs to place it: a title and a
+ * valid date. Published events always have both (the schema requires them),
+ * but a draft in Presentation may not have them yet; it appears once it
+ * does. Typegen types both as strings, so this reads them as possibly null.
+ */
+function isPlaceableEvent({
+  title,
+  event_date,
+}: {
+  title: string | null;
+  event_date: string | null;
+}): boolean {
+  return (
+    stegaClean(title ?? "").trim() !== "" &&
+    !Number.isNaN(new Date(stegaClean(event_date ?? "")).getTime())
+  );
+}
+
 export async function getSanityEvents(): Promise<Event[]> {
   const mock = await loadMockCms();
   if (mock) return mock.getMockEvents(getCmsNow());
@@ -166,7 +185,7 @@ export async function getSanityEvents(): Promise<Event[]> {
     [...liveCacheTags.event, contentCacheTag("organization")],
     "events",
   );
-  return events.map(omitNulls);
+  return events.filter(isPlaceableEvent).map(omitNulls);
 }
 
 export async function getSanityResearchProjects(): Promise<ResearchProject[]> {
