@@ -36,12 +36,20 @@ export type IndexListProps = {
   className?: string;
 };
 
+/* The parts of a row that recede while another row is active (see IndexList). */
+const recedingTitle =
+  "[@media(hover:hover)]:group-hover/index:group-data-[active=false]/item:text-fg-muted group-has-[a:focus-visible]/index:group-data-[active=false]/item:text-fg-muted";
+const recedingMark =
+  "[@media(hover:hover)]:group-hover/index:group-data-[active=false]/item:opacity-45 group-has-[a:focus-visible]/index:group-data-[active=false]/item:opacity-45";
+
 /**
  * A typographic index of destinations: full-width link rows with a large
  * light title, one line of description and an arrow, separated by hairlines.
  * On wide screens a sticky photo beside the list shows the row that is
  * hovered or focused (the first one until then), and while the pointer or
- * keyboard focus is in the list the other rows dim.
+ * keyboard focus is in the list the other rows recede: their titles turn
+ * muted and their arrows and thumbnails fade; descriptions and details keep
+ * their full contrast.
  * Keyboard focus drives the preview exactly like the pointer.
  */
 export function IndexList({
@@ -74,7 +82,7 @@ export function IndexList({
           <li
             key={item.id}
             data-active={item.id === active}
-            className="border-hairline border-b transition-opacity duration-500 ease-brand group-has-[a:focus-visible]/index:not-data-[active=true]:opacity-45 motion-reduce:transition-none [@media(hover:hover)]:group-hover/index:not-data-[active=true]:opacity-45"
+            className="group/item border-hairline border-b"
           >
             <Anchor
               href={item.href}
@@ -85,7 +93,12 @@ export function IndexList({
               <div className="min-w-0">
                 {/* A word wider than the column (a long title beside the
                     thumbnail at 320px) breaks instead of running under it. */}
-                <HeadingTag className="wrap-break-word text-display-md text-fg transition-transform duration-500 ease-brand group-hover/row:translate-x-2 motion-reduce:transition-none">
+                <HeadingTag
+                  className={cn(
+                    "wrap-break-word text-display-md text-fg transition-[color,translate] duration-500 ease-brand group-hover/row:translate-x-2 motion-reduce:transition-none",
+                    recedingTitle,
+                  )}
+                >
                   {item.title}
                 </HeadingTag>
                 <p className="mt-3 max-w-xl text-fg-muted text-small md:text-body">
@@ -99,7 +112,12 @@ export function IndexList({
                   </div>
                 ) : null}
                 {item.image ? (
-                  <div className="relative size-16 shrink-0 overflow-hidden rounded-2xl bg-sunken sm:size-20 lg:hidden">
+                  <div
+                    className={cn(
+                      "relative size-16 shrink-0 overflow-hidden rounded-2xl bg-sunken transition-opacity duration-500 ease-brand motion-reduce:transition-none sm:size-20 lg:hidden",
+                      recedingMark,
+                    )}
+                  >
                     <Image
                       src={item.image.src}
                       alt=""
@@ -112,7 +130,10 @@ export function IndexList({
                 ) : null}
                 <span
                   aria-hidden="true"
-                  className="hidden size-12 shrink-0 place-items-center rounded-full border border-hairline-strong text-fg transition-colors duration-300 group-hover/row:border-fg group-hover/row:bg-fg group-hover/row:text-canvas sm:grid"
+                  className={cn(
+                    "hidden size-12 shrink-0 place-items-center rounded-full border border-hairline-strong text-fg transition-[color,background-color,border-color,opacity] duration-300 group-hover/row:border-fg group-hover/row:bg-fg group-hover/row:text-canvas sm:grid",
+                    recedingMark,
+                  )}
                 >
                   <ArrowRight className="size-4 transition-transform duration-500 ease-brand group-hover/row:-rotate-45 motion-reduce:transition-none" />
                 </span>
