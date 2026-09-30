@@ -622,6 +622,40 @@ describe("the recovery of images an import left without a file", () => {
     ]);
   });
 
+  test("retries only the draft when its repair failed after the published one succeeded", async () => {
+    const stored = [
+      { _id: "homeCopy", _rev: "r1", hero: { _type: "image" } },
+      { _id: "drafts.homeCopy", _rev: "r2", hero: { _type: "image" } },
+    ];
+    const entry = pending("homeCopy", "hero", "hero.webp");
+    const { client } = dataset(stored);
+    client.attach = async (id) => {
+      if (id.startsWith("drafts.")) throw new Error("revision changed");
+    };
+    const result = await repairPendingAssets([entry], client);
+    expect(result).toStrictEqual({
+      attached: 1,
+      failures: ["drafts.homeCopy: revision changed"],
+      pending: [{ ...entry, draftOnly: true }],
+    });
+
+    // The published image now has its file; the next run still repairs the draft.
+    const retry = dataset([
+      {
+        ...stored[0],
+        _rev: "r3",
+        hero: { asset: { _ref: "image-hero.webp" } },
+      },
+      { ...stored[1], _rev: "r4" },
+    ]);
+    expect(
+      await repairPendingAssets(result.pending, retry.client),
+    ).toStrictEqual({ attached: 1, failures: [], pending: [] });
+    expect(retry.attached).toStrictEqual([
+      ["drafts.homeCopy", "r4", { hero: "image-hero.webp" }],
+    ]);
+  });
+
   test("finds every image of the real backfill by the path it records", () => {
     // As an import that created the documents and uploaded nothing.
     const created = JSON.parse(JSON.stringify(documents), (key, value) =>

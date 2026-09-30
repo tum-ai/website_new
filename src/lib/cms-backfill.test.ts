@@ -256,9 +256,33 @@ describe("the pending-assets ledger", () => {
         pending("person-bo", "portrait", "bo"),
       ];
       expect(
-        settlePendingAssets(open, new Set(["homeCopy", "drafts.person-bo"])),
-      ).toStrictEqual([open[0], open[2]]);
+        settlePendingAssets(
+          open,
+          new Set(["homeCopy", "drafts.homeCopy", "drafts.person-bo"]),
+        ),
+      ).toStrictEqual([open[0], { ...open[2], draftOnly: true }]);
       expect(settlePendingAssets(open, new Set())).toStrictEqual([]);
+    });
+
+    test("a draft-only entry repairs the draft while it lacks the file", () => {
+      const entry = {
+        ...pending("homeCopy", "hero", "hero"),
+        draftOnly: true as const,
+      };
+      const published = { _id: "homeCopy", hero: attached };
+      const draft = { _id: "drafts.homeCopy", hero: { _type: "image" } };
+      expect(findUnattachedAssets([entry], [published, draft])).toStrictEqual({
+        open: [entry],
+        repairs: [{ document: draft, assets: [entry] }],
+      });
+      // Settled once the draft has its file, or is gone (published or deleted).
+      const repaired = { ...draft, hero: attached };
+      for (const stored of [[published, repaired], [published]]) {
+        expect(findUnattachedAssets([entry], stored)).toStrictEqual({
+          open: [],
+          repairs: [],
+        });
+      }
     });
   });
 });

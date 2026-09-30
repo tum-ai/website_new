@@ -146,8 +146,8 @@ holds `partnerTier` (gold, silver, bronze, supporter; set means "is a partner"),
   never had has no such marker: a re-run gives it its code tier back). It is a dry run by default
   (public API, no token; the plan goes to `.sanity-backfill/<dataset>.partner-migration.json`);
   `--apply` carries that plan out through `sanity exec --with-user-token` with
-  `createIfNotExists` and `setIfMissing` on the published document and its draft, uploading the
-  code's logo files.
+  `createIfNotExists` and `setIfMissing` on the published document and its draft in one
+  transaction (so a failure leaves both for the next plan), uploading the code's logo files.
 
 ### Content slices
 
@@ -221,7 +221,8 @@ write token in the repository or CI.
   (gitignored); if that fails, nothing is imported. After the import, even a failed one, it
   uploads only the ledger's images that still lack a file and sets those `asset` references on
   the document and its draft, guarded by the revision. Entries drop once the image has its file
-  or is gone; failed ones stay, so running the backfill again recovers without `--overwrite`,
+  or is gone; failed ones stay (only for the draft when the published document's repair
+  succeeded), so running the backfill again recovers without `--overwrite`,
   keeps the editors' edits and never restores an image an editor removed. Images an import left
   without a file before the ledger existed, or on another machine, are not repaired: attach them
   in the Studio.

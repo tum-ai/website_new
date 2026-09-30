@@ -140,6 +140,11 @@ export type PlannedAsset = {
 export type PendingAsset = PlannedAsset & {
   /** The published document's `_id`. */
   documentId: string;
+  /**
+   * The published document has its file; only its draft still lacks it
+   * (the draft's repair failed after the published one succeeded).
+   */
+  draftOnly?: true;
 };
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -237,10 +242,11 @@ const isUnattached = (document: unknown, path: string) => {
  * Which ledger entries still need their file, given the dataset's `stored`
  * published documents and drafts. An entry is `open` while its published
  * document holds the image without `asset`; the repair then sets it there
- * and on the draft if the draft lacks it too. Every other entry is settled:
- * the import (or an earlier repair) attached it, or the image or document is
- * gone. An image without `asset` that is not in `pending` is an editor's
- * removal and never appears here.
+ * and on the draft if the draft lacks it too. A `draftOnly` entry is `open`
+ * while the draft holds the image without `asset`, and repairs only the
+ * draft. Every other entry is settled: the import (or an earlier repair)
+ * attached it, or the image or document is gone. An image without `asset`
+ * that is not in `pending` is an editor's removal and never appears here.
  */
 export function findUnattachedAssets<Stored extends { _id: string }>(
   pending: readonly PendingAsset[],
@@ -253,9 +259,10 @@ export function findUnattachedAssets<Stored extends { _id: string }>(
   const repairs = new Map<Stored, PendingAsset[]>();
   const open = pending.filter((entry) => {
     const published = byId.get(entry.documentId);
-    if (!isUnattached(published, entry.path)) return false;
     const draft = byId.get(`drafts.${entry.documentId}`);
-    for (const document of [published, draft]) {
+    const targets = entry.draftOnly ? [draft] : [published, draft];
+    if (!isUnattached(targets[0], entry.path)) return false;
+    for (const document of targets) {
       if (document && isUnattached(document, entry.path)) {
         repairs.set(document, [...(repairs.get(document) ?? []), entry]);
       }
@@ -270,16 +277,21 @@ export function findUnattachedAssets<Stored extends { _id: string }>(
 
 /**
  * The ledger after a repair: the `open` entries of a document (published or
- * draft) whose repair failed, so the next run retries them.
+ * draft) whose repair failed, so the next run retries them. An entry whose
+ * published repair succeeded and whose draft's failed becomes `draftOnly`:
+ * the published image now has its file, so only the draft is retried.
  */
 export function settlePendingAssets(
   open: readonly PendingAsset[],
   failedIds: ReadonlySet<string>,
 ): PendingAsset[] {
-  return open.filter(
-    ({ documentId }) =>
-      failedIds.has(documentId) || failedIds.has(`drafts.${documentId}`),
-  );
+  return open.flatMap((entry): PendingAsset[] => {
+    if (failedIds.has(entry.documentId)) return [entry];
+    if (failedIds.has(`drafts.${entry.documentId}`)) {
+      return [{ ...entry, draftOnly: true }];
+    }
+    return [];
+  });
 }
 
 /** The `/assets/...` path the site serves `file` under. */

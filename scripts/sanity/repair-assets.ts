@@ -15,7 +15,9 @@
  *   entry whose published document holds the image without `asset`, uploads
  *   the file and sets only that reference, on the published document and on
  *   its draft, so nothing an editor changed is touched. Entries drop once
- *   the image has its file or is gone; failed ones stay for the next run.
+ *   the image has its file or is gone; failed ones stay for the next run
+ *   (only for the draft, `draftOnly`, when the published document's repair
+ *   succeeded).
  *   An image without `asset` that is not in the ledger stays removed.
  *
  * `backfill.ts` runs both through `sanity exec --with-user-token` (the same
@@ -167,11 +169,12 @@ function readLedger(file: string): PendingAsset[] {
       (entry) =>
         typeof entry?.documentId === "string" &&
         typeof entry.path === "string" &&
-        typeof entry.sanityAsset === "string",
+        typeof entry.sanityAsset === "string" &&
+        (entry.draftOnly === undefined || entry.draftOnly === true),
     )
   ) {
     throw new Error(
-      `${file} is not a list of {documentId, path, sanityAsset}: fix or delete it.`,
+      `${file} is not a list of {documentId, path, sanityAsset, draftOnly?}: fix or delete it.`,
     );
   }
   return entries;
