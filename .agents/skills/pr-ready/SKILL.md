@@ -57,7 +57,7 @@ reference in `docs/design-system.md`). Run the `docs-sync` subagent to find stal
 3. On a failure, read the log (`gh run view --job <job id> --log-failed`), batch every fix, and
    push once. Never close and reopen the PR to re-run CI.
 4. **Visual job failed on an intended change:** check the diffs (compare baseline PNG files from git,
-   or the `visual-report` artifact), then `gh pr edit <number> --add-label update-snapshots`. The
+   or the `visual-report-1`/`-2` artifacts), then `gh pr edit <number> --add-label update-snapshots`. The
    snapshot workflow captures only the changed baselines, commits them as `github-actions[bot]`
    and removes the label. Its commit starts no CI; the next push runs it.
 5. Check the bot's commit touched only your routes. Restore any other PNG from the base branch in
