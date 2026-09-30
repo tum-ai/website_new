@@ -98,9 +98,9 @@ built-in through any chain of imports (Turbopack would fail the production build
 
 | Feature | `index.ts` | `server.ts` |
 | --- | --- | --- |
-| `community` | `departments`, `memberJourney`, types `JourneyStep`, `MemberStory` | `getMemberStories`, `buildMemberStoriesBackfill`, `MembershipApplyButton` |
+| `community` | `departments`, `memberJourney`, `MembershipPhase` (the recruiting-window switch), types `JourneyStep`, `MemberStory` | `getMemberStories`, `buildMemberStoriesBackfill`, `getJourneyStages`, `memberStoryKey`, `MembershipApplyButton` |
 | `e-lab` | | `getTestimonialCards`, `buildVentureBackfill` |
-| `partners` | the directory helpers `getHighlightedPartners`, `getPartnerKey`; `PartnerRotationGrid` (the rotating partner wall, a client island without CSS: its styles are global, `styles/partner-rotation.css`); `organizationByKey` | `getPartners`, `getResearchPartners`, `getPartnersCopy` (the pitch), `getPartnerCaseStudies`, `getPartnerLogos`, `buildOrganizationBackfill` |
+| `partners` | the directory helpers `getHighlightedPartners`, `getPartnerKey`; `PartnerRotationGrid` (the rotating partner wall, a client island without CSS: its styles are global, `styles/partner-rotation.css`); `organizationByKey`, `organizationsWithKeys` | `getPartners`, `getResearchPartners`, `getPartnersCopy` (the pitch), `getPartnerCaseStudies`, `getPartnerLogos`, `buildOrganizationBackfill` |
 | `qanda` | | `faqs` (the design-system showcase) |
 | `research` | | `getRexInstitutions` |
 
@@ -108,7 +108,8 @@ built-in through any chain of imports (Turbopack would fail the production build
 
 | Module | May import |
 | --- | --- |
-| `app`, `src/*.ts` | `features/<x>/<name>-page.tsx` and page `.css`, components, config, lib, sanity, styles, app |
+| `app` | `features/<x>/<name>-page.tsx` and page `.css`, components, config, lib, styles, app (not sanity or the studio) |
+| `src/*.ts` (`proxy.ts`) | config, lib |
 | `app/studio` | sanity, lib (no site shell, CSS or features) |
 | `features/<x>` | its own files except `.css`, `features/<y>` through its `index.ts` or `server.ts`, `components/{ds,shell}`, `components/json-ld`, config, lib |
 | `features/<x>/index.ts`, `server.ts` | its own feature's files except pages; an index reaches no server-only module |
@@ -118,6 +119,10 @@ built-in through any chain of imports (Turbopack would fail the production build
 | `config` | config, lib |
 | `lib` | lib |
 | `sanity` | sanity, lib |
+| `styles` | styles |
+
+Every module outside `components/ds` imports the design system through its barrel,
+`@/components/ds`, never a file inside it.
 
 Why routes import page modules and indexes never re-export pages: Turbopack keeps every
 re-exported module that has client islands or a CSS import, even when the importer uses none of
