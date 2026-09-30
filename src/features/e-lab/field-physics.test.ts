@@ -166,7 +166,9 @@ describe("the hero's field as drawn", () => {
         );
       }
     },
-    20_000,
+    // Thousands of full-field steps: about 15 s under CI's v8 coverage, and
+    // past 20 s on a slow runner, so leave headroom.
+    60_000,
   );
 });
 
