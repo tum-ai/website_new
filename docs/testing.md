@@ -177,11 +177,10 @@ label is the only trigger.
   covered in CI by `chromium-phone`; WebKit by `webkit-desktop` and `visual-webkit`.
 - **Chromium `home-1440`:** faint anti-aliasing noise (about 128 pixels, at most 2/255) stays
   under the per-pixel threshold, so it doesn't count against `maxDiffPixels`. Leave it.
-- **WebKit `data-privacy-1440`:** the table of contents' scroll spy can still mark the last
-  section as current after `loadLazyContent` scrolls back to the top, so the first capture
-  fails "two consecutive stable screenshots" (about 1,400 pixels in the TOC) and the retry
-  passes. The old ratio tolerance hid it. Fix pending: wait for the spy to settle in the
-  visual spec, or let it update synchronously on scroll.
+- **Fixed:** on WebKit `data-privacy-1440` the table of contents' scroll spy could still mark
+  the last section as current after `loadLazyContent` scrolled back to the top, so the first
+  capture failed "two consecutive stable screenshots" and only the retry passed. The visual
+  spec now waits until no TOC entry is current before it captures.
 - **Fixed:** the E-Lab and Apply timeline markers used to depend on scroll timing; that
   timeline is static under reduced motion now (#280). The partner rotation property test
   collects failures and asserts once per run, so it no longer times out (#278).
