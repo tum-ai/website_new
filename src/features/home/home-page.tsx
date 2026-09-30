@@ -1,46 +1,63 @@
-import { ButtonLink, CtaBand, Highlight } from "@/components/ds";
-import { getPartnershipEmailUrl } from "@/features/partners";
-import { AboutSection } from "./about-section";
-import { ExploreSection } from "./explore-section";
+import { getSiteFacts } from "@/config/site-settings-content";
+import { getMemberStories } from "@/features/community/server";
+import { getPartnerLogos, getPartners } from "@/features/partners/server";
+import { getRexInstitutions } from "@/features/research/server";
+import { getHomeContent } from "./content";
 import { HomeHero } from "./home-hero";
+import { homeView } from "./home-view";
+import { JoinSection } from "./join-section";
+import { MissionSection } from "./mission-section";
 import { PartnersSection } from "./partners-section";
+import { ProgramsSection } from "./programs-section";
+import { RoomSection } from "./room-section";
 
 /**
- * Home page: ink hero, "What is TUM.ai?" (paper and mist), the destinations
- * bento, the partner teaser (ink) and a closing call to action. Must stay
- * statically prerendered; see HomeHero for the image-preload contract.
+ * Home page, for two audiences at once: prospective partners and members.
+ * Night hero with the logomark aperture, the mission and its figures, the
+ * program index (paper), event photography (night), the partner case (mist)
+ * and the member call to action (ink). Must stay statically prerendered; see
+ * HeroAperture for the image-preload contract. The copy comes from the
+ * content slice (`content.ts`), the figures from the site facts, and the
+ * member stories, REX institutions, partners and partner artwork from their
+ * slices (each the CMS or the code).
  */
-export function HomePage() {
+export async function HomePage() {
+  const [
+    { copy, departmentCount },
+    facts,
+    rexInstitutions,
+    stories,
+    { marqueeLogos },
+    partners,
+  ] = await Promise.all([
+    getHomeContent(),
+    getSiteFacts(),
+    getRexInstitutions(),
+    getMemberStories(),
+    getPartnerLogos(),
+    getPartners(),
+  ]);
+  const { ledger, programs } = homeView(copy, {
+    facts,
+    departmentCount,
+    rexInstitutions,
+  });
   return (
     <main>
-      <HomeHero />
-      <AboutSection />
-      <ExploreSection />
-      <PartnersSection />
-      <CtaBand
-        titleId="join-title"
-        tone="lavender"
-        eyebrow="TUM.ai"
-        title={
-          <>
-            Join the <Highlight variant="fade">community</Highlight>
-          </>
-        }
-        actions={
-          <>
-            <ButtonLink href="/apply" size="lg" arrow>
-              Become a Member
-            </ButtonLink>
-            <ButtonLink
-              href={getPartnershipEmailUrl()}
-              size="lg"
-              variant="inverse"
-            >
-              Become a Partner
-            </ButtonLink>
-          </>
-        }
+      <HomeHero
+        hero={copy.hero}
+        partners={partners}
+        marqueeLogos={marqueeLogos}
       />
+      <MissionSection mission={copy.mission} ledger={ledger} />
+      <ProgramsSection
+        title={copy.programs.title}
+        lead={copy.programs.lead}
+        items={programs}
+      />
+      <RoomSection room={copy.room} />
+      <PartnersSection copy={copy.partners} partners={partners} />
+      <JoinSection join={copy.join} stories={stories} />
     </main>
   );
 }

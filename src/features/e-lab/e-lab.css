@@ -1,0 +1,34 @@
+/*
+ * E-Lab-only styles: the hero's application field (see ApplicationField).
+ * Once on load the dots go out one by one, each on its own `--delay`, gate
+ * after gate; each fade stays within 1.2s and only opacity animates. Under
+ * reduced motion the field shows its end state.
+ */
+
+@layer components {
+  @keyframes elab-field-out {
+    from {
+      opacity: 1;
+    }
+  }
+
+  .elab-field-out {
+    opacity: 0.16;
+  }
+
+  /* The focus ring around an open venture logo: keyboard focus only. */
+  .elab-field-ring {
+    opacity: 0;
+  }
+
+  .elab-field-venture:focus-visible .elab-field-ring {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .elab-field-out {
+      animation: elab-field-out 1.2s var(--ease-brand) both;
+      animation-delay: var(--delay, 0ms);
+    }
+  }
+}

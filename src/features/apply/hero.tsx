@@ -1,39 +1,70 @@
-import Image from "next/image";
-import { Highlight, PageHero } from "@/components/ds";
-import { ApplyAction } from "./apply-action";
+import { ButtonLink, PageHero } from "@/components/ds";
+import type { MembershipConfig } from "@/config/membership";
+import { fillPageTokens } from "@/lib/content-copy";
+import { isCmsClockFixed } from "@/lib/mock-cms-env";
+import { LiveApplyAction, LiveCallPhase } from "./apply-action";
+import type { ApplyCopy } from "./data/apply";
+import { LiveHeroDates } from "./live-call-dates";
+import { callStatus, type RecruitingCall } from "./round";
 
-export function Hero() {
+/**
+ * The call for members: the title and status on the left, and the page's
+ * bold element on the right, the round's important dates with passed dates
+ * struck through, over a ruler of the application window's days. The words
+ * come from the page copy; the status and dates from the round, both kept
+ * current in the browser (`membership` is the window `call` was computed
+ * from).
+ */
+export function Hero({
+  call,
+  membership,
+  copy,
+}: {
+  call: RecruitingCall;
+  membership: MembershipConfig;
+  copy: Pick<ApplyCopy, "heroTitle" | "heroLead" | "faqLabel" | "datesTitle">;
+}) {
   return (
     <PageHero
       titleId="apply-hero-title"
-      title={
-        <>
-          <Highlight>Join</Highlight> Us
-        </>
-      }
+      title={copy.heroTitle}
+      emphasis="highlight"
+      mark={false}
       lead={
         <>
-          <p className="text-fg text-heading-md md:text-heading-lg">
-            Are you a young innovator passionate about making a difference?
-          </p>
-          <p className="mt-6">
-            We're here to bridge the gap by connecting you with key stakeholders
-            in your field. Together, we can harness the power of AI for
-            transformative, interdisciplinary projects that drive tangible
-            social change.
-          </p>
+          <LiveCallPhase
+            call={call}
+            render={(variant) => (
+              <p className="text-fg">{callStatus(variant)}</p>
+            )}
+          />
+          <p className="mt-4">{copy.heroLead}</p>
         </>
       }
-      actions={<ApplyAction statusId="apply-hero-status" />}
+      actions={
+        <>
+          <LiveApplyAction call={call} statusId="apply-hero-status" />
+          <ButtonLink href="#apply-faq" size="lg" variant="outline">
+            {copy.faqLabel}
+          </ButtonLink>
+        </>
+      }
+      classNames={{ grid: "lg:items-start" }}
       media={
-        <div className="hidden md:flex md:justify-center lg:justify-end lg:pb-3">
-          <Image
-            src="/assets/tum_ai_logo_new.svg"
-            alt="TUM.ai Logo"
-            width={1640}
-            height={406}
-            loading="eager"
-            className="h-auto w-full max-w-md lg:max-w-lg"
+        <div className="lg:pt-3">
+          <p
+            id="apply-dates-title"
+            className="font-medium text-fg-muted text-small"
+          >
+            {fillPageTokens(copy.datesTitle, {
+              round: call.name.toLowerCase(),
+            })}
+          </p>
+          <LiveHeroDates
+            call={call}
+            config={membership}
+            live={!isCmsClockFixed()}
+            labelledBy="apply-dates-title"
           />
         </div>
       }

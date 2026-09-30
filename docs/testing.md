@@ -18,6 +18,10 @@ close and reopen a PR to re-run CI.
 
 People can run any suite locally when it helps; the commands are below.
 
+**Knip locally:** run `CI=1 pnpm knip`. Knip's lefthook plugin counts the `lefthook` dependency as
+used only when `CI` is set or it finds installed git hooks, so a plain `pnpm knip` in a git
+worktree (or a clone whose hooks aren't installed) reports `lefthook` as unused. CI sets `CI`.
+
 ## Layers
 
 | Layer | Files | Command | Environment |
@@ -39,7 +43,8 @@ thresholds (`vitest.config.ts`): `src/lib/**` and `src/features/**/*.ts` 90 %,
 
 `vitest.config.ts` defines two projects. `*.test.ts` runs in node, `*.test.tsx` in jsdom with
 `vitest.setup.ts` (jest-dom matchers and the axe matcher). The `@/` and `@test/` aliases work in
-both, and `server-only` is replaced by a stub, so `lib/sanity.ts` can be imported; mock
+both, and `server-only` is replaced by a stub (`vitest.aliases.ts`, shared with
+`vitest.perf.config.ts`), so `lib/sanity.ts` can be imported; mock
 `next/headers`, `next/navigation` and `next-sanity` with `vi.mock`.
 
 ```tsx
@@ -59,6 +64,18 @@ Playwright's axe run covers them on real pages.
 
 `pnpm test` never builds the app. Anything that needs build output goes in `test/perf/` and runs
 with `pnpm test:perf` after `pnpm build`.
+
+**Content slices under the mock CMS.** A slice's tests stub `CMS_CONTENT_SOURCE` and
+`USE_MOCK_CMS=1`; `fetchContent` then imports `lib/cms-content-mock` dynamically and queries the
+backfill documents with groq-js. A test that edits those documents with
+`vi.mock("@/lib/cms-content-mock", ...)` must call one getter at a time, never several loads
+concurrently (`Promise.all`, or a getter that runs several `loadContent` calls at once): Vitest
+resolves only the first of several concurrent dynamic imports of a mocked module to the mock,
+and the others to the real module, so their edits silently don't apply (checked with Vitest
+5.0.2: two concurrent `fetchContent` calls return the mock's value and the real module's). This
+is a Vitest artefact, not a bug in the loader: without `vi.mock` every concurrent import gets the
+same module, as in Node and Next, and whole pages render identically in both sources
+(`lib/community-content.test.ts` and the Q&A slice's tests show the pattern).
 
 ### Playwright
 
@@ -85,8 +102,8 @@ What the specs check:
 - `a11y`: axe (WCAG 2 A/AA, serious and critical fail), new-tab links announce themselves, and
   accessible names contain the visible label.
 - `keyboard`: skip link, mobile menu focus trap, Escape and focus return, dialogs, accordion,
-  tabs, filter chips, header CTA.
-- `motion`: under reduced motion nothing is pending or looping and marquees are one static list.
+  filter chips, header CTA, header navigation.
+- `motion`: under reduced motion every section is visible and nothing is pending or looping.
 - `no-js`: content is visible without JavaScript.
 - `partners`: anchors land below the header, the finder flow, the booking fallback.
 - `routing`: `/design-system` and unknown paths return 404 in production; `/studio` has no site
@@ -113,6 +130,7 @@ keeps them in `knownIssues`; the list is empty today.
 | Visible UI change | intended visual diffs accepted with the `update-snapshots` label (below) and listed in the PR |
 | Homepage markup or images | the homepage budget (`test:perf`) in CI's Build job |
 | New folder or import path | `src/architecture.test.ts` passes without new exceptions |
+| A content slice or a page reading one | the slice's parity test (code and mock `sanity` sources equal); `test/cms-backfill.test.ts`; `src/architecture.test.ts` (no client island reaches `server-only`) |
 
 Test behaviour, not source text: no reading source files to grep for strings, and no
 change-detector assertions on literals. A documented config edit (a new deadline, a new cohort)
@@ -126,7 +144,7 @@ Playwright image `mcr.microsoft.com/playwright:v1.63.0-noble`, so fonts and rend
 Screenshots taken on macOS differ and are never committed (`e2e/.gitignore`).
 
 While capturing, `e2e/visual-screenshot.css` hides photos, video and the film grain but keeps
-their boxes, and the spec masks moving regions (marquees, rotating partner grids, count-ups).
+their boxes, and the spec masks moving regions (rotating partner grids, count-ups).
 The screenshots test layout, not image content. A screenshot may differ from its baseline in at
 most 100 pixels (`maxDiffPixels`); a pixel counts only when it differs beyond Playwright's
 per-pixel `threshold` (0.2), so anti-aliasing noise doesn't. An absolute budget replaced
@@ -159,13 +177,12 @@ label is the only trigger.
   covered in CI by `chromium-phone`; WebKit by `webkit-desktop` and `visual-webkit`.
 - **Chromium `home-1440`:** faint anti-aliasing noise (about 128 pixels, at most 2/255) stays
   under the per-pixel threshold, so it doesn't count against `maxDiffPixels`. Leave it.
-- **WebKit `data-privacy-1440`:** the table of contents' scroll spy can still mark the last
-  section as current after `loadLazyContent` scrolls back to the top, so the first capture
-  fails "two consecutive stable screenshots" (about 1,400 pixels in the TOC) and the retry
-  passes. The old ratio tolerance hid it. Fix pending: wait for the spy to settle in the
-  visual spec, or let it update synchronously on scroll.
-- **Fixed:** the E-Lab and Apply timeline markers used to depend on scroll timing; the ds
-  `Timeline` is static under reduced motion now (#280). The partner rotation property test
+- **Fixed:** on WebKit `data-privacy-1440` the table of contents' scroll spy could still mark
+  the last section as current after `loadLazyContent` scrolled back to the top, so the first
+  capture failed "two consecutive stable screenshots" and only the retry passed. The visual
+  spec now waits until no TOC entry is current before it captures.
+- **Fixed:** the E-Lab and Apply timeline markers used to depend on scroll timing; that
+  timeline is static under reduced motion now (#280). The partner rotation property test
   collects failures and asserts once per run, so it no longer times out (#278).
 
 ## Real Safari

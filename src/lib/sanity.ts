@@ -8,36 +8,34 @@ import {
   type LivePerspective,
   resolvePerspectiveFromCookies,
 } from "next-sanity/live";
+import { contentCacheTag, liveCacheTags } from "./cache-tags";
 import { getCmsNow } from "./mock-cms-env";
 import { omitNulls } from "./omit-nulls";
 import type {
   EVENTS_QUERY_RESULT,
-  PARTNERS_QUERY_RESULT,
-  RESEARCH_PARTNERS_QUERY_RESULT,
   RESEARCH_QUERY_RESULT,
 } from "./sanity.types.generated";
 import {
+  hasPageContent,
+  isSanityConfigured,
+  sanityClientConfig,
+  studioPath,
+} from "./sanity-config";
+import {
   EVENTS_QUERY,
-  PARTNERS_QUERY,
   PUBLIC_EVENTS_QUERY,
+  PUBLIC_PARTNER_ORGANIZATIONS_QUERY,
   PUBLIC_PARTNERS_QUERY,
   PUBLIC_RESEARCH_QUERY,
-  RESEARCH_PARTNERS_QUERY,
   RESEARCH_QUERY,
 } from "./sanity-queries";
 import type {
   Event,
-  Partner,
   PublicEvent,
   PublicPartner,
   PublicResearch,
   ResearchProject,
 } from "./types";
-
-const projectId =
-  process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "test-project-id";
-const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
-const apiVersion = "2024-03-01";
 
 /**
  * Server-side read token (Viewer rights): fetches drafts in draft mode and
@@ -57,18 +55,17 @@ export function getSanityReadToken(): string | undefined {
  */
 const browserToken = process.env.SANITY_API_BROWSER_TOKEN || false;
 
-export const isSanityConfigured = Boolean(
-  process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-);
+export { isSanityConfigured };
 
+/**
+ * The client for events and research, with draft mode, stega and Sanity
+ * Live (and the public API's partners). Page content from the same dataset goes through
+ * `lib/cms-content.ts`, which shares `sanityClientConfig`.
+ */
 export const client = createClient({
-  projectId,
-  dataset,
-  apiVersion,
-  useCdn: true,
-  perspective: "published",
+  ...sanityClientConfig,
   stega: {
-    studioUrl: "/studio",
+    studioUrl: studioPath,
   },
 });
 
@@ -165,7 +162,8 @@ export async function getSanityEvents(): Promise<Event[]> {
 
   const events = await fetchSanityList<EVENTS_QUERY_RESULT[number]>(
     EVENTS_QUERY,
-    ["events"],
+    // The events' co-hosts are organisations.
+    [...liveCacheTags.event, contentCacheTag("organization")],
     "events",
   );
   return events.map(omitNulls);
@@ -177,33 +175,11 @@ export async function getSanityResearchProjects(): Promise<ResearchProject[]> {
 
   const projects = await fetchSanityList<RESEARCH_QUERY_RESULT[number]>(
     RESEARCH_QUERY,
-    ["research-projects"],
+    // The projects' institutions are organisations.
+    [...liveCacheTags.research, contentCacheTag("organization")],
     "research projects",
   );
   return projects.map(omitNulls);
-}
-
-export async function getSanityPartners(): Promise<Partner[]> {
-  const mock = await loadMockCms();
-  if (mock) return mock.getMockPartners();
-
-  const partners = await fetchSanityList<PARTNERS_QUERY_RESULT[number]>(
-    PARTNERS_QUERY,
-    ["partners"],
-    "partners",
-  );
-  return partners.map(omitNulls);
-}
-
-/** Partners in the "Research Partners" category, for /research. */
-export async function getSanityResearchPartners(): Promise<Partner[]> {
-  const mock = await loadMockCms();
-  if (mock) return mock.getMockResearchPartners();
-
-  const partners = await fetchSanityList<
-    RESEARCH_PARTNERS_QUERY_RESULT[number]
-  >(RESEARCH_PARTNERS_QUERY, ["partners"], "research partners");
-  return partners.map(omitNulls);
 }
 
 /**
@@ -224,15 +200,33 @@ async function fetchPublishedList<T>(
 }
 
 export function getPublishedEvents(): Promise<PublicEvent[]> {
-  return fetchPublishedList<PublicEvent>(PUBLIC_EVENTS_QUERY, ["events"]);
+  return fetchPublishedList<PublicEvent>(PUBLIC_EVENTS_QUERY, [
+    ...liveCacheTags.event,
+  ]);
 }
 
-export function getPublishedPartners(): Promise<PublicPartner[]> {
-  return fetchPublishedList<PublicPartner>(PUBLIC_PARTNERS_QUERY, ["partners"]);
+/**
+ * `/api/getPartners`: the partner organisations on a dataset with page
+ * content (the new site's), in the frozen `partner` shape. The old site's
+ * `partner` documents answer on `production`, and on the new site's dataset
+ * as long as no organisation has a partner tier, so the API keeps serving
+ * them until `pnpm sanity:migrate-partners` has run there.
+ */
+export async function getPublishedPartners(): Promise<PublicPartner[]> {
+  if (hasPageContent) {
+    const organizations = await fetchPublishedList<PublicPartner>(
+      PUBLIC_PARTNER_ORGANIZATIONS_QUERY,
+      [contentCacheTag("organization")],
+    );
+    if (organizations.length > 0) return organizations;
+  }
+  return fetchPublishedList<PublicPartner>(PUBLIC_PARTNERS_QUERY, [
+    ...liveCacheTags.partner,
+  ]);
 }
 
 export function getPublishedResearch(): Promise<PublicResearch[]> {
   return fetchPublishedList<PublicResearch>(PUBLIC_RESEARCH_QUERY, [
-    "research-projects",
+    ...liveCacheTags.research,
   ]);
 }

@@ -1,82 +1,124 @@
 /*
- * Homepage-only motion: the hero photo mosaic, the hero scroll cue and the
- * scroll-lit statement. Everything here is decorative and switches off under
- * reduced motion; the scroll-lit text is a pure CSS enhancement that only
- * runs where scroll-driven animations are supported, so server HTML and
- * other browsers always show the text at full contrast.
+ * Homepage-only styles: the hero aperture (the logomark as a window onto
+ * event photos, see HeroAperture) and its construction grid. The entrance is
+ * a single fade and rise that switches off under reduced motion.
  */
 
 @layer components {
-  @keyframes home-mosaic-up {
+  @keyframes home-aperture-in {
     from {
-      transform: translate3d(0, 0, 0);
-    }
-    to {
-      transform: translate3d(0, -50%, 0);
-    }
-  }
-
-  @keyframes home-mosaic-down {
-    from {
-      transform: translate3d(0, -50%, 0);
-    }
-    to {
-      transform: translate3d(0, 0, 0);
-    }
-  }
-
-  @keyframes home-scroll-cue {
-    0% {
       opacity: 0;
-      transform: translate3d(0, -6px, 0);
-    }
-    35%,
-    65% {
-      opacity: 1;
-    }
-    100% {
-      opacity: 0;
-      transform: translate3d(0, 8px, 0);
+      transform: translate3d(0, 3%, 0);
     }
   }
 
-  @keyframes home-lit {
-    from {
-      opacity: 0.2;
-    }
-    to {
-      opacity: 1;
+  /*
+   * The aperture enters once its first photo has loaded (HeroAperture sets
+   * data-ready), so the mark and the image arrive together. Only while
+   * scripts run: without them the mark shows at once.
+   */
+  @media (scripting: enabled) {
+    .home-aperture-frame[data-ready="false"] {
+      opacity: 0;
     }
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    .home-mosaic-column {
-      animation: home-mosaic-up var(--mosaic-duration, 90s) linear infinite;
-      will-change: transform;
-    }
-
-    .home-mosaic-column[data-direction="down"] {
-      animation-name: home-mosaic-down;
-    }
-
-    /* The hero pauses its wall once it scrolls out of view (see HeroMosaic). */
-    .home-mosaic[data-paused="true"] .home-mosaic-column {
-      animation-play-state: paused;
-    }
-
-    .home-scroll-cue-arrow {
-      animation: home-scroll-cue 2.4s var(--ease-brand) infinite;
+    .home-aperture-frame[data-ready="true"] {
+      animation: home-aperture-in 1.2s var(--ease-brand) both;
     }
   }
 
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      .home-lit-word {
-        animation: home-lit linear both;
-        animation-duration: auto;
-        animation-timeline: view();
-        animation-range: entry 0% cover 42%;
-      }
+  /*
+   * Where the mark sits. Phones and tablets: large and low behind the
+   * copy, dimmed so the headline keeps its contrast. From lg: beside the
+   * copy, cropped by the right edge like the brand guide's section slides.
+   */
+  .home-aperture-frame {
+    right: -34vw;
+    bottom: 7rem;
+    width: 118vw;
+    opacity: 0.5;
+  }
+
+  @media (min-width: 40rem) {
+    .home-aperture-frame {
+      right: -22vw;
+      width: 88vw;
     }
+  }
+
+  @media (min-width: 64rem) {
+    .home-aperture-frame {
+      top: calc(var(--header-height) + 1.5rem);
+      right: -6vw;
+      bottom: auto;
+      width: min(58vw, 62rem);
+      opacity: 1;
+    }
+  }
+
+  /* The official logomark paths as an alpha mask (public/assets/brand). */
+  .home-aperture {
+    -webkit-mask:
+      url("/assets/brand/logomark-mask.svg") center / 100% 100% no-repeat;
+    mask: url("/assets/brand/logomark-mask.svg") center / 100% 100% no-repeat;
+  }
+
+  /*
+   * The join band's logomark and its continuation in the footer (phones and
+   * tablets). The mark runs --join-mark-bleed past the band's bottom edge
+   * (the band clips it);
+   * the footer's own mark takes the same horizontal box and shows exactly
+   * that overflow from its top edge, in the footer's fainter tone, so the
+   * shape carries on across the seam a shade darker. Both boxes are sized in
+   * % of full-width containers, so they line up at every width.
+   */
+  :root:has([data-footer-bleed]) {
+    --join-mark-right: -40%;
+    --join-mark-width: 140%;
+    --join-mark-bleed: 12rem;
+  }
+
+  @media (min-width: 40rem) {
+    :root:has([data-footer-bleed]) {
+      --join-mark-right: -24%;
+      --join-mark-width: 85%;
+      --join-mark-bleed: 14rem;
+    }
+  }
+
+  /* From lg the mark is shown whole, lifted off the seam (a negative bleed),
+     so the footer's mark sits entirely above the footer and stays hidden. */
+  @media (min-width: 64rem) {
+    :root:has([data-footer-bleed]) {
+      --join-mark-right: -7%;
+      --join-mark-width: min(50%, 56rem);
+      --join-mark-bleed: -6rem;
+    }
+  }
+
+  .home-join-mark {
+    right: var(--join-mark-right);
+    bottom: calc(-1 * var(--join-mark-bleed));
+    width: var(--join-mark-width);
+  }
+}
+
+/*
+ * The footer is shared by every page and styles its mark with utilities, so
+ * the override lives in the utilities layer; the :has() guard limits it to a
+ * page that carries the join band's mark.
+ */
+@layer utilities {
+  :root:has([data-footer-bleed]) [data-footer-mark] {
+    top: var(--join-mark-bleed);
+    right: var(--join-mark-right);
+    bottom: auto;
+    width: var(--join-mark-width);
+    height: auto;
+    aspect-ratio: 477 / 406;
+    translate: 0 -100%;
+    animation: none;
   }
 }

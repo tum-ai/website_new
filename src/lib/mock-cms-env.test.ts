@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { getCmsNow } from "@/lib/mock-cms-env";
+import { getCmsNow, isCmsClockFixed } from "@/lib/mock-cms-env";
 
 // `getMockCmsNow` (parsing MOCK_CMS_NOW) is covered in mock-cms.test.ts.
 
@@ -43,5 +43,29 @@ describe("getCmsNow", () => {
     vi.stubEnv("USE_MOCK_CMS", "1");
     vi.stubEnv("MOCK_CMS_NOW", "tomorrow");
     expect(() => getCmsNow()).toThrow(/MOCK_CMS_NOW/);
+  });
+});
+
+describe("isCmsClockFixed", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  test("is true only under the mock CMS with MOCK_CMS_NOW set", () => {
+    vi.stubEnv("VERCEL", "");
+    vi.stubEnv("USE_MOCK_CMS", "1");
+    vi.stubEnv("MOCK_CMS_NOW", "2026-10-01T12:00:00Z");
+    expect(isCmsClockFixed()).toBe(true);
+
+    vi.stubEnv("MOCK_CMS_NOW", "");
+    expect(isCmsClockFixed()).toBe(false);
+
+    vi.stubEnv("MOCK_CMS_NOW", "2026-10-01T12:00:00Z");
+    vi.stubEnv("USE_MOCK_CMS", "");
+    expect(isCmsClockFixed()).toBe(false);
+
+    vi.stubEnv("USE_MOCK_CMS", "1");
+    vi.stubEnv("VERCEL", "1");
+    expect(isCmsClockFixed()).toBe(false);
   });
 });

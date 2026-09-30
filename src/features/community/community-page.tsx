@@ -1,73 +1,62 @@
-import Image from "next/image";
-import { ButtonLink, CtaBand, Highlight, PageHero } from "@/components/ds";
-import { stories } from "./data/member-stories";
+import { ButtonLink, PageHero, Photo } from "@/components/ds";
+import { callToActionLabels } from "@/config/calls-to-action";
+import { getPartnersCopy } from "@/features/partners/server";
+import { ClosingSection } from "./closing-section";
+import { getCommunityContent } from "./content";
 import { DepartmentsSection } from "./departments-section";
-import { JourneySection } from "./journey-section";
 import { MemberStories } from "./member-stories";
+import { getMemberStories } from "./people-content";
+import { SemesterPlan } from "./semester-plan";
 
-/** Hero media: an onboarding group photo in the brand's signature shape. */
-function HeroPhoto() {
-  return (
-    <div className="relative aspect-[4/3] overflow-hidden rounded-signature bg-sunken ring-1 ring-white/10 lg:ml-6">
-      <Image
-        src="/assets/homepage/Onboarding25.webp"
-        alt="A new TUM.ai batch in matching black T-shirts gathered for a group photo at onboarding"
-        fill
-        preload
-        sizes="(min-width: 1280px) 36rem, (min-width: 1024px) 44vw, 92vw"
-        className="object-cover"
-      />
-    </div>
-  );
-}
-
-export function CommunityPage() {
+/**
+ * /community, for prospective members first and partners second: who runs
+ * TUM.ai, then the membership as a semester timetable (the page's one bold
+ * element), the departments behind the initiative track, the members' own
+ * stories, and a close that returns to semester zero. The copy, journey and
+ * departments come from the content slice (`content.ts`), the member stories
+ * from theirs (`people-content.ts`) and the partner pitch from the partners
+ * copy: each the CMS or the code.
+ */
+export async function CommunityPage() {
+  const [{ copy, journey, departments }, stories, { pitch }] =
+    await Promise.all([
+      getCommunityContent(),
+      getMemberStories(),
+      getPartnersCopy(),
+    ]);
+  const { photo } = copy.hero;
   return (
     <main>
       <PageHero
         titleId="community-hero-title"
-        // An array (not a fragment) so SplitWords animates word by word.
-        title={[
-          "The TUM.ai ",
-          <Highlight key="member">Member</Highlight>,
-          " ",
-          <Highlight key="journey">Journey</Highlight>,
-        ]}
-        lead="At TUM.ai, members contribute through AI projects, workshops, and community initiatives - turning bold ideas into real-world impact."
+        title={copy.hero.title}
+        emphasis="highlight"
+        lead={copy.hero.lead}
         actions={
           <>
             <ButtonLink href="/apply" size="lg" arrow>
-              Become a Member
+              {callToActionLabels.member}
             </ButtonLink>
-            <ButtonLink
-              href="#memberStories"
-              variant="outline"
-              size="lg"
-              arrow="down"
-            >
-              Member Stories
+            <ButtonLink href="/partners" size="lg" variant="outline">
+              {callToActionLabels.partner}
             </ButtonLink>
           </>
         }
-        media={<HeroPhoto />}
-      />
-      <JourneySection />
-      <DepartmentsSection />
-      <MemberStories stories={stories} />
-      <CtaBand
-        titleId="community-cta-title"
-        eyebrow="Join us"
-        title={
-          <>
-            Become a <Highlight>Member</Highlight>
-          </>
-        }
-        actions={
-          <ButtonLink href="/apply" size="lg" arrow>
-            Apply now
-          </ButtonLink>
+        media={
+          <Photo
+            src={photo.src}
+            alt={photo.alt}
+            position={photo.objectPosition}
+            caption={copy.hero.photoCaption}
+            eager
+            sizes="(min-width: 1280px) 36rem, (min-width: 1024px) 44vw, 92vw"
+          />
         }
       />
+      <SemesterPlan copy={copy.journey} journey={journey} stories={stories} />
+      <DepartmentsSection copy={copy.departments} departments={departments} />
+      <MemberStories copy={copy.stories} stories={stories} />
+      <ClosingSection copy={copy.closing} partnerPitch={pitch} />
     </main>
   );
 }

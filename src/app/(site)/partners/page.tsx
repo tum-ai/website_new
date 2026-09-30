@@ -5,20 +5,15 @@ import { PartnersPage } from "@/features/partners/partners-page";
 // that module in every page that imports the feature (the homepage imports
 // the partners index for the partner directory).
 import "@/features/partners/partners.css";
-import { getSanityPartners } from "@/lib/sanity";
 
 export const metadata = buildMetadata("partners");
 export const revalidate = 900;
 
-export default async function Page() {
-  // Empty when the CMS is unavailable; the page then shows its curated
-  // launch partners.
-  const partners = await getSanityPartners();
-
+export default function Page() {
   return (
     <>
       <JsonLd data={getJsonLd("partners")} />
-      <PartnersPage initialPartners={partners} />
+      <PartnersPage />
     </>
   );
 }

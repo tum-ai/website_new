@@ -1,249 +1,306 @@
 import {
-  Aurora,
-  BrandMark,
+  ButtonLink,
   Container,
+  Display,
   EmptyState,
-  Eyebrow,
   LogoWall,
   PageHero,
   Reveal,
   Section,
   SectionHeader,
   Steps,
-  Tabs,
-  TabsList,
-  TabsPanel,
-  TabsTab,
+  Text,
 } from "@/components/ds";
-import type { Partner, ResearchProject } from "@/lib/types";
-import { rexInstitutions, rexProcess } from "./data/rex";
+import { callToActionLabels } from "@/config/calls-to-action";
+import { getResearchPartners } from "@/features/partners/server";
+import type { ResearchProject } from "@/lib/types";
+import { AffiliationIndex } from "./affiliations";
+import { getLabSiteList, getResearchCopy } from "./content";
+import { getAbstractBody } from "./data/research-copy";
+import { ProjectList, ReferenceList } from "./project-list";
 import {
-  formatCounter,
-  getCollaboratorLogos,
-  getLogoColumns,
-  getResearchProjectLists,
+  getLabSites,
+  getPartnerLogos,
+  getResearchIndex,
+  reportUnplaced,
 } from "./research";
-import { ResearchCard } from "./research-card";
+import { ResearchFigure } from "./research-figure";
+import { ResearchGlobe } from "./research-globe";
+import { getRexInstitutions } from "./rex-content";
 
-/** The /research page: CMS projects and collaborators, and the REX program. */
-export function ResearchPage({
+/**
+ * The /research page, set like a paper's first page. The hero is the title
+ * block: every institution of a CMS project, numbered, and each
+ * project below cites them by number. Completed projects form the
+ * references list, REX follows on lavender, and the closing band repeats the
+ * affiliation line with one open slot for the next lab. The copy and the
+ * lab sites come from the content slice (`content.ts`), the REX
+ * institutions from theirs (`rex-content.ts`) and the research partners
+ * (the partner organisations in the "Research Partners" category) from the
+ * partners' organisation slice: each the CMS or the code.
+ */
+export async function ResearchPage({
   projects,
-  researchPartners,
 }: {
   /** Research projects from the CMS, in CMS order. */
   projects: ResearchProject[];
-  /** Partners in the "Research Partners" category. */
-  researchPartners: Partner[];
 }) {
-  const { ongoing, past } = getResearchProjectLists(projects);
-  const collaborators = getCollaboratorLogos(researchPartners);
+  const [copy, rexInstitutions, labSites, researchPartners] = await Promise.all(
+    [
+      getResearchCopy(),
+      getRexInstitutions(),
+      getLabSiteList(),
+      getResearchPartners(),
+    ],
+  );
+  const { closing, rex } = copy;
+  const { affiliations, ongoing, completed } = getResearchIndex(projects);
+  const partnerLogos = getPartnerLogos(researchPartners);
+  const { sites, unplaced } = getLabSites(
+    [
+      ...affiliations,
+      ...researchPartners.map(({ id: key, name }) => ({ key, name })),
+      ...rexInstitutions.map(({ key, name }) => ({ key, name })),
+    ],
+    labSites,
+  );
+  reportUnplaced(unplaced);
+  const affiliationNames = affiliations.map(({ name }) => name);
 
   return (
     <main>
-      <Tabs defaultValue="projects">
-        <PageHero
-          title="Research"
-          lead="Our research offerings - from projects to exchange programs"
+      <PageHero
+        tone="night"
+        mark={false}
+        titleId="research-title"
+        title={copy.hero.title}
+        emphasis="highlight"
+        lead={copy.hero.lead}
+        actions={
+          <>
+            <ButtonLink href="/partners#partner-contact" size="lg">
+              {callToActionLabels.partner}
+            </ButtonLink>
+            <ButtonLink href="/apply" size="lg" variant="outline" arrow>
+              {callToActionLabels.member}
+            </ButtonLink>
+          </>
+        }
+        media={
+          <ResearchGlobe
+            sites={sites}
+            className="mx-auto w-full max-w-md lg:max-w-none"
+          />
+        }
+        classNames={{
+          grid: "lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-center",
+        }}
+      >
+        {affiliations.length > 0 ? (
+          <AffiliationIndex
+            id="hero-affiliations"
+            label="Affiliations"
+            affiliations={affiliationNames}
+            className="border-hairline border-t pt-8 md:pt-10"
+          />
+        ) : null}
+      </PageHero>
+
+      <Section
+        tone="paper"
+        spacing="xl"
+        id="abstract"
+        aria-labelledby="abstract-title"
+      >
+        {partnerLogos.length > 0 ? (
+          <Container className="mb-24 md:mb-32">
+            {/* The list below carries the same name for assistive tech. */}
+            <p aria-hidden="true" className="text-fg-subtle text-meta">
+              {copy.partnersLabel}
+            </p>
+            <Reveal variant="fade">
+              <LogoWall
+                layout="strip"
+                logos={partnerLogos}
+                label={copy.partnersLabel}
+                className="mt-8 border-hairline border-b pb-16 md:pb-20"
+              />
+            </Reveal>
+          </Container>
+        ) : null}
+        <Container className="grid gap-14 lg:grid-cols-12 lg:gap-12">
+          <div className="lg:col-span-6">
+            <h2 id="abstract-title" className="text-fg-subtle text-meta">
+              {copy.abstract.label}
+            </h2>
+            <Display as="p" size="md" className="mt-6 max-w-[16em]">
+              {copy.abstract.statement}
+            </Display>
+            <Text size="lead" className="mt-8 max-w-xl">
+              {getAbstractBody(ongoing.length, copy.abstract)}
+            </Text>
+          </div>
+          <Reveal className="lg:col-span-5 lg:col-start-8 lg:self-end">
+            <ResearchFigure panels={copy.figurePanels} />
+          </Reveal>
+        </Container>
+      </Section>
+
+      <Section
+        tone="paper"
+        spacing="none"
+        id="projects"
+        aria-labelledby="projects-title"
+        className="scroll-mt-header pb-28 md:pb-40"
+      >
+        <Container>
+          <SectionHeader
+            id="projects-title"
+            title={copy.ongoing.title}
+            count={ongoing.length}
+            layout="stack"
+          />
+          {ongoing.length > 0 ? (
+            <ProjectList projects={ongoing} />
+          ) : (
+            <EmptyState title={copy.ongoing.empty} />
+          )}
+        </Container>
+      </Section>
+
+      {completed.length > 0 ? (
+        <Section
+          tone="mist"
+          spacing="xl"
+          id="publications"
+          aria-labelledby="publications-title"
+          className="scroll-mt-header"
         >
-          <TabsList aria-label="Research tabs" activateOnFocus>
-            <TabsTab value="projects">Projects</TabsTab>
-            <TabsTab value="exchange">Research Exchange Program</TabsTab>
-          </TabsList>
-        </PageHero>
-
-        <TabsPanel value="projects" keepMounted>
-          <Section
-            tone="paper"
-            spacing="lg"
-            aria-labelledby="ongoing-projects-title"
-          >
-            <Container>
-              <SectionHeader
-                id="ongoing-projects-title"
-                eyebrow="Current work"
-                index={1}
-                title="Ongoing Projects"
-              />
-              {ongoing.length > 0 ? (
-                <ul className="grid gap-5 lg:grid-cols-3 xl:gap-6">
-                  {ongoing.map((project, index) => (
-                    <Reveal as="li" key={project.id} delay={(index % 3) * 90}>
-                      <ResearchCard project={project} index={index} />
-                    </Reveal>
-                  ))}
-                </ul>
-              ) : (
-                <EmptyState title="No ongoing projects" />
-              )}
-            </Container>
-          </Section>
-
-          {past.length > 0 ? (
-            <Section
-              tone="mist"
-              spacing="lg"
-              aria-labelledby="past-projects-title"
-            >
-              <Container>
-                <SectionHeader
-                  id="past-projects-title"
-                  eyebrow="Archive"
-                  index={2}
-                  title="Past Projects"
-                />
-                <ul className="border-hairline border-t">
-                  {past.map((project, index) => (
-                    <Reveal
-                      as="li"
-                      key={project.id}
-                      delay={Math.min(index, 4) * 60}
-                      className="border-hairline border-b"
-                    >
-                      <ResearchCard
-                        layout="row"
-                        project={project}
-                        index={index}
-                      />
-                    </Reveal>
-                  ))}
-                </ul>
-              </Container>
-            </Section>
-          ) : null}
-
-          {collaborators.length > 0 ? (
-            <Section
-              tone="ink"
-              spacing="lg"
-              grain
-              aria-labelledby="collaborators-title"
-              className="overflow-clip"
-            >
-              <Aurora intensity="subtle" />
-              <Container>
-                <SectionHeader
-                  id="collaborators-title"
-                  eyebrow="Research partners"
-                  index={past.length > 0 ? 3 : 2}
-                  title="Collaborators"
-                />
-                <Reveal variant="fade" delay={120}>
-                  <LogoWall
-                    logos={collaborators}
-                    columns={getLogoColumns(collaborators.length)}
-                    size="xl"
-                  />
-                </Reveal>
-              </Container>
-            </Section>
-          ) : null}
-        </TabsPanel>
-
-        <TabsPanel value="exchange" keepMounted>
-          <Section tone="paper" spacing="lg" aria-labelledby="rex-title">
-            <Container>
-              <SectionHeader
-                id="rex-title"
-                eyebrow="Research abroad"
-                index={1}
-                title="Research Exchange (REX) Program"
-                classNames={{ aside: "lg:max-w-2xl" }}
-                lead={
-                  <>
-                    Our Research Exchange (REX) Program provides TUM.ai members
-                    with opportunities to conduct research abroad. Offers range
-                    from final theses to research internships with leading labs
-                    at institutions like{" "}
-                    <span className="font-semibold text-fg">
-                      Harvard, MIT, Cambridge,
-                    </span>{" "}
-                    or <span className="font-semibold text-fg">INRIA</span>.
-                  </>
-                }
-              />
-
-              <ul
-                aria-hidden="true"
-                className="grid grid-cols-2 border-hairline-strong border-y lg:grid-cols-4"
-              >
-                {rexInstitutions.map((name, index) => (
-                  <Reveal
-                    as="li"
-                    key={name}
-                    delay={index * 90}
-                    className="min-w-0 border-hairline py-7 max-lg:even:pl-5 max-lg:odd:border-r max-lg:odd:pr-5 md:py-9 lg:border-l lg:py-10 lg:pl-6 lg:first:border-l-0 lg:first:pl-0 max-lg:[&:nth-child(-n+2)]:border-b"
-                  >
-                    <span className="tabular text-fg-subtle text-meta">
-                      {formatCounter(index)}
-                    </span>
-                    <span className="mt-8 block font-light text-fg text-heading-lg sm:text-display-md lg:mt-14">
-                      {name}
-                    </span>
-                  </Reveal>
-                ))}
-              </ul>
-            </Container>
-          </Section>
-
-          <Section as="div" tone="lavender" spacing="lg">
-            <Container>
-              <Reveal>
-                <Eyebrow as="h3" index={2}>
-                  How it works
-                </Eyebrow>
-              </Reveal>
-              {/* "We" opens the sentence the steps complete. */}
-              <Reveal delay={60}>
-                <p className="mt-10 font-light text-display-lg text-fg md:mt-14">
-                  We
-                </p>
-              </Reveal>
-              <Steps
-                items={rexProcess.map((clause) => ({ title: clause }))}
-                columns={5}
-                headingAs="h4"
-                className="mt-10 md:mt-14"
-              />
-            </Container>
-          </Section>
-
-          <Section
-            as="div"
-            tone="ink"
-            spacing="xl"
-            grain
-            className="overflow-clip"
-          >
-            <Aurora intensity="subtle" />
-            <BrandMark
-              className="absolute -right-[14%] -bottom-[38%] -z-10 w-[min(60rem,95%)]"
-              intensity="subtle"
+          <Container>
+            <SectionHeader
+              id="publications-title"
+              title={copy.completed.title}
+              count={completed.length}
+              layout="stack"
+              lead={copy.completed.lead}
             />
-            <Container>
-              <Reveal>
-                <Eyebrow as="h3" index={3}>
-                  Origin
-                </Eyebrow>
-              </Reveal>
-              <Reveal delay={60}>
-                <p className="mt-8 max-w-4xl font-light text-display-md text-fg">
-                  REX was launched based on the observation that members were
-                  already conducting research abroad and recommending others to
-                  follow in their footsteps.
+            <ReferenceList projects={completed} />
+          </Container>
+        </Section>
+      ) : null}
+
+      <Section
+        tone="lavender"
+        spacing="xl"
+        id="rex"
+        aria-labelledby="rex-title"
+        className="scroll-mt-header"
+      >
+        <Container>
+          <SectionHeader
+            id="rex-title"
+            title={rex.title}
+            layout="stack"
+            lead={rex.lead}
+          />
+          {/* The list below carries the same name for assistive tech. */}
+          <p aria-hidden="true" className="text-fg-subtle text-meta">
+            {rex.logosLabel}
+          </p>
+          <LogoWall
+            layout="strip"
+            logos={rexInstitutions.map(
+              ({ key: _key, shortName: _shortName, ...logo }) => logo,
+            )}
+            label={rex.logosLabel}
+            className="mt-8"
+          />
+
+          <div className="mt-20 grid gap-14 md:mt-28 lg:grid-cols-12 lg:gap-12">
+            <div className="lg:col-span-8">
+              <h3 className="text-fg-subtle text-meta">{rex.processTitle}</h3>
+              {/* "We" opens the sentence the steps complete. */}
+              <p className="mt-6 font-light text-display-md text-fg">We</p>
+              <Steps
+                layout="rows"
+                headingAs="h4"
+                className="mt-6"
+                items={rex.process.map((clause) => ({ title: clause }))}
+              />
+            </div>
+            <Reveal className="lg:col-span-3 lg:col-start-10 lg:pt-12">
+              <Text className="max-w-md">{rex.origin}</Text>
+              <ButtonLink
+                href="/apply"
+                className="mt-8"
+                variant="outline"
+                arrow
+              >
+                {callToActionLabels.member}
+              </ButtonLink>
+            </Reveal>
+          </div>
+        </Container>
+      </Section>
+
+      <Section
+        tone="ink"
+        spacing="xl"
+        aria-labelledby="closing-title"
+        className="overflow-clip"
+      >
+        <Container>
+          <Reveal>
+            <h2
+              id="closing-title"
+              className="max-w-[12em] text-display-lg text-highlight"
+            >
+              {closing.title}
+            </h2>
+          </Reveal>
+          <Reveal delay={80}>
+            <AffiliationIndex
+              id="closing-affiliations"
+              label="Affiliations"
+              affiliations={affiliationNames}
+              openSlot={closing.openSlot}
+              className="mt-12 border-hairline border-t pt-8 md:mt-16"
+            />
+          </Reveal>
+          <div className="mt-16 grid border-hairline-strong border-t md:mt-24 md:grid-cols-2">
+            {[
+              {
+                ...closing.partner,
+                action: (
+                  <ButtonLink href="/partners#partner-contact">
+                    {callToActionLabels.partner}
+                  </ButtonLink>
+                ),
+              },
+              {
+                ...closing.student,
+                action: (
+                  <ButtonLink href="/apply" variant="outline" arrow>
+                    {callToActionLabels.member}
+                  </ButtonLink>
+                ),
+              },
+            ].map((fork, position) => (
+              <Reveal
+                key={fork.audience}
+                delay={position * 100}
+                className="border-hairline py-8 max-md:not-last:border-b md:py-10 md:even:border-l md:even:pl-12 md:odd:pr-12"
+              >
+                <p className="text-fg-subtle text-meta">{fork.audience}</p>
+                <p className="mt-3 max-w-md text-fg text-heading-md">
+                  {fork.text}
                 </p>
+                <div className="mt-8">{fork.action}</div>
               </Reveal>
-              <Reveal delay={140}>
-                <p className="mt-10 max-w-2xl text-fg-muted text-lead">
-                  It is therefore a testament to our tight-knit community that
-                  we could build a network of great researchers who eagerly
-                  introduce our members to their respective fields and trust
-                  TUM.ai to provide curious minds.
-                </p>
-              </Reveal>
-            </Container>
-          </Section>
-        </TabsPanel>
-      </Tabs>
+            ))}
+          </div>
+        </Container>
+      </Section>
     </main>
   );
 }

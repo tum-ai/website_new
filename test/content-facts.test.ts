@@ -1,7 +1,6 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative, sep } from "node:path";
 import { expect, test } from "vitest";
-
 import {
   eLabApplicationsCloseAt,
   eLabCompletedIterations,
@@ -10,15 +9,16 @@ import {
   eLabProgramSummary,
   isApplicationWindowOpen,
 } from "../src/config/e-lab.ts";
-import { membershipConfig } from "../src/config/membership.ts";
+import { recruitingTimeline } from "../src/config/membership.ts";
 import {
   officialMembers,
   organizationFacts,
 } from "../src/config/organization.ts";
 import { faq as applyFaq } from "../src/features/apply/data/faq.ts";
 import { faq as eLabFaq } from "../src/features/e-lab/data/faq.ts";
-import { eLabMetrics } from "../src/features/e-lab/data/venture-page.ts";
-import { partnerStats } from "../src/features/partners/data/partners.ts";
+import { testimonialCards } from "../src/features/e-lab/data/venture-page.ts";
+import { getPartnersCopy } from "../src/features/partners/content.ts";
+import { faqs as qandaFaqs } from "../src/features/qanda/data/qanda.ts";
 import { parseMunichDateTime } from "../src/lib/munich-time.ts";
 
 test("Munich wall-clock times resolve summer and winter time", () => {
@@ -75,27 +75,58 @@ test("E-Lab program length and proof points come from the config", () => {
     (item) => item.question === "What is the time commitment for the program?",
   );
   expect(commitment?.answer).toContain(weeks);
-
-  const metric = (id: string) => eLabMetrics.find((item) => item.id === id);
-  expect(metric("iterations")?.to).toBe(eLabCompletedIterations);
-  expect(metric("funding")?.to).toBe(eLabConfig.ventureFundingMillions);
 });
 
-test("member figures add up and feed the partner stats", () => {
+test("E-Lab counts only the cohorts that have finished", () => {
+  expect(Number.isInteger(eLabCompletedIterations)).toBe(true);
+  expect(eLabCompletedIterations).toBeGreaterThan(0);
+  // The current cohort is still running, so it is not among them.
+  expect(Number.parseFloat(eLabConfig.currentIteration)).toBeGreaterThan(
+    eLabCompletedIterations,
+  );
+  // Founders quoted as alumni of a cohort ("E-Lab 3.0") come from one of them.
+  for (const card of testimonialCards) {
+    const cohort = /^E-Lab (\d+)/.exec(card.context ?? "")?.[1];
+    if (cohort) {
+      expect(Number(cohort), card.name).toBeLessThanOrEqual(
+        eLabCompletedIterations,
+      );
+    }
+  }
+  // The Q&A states the count it derives.
+  const startups = qandaFaqs.find((entry) => entry.id === "startups");
+  expect(startups?.evidence?.text).toContain(
+    `has run ${eLabCompletedIterations} cohorts`,
+  );
+});
+
+test("member figures add up and feed the partner stats", async () => {
   expect(officialMembers).toBe(
     organizationFacts.activeMembers + organizationFacts.alumni,
   );
-  const members = partnerStats.find(
-    (stat) => stat.label === "Official members",
-  );
+  // The figures /partners renders from its code copy.
+  const { stats } = await getPartnersCopy();
+  const members = stats.find((stat) => stat.label === "Official members");
   expect(members?.value).toBe(`${officialMembers}+`);
+});
+
+test("the partner selection stats come from the organization facts", async () => {
+  const { stats } = await getPartnersCopy();
+  const value = (label: string) =>
+    stats.find((stat) => stat.label === label)?.value;
+  expect(value("Started applications per batch")).toBe(
+    `${organizationFacts.startedApplicationsPerBatch}+`,
+  );
+  expect(value("Acceptance rate per batch")).toBe(
+    `${organizationFacts.acceptanceRate}%`,
+  );
 });
 
 test("the Apply FAQ timeline comes from the recruiting config", () => {
   const timeline = applyFaq.find(
-    (item) => item.question === "How does the application timeline look like?",
+    (item) => item.question === "What does the application timeline look like?",
   );
-  for (const window of Object.values(membershipConfig.timeline)) {
+  for (const window of Object.values(recruitingTimeline)) {
     expect(timeline?.answer, window).toContain(window);
   }
 });
@@ -108,7 +139,15 @@ test("the Apply FAQ timeline comes from the recruiting config", () => {
  */
 const hardcodedFacts: [RegExp, string][] = [
   [/\b1\d-week\b|\bin 1\d weeks\b/i, "E-Lab length: config/e-lab.ts"],
+  [
+    /\b\d{3,}\+?\s+(?:team\s+)?applications\b/i,
+    "E-Lab application count: eLabConfig.selection in config/e-lab.ts",
+  ],
   [/\b\d+\+? active members\b/i, "member counts: config/organization.ts"],
+  [
+    /\b\d{3,}\+?\s+started applications\b|\b\d+(?:\.\d+)?%\s+(?:acceptance|accepted|get in)\b/i,
+    "recruiting selection: organizationFacts in config/organization.ts",
+  ],
   [
     /applications open in (january|february|march|april|may|june|july|august|september|october|november|december)/i,
     "application phase: config/e-lab.ts or config/membership.ts",
@@ -122,6 +161,11 @@ const hardcodedFacts: [RegExp, string][] = [
     "social links: config/contact.ts",
   ],
   [/tally\.so\/r\//, "application forms: config/e-lab.ts or membership.ts"],
+  [
+    // A typed date range such as "September 24th - October 27th".
+    /\b(?:january|february|march|april|may|june|july|august|september|october|november|december) \d{1,2}(?:[a-z]{2})? ?(?:-|to|until) ?(?:january|february|march|april|may|june|july|august|september|october|november|december|\d)/i,
+    "recruiting round dates: membershipConfig.round in config/membership.ts",
+  ],
   [
     // Anchored per line (`m`); the first group is the reported literal.
     /^.*?(https?:\/\/(?:www\.)?tum-ai\.com)(?![\w.-])/m,
@@ -142,8 +186,20 @@ const hardcodedFacts: [RegExp, string][] = [
     "Makeathon size: config/community.ts",
   ],
   [
+    /\b\d+\+?\s+(?:publications|papers)\b|\b\d{3,}\+?\s+hackers\b/i,
+    "research output and hackathon reach: config/impact.ts",
+  ],
+  [
     /\b[a-z]+\.[a-z]+@tum-ai\.com\b/i,
     "personal emails: use a role address from config/contact.ts",
+  ],
+  [
+    /\bcracked \d|\d+(?:\.\d+)?%[^\n]*\bacceptance rate\b|\bacceptance rate\b[^\n]*\d+(?:\.\d+)?%/i,
+    "acceptance rate: organizationFacts in config/organization.ts",
+  ],
+  [
+    /\b\d+k\+?\s+linkedin\b/i,
+    "LinkedIn audience: organizationFacts in config/organization.ts",
   ],
 ];
 

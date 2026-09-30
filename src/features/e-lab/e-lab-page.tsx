@@ -1,74 +1,61 @@
-import { CtaBand, FaqSection } from "@/components/ds";
-import { eLabApplicationCopy, eLabPhaseCopy } from "@/config/e-lab";
-import { ELabApplicationCta, ELabApplicationStatus } from "./application-cta";
-import { faq } from "./data/faq";
-import { ELabPhase } from "./e-lab-phase";
-import { ExpectationELab } from "./expectation-e-lab";
+import { FaqSection } from "@/components/ds";
+import { eLabCohortNameOf } from "@/config/e-lab";
+import { getSiteFacts } from "@/config/site-settings-content";
+import { ApplicationField } from "./application-field";
+import { ClosingSection } from "./closing-section";
+import { getELabCopy, getELabFaqs } from "./content";
+import { buildStages, gatesOf } from "./data/selection";
 import { Hero } from "./hero";
-import { NotableStartups } from "./notable-startups";
-import { ProgramTimeline } from "./program-timeline";
-import { Testimonials } from "./testimonials";
-
-/** Keeps "E-Lab 6.0" on one line so display type never breaks at the hyphen. */
-function KeepCohortTogether({ text }: { text: string }) {
-  const { cohortName } = eLabApplicationCopy;
-  const index = text.indexOf(cohortName);
-  if (index === -1) return text;
-  return (
-    <>
-      {text.slice(0, index)}
-      <span className="whitespace-nowrap">{cohortName}</span>
-      {text.slice(index + cohortName.length)}
-    </>
-  );
-}
+import { SelectionGates } from "./selection-gates";
+import { VentureTrace } from "./venture-trace";
+import { VoicesSection } from "./voices-section";
 
 /**
- * /e-lab: ink hero with the cohort lockup and live application status, what
- * to expect with proof points, community voices, the program timeline,
- * alumni ventures, FAQ and the closing application call to action. All cohort
- * copy and state comes from src/config/e-lab.ts; the route renders the
- * JSON-LD from src/config/seo.ts.
+ * /e-lab, for founders first and partners second: the program in one
+ * sentence, then one cohort drawn as its gates to scale (the page's one bold
+ * element), one venture traced through them, founders and investors in their
+ * own words, the FAQ, and a close back at the widest gate, the application
+ * round. The cohort's figures come from the site facts and its state from
+ * the E-Lab window (`getSiteFacts()`, `getELabWindow()`); the copy and the
+ * FAQ from the content slice (`content.ts`), the ventures and voices from
+ * theirs (`venture-content.ts`): each the CMS or the code. The route renders
+ * the JSON-LD from src/config/seo.ts.
  */
-export function ELabPage() {
+export async function ELabPage() {
+  const [faq, copy, facts] = await Promise.all([
+    getELabFaqs(),
+    getELabCopy(),
+    getSiteFacts(),
+  ]);
+  const { selection } = facts.eLab;
+  const stages = buildStages(copy.gates.stages, selection);
+  const gates = gatesOf(stages);
   return (
     <main>
-      <Hero />
-
-      <ExpectationELab />
-
-      <Testimonials />
-
-      <ProgramTimeline />
-
-      <NotableStartups />
-
-      <FaqSection items={faq} tone="lavender" />
-
-      <CtaBand
-        titleId="elab-apply-title"
-        eyebrow={eLabApplicationCopy.cohortName}
-        title={
-          <ELabPhase
-            open={<KeepCohortTogether text={eLabPhaseCopy.open.cardHeading} />}
-            closed={
-              <KeepCohortTogether text={eLabPhaseCopy.closed.cardHeading} />
-            }
+      <Hero
+        copy={copy.hero}
+        logo={facts.eLab.heroLogo}
+        field={
+          <ApplicationField
+            gates={gates}
+            copy={copy.field}
+            cohortName={eLabCohortNameOf(facts.eLab.currentIteration)}
           />
-        }
-        lead={
-          <ELabPhase
-            open={eLabPhaseCopy.open.cardDescription}
-            closed={eLabPhaseCopy.closed.cardDescription}
-          />
-        }
-        actions={
-          <>
-            <ELabApplicationCta label="card" />
-            <ELabApplicationStatus />
-          </>
         }
       />
+      <SelectionGates
+        copy={copy.gates}
+        stages={stages}
+        applications={selection.applications}
+      />
+      <VentureTrace
+        copy={copy.ventures}
+        gates={gates}
+        fundingMillions={facts.eLab.ventureFundingMillions}
+      />
+      <VoicesSection copy={copy.voices} />
+      <FaqSection items={faq} tone="lavender" />
+      <ClosingSection copy={copy.closing} />
     </main>
   );
 }

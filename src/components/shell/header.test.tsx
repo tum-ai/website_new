@@ -3,33 +3,67 @@ import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { usePathname } from "next/navigation";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import type { Campaign } from "@/config/campaigns";
+import { eLabApplicationCopy } from "@/config/e-lab";
+import { type MembershipConfig, membershipConfig } from "@/config/membership";
 import {
   getHeaderOptions,
+  type HeaderCtaSchedule,
   headerConnectLinks,
+  headerCtaSchedule,
+  headerCtaSetting,
   mainNavigation,
 } from "@/config/navigation";
 import { Header } from "./header";
-import { logoRevealShare } from "./header-scroll";
 
 vi.mock("next/navigation", () => ({ usePathname: vi.fn(() => "/events") }));
 
-function renderHeader(pathname: string) {
+/** A fixed, switched-on round, so the tests don't move with the live config. */
+const membership: MembershipConfig = {
+  ...membershipConfig,
+  applicationsOpen: true,
+  round: {
+    ...membershipConfig.round,
+    opens: "28.09.2026",
+    deadlineDate: "27.10.2026",
+    deadlineTime: "23:59",
+  },
+};
+
+const scheduleWith = (campaigns: readonly Campaign[] = []) =>
+  headerCtaSchedule({
+    membership,
+    fallback: headerCtaSetting.fallback,
+    eLabCohortName: eLabApplicationCopy.cohortName,
+    campaigns,
+  });
+
+function renderHeader(
+  pathname: string,
+  {
+    membershipOpen = true,
+    liveClock = false,
+    schedule = scheduleWith(),
+  }: {
+    membershipOpen?: boolean;
+    liveClock?: boolean;
+    schedule?: HeaderCtaSchedule;
+  } = {},
+) {
   vi.mocked(usePathname).mockReturnValue(pathname);
+  // The site-wide CTA the server rendered for this membership state.
+  const initialCta = getHeaderOptions("/", { membershipOpen }).cta;
   // The ds Dialog makes `#app-root` inert while the menu is open.
   return render(
     <div id="app-root">
-      <Header />
+      <Header
+        ctaSchedule={schedule}
+        initialCta={initialCta}
+        connectLinks={headerConnectLinks}
+        liveClock={liveClock}
+      />
     </div>,
   );
-}
-
-async function scrollTo(y: number) {
-  await act(async () => {
-    window.scrollY = y;
-    window.dispatchEvent(new Event("scroll"));
-    // The header measures once per animation frame.
-    await new Promise((resolve) => requestAnimationFrame(resolve));
-  });
 }
 
 beforeEach(() => {
@@ -41,12 +75,17 @@ afterEach(() => {
 });
 
 describe("header CTA", () => {
-  test.each(["/events", "/", "/partners"])(
-    "shows the configured call to action on %s",
-    (pathname) => {
-      renderHeader(pathname);
+  test.each([
+    ["/events", true],
+    ["/events", false],
+    ["/", true],
+    ["/partners", false],
+  ] as const)(
+    "shows the configured call to action on %s (membership open: %s)",
+    (pathname, membershipOpen) => {
+      renderHeader(pathname, { membershipOpen });
       const banner = within(screen.getByRole("banner"));
-      const { cta } = getHeaderOptions(pathname);
+      const { cta } = getHeaderOptions(pathname, { membershipOpen });
       if (!cta) {
         // Only the logo and the main links.
         expect(banner.getAllByRole("link", { hidden: true })).toHaveLength(
@@ -60,6 +99,70 @@ describe("header CTA", () => {
       );
     },
   );
+
+  test("switches to the closed-round CTA once the deadline passes", () => {
+    const closesAt = scheduleWith().membership.closesAt ?? 0;
+    const open = getHeaderOptions("/events", { membershipOpen: true }).cta;
+    const closed = getHeaderOptions("/events", { membershipOpen: false }).cta;
+    vi.useFakeTimers({ toFake: ["Date"] });
+    try {
+      vi.setSystemTime(closesAt + 60_000);
+      // A cached render from before the deadline: corrected after mount.
+      renderHeader("/events", { membershipOpen: true, liveClock: true });
+      const banner = within(screen.getByRole("banner"));
+      if (!closed) throw new Error("the closed-round CTA has no target");
+      expect(banner.getByRole("link", { name: closed.label })).toHaveAttribute(
+        "href",
+        closed.href,
+      );
+      if (open && open.label !== closed.label) {
+        expect(
+          banner.queryByRole("link", { name: open.label }),
+        ).not.toBeInTheDocument();
+      }
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  test("a campaign starts on time on a cached page and ends by itself", () => {
+    const campaign: Campaign = {
+      id: "campaign-elab",
+      name: "E-Lab kickoff",
+      startDate: "01.12.2026",
+      startTime: "10:00",
+      endDate: "01.12.2026",
+      endTime: "10:01",
+      headerCta: { variant: "elab", yieldsToRecruiting: false },
+    };
+    const schedule = scheduleWith([campaign]);
+    const startsAt = schedule.campaigns[0].startsAt ?? 0;
+    const elab = schedule.ctas.elab;
+    const closed = getHeaderOptions("/events", { membershipOpen: false }).cta;
+    if (!closed || !elab.href) throw new Error("expected linked CTAs");
+    vi.useFakeTimers();
+    try {
+      vi.setSystemTime(startsAt - 1000);
+      renderHeader("/events", {
+        membershipOpen: false,
+        liveClock: true,
+        schedule,
+      });
+      const banner = within(screen.getByRole("banner"));
+      expect(banner.getByRole("link", { name: closed.label })).toBeVisible();
+
+      act(() => vi.advanceTimersByTime(1500));
+      expect(banner.getByRole("link", { name: elab.label })).toHaveAttribute(
+        "href",
+        elab.href,
+      );
+
+      act(() => vi.advanceTimersByTime(60_000));
+      expect(banner.getByRole("link", { name: closed.label })).toBeVisible();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });
 
 describe("logo", () => {
@@ -68,15 +171,9 @@ describe("logo", () => {
     expect(screen.getByRole("link", { name: "TUM.ai home" })).toBeVisible();
   });
 
-  test("home hides it over the hero and reveals it after scrolling", async () => {
-    const { container } = renderHeader("/");
-    const logo = () => container.querySelector('a[aria-label="TUM.ai home"]');
-    expect(logo()).toHaveAttribute("aria-hidden", "true");
-    expect(logo()).toHaveAttribute("tabindex", "-1");
-
-    await scrollTo(window.innerHeight * logoRevealShare.wide + 1);
-    expect(logo()).not.toHaveAttribute("aria-hidden");
-    expect(logo()).not.toHaveAttribute("tabindex");
+  test("home shows it from the start: the hero has no logo of its own", () => {
+    renderHeader("/");
+    expect(screen.getByRole("link", { name: "TUM.ai home" })).toBeVisible();
   });
 });
 

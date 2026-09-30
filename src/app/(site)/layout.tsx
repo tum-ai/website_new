@@ -6,7 +6,16 @@ import { MotionProvider } from "@/components/ds";
 import { Footer } from "@/components/shell/footer";
 import { Header } from "@/components/shell/header";
 import { SkipLink } from "@/components/shell/skip-link";
+import { eLabCohortNameOf } from "@/config/e-lab";
+import {
+  headerConnectLinksFor,
+  headerCtaAt,
+  headerCtaSchedule,
+} from "@/config/navigation";
+import { getCampaigns, getMembershipWindow } from "@/config/schedule-content";
 import { rootMetadata } from "@/config/seo";
+import { getSiteFacts } from "@/config/site-settings-content";
+import { getCmsNow, isCmsClockFixed } from "@/lib/mock-cms-env";
 import { isSanityConfigured, SanityLive } from "@/lib/sanity";
 import "@/styles/index.css";
 
@@ -41,6 +50,21 @@ export const metadata: Metadata = {
 };
 
 /**
+ * Every site route renders again at least hourly (routes with a shorter
+ * `revalidate` keep theirs). A safety net: the Sanity webhook
+ * (`/api/revalidate`) regenerates pages on publish, but a missed delivery
+ * would otherwise leave a formerly static route (`/`, `/community`,
+ * `/projects`, `/qanda`, the legal pages) on its old content until the next
+ * deploy. It also bounds how long a page's server-rendered phase (header
+ * CTA, apply buttons) and baked schedule lag the clock: the browser
+ * islands switch at the instants they were rendered with, so an edited
+ * deadline reaches them only when the page regenerates. Pages stay
+ * prerendered at build (the homepage budget reads that output), and an
+ * hourly render per route is cheap next to the 5 to 15 minute ISR routes.
+ */
+export const revalidate = 3600;
+
+/**
  * Browser chrome that still reads theme-color (e.g. Chrome on Android) uses the
  * same brand black as the root canvas, the hero tops and the footer
  * (`--color-black` in src/styles/index.css; metadata needs a literal color).
@@ -55,6 +79,19 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const { isEnabled: isDraftMode } = await draftMode();
+  const [facts, membership, campaigns] = await Promise.all([
+    getSiteFacts(),
+    getMembershipWindow(),
+    getCampaigns(),
+  ]);
+  // The header's CTA follows the membership window and the campaigns: the
+  // schedule goes to the browser, which re-evaluates it at each boundary.
+  const ctaSchedule = headerCtaSchedule({
+    membership,
+    fallback: facts.headerCtaFallback,
+    eLabCohortName: eLabCohortNameOf(facts.eLab.currentIteration),
+    campaigns,
+  });
 
   return (
     <html lang="en" className={manrope.variable}>
@@ -64,7 +101,12 @@ export default async function RootLayout({
         {/* Isolated root so Base UI portals always stack above page content. */}
         <div id="app-root" className="isolate">
           <MotionProvider>
-            <Header />
+            <Header
+              ctaSchedule={ctaSchedule}
+              initialCta={headerCtaAt(ctaSchedule, getCmsNow())}
+              connectLinks={headerConnectLinksFor(facts)}
+              liveClock={!isCmsClockFixed()}
+            />
             <div
               id="main-content"
               tabIndex={-1}

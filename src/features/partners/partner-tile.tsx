@@ -1,7 +1,6 @@
 import { LogoTile, type LogoTileProps } from "@/components/ds";
 import { getSafeExternalUrl } from "@/lib/security";
 import type { Partner } from "@/lib/types";
-import { symbolOnlyLogos } from "./data/partner-logos";
 
 /** Tile height step: the tiers keep Gold > Silver > Bronze > supporters. */
 export type PartnerTileSize = NonNullable<LogoTileProps["size"]>;
@@ -26,11 +25,7 @@ export function PartnerTile({
       name={partner.name}
       src={partner.image}
       href={getSafeExternalUrl(partner.link) ?? undefined}
-      wordmark={
-        partner.image && symbolOnlyLogos.has(partner.image)
-          ? partner.name
-          : undefined
-      }
+      wordmark={partner.image && partner.symbolOnly ? partner.name : undefined}
       size={size}
       // Serve the artwork as is: PartnerRotationGrid preloads `partner.image`
       // before a swap, so the tile must render that exact URL (an optimizer

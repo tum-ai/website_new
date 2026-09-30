@@ -37,7 +37,7 @@ paths:
     server runs a production build with `USE_MOCK_CMS=1` and a fixed `MOCK_CMS_NOW`;
   - every route runs in chromium and webkit; axe must report no serious or critical WCAG 2 A/AA
     violations;
-  - prefer role and name locators; mask animated regions (marquee, mosaic, count-up) in
+  - prefer role and name locators; mask animated regions (rotating partner grids, count-ups) in
     `toHaveScreenshot`;
   - visual baselines come only from the CI Playwright container: add the `update-snapshots` label
     to the PR (the bot commits only changed PNG files and starts no CI), never from a local run;

@@ -7,24 +7,30 @@ import {
   Container,
   TopBlend,
 } from "@/components/ds";
+import { callToActionLabels } from "@/config/calls-to-action";
 import {
-  connectLinks,
-  contributeLinks,
+  connectLinksFor,
+  contributeLinksFor,
   legalLinks,
   mainNavigation,
   type NavLink,
 } from "@/config/navigation";
+import { getSiteFacts } from "@/config/site-settings-content";
 import { NavAnchor } from "./nav-anchor";
 
-const columns: { title: string; links: readonly NavLink[] }[] = [
-  { title: "Explore", links: mainNavigation },
-  { title: "Connect", links: connectLinks },
-  { title: "Legal", links: legalLinks },
-  { title: "Contribute", links: contributeLinks },
-];
-
-/** Site footer on every page: logo, tagline, both CTAs and the link columns. */
-export function Footer() {
+/**
+ * Site footer on every page: logo, tagline, both CTAs and the link columns.
+ * The tagline and the contact links come from the render's `getSiteFacts()`;
+ * the column titles are navigation structure and stay here.
+ */
+export async function Footer() {
+  const facts = await getSiteFacts();
+  const columns: { title: string; links: readonly NavLink[] }[] = [
+    { title: "Explore", links: mainNavigation },
+    { title: "Connect", links: connectLinksFor(facts) },
+    { title: "Legal", links: legalLinks },
+    { title: "Contribute", links: contributeLinksFor(facts) },
+  ];
   return (
     <footer data-tone="night" className="relative isolate overflow-clip">
       <div aria-hidden className="grain -z-10" />
@@ -32,7 +38,10 @@ export function Footer() {
         intensity="subtle"
         className="[mask-image:linear-gradient(to_bottom,transparent,black_35%,black_60%,transparent)]"
       />
+      {/* `data-footer-mark`: a page can re-place it to continue its own mark
+          across the seam (the home page does, see features/home/home.css). */}
       <BrandMark
+        data-footer-mark=""
         className="absolute -right-[6%] -bottom-[22%] -z-10 w-[min(46rem,90%)]"
         intensity="faint"
       />
@@ -49,11 +58,11 @@ export function Footer() {
               className="h-8 w-auto"
             />
             <p className="mt-10 max-w-lg text-display-md text-fg">
-              Empowering students to build the future of AI.
+              {facts.footerTagline}
             </p>
             <Actions className="mt-10">
               <ButtonLink href="/apply" arrow>
-                Become a Member
+                {callToActionLabels.member}
               </ButtonLink>
               <ButtonLink href="/partners" variant="outline">
                 Partner with us
@@ -68,10 +77,7 @@ export function Footer() {
               const titleId = `footer-${column.title.toLowerCase()}`;
               return (
                 <div key={column.title}>
-                  <p
-                    id={titleId}
-                    className="text-eyebrow text-fg-subtle uppercase"
-                  >
+                  <p id={titleId} className="text-eyebrow text-fg-subtle">
                     {column.title}
                   </p>
                   <ul aria-labelledby={titleId} className="mt-5 space-y-3">

@@ -26,3 +26,15 @@ test.each([
     "process.env.USE_MOCK_CMS": inlined,
   });
 });
+
+test("the image optimizer fetches only this project's Sanity assets", async () => {
+  vi.stubEnv("NEXT_PUBLIC_SANITY_PROJECT_ID", "abc123");
+  const config = await loadConfig();
+  expect(config.images?.remotePatterns).toStrictEqual([
+    {
+      protocol: "https",
+      hostname: "cdn.sanity.io",
+      pathname: "/images/abc123/**",
+    },
+  ]);
+});

@@ -10,8 +10,8 @@ import {
 
 /*
  * `prefers-reduced-motion: reduce` (the `reduced-motion` project): every
- * section is visible without scroll reveals, nothing loops, and marquees
- * become a static list without their duplicate copy.
+ * section is visible without scroll reveals and nothing loops (aurora,
+ * drift and the partner marquee hold still).
  */
 
 for (const route of siteRoutes) {
@@ -31,17 +31,3 @@ for (const route of siteRoutes) {
     });
   });
 }
-
-test("marquees render one static, reachable list", async ({ page }) => {
-  await page.goto("/");
-  await loadLazyContent(page);
-  const marquees = page.locator('[class~="group/marquee"]');
-  expect(await marquees.count()).toBeGreaterThan(0);
-
-  for (const marquee of await marquees.all()) {
-    // The inert duplicate is display: none; the labelled original remains.
-    await expect(marquee.locator("ul[aria-hidden]")).toBeHidden();
-    await expect(marquee.locator("ul[aria-label]")).toBeVisible();
-    expect(await getRunningAnimations(page, marquee)).toEqual([]);
-  }
-});

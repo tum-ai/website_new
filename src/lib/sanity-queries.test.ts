@@ -2,11 +2,10 @@ import { evaluate, parse } from "groq-js";
 import { describe, expect, test } from "vitest";
 import {
   EVENTS_QUERY,
-  PARTNERS_QUERY,
   PUBLIC_EVENTS_QUERY,
+  PUBLIC_PARTNER_ORGANIZATIONS_QUERY,
   PUBLIC_PARTNERS_QUERY,
   PUBLIC_RESEARCH_QUERY,
-  RESEARCH_PARTNERS_QUERY,
   RESEARCH_QUERY,
 } from "@/lib/sanity-queries";
 
@@ -14,29 +13,6 @@ async function run(query: string, dataset: unknown[]) {
   const value = await evaluate(parse(query), { dataset });
   return value.get();
 }
-
-test("partner query preserves legacy fields while exposing optional wall settings", async () => {
-  const [legacy, current] = await run(PARTNERS_QUERY, [
-    {
-      _id: "legacy",
-      _type: "partner",
-      name: "IBM",
-      category: "Research Partners",
-    },
-    {
-      _id: "current",
-      _type: "partner",
-      name: "Google",
-      tier: "gold",
-      featured: true,
-    },
-  ]);
-  expect(legacy.id).toBe("legacy");
-  expect(legacy.category).toBe("Research Partners");
-  expect(legacy.tier).toBeNull();
-  expect(current.tier).toBe("gold");
-  expect(current.featured).toBe(true);
-});
 
 type TestEvent = {
   id: string;
@@ -80,6 +56,51 @@ test("event query: images compacts poster+img, drops missing, description falls 
   expect(byId["evt-both"].id).toBe("evt-both");
 });
 
+test("event query: hosts stay an array and default to empty", async () => {
+  const [hosted, bare] = await run(EVENTS_QUERY, [
+    {
+      _id: "hosted",
+      _type: "event",
+      title: "Anthropic x Lovable",
+      event_date: "2026-01-01",
+      hosts: ["Anthropic", "Lovable"],
+    },
+    { _id: "bare", _type: "event", title: "Talk", event_date: "2026-02-01" },
+  ]);
+  expect(hosted.hosts).toStrictEqual(["Anthropic", "Lovable"]);
+  expect(bare.hosts).toStrictEqual([]);
+});
+
+test("event query: co-hosts resolve to organisations beside the old names", async () => {
+  const dataset = [
+    { _id: "org-aws", _type: "organization", key: "aws", name: "AWS" },
+    {
+      _id: "evt-refs",
+      _type: "event",
+      title: "Hackathon",
+      event_date: "2026-01-01",
+      hosts: ["Amazon Web Services"],
+      coHosts: [
+        { _key: "aws", _type: "reference", _ref: "org-aws" },
+        { _key: "gone", _type: "reference", _ref: "org-deleted" },
+      ],
+    },
+    {
+      _id: "evt-names",
+      _type: "event",
+      title: "Talk",
+      event_date: "2026-02-01",
+    },
+  ];
+
+  const [referenced, bare] = await run(EVENTS_QUERY, dataset);
+
+  expect(referenced.coHosts).toStrictEqual([{ key: "aws", name: "AWS" }, null]);
+  expect(referenced.hosts).toStrictEqual(["Amazon Web Services"]);
+  expect(bare.coHosts).toBeNull();
+  expect(bare.hosts).toStrictEqual([]);
+});
+
 test("research query: keywords stay an array, description falls back", async () => {
   const dataset = [
     {
@@ -103,15 +124,32 @@ test("research query: keywords stay an array, description falls back", async () 
   expect(bare.keywords).toStrictEqual([]);
 });
 
-test("research partners query filters the category in GROQ", async () => {
-  const partners = await run(RESEARCH_PARTNERS_QUERY, [
-    { _id: "a", _type: "partner", name: "IBM", category: "Research Partners" },
-    { _id: "b", _type: "partner", name: "Acme", category: "Industry" },
-    { _id: "c", _type: "partner", name: "Legacy" },
+test("research query: institutions resolve to organisations, in order", async () => {
+  const dataset = [
+    { _id: "org-mit", _type: "organization", key: "mit", name: "MIT" },
+    { _id: "org-tum", _type: "organization", key: "tum", name: "TUM" },
+    {
+      _id: "res-refs",
+      _type: "research",
+      title: "TUM, MIT: Study",
+      institutions: [
+        { _key: "tum", _type: "reference", _ref: "org-tum" },
+        { _key: "gone", _type: "reference", _ref: "org-deleted" },
+        { _key: "mit", _type: "reference", _ref: "org-mit" },
+      ],
+    },
+    { _id: "res-title", _type: "research", title: "MIT: Study" },
+  ];
+
+  const [referenced, titled] = await run(RESEARCH_QUERY, dataset);
+
+  expect(referenced.institutions).toStrictEqual([
+    { key: "tum", name: "TUM" },
+    null,
+    { key: "mit", name: "MIT" },
   ]);
-  expect(partners.map((partner: { id: string }) => partner.id)).toStrictEqual([
-    "a",
-  ]);
+  expect(referenced.title).toBe("TUM, MIT: Study");
+  expect(titled.institutions).toBeNull();
 });
 
 test("the page event query no longer fetches the unused detail text", async () => {
@@ -160,6 +198,22 @@ describe("public API query shapes are frozen", () => {
     expect(event.detail).toBe("Long text");
   });
 
+  test("events answer the same with co-host references", async () => {
+    const [event] = await run(PUBLIC_EVENTS_QUERY, [
+      { _id: "o", _type: "organization", key: "aws", name: "AWS" },
+      {
+        _id: "e",
+        _type: "event",
+        title: "T",
+        event_date: "2026-01-01",
+        hosts: ["AWS"],
+        coHosts: [{ _key: "aws", _type: "reference", _ref: "o" }],
+      },
+    ]);
+    expect(event).not.toHaveProperty("coHosts");
+    expect(event).not.toHaveProperty("hosts");
+  });
+
   test("research keeps keywords as one comma-joined string", async () => {
     const [project] = await run(PUBLIC_RESEARCH_QUERY, [
       { _id: "r", _type: "research", title: "S", keywords: ["AI", "ML"] },
@@ -178,12 +232,93 @@ describe("public API query shapes are frozen", () => {
     );
   });
 
+  test("research answers the same with institution references", async () => {
+    const [project] = await run(PUBLIC_RESEARCH_QUERY, [
+      { _id: "o", _type: "organization", key: "mit", name: "MIT" },
+      {
+        _id: "r",
+        _type: "research",
+        title: "MIT: S",
+        institutions: [{ _key: "mit", _type: "reference", _ref: "o" }],
+      },
+    ]);
+    expect(project).not.toHaveProperty("institutions");
+    expect(project.title).toBe("MIT: S");
+  });
+
+  const partnerKeys = [
+    "category",
+    "featured",
+    "id",
+    "image",
+    "link",
+    "name",
+    "tier",
+  ].sort();
+
   test("partners keep their keys", async () => {
     const [partner] = await run(PUBLIC_PARTNERS_QUERY, [
       { _id: "p", _type: "partner", name: "IBM" },
     ]);
-    expect(Object.keys(partner).sort()).toStrictEqual(
-      ["category", "featured", "id", "image", "link", "name", "tier"].sort(),
-    );
+    expect(Object.keys(partner).sort()).toStrictEqual(partnerKeys);
+  });
+
+  test("partner organisations answer in the same shape, with the old partner ids", async () => {
+    const partners = await run(PUBLIC_PARTNER_ORGANIZATIONS_QUERY, [
+      {
+        _id: "image-logo",
+        _type: "sanity.imageAsset",
+        url: "https://cdn/x.png",
+      },
+      {
+        _id: "organization-ibm",
+        _type: "organization",
+        key: "ibm",
+        name: "IBM",
+        href: "https://www.ibm.com/",
+        logo: { asset: { _type: "reference", _ref: "image-logo" } },
+        partnerTier: "bronze",
+        partnerCategory: "Research Partners",
+        legacyPartnerId: "XNCTBM8X9vP2N4tjVziXsW",
+      },
+      {
+        _id: "organization-jetbrains",
+        _type: "organization",
+        key: "jetbrains",
+        name: "JetBrains",
+        partnerTier: "gold",
+        partnerFeatured: true,
+      },
+      {
+        _id: "organization-meta",
+        _type: "organization",
+        key: "meta",
+        name: "Meta",
+      },
+    ]);
+    expect(partners).toHaveLength(2);
+    for (const partner of partners) {
+      expect(Object.keys(partner).sort()).toStrictEqual(partnerKeys);
+    }
+    expect(partners).toStrictEqual([
+      {
+        id: "XNCTBM8X9vP2N4tjVziXsW",
+        name: "IBM",
+        link: "https://www.ibm.com/",
+        image: "https://cdn/x.png",
+        category: "Research Partners",
+        tier: "bronze",
+        featured: null,
+      },
+      {
+        id: "organization-jetbrains",
+        name: "JetBrains",
+        link: null,
+        image: null,
+        category: null,
+        tier: "gold",
+        featured: true,
+      },
+    ]);
   });
 });

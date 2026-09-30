@@ -2,13 +2,14 @@
 
 import {
   type CSSProperties,
+  type RefObject,
   useCallback,
   useEffect,
   useRef,
   useState,
 } from "react";
 import type { Partner } from "@/lib/types";
-import { getPartnerKey } from "./partner-directory";
+import { getPartnerKey } from "./partner-key";
 import { createPartnerRotation, nextPartnerBatch } from "./partner-rotation";
 import { PartnerTile, type PartnerTileSize } from "./partner-tile";
 
@@ -38,10 +39,12 @@ function preload(src?: string) {
 /**
  * A wall of partner tiles that, when there are more partners than
  * `capacity`, swaps `batchSize` of them every 2.5 s with a dissolve (the
- * `partner-rotation-*` classes in partners.css). It pauses off screen, in
- * background tabs and under reduced motion, where it shows every partner.
- * Remount it (`key`) when capacity or the company keys change, which cancels
- * pending batches safely.
+ * `partner-rotation-*` classes in styles/partner-rotation.css). The first
+ * `capacity` partners start on the wall. It pauses off screen, in background
+ * tabs and under reduced motion, where it shows every partner or, with
+ * `stillShows="capacity"`, only the starting wall. Remount it (`key`) when
+ * capacity or the company keys change, which cancels pending batches
+ * safely.
  */
 export function PartnerRotationGrid({
   partners,
@@ -49,6 +52,8 @@ export function PartnerRotationGrid({
   batchSize = 1,
   offset = 0,
   size = "xl",
+  stillShows = "all",
+  label,
   className,
 }: {
   partners: Partner[];
@@ -56,6 +61,14 @@ export function PartnerRotationGrid({
   batchSize?: number;
   offset?: number;
   size?: PartnerTileSize;
+  /**
+   * What the wall shows under reduced motion: every partner (`all`, the
+   * /partners walls) or the starting wall of `capacity` tiles (`capacity`),
+   * for a wall whose size must not grow.
+   */
+  stillShows?: "all" | "capacity";
+  /** Makes the wall a list with this accessible name. */
+  label?: string;
   className: string;
 }) {
   const byKey = new Map(
@@ -70,7 +83,7 @@ export function PartnerRotationGrid({
   const [reduced, setReduced] = useState(false);
   const [visible, setVisible] = useState(false);
   const [hidden, setHidden] = useState(false);
-  const root = useRef<HTMLDivElement>(null);
+  const root = useRef<HTMLElement>(null);
   const busy = useRef(false);
   const mounted = useRef(false);
   const current = useRef(rotation);
@@ -147,50 +160,62 @@ export function PartnerRotationGrid({
     };
   }, [advance, canRun, offset, rotating]);
 
+  const Wall = label ? "ul" : "div";
+  const Slot = label ? "li" : "div";
+  const still = reduced && stillShows === "capacity";
   return (
-    <div ref={root} className={className} data-rotating={!reduced}>
-      {(reduced ? [...byKey.keys()] : rotation.visible).map((key, slot) => {
-        const partner = byKey.get(key);
-        const transition = reduced
-          ? undefined
-          : transitions.find((change) => change.slot === slot);
-        const outgoing = transition
-          ? byKey.get(transition.outgoing)
-          : undefined;
-        return partner ? (
-          <div
-            className="partner-rotation-slot"
-            // Slots are fixed positions on the wall; the company inside changes.
-            // biome-ignore lint/suspicious/noArrayIndexKey: the slot index is the identity
-            key={`slot-${slot}`}
-            style={
-              {
-                "--partner-logo-delay": `${transition?.delay ?? 0}ms`,
-              } as CSSProperties
-            }
-          >
-            <div
-              className={
-                outgoing
-                  ? "partner-rotation-current partner-rotation-enter"
-                  : "partner-rotation-current"
+    <Wall
+      ref={root as RefObject<HTMLUListElement & HTMLDivElement>}
+      aria-label={label}
+      className={className}
+      // Visual tests mask rotating walls by this marker; a wall that holds
+      // its starting tiles under reduced motion is still and drops it.
+      data-rotating={still ? undefined : !reduced}
+    >
+      {(reduced && !still ? [...byKey.keys()] : rotation.visible).map(
+        (key, slot) => {
+          const partner = byKey.get(key);
+          const transition = reduced
+            ? undefined
+            : transitions.find((change) => change.slot === slot);
+          const outgoing = transition
+            ? byKey.get(transition.outgoing)
+            : undefined;
+          return partner ? (
+            <Slot
+              className="partner-rotation-slot"
+              // Slots are fixed positions on the wall; the company inside changes.
+              // biome-ignore lint/suspicious/noArrayIndexKey: the slot index is the identity
+              key={`slot-${slot}`}
+              style={
+                {
+                  "--partner-logo-delay": `${transition?.delay ?? 0}ms`,
+                } as CSSProperties
               }
-              key={key}
             >
-              <PartnerTile partner={partner} size={size} />
-            </div>
-            {outgoing ? (
               <div
-                className="partner-rotation-outgoing"
-                aria-hidden="true"
-                inert
+                className={
+                  outgoing
+                    ? "partner-rotation-current partner-rotation-enter"
+                    : "partner-rotation-current"
+                }
+                key={key}
               >
-                <PartnerTile partner={outgoing} size={size} transparent />
+                <PartnerTile partner={partner} size={size} />
               </div>
-            ) : null}
-          </div>
-        ) : null;
-      })}
-    </div>
+              {outgoing ? (
+                <div
+                  className="partner-rotation-outgoing"
+                  aria-hidden="true"
+                  inert
+                >
+                  <PartnerTile partner={outgoing} size={size} transparent />
+                </div>
+              ) : null}
+            </Slot>
+          ) : null;
+        },
+      )}
+    </Wall>
   );
 }

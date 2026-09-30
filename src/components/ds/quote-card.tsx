@@ -2,7 +2,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import Image from "next/image";
 import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/cn";
-import { isExternalHref } from "./internal";
+import { isUnoptimizedRemoteImage } from "./internal";
 
 /** Props for {@link QuoteMark}. */
 export type QuoteMarkProps = Omit<
@@ -29,20 +29,38 @@ export function QuoteMark({ className, ...props }: QuoteMarkProps) {
   );
 }
 
-const quoteCardStyles = cva(
-  "relative flex h-full flex-col rounded-3xl p-7 md:p-8",
-  {
-    variants: {
-      /** `raised` for light bands; `glass` is the frosted panel for dark bands. */
-      variant: {
-        raised: "border border-hairline bg-raised shadow-soft",
-        glass:
-          "border border-white/10 bg-white/[0.045] shadow-inset-hairline backdrop-blur-md",
-      },
+const quoteCardStyles = cva("relative flex h-full flex-col", {
+  variants: {
+    /**
+     * `raised` for light bands; `glass` is the frosted panel for dark bands;
+     * `editorial` drops the card and sets the quote as a large light
+     * statement, for one quote that carries a section; `ruled` drops the
+     * card for a hairline rule above the quote, for lists of quotes set
+     * editorially on any band.
+     */
+    variant: {
+      raised:
+        "rounded-3xl border border-hairline bg-raised p-7 shadow-soft md:p-8",
+      glass:
+        "rounded-3xl border border-white/10 bg-white/[0.045] p-7 shadow-inset-hairline backdrop-blur-md md:p-8",
+      editorial: "",
+      ruled: "border-hairline-strong border-t pt-8",
     },
-    defaultVariants: { variant: "raised" },
   },
-);
+  defaultVariants: { variant: "raised" },
+});
+
+const quoteTextStyles = cva("flex-1 text-fg", {
+  variants: {
+    variant: {
+      raised: "mt-6 text-lead",
+      glass: "mt-6 text-lead",
+      editorial: "mt-8 text-display-md",
+      ruled: "mt-5 text-lead",
+    },
+  },
+  defaultVariants: { variant: "raised" },
+});
 
 /** An image in a quote card: its source and text alternative. */
 export type QuoteImage = {
@@ -50,6 +68,8 @@ export type QuoteImage = {
   src: string;
   /** Text alternative; "" for a portrait the name already describes. */
   alt?: string;
+  /** Portrait only: CSS `object-position`, e.g. from the Studio hotspot. */
+  position?: string;
 };
 
 /** Props for {@link QuoteCard}. */
@@ -76,7 +96,11 @@ export type QuoteCardProps = Omit<ComponentProps<"figure">, "children"> &
     eager?: boolean;
   };
 
-/** Testimonial: quote mark, quotation, and a person row with portrait. */
+/**
+ * Testimonial: quote mark, quotation, and a person row with portrait. The
+ * `editorial` variant sets the quotation in display type, without a card;
+ * `ruled` sets it under a hairline, without a card.
+ */
 export function QuoteCard({
   quote,
   name,
@@ -97,8 +121,8 @@ export function QuoteCard({
         <QuoteMark />
         {context}
       </div>
-      <blockquote className="mt-6 flex-1 text-fg text-lead">{quote}</blockquote>
-      <figcaption className="mt-8">
+      <blockquote className={quoteTextStyles({ variant })}>{quote}</blockquote>
+      <figcaption className={variant === "editorial" ? "mt-10" : "mt-8"}>
         <div className="flex items-center gap-4">
           {portrait ? (
             <Image
@@ -107,11 +131,12 @@ export function QuoteCard({
               width={52}
               height={52}
               loading={loading}
-              unoptimized={isExternalHref(portrait.src)}
+              unoptimized={isUnoptimizedRemoteImage(portrait.src)}
               className="size-12 shrink-0 rounded-full object-cover ring-2 ring-hairline"
+              style={{ objectPosition: portrait.position }}
             />
           ) : null}
-          <div className="min-w-0 flex-1">
+          <div className={cn("min-w-0", variant !== "editorial" && "flex-1")}>
             <p className="text-fg text-heading-sm">{name}</p>
             {byline ? (
               <p className="text-fg-muted text-meta">{byline}</p>
@@ -124,8 +149,12 @@ export function QuoteCard({
               width={96}
               height={24}
               loading={loading}
-              unoptimized={isExternalHref(logo.src)}
-              className="h-6 w-auto max-w-24 shrink-0 object-contain opacity-80"
+              unoptimized={isUnoptimizedRemoteImage(logo.src)}
+              className={cn(
+                "h-6 w-auto max-w-24 shrink-0 object-contain opacity-80",
+                variant === "editorial" &&
+                  "ml-2 border-hairline-strong border-l pl-6",
+              )}
             />
           ) : null}
         </div>

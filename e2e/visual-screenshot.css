@@ -10,11 +10,16 @@
  *   `/` and `/partners` failed against baselines captured minutes earlier.
  * Image content comes from the CMS and assets, not from the code under test.
  * `visibility` (not a mask) keeps text layered over images visible, such as
- * the home hero over its photo mosaic.
+ * the home hero over its logomark aperture.
+ *
+ * The research globe's WebGL canvas is hidden the same way: WebKit captured
+ * it both with and without its land dots, depending on when the map texture
+ * finished loading.
  */
 img,
 video,
-picture {
+picture,
+canvas {
   /* biome-ignore lint/complexity/noImportantStyles: must beat utility classes and inline styles while capturing */
   visibility: hidden !important;
 }

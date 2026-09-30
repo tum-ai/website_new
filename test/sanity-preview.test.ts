@@ -2,7 +2,9 @@ import { globSync } from "node:fs";
 import { dirname, relative, sep } from "node:path";
 import { createClient } from "next-sanity";
 import { expect, test, vi } from "vitest";
-import sanityConfig from "../src/sanity/sanity.config.ts";
+import { studioConfig } from "../src/sanity/sanity.config.ts";
+import { liveSchemaTypes } from "../src/sanity/schemas";
+import { contentSchemaTypes } from "../src/sanity/schemas/content";
 
 // The route handler reads the shared client; the real module also defines
 // Sanity Live, which only loads under the react-server runtime.
@@ -32,8 +34,18 @@ type PresentationOptions = {
   previewUrl?: { initial?: string; previewMode?: { enable?: string } };
 };
 
+/** The Studio's one workspace, as the new site's dataset has it. */
+function workspaceOf(dataset: string) {
+  const config = studioConfig(dataset);
+  if (Array.isArray(config)) throw new Error("expected one workspace");
+  return config;
+}
+
+const workspace = workspaceOf("redesign");
+
+/** Presentation previews drafts of events, partners and research. */
 function presentationOptions(): PresentationOptions | undefined {
-  const tools = (sanityConfig.plugins ?? []).flatMap((plugin) =>
+  const tools = (workspace.plugins ?? []).flatMap((plugin) =>
     typeof plugin === "object" &&
     "tools" in plugin &&
     Array.isArray(plugin.tools)
@@ -59,12 +71,80 @@ test("Studio Presentation enables draft mode through an existing route handler",
   expect(route.GET).toBeTypeOf("function");
 });
 
-test("Studio basePath is served by the embedded Studio catch-all page", () => {
-  const studioPages = pages
+test("the Studio is served by the embedded Studio catch-all page at /studio", () => {
+  const catchAll = pages
     .map(routePathOf)
-    .filter((path) => path.startsWith(`${sanityConfig.basePath}/`));
+    .filter((path) => /^\/studio\/\[\[\.\.\.\w+\]\]$/.test(path));
+  expect(catchAll).toHaveLength(1);
 
-  expect(studioPages).toStrictEqual([
-    expect.stringMatching(/^\/studio\/\[\[\.\.\.\w+\]\]$/),
-  ]);
+  // The optional catch-all serves /studio and every path below it.
+  expect(workspace.basePath).toBe("/studio");
+});
+
+/** The document type names the Studio registers on `dataset`. */
+function typeNames(dataset: string): string[] {
+  const types = workspaceOf(dataset).schema?.types;
+  return Array.isArray(types) ? types.map((type) => type.name) : [];
+}
+
+const liveTypes = liveSchemaTypes.map(({ name }) => name);
+const contentTypes = contentSchemaTypes.map(({ name }) => name);
+
+test("the new site's dataset edits every type in one workspace", () => {
+  expect(new Set(typeNames("redesign"))).toStrictEqual(
+    new Set([...liveTypes, ...contentTypes]),
+  );
+  expect(workspaceOf("redesign").dataset).toBe("redesign");
+});
+
+test("on production the Studio registers no page content type", () => {
+  expect(new Set(liveTypes)).toStrictEqual(
+    new Set(["event", "partner", "research"]),
+  );
+  expect(contentTypes.length).toBeGreaterThan(0);
+  expect(typeNames("production")).toStrictEqual(liveTypes);
+});
+
+test("the new site's Studio creates no partner documents; production's does", () => {
+  const defaults = ["partner", "organization", "event"].map((schemaType) => ({
+    id: schemaType,
+    title: schemaType,
+    schemaType,
+    value: {},
+  }));
+  const templates = workspaceOf("redesign").schema?.templates;
+  if (typeof templates !== "function") throw new Error("expected a resolver");
+  const offered = templates(defaults, {} as never).map(
+    ({ schemaType }) => schemaType,
+  );
+  expect(offered).toContain("organization");
+  expect(offered).not.toContain("partner");
+  // Production keeps the Studio's defaults, `partner` included.
+  expect(workspaceOf("production").schema?.templates).toBeUndefined();
+});
+
+/** The field names of `type` as the Studio registers it on `dataset`. */
+function fieldNames(dataset: string, type: string): string[] {
+  const types = workspaceOf(dataset).schema?.types;
+  const found = (Array.isArray(types) ? types : []).find(
+    (candidate) => candidate.name === type,
+  ) as { fields?: { name: string }[] } | undefined;
+  return (found?.fields ?? []).map(({ name }) => name);
+}
+
+test("the old site's types keep their fields; organisation references only where organisations exist", () => {
+  const research = fieldNames("production", "research");
+  // Production has no organisation type, and the old site reads the title.
+  expect(research).not.toContain("institutions");
+  expect(research).toContain("title");
+  // The new site's dataset adds the references and keeps every old field.
+  expect(fieldNames("redesign", "research")).toStrictEqual(
+    expect.arrayContaining([...research, "institutions"]),
+  );
+  const event = fieldNames("production", "event");
+  expect(event).not.toContain("coHosts");
+  expect(event).toContain("hosts");
+  expect(fieldNames("redesign", "event")).toStrictEqual(
+    expect.arrayContaining([...event, "coHosts"]),
+  );
 });

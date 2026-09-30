@@ -1,0 +1,275 @@
+/*
+ * /events only: the hero's lockup. By default (reduced motion, or no
+ * JavaScript) the TUM.ai logo and × sit beside a two-column index of the
+ * co-hosts. With motion allowed and scripts running, the names become a reel
+ * in the slot after the ×: one row at full strength, its neighbours fading
+ * out under a mask (on phones the slot is the row under the logo, from lg
+ * the row beside it). The reel holds the index three times, so it wraps
+ * without end. It turns once on load (CSS, before hydration), then wherever
+ * the reader turns it: the names window is a region of its own (HeroReel
+ * turns it on drag, horizontal swipe, wheel and arrow keys and sets --roll,
+ * in rows within a turn). Over the names the wheel turns the reel; on touch
+ * a vertical swipe scrolls the page and a pinch zooms it
+ * (`touch-action: pan-y pinch-zoom`).
+ *
+ * The load turn runs 2.2s, longer than the usual 1.2s entrance ceiling: a
+ * full turn through every name needs the time to read as a roll rather than
+ * a flicker, and it is the page's only load moment. Only transforms and
+ * opacity move.
+ */
+
+@layer components {
+  @keyframes events-roll-in {
+    from {
+      transform: translate3d(0, calc(var(--names) * var(--row)), 0);
+    }
+  }
+
+  @keyframes events-panel-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  .events-hero {
+    --row: 1.18em;
+  }
+
+  .events-lockup {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  /*
+   * The TUM.ai logo as the lockup's first half, the height of a capital in
+   * the display size beside it (the × and the co-host logos), so the pair
+   * reads as one line.
+   */
+  .events-lockup-title {
+    display: flex;
+    align-items: center;
+    gap: 0.3em;
+  }
+
+  .events-lockup-logo {
+    width: auto;
+    height: 0.74em;
+  }
+
+  .events-names {
+    columns: 2;
+    column-gap: 2rem;
+    border-bottom: 1px solid var(--tone-hairline-strong);
+  }
+
+  .events-name {
+    display: flex;
+    break-inside: avoid;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    border-top: 1px solid var(--tone-hairline-strong);
+    padding-block: 0.75rem;
+    font-size: var(--text-lead);
+  }
+
+  .events-name-count {
+    font-size: var(--text-body);
+  }
+
+  .events-host-panels,
+  .events-reel {
+    display: none;
+  }
+
+  .events-hero-footer {
+    margin-top: 3.5rem;
+  }
+
+  @media (min-width: 64rem) {
+    .events-lockup {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: start;
+      gap: 4rem;
+    }
+
+    .events-names {
+      column-gap: 3rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
+    .events-hero[data-roll] {
+      .events-hero-inner {
+        display: flex;
+        flex-direction: column;
+        min-height: min(100svh, 64rem);
+      }
+
+      .events-lockup {
+        flex: 1;
+        grid-template-columns: minmax(0, 1fr);
+        align-content: center;
+        gap: 0;
+        /* Phones: the stage has room, so the lockup grows with the width. */
+        font-size: max(var(--text-display-lg), 13vw);
+        line-height: var(--row);
+      }
+
+      .events-lockup-title {
+        line-height: var(--row);
+      }
+
+      /* The scroll region (focusable); the viewport inside clips and fades.
+         pan-y: a vertical swipe scrolls the page (no trap on phones); a
+         horizontal one reaches hero-reel.tsx and turns the reel. */
+      .events-names-window {
+        --visible: 3;
+        cursor: grab;
+        touch-action: pan-y pinch-zoom;
+        user-select: none;
+        border-radius: 0.75rem;
+
+        &[data-dragging] {
+          cursor: grabbing;
+        }
+      }
+
+      .events-names-viewport {
+        height: calc(var(--row) * var(--visible));
+        overflow: clip;
+        letter-spacing: var(--text-display-lg--letter-spacing);
+        font-weight: 300;
+        mask-image: linear-gradient(
+          to bottom,
+          black calc(100% / var(--visible)),
+          transparent
+        );
+      }
+
+      .events-reel img {
+        pointer-events: none;
+        -webkit-user-drag: none;
+      }
+
+      /* The list stays for assistive technology; the reel shows the names. */
+      .events-names {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+
+      .events-reel {
+        display: block;
+        translate: 0 calc((var(--names) + var(--roll, 0)) * var(--row) * -1);
+        animation: events-roll-in 2.2s var(--ease-brand) both;
+      }
+
+      .events-reel .events-name {
+        justify-content: flex-start;
+        align-items: flex-start;
+        gap: 0.12em;
+        height: var(--row);
+        border: 0;
+        padding: 0;
+        font-size: inherit;
+        line-height: var(--row);
+        white-space: nowrap;
+      }
+
+      /* A co-host without artwork, set as a wordmark at a logo's scale. */
+      .events-name-text {
+        display: flex;
+        align-self: center;
+        align-items: center;
+        gap: 0.3em;
+        font-size: 0.58em;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        line-height: 1;
+      }
+
+      /* An app icon beside a co-host's name, rounded like on a phone. */
+      .events-name-icon {
+        width: 1.15em;
+        height: 1.15em;
+        border-radius: 22%;
+      }
+
+      .events-name-logo {
+        position: relative;
+        align-self: center;
+        flex: none;
+      }
+
+      /* Centred on the logo: the same place beside every logo, whatever
+         its height. */
+      .events-reel .events-name-count {
+        align-self: center;
+        font-size: 0.32em;
+        line-height: 1;
+        letter-spacing: 0;
+      }
+
+      .events-hero-footer {
+        margin-top: 0;
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) and (scripting: enabled) and (
+      min-width: 64rem
+    ) {
+    .events-hero[data-roll] {
+      .events-lockup {
+        font-size: var(--text-display-lg);
+        grid-template-columns: auto minmax(0, 1fr) minmax(0, 17rem);
+        align-items: center;
+        column-gap: 0.28em;
+      }
+
+      .events-names-window {
+        --visible: 5;
+      }
+
+      .events-names-viewport {
+        mask-image: linear-gradient(
+          to bottom,
+          transparent,
+          black calc(100% / var(--visible)),
+          black calc(100% - 100% / var(--visible)),
+          transparent
+        );
+      }
+
+      .events-reel {
+        padding-top: calc(var(--row) * (var(--visible) - 1) / 2);
+      }
+
+      .events-host-panels {
+        display: block;
+        position: relative;
+        align-self: stretch;
+        font-size: 1rem;
+        line-height: normal;
+        animation: events-panel-in 600ms var(--ease-brand) 1.8s both;
+      }
+
+      .events-host-panel {
+        position: absolute;
+        inset-inline: 0;
+        top: 50%;
+        translate: 0 -50%;
+        opacity: 0;
+        transition: opacity 300ms var(--ease-brand);
+
+        &[data-active] {
+          opacity: 1;
+        }
+      }
+    }
+  }
+}

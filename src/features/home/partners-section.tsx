@@ -1,121 +1,101 @@
-import Image from "next/image";
 import {
-  Aurora,
-  BrandMark,
   ButtonLink,
   Container,
-  Highlight,
-  LogoTile,
-  Marquee,
+  Ledger,
+  type LedgerItem,
+  QuoteCard,
   Reveal,
   Section,
   SectionHeader,
 } from "@/components/ds";
-import {
-  getHighlightedPartners,
-  getPartnerDirectory,
-  getPartnerKey,
-  getPartnershipEmailUrl,
-  marqueeLogos,
-} from "@/features/partners";
-
-/** Icon-only marks that need the partner name beside them to read. */
-const LOCKUP_KEYS = new Set(["mutagent", "dryft"]);
+import { callToActionLabels } from "@/config/calls-to-action";
+import { getTestimonialCards } from "@/features/e-lab/server";
+import { getPartnerCaseStudies } from "@/features/partners/server";
+import type { Partner } from "@/lib/types";
+import type { HomeCopy } from "./data/homepage";
+import { PartnerWall } from "./partner-wall";
 
 /**
- * Gold, silver and bronze partners in the partner page's order, paired with
- * the artwork verified for dark bands. Built from the static defaults, so the
- * home page stays prerendered without a CMS request.
+ * The partner case on mist: a venture investor's quote, three measured
+ * outcomes, then the rotating wall of every current partner. Ends with the partner calls to
+ * action. The copy picks the quote; the quote and the outcomes come from the
+ * E-Lab and partners content slices (the CMS or the code).
  */
-const partnerLogos = getHighlightedPartners(getPartnerDirectory([])).map(
-  (partner) => {
-    const key = getPartnerKey(partner.name);
-    return { key, name: partner.name, image: marqueeLogos[key] };
-  },
-);
-
-/**
- * Partner teaser on ink: the sponsorship pitch beside a photo, then a
- * full-bleed rail of partner logos.
- */
-export function PartnersSection() {
+export async function PartnersSection({
+  copy,
+  partners,
+}: {
+  copy: HomeCopy["partners"];
+  /** Every partner in directory order (`getPartners()`). */
+  partners: Partner[];
+}) {
+  const [cards, caseStudies] = await Promise.all([
+    getTestimonialCards(),
+    getPartnerCaseStudies(),
+  ]);
+  const quote = cards.find((card) => card.id === copy.quote);
+  /** What partners got out of working with TUM.ai, as ledger rows. */
+  const outcomes: LedgerItem[] = caseStudies.map((study) => ({
+    label: study.name,
+    value: study.metric,
+    note: study.summary,
+  }));
   return (
     <Section
-      tone="ink"
-      spacing="lg"
-      grain
+      tone="mist"
+      spacing="xl"
       id="partners"
       aria-labelledby="partners-title"
-      className="overflow-clip"
     >
-      <Aurora intensity="subtle" />
-      <BrandMark
-        className="absolute -top-[12%] -right-[22%] -z-10 w-[min(60rem,95%)]"
-        intensity="faint"
-      />
-
-      <Container className="grid gap-12 lg:grid-cols-12 lg:items-center lg:gap-20">
+      <Container>
         <SectionHeader
           id="partners-title"
-          eyebrow="Partners"
-          index={3}
+          title={copy.title}
+          size="lg"
           layout="stack"
-          className="lg:order-2 lg:col-span-6"
-          title={
-            <>
-              Join <Highlight variant="fade">TUM.ai</Highlight> as a sponsor or
-              cooperation partner.
-            </>
-          }
-          lead="Get access to our exclusive pre-selected talent pool of qualified Software/Data Engineers and AI Strategists."
+          lead={copy.lead}
           actions={
             <>
-              <ButtonLink href={getPartnershipEmailUrl()}>
-                Become a Partner
+              <ButtonLink href="/partners#partner-contact">
+                {callToActionLabels.partner}
               </ButtonLink>
-              <ButtonLink href="/partners" variant="inverse" arrow>
-                View Our Partners
+              <ButtonLink href="/partners" variant="outline" arrow>
+                {copy.moreLabel}
               </ButtonLink>
             </>
           }
         />
-        <Reveal variant="scale" className="lg:order-1 lg:col-span-6">
-          <div className="group/zoom relative aspect-[3/2] overflow-hidden rounded-4xl bg-sunken">
-            <Image
-              src="/assets/partners_pic.webp"
-              alt="Presentation at a TUM.ai event"
-              fill
-              sizes="(min-width: 1280px) 38rem, (min-width: 1024px) 48vw, 100vw"
-              className="zoom-media object-cover"
-            />
-          </div>
+
+        <div className="grid gap-16 lg:grid-cols-12 lg:gap-12">
+          {quote ? (
+            <Reveal className="lg:col-span-7">
+              <QuoteCard
+                variant="editorial"
+                quote={quote.quote}
+                name={quote.name}
+                byline={quote.role}
+                portrait={{
+                  src: quote.portraitSrc,
+                  alt: "",
+                  position: quote.portraitPosition,
+                }}
+                logo={{
+                  src: quote.organizationLogoSrc,
+                  alt: quote.organizationLogoAlt,
+                }}
+                className="max-w-3xl"
+              />
+            </Reveal>
+          ) : null}
+          <Reveal delay={120} className="lg:col-span-4 lg:col-start-9">
+            <Ledger items={outcomes} />
+          </Reveal>
+        </div>
+
+        <Reveal className="mt-20 md:mt-28">
+          <PartnerWall partners={partners} />
         </Reveal>
       </Container>
-
-      <Container className="mt-20 border-hairline border-t md:mt-28" />
-      <Marquee
-        label="Partners"
-        duration={partnerLogos.length * 3.5}
-        gap={1}
-        className="mt-10 md:mt-12"
-      >
-        {partnerLogos.map((logo) => (
-          <div
-            key={logo.key}
-            className="flex h-12 w-36 items-center justify-center opacity-80 transition-opacity duration-300 hover:opacity-100 md:w-44"
-          >
-            <LogoTile
-              variant="bare"
-              name={logo.name}
-              src={logo.image}
-              wordmark={
-                logo.image && LOCKUP_KEYS.has(logo.key) ? logo.name : undefined
-              }
-              className="size-full"
-            />
-          </div>
-        ))}
-      </Marquee>
     </Section>
   );
 }

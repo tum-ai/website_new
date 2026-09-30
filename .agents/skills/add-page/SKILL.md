@@ -38,6 +38,11 @@ export function <Domain>Page() {
 - Interactive parts are small `"use client"` islands next to the page module.
 - Page-only CSS, if unavoidable, goes in `<domain>.css` inside `@layer`; the route imports it.
 - Add `index.ts` only if another feature needs something from this one, and never export the page.
+  Keep it isomorphic; server-only exports (content getters, async server components) go in
+  `server.ts`, which starts with `import "server-only"`.
+- Editable copy and facts: once the page has copy editors should own, add a content slice and a
+  `<page>Copy` singleton (the `cms-content-model` skill); read facts with `await getSiteFacts()`
+  and the CTA labels from `@/config/calls-to-action`.
 
 ## 2. SEO entry
 
@@ -74,7 +79,7 @@ and set `export const revalidate = <seconds>`.
 If the page belongs in the header or footer, add it to `src/config/navigation.ts`
 (`mainNavigation`, `connectLinks`, `legalLinks`, ...). If the header should behave differently on
 it (frosted from the start, another CTA), add an entry to the route overrides behind
-`getHeaderOptions` in the same file.
+`getHeaderOptions(pathname, { membershipOpen })` in the same file.
 
 ## 5. E2E and visual baseline
 

@@ -20,7 +20,7 @@ The relevant jobs:
 
 - **E2E (1/3, 2/3, 3/3):** every route at 1440, 1024, 768, 390 and 320 px in Chromium, WebKit at
   1440, reduced motion and no-JS: one `h1` and `main`, no console errors, overflow or broken
-  images, axe (WCAG 2 A/AA), keyboard (skip link, menu, dialogs, accordion, tabs, chips).
+  images, axe (WCAG 2 A/AA), keyboard (skip link, menu, dialogs, accordion, chips).
   The merged HTML report with traces is the `playwright-report` artifact of **E2E report**.
 - **Visual:** full-page screenshots of every route at 390 and 1440 px in Chromium and WebKit,
   compared with the Linux baselines in `e2e/__screenshots__/linux/`.
@@ -31,7 +31,7 @@ Read a failure with `gh run view --job <job id> --log-failed`.
 
 1. Look at the diffs, don't just count them. Either compare baseline PNG files from git
    (`git show "origin/<base>:e2e/__screenshots__/linux/visual-webkit/<route>-390.png" > before.png`)
-   or download the `visual-report` artifact (large; it can stall).
+   or download the `visual-report-1`/`-2` artifacts, one per shard (large; they can stall).
 2. Every diff must be intended: wrapping, stacked actions, nested corners, alignment, contrast on
    each band, nothing hidden behind the fixed header. Layout breaks, lost content or unlisted copy
    changes are regressions; fix them.
@@ -53,12 +53,12 @@ CI's `reduced-motion`, `no-js` and `@keyboard` projects cover the shared behavio
 interaction, add to `e2e/keyboard.spec.ts` or `e2e/motion.spec.ts` rather than checking by hand.
 What they must hold:
 
-- Under reduced motion everything is visible without scrolling, marquees are static rows,
+- Under reduced motion everything is visible without scrolling, the partner marquee is a static row,
   nothing loops, and no content waits for an animation.
 - The first Tab shows the skip link; Enter moves focus to the main content.
 - Tab order follows the visual order; every stop has a visible focus ring.
 - Dialogs and the mobile menu (below 1280 px) trap focus, close on Escape and return focus to the
-  trigger. Accordions, tabs and filter chips work with Enter, Space and the arrow keys.
+  trigger. Accordions and filter chips work with Enter, Space and the arrow keys.
 
 ## 4. Report
 

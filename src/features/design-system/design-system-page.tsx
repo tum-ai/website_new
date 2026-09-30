@@ -1,4 +1,4 @@
-import { Brain, Handshake, Inbox, Rocket, Sparkles, Users } from "lucide-react";
+import { Brain, Handshake, Inbox, Rocket, Sparkles } from "lucide-react";
 import type { ReactNode } from "react";
 import {
   Accordion,
@@ -13,36 +13,28 @@ import {
   BulletList,
   ButtonLink,
   buttonStyles,
-  Card,
-  Carousel,
   Container,
-  CornerHint,
   CountUp,
   CtaBand,
-  CtaPanel,
-  cardStyles,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-  DialogTrigger,
+  DayRuler,
   Display,
   EmptyState,
   Eyebrow,
   FallbackImage,
   FaqList,
   FaqSection,
-  FeatureCard,
   formatFigure,
   Heading,
   Highlight,
   IconBadge,
+  IndexList,
+  KeyDates,
+  Ledger,
   LogoTile,
   LogoWall,
-  Marquee,
-  MediaCard,
   PageHero,
   PersonCard,
+  Photo,
   Pill,
   Prose,
   parseFigure,
@@ -57,25 +49,17 @@ import {
   StatGrid,
   StatusBadge,
   Steps,
-  Tabs,
-  TabsList,
-  TabsPanel,
-  TabsTab,
   Tag,
   Text,
   TextLink,
-  Timeline,
   type Tone,
   TopBlend,
 } from "@/components/ds";
 import { socialLinks } from "@/config/contact";
 import { eLabConfig } from "@/config/e-lab";
 import { organizationFacts } from "@/config/organization";
-import { faqs } from "@/features/qanda";
-import {
-  DesignSystemInteractive,
-  DesignSystemScrollDemo,
-} from "./design-system-interactive";
+import { faqs } from "@/features/qanda/server";
+import { DesignSystemInteractive } from "./design-system-interactive";
 
 /*
  * Every export of src/components/ds appears on this page at least once, and
@@ -90,13 +74,6 @@ const tones: { tone: Tone; name: string; hex: string }[] = [
   { tone: "violet", name: "Electric Lavender", hex: "#9A64D9" },
   { tone: "ink", name: "Dark Indigo", hex: "#1B0049" },
   { tone: "night", name: "Black", hex: "#0D0214" },
-];
-
-const photos = [
-  { src: "/assets/open_ai_speaker_event.webp", title: "Events" },
-  { src: "/assets/innovation/robotics_discussion.webp", title: "Research" },
-  { src: "/assets/innovation/robotics_writing.webp", title: "Projects" },
-  { src: "/assets/home_img4.webp", title: "E-Lab" },
 ];
 
 const logos = [
@@ -148,11 +125,9 @@ function Block({
   );
 }
 
-/** Small uppercase caption above a demo. */
+/** Small caption above a demo. */
 function Label({ children }: { children: ReactNode }) {
-  return (
-    <p className="mb-4 text-eyebrow text-fg-subtle uppercase">{children}</p>
-  );
+  return <p className="mb-4 text-eyebrow text-fg-subtle">{children}</p>;
 }
 
 export function DesignSystemPage() {
@@ -161,11 +136,8 @@ export function DesignSystemPage() {
       <PageHero
         titleId="ds-hero-title"
         eyebrow="Living reference"
-        title={
-          <>
-            Precise, calm, <Highlight>alive.</Highlight>
-          </>
-        }
+        title="Precise, calm, alive."
+        emphasis="highlight"
         lead="Every component on this page is the one used on the site. Tones, type, motion and interaction live in src/components/ds and src/styles/index.css."
         actions={
           <>
@@ -186,7 +158,7 @@ export function DesignSystemPage() {
               src="/assets/open_ai_speaker_event.webp"
               alt="A speaker on stage at a TUM.ai event"
               fill
-              priority
+              preload
               sizes="(min-width: 1024px) 45vw, 100vw"
               className="zoom-media object-cover"
               fallback={<BrandPanel />}
@@ -413,49 +385,19 @@ export function DesignSystemPage() {
       </Section>
 
       <Block id="cards" title="Cards">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <FeatureCard icon={Brain} title="Research" index="01">
-            Applied AI research with leading labs and universities.
-          </FeatureCard>
-          <FeatureCard icon={Rocket} title="Ventures" index="02">
-            From first idea to funded startup in the E-Lab.
-          </FeatureCard>
-          <FeatureCard icon={Users} title="Community" index="03">
-            {organizationFacts.alumni}+ alumni across{" "}
-            {organizationFacts.nationalities} nationalities.
-          </FeatureCard>
-          <FeatureCard
-            icon={Handshake}
-            title="Industry"
-            index="04"
-            variant="outline"
-          >
-            Projects and hackathons with partners (outline).
-          </FeatureCard>
-        </div>
-        <div className="mt-4 grid gap-4 md:grid-cols-3">
-          <Card>
-            <Label>Card · raised</Label>
-            <Heading>Base surface</Heading>
-          </Card>
-          <Card variant="outline" interactive as="article">
-            <Label>Card · outline, interactive</Label>
-            <Heading>Lifts on hover</Heading>
-          </Card>
+        <div className="grid gap-4 md:grid-cols-3">
           <SpotlightCard>
-            <Label>SpotlightCard</Label>
+            <Label>SpotlightCard · raised</Label>
             <Heading>Light follows the pointer</Heading>
           </SpotlightCard>
-        </div>
-        <div
-          className={cardStyles({
-            variant: "outline",
-            padding: "sm",
-            className: "mt-4",
-          })}
-        >
-          <Label>cardStyles on a plain div</Label>
-          <Text>For surfaces that are another component&apos;s root.</Text>
+          <SpotlightCard variant="outline" interactive>
+            <Label>SpotlightCard · outline, interactive</Label>
+            <Heading>Lifts on hover</Heading>
+          </SpotlightCard>
+          <SpotlightCard variant="glass" padding="sm">
+            <Label>SpotlightCard · glass, padding sm</Label>
+            <Heading>Frosted panel</Heading>
+          </SpotlightCard>
         </div>
         <div className="mt-10">
           <Label>
@@ -476,85 +418,54 @@ export function DesignSystemPage() {
             </a>
           </div>
         </div>
-        <div className="group/zoom mt-10 flex flex-wrap items-center gap-4">
-          <Label>CornerHint · arrow, open, tonal (hover the row)</Label>
-          <CornerHint />
-          <CornerHint icon="open" />
-          <CornerHint icon="open" variant="tonal" className="size-9" />
-        </div>
-        <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {photos.map((photo, index) => (
-            <MediaCard
-              key={photo.title}
-              href="/design-system"
-              image={{ src: photo.src, alt: "" }}
-              eyebrow="Explore"
-              title={photo.title}
-              meta="Munich · 2026"
-              scrim={index % 2 === 1 ? "strong" : "default"}
-            />
-          ))}
-        </div>
-        <div className="mt-4 grid items-start gap-4 md:grid-cols-3">
-          <MediaCard
-            image={{ alt: "" }}
-            title="No photo: BrandPanel fallback"
-            meta="`fallback` default"
-            aspect="4/3"
+        <div className="mt-12 grid items-start gap-6 md:grid-cols-3">
+          <Label>Photo · rounded 3/2, 4/5, 4/3, 1/1, bleed 16/10</Label>
+          <Photo
+            className="md:col-start-1"
+            src="/assets/homepage/Onboarding25.webp"
+            alt="A new TUM.ai batch in matching black T-shirts"
+            caption="Caption: what, where and when"
+            sizes="(min-width: 768px) 30vw, 100vw"
           />
-          <MediaCard
-            href="/design-system"
-            image={{ src: "/missing/photo.webp", alt: "" }}
-            title="Broken photo: custom fallback"
-            aspect="4/3"
-            fallback={<BrandPanel seed={2} />}
-            cornerHint={<Tag className="bg-white/90 text-violet-950">New</Tag>}
+          <Photo
+            aspect="4/5"
+            src="/assets/homepage/venture_onboarding25.webp"
+            alt="The venture team around a meeting table"
+            caption="aspect 4/5, position 50% 60%"
+            position="50% 60%"
+            sizes="(min-width: 768px) 30vw, 100vw"
           />
-          <MediaCard
-            layout="stacked"
+          <Photo
+            shape="bleed"
+            aspect="16/10"
+            src="/assets/homepage/IBM_visit.webp"
+            alt="Members on a company visit to IBM"
+            sizes="(min-width: 768px) 30vw, 100vw"
+          />
+          <Photo
             aspect="4/3"
-            href="/design-system"
-            image={{ src: "/assets/homepage/Makeathon.webp", alt: "" }}
-            eyebrow="Hackathon"
-            title="Stacked media card"
-            description="Image on top, text on the band."
+            src="/assets/homepage/Makeathon.webp"
+            alt="The Makeathon team on stage"
+            sizes="(min-width: 768px) 30vw, 100vw"
+          />
+          <Photo
+            aspect="1/1"
+            src="/assets/homepage/getaway24.webp"
+            alt="Members at a long table in a vaulted restaurant"
+            sizes="(min-width: 768px) 30vw, 100vw"
           />
         </div>
-        <div className="mt-4 grid gap-4 md:grid-cols-3">
-          <Dialog>
-            <MediaCard
-              aspect="4/5"
-              image={{
-                src: "/assets/innovation/robotics_writing.webp",
-                alt: "",
-              }}
-              eyebrow="01"
-              title="Action: opens a dialog"
-              titleId="ds-media-action-title"
-              description="The whole card is one DialogTrigger, named by the title. descriptionLines={3} clamps this and reserves three lines from md, so titles in a row line up."
-              descriptionLines={3}
-              action={<DialogTrigger aria-labelledby="ds-media-action-title" />}
-            />
-            <DialogContent size="md">
-              <div className="p-8 md:p-10">
-                <DialogTitle>MediaCard action</DialogTitle>
-                <DialogDescription className="mt-3">
-                  Opened from the card&apos;s stretched trigger.
-                </DialogDescription>
-              </div>
-            </DialogContent>
-          </Dialog>
-          <CtaPanel className="flex flex-col justify-between gap-8 rounded-3xl p-8 md:col-span-2">
-            <p className="text-fg text-heading-lg">
-              CtaPanel: the CtaBand panel surface on its own,{" "}
-              <span className="text-highlight">for a bento cell.</span>
-            </p>
-            <p className="border-hairline border-t pt-6 text-fg-muted text-small">
-              Pad it and match its neighbours&apos; radius with className.
-            </p>
-          </CtaPanel>
+        <div className="mt-6">
+          <Label>Photo · panorama (4/3, 2/1 from sm, 24/7 from lg)</Label>
+          <Photo
+            aspect="panorama"
+            src="/assets/apply/new_section_photo_1.webp"
+            alt="A batch of members in winter jackets in front of a baroque building"
+            caption="aspect panorama, position 50% 45%"
+            position="50% 45%"
+          />
         </div>
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           <QuoteCard
             quote="Truly impressive what the team has built. We’re just getting started."
             name="Axel Täubert"
@@ -563,6 +474,13 @@ export function DesignSystemPage() {
               src: "/assets/partners/logos/google.webp",
               alt: "Google",
             }}
+          />
+          <QuoteCard
+            variant="ruled"
+            quote="Ruled: a list of quotes under hairlines, without a card."
+            name="Leon Hergert"
+            byline="Co-Founder @ Spherecast"
+            portrait={{ src: "/assets/e-lab/testimonials/leon_hergert.png" }}
           />
           <PersonCard
             name="Leonie Freisinger"
@@ -697,7 +615,7 @@ export function DesignSystemPage() {
       <Block
         id="figures"
         title="Figures"
-        lead="StatGrid sizes (sm to xl) and CountUp parsing copy figures."
+        lead="StatGrid sizes (sm to xl), the Ledger (md and lg) and CountUp parsing copy figures."
       >
         <div className="grid gap-6">
           <StatGrid
@@ -717,6 +635,36 @@ export function DesignSystemPage() {
               { value: 40, suffix: "+", label: "Nationalities" },
             ]}
           />
+          <div className="grid gap-10 lg:grid-cols-2">
+            <Ledger
+              items={[
+                {
+                  label: "Founded",
+                  value: String(organizationFacts.foundingYear),
+                  note: "Ledger md: a string figure",
+                },
+                {
+                  label: "Nationalities",
+                  value: organizationFacts.nationalities,
+                  suffix: "+",
+                  note: "Counted up on scroll",
+                },
+              ]}
+            />
+            <Ledger
+              size="lg"
+              items={[
+                {
+                  label: "Raised",
+                  value: eLabConfig.ventureFundingMillions,
+                  prefix: "€",
+                  suffix: "M",
+                  note: "Ledger lg",
+                },
+                { label: "Without a note", value: "48h" },
+              ]}
+            />
+          </div>
           <dl className="grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
             {figures.map((figure) => (
               <div key={figure} className="rounded-2xl bg-sunken p-4">
@@ -732,33 +680,62 @@ export function DesignSystemPage() {
         </div>
       </Block>
 
+      <Block
+        id="index"
+        title="Index and editorial quote"
+        lead="IndexList: hover or focus a row to swap the preview (from lg). QuoteCard editorial: one quote that carries a section."
+      >
+        <div className="grid gap-16">
+          <IndexList
+            items={[
+              {
+                id: "research",
+                title: "Research",
+                description: "Projects with universities and labs.",
+                href: "/research",
+                image: { src: "/assets/innovation/robotics_discussion.webp" },
+              },
+              {
+                id: "events",
+                title: "Events",
+                description: "Talks, workshops and hackathons.",
+                detail: "With a detail",
+                href: "/events",
+                image: { src: "/assets/open_ai_speaker_event.webp" },
+              },
+              {
+                id: "no-image",
+                title: "Without a photo",
+                description: "Rows without a photo leave the preview empty.",
+                href: "/qanda",
+              },
+            ]}
+          />
+          <QuoteCard
+            variant="editorial"
+            quote="The density of real builders at the Final Pitch is what pre-seed funds look for."
+            name="Editorial variant"
+            byline="Role @ Organization"
+            portrait={{ src: "/assets/partners/people/leonie.webp" }}
+            className="max-w-3xl"
+          />
+        </div>
+      </Block>
+
       <Block id="interactive" title="Interactive" tone="lavender">
         <DesignSystemInteractive />
-        <div className="mt-16">
-          <Tabs defaultValue="projects">
-            <TabsList aria-label="Demo tabs">
-              <TabsTab value="projects">Projects</TabsTab>
-              <TabsTab value="exchange">Research Exchange Program</TabsTab>
-            </TabsList>
-            <TabsPanel
-              value="projects"
-              className="mt-8 text-body text-fg-muted"
-            >
-              Tab panel one.
-            </TabsPanel>
-            <TabsPanel
-              value="exchange"
-              className="mt-8 text-body text-fg-muted"
-            >
-              Tab panel two.
-            </TabsPanel>
-          </Tabs>
-        </div>
         <FaqList
           className="mt-16"
-          items={faqs.slice(0, 3)}
+          items={faqs.slice(0, 3).map((faq, index) => ({
+            ...faq,
+            id: `ds-faq-${index + 1}`,
+          }))}
           defaultValue={faqs[0] ? [faqs[0].question] : undefined}
         />
+        <p className="mt-6 text-fg-muted text-small">
+          Items with an <code>id</code> are deep-linkable:{" "}
+          <TextLink href="#ds-faq-3">open the third question</TextLink>.
+        </p>
         <Accordion className="mt-10">
           <AccordionItem value="parts">
             <AccordionTrigger headingAs="h4">
@@ -771,31 +748,70 @@ export function DesignSystemPage() {
         </Accordion>
       </Block>
 
-      <Block id="process" title="Timeline and steps">
-        <Label>Timeline · alternate, progress rail, dot markers</Label>
-        <Timeline
-          alternate
-          items={[
-            { label: "Week 1", title: "Kickoff", description: "Onboarding." },
-            { label: "Week 4", title: "Phase I", description: "Build." },
-            { label: "Week 8", title: "Midterm", description: "MVP gate." },
-            { label: "Week 12", title: "Demo Day", description: "Pitch." },
-          ]}
-        />
-        <div className="mt-24">
-          <Label>Timeline · dashed rail, number markers, continuation</Label>
-          <Timeline
-            rail="dashed"
-            marker="number"
-            continuation="Your journey continues..."
-            items={[
-              { title: "Apply", description: "Tell us about your idea." },
-              { title: "Pitch", description: "Meet the jury." },
-              { title: "Build", description: "Twelve weeks of sprints." },
-            ]}
-          />
+      <Block
+        id="key-dates"
+        title="Key dates and day ruler"
+        lead="KeyDates sets a round's important dates as a call for papers does: passed dates struck through, the next in the accent. DayRuler shows how much of a window of days is gone."
+      >
+        <div className="grid gap-12 lg:grid-cols-2">
+          <div>
+            <Label>KeyDates md, drawIn · DayRuler md</Label>
+            <KeyDates
+              drawIn
+              items={[
+                {
+                  id: "opens",
+                  label: "Applications open",
+                  date: "28 Sep",
+                  state: "past",
+                },
+                {
+                  id: "deadline",
+                  label: "Application deadline",
+                  detail: "23:59, Munich time",
+                  date: "27 Oct",
+                  state: "next",
+                  note: "26 days left",
+                },
+                { id: "interviews", label: "Interviews", date: "2 - 8 Nov" },
+              ]}
+            />
+            <DayRuler
+              className="mt-8"
+              days={29}
+              elapsed={3}
+              startLabel="Opened 28 Sep"
+              endLabel="Deadline 27 Oct"
+              markLabel="Today"
+            />
+          </div>
+          <div>
+            <Label>KeyDates lg, one row · DayRuler lg</Label>
+            <KeyDates
+              size="lg"
+              items={[
+                {
+                  id: "deadline",
+                  label: "Application deadline",
+                  date: "27 Oct",
+                  state: "next",
+                  note: "in 26 days",
+                },
+              ]}
+            />
+            <DayRuler
+              className="mt-8"
+              size="lg"
+              days={29}
+              elapsed={22}
+              markLabel="7 days left"
+            />
+          </div>
         </div>
-        <div className="mt-24">
+      </Block>
+
+      <Block id="process" title="Steps">
+        <div>
           <Label>Steps · badge markers, solid rail</Label>
           <Steps
             items={[
@@ -822,6 +838,21 @@ export function DesignSystemPage() {
           />
         </div>
         <div className="mt-24">
+          <Label>Steps · rows, for steps that are sentences</Label>
+          <p className="mb-6 font-light text-display-md text-fg">We</p>
+          <Steps
+            layout="rows"
+            items={[
+              { title: "collect project proposals from our partners," },
+              { title: "preselect applicants on their research experience," },
+              {
+                title: "and support their stay abroad.",
+                description: "An optional line under a step.",
+              },
+            ]}
+          />
+        </div>
+        <div className="mt-24">
           <Label>Steps · dot markers, no rail</Label>
           <Steps
             columns={3}
@@ -836,19 +867,8 @@ export function DesignSystemPage() {
         </div>
       </Block>
 
-      <Block id="logos" title="Logos and rails" tone="mist">
-        <Marquee label="Partners" duration={40}>
-          {logos.map((logo) => (
-            <LogoTile key={logo.name} {...logo} size="sm" className="w-44" />
-          ))}
-        </Marquee>
-        <Marquee className="mt-4" label="Partners, reversed" reverse>
-          {logos.map((logo) => (
-            <LogoTile key={logo.name} {...logo} variant="chip" />
-          ))}
-        </Marquee>
+      <Block id="logos" title="Logos" tone="mist">
         <LogoWall
-          className="mt-8"
           label="Logo wall"
           logos={[
             ...logos,
@@ -861,7 +881,48 @@ export function DesignSystemPage() {
           ]}
           columns={6}
         />
-        <div className="mt-4 grid gap-3 sm:grid-cols-4">
+        <div className="mt-12">
+          <Label>LogoWall · strip, equal area from each aspect ratio</Label>
+          <LogoWall
+            layout="strip"
+            label="Logo strip"
+            logos={[
+              {
+                name: "NVIDIA",
+                src: "/assets/partners/logos/nvidia.webp",
+                aspectRatio: 204 / 150,
+              },
+              {
+                name: "Google",
+                src: "/assets/partners/logos/google.webp",
+                aspectRatio: 270 / 82,
+                href: "https://about.google",
+              },
+              {
+                name: "IBM",
+                src: "/assets/partners/logos/ibm.png",
+                aspectRatio: 500 / 200,
+              },
+              {
+                name: "Meta",
+                src: "/assets/partners/logos/meta.svg",
+                aspectRatio: 50 / 11,
+              },
+              {
+                name: "Databricks",
+                src: "/assets/partners/logos/databricks.svg",
+                aspectRatio: 712.77 / 112.97,
+              },
+              {
+                name: "BMW",
+                src: "/assets/partners/logos/bmw.svg",
+                aspectRatio: 1,
+              },
+              { name: "Helmholtz Munich" },
+            ]}
+          />
+        </div>
+        <div className="mt-12 grid gap-3 sm:grid-cols-4">
           <LogoTile
             name="Google"
             src="/assets/partners/logos/google.webp"
@@ -876,36 +937,6 @@ export function DesignSystemPage() {
           />
           <LogoTile name="Missing artwork" src="/missing/logo.png" />
           <LogoTile name="No artwork" size="sm" />
-        </div>
-        <Carousel className="mt-16" label="Highlights">
-          {photos.map((photo) => (
-            <MediaCard
-              key={photo.title}
-              image={{ src: photo.src, alt: "" }}
-              title={photo.title}
-              aspect="16/10"
-            />
-          ))}
-        </Carousel>
-        <div className="mt-16 aspect-[16/9] overflow-hidden rounded-4xl">
-          <Carousel
-            variant="overlay"
-            label="Photo frame"
-            classNames={{ slide: "basis-full" }}
-          >
-            {photos.map((photo) => (
-              <div key={photo.title} className="relative h-full">
-                <FallbackImage
-                  src={photo.src}
-                  alt={photo.title}
-                  fill
-                  sizes="(min-width: 1024px) 80vw, 100vw"
-                  className="object-cover"
-                  fallback={<BrandPanel />}
-                />
-              </div>
-            ))}
-          </Carousel>
         </div>
         <EmptyState
           className="mt-16"
@@ -939,9 +970,6 @@ export function DesignSystemPage() {
           className="mt-8 h-px bg-violet-500"
           aria-hidden="true"
         />
-        <div className="mt-10">
-          <DesignSystemScrollDemo />
-        </div>
       </Block>
 
       <Section
@@ -967,14 +995,14 @@ export function DesignSystemPage() {
       <FaqSection
         id="ds-faq"
         tone="mist"
-        index={9}
         items={faqs.slice(3, 6)}
         defaultValue={faqs[3] ? [faqs[3].question] : undefined}
-        lead="FaqSection: sticky heading column beside the accordion; an eyebrow index and the first answer open."
+        lead="FaqSection: sticky heading column beside the accordion, with the first answer open."
       />
 
       <CtaBand
         variant="band"
+        mark={false}
         titleId="ds-cta-band"
         visual={
           <span aria-hidden="true" className="inline-block text-highlight">
@@ -982,7 +1010,7 @@ export function DesignSystemPage() {
           </span>
         }
         title="Band variant with a visual."
-        lead="Full-bleed dark band; `children` brings its own layout."
+        lead="Full-bleed flat ink; `mark={false}` leaves the visual as the only artwork, and `children` brings its own layout."
       >
         <Actions align="center">
           <ButtonLink href="/partners" variant="inverse">

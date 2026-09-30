@@ -298,9 +298,13 @@ export function buildMetadata(key: SEOPageKey): Metadata {
 
 /**
  * The JSON-LD nodes for a page: the Organization, the page itself, then any
- * page-specific nodes.
+ * page-specific nodes. `pageFields` adds properties to the page node that
+ * the page's own content supplies, such as an FAQPage's `mainEntity`.
  */
-export function getJsonLd(key: SEOPageKey): object[] {
+export function getJsonLd(
+  key: SEOPageKey,
+  pageFields: Record<string, unknown> = {},
+): object[] {
   if (key === "home") {
     return [
       organizationJsonLd,
@@ -323,6 +327,7 @@ export function getJsonLd(key: SEOPageKey): object[] {
       description: page.description,
       url: absoluteUrl(path),
       ...(page.publisher === false ? {} : { publisher: organizationJsonLd }),
+      ...pageFields,
     },
     ...extra,
   ];

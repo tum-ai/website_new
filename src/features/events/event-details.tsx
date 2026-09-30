@@ -1,6 +1,5 @@
 "use client";
 
-import { MapPin } from "lucide-react";
 import type { ReactNode } from "react";
 import {
   BrandPanel,
@@ -11,79 +10,93 @@ import {
   DialogTitle,
   DialogTrigger,
   FallbackImage,
-  Tag,
 } from "@/components/ds";
 import type { EventDetails } from "./events";
+import { categoryLabel } from "./filters";
+import { HostLine } from "./host-line";
+import { Lockup } from "./lockup";
 
-const imageSizes = "(min-width: 768px) 40vw, 100vw";
+const imageSizes = "(min-width: 768px) 28rem, 100vw";
 
 /**
- * "Read More" trigger and the event detail dialog: image, date, title,
- * location, category, the full description and an optional action (the
- * sign-up for upcoming events). Takes plain, pre-formatted props from the
- * server (`toEventDetails`), so it never formats a date in the browser.
+ * What opens the dialog: a ds `Button` with a trailing arrow, or a plain
+ * `<button>` styled by the caller (a register row's title, a poster tile).
+ * The element is created here, on the client: an element built in a server
+ * component loses its children when Base UI merges the trigger's props.
+ */
+export type EventDialogTrigger =
+  | { kind: "button"; variant: "primary" | "outline" }
+  | { kind: "bare"; className: string };
+
+/**
+ * An event's detail dialog: its poster beside the date, title, venue,
+ * co-hosts, the full description and an optional action (the sign-up for
+ * upcoming events). `children` is the trigger's content, which starts with
+ * "Read More about" for screen readers. Takes plain, pre-formatted props from
+ * the server (`toEventDetails`), so it never formats a date in the browser.
  */
 export function EventDetailsDialog({
   details,
   action,
-  triggerVariant = "outline",
+  trigger,
+  children,
 }: {
   /** What the dialog shows. */
   details: EventDetails;
   /** Rendered under the description, e.g. the sign-up button. */
   action?: ReactNode;
-  /** Look of the "Read More" trigger. */
-  triggerVariant?: "outline" | "link";
+  /** What opens the dialog. */
+  trigger: EventDialogTrigger;
+  /** The trigger's content. */
+  children: ReactNode;
 }) {
-  const { title, date, location, category, description, image } = details;
+  const { title, date, location, category, hosts, description, image } =
+    details;
 
   return (
     <Dialog>
-      <DialogTrigger render={<Button variant={triggerVariant} arrow />}>
-        Read More
-        <span className="sr-only"> about {title}</span>
+      <DialogTrigger
+        render={
+          trigger.kind === "button" ? (
+            <Button variant={trigger.variant} arrow />
+          ) : (
+            <button type="button" className={trigger.className} />
+          )
+        }
+      >
+        {children}
       </DialogTrigger>
       <DialogContent size="xl">
         <div className="grid md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
-          <div className="relative aspect-[4/3] overflow-hidden bg-sunken md:aspect-auto md:min-h-128">
-            {image ? (
-              <FallbackImage
-                src={image.src}
-                alt=""
-                fill
-                unoptimized
-                sizes={imageSizes}
-                className="scale-110 object-cover opacity-60 blur-2xl"
-                fallback={null}
-              />
-            ) : null}
+          <div className="relative aspect-square overflow-hidden bg-sunken md:aspect-auto md:min-h-128">
             <FallbackImage
               src={image?.src}
               alt={image?.alt ?? ""}
               fill
               unoptimized
               sizes={imageSizes}
-              className="object-contain"
+              className="object-cover"
               fallback={<BrandPanel />}
             />
           </div>
           <div className="flex min-w-0 flex-col px-6 py-8 sm:px-10 sm:py-10 md:pt-14">
-            <p className="text-eyebrow text-highlight uppercase">
-              <time dateTime={date.dateTime}>{date.long}</time>
+            <p className="font-medium text-highlight text-small">
+              <time dateTime={date.dateTime}>
+                {date.weekday}, {date.long}
+                {date.time ? `, ${date.time}` : null}
+              </time>
             </p>
-            <DialogTitle className="mt-4 md:pr-8">{title}</DialogTitle>
-            {location ? (
-              <DialogDescription className="mt-3 flex items-start gap-2 text-small">
-                <MapPin
-                  aria-hidden
-                  className="mt-1 size-4 shrink-0 text-highlight"
-                />
-                {location}
+            <DialogTitle className="mt-4 md:pr-8">
+              <Lockup title={title} />
+            </DialogTitle>
+            {location || category ? (
+              <DialogDescription className="mt-3 text-small">
+                {[location, category ? categoryLabel(category) : null]
+                  .filter(Boolean)
+                  .join(", ")}
               </DialogDescription>
             ) : null}
-            {category ? (
-              <Tag className="mt-5 self-start">{category}</Tag>
-            ) : null}
+            <HostLine hosts={hosts} className="mt-2 text-small" />
             <p className="mt-7 whitespace-pre-line border-hairline border-t pt-7 text-body text-fg-muted">
               {description}
             </p>

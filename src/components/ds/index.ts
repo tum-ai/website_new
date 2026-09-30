@@ -7,7 +7,7 @@
  * API conventions (every component follows them; new ones must too):
  * - Variant props are cva variants, documented on the cva config. A variant
  *   that swaps the markup rather than classes may branch in JSX instead.
- * - `as` is the root element (Section, Card, Container, Reveal, typography).
+ * - `as` is the root element (Section, Container, Reveal, typography).
  *   `headingAs` is the level of a component's title (`h2`/`h3`/`h4`); the
  *   page hero owns the `h1`.
  * - `tone` only ever means a band tone (`data-tone`: paper, mist, lavender,
@@ -37,9 +37,6 @@ export {
   type AccordionProps,
   AccordionTrigger,
   type AccordionTriggerProps,
-  type FaqItem,
-  FaqList,
-  type FaqListProps,
 } from "./accordion";
 export { Actions, type ActionsProps } from "./actions";
 export { Anchor, type AnchorProps } from "./anchor";
@@ -58,13 +55,6 @@ export {
   IconButton,
   type IconButtonProps,
 } from "./button";
-export { Card, type CardProps, type CardStyleProps, cardStyles } from "./card";
-export {
-  Carousel,
-  type CarouselClassNames,
-  type CarouselProps,
-  type CarouselVariant,
-} from "./carousel";
 export { ChipGroup, type ChipGroupProps, type ChipOption } from "./chip-group";
 export {
   Collapsible,
@@ -80,9 +70,8 @@ export {
   CtaBand,
   type CtaBandClassNames,
   type CtaBandProps,
-  CtaPanel,
-  type CtaPanelProps,
 } from "./cta-band";
+export { DayRuler, type DayRulerProps } from "./day-ruler";
 export {
   Dialog,
   DialogClose,
@@ -97,10 +86,22 @@ export {
 } from "./dialog";
 export { EmptyState, type EmptyStateProps } from "./empty-state";
 export { FallbackImage, type FallbackImageProps } from "./fallback-image";
+export { type FaqItem, FaqList, type FaqListProps } from "./faq-list";
 export { FaqSection, type FaqSectionProps } from "./faq-section";
-export { FeatureCard, type FeatureCardProps } from "./feature-card";
 export { formatFigure, type ParsedFigure, parseFigure } from "./figure";
 export { IconBadge, type IconBadgeProps } from "./icon-badge";
+export {
+  IndexList,
+  type IndexListItem,
+  type IndexListProps,
+} from "./index-list";
+export {
+  type KeyDateItem,
+  type KeyDateState,
+  KeyDates,
+  type KeyDatesProps,
+} from "./key-dates";
+export { Ledger, type LedgerItem, type LedgerProps } from "./ledger";
 export {
   type LogoItem,
   LogoTile,
@@ -108,27 +109,14 @@ export {
   LogoWall,
   type LogoWallProps,
 } from "./logo-wall";
-export { Marquee, type MarqueeProps } from "./marquee";
-export {
-  CornerHint,
-  type CornerHintProps,
-  MediaCard,
-  type MediaCardImage,
-  type MediaCardProps,
-} from "./media-card";
 export { MotionProvider, type MotionProviderProps } from "./motion-provider";
 export {
   PageHero,
   type PageHeroClassNames,
   type PageHeroProps,
 } from "./page-hero";
-export {
-  Parallax,
-  type ParallaxProps,
-  ScrollProgress,
-  type ScrollProgressProps,
-} from "./parallax";
 export { PersonCard, type PersonCardProps } from "./person-card";
+export { Photo, type PhotoProps } from "./photo";
 export {
   type BadgeStatus,
   Pill,
@@ -157,27 +145,10 @@ export { SpotlightCard, type SpotlightCardProps } from "./spotlight-card";
 export { StatGrid, type StatGridProps, type StatItem } from "./stat";
 export { type StepItem, Steps, type StepsProps } from "./steps";
 export {
-  Tabs,
-  TabsList,
-  type TabsListProps,
-  TabsPanel,
-  type TabsPanelProps,
-  type TabsProps,
-  TabsTab,
-  type TabsTabProps,
-} from "./tabs";
-export {
   TextLink,
   type TextLinkEmphasis,
   type TextLinkProps,
 } from "./text-link";
-export {
-  Timeline,
-  type TimelineItem,
-  type TimelineMarker,
-  type TimelineProps,
-  type TimelineRail,
-} from "./timeline";
 export { TopBlend, type TopBlendProps } from "./top-blend";
 export type {
   BlockElement,
@@ -200,4 +171,3 @@ export {
   type TextEmphasis,
   type TextProps,
 } from "./typography";
-export { type Breakpoint, useBreakpoint } from "./use-breakpoint";

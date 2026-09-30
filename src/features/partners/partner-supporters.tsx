@@ -15,7 +15,14 @@ const columnQueries = [
 ] as const;
 
 /** The supporter board: three rows of small tiles that rotate a row at a time. */
-export function PartnerSupporters({ partners }: { partners: Partner[] }) {
+export function PartnerSupporters({
+  partners,
+  title,
+}: {
+  partners: Partner[];
+  /** The board's heading, from the page copy. */
+  title: string;
+}) {
   const [columns, setColumns] = useState(6);
   useEffect(() => {
     const queries = columnQueries.map((entry) => ({
@@ -41,7 +48,7 @@ export function PartnerSupporters({ partners }: { partners: Partner[] }) {
         id="partner-supporters-title"
         className="mb-6 text-fg-muted text-heading-md md:mb-8"
       >
-        Supporters of the vision
+        {title}
       </h3>
       <PartnerRotationGrid
         key={columns}

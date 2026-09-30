@@ -1,6 +1,15 @@
 import type { Locator, Page } from "@playwright/test";
-import { getHeaderOptions } from "@/config/navigation";
-import { expect, test } from "./fixtures";
+import { campaignsFallback } from "@/config/campaigns";
+import { eLabCohortNameOf } from "@/config/e-lab";
+import { membershipConfig } from "@/config/membership";
+import {
+  getHeaderOptions,
+  headerCtaAt,
+  headerCtaSchedule,
+  mainNavigation,
+} from "@/config/navigation";
+import { siteFactsFallback } from "@/config/site-facts";
+import { expect, MOCK_CMS_NOW, test } from "./fixtures";
 
 /*
  * Keyboard access. `@keyboard` tests run on desktop Chromium and desktop
@@ -19,6 +28,23 @@ async function pressTab(page: Page, backwards = false) {
   const option = browser === "webkit" && process.platform === "darwin";
   const key = `${option ? "Alt+" : ""}${backwards ? "Shift+" : ""}Tab`;
   await page.keyboard.press(key);
+}
+
+/**
+ * The header CTA the server renders on `path` at the mock clock, computed
+ * the way the site layout does (`headerCtaAt(headerCtaSchedule(…))`, with
+ * campaigns), from the code facts the E2E build serves.
+ */
+function headerCtaOn(path: string) {
+  const schedule = headerCtaSchedule({
+    membership: membershipConfig,
+    fallback: siteFactsFallback.headerCtaFallback,
+    eLabCohortName: eLabCohortNameOf(siteFactsFallback.eLab.currentIteration),
+    campaigns: campaignsFallback,
+  });
+  return getHeaderOptions(path, {
+    cta: headerCtaAt(schedule, new Date(MOCK_CMS_NOW)),
+  }).cta;
 }
 
 /** Presses Tab until `target` has focus (at most `limit` presses). */
@@ -125,15 +151,6 @@ test.describe("dialogs", { tag: "@keyboard" }, () => {
     await expectModalDialog(page, trigger);
   });
 
-  test("research project details", async ({ page }) => {
-    await page.goto("/research");
-    const trigger = page
-      .getByRole("tabpanel", { name: "Projects" })
-      .locator('button[aria-haspopup="dialog"]')
-      .first();
-    await expectModalDialog(page, trigger);
-  });
-
   test("partner booking", async ({ page }) => {
     // Keep the third-party calendar out of the test.
     await page.route(/cal\.(eu|com)/, (route) => route.abort());
@@ -152,7 +169,8 @@ test.describe("disclosure widgets", { tag: "@keyboard" }, () => {
     const first = triggers.first();
     const second = triggers.nth(1);
 
-    // The first answer starts open (FaqSection `defaultValue`), the rest closed.
+    // The first answer starts open (MissionAnswers' initial state), the rest
+    // closed.
     await expect(first).toHaveAttribute("aria-expanded", "true");
     await expect(second).toHaveAttribute("aria-expanded", "false");
 
@@ -170,61 +188,38 @@ test.describe("disclosure widgets", { tag: "@keyboard" }, () => {
     await expect(second).toHaveAttribute("aria-expanded", "false");
   });
 
-  test("research tabs follow the arrow keys", async ({ page }) => {
-    await page.goto("/research");
-    const projects = page.getByRole("tab", { name: "Projects" });
-    const exchange = page.getByRole("tab", {
-      name: "Research Exchange Program",
-    });
-    await expect(projects).toHaveAttribute("aria-selected", "true");
-
-    await projects.focus();
-    await page.keyboard.press("ArrowRight");
-    await expect(exchange).toBeFocused();
-    await expect(exchange).toHaveAttribute("aria-selected", "true");
-    await expect(
-      page.getByRole("tabpanel", { name: "Research Exchange Program" }),
-    ).toBeVisible();
-
-    await page.keyboard.press("ArrowLeft");
-    await expect(projects).toBeFocused();
-    await expect(projects).toHaveAttribute("aria-selected", "true");
-  });
-
-  test("event filter chips use roving focus and keep focus on Clear", async ({
-    page,
-  }) => {
+  test("event filter chips use roving focus", async ({ page }) => {
     await page.goto("/events");
     const category = page.getByRole("group", { name: "Category" });
-    const all = category.getByRole("button", { name: /^All Categories/ });
-    const hackathon = category.getByRole("button", { name: /^Hackathon/ });
+    const all = category.getByRole("button", { name: /^All/ });
+    const hackathons = category.getByRole("button", { name: /^Hackathons/ });
     await expect(all).toHaveAttribute("aria-pressed", "true");
 
     await all.focus();
     await page.keyboard.press("ArrowRight");
-    await expect(hackathon).toBeFocused();
+    await expect(hackathons).toBeFocused();
     await page.keyboard.press("Enter");
-    await expect(hackathon).toHaveAttribute("aria-pressed", "true");
+    await expect(hackathons).toHaveAttribute("aria-pressed", "true");
     await expect(all).toHaveAttribute("aria-pressed", "false");
 
-    const clear = page.getByRole("button", { name: "Clear" });
-    await clear.focus();
+    await page.keyboard.press("ArrowLeft");
     await page.keyboard.press("Enter");
-    await expect(clear).toBeHidden();
     await expect(all).toHaveAttribute("aria-pressed", "true");
     await expect(all).toBeFocused();
   });
 });
 
 /*
- * The header CTA per route, from `getHeaderOptions` (untagged: runs on the
- * desktop and phone projects). A page CTA shows in the pill from `sm` and in
+ * The header CTA per route, as the server renders it (`headerCtaOn`;
+ * untagged: runs on the desktop and phone projects). A page CTA shows in the pill from `sm` and in
  * the menu everywhere; an in-page anchor stays in the pill on phones too.
  */
 test.describe("header call to action", () => {
   for (const path of ["/events", "/partners"]) {
     test(path, async ({ page }) => {
-      const { cta } = getHeaderOptions(path);
+      // The server renders by the mock clock, and the header keeps that
+      // answer (the clock is fixed), so the expectation uses the same instant.
+      const cta = headerCtaOn(path);
       test.skip(!cta, "no CTA configured for this route");
       if (!cta) return;
       await page.goto(path);
@@ -260,8 +255,85 @@ test.describe("header navigation", { tag: "@keyboard" }, () => {
     await page.goto("/events");
     const nav = page.getByRole("navigation", { name: "Main" });
     const links = nav.getByRole("link");
-    await expect(links).toHaveCount(7);
+    await expect(links).toHaveCount(mainNavigation.length);
     await tabTo(page, links.last());
     await expect(links.last()).toBeFocused();
+  });
+});
+
+test.describe("interactive figures", { tag: "@keyboard" }, () => {
+  test("the research globe turns with the arrow keys", async ({ page }) => {
+    await page.goto("/research");
+    const globe = page.getByRole("slider", {
+      name: "Globe of our research sites",
+    });
+    const centre = async () =>
+      Number(await globe.getAttribute("aria-valuenow"));
+    const start = await centre();
+
+    await globe.focus();
+    await expect(globe).toBeFocused();
+    // Right raises the value: the longitude at the centre moves east.
+    await page.keyboard.press("ArrowRight");
+    await expect.poll(centre).toBeGreaterThan(start);
+    await page.keyboard.press("ArrowLeft");
+    await expect.poll(centre).toBe(start);
+    await expect(globe).toHaveAttribute("aria-valuetext", /^Centred on/);
+  });
+
+  test("the events co-host reel steps with the arrow keys", async ({
+    page,
+  }) => {
+    await page.goto("/events");
+    // The reel is a named group only with motion allowed and scripts on;
+    // under reduced motion the hero is a static list.
+    const reel = page.getByRole("group", { name: /^Co-hosts:/ });
+    await expect(reel).toBeVisible();
+    // The panel beside the reel shows the events of the name in the slot.
+    const panels = page.locator("[data-host-panel]");
+    const count = await panels.count();
+    expect(count).toBeGreaterThan(1);
+    const shown = (index: number) =>
+      page.locator(`[data-host-panel="${index}"]`);
+    await expect(shown(0)).toHaveAttribute("data-active", "");
+
+    await reel.focus();
+    await page.keyboard.press("ArrowDown");
+    await expect(shown(1)).toHaveAttribute("data-active", "");
+    await expect(shown(0)).not.toHaveAttribute("data-active");
+
+    // Back past the first name: the reel wraps to the last.
+    await page.keyboard.press("ArrowUp");
+    await page.keyboard.press("ArrowUp");
+    await expect(shown(count - 1)).toHaveAttribute("data-active", "");
+  });
+
+  test("a focused venture in the E-Lab field opens, and closes on blur", async ({
+    page,
+  }) => {
+    await page.goto("/e-lab");
+    const ventures = page.getByRole("link", { name: /, an E-Lab venture/ });
+    const first = ventures.first();
+    const second = ventures.nth(1);
+
+    await first.focus();
+    await expect(first).toBeFocused();
+    await expect(first).toHaveAttribute("data-expanded", "true");
+
+    // The next Tab stop is the next venture: the first closes as it opens.
+    await pressTab(page);
+    await expect(second).toBeFocused();
+    await expect(second).toHaveAttribute("data-expanded", "true");
+    await expect(first).toHaveAttribute("data-expanded", "false");
+  });
+});
+
+test.describe("deep links", { tag: "@keyboard" }, () => {
+  test("/qanda#member-journey opens that answer", async ({ page }) => {
+    await page.goto("/qanda#member-journey");
+    const question = page
+      .getByRole("main")
+      .getByRole("button", { name: "What does the member journey look like?" });
+    await expect(question).toHaveAttribute("aria-expanded", "true");
   });
 });

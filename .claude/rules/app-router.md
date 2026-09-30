@@ -31,7 +31,8 @@ Routes are thin. Page composition lives in `src/features/<domain>/<domain>-page.
   `studio/[[...tool]]/layout.tsx` is the Studio's own root and may import only `@/sanity` and
   `@/lib`. `global-not-found.tsx` renders 404s because no layout is shared.
 - **CMS data:** fetch in the server route through the getters in `@/lib/sanity` and set
-  `revalidate`. The getters log a failed fetch and return `[]`, so routes have no try/catch.
+  `revalidate` (shorter than the site layout's `revalidate = 3600`, the hourly safety net under
+  the Sanity webhook). The getters log a failed fetch and return `[]`, so routes have no try/catch.
   A route that needs a render date passes it as a prop (`now`), computed on the server, and uses
   `MOCK_CMS_NOW` under the mock CMS (see `/events` and `/apply`).
 - **API routes:** `api/getNotes` (events), `api/getPartners` and `api/getResearch` are a public

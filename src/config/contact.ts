@@ -4,7 +4,7 @@
  * partner flows and JSON-LD read them. See "Updating site facts" in
  * docs/contributor-guide.md.
  */
-import { legalEntity } from "./organization";
+import { registeredOfficeLinesDe } from "./organization";
 
 export const contactEmails = {
   general: "contact@tum-ai.com",
@@ -41,8 +41,28 @@ export const socialLinks = {
     "https://join.slack.com/t/tumaipublic/shared_invite/zt-10kg0t1f9-JLRXDxY_d_vprKWgab0cVw",
 } as const;
 
+/** Role addresses, as the CMS `siteSettings` document holds them. */
+export type ContactEmails = {
+  readonly [Role in keyof typeof contactEmails]: string;
+};
+
+/** Social profiles, as the CMS `siteSettings` document holds them. */
+export type SocialLinks = {
+  readonly [Network in keyof typeof socialLinks]: string;
+};
+
+/**
+ * The partnership booking page, as the CMS `siteSettings` document holds it.
+ * `partnershipContact.cc` stays in code: it names people.
+ */
+export type PartnershipBooking = {
+  readonly bookingUrl: string;
+  readonly bookingHost: string;
+};
+
 /**
  * German one-line form of the registered office for the Imprint ("Arcisstraße
- * 21, 80333 München"). The address itself lives in config/organization.ts.
+ * 21, 80333 München"), joined from `registeredOfficeLinesDe` in
+ * config/organization.ts.
  */
-export const registeredOfficeAddressLine = `${legalEntity.registeredOffice.streetAddress}, ${legalEntity.registeredOffice.postalCode} München`;
+export const registeredOfficeAddressLine = registeredOfficeLinesDe.join(", ");

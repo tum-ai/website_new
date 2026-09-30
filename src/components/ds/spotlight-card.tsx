@@ -1,5 +1,6 @@
 "use client";
 
+import { cva, type VariantProps } from "class-variance-authority";
 import {
   type ComponentProps,
   type PointerEvent,
@@ -7,11 +8,42 @@ import {
   useRef,
 } from "react";
 import { cn } from "@/lib/cn";
-import { type CardStyleProps, cardStyles } from "./card";
 import { useComposedRef } from "./refs";
 
+/** Card surface of {@link SpotlightCard}. */
+const cardStyles = cva("group/card relative isolate rounded-3xl text-fg", {
+  variants: {
+    /** Surface treatment. */
+    variant: {
+      /** Solid surface one step above the band. */
+      raised: "border border-hairline bg-raised shadow-soft",
+      /** Hairline only; for dense grids. */
+      outline: "border border-hairline bg-transparent",
+      /** Frosted panel for dark bands and imagery. */
+      glass:
+        "border border-white/10 bg-white/[0.045] shadow-inset-hairline backdrop-blur-md",
+      /** No surface: layout and hover behavior only. */
+      plain: "",
+    },
+    /** Inner padding step. */
+    padding: {
+      none: "",
+      sm: "p-5",
+      md: "p-6 md:p-7",
+      lg: "p-7 md:p-9",
+    },
+    /** A 4px lift and a stronger shadow on hover (still under reduced motion). */
+    interactive: {
+      true: "transition-[translate,box-shadow,border-color,background-color] duration-500 ease-brand hover:-translate-y-1 hover:border-hairline-strong hover:shadow-lift motion-reduce:hover:translate-y-0",
+      false: "",
+    },
+  },
+  defaultVariants: { variant: "raised", padding: "md", interactive: false },
+});
+
 /** Props for {@link SpotlightCard}: a div's props plus the card variants. */
-export type SpotlightCardProps = ComponentProps<"div"> & CardStyleProps;
+export type SpotlightCardProps = ComponentProps<"div"> &
+  VariantProps<typeof cardStyles>;
 
 /**
  * Card with a soft light that follows the pointer and a glow that traces the

@@ -1,9 +1,6 @@
-import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vitest/config";
-
-const fromRoot = (path: string) =>
-  fileURLToPath(new URL(path, import.meta.url));
+import { vitestAliases } from "./vitest.aliases";
 
 /**
  * Unit and component tests. `pnpm test` never builds the app; the
@@ -16,14 +13,7 @@ const fromRoot = (path: string) =>
  * Tests may live next to the code under `src/` or in `test/`.
  */
 export default defineConfig({
-  resolve: {
-    alias: [
-      { find: /^@\//, replacement: `${fromRoot("./src")}/` },
-      { find: /^@test\//, replacement: `${fromRoot("./test")}/` },
-      // `server-only` throws outside the React Server Components bundler.
-      { find: /^server-only$/, replacement: fromRoot("./test/stubs/empty.ts") },
-    ],
-  },
+  resolve: { alias: vitestAliases },
   test: {
     exclude: ["**/node_modules/**", "**/.next*/**", "e2e/**"],
     server: {
@@ -41,8 +31,8 @@ export default defineConfig({
       reportsDirectory: "coverage",
       // Line coverage per group, enforced by `pnpm test:coverage` (CI's Unit
       // job). Logic is held to 90 %; ds components to 80 %, because their
-      // motion branches (Parallax, CountUp, Timeline scroll markers) only run
-      // in a real browser, where E2E and visual cover them. Measured at the
+      // motion branches (such as CountUp's animation frames) only run in a
+      // real browser, where E2E and visual cover them. Measured at the
       // time of adding: lib 99 %, features/**/*.ts 93 %, ds 90 %.
       thresholds: {
         "src/lib/**": { lines: 90 },

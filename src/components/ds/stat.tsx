@@ -79,7 +79,18 @@ export type StatGridProps = VariantProps<typeof statGridStyles> &
     className?: string;
   };
 
-function StatFigure({ item }: { item: StatItem }) {
+/**
+ * One figure as text or a count-up. Shared with the Ledger (not exported from
+ * the barrel).
+ */
+export function StatFigure({
+  item,
+}: {
+  item: Pick<
+    StatItem,
+    "value" | "count" | "prefix" | "suffix" | "decimals" | "grouping"
+  >;
+}) {
   const { value, prefix, suffix, decimals, grouping } = item;
   const count = item.count ?? typeof value === "number";
   if (!count) {

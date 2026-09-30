@@ -145,9 +145,7 @@ export function LegalToc({
         </CollapsiblePanel>
       </Collapsible>
       <div className="hidden lg:block">
-        <p className="mb-4 pl-4 text-eyebrow text-fg-subtle uppercase">
-          {label}
-        </p>
+        <p className="mb-4 pl-4 text-eyebrow text-fg-subtle">{label}</p>
         {list}
       </div>
     </nav>

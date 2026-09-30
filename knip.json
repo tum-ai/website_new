@@ -1,7 +1,21 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  // `sanity.cli.ts` is loaded by the Sanity CLI (`pnpm sanity:typegen`).
-  "entry": ["test/stubs/*.ts", "src/sanity/sanity.cli.ts"],
+  // Loaded by the Sanity CLI from `src/sanity` by `pnpm sanity:typegen`,
+  // where knip can't follow the path. (`pnpm sanity:backfill` runs
+  // scripts/sanity/backfill.ts through tsx, which knip finds in package.json
+  // by itself.)
+  // scripts/sanity/repair-assets.ts, apply-partner-migration.ts,
+  // migrate-content-dedup-apply.ts and migrate-org-references-apply.ts: run
+  // by path through `sanity exec` from backfill.ts, migrate-partners.ts,
+  // migrate-content-dedup.ts and migrate-org-references.ts.
+  "entry": [
+    "test/stubs/*.ts",
+    "src/sanity/sanity.cli.ts",
+    "scripts/sanity/repair-assets.ts",
+    "scripts/sanity/apply-partner-migration.ts",
+    "scripts/sanity/migrate-content-dedup-apply.ts",
+    "scripts/sanity/migrate-org-references-apply.ts"
+  ],
   // Loaded by path: playwright.config.ts `toHaveScreenshot.stylePath`.
   "ignoreFiles": ["e2e/visual-screenshot.css"],
   "ignoreIssues": {
@@ -15,14 +29,9 @@
     "src/components/ds/**": ["types"]
   },
   "ignoreDependencies": [
-    // Runs the git hooks from lefthook.yml; installed by `pnpm install`.
-    "lefthook",
     // Open question for Justin (cleanup #264 checklist, "Ops"): keep the
     // Vercel CLI as a devDependency (`pnpm exec vercel env pull`,
     // docs/contributor-guide.md) or drop it.
-    "vercel",
-    // Unused since the redesign. Either type the JSON-LD in config/seo.ts
-    // with it or remove it; tracked as a W3-Lock handoff.
-    "schema-dts"
+    "vercel"
   ]
 }

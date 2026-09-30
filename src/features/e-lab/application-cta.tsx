@@ -1,15 +1,17 @@
 import { ButtonLink, StatusBadge } from "@/components/ds";
-import { eLabApplicationCopy, eLabConfig, eLabPhaseCopy } from "@/config/e-lab";
+import {
+  eLabApplicationCopyOf,
+  eLabPhaseCopyOf,
+  eLabWindowClock,
+} from "@/config/e-lab";
+import { getELabWindow } from "@/config/schedule-content";
+import { getSiteFacts } from "@/config/site-settings-content";
 import { ELabPhase } from "./e-lab-phase";
 
 type ELabApplicationCtaProps = {
-  /** Which label set to show: the hero's (with the cohort) or the card's. */
-  label: "hero" | "card";
   /** Button and badge height; keep equal to the neighbouring status badge. */
   size?: "md" | "lg";
 };
-
-const labelKey = { hero: "heroCtaLabel", card: "cardCtaLabel" } as const;
 
 /**
  * The application call to action for the current E-Lab cohort. It follows
@@ -21,27 +23,37 @@ const labelKey = { hero: "heroCtaLabel", card: "cardCtaLabel" } as const;
  *   2.5.3), so speech users can say what they see.
  * - closed: a muted "closed" status badge, so the page never shows a dead
  *   button.
+ *
+ * The window, form and copy come from the render's `getELabWindow()` and
+ * `getSiteFacts()`.
  */
-export function ELabApplicationCta({
-  label,
+export async function ELabApplicationCta({
   size = "lg",
 }: ELabApplicationCtaProps) {
-  const { open, closed } = eLabPhaseCopy;
+  const [eLabWindow, facts] = await Promise.all([
+    getELabWindow(),
+    getSiteFacts(),
+  ]);
+  const { open, closed } = eLabPhaseCopyOf(
+    facts.eLab.currentIteration,
+    eLabWindow,
+  );
 
   return (
     <ELabPhase
+      clock={eLabWindowClock(eLabWindow)}
       open={
         <ButtonLink
-          href={eLabConfig.applicationUrl}
+          href={eLabWindow.applicationUrl}
           size={size}
           arrow="external"
         >
-          {open[labelKey[label]]}
+          {open.ctaLabel}
         </ButtonLink>
       }
       closed={
         <StatusBadge status="closed" size={size}>
-          {closed[labelKey[label]]}
+          {closed.ctaLabel}
         </StatusBadge>
       }
     />
@@ -49,25 +61,34 @@ export function ELabApplicationCta({
 }
 
 /**
- * Live "applications open" badge with the deadline from the E-Lab config.
- * Renders nothing once applications close: the closed CTA already reads as a
- * status there.
+ * Live "applications open" badge with the deadline of the render's E-Lab
+ * window. Renders nothing once applications close: the closed CTA already
+ * reads as a status there.
  */
-export function ELabApplicationStatus({
+export async function ELabApplicationStatus({
   size = "lg",
 }: {
   /** Keep equal to the neighbouring CTA's size so both share one height. */
   size?: "sm" | "md" | "lg";
 }) {
+  const [eLabWindow, facts] = await Promise.all([
+    getELabWindow(),
+    getSiteFacts(),
+  ]);
+  const { deadline } = eLabApplicationCopyOf(
+    facts.eLab.currentIteration,
+    eLabWindow,
+  );
   return (
     <ELabPhase
+      clock={eLabWindowClock(eLabWindow)}
       open={
         <StatusBadge status="live" size={size}>
           {/* Shorter label on phones keeps the pill on one line; below about
               360px it wraps (see StatusBadge). */}
           <span className="max-sm:hidden">Applications open</span>
           <span className="sm:hidden">Open</span> until{" "}
-          <span className="tabular">{eLabApplicationCopy.deadline}</span>
+          <span className="tabular">{deadline}</span>
         </StatusBadge>
       }
       closed={null}

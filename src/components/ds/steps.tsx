@@ -12,6 +12,8 @@ export type StepItem = {
   title: ReactNode;
   /** One or two sentences. */
   description?: ReactNode;
+  /** A short line under the title, such as the step's dates. */
+  detail?: ReactNode;
   /** Icon in the marker instead of the number (the number moves above the title). */
   icon?: LucideIcon;
   /** Overrides the automatic "01" numbering (e.g. "02A"). */
@@ -72,6 +74,13 @@ export type StepsProps = VariantProps<typeof listStyles> &
   VariantProps<typeof railStyles> & {
     /** The steps, in order. */
     items: StepItem[];
+    /**
+     * `columns` (default): markers on a rail, one column per step on wide
+     * screens. `rows`: one hairline row per step with the number beside
+     * it, for steps that are sentences rather than short labels. `rows`
+     * ignores `columns`, `rail`, `marker` and icons.
+     */
+    layout?: "columns" | "rows";
     /** Heading level of each step title. Default `h3`. */
     headingAs?: HeadingLevel;
     /** Classes merged over the wrapper. */
@@ -80,16 +89,52 @@ export type StepsProps = VariantProps<typeof listStyles> &
 
 /**
  * Numbered process as an ordered list. A rail joins the step markers on wide
- * screens; steps reveal in sequence.
+ * screens (or, as `rows`, hairlines separate them); steps reveal in sequence.
  */
 export function Steps({
   items,
+  layout = "columns",
   columns,
   rail,
   marker = "badge",
   headingAs: HeadingTag = "h3",
   className,
 }: StepsProps) {
+  if (layout === "rows") {
+    return (
+      <ol className={cn("border-hairline-strong border-t", className)}>
+        {items.map((item, index) => {
+          const number = item.number ?? counter(index + 1);
+          return (
+            <Reveal
+              as="li"
+              key={item.id ?? textKey(item.title, number)}
+              delay={index * 70}
+              className="grid grid-cols-[3rem_minmax(0,1fr)] items-baseline gap-x-4 border-hairline border-b py-6 md:grid-cols-[6rem_minmax(0,1fr)] md:gap-x-8 md:py-8"
+            >
+              <span className="tabular text-heading-md text-highlight">
+                {number}
+              </span>
+              <div>
+                <HeadingTag className="max-w-3xl text-fg text-heading-md">
+                  {item.title}
+                </HeadingTag>
+                {item.detail ? (
+                  <p className="mt-1 text-fg-subtle text-meta">{item.detail}</p>
+                ) : null}
+                {item.description ? (
+                  <div className="mt-2 max-w-2xl text-fg-muted text-small">
+                    {item.description}
+                  </div>
+                ) : null}
+              </div>
+            </Reveal>
+          );
+        })}
+      </ol>
+    );
+  }
+
   return (
     <div className={cn("relative", className)}>
       {rail === "none" ? null : (
@@ -121,7 +166,7 @@ export function Steps({
                 ) : null}
               </span>
               {numberAbove ? (
-                <p className="tabular mt-6 text-eyebrow text-fg-subtle uppercase">
+                <p className="tabular mt-6 text-eyebrow text-fg-subtle">
                   {number}
                 </p>
               ) : null}
@@ -133,6 +178,9 @@ export function Steps({
               >
                 {item.title}
               </HeadingTag>
+              {item.detail ? (
+                <p className="mt-1 text-fg-subtle text-meta">{item.detail}</p>
+              ) : null}
               {item.description ? (
                 <div className="mt-3 text-fg-muted text-small">
                   {item.description}

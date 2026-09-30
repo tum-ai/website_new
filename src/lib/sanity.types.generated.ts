@@ -15,11 +15,1021 @@
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: ../../node_modules/.cache/sanity/schema.json
+export type EventsCopy = {
+  _id: string;
+  _type: "eventsCopy";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  hero?: {
+    emptyLead: string;
+  };
+  upcoming?: {
+    title: string;
+    empty: string;
+  };
+  past?: {
+    title: string;
+    lead: string;
+  };
+  posters?: {
+    title: string;
+    lead: string;
+  };
+  closing?: {
+    title: string;
+    lead: string;
+    studentsReader: string;
+    nextUp: string;
+    membership: string;
+  };
+};
+
 export type SanityImageAssetReference = {
   _ref: string;
   _type: "reference";
   _weak?: boolean;
   [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+};
+
+export type ELabCopy = {
+  _id: string;
+  _type: "eLabCopy";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  hero?: {
+    title: string;
+    lead: string;
+  };
+  gates?: {
+    title: string;
+    lead: string;
+    scaleLabel: string;
+    stages: Array<
+      | {
+          figure:
+            | "applications"
+            | "admitted"
+            | "midterm"
+            | "selectionDay"
+            | "finalPitch";
+          name: string;
+          description: string;
+          approximate?: boolean;
+          _type: "gateStage";
+          _key: string;
+        }
+      | {
+          key: string;
+          name: string;
+          duration: {
+            amount: number;
+            unit: "days" | "weeks";
+          };
+          description: string;
+          photo?: {
+            asset?: SanityImageAssetReference;
+            media?: unknown;
+            hotspot?: SanityImageHotspot;
+            crop?: SanityImageCrop;
+            alt?: string;
+            _type: "image";
+          };
+          photoCaption?: string;
+          _type: "phaseStage";
+          _key: string;
+        }
+    >;
+  };
+  field?: {
+    caption: string;
+    inviteLabel: string;
+  };
+  ventures?: {
+    title: string;
+    fundingNote: string;
+    logosLabel: string;
+  };
+  voices?: {
+    title: string;
+    lead: string;
+    foundersLabel: string;
+    investorsLabel: string;
+  };
+  closing?: {
+    title: string;
+    followLabel: string;
+    partnersReader: string;
+    partnersText: string;
+  };
+};
+
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop";
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+};
+
+export type SanityImageHotspot = {
+  _type: "sanity.imageHotspot";
+  x: number;
+  y: number;
+  height: number;
+  width: number;
+};
+
+export type Milestone = {
+  _id: string;
+  _type: "milestone";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  year: number;
+  kind: "research" | "programs" | "events" | "organization";
+  order: number;
+  title: string;
+  detail?: string;
+};
+
+export type ApplyCopy = {
+  _id: string;
+  _type: "applyCopy";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  heroTitle: string;
+  heroLead: string;
+  faqLabel: string;
+  datesTitle: string;
+  scope?: {
+    title: string;
+    inScopeTitle: string;
+    notRequiredTitle: string;
+    valuesTitle: string;
+    qualities: Array<{
+      title: string;
+      text: string;
+      _type: "point";
+      _key: string;
+    }>;
+    notRequired: Array<{
+      title: string;
+      text: string;
+      _type: "point";
+      _key: string;
+    }>;
+    values: Array<{
+      title: string;
+      text: string;
+      _type: "point";
+      _key: string;
+    }>;
+    photo: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      _type: "image";
+    };
+  };
+  tracks?: {
+    title: string;
+    lead: string;
+    offeringsTitle: string;
+    offerings: Array<{
+      title: string;
+      text: string;
+      _type: "point";
+      _key: string;
+    }>;
+    photo: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      _type: "image";
+    };
+    journeyLink: string;
+  };
+  selection?: {
+    title: string;
+    lead: string;
+    stages: Array<{
+      title: string;
+      when: "deadline" | "after-deadline" | "interviews" | "onboarding";
+      text: string;
+      _type: "selectionStage";
+      _key: string;
+    }>;
+  };
+  history?: {
+    title: string;
+    lead: string;
+  };
+  closing?: {
+    companiesReader: string;
+  };
+};
+
+export type PersonReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "person";
+};
+
+export type HomeCopy = {
+  _id: string;
+  _type: "homeCopy";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  hero?: {
+    title: string;
+    lead: string;
+    partnersLabel: string;
+    photos: Array<{
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      _type: "image";
+      _key: string;
+    }>;
+  };
+  mission?: {
+    statement: string;
+    body: string;
+  };
+  ledger: Array<{
+    key:
+      | "founded"
+      | "members"
+      | "nationalities"
+      | "funding"
+      | "makeathon"
+      | "publications";
+    label: string;
+    note: string;
+    _type: "ledgerRow";
+    _key: string;
+  }>;
+  programs?: {
+    title: string;
+    lead: string;
+    items: Array<{
+      key: string;
+      title: string;
+      description: string;
+      href: string;
+      image: {
+        asset?: SanityImageAssetReference;
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        alt?: string;
+        _type: "image";
+      };
+      _type: "program";
+      _key: string;
+    }>;
+  };
+  room?: {
+    title: string;
+    lead: string;
+    photos: Array<{
+      image: {
+        asset?: SanityImageAssetReference;
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        alt?: string;
+        _type: "image";
+      };
+      caption: string;
+      _type: "roomPhoto";
+      _key: string;
+    }>;
+  };
+  join?: {
+    title: string;
+    lead: string;
+    stepsTitle: string;
+    steps: Array<{
+      title: string;
+      dates: string;
+      _type: "recruitingStep";
+      _key: string;
+    }>;
+    quote?: {
+      person: PersonReference;
+      excerpt: string;
+    };
+  };
+  partners?: {
+    title: string;
+    lead: string;
+    moreLabel: string;
+    quote: PersonReference;
+  };
+};
+
+export type OrganizationReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "organization";
+};
+
+export type LabSite = {
+  _id: string;
+  _type: "labSite";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  order: number;
+  city: string;
+  key: Slug;
+  location: Geopoint;
+  home?: boolean;
+  organizations: Array<
+    {
+      _key: string;
+    } & OrganizationReference
+  >;
+};
+
+export type Geopoint = {
+  _type: "geopoint";
+  lat?: number;
+  lng?: number;
+  alt?: number;
+};
+
+export type Slug = {
+  _type: "slug";
+  current: string;
+  source?: string;
+};
+
+export type ResearchCopy = {
+  _id: string;
+  _type: "researchCopy";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  hero?: {
+    title: string;
+    lead: string;
+  };
+  partnersLabel: string;
+  abstract?: {
+    label: string;
+    statement: string;
+    body: string;
+    runningOne: string;
+    runningMany: string;
+  };
+  figurePanels: Array<{
+    image: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      _type: "image";
+    };
+    caption: string;
+    _type: "figurePanel";
+    _key: string;
+  }>;
+  ongoing?: {
+    title: string;
+    empty: string;
+  };
+  completed?: {
+    title: string;
+    lead: string;
+  };
+  rex?: {
+    title: string;
+    lead: string;
+    logosLabel: string;
+    processTitle: string;
+    process: Array<string>;
+    origin: string;
+  };
+  closing?: {
+    title: string;
+    openSlot: string;
+    partner?: {
+      audience: string;
+      text: string;
+    };
+    student?: {
+      audience: string;
+      text: string;
+    };
+  };
+};
+
+export type TaskForce = {
+  _id: string;
+  _type: "taskForce";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  order: number;
+  name: string;
+  slug: Slug;
+  field: string;
+  description: string;
+  detailedDescription: string;
+  work?: {
+    partner: OrganizationReference;
+    items: Array<string>;
+  };
+  photo?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  photoCaption?: string;
+};
+
+export type ProjectsCopy = {
+  _id: string;
+  _type: "projectsCopy";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  hero?: {
+    eyebrow: string;
+    title: string;
+    lead: string;
+    figureLabel: string;
+  };
+  openSeat?: {
+    name: string;
+    field: string;
+  };
+  closing?: {
+    title: string;
+    lead: string;
+    student?: {
+      audience: string;
+      text: string;
+    };
+    partner?: {
+      audience: string;
+      text: string;
+      textWithoutPartner: string;
+    };
+  };
+};
+
+export type Department = {
+  _id: string;
+  _type: "department";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  order: number;
+  name: string;
+  description: string;
+  photo?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  photoCaption?: string;
+};
+
+export type JourneyStep = {
+  _id: string;
+  _type: "journeyStep";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  order: number;
+  stage: number;
+  number: string;
+  name: string;
+  description: string;
+  iconKey:
+    | "rocket"
+    | "brain"
+    | "handshake"
+    | "chart"
+    | "globe"
+    | "graduation-cap";
+  fromSemester: number;
+  span: "event" | "ongoing";
+  evidence?: {
+    person: PersonReference;
+    excerpt: string;
+  };
+};
+
+export type CommunityCopy = {
+  _id: string;
+  _type: "communityCopy";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  hero?: {
+    title: string;
+    lead: string;
+    photo: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      _type: "image";
+    };
+    photoCaption: string;
+  };
+  journey?: {
+    title: string;
+    lead: string;
+  };
+  departments?: {
+    title: string;
+    lead: string;
+  };
+  stories?: {
+    title: string;
+    lead: string;
+  };
+  closing?: {
+    title: string;
+    lead: string;
+    companiesReader: string;
+  };
+};
+
+export type QandaCopy = {
+  _id: string;
+  _type: "qandaCopy";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  heroTitle: string;
+  missionQuestion: string;
+  missionLead: string;
+  missionPassage: string;
+  closing?: {
+    title: string;
+    lead: string;
+    action: string;
+  };
+  forks?: {
+    students?: {
+      reader: string;
+      text: string;
+    };
+    companies?: {
+      reader: string;
+    };
+  };
+};
+
+export type PartnersCopy = {
+  _id: string;
+  _type: "partnersCopy";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  pitch?: string;
+  intents?: {
+    talent?: {
+      label?: string;
+      shortLabel?: string;
+      detail?: string;
+    };
+    hackathon?: {
+      label?: string;
+      shortLabel?: string;
+      detail?: string;
+    };
+    brand?: {
+      label?: string;
+      shortLabel?: string;
+      detail?: string;
+    };
+    research?: {
+      label?: string;
+      shortLabel?: string;
+      detail?: string;
+    };
+  };
+  durations?: {
+    oneOff?: {
+      label?: string;
+      detail?: string;
+    };
+    ongoing?: {
+      label?: string;
+      detail?: string;
+    };
+  };
+  recommendations?: {
+    longTerm?: {
+      name?: string;
+      description?: string;
+    };
+    hackathon?: {
+      name?: string;
+      description?: string;
+    };
+    talent?: {
+      name?: string;
+      description?: string;
+    };
+    brand?: {
+      name?: string;
+      description?: string;
+    };
+    research?: {
+      name?: string;
+      description?: string;
+    };
+  };
+  reasons?: Array<{
+    icon: "users" | "briefcase" | "network";
+    name?: string;
+    title?: string;
+    description?: string;
+    _type: "reason";
+    _key: string;
+  }>;
+  stats?: Array<{
+    value: string;
+    label?: string;
+    detail?: string;
+    _type: "stat";
+    _key: string;
+  }>;
+  pillars?: Array<{
+    key: "research" | "venture" | "hackathons";
+    title?: string;
+    metricLabel?: string;
+    description?: string;
+    image: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt: string;
+      _type: "image";
+    };
+    href: string;
+    _type: "pillar";
+    _key: string;
+  }>;
+  prompts?: {
+    intentQuestion?: string;
+    durationQuestion?: string;
+    resultQuestion?: string;
+    firstChoice?: string;
+    bookingTitle?: string;
+    bookingLead?: string;
+    bookingSlow?: string;
+  };
+  sections?: {
+    hero?: {
+      eyebrow?: string;
+      title?: Array<string>;
+      lead?: string;
+      contactLabel?: string;
+      fitLabel?: string;
+      caption?: Array<string>;
+    };
+    marquee?: {
+      label?: string;
+      link?: string;
+    };
+    finder?: {
+      eyebrow?: string;
+      title?: Array<string>;
+      lead?: string;
+      note?: string;
+    };
+    reasons?: {
+      title?: Array<string>;
+      lead?: string;
+      contact?: string;
+    };
+    proof?: {
+      title?: string;
+      caption?: string;
+    };
+    pillars?: {
+      title?: Array<string>;
+      lead?: string;
+    };
+    people?: {
+      title?: string;
+      lead?: Array<string>;
+      statLabel?: string;
+      tagline?: Array<string>;
+      alumniTitle?: string;
+    };
+    directory?: {
+      title?: Array<string>;
+      lead?: Array<string>;
+      supportersTitle?: string;
+    };
+    cases?: {
+      title?: Array<string>;
+      lead?: Array<string>;
+      contact?: string;
+    };
+    contact?: {
+      title?: Array<string>;
+      lead?: Array<string>;
+      emailLabel?: string;
+    };
+  };
+};
+
+export type VentureTrace = {
+  _id: string;
+  _type: "ventureTrace";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  venture: OrganizationReference;
+  person: PersonReference;
+  cohort: string;
+  now?: string;
+  milestones: Array<{
+    text: string;
+    source: string;
+    _type: "milestone";
+    _key: string;
+  }>;
+};
+
+export type CaseStudy = {
+  _id: string;
+  _type: "caseStudy";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  organization: OrganizationReference;
+  order: number;
+  metric: string;
+  label: string;
+  summary: string;
+  copy: string;
+  attribution?: string;
+  image: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt: string;
+    _type: "image";
+  };
+};
+
+export type Person = {
+  _id: string;
+  _type: "person";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  placement: "member-story" | "partner-profile" | "e-lab-testimonial";
+  key: string;
+  order: number;
+  name: string;
+  role: string;
+  context?: string;
+  quote?: string;
+  story?: string;
+  portrait: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  organization?: OrganizationReference;
+  roleAtOrganization?: boolean;
+};
+
+export type LogoList = {
+  _id: string;
+  _type: "logoList";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  surface:
+    | "alumni-destinations"
+    | "partner-marquee"
+    | "e-lab-ventures"
+    | "rex-institutions";
+  organizations: Array<
+    {
+      _key: string;
+    } & OrganizationReference
+  >;
+};
+
+export type Organization = {
+  _id: string;
+  _type: "organization";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name: string;
+  key: string;
+  shortName?: string;
+  href?: string;
+  logo?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    symbolOnly?: boolean;
+    aspectRatio?: number;
+    _type: "image";
+  };
+  logoOnDark?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    symbolOnly?: boolean;
+    aspectRatio?: number;
+    _type: "image";
+  };
+  partnerTier?: "gold" | "silver" | "bronze" | "supporter";
+  partnerFeatured?: boolean;
+  partnerCategory?:
+    | "Industry Partners"
+    | "Technical Partners"
+    | "Research Partners"
+    | "Venture Capital"
+    | "Initiatives";
+  legacyPartnerId?: string;
+};
+
+export type EventReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "event";
+};
+
+export type Campaign = {
+  _id: string;
+  _type: "campaign";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name: string;
+  startDate: string;
+  startTime?: string;
+  endDate?: string;
+  endTime?: string;
+  headerCta?: {
+    variant?: "member" | "partner" | "elab" | "notify";
+    label?: string;
+    notifyUrl?: string;
+    yieldsToRecruiting?: boolean;
+  };
+  featuredEvent?: EventReference;
+};
+
+export type ApplicationWindow = {
+  _id: string;
+  _type: "applicationWindow";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  program: "membership" | "e-lab";
+  roundName?: string;
+  switchedOn: boolean;
+  opens?: string;
+  deadlineDate: string;
+  deadlineTime: string;
+  applicationUrl: string;
+  milestones?: Array<{
+    key: "interviews" | "onboarding";
+    from: string;
+    to: string;
+    _type: "milestone";
+    _key: string;
+  }>;
+  nextWindowLabel?: string;
+};
+
+export type SiteSettings = {
+  _id: string;
+  _type: "siteSettings";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  organization: {
+    foundingYear: number;
+    activeMembers: number;
+    alumni: number;
+    majors: number;
+    universities: number;
+    nationalities: number;
+    acceptanceRate: number;
+    startedApplicationsPerBatch?: number;
+    linkedinAudience: number;
+  };
+  brandMission: string;
+  impact: {
+    publications: number;
+    publicationVenues: Array<string>;
+    hackathonParticipants: number;
+  };
+  community: {
+    makeathonSize: number;
+  };
+  contactEmails: {
+    general: string;
+    partners: string;
+    venture: string;
+    recruitment: string;
+  };
+  socialLinks: {
+    linkedin: string;
+    instagram: string;
+    github: string;
+    x: string;
+    youtube: string;
+    facebook: string;
+    tiktok: string;
+    slack: string;
+  };
+  partnershipBooking: {
+    bookingUrl: string;
+    bookingHost: string;
+  };
+  eLab: {
+    currentIteration: string;
+    programWeeks: number;
+    ventureFundingMillions: number;
+    selection: {
+      applications: number;
+      admitted: number;
+      midterm: number;
+      selectionDay: number;
+      finalPitch: number;
+    };
+    heroLogo: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      _type: "image";
+    };
+  };
+  footerTagline: string;
+  headerCtaFallback: "partner" | "member" | "elab";
+};
+
+export type Faq = {
+  _id: string;
+  _type: "faq";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  collection: "apply" | "e-lab" | "qanda";
+  order: number;
+  question: string;
+  answer: string;
+  anchor?: string;
+  points?: Array<string>;
+  spans?: Array<string>;
+  evidence?: {
+    text?: string;
+    label?: string;
+    href?: string;
+  };
 };
 
 export type Partner = {
@@ -47,22 +1057,6 @@ export type Partner = {
   featured?: boolean;
 };
 
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop";
-  top: number;
-  bottom: number;
-  left: number;
-  right: number;
-};
-
-export type SanityImageHotspot = {
-  _type: "sanity.imageHotspot";
-  x: number;
-  y: number;
-  height: number;
-  width: number;
-};
-
 export type Event = {
   _id: string;
   _type: "event";
@@ -76,6 +1070,12 @@ export type Event = {
   location?: string;
   city?: "Munich" | "Online";
   category?: "Hackathon" | "Speaker" | "Event" | "E-Lab";
+  coHosts?: Array<
+    {
+      _key: string;
+    } & OrganizationReference
+  >;
+  hosts?: Array<string>;
   poster?: {
     asset?: SanityImageAssetReference;
     media?: unknown;
@@ -101,6 +1101,11 @@ export type Research = {
   _updatedAt: string;
   _rev: string;
   title: string;
+  institutions?: Array<
+    {
+      _key: string;
+    } & OrganizationReference
+  >;
   desc?: string;
   status?: "ongoing" | "completed";
   publication?: string;
@@ -204,24 +1209,39 @@ export type SanityImageAsset = {
   source?: SanityAssetSourceData;
 };
 
-export type Geopoint = {
-  _type: "geopoint";
-  lat?: number;
-  lng?: number;
-  alt?: number;
-};
-
-export type Slug = {
-  _type: "slug";
-  current: string;
-  source?: string;
-};
-
 export type AllSanitySchemaTypes =
+  | EventsCopy
   | SanityImageAssetReference
-  | Partner
+  | ELabCopy
   | SanityImageCrop
   | SanityImageHotspot
+  | Milestone
+  | ApplyCopy
+  | PersonReference
+  | HomeCopy
+  | OrganizationReference
+  | LabSite
+  | Geopoint
+  | Slug
+  | ResearchCopy
+  | TaskForce
+  | ProjectsCopy
+  | Department
+  | JourneyStep
+  | CommunityCopy
+  | QandaCopy
+  | PartnersCopy
+  | VentureTrace
+  | CaseStudy
+  | Person
+  | LogoList
+  | Organization
+  | EventReference
+  | Campaign
+  | ApplicationWindow
+  | SiteSettings
+  | Faq
+  | Partner
   | Event
   | Research
   | SanityImagePaletteSwatch
@@ -230,13 +1250,1775 @@ export type AllSanitySchemaTypes =
   | SanityImageMetadata
   | SanityFileAsset
   | SanityAssetSourceData
-  | SanityImageAsset
-  | Geopoint
-  | Slug;
+  | SanityImageAsset;
+
+// Source: ../config/schedule-content.ts
+// Variable: APPLICATION_WINDOW_QUERY
+// Query: *[_type == "applicationWindow" && program == $program] | order(_updatedAt desc)[0]{  roundName,  switchedOn,  opens,  deadlineDate,  deadlineTime,  applicationUrl,  nextWindowLabel,  milestones[]{ key, from, to }}
+export type APPLICATION_WINDOW_QUERY_RESULT = {
+  roundName: string | null;
+  switchedOn: boolean;
+  opens: string | null;
+  deadlineDate: string;
+  deadlineTime: string;
+  applicationUrl: string;
+  nextWindowLabel: string | null;
+  milestones: Array<{
+    key: "interviews" | "onboarding";
+    from: string;
+    to: string;
+  }> | null;
+} | null;
+
+// Source: ../config/schedule-content.ts
+// Variable: CAMPAIGNS_QUERY
+// Query: *[_type == "campaign"] | order(startDate desc, _id asc){  "id": _id,  name,  startDate,  startTime,  endDate,  endTime,  headerCta{ variant, label, notifyUrl, yieldsToRecruiting },  "featuredEventId": featuredEvent._ref}
+export type CAMPAIGNS_QUERY_RESULT = Array<{
+  id: string;
+  name: string;
+  startDate: string;
+  startTime: string | null;
+  endDate: string | null;
+  endTime: string | null;
+  headerCta: {
+    variant: "elab" | "member" | "notify" | "partner" | null;
+    label: string | null;
+    notifyUrl: string | null;
+    yieldsToRecruiting: boolean | null;
+  } | null;
+  featuredEventId: string | null;
+}>;
+
+// Source: ../config/site-settings-content.ts
+// Variable: SITE_SETTINGS_QUERY
+// Query: *[_type == "siteSettings" && _id == "siteSettings"][0]{  organization{    foundingYear,    activeMembers,    alumni,    majors,    universities,    nationalities,    acceptanceRate,    startedApplicationsPerBatch,    linkedinAudience  },  brandMission,  impact{ publications, publicationVenues, hackathonParticipants },  community{ makeathonSize },  contactEmails{ general, partners, venture, recruitment },  socialLinks{ linkedin, instagram, github, x, youtube, facebook, tiktok, slack },  partnershipBooking{ bookingUrl, bookingHost },  eLab{    currentIteration,    programWeeks,    ventureFundingMillions,    selection{ applications, admitted, midterm, selectionDay, finalPitch },    "heroLogo": heroLogo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}  },  footerTagline,  headerCtaFallback}
+export type SITE_SETTINGS_QUERY_RESULT = {
+  organization: {
+    foundingYear: number;
+    activeMembers: number;
+    alumni: number;
+    majors: number;
+    universities: number;
+    nationalities: number;
+    acceptanceRate: number;
+    startedApplicationsPerBatch: number | null;
+    linkedinAudience: number;
+  };
+  brandMission: string;
+  impact: {
+    publications: number;
+    publicationVenues: Array<string>;
+    hackathonParticipants: number;
+  };
+  community: {
+    makeathonSize: number;
+  };
+  contactEmails: {
+    general: string;
+    partners: string;
+    venture: string;
+    recruitment: string;
+  };
+  socialLinks: {
+    linkedin: string;
+    instagram: string;
+    github: string;
+    x: string;
+    youtube: string;
+    facebook: string;
+    tiktok: string;
+    slack: string;
+  };
+  partnershipBooking: {
+    bookingUrl: string;
+    bookingHost: string;
+  };
+  eLab: {
+    currentIteration: string;
+    programWeeks: number;
+    ventureFundingMillions: number;
+    selection: {
+      applications: number;
+      admitted: number;
+      midterm: number;
+      selectionDay: number;
+      finalPitch: number;
+    };
+    heroLogo: {
+      src: string | null;
+      width: number | null;
+      height: number | null;
+      alt: string | null;
+      hotspot: {
+        x: number;
+        y: number;
+      } | null;
+      crop: {
+        top: number;
+        bottom: number;
+        left: number;
+        right: number;
+      } | null;
+    };
+  };
+  footerTagline: string;
+  headerCtaFallback: "elab" | "member" | "partner";
+} | null;
+
+// Source: ../features/apply/content.ts
+// Variable: APPLY_CONTENT_QUERY
+// Query: {  "copy": *[_id == "applyCopy"][0]{    heroTitle,    heroLead,    faqLabel,    datesTitle,    scope{      title,      inScopeTitle,      notRequiredTitle,      valuesTitle,      qualities[]{ title, text },      notRequired[]{ title, text },      values[]{ title, text },      "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}    },    tracks{      title,      lead,      offeringsTitle,      offerings[]{ title, text },      "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},      journeyLink    },    selection{ title, lead, stages[]{ title, when, text } },    history{ title, lead },    closing{ companiesReader }  },  "milestones": *[_type == "milestone"] | order(year asc, order asc){    year,    kind,    title,    detail  }}
+export type APPLY_CONTENT_QUERY_RESULT = {
+  copy:
+    | {
+        heroTitle: null;
+        heroLead: null;
+        faqLabel: null;
+        datesTitle: null;
+        scope: null;
+        tracks: null;
+        selection: null;
+        history: null;
+        closing: null;
+      }
+    | {
+        heroTitle: null;
+        heroLead: null;
+        faqLabel: null;
+        datesTitle: null;
+        scope: null;
+        tracks: null;
+        selection: null;
+        history: null;
+        closing: {
+          companiesReader: null;
+        } | null;
+      }
+    | {
+        heroTitle: string;
+        heroLead: null;
+        faqLabel: null;
+        datesTitle: null;
+        scope: null;
+        tracks: null;
+        selection: null;
+        history: null;
+        closing: {
+          companiesReader: null;
+        } | null;
+      }
+    | {
+        heroTitle: null;
+        heroLead: null;
+        faqLabel: null;
+        datesTitle: null;
+        scope: null;
+        tracks: null;
+        selection: null;
+        history: null;
+        closing: {
+          companiesReader: string;
+        } | null;
+      }
+    | {
+        heroTitle: string;
+        heroLead: string;
+        faqLabel: string;
+        datesTitle: string;
+        scope: {
+          title: string;
+          inScopeTitle: string;
+          notRequiredTitle: string;
+          valuesTitle: string;
+          qualities: Array<{
+            title: string;
+            text: string;
+          }>;
+          notRequired: Array<{
+            title: string;
+            text: string;
+          }>;
+          values: Array<{
+            title: string;
+            text: string;
+          }>;
+          photo: {
+            src: string | null;
+            width: number | null;
+            height: number | null;
+            alt: string | null;
+            hotspot: {
+              x: number;
+              y: number;
+            } | null;
+            crop: {
+              top: number;
+              bottom: number;
+              left: number;
+              right: number;
+            } | null;
+          };
+        } | null;
+        tracks: {
+          title: string;
+          lead: string;
+          offeringsTitle: string;
+          offerings: Array<{
+            title: string;
+            text: string;
+          }>;
+          photo: {
+            src: string | null;
+            width: number | null;
+            height: number | null;
+            alt: string | null;
+            hotspot: {
+              x: number;
+              y: number;
+            } | null;
+            crop: {
+              top: number;
+              bottom: number;
+              left: number;
+              right: number;
+            } | null;
+          };
+          journeyLink: string;
+        } | null;
+        selection: {
+          title: string;
+          lead: string;
+          stages: Array<{
+            title: string;
+            when: "after-deadline" | "deadline" | "interviews" | "onboarding";
+            text: string;
+          }>;
+        } | null;
+        history: {
+          title: string;
+          lead: string;
+        } | null;
+        closing: {
+          companiesReader: string;
+        } | null;
+      }
+    | null;
+  milestones: Array<{
+    year: number;
+    kind: "events" | "organization" | "programs" | "research";
+    title: string;
+    detail: string | null;
+  }>;
+};
+
+// Source: ../features/community/content.ts
+// Variable: COMMUNITY_COPY_QUERY
+// Query: *[_id == "communityCopy"][0]{  hero{ title, lead, "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}, photoCaption },  journey{ title, lead },  departments{ title, lead },  stories{ title, lead },  closing{ title, lead, companiesReader }}
+export type COMMUNITY_COPY_QUERY_RESULT =
+  | {
+      hero: null;
+      journey: null;
+      departments: null;
+      stories: null;
+      closing: null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+        photo: null;
+        photoCaption: null;
+      } | null;
+      journey: null;
+      departments: null;
+      stories: null;
+      closing: null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+        photo: null;
+        photoCaption: null;
+      } | null;
+      journey: null;
+      departments: null;
+      stories: null;
+      closing: {
+        title: string;
+        lead: null;
+        companiesReader: null;
+      } | null;
+    }
+  | {
+      hero: null;
+      journey: null;
+      departments: null;
+      stories: null;
+      closing: {
+        title: string;
+        lead: string;
+        companiesReader: null;
+      } | null;
+    }
+  | {
+      hero: {
+        title: null;
+        lead: null;
+        photo: null;
+        photoCaption: null;
+      } | null;
+      journey: null;
+      departments: null;
+      stories: null;
+      closing: {
+        title: string;
+        lead: string;
+        companiesReader: null;
+      } | null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+        photo: null;
+        photoCaption: null;
+      } | null;
+      journey: null;
+      departments: null;
+      stories: null;
+      closing: {
+        title: string;
+        lead: string;
+        companiesReader: null;
+      } | null;
+    }
+  | {
+      hero: null;
+      journey: null;
+      departments: null;
+      stories: null;
+      closing: {
+        title: null;
+        lead: null;
+        companiesReader: string;
+      } | null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+        photo: {
+          src: string | null;
+          width: number | null;
+          height: number | null;
+          alt: string | null;
+          hotspot: {
+            x: number;
+            y: number;
+          } | null;
+          crop: {
+            top: number;
+            bottom: number;
+            left: number;
+            right: number;
+          } | null;
+        };
+        photoCaption: string;
+      } | null;
+      journey: {
+        title: string;
+        lead: string;
+      } | null;
+      departments: {
+        title: string;
+        lead: string;
+      } | null;
+      stories: {
+        title: string;
+        lead: string;
+      } | null;
+      closing: {
+        title: string;
+        lead: string;
+        companiesReader: string;
+      } | null;
+    }
+  | null;
+
+// Source: ../features/e-lab/content.ts
+// Variable: ELAB_COPY_QUERY
+// Query: *[_id == "eLabCopy"][0]{  hero{ title, lead },  gates{    title,    lead,    scaleLabel,    stages[]{      _type,      figure,      name,      description,      approximate,      "id": key,      duration{ amount, unit },      "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},      photoCaption    }  },  field{ caption, inviteLabel },  ventures{ title, fundingNote, logosLabel },  voices{ title, lead, foundersLabel, investorsLabel },  closing{ title, followLabel, partnersReader, partnersText }}
+export type ELAB_COPY_QUERY_RESULT =
+  | {
+      hero: null;
+      gates: null;
+      field: null;
+      ventures: null;
+      voices: null;
+      closing: null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+      } | null;
+      gates: null;
+      field: null;
+      ventures: null;
+      voices: null;
+      closing: null;
+    }
+  | {
+      hero: null;
+      gates: null;
+      field: null;
+      ventures: null;
+      voices: null;
+      closing: {
+        title: null;
+        followLabel: null;
+        partnersReader: null;
+        partnersText: null;
+      } | null;
+    }
+  | {
+      hero: null;
+      gates: null;
+      field: null;
+      ventures: null;
+      voices: null;
+      closing: {
+        title: string;
+        followLabel: null;
+        partnersReader: null;
+        partnersText: null;
+      } | null;
+    }
+  | {
+      hero: {
+        title: null;
+        lead: null;
+      } | null;
+      gates: null;
+      field: null;
+      ventures: null;
+      voices: null;
+      closing: {
+        title: string;
+        followLabel: null;
+        partnersReader: null;
+        partnersText: null;
+      } | null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+      } | null;
+      gates: null;
+      field: null;
+      ventures: null;
+      voices: null;
+      closing: {
+        title: string;
+        followLabel: null;
+        partnersReader: null;
+        partnersText: null;
+      } | null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+      } | null;
+      gates: {
+        title: string;
+        lead: string;
+        scaleLabel: string;
+        stages: Array<
+          | {
+              _type: "gateStage";
+              figure:
+                | "admitted"
+                | "applications"
+                | "finalPitch"
+                | "midterm"
+                | "selectionDay";
+              name: string;
+              description: string;
+              approximate: boolean | null;
+              id: null;
+              duration: null;
+              photo: null;
+              photoCaption: null;
+            }
+          | {
+              _type: "phaseStage";
+              figure: null;
+              name: string;
+              description: string;
+              approximate: null;
+              id: string;
+              duration: {
+                amount: number;
+                unit: "days" | "weeks";
+              };
+              photo: {
+                src: string | null;
+                width: number | null;
+                height: number | null;
+                alt: string | null;
+                hotspot: {
+                  x: number;
+                  y: number;
+                } | null;
+                crop: {
+                  top: number;
+                  bottom: number;
+                  left: number;
+                  right: number;
+                } | null;
+              } | null;
+              photoCaption: string | null;
+            }
+        >;
+      } | null;
+      field: {
+        caption: string;
+        inviteLabel: string;
+      } | null;
+      ventures: {
+        title: string;
+        fundingNote: string;
+        logosLabel: string;
+      } | null;
+      voices: {
+        title: string;
+        lead: string;
+        foundersLabel: string;
+        investorsLabel: string;
+      } | null;
+      closing: {
+        title: string;
+        followLabel: string;
+        partnersReader: string;
+        partnersText: string;
+      } | null;
+    }
+  | null;
+
+// Source: ../features/e-lab/venture-content.ts
+// Variable: VENTURE_TRACE_QUERY
+// Query: *[_id == "ventureTrace"][0]{  "startupId": venture->key,  "testimonialId": person->key,  "founderContext": person->context,  cohort,  now,  "after": milestones[]{ text, source }}
+export type VENTURE_TRACE_QUERY_RESULT =
+  | {
+      startupId: string;
+      testimonialId: string;
+      founderContext: string | null;
+      cohort: string;
+      now: string | null;
+      after: Array<{
+        text: string;
+        source: string;
+      }>;
+    }
+  | {
+      startupId: null;
+      testimonialId: null;
+      founderContext: null;
+      cohort: null;
+      now: null;
+      after: null;
+    }
+  | {
+      startupId: null;
+      testimonialId: null;
+      founderContext: null;
+      cohort: null;
+      now: null;
+      after: Array<{
+        text: null;
+        source: null;
+      }> | null;
+    }
+  | null;
+
+// Source: ../features/events/content.ts
+// Variable: EVENTS_COPY_QUERY
+// Query: *[_id == "eventsCopy"][0]{  hero{ emptyLead },  upcoming{ title, empty },  past{ title, lead },  posters{ title, lead },  closing{ title, lead, studentsReader, nextUp, membership }}
+export type EVENTS_COPY_QUERY_RESULT =
+  | {
+      hero: null;
+      upcoming: null;
+      past: null;
+      posters: null;
+      closing: null;
+    }
+  | {
+      hero: {
+        emptyLead: null;
+      } | null;
+      upcoming: null;
+      past: null;
+      posters: null;
+      closing: null;
+    }
+  | {
+      hero: null;
+      upcoming: null;
+      past: null;
+      posters: null;
+      closing: {
+        title: null;
+        lead: null;
+        studentsReader: null;
+        nextUp: null;
+        membership: null;
+      } | null;
+    }
+  | {
+      hero: {
+        emptyLead: null;
+      } | null;
+      upcoming: null;
+      past: null;
+      posters: null;
+      closing: {
+        title: string;
+        lead: null;
+        studentsReader: null;
+        nextUp: null;
+        membership: null;
+      } | null;
+    }
+  | {
+      hero: null;
+      upcoming: null;
+      past: null;
+      posters: null;
+      closing: {
+        title: string;
+        lead: string;
+        studentsReader: null;
+        nextUp: null;
+        membership: null;
+      } | null;
+    }
+  | {
+      hero: {
+        emptyLead: null;
+      } | null;
+      upcoming: null;
+      past: null;
+      posters: null;
+      closing: {
+        title: string;
+        lead: string;
+        studentsReader: null;
+        nextUp: null;
+        membership: null;
+      } | null;
+    }
+  | {
+      hero: {
+        emptyLead: string;
+      } | null;
+      upcoming: {
+        title: string;
+        empty: string;
+      } | null;
+      past: {
+        title: string;
+        lead: string;
+      } | null;
+      posters: {
+        title: string;
+        lead: string;
+      } | null;
+      closing: {
+        title: string;
+        lead: string;
+        studentsReader: string;
+        nextUp: string;
+        membership: string;
+      } | null;
+    }
+  | null;
+
+// Source: ../features/home/content.ts
+// Variable: HOME_COPY_QUERY
+// Query: *[_id == "homeCopy"][0]{  hero{    title,    lead,    partnersLabel,    "photos": photos[]{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}  },  mission{ statement, body },  ledger[]{ key, label, note },  programs{    title,    lead,    items[]{      "id": key,      title,      description,      href,      "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}    }  },  room{    title,    lead,    "photos": photos[]{ "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}, caption }  },  join{    title,    lead,    stepsTitle,    steps[]{ title, dates },    quote{ "name": person->name, excerpt }  },  partners{ title, lead, moreLabel, "quote": quote->key }}
+export type HOME_COPY_QUERY_RESULT =
+  | {
+      hero: null;
+      mission: null;
+      ledger: null;
+      programs: null;
+      room: null;
+      join: null;
+      partners: null;
+    }
+  | {
+      hero: {
+        title: null;
+        lead: null;
+        partnersLabel: null;
+        photos: null;
+      } | null;
+      mission: null;
+      ledger: null;
+      programs: null;
+      room: null;
+      join: null;
+      partners: null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+        partnersLabel: null;
+        photos: null;
+      } | null;
+      mission: null;
+      ledger: null;
+      programs: null;
+      room: null;
+      join: null;
+      partners: null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+        partnersLabel: string;
+        photos: Array<{
+          src: string | null;
+          width: number | null;
+          height: number | null;
+          alt: string | null;
+          hotspot: {
+            x: number;
+            y: number;
+          } | null;
+          crop: {
+            top: number;
+            bottom: number;
+            left: number;
+            right: number;
+          } | null;
+        }>;
+      } | null;
+      mission: {
+        statement: string;
+        body: string;
+      } | null;
+      ledger: Array<{
+        key:
+          | "founded"
+          | "funding"
+          | "makeathon"
+          | "members"
+          | "nationalities"
+          | "publications";
+        label: string;
+        note: string;
+      }>;
+      programs: {
+        title: string;
+        lead: string;
+        items: Array<{
+          id: string;
+          title: string;
+          description: string;
+          href: string;
+          image: {
+            src: string | null;
+            width: number | null;
+            height: number | null;
+            alt: string | null;
+            hotspot: {
+              x: number;
+              y: number;
+            } | null;
+            crop: {
+              top: number;
+              bottom: number;
+              left: number;
+              right: number;
+            } | null;
+          };
+        }>;
+      } | null;
+      room: {
+        title: string;
+        lead: string;
+        photos: Array<{
+          image: {
+            src: string | null;
+            width: number | null;
+            height: number | null;
+            alt: string | null;
+            hotspot: {
+              x: number;
+              y: number;
+            } | null;
+            crop: {
+              top: number;
+              bottom: number;
+              left: number;
+              right: number;
+            } | null;
+          };
+          caption: string;
+        }>;
+      } | null;
+      join: {
+        title: string;
+        lead: string;
+        stepsTitle: string;
+        steps: Array<{
+          title: string;
+          dates: string;
+        }>;
+        quote: {
+          name: string;
+          excerpt: string;
+        } | null;
+      } | null;
+      partners: {
+        title: string;
+        lead: string;
+        moreLabel: string;
+        quote: string;
+      } | null;
+    }
+  | null;
+
+// Source: ../features/partners/content.ts
+// Variable: PARTNERS_COPY_QUERY
+// Query: *[_id == "partnersCopy"][0]{  pitch,  intents{    talent{ label, shortLabel, detail },    hackathon{ label, shortLabel, detail },    brand{ label, shortLabel, detail },    research{ label, shortLabel, detail }  },  durations{    oneOff{ label, detail },    ongoing{ label, detail }  },  recommendations{    longTerm{ name, description },    hackathon{ name, description },    talent{ name, description },    brand{ name, description },    research{ name, description }  },  reasons[]{ icon, name, title, description },  stats[]{ value, label, detail },  pillars[]{    key,    title,    metricLabel,    description,    "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},    href  },  prompts{    intentQuestion,    durationQuestion,    resultQuestion,    firstChoice,    bookingTitle,    bookingLead,    bookingSlow  },  sections{    hero{ eyebrow, title, lead, contactLabel, fitLabel, caption },    marquee{ label, link },    finder{ eyebrow, title, lead, note },    reasons{ title, lead, contact },    proof{ title, caption },    pillars{ title, lead },    people{ title, lead, statLabel, tagline, alumniTitle },    directory{ title, lead, supportersTitle },    cases{ title, lead, contact },    contact{ title, lead, emailLabel }  }}
+export type PARTNERS_COPY_QUERY_RESULT =
+  | {
+      pitch: null;
+      intents: null;
+      durations: null;
+      recommendations: null;
+      reasons: null;
+      stats: null;
+      pillars: null;
+      prompts: null;
+      sections: null;
+    }
+  | {
+      pitch: string | null;
+      intents: {
+        talent: {
+          label: string | null;
+          shortLabel: string | null;
+          detail: string | null;
+        } | null;
+        hackathon: {
+          label: string | null;
+          shortLabel: string | null;
+          detail: string | null;
+        } | null;
+        brand: {
+          label: string | null;
+          shortLabel: string | null;
+          detail: string | null;
+        } | null;
+        research: {
+          label: string | null;
+          shortLabel: string | null;
+          detail: string | null;
+        } | null;
+      } | null;
+      durations: {
+        oneOff: {
+          label: string | null;
+          detail: string | null;
+        } | null;
+        ongoing: {
+          label: string | null;
+          detail: string | null;
+        } | null;
+      } | null;
+      recommendations: {
+        longTerm: {
+          name: string | null;
+          description: string | null;
+        } | null;
+        hackathon: {
+          name: string | null;
+          description: string | null;
+        } | null;
+        talent: {
+          name: string | null;
+          description: string | null;
+        } | null;
+        brand: {
+          name: string | null;
+          description: string | null;
+        } | null;
+        research: {
+          name: string | null;
+          description: string | null;
+        } | null;
+      } | null;
+      reasons: Array<{
+        icon: "briefcase" | "network" | "users";
+        name: string | null;
+        title: string | null;
+        description: string | null;
+      }> | null;
+      stats: Array<{
+        value: string;
+        label: string | null;
+        detail: string | null;
+      }> | null;
+      pillars: Array<{
+        key: "hackathons" | "research" | "venture";
+        title: string | null;
+        metricLabel: string | null;
+        description: string | null;
+        image: {
+          src: string | null;
+          width: number | null;
+          height: number | null;
+          alt: string;
+          hotspot: {
+            x: number;
+            y: number;
+          } | null;
+          crop: {
+            top: number;
+            bottom: number;
+            left: number;
+            right: number;
+          } | null;
+        };
+        href: string;
+      }> | null;
+      prompts: {
+        intentQuestion: string | null;
+        durationQuestion: string | null;
+        resultQuestion: string | null;
+        firstChoice: string | null;
+        bookingTitle: string | null;
+        bookingLead: string | null;
+        bookingSlow: string | null;
+      } | null;
+      sections: {
+        hero: {
+          eyebrow: string | null;
+          title: Array<string> | null;
+          lead: string | null;
+          contactLabel: string | null;
+          fitLabel: string | null;
+          caption: Array<string> | null;
+        } | null;
+        marquee: {
+          label: string | null;
+          link: string | null;
+        } | null;
+        finder: {
+          eyebrow: string | null;
+          title: Array<string> | null;
+          lead: string | null;
+          note: string | null;
+        } | null;
+        reasons: {
+          title: Array<string> | null;
+          lead: string | null;
+          contact: string | null;
+        } | null;
+        proof: {
+          title: string | null;
+          caption: string | null;
+        } | null;
+        pillars: {
+          title: Array<string> | null;
+          lead: string | null;
+        } | null;
+        people: {
+          title: string | null;
+          lead: Array<string> | null;
+          statLabel: string | null;
+          tagline: Array<string> | null;
+          alumniTitle: string | null;
+        } | null;
+        directory: {
+          title: Array<string> | null;
+          lead: Array<string> | null;
+          supportersTitle: string | null;
+        } | null;
+        cases: {
+          title: Array<string> | null;
+          lead: Array<string> | null;
+          contact: string | null;
+        } | null;
+        contact: {
+          title: Array<string> | null;
+          lead: Array<string> | null;
+          emailLabel: string | null;
+        } | null;
+      } | null;
+    }
+  | null;
+
+// Source: ../features/partners/content.ts
+// Variable: PARTNER_CASE_STUDIES_QUERY
+// Query: *[_type == "caseStudy"] | order(order asc){  "organization": organization->key,  "name": organization->name,  metric,  label,  summary,  copy,  attribution,  "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}}
+export type PARTNER_CASE_STUDIES_QUERY_RESULT = Array<{
+  organization: string;
+  name: string;
+  metric: string;
+  label: string;
+  summary: string;
+  copy: string;
+  attribution: string | null;
+  image: {
+    src: string | null;
+    width: number | null;
+    height: number | null;
+    alt: string;
+    hotspot: {
+      x: number;
+      y: number;
+    } | null;
+    crop: {
+      top: number;
+      bottom: number;
+      left: number;
+      right: number;
+    } | null;
+  };
+}>;
+
+// Source: ../features/projects/content.ts
+// Variable: PROJECTS_CONTENT_QUERY
+// Query: {  "copy": *[_id == "projectsCopy"][0]{    hero{ eyebrow, title, lead, figureLabel },    openSeat{ name, field },    closing{      title,      lead,      student{ audience, text },      partner{ audience, text, textWithoutPartner }    }  },  "taskForces": *[_type == "taskForce"] | order(order asc){    "slug": slug.current,    name,    field,    description,    detailedDescription,    work{ "partner": partner->name, items },    "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},    photoCaption  }}
+export type PROJECTS_CONTENT_QUERY_RESULT = {
+  copy:
+    | {
+        hero: null;
+        openSeat: null;
+        closing: null;
+      }
+    | {
+        hero: {
+          eyebrow: null;
+          title: string;
+          lead: string;
+          figureLabel: null;
+        } | null;
+        openSeat: null;
+        closing: null;
+      }
+    | {
+        hero: null;
+        openSeat: null;
+        closing: {
+          title: null;
+          lead: null;
+          student: null;
+          partner: null;
+        } | null;
+      }
+    | {
+        hero: {
+          eyebrow: null;
+          title: string;
+          lead: string;
+          figureLabel: null;
+        } | null;
+        openSeat: null;
+        closing: {
+          title: string;
+          lead: null;
+          student: null;
+          partner: null;
+        } | null;
+      }
+    | {
+        hero: {
+          eyebrow: null;
+          title: string;
+          lead: string;
+          figureLabel: null;
+        } | null;
+        openSeat: null;
+        closing: {
+          title: string;
+          lead: null;
+          student: {
+            audience: string;
+            text: string;
+          } | null;
+          partner: {
+            audience: string;
+            text: string;
+            textWithoutPartner: null;
+          } | null;
+        } | null;
+      }
+    | {
+        hero: null;
+        openSeat: null;
+        closing: {
+          title: string;
+          lead: string;
+          student: null;
+          partner: null;
+        } | null;
+      }
+    | {
+        hero: {
+          eyebrow: null;
+          title: null;
+          lead: null;
+          figureLabel: null;
+        } | null;
+        openSeat: null;
+        closing: {
+          title: string;
+          lead: string;
+          student: null;
+          partner: null;
+        } | null;
+      }
+    | {
+        hero: {
+          eyebrow: null;
+          title: string;
+          lead: string;
+          figureLabel: null;
+        } | null;
+        openSeat: null;
+        closing: {
+          title: string;
+          lead: string;
+          student: null;
+          partner: null;
+        } | null;
+      }
+    | {
+        hero: {
+          eyebrow: string;
+          title: string;
+          lead: string;
+          figureLabel: string;
+        } | null;
+        openSeat: {
+          name: string;
+          field: string;
+        } | null;
+        closing: {
+          title: string;
+          lead: string;
+          student: {
+            audience: string;
+            text: string;
+          } | null;
+          partner: {
+            audience: string;
+            text: string;
+            textWithoutPartner: string;
+          } | null;
+        } | null;
+      }
+    | null;
+  taskForces: Array<{
+    slug: string;
+    name: string;
+    field: string;
+    description: string;
+    detailedDescription: string;
+    work: {
+      partner: string;
+      items: Array<string>;
+    } | null;
+    photo: {
+      src: string | null;
+      width: number | null;
+      height: number | null;
+      alt: string | null;
+      hotspot: {
+        x: number;
+        y: number;
+      } | null;
+      crop: {
+        top: number;
+        bottom: number;
+        left: number;
+        right: number;
+      } | null;
+    } | null;
+    photoCaption: string | null;
+  }>;
+};
+
+// Source: ../features/qanda/content.ts
+// Variable: QANDA_CONTENT_QUERY
+// Query: {  "copy": *[_id == "qandaCopy"][0]{    heroTitle,    missionQuestion,    missionLead,    missionPassage,    closing{ title, lead, action },    forks{ students{ reader, text }, companies{ reader } }  },  "faqs": *[_type == "faq" && collection == "qanda"] | order(order asc){    "id": anchor,    question,    answer,    points,    spans,    evidence{ text, label, href }  }}
+export type QANDA_CONTENT_QUERY_RESULT = {
+  copy:
+    | {
+        heroTitle: null;
+        missionQuestion: null;
+        missionLead: null;
+        missionPassage: null;
+        closing: null;
+        forks: null;
+      }
+    | {
+        heroTitle: string;
+        missionQuestion: null;
+        missionLead: null;
+        missionPassage: null;
+        closing: {
+          title: null;
+          lead: null;
+          action: null;
+        } | null;
+        forks: null;
+      }
+    | {
+        heroTitle: null;
+        missionQuestion: null;
+        missionLead: null;
+        missionPassage: null;
+        closing: {
+          title: string;
+          lead: null;
+          action: null;
+        } | null;
+        forks: null;
+      }
+    | {
+        heroTitle: null;
+        missionQuestion: null;
+        missionLead: null;
+        missionPassage: null;
+        closing: {
+          title: string;
+          lead: string;
+          action: null;
+        } | null;
+        forks: null;
+      }
+    | {
+        heroTitle: string;
+        missionQuestion: string;
+        missionLead: string;
+        missionPassage: string;
+        closing: {
+          title: string;
+          lead: string;
+          action: string;
+        } | null;
+        forks: {
+          students: {
+            reader: string;
+            text: string;
+          } | null;
+          companies: {
+            reader: string;
+          } | null;
+        } | null;
+      }
+    | null;
+  faqs: Array<{
+    id: string | null;
+    question: string;
+    answer: string;
+    points: Array<string> | null;
+    spans: Array<string> | null;
+    evidence: {
+      text: string | null;
+      label: string | null;
+      href: string | null;
+    } | null;
+  }>;
+};
+
+// Source: ../features/research/content.ts
+// Variable: RESEARCH_COPY_QUERY
+// Query: *[_id == "researchCopy"][0]{  hero{ title, lead },  partnersLabel,  abstract{ label, statement, body, runningOne, runningMany },  "figurePanels": figurePanels[]{ "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}, caption },  ongoing{ title, empty },  completed{ title, lead },  rex{ title, lead, logosLabel, processTitle, process, origin },  closing{    title,    openSlot,    partner{ audience, text },    student{ audience, text }  }}
+export type RESEARCH_COPY_QUERY_RESULT =
+  | {
+      hero: null;
+      partnersLabel: null;
+      abstract: null;
+      figurePanels: null;
+      ongoing: null;
+      completed: null;
+      rex: null;
+      closing: null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+      } | null;
+      partnersLabel: null;
+      abstract: null;
+      figurePanels: null;
+      ongoing: null;
+      completed: null;
+      rex: null;
+      closing: null;
+    }
+  | {
+      hero: null;
+      partnersLabel: null;
+      abstract: null;
+      figurePanels: null;
+      ongoing: null;
+      completed: null;
+      rex: null;
+      closing: {
+        title: null;
+        openSlot: null;
+        partner: null;
+        student: null;
+      } | null;
+    }
+  | {
+      hero: null;
+      partnersLabel: null;
+      abstract: null;
+      figurePanels: null;
+      ongoing: null;
+      completed: null;
+      rex: null;
+      closing: {
+        title: string;
+        openSlot: null;
+        partner: null;
+        student: null;
+      } | null;
+    }
+  | {
+      hero: {
+        title: null;
+        lead: null;
+      } | null;
+      partnersLabel: null;
+      abstract: null;
+      figurePanels: null;
+      ongoing: null;
+      completed: null;
+      rex: null;
+      closing: {
+        title: string;
+        openSlot: null;
+        partner: null;
+        student: null;
+      } | null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+      } | null;
+      partnersLabel: null;
+      abstract: null;
+      figurePanels: null;
+      ongoing: null;
+      completed: null;
+      rex: null;
+      closing: {
+        title: string;
+        openSlot: null;
+        partner: null;
+        student: null;
+      } | null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+      } | null;
+      partnersLabel: null;
+      abstract: null;
+      figurePanels: null;
+      ongoing: null;
+      completed: null;
+      rex: null;
+      closing: {
+        title: string;
+        openSlot: null;
+        partner: {
+          audience: string;
+          text: string;
+        } | null;
+        student: {
+          audience: string;
+          text: string;
+        } | null;
+      } | null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+      } | null;
+      partnersLabel: string;
+      abstract: {
+        label: string;
+        statement: string;
+        body: string;
+        runningOne: string;
+        runningMany: string;
+      } | null;
+      figurePanels: Array<{
+        image: {
+          src: string | null;
+          width: number | null;
+          height: number | null;
+          alt: string | null;
+          hotspot: {
+            x: number;
+            y: number;
+          } | null;
+          crop: {
+            top: number;
+            bottom: number;
+            left: number;
+            right: number;
+          } | null;
+        };
+        caption: string;
+      }>;
+      ongoing: {
+        title: string;
+        empty: string;
+      } | null;
+      completed: {
+        title: string;
+        lead: string;
+      } | null;
+      rex: {
+        title: string;
+        lead: string;
+        logosLabel: string;
+        processTitle: string;
+        process: Array<string>;
+        origin: string;
+      } | null;
+      closing: {
+        title: string;
+        openSlot: string;
+        partner: {
+          audience: string;
+          text: string;
+        } | null;
+        student: {
+          audience: string;
+          text: string;
+        } | null;
+      } | null;
+    }
+  | null;
+
+// Source: ../features/research/content.ts
+// Variable: LAB_SITES_QUERY
+// Query: *[_type == "labSite"] | order(order asc){  "id": key.current,  city,  "location": [location.lat, location.lng],  home,  "organizations": organizations[]->{ key, name, shortName }}
+export type LAB_SITES_QUERY_RESULT = Array<{
+  id: string;
+  city: string;
+  location: Array<number | null>;
+  home: boolean | null;
+  organizations: Array<{
+    key: string;
+    name: string;
+    shortName: string | null;
+  }>;
+}>;
+
+// Source: ../lib/community-content.ts
+// Variable: JOURNEY_QUERY
+// Query: *[_type == "journeyStep"] | order(order asc){  "step": number,  name,  description,  iconKey,  fromSemester,  span,  stage,  evidence{ "name": person->name, excerpt }}
+export type JOURNEY_QUERY_RESULT = Array<{
+  step: string;
+  name: string;
+  description: string;
+  iconKey:
+    | "brain"
+    | "chart"
+    | "globe"
+    | "graduation-cap"
+    | "handshake"
+    | "rocket";
+  fromSemester: number;
+  span: "event" | "ongoing";
+  stage: number;
+  evidence: {
+    name: string;
+    excerpt: string;
+  } | null;
+}>;
+
+// Source: ../lib/community-content.ts
+// Variable: DEPARTMENTS_QUERY
+// Query: *[_type == "department"] | order(order asc){  name,  description,  "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  photoCaption}
+export type DEPARTMENTS_QUERY_RESULT = Array<{
+  name: string;
+  description: string;
+  photo: {
+    src: string | null;
+    width: number | null;
+    height: number | null;
+    alt: string | null;
+    hotspot: {
+      x: number;
+      y: number;
+    } | null;
+    crop: {
+      top: number;
+      bottom: number;
+      left: number;
+      right: number;
+    } | null;
+  } | null;
+  photoCaption: string | null;
+}>;
+
+// Source: ../lib/faq-content.ts
+// Variable: FAQ_QUERY
+// Query: *[_type == "faq" && collection == $collection] | order(order asc){  question,  answer}
+export type FAQ_QUERY_RESULT = Array<{
+  question: string;
+  answer: string;
+}>;
+
+// Source: ../lib/organization-content.ts
+// Variable: LOGO_LISTS_QUERY
+// Query: *[_type == "logoList" && _id in $ids]{  surface,  "organizations": organizations[]->{  key,  name,  shortName,  href,  "logo": logo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "logoSymbolOnly": logo.symbolOnly,  "logoAspectRatio": logo.aspectRatio,  "logoOnDark": logoOnDark{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "logoOnDarkSymbolOnly": logoOnDark.symbolOnly,  "logoOnDarkAspectRatio": logoOnDark.aspectRatio,  partnerTier,  partnerCategory,  partnerFeatured}}
+export type LOGO_LISTS_QUERY_RESULT = Array<{
+  surface:
+    | "alumni-destinations"
+    | "e-lab-ventures"
+    | "partner-marquee"
+    | "rex-institutions";
+  organizations: Array<{
+    key: string;
+    name: string;
+    shortName: string | null;
+    href: string | null;
+    logo: {
+      src: string | null;
+      width: number | null;
+      height: number | null;
+      alt: string | null;
+      hotspot: {
+        x: number;
+        y: number;
+      } | null;
+      crop: {
+        top: number;
+        bottom: number;
+        left: number;
+        right: number;
+      } | null;
+    } | null;
+    logoSymbolOnly: boolean | null;
+    logoAspectRatio: number | null;
+    logoOnDark: {
+      src: string | null;
+      width: number | null;
+      height: number | null;
+      alt: string | null;
+      hotspot: {
+        x: number;
+        y: number;
+      } | null;
+      crop: {
+        top: number;
+        bottom: number;
+        left: number;
+        right: number;
+      } | null;
+    } | null;
+    logoOnDarkSymbolOnly: boolean | null;
+    logoOnDarkAspectRatio: number | null;
+    partnerTier: "bronze" | "gold" | "silver" | "supporter" | null;
+    partnerCategory:
+      | "Industry Partners"
+      | "Initiatives"
+      | "Research Partners"
+      | "Technical Partners"
+      | "Venture Capital"
+      | null;
+    partnerFeatured: boolean | null;
+  }>;
+}>;
+
+// Source: ../lib/organization-content.ts
+// Variable: PARTNER_ORGANIZATIONS_QUERY
+// Query: *[_type == "organization" && defined(partnerTier)] | order(key asc){  key,  name,  shortName,  href,  "logo": logo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "logoSymbolOnly": logo.symbolOnly,  "logoAspectRatio": logo.aspectRatio,  "logoOnDark": logoOnDark{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "logoOnDarkSymbolOnly": logoOnDark.symbolOnly,  "logoOnDarkAspectRatio": logoOnDark.aspectRatio,  partnerTier,  partnerCategory,  partnerFeatured}
+export type PARTNER_ORGANIZATIONS_QUERY_RESULT = Array<{
+  key: string;
+  name: string;
+  shortName: string | null;
+  href: string | null;
+  logo: {
+    src: string | null;
+    width: number | null;
+    height: number | null;
+    alt: string | null;
+    hotspot: {
+      x: number;
+      y: number;
+    } | null;
+    crop: {
+      top: number;
+      bottom: number;
+      left: number;
+      right: number;
+    } | null;
+  } | null;
+  logoSymbolOnly: boolean | null;
+  logoAspectRatio: number | null;
+  logoOnDark: {
+    src: string | null;
+    width: number | null;
+    height: number | null;
+    alt: string | null;
+    hotspot: {
+      x: number;
+      y: number;
+    } | null;
+    crop: {
+      top: number;
+      bottom: number;
+      left: number;
+      right: number;
+    } | null;
+  } | null;
+  logoOnDarkSymbolOnly: boolean | null;
+  logoOnDarkAspectRatio: number | null;
+  partnerTier: "bronze" | "gold" | "silver" | "supporter";
+  partnerCategory:
+    | "Industry Partners"
+    | "Initiatives"
+    | "Research Partners"
+    | "Technical Partners"
+    | "Venture Capital"
+    | null;
+  partnerFeatured: boolean | null;
+}>;
+
+// Source: ../lib/organization-content.ts
+// Variable: ORGANIZATIONS_BY_KEY_QUERY
+// Query: *[_type == "organization" && key in $keys]{  key,  name,  shortName,  href,  "logo": logo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "logoSymbolOnly": logo.symbolOnly,  "logoAspectRatio": logo.aspectRatio,  "logoOnDark": logoOnDark{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "logoOnDarkSymbolOnly": logoOnDark.symbolOnly,  "logoOnDarkAspectRatio": logoOnDark.aspectRatio,  partnerTier,  partnerCategory,  partnerFeatured}
+export type ORGANIZATIONS_BY_KEY_QUERY_RESULT = Array<{
+  key: string;
+  name: string;
+  shortName: string | null;
+  href: string | null;
+  logo: {
+    src: string | null;
+    width: number | null;
+    height: number | null;
+    alt: string | null;
+    hotspot: {
+      x: number;
+      y: number;
+    } | null;
+    crop: {
+      top: number;
+      bottom: number;
+      left: number;
+      right: number;
+    } | null;
+  } | null;
+  logoSymbolOnly: boolean | null;
+  logoAspectRatio: number | null;
+  logoOnDark: {
+    src: string | null;
+    width: number | null;
+    height: number | null;
+    alt: string | null;
+    hotspot: {
+      x: number;
+      y: number;
+    } | null;
+    crop: {
+      top: number;
+      bottom: number;
+      left: number;
+      right: number;
+    } | null;
+  } | null;
+  logoOnDarkSymbolOnly: boolean | null;
+  logoOnDarkAspectRatio: number | null;
+  partnerTier: "bronze" | "gold" | "silver" | "supporter" | null;
+  partnerCategory:
+    | "Industry Partners"
+    | "Initiatives"
+    | "Research Partners"
+    | "Technical Partners"
+    | "Venture Capital"
+    | null;
+  partnerFeatured: boolean | null;
+}>;
+
+// Source: ../lib/person-content.ts
+// Variable: PEOPLE_QUERY
+// Query: *[_type == "person" && placement == $placement] | order(order asc){  key,  name,  role,  context,  quote,  story,  "portrait": portrait{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "organization": organization->{    key,    name,    shortName,    "logo": logo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}  },  roleAtOrganization}
+export type PEOPLE_QUERY_RESULT = Array<{
+  key: string;
+  name: string;
+  role: string;
+  context: string | null;
+  quote: string | null;
+  story: string | null;
+  portrait: {
+    src: string | null;
+    width: number | null;
+    height: number | null;
+    alt: string | null;
+    hotspot: {
+      x: number;
+      y: number;
+    } | null;
+    crop: {
+      top: number;
+      bottom: number;
+      left: number;
+      right: number;
+    } | null;
+  };
+  organization: {
+    key: string;
+    name: string;
+    shortName: string | null;
+    logo: {
+      src: string | null;
+      width: number | null;
+      height: number | null;
+      alt: string | null;
+      hotspot: {
+        x: number;
+        y: number;
+      } | null;
+      crop: {
+        top: number;
+        bottom: number;
+        left: number;
+        right: number;
+      } | null;
+    } | null;
+  } | null;
+  roleAtOrganization: boolean | null;
+}>;
 
 // Source: ../lib/sanity-queries.ts
 // Variable: EVENTS_QUERY
-// Query: *[_type == "event"]{  "id": _id,  title,  "description": coalesce(desc, ""),  event_date,  location,  city,  category,  "poster": poster.asset->url,  "images": array::compact([poster.asset->url, img.asset->url]),  sign_up}
+// Query: *[_type == "event"]{  "id": _id,  title,  "description": coalesce(desc, ""),  event_date,  location,  city,  category,  "hosts": coalesce(hosts, []),  "coHosts": coHosts[]->{ key, name },  "poster": poster.asset->url,  "images": array::compact([poster.asset->url, img.asset->url]),  sign_up}
 export type EVENTS_QUERY_RESULT = Array<{
   id: string;
   title: string;
@@ -245,6 +3027,11 @@ export type EVENTS_QUERY_RESULT = Array<{
   location: string | null;
   city: "Munich" | "Online" | null;
   category: "E-Lab" | "Event" | "Hackathon" | "Speaker" | null;
+  hosts: Array<string> | Array<never>;
+  coHosts: Array<{
+    key: string;
+    name: string;
+  }> | null;
   poster: string | null;
   images: Array<string>;
   sign_up: string | null;
@@ -252,47 +3039,19 @@ export type EVENTS_QUERY_RESULT = Array<{
 
 // Source: ../lib/sanity-queries.ts
 // Variable: RESEARCH_QUERY
-// Query: *[_type == "research"]{  "id": _id,  title,  "description": coalesce(desc, ""),  status,  publication,  "keywords": coalesce(keywords, []),  "image": img.asset->url}
+// Query: *[_type == "research"]{  "id": _id,  title,  "institutions": institutions[]->{ key, name },  "description": coalesce(desc, ""),  status,  publication,  "keywords": coalesce(keywords, []),  "image": img.asset->url}
 export type RESEARCH_QUERY_RESULT = Array<{
   id: string;
   title: string;
+  institutions: Array<{
+    key: string;
+    name: string;
+  }> | null;
   description: string | "";
   status: "completed" | "ongoing" | null;
   publication: string | null;
   keywords: Array<string> | Array<never>;
   image: string | null;
-}>;
-
-// Source: ../lib/sanity-queries.ts
-// Variable: PARTNERS_QUERY
-// Query: *[_type == "partner"]{  "id": _id,  name,  link,  "image": image.asset->url,  category,  tier,  featured}
-export type PARTNERS_QUERY_RESULT = Array<{
-  id: string;
-  name: string;
-  link: string | null;
-  image: string | null;
-  category:
-    | "Industry Partners"
-    | "Initiatives"
-    | "Research Partners"
-    | "Technical Partners"
-    | "Venture Capital"
-    | null;
-  tier: "bronze" | "gold" | "silver" | "supporter" | null;
-  featured: boolean | null;
-}>;
-
-// Source: ../lib/sanity-queries.ts
-// Variable: RESEARCH_PARTNERS_QUERY
-// Query: *[_type == "partner" && category == "Research Partners"]{  "id": _id,  name,  link,  "image": image.asset->url,  category,  tier,  featured}
-export type RESEARCH_PARTNERS_QUERY_RESULT = Array<{
-  id: string;
-  name: string;
-  link: string | null;
-  image: string | null;
-  category: "Research Partners";
-  tier: "bronze" | "gold" | "silver" | "supporter" | null;
-  featured: boolean | null;
 }>;
 
 // Source: ../lib/sanity-queries.ts
@@ -341,5 +3100,24 @@ export type PUBLIC_PARTNERS_QUERY_RESULT = Array<{
     | "Venture Capital"
     | null;
   tier: "bronze" | "gold" | "silver" | "supporter" | null;
+  featured: boolean | null;
+}>;
+
+// Source: ../lib/sanity-queries.ts
+// Variable: PUBLIC_PARTNER_ORGANIZATIONS_QUERY
+// Query: *[_type == "organization" && defined(partnerTier)]{  "id": coalesce(legacyPartnerId, _id),  name,  "link": href,  "image": logo.asset->url,  "category": partnerCategory,  "tier": partnerTier,  "featured": partnerFeatured}
+export type PUBLIC_PARTNER_ORGANIZATIONS_QUERY_RESULT = Array<{
+  id: string;
+  name: string;
+  link: string | null;
+  image: string | null;
+  category:
+    | "Industry Partners"
+    | "Initiatives"
+    | "Research Partners"
+    | "Technical Partners"
+    | "Venture Capital"
+    | null;
+  tier: "bronze" | "gold" | "silver" | "supporter";
   featured: boolean | null;
 }>;

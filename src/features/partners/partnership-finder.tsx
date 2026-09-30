@@ -14,8 +14,8 @@ import {
 import { type ReactNode, useEffect, useRef } from "react";
 import { Button, Highlight, IconBadge, Text } from "@/components/ds";
 import { cn } from "@/lib/cn";
+import { splitAtPageToken } from "@/lib/content-copy";
 import { ContactActions } from "./contact-actions";
-import { partnershipDurations, partnershipIntents } from "./data/partners";
 import { usePartnership } from "./partnership-context";
 import { getPartnershipRecommendation } from "./partnerships";
 
@@ -31,8 +31,7 @@ const steps = ["Your goal", "Your timeframe", "Your fit"];
 /* Step headings receive focus programmatically; the panel scrolls below the fixed header. */
 const stepHeading =
   "scroll-mt-header text-heading-lg text-fg outline-none focus-visible:outline-none";
-const stepLabel =
-  "flex items-center gap-2 text-eyebrow text-highlight uppercase";
+const stepLabel = "flex items-center gap-2 text-eyebrow text-highlight";
 
 function FinderOption({
   icon,
@@ -75,19 +74,36 @@ function FinderOption({
 }
 
 /**
+ * The result question with `{{format}}` (or `{{ format }}`, as the Studio
+ * allows) replaced by `format`, the highlighted format name; without the
+ * token, the text alone.
+ */
+function withFormat(template: string, format: ReactNode): ReactNode {
+  const [before, ...rest] = splitAtPageToken(template, "format");
+  if (rest.length === 0) return template;
+  return (
+    <>
+      {before}
+      {format}
+      {rest.join("")}
+    </>
+  );
+}
+
+/**
  * The partnership finder's panel: two questions (goal, then timeframe) lead
  * to a recommended format with the contact actions, which carry the answers
  * into the email and the booking notes. Each step moves focus to its heading
  * and scrolls the panel below the fixed header. Needs a PartnershipProvider.
  */
 export function PartnershipFinder() {
-  const { selection, dispatch } = usePartnership();
+  const { selection, dispatch, copy } = usePartnership();
   const { step, intent } = selection;
   const heading = useRef<HTMLHeadingElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const previousStep = useRef(step);
-  const recommendation = getPartnershipRecommendation(selection);
-  const selectedIntent = partnershipIntents.find((item) => item.id === intent);
+  const recommendation = getPartnershipRecommendation(selection, copy);
+  const selectedIntent = copy.intents.find((item) => item.id === intent);
   const activeIndex = step === "intent" ? 0 : step === "duration" ? 1 : 2;
 
   useEffect(() => {
@@ -172,10 +188,10 @@ export function PartnershipFinder() {
         {step === "intent" ? (
           <>
             <h3 ref={heading} tabIndex={-1} className={stepHeading}>
-              What matters most to you right now?
+              {copy.prompts.intentQuestion}
             </h3>
             <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-              {partnershipIntents.map((item) => (
+              {copy.intents.map((item) => (
                 <FinderOption
                   key={item.id}
                   icon={icons[item.id]}
@@ -190,11 +206,10 @@ export function PartnershipFinder() {
           <>
             <p className={cn(stepLabel, "mb-3")}>{selectedIntent?.label}</p>
             <h3 ref={heading} tabIndex={-1} className={stepHeading}>
-              Are you looking for a one-off activation or an ongoing
-              relationship?
+              {copy.prompts.durationQuestion}
             </h3>
             <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-              {partnershipDurations.map((item) => (
+              {copy.durations.map((item) => (
                 <FinderOption
                   key={item.id}
                   label={item.label}
@@ -214,13 +229,15 @@ export function PartnershipFinder() {
               {selectedIntent?.label}
             </span>
             <h3 ref={heading} tabIndex={-1} className={stepHeading}>
-              Sounds like a <Highlight>{recommendation.name}</Highlight> is a
-              good fit.
+              {withFormat(
+                copy.prompts.resultQuestion,
+                <Highlight>{recommendation.name}</Highlight>,
+              )}
             </h3>
             <Text className="mt-5">{recommendation.description}</Text>
             {intent === "hackathon" && selection.duration === "ongoing" ? (
               <p className="mt-4 font-semibold text-body text-highlight">
-                With first choice on hackathon slots.
+                {copy.prompts.firstChoice}
               </p>
             ) : null}
             <ContactActions className="mt-7 max-sm:w-full max-sm:flex-col max-sm:items-stretch" />

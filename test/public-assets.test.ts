@@ -43,3 +43,17 @@ test("literal /assets/ references point to files in public/", () => {
   // Guards the pattern: the site references well over a hundred assets.
   expect(references).toBeGreaterThan(100);
 });
+
+test("public/ holds no notes, since every file in it is served", () => {
+  const notes: string[] = [];
+  const visit = (dir: string) => {
+    for (const name of readdirSync(dir)) {
+      const path = join(dir, name);
+      if (statSync(path).isDirectory()) visit(path);
+      else if (/\.(md|mdx)$/i.test(name)) notes.push(relative(root, path));
+    }
+  };
+  visit(join(root, "public"));
+  // Asset provenance notes live in docs/asset-sources/.
+  expect(notes).toStrictEqual([]);
+});

@@ -1,30 +1,26 @@
 import { act, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { eLabApplicationsCloseAt } from "@/config/e-lab";
+import { type ELabApplicationWindow, eLabWindowClock } from "@/config/e-lab";
 import { ELabPhaseSwitch } from "./e-lab-phase-switch";
 
 /*
- * The deadline comes from the real config; only the master switch is pinned
- * on, so these tests keep working when a maintainer closes a round early.
+ * An injected, switched-on window, so these tests keep working when a
+ * maintainer closes a round early or an editor moves the deadline.
  */
-vi.mock("@/config/e-lab", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/config/e-lab")>();
-  return {
-    ...actual,
-    isELabApplicationOpen: (now: Date) =>
-      actual.isApplicationWindowOpen({
-        switchedOn: true,
-        closesAt: actual.eLabApplicationsCloseAt,
-        now,
-      }),
-  };
-});
+const eLabWindow: ELabApplicationWindow = {
+  applicationsOpen: true,
+  applicationUrl: "https://example.com/apply",
+  applicationDeadlineDate: "27.09.2026",
+  applicationDeadlineTime: "22:00",
+  nextApplicationWindow: "August",
+};
+const clock = eLabWindowClock(eLabWindow);
+const deadline = clock.closesAt ?? 0;
 
-const deadline = eLabApplicationsCloseAt.getTime();
-
-function renderSwitch(initialOpen?: boolean) {
+function renderSwitch(initialOpen?: boolean, phase = clock) {
   return render(
     <ELabPhaseSwitch
+      clock={phase}
       initialOpen={initialOpen}
       open={<p>Apply now</p>}
       closed={<p>Applications closed</p>}
@@ -41,6 +37,10 @@ afterEach(() => {
 });
 
 describe("ELabPhaseSwitch", () => {
+  test("closes at the deadline in Munich time", () => {
+    expect(new Date(deadline).toISOString()).toBe("2026-09-27T20:00:00.000Z");
+  });
+
   test("shows the open variant until the deadline and switches by itself", () => {
     vi.setSystemTime(deadline - 5000);
     renderSwitch();
@@ -65,6 +65,15 @@ describe("ELabPhaseSwitch", () => {
     vi.setSystemTime(deadline - 1);
     renderSwitch();
     expect(screen.getByText("Apply now")).toBeInTheDocument();
+  });
+
+  test("stays closed while the master switch is off", () => {
+    vi.setSystemTime(deadline - 60_000);
+    renderSwitch(
+      undefined,
+      eLabWindowClock({ ...eLabWindow, applicationsOpen: false }),
+    );
+    expect(screen.getByText("Applications closed")).toBeInTheDocument();
   });
 
   test("corrects a cached server render from before the deadline on mount", () => {

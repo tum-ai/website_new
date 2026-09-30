@@ -34,6 +34,12 @@ for (const viewport of widths) {
         await page.clock.setFixedTime(MOCK_CMS_NOW);
         await page.goto(route.path);
         await loadLazyContent(page);
+        // The legal table of contents updates its scroll spy on the next
+        // frame; busy WebKit runners can capture before it has caught up
+        // with the return to the top, so wait for the top-of-page state.
+        await expect(
+          page.locator('nav a[aria-current="location"]'),
+        ).toHaveCount(0);
         await waitForAnimations(page);
         await page.evaluate(() => document.fonts.ready);
         const dateDependent = visualDateDependentStyles[route.path];

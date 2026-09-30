@@ -69,14 +69,15 @@ these fluidly:
 | `text-heading-lg` / `-md` / `-sm` | 34 / 23 / 17px | card and sub-section titles |
 | `text-lead` | up to 21px | intros |
 | `text-body` / `text-small` / `text-meta` | 16 / 14 / 13px | copy and metadata |
-| `text-eyebrow` | 12px uppercase | labels above headlines |
+| `text-eyebrow` | 14px sentence case | labels above headlines |
 
-Display sizes are medium weight with tight negative tracking. Hierarchy comes from size and
-weight, not decoration.
+Display sizes and figures are Light (300) with tight negative tracking, as in the brand guide;
+`display-md` is Regular, headings Medium, labels Semibold and never in capitals. Hierarchy comes
+from size and weight, not decoration.
 
 ## Logos
 
-- `public/assets/tum_ai_logo_new.svg`: the primary logo (the homepage's only preloaded image).
+- `public/assets/tum_ai_logo_new.svg`: the primary logo (preloaded on every page by the header).
 - `public/assets/logo_new_white_standard.png`: white logo, only on dark enough backgrounds.
 - `public/assets/favicon.svg`, `favicon-96.png`, `apple-touch-icon.png`, `src/app/icon.svg`: icons.
 - `BrandMark` (`src/components/ds/brand-mark.tsx`): the logomark geometry as a large tonal
@@ -89,7 +90,8 @@ Never redraw, recolour, crop or rebuild the logo.
 Canonical implementation: `src/components/ds/button.tsx` (`buttonStyles`, `Button`,
 `ButtonLink`, `IconButton`).
 
-- `primary`: violet-600 fill, white label, dark purple on hover, a single sheen on hover.
+- `primary`: a flat violet-600 fill with a hairline highlight, white label, dark purple on hover.
+  No glow or sheen.
 - `secondary`, `outline`, `ghost`: read the surrounding tone, so they work on light and dark bands.
 - `inverse`: solid white, for secondary actions on dark bands and photos.
 - `link`: inline text action in the tone's highlight colour.

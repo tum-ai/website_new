@@ -21,6 +21,8 @@ export const EVENTS_QUERY = defineQuery(`*[_type == "event"]{
   location,
   city,
   category,
+  "hosts": coalesce(hosts, []),
+  "coHosts": coHosts[]->{ key, name },
   "poster": poster.asset->url,
   "images": array::compact([poster.asset->url, img.asset->url]),
   sign_up
@@ -29,33 +31,12 @@ export const EVENTS_QUERY = defineQuery(`*[_type == "event"]{
 export const RESEARCH_QUERY = defineQuery(`*[_type == "research"]{
   "id": _id,
   title,
+  "institutions": institutions[]->{ key, name },
   "description": coalesce(desc, ""),
   status,
   publication,
   "keywords": coalesce(keywords, []),
   "image": img.asset->url
-}`);
-
-export const PARTNERS_QUERY = defineQuery(`*[_type == "partner"]{
-  "id": _id,
-  name,
-  link,
-  "image": image.asset->url,
-  category,
-  tier,
-  featured
-}`);
-
-/** Partners shown on /research; the category filter runs in the Content Lake. */
-export const RESEARCH_PARTNERS_QUERY =
-  defineQuery(`*[_type == "partner" && category == "Research Partners"]{
-  "id": _id,
-  name,
-  link,
-  "image": image.asset->url,
-  category,
-  tier,
-  featured
 }`);
 
 /** `/api/getNotes` response body. Frozen: includes the legacy `detail` text. */
@@ -84,7 +65,11 @@ export const PUBLIC_RESEARCH_QUERY = defineQuery(`*[_type == "research"]{
   "image": img.asset->url
 }`);
 
-/** `/api/getPartners` response body. Frozen. */
+/**
+ * `/api/getPartners` response body on `production`, the old site's dataset,
+ * and on the new site's dataset until the partners are migrated to
+ * organisations (`getPublishedPartners`). Frozen.
+ */
 export const PUBLIC_PARTNERS_QUERY = defineQuery(`*[_type == "partner"]{
   "id": _id,
   name,
@@ -93,4 +78,22 @@ export const PUBLIC_PARTNERS_QUERY = defineQuery(`*[_type == "partner"]{
   category,
   tier,
   featured
+}`);
+
+/**
+ * `/api/getPartners` response body from the partner organisations (every
+ * `organization` with a `partnerTier`), in exactly the shape of
+ * {@link PUBLIC_PARTNERS_QUERY}. `id` is the old site's partner document id
+ * the migration kept (`legacyPartnerId`), so consumers keep the ids they
+ * know; a partner added since has its organisation's `_id`. Frozen.
+ */
+export const PUBLIC_PARTNER_ORGANIZATIONS_QUERY =
+  defineQuery(`*[_type == "organization" && defined(partnerTier)]{
+  "id": coalesce(legacyPartnerId, _id),
+  name,
+  "link": href,
+  "image": logo.asset->url,
+  "category": partnerCategory,
+  "tier": partnerTier,
+  "featured": partnerFeatured
 }`);

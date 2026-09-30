@@ -7,9 +7,17 @@ import { defineCliConfig } from "sanity/cli";
  * folder holding that file as the project root and resolves every path below
  * from here.
  *
- * - The extracted `schema.json` is an intermediate file, written to
- *   `node_modules/.cache` and not committed: it is mostly Sanity's built-in
- *   asset types, and the generated TypeScript is what reviewers read.
+ * - `pnpm sanity:typegen` extracts the Studio's one workspace into
+ *   `schema.json`, an intermediate file in `node_modules/.cache`, not
+ *   committed: it is mostly Sanity's built-in asset types, and the generated
+ *   TypeScript is what reviewers read. The Studio registers the page content
+ *   types on every dataset except `production`, so the script names a
+ *   placeholder dataset (`schema-extract`); extraction reads the local
+ *   schema and never contacts a dataset.
+ * - Queries are found in `lib` (the event, partner and research queries and
+ *   shared content types), in feature content slices
+ *   (`features/<x>/content.ts` and `<topic>-content.ts`) and in config
+ *   content slices (`config/<x>-content.ts`).
  * - Required fields (`Rule.required()`) are extracted as non-optional
  *   (`--enforce-required-fields`), so `title`, `name` and `event_date` are
  *   typed `string`, not `string | null`.
@@ -25,7 +33,11 @@ export default defineCliConfig({
     dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
   },
   typegen: {
-    path: "../lib/**/*.ts",
+    path: [
+      "../lib/**/*.ts",
+      "../features/**/*content.ts",
+      "../config/*-content.ts",
+    ],
     schema: "../../node_modules/.cache/sanity/schema.json",
     generates: "../lib/sanity.types.generated.ts",
     overloadClientMethods: false,

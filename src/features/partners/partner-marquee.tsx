@@ -1,18 +1,30 @@
 import type { CSSProperties } from "react";
 import { ButtonLink, LogoTile } from "@/components/ds";
 import type { Partner } from "@/lib/types";
-import { symbolOnlyLogos } from "./data/partner-logos";
-import { marqueeLogos } from "./data/partner-marquee-logos";
-import { getPartnerKey } from "./partner-directory";
+import type { PartnersSections } from "./data/partners";
+import { getPartnerKey } from "./partner-key";
 
 /**
- * Highlighted-partner rail for the dark hero. Unlike the DS `Marquee` (which
- * duplicates its list), every partner is rendered once and moves at an equal
- * rate, wrapping outside the clipped window; mechanics live in partners.css.
- * Only artwork verified on dark bands is shown (`marqueeLogos`); everything
- * else, and artwork that fails to load, falls back to the name.
+ * Highlighted-partner rail for the dark hero. Every partner is rendered once
+ * (no duplicated list for a seamless loop) and moves at an equal rate,
+ * wrapping outside the clipped window; mechanics live in partners.css. Under
+ * reduced motion the rail stands still as a wrapped row of logos.
+ * Only artwork verified on dark bands is shown (`marqueeLogos`, by partner
+ * key); everything else, and artwork that fails to load, falls back to the
+ * name. Symbol-only artwork gets the name beside it.
  */
-export function PartnerMarquee({ partners }: { partners: Partner[] }) {
+export function PartnerMarquee({
+  partners,
+  marqueeLogos,
+  symbolOnlyLogos,
+  copy,
+}: {
+  partners: Partner[];
+  marqueeLogos: Readonly<Record<string, string | undefined>>;
+  symbolOnlyLogos: ReadonlySet<string>;
+  /** The rail's label and its link down to the directory. */
+  copy: PartnersSections["marquee"];
+}) {
   if (!partners.length) return null;
   const animated = partners.length > 3;
   return (
@@ -27,11 +39,9 @@ export function PartnerMarquee({ partners }: { partners: Partner[] }) {
       }
     >
       <div className="mb-4 flex items-center justify-between gap-4 md:mb-6">
-        <p className="font-semibold text-fg-muted text-meta">
-          In good company.
-        </p>
+        <p className="font-semibold text-fg-muted text-meta">{copy.label}</p>
         <ButtonLink href="#our-partners" variant="link" size="sm" arrow="down">
-          Meet our partners
+          {copy.link}
         </ButtonLink>
       </div>
       <div className="partner-marquee-window motion-safe:mask-fade-x">

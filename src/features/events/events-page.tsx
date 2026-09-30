@@ -1,72 +1,57 @@
-import type { ReactNode } from "react";
-import { PageHero } from "@/components/ds";
 import type { Event } from "@/lib/types";
-import { type EventMonth, groupEventsByMonth, splitEvents } from "./events";
+import { ClosingSection } from "./closing-section";
 import {
-  EventListings,
-  type EventMonthEntries,
-  EventsFilterProvider,
-  EventTotals,
-} from "./events-browser";
-import { EventFiltersPanel } from "./events-filters";
-import { PastEventCard } from "./past-events";
-import { UpcomingEventCard } from "./upcoming-events";
-
-/** Month groups with each event rendered by `renderCard`, for the island. */
-function toEntries(
-  months: EventMonth<Event>[],
-  renderCard: (event: Event, index: number) => ReactNode,
-): EventMonthEntries[] {
-  let index = 0;
-  return months.map(({ key, monthName, year, events }) => ({
-    key,
-    monthName,
-    year,
-    entries: events.map((event) => ({
-      id: event.id,
-      category: event.category,
-      city: event.city,
-      card: renderCard(event, index++),
-    })),
-  }));
-}
+  indexHosts,
+  pinFeaturedEvent,
+  splitEvents,
+  summarizeEvents,
+} from "./events";
+import { EventsHero } from "./hero";
+import { PosterWall } from "./poster-wall";
+import { Register } from "./register";
+import { Upcoming } from "./upcoming";
 
 /**
- * /events: the hero with the filters and totals, then the upcoming and the
- * past events. A server component: it splits the events at `now`, groups
- * them by Munich month and renders every card, so the client island
- * (`EventsFilterProvider`) only filters and never reads the clock.
+ * /events, set around the co-branding lockup its events already carry
+ * ("Anthropic x Lovable x Hugging Face"): the hero completes "TUM.ai ×" with
+ * every co-host from the CMS, then come the upcoming events, the archive as
+ * a register by semester, the posters as they were announced, and a close
+ * that completes the lockup with the reader's team. A running campaign's
+ * featured event leads the upcoming events and the close while it is
+ * upcoming. A server component: it splits the events at `now` and renders
+ * every row, so the only client parts are the register's filter and the
+ * dialogs.
  */
 export function EventsPage({
   events,
   now,
+  featuredEventId = null,
 }: {
   /** Every published event, in any order. */
   events: Event[];
   /** The instant that separates upcoming from past (the render time). */
   now: Date;
+  /** The `_id` of the event a running campaign features, if any. */
+  featuredEventId?: string | null;
 }) {
-  const { upcoming, past } = splitEvents(events, now);
+  const split = splitEvents(events, now);
+  const { past } = split;
+  const upcoming = pinFeaturedEvent(split.upcoming, featuredEventId);
+  const summary = summarizeEvents(events);
 
   return (
-    <EventsFilterProvider
-      upcoming={toEntries(groupEventsByMonth(upcoming), (event, index) => (
-        <UpcomingEventCard event={event} seed={index} />
-      ))}
-      past={toEntries(groupEventsByMonth(past), (event, index) => (
-        <PastEventCard event={event} seed={index} />
-      ))}
-    >
-      <main>
-        <PageHero
-          title="Events"
-          lead="Explore TUM.ai's upcoming events including workshops, hackathons, and meetups. Join us to learn, network, and innovate in the field of artificial intelligence."
-          media={<EventTotals />}
-        >
-          <EventFiltersPanel />
-        </PageHero>
-        <EventListings />
-      </main>
-    </EventsFilterProvider>
+    <main>
+      <EventsHero
+        summary={summary}
+        hosts={indexHosts(events)}
+        hasUpcoming={upcoming.length > 0}
+      />
+      <Upcoming events={upcoming} />
+      {past.length > 0 ? (
+        <Register events={past} since={summary.since} />
+      ) : null}
+      <PosterWall events={past} />
+      <ClosingSection next={upcoming[0]} />
+    </main>
   );
 }

@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import { Reveal } from "@/components/ds";
 import { ContactActions } from "../contact-actions";
 
@@ -7,7 +6,7 @@ export function ContactRow({
   title,
   bookingFirst,
 }: {
-  title: ReactNode;
+  title: string;
   bookingFirst?: boolean;
 }) {
   return (

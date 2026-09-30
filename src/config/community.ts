@@ -22,11 +22,18 @@ const berlinYear = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
 });
 
+/** The figures as the CMS `siteSettings` document holds them; `communityFacts` is the code fallback. */
+export type CommunityFacts = { readonly makeathonSize: number };
+
 /**
  * Whole calendar years between the founding year and `now`'s year in Munich,
  * e.g. 6 in 2026 for a 2020 founding. Pass the server's "now"; never call it
- * during a client render.
+ * during a client render. `foundingYear` defaults to the code fact; pass the
+ * resolved one from `getSiteFacts()` where it is at hand.
  */
-export function yearsSinceFounding(now: Date): number {
-  return Number(berlinYear.format(now)) - organizationFacts.foundingYear;
+export function yearsSinceFounding(
+  now: Date,
+  foundingYear: number = organizationFacts.foundingYear,
+): number {
+  return Number(berlinYear.format(now)) - foundingYear;
 }

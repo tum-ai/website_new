@@ -1,7 +1,7 @@
 "use client";
 
 import { Menu, SlidersHorizontal } from "lucide-react";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   BrandMark,
   Button,
@@ -16,27 +16,17 @@ import {
   DialogTitle,
   DialogTrigger,
   IconButton,
-  Parallax,
-  ScrollProgress,
   TextLink,
-  useBreakpoint,
 } from "@/components/ds";
 
 /** Stateful demos for the /design-system reference page. */
 export function DesignSystemInteractive() {
   const [category, setCategory] = useState("all");
-  const wide = useBreakpoint("md");
 
   return (
     <div className="grid gap-10 lg:grid-cols-2">
-      <p className="text-fg-muted text-small lg:col-span-2">
-        useBreakpoint(&quot;md&quot;):{" "}
-        <strong className="text-fg">
-          {wide ? "md and wider" : "narrower than md"}
-        </strong>
-      </p>
       <div>
-        <p id="chip-label" className="text-eyebrow text-fg-subtle uppercase">
+        <p id="chip-label" className="text-eyebrow text-fg-subtle">
           Chip group
         </p>
         <ChipGroup
@@ -118,29 +108,6 @@ export function DesignSystemInteractive() {
             </p>
           </CollapsiblePanel>
         </Collapsible>
-      </div>
-    </div>
-  );
-}
-
-/** Scroll-linked demos: <Parallax> and <ScrollProgress> need a client ref. */
-export function DesignSystemScrollDemo() {
-  const target = useRef<HTMLDivElement>(null);
-  return (
-    <div ref={target} className="grid gap-6 md:grid-cols-[auto_minmax(0,1fr)]">
-      <div className="relative hidden w-px bg-hairline md:block">
-        <ScrollProgress
-          target={target}
-          className="absolute inset-0 bg-violet-500"
-        />
-      </div>
-      <div className="relative h-64 overflow-hidden rounded-3xl bg-sunken">
-        <Parallax offset={40} className="absolute inset-x-0 top-8">
-          <p className="text-center text-display-md text-fg">Parallax</p>
-        </Parallax>
-        <p className="absolute right-6 bottom-6 text-fg-muted text-small">
-          Static under reduced motion.
-        </p>
       </div>
     </div>
   );

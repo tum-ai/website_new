@@ -1,0 +1,14 @@
+{
+  // tsx config for the Sanity scripts (`pnpm sanity:backfill`): the root
+  // config plus a stub for `server-only`, as in vitest.aliases.ts. The
+  // backfill builders live in server-only content slices; outside Next's
+  // react-server bundle the real package throws on import.
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["../../src/*"],
+      "@test/*": ["../../test/*"],
+      "server-only": ["../../test/stubs/empty.ts"]
+    }
+  }
+}
