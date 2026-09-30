@@ -32,9 +32,6 @@
     // Open question for Justin (cleanup #264 checklist, "Ops"): keep the
     // Vercel CLI as a devDependency (`pnpm exec vercel env pull`,
     // docs/contributor-guide.md) or drop it.
-    "vercel",
-    // Unused since the redesign. Either type the JSON-LD in config/seo.ts
-    // with it or remove it; tracked as a W3-Lock handoff.
-    "schema-dts"
+    "vercel"
   ]
 }
