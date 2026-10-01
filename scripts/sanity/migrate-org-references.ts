@@ -48,7 +48,6 @@ const introducedOrganizationKeys = [
   "tum",
   "tum-camp",
   "lmu-klinikum",
-  "helmholtz-munich",
   "ibm-almaden",
   "ibm-research",
 ] as const;

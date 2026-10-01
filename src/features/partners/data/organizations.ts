@@ -476,14 +476,17 @@ export const organizations: readonly Organization[] = [
     },
     partnership: { tier: "supporter", category: "Industry Partners" },
   }),
+  // The old site's partner "Helmholtz" (the association's wordmark): TUM.ai
+  // works with this Munich centre, med.AI's partner on /projects, whose
+  // research projects are titled "Helmholtz Zentrum" (its former name).
   defineOrganization({
-    key: "helmholtz",
-    name: "Helmholtz",
-    href: "https://www.helmholtz.de/",
+    key: "helmholtz-munich",
+    name: "Helmholtz Munich",
+    href: "https://www.helmholtz-munich.de/",
     logo: {
-      src: "/assets/partners/logos/helmholtz.webp",
-      width: 500,
-      height: 66,
+      src: "/assets/partners/logos/helmholtz-munich.svg",
+      width: 1301,
+      height: 100,
     },
     partnership: { tier: "supporter", category: "Research Partners" },
   }),
@@ -868,8 +871,8 @@ export const organizations: readonly Organization[] = [
 
   // Research institutions and labs the site names without a logo: the
   // research projects cite them, the /research globe places them
-  // (features/research/data/lab-sites.ts), and Helmholtz Munich is med.AI's
-  // partner on /projects. Named as the project titles name them.
+  // (features/research/data/lab-sites.ts). Named as the project titles name
+  // them.
   defineOrganization({ key: "tum", name: "TUM", href: "https://www.tum.de/" }),
   defineOrganization({
     key: "tum-camp",
@@ -880,16 +883,6 @@ export const organizations: readonly Organization[] = [
     key: "lmu-klinikum",
     name: "LMU Klinikum",
     href: "https://www.lmu-klinikum.de/",
-  }),
-  // TODO(content): decided 2026-10-01: the partner "Helmholtz" (helmholtz.de,
-  // the association's wordmark) is this Munich centre, shown as "Helmholtz
-  // Munich". Merging the two needs the `redesign` dataset's "Helmholtz"
-  // document and the org-references migration moved with it, and a Helmholtz
-  // Munich logo; until then both entries stay.
-  defineOrganization({
-    key: "helmholtz-munich",
-    name: "Helmholtz Munich",
-    href: "https://www.helmholtz-munich.de/",
   }),
   // IBM's lab in San Jose, now "IBM Research – Silicon Valley".
   defineOrganization({

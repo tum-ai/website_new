@@ -253,7 +253,7 @@ describe("getLabSites", () => {
     { key: "ibm", name: "IBM" },
     { key: "lmu", name: "LMU" },
     { key: "flower-labs", name: "Flower Labs" },
-    { key: "helmholtz", name: "Helmholtz" },
+    { key: "helmholtz-munich", name: "Helmholtz Munich" },
     { key: "harvard-medical-school", name: "Harvard Medical School" },
     { key: "mit", name: "MIT" },
     { key: "mi4people", name: "MI4People" },
@@ -321,7 +321,7 @@ describe("getLabSites", () => {
       "LMU Klinikum",
       "Klinikum rechts der Isar",
       "LMU",
-      "Helmholtz",
+      "Helmholtz Munich",
       "MI4People",
     ]);
     expect(sites.find(({ id }) => id === "boston")?.institutions).toEqual([

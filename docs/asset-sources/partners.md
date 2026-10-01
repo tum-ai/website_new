@@ -91,7 +91,7 @@ Every partner of the old site is an organisation with a partner tier (`src/featu
 - `logos/gdsc.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/a987aeccee533fa42bac05586a15b68fa2fb9832-818x835.png
 - `logos/harvard-medical-school.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/ab1e75b296bb91c83cd11ac11d2d779f86b12f5c-1024x289.png
 - `logos/heimkapital.svg`: https://cdn.sanity.io/images/o9uuv2sq/production/5f9b8ac7de25f447cd9882a06ac98baf30b5c8a6-142x23.svg
-- `logos/helmholtz.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/b3b814fde9640ec03ac35d172c772a987ee2b9a8-2560x338.png
+- `logos/helmholtz-munich.svg`: https://www.helmholtz-munich.de/_assets/a92153751098915699a1afa17e77f864/Images/logo_helmholtz.svg (the site header's lockup, 2026-10-01)
 - `logos/hugging-face.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/b5716e79a38c41ba36fc555f18f6eaa8c65899d1-1926x512.png
 - `logos/infineon.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/8cd78454c8de6bff9e7a2e51d09b52adf6b07c32-2560x1129.png
 - `logos/initiatives-for-humanity.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/04b4b5f49564801363a7a48bc746e94773e346dd-200x200.jpg

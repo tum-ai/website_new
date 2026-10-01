@@ -8,13 +8,8 @@ test("one organisation's spellings share a key", () => {
     ["manage-and-more", "Manage and More"],
     ["helmholtz-munich", "Helmholtz Zentrum"],
     ["Helmholtz Munich", "Helmholtz Center Munich"],
+    ["Helmholtz", "Helmholtz Munich"],
   ]) {
     expect(getPartnerKey(a ?? ""), `${a} = ${b}`).toBe(getPartnerKey(b ?? ""));
   }
-});
-
-test("the Helmholtz association and the Munich centre stay apart", () => {
-  expect(getPartnerKey("Helmholtz")).not.toBe(
-    getPartnerKey("Helmholtz Munich"),
-  );
 });

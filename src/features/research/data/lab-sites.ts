@@ -56,7 +56,6 @@ export const labSiteTemplates: readonly LabSiteTemplate[] = [
     organizations: [
       "tum",
       "tum-camp",
-      "helmholtz",
       "helmholtz-munich",
       "lmu",
       "lmu-klinikum",
