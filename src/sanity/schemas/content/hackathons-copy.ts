@@ -111,20 +111,7 @@ export const hackathonsCopyType = defineType({
           max: 320,
           rows: 4,
           placeholders: true,
-          pageTokens: {
-            count: "the number of hackathons so far",
-            since: "the year of the first Makeathon",
-          },
-        }),
-        copyString({
-          name: "recentLabel",
-          title: "Last year's label",
-          description:
-            "Over the ribbon's last twelve months, on wide screens: “{{count}} in the last twelve months”.",
-          max: 50,
-          pageTokens: {
-            count: "the hackathons in the twelve months before today",
-          },
+          pageTokens: { since: "the year of the first Makeathon" },
         }),
         copyString({
           name: "ribbonLabel",
@@ -206,6 +193,13 @@ export const hackathonsCopyType = defineType({
             count: "the number of these hackathons so far",
             since: "the month of the first",
           },
+        }),
+        copyString({
+          name: "hostsPrefix",
+          title: "Co-hosts prefix",
+          description:
+            "Before an event's co-hosts: “with” (… with BMW and CDTM).",
+          max: 20,
         }),
       ],
     }),

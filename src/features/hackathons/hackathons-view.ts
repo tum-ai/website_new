@@ -13,7 +13,6 @@ import {
   pastMarks,
 } from "./marks";
 import {
-  axisX,
   dayNumber,
   formatDayRange,
   layoutByYear,
@@ -42,8 +41,6 @@ export type HackathonEventRow = {
   id: string;
   title: string;
   dates: string;
-  /** The first day, for `<time dateTime>`. */
-  dateTime: string;
   /** "Cafe Luitpold, Munich", or empty. */
   place: string;
   /** Co-hosts the title doesn't already name. */
@@ -52,11 +49,8 @@ export type HackathonEventRow = {
   signUp?: string;
 };
 
-/**
- * A year back from today: the hero's "last twelve months" and the first
- * day of the closing strip.
- */
-const RECENT_DAYS = 365;
+/** The closing strip starts on 1 January of the year a year ago. */
+const STRIP_DAYS = 365;
 
 const monthYear = (day: string) =>
   new Intl.DateTimeFormat("en-GB", {
@@ -107,11 +101,9 @@ export function hackathonsView({
     return { ...placed, kind: entry.kind, upcoming: entry.upcoming };
   };
   const continuous = layoutRibbon(marks, today);
-  const yearAgo = shiftDays(today, -RECENT_DAYS);
-  const closing = layoutRibbon(marks, today, { from: yearAgo });
-  const recent = pastMarks(marks, today).filter(
-    ({ start }) => start >= yearAgo,
-  );
+  const closing = layoutRibbon(marks, today, {
+    from: `${shiftDays(today, -STRIP_DAYS).slice(0, 4)}-01-01`,
+  });
 
   const firstEdition = copy.makeathon.editions[0];
   const since = firstEdition ? firstEdition.start.slice(0, 4) : "";
@@ -125,22 +117,14 @@ export function hackathonsView({
         count: String(pastMarks(marks, today).length),
         since,
       }),
-    },
-    ribbon: {
-      entries,
-      continuous: { ...continuous, marks: continuous.marks.map(draw) },
-      /** The last twelve months on the wide ribbon, with how many it held. */
-      recent: {
-        label: fillPageTokens(copy.hero.recentLabel, {
-          count: String(recent.length),
-        }),
-        from: axisX(continuous.axis, yearAgo),
-        to: axisX(continuous.axis, today),
+      ribbon: {
+        entries,
+        continuous: { ...continuous, marks: continuous.marks.map(draw) },
+        byYear: layoutByYear(marks).map((row) => ({
+          ...row,
+          marks: row.marks.map(draw),
+        })),
       },
-      byYear: layoutByYear(marks).map((row) => ({
-        ...row,
-        marks: row.marks.map(draw),
-      })),
     },
     makeathon: {
       ...copy.makeathon,
@@ -189,7 +173,6 @@ function hackathonEventRows(
         id: mark.id,
         title: mark.title,
         dates: formatDayRange(mark.start, mark.end),
-        dateTime: mark.start,
         // A venue still "TBA" says nothing once the hackathon is over.
         place: /\bTBA\b/.test(event.location ?? "")
           ? (event.city ?? "")

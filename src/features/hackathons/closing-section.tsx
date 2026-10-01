@@ -35,7 +35,7 @@ export function ClosingSection({ closing }: { closing: View["closing"] }) {
         <Reveal>
           <h2
             id="hackathons-close-title"
-            className="max-w-[12em] text-display-xl text-highlight"
+            className="max-w-[12em] text-display-lg text-highlight"
           >
             {closing.title}
           </h2>

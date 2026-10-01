@@ -1,9 +1,8 @@
-import { PageHero } from "@/components/ds";
 import { getPartnerCaseStudies } from "@/features/partners/server";
 import type { Event } from "@/lib/types";
 import { ClosingSection } from "./closing-section";
 import { getHackathonsCopy } from "./content";
-import { HackathonRibbon } from "./hackathon-ribbon";
+import { HackathonsHero } from "./hackathons-hero";
 import { hackathonsView } from "./hackathons-view";
 import { LeagueSection } from "./league-section";
 import { MakeathonSection } from "./makeathon-section";
@@ -72,18 +71,7 @@ export async function HackathonsPage({
 
   return (
     <main>
-      <PageHero
-        tone="night"
-        mark={false}
-        titleId="hackathons-hero-title"
-        eyebrow={view.hero.eyebrow}
-        title={view.hero.title}
-        lead={view.hero.lead}
-        size="md"
-        classNames={{ content: "max-w-4xl", footer: "mt-14 md:mt-20" }}
-      >
-        <HackathonRibbon ribbon={view.ribbon} copy={view.hero} />
-      </PageHero>
+      <HackathonsHero hero={view.hero} />
       <MakeathonSection makeathon={view.makeathon} />
       <PartnerHackathonsSection partners={view.partners} voice={voice} />
       <LeagueSection league={view.league} />

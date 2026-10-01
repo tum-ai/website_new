@@ -74,7 +74,7 @@ describe("the /hackathons content slice", () => {
     useSource("code");
     const copy = await getHackathonsCopy();
     expect(copy).toStrictEqual(code);
-    expect(copy.hero.lead).toContain("{{count}}");
+    expect(copy.hero.lead).toContain("{{since}}");
     expect(copy.hero.lead).not.toContain("{{impact.");
   });
 

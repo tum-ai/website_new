@@ -46,7 +46,7 @@ describe("leagueSummaryOf", () => {
       ]),
     ).toStrictEqual({
       cities: ["Munich", "Paris", "Zurich"],
-      citiesText: "Munich, Paris, and Zurich",
+      citiesText: "Munich, Paris and Zurich",
       matchCount: 4,
     });
   });

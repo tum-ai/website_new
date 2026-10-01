@@ -61,7 +61,7 @@ export function PartnerHackathonsSection({
                       {[
                         row.place,
                         row.hosts.length > 0
-                          ? `with ${formatList(row.hosts)}`
+                          ? `${partners.hostsPrefix} ${formatList(row.hosts)}`
                           : "",
                       ]
                         .filter(Boolean)
@@ -70,12 +70,9 @@ export function PartnerHackathonsSection({
                   ) : null}
                 </div>
                 <div className="flex items-baseline gap-4 sm:flex-col sm:items-end sm:gap-3">
-                  <time
-                    dateTime={row.dateTime}
-                    className="tabular text-fg-muted text-small sm:text-right"
-                  >
+                  <p className="tabular text-fg-muted text-small sm:text-right">
                     {row.dates}
-                  </time>
+                  </p>
                   {row.signUp ? (
                     <SignUpAction title={row.title} signUp={row.signUp} />
                   ) : null}

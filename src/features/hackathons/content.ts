@@ -27,7 +27,6 @@ export const HACKATHONS_COPY_QUERY = defineQuery(`*[_id == "hackathonsCopy"][0]{
     eyebrow,
     title,
     lead,
-    recentLabel,
     ribbonLabel,
     sliderLabel,
     nextLabel,
@@ -41,7 +40,7 @@ export const HACKATHONS_COPY_QUERY = defineQuery(`*[_id == "hackathonsCopy"][0]{
     photoCaption,
     editions[]{ key, name, start, end, city, note, link{ label, href } }
   },
-  partners{ title, lead },
+  partners{ title, lead, hostsPrefix },
   league{ title, lead, linkLabel },
   offer{ title, lead, items, addOns },
   closing{

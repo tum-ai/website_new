@@ -4,7 +4,6 @@ import { getMockEvents } from "@/lib/mock-cms";
 import { makeathonEditions } from "./data/makeathon";
 import { buildMarks, type HackathonMark } from "./marks";
 import {
-  axisX,
   dayNumber,
   formatDayRange,
   layoutByYear,
@@ -118,18 +117,9 @@ describe("layoutRibbon", () => {
     expect(window.years.map(({ year }) => year)).toStrictEqual([2026]);
   });
 
-  test("axisX places a day where its mark starts", () => {
-    for (const placed of layout.marks) {
-      const source = marks.find(({ id }) => id === placed.id);
-      if (!source) throw new Error(placed.id);
-      expect(axisX(layout.axis, source.start)).toBeCloseTo(placed.x, 12);
-    }
-  });
-
   test("no marks: an empty figure", () => {
     const empty = layoutRibbon([], today);
     expect(empty).toMatchObject({ marks: [], lanes: 0, years: [] });
-    expect(axisX(empty.axis, today)).toBe(0);
   });
 });
 
@@ -197,5 +187,17 @@ describe("formatDayRange", () => {
   ])("%s to %s", (start, end, long, short) => {
     expect(formatDayRange(start, end)).toBe(long);
     expect(formatDayRange(start, end, { short: true })).toBe(short);
+  });
+
+  test("without the year, unless the range crosses New Year", () => {
+    expect(formatDayRange("2024-04-26", "2024-04-28", { year: false })).toBe(
+      "26 to 28 April",
+    );
+    expect(formatDayRange("2021-04-18", "2021-04-18", { year: false })).toBe(
+      "18 April",
+    );
+    expect(formatDayRange("2025-12-30", "2026-01-02", { year: false })).toBe(
+      "30 December 2025 to 2 January 2026",
+    );
   });
 });

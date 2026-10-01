@@ -11,9 +11,9 @@ import { RIBBON } from "./ribbon";
  */
 const sizes = {
   hero: {
-    "--above": "8rem",
-    "--lane-step": "1.875rem",
-    "--lane-h": "1.375rem",
+    "--above": "clamp(7rem, 24svh, 15rem)",
+    "--lane-step": "2rem",
+    "--lane-h": "1.5rem",
   },
   year: {
     "--above": "3rem",

@@ -131,11 +131,6 @@ export function layoutRibbon(
   return { ...placed, years, axis: { origin, days: length } };
 }
 
-/** Where `day` falls on a {@link RibbonLayout}'s axis, as a track fraction. */
-export function axisX(axis: RibbonLayout["axis"], day: string): number {
-  return axis.days === 0 ? 0 : (dayNumber(day) - axis.origin) / axis.days;
-}
-
 /** One row of the yearly ribbon. */
 export type RibbonYear = {
   year: number;
@@ -214,11 +209,13 @@ const parts = (day: string) => {
  * 2024", "30 September to 2 October 2022", "30 December 2025 to 2 January
  * 2026". `short` abbreviates the month and drops the year, for a register
  * with a spaced hyphen as the ds `KeyDates` shows ranges: "17 - 19 Apr".
+ * `year: false` drops the year where something beside it states it ("26 to
+ * 28 April"); a range across New Year keeps both.
  */
 export function formatDayRange(
   start: string,
   end: string,
-  { short = false }: { short?: boolean } = {},
+  { short = false, year = true }: { short?: boolean; year?: boolean } = {},
 ): string {
   const a = parts(start);
   const b = parts(end);
@@ -229,11 +226,12 @@ export function formatDayRange(
       ? `${a.date} - ${b.date} ${month(b.month)}`
       : `${a.date} ${month(a.month)} - ${b.date} ${month(b.month)}`;
   }
-  if (start === end) return `${a.date} ${a.month} ${a.year}`;
   if (a.year !== b.year) {
     return `${a.date} ${a.month} ${a.year} to ${b.date} ${b.month} ${b.year}`;
   }
+  const tail = year ? ` ${b.year}` : "";
+  if (start === end) return `${a.date} ${a.month}${tail}`;
   return a.month === b.month
-    ? `${a.date} to ${b.date} ${b.month} ${b.year}`
-    : `${a.date} ${a.month} to ${b.date} ${b.month} ${b.year}`;
+    ? `${a.date} to ${b.date} ${b.month}${tail}`
+    : `${a.date} ${a.month} to ${b.date} ${b.month}${tail}`;
 }

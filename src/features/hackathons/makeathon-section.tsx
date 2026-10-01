@@ -67,7 +67,10 @@ export function MakeathonSection({
                 value: edition.start.slice(0, 4),
                 note: (
                   <>
-                    {formatDayRange(edition.start, edition.end)}. {edition.note}
+                    {formatDayRange(edition.start, edition.end, {
+                      year: false,
+                    })}
+                    . {edition.note}
                     {edition.link ? (
                       <>
                         {" "}

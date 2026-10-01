@@ -43,9 +43,10 @@ test("one h1, ordered bands, and no axe violations", async () => {
 
 test("the ribbon lists every hackathon from the first Makeathon, and the next one", async () => {
   await renderPage();
-  const list = screen.getByRole("list", {
+  const figure = screen.getByRole("figure", {
     name: hackathonsCopyTemplate.hero.ribbonLabel,
   });
+  const list = within(figure).getByRole("list");
   const items = within(list).getAllByRole("listitem");
   expect(items[0]).toHaveTextContent(makeathonEditions[0].name);
   const finale = hackathonFacts.league.matches.at(-1);

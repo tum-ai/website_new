@@ -72,6 +72,7 @@ export type HackathonsCopy = {
   partners?: {
     title: string;
     lead: string;
+    hostsPrefix: string;
   };
   league?: {
     title: string;
@@ -2028,7 +2029,7 @@ export type EVENTS_COPY_QUERY_RESULT =
 
 // Source: ../features/hackathons/content.ts
 // Variable: HACKATHONS_COPY_QUERY
-// Query: *[_id == "hackathonsCopy"][0]{  hero{    eyebrow,    title,    lead,    ribbonLabel,    sliderLabel,    nextLabel,    legend{ makeathon, league, partner }  },  makeathon{    title,    lead,    linkLabel,    "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},    photoCaption,    editions[]{ key, name, start, end, city, note, link{ label, href } }  },  partners{ title, lead },  league{ title, lead, linkLabel },  offer{ title, lead, items, addOns },  closing{    title,    lead,    student{ audience, text, actionLabel },    partner{ audience, text }  }}
+// Query: *[_id == "hackathonsCopy"][0]{  hero{    eyebrow,    title,    lead,    ribbonLabel,    sliderLabel,    nextLabel,    legend{ makeathon, league, partner }  },  makeathon{    title,    lead,    linkLabel,    "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},    photoCaption,    editions[]{ key, name, start, end, city, note, link{ label, href } }  },  partners{ title, lead, hostsPrefix },  league{ title, lead, linkLabel },  offer{ title, lead, items, addOns },  closing{    title,    lead,    student{ audience, text, actionLabel },    partner{ audience, text }  }}
 export type HACKATHONS_COPY_QUERY_RESULT =
   | {
       hero: null;
@@ -2052,6 +2053,7 @@ export type HACKATHONS_COPY_QUERY_RESULT =
       partners: {
         title: string;
         lead: string;
+        hostsPrefix: null;
       } | null;
       league: null;
       offer: null;
@@ -2253,6 +2255,7 @@ export type HACKATHONS_COPY_QUERY_RESULT =
       partners: {
         title: string;
         lead: string;
+        hostsPrefix: string;
       } | null;
       league: {
         title: string;

@@ -288,19 +288,20 @@ test.describe("interactive figures", { tag: "@keyboard" }, () => {
     const ribbon = page.getByRole("slider", { name: "Hackathon timeline" });
     const index = async () =>
       Number(await ribbon.getAttribute("aria-valuenow"));
-    // It starts on the next hackathon: the league's Grand Finale at
-    // MOCK_CMS_NOW.
-    await expect(ribbon).toHaveAttribute("aria-valuetext", /Grand Finale/);
-    const start = await index();
 
     await ribbon.focus();
     await expect(ribbon).toBeFocused();
-    await page.keyboard.press("ArrowLeft");
-    await expect.poll(index).toBe(start - 1);
     await page.keyboard.press("Home");
-    await expect(ribbon).toHaveAttribute("aria-valuetext", /^GPT-3 Makeathon/);
+    await expect(ribbon).toHaveAttribute("aria-valuetext", /GPT-3 Makeathon/);
+    await page.keyboard.press("ArrowRight");
+    await expect.poll(index).toBe(1);
+    // The last stop is the next hackathon: the league's Grand Finale at
+    // MOCK_CMS_NOW.
     await page.keyboard.press("End");
-    await expect.poll(index).toBe(start);
+    await expect
+      .poll(index)
+      .toBe(Number(await ribbon.getAttribute("aria-valuemax")));
+    await expect(ribbon).toHaveAttribute("aria-valuetext", /Grand Finale/);
   });
 
   test("the events co-host reel steps with the arrow keys", async ({

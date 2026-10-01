@@ -13,16 +13,8 @@ export type HackathonsCopy = {
   hero: {
     eyebrow: string;
     title: string;
-    /**
-     * `{{count}}`: the hackathons so far; `{{since}}`: the year of the
-     * first Makeathon.
-     */
+    /** `{{since}}`: the year of the first Makeathon. */
     lead: string;
-    /**
-     * Over the ribbon's last year, on wide screens: `{{count}}` is the
-     * hackathons in the twelve months before today.
-     */
-    recentLabel: string;
     /** The accessible name of the ribbon's list of hackathons. */
     ribbonLabel: string;
     /** The accessible name of the ribbon's slider (pointer and arrow keys). */
@@ -54,6 +46,8 @@ export type HackathonsCopy = {
      * the first.
      */
     lead: string;
+    /** Before an event's co-hosts: "with" (… "with BMW and CDTM"). */
+    hostsPrefix: string;
   };
   league: {
     title: string;
@@ -83,9 +77,10 @@ export const hackathonsPageTokens = ["count", "since"] as const;
 export const hackathonsCopyTemplate: HackathonsCopy = {
   hero: {
     eyebrow: "Hackathons",
-    title: "Every hackathon we have run, to scale.",
-    lead: "Since {{since}} we have run {{count}} hackathons: the Makeathon every spring, smaller ones with partners in between, and since {{league.foundedYear}} a European league. {{impact.hackathonParticipants}}+ people have built at them.",
-    recentLabel: "{{count}} in the last twelve months",
+    title: "Our hackathons, to scale.",
+    // TODO(content): the ribbon's other hackathons start with the CMS events
+    // (August 2025); add the earlier ones (OpenAI, AWS, ...) as events.
+    lead: "Since {{since}} we have run the Makeathon every year, hackathons with partners in between, and since {{league.foundedYear}} a European league. {{impact.hackathonParticipants}}+ people have built at them.",
     ribbonLabel: "Every TUM.ai hackathon, oldest first",
     sliderLabel: "Hackathon timeline",
     nextLabel: "Next",
@@ -96,7 +91,7 @@ export const hackathonsCopyTemplate: HackathonsCopy = {
     },
   },
   makeathon: {
-    title: "The Makeathon, every spring since {{since}}.",
+    title: "The Makeathon, every year since {{since}}.",
     lead: "Our flagship. Students and young professionals get a weekend to build AI for problems that companies, hospitals and research labs bring. It is free to take part, and our Makeathon team runs it from start to finish. Over {{community.makeathonSize}} people took part in the latest edition.",
     linkLabel: "Visit the Makeathon site",
     photo: {
@@ -112,7 +107,8 @@ export const hackathonsCopyTemplate: HackathonsCopy = {
   },
   partners: {
     title: "Between Makeathons, hackathons with partners.",
-    lead: "{{count}} more since {{since}}, each on one theme, over a day or a weekend.",
+    lead: "{{count}} since {{since}}, each on one theme, over a day or a weekend.",
+    hostsPrefix: "with",
   },
   league: {
     title:

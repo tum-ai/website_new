@@ -10,6 +10,8 @@
  * repeated on this site.
  */
 
+import { formatList } from "@/lib/words";
+
 /** One match of a league season, as its own site lists it. */
 export type LeagueMatch = {
   /** Stable key, as in the league site's URL (`munich-1`). */
@@ -84,15 +86,10 @@ export const hackathonFacts = {
 export type LeagueSummary = {
   /** The host cities in order of their first match. */
   cities: readonly string[];
-  /** "Munich, Paris, and Zurich". */
+  /** "Munich, Paris and Zurich" (house style, `formatList`). */
   citiesText: string;
   matchCount: number;
 };
-
-const cityList = new Intl.ListFormat("en", {
-  style: "long",
-  type: "conjunction",
-});
 
 /** The cities and match count of a season, derived from its matches. */
 export function leagueSummaryOf(
@@ -101,7 +98,7 @@ export function leagueSummaryOf(
   const cities = [...new Set(matches.map(({ city }) => city))];
   return {
     cities,
-    citiesText: cityList.format(cities),
+    citiesText: formatList(cities),
     matchCount: matches.length,
   };
 }
