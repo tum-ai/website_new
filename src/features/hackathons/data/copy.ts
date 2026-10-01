@@ -78,8 +78,6 @@ export const hackathonsCopyTemplate: HackathonsCopy = {
   hero: {
     eyebrow: "Hackathons",
     title: "Our hackathons, to scale.",
-    // TODO(content): the ribbon's other hackathons start with the CMS events
-    // (August 2025); add the earlier ones (OpenAI, AWS, ...) as events.
     lead: "Since {{since}} we have run the Makeathon every year, hackathons with partners in between, and since {{league.foundedYear}} a European league. {{impact.hackathonParticipants}}+ people have built at them.",
     ribbonLabel: "Every TUM.ai hackathon, oldest first",
     sliderLabel: "Hackathon timeline",

@@ -24,7 +24,9 @@ deleting the event; references between content types are normal references.
 
 The old site's types (`event`, `partner`, `research`) are not in this table: the backfill copies
 their published documents from `production` into `redesign` unchanged (same `_id`s), adding the
-events' `hosts` from `liveEventHosts` in `lib/mock-cms.ts`. The new site reads partners from
+events' `hosts` from `liveEventHosts` in `lib/mock-cms.ts`. It also creates the events only
+`redesign` has: the earlier hackathons in `redesignOnlyEvents` (`lib/mock-cms.ts`,
+`scripts/sanity/redesign-events.ts`), which editors own in the Studio once imported. The new site reads partners from
 `organization` instead (a partner is an organisation with a `partnerTier`);
 `pnpm sanity:migrate-partners` moves the copied `partner` documents onto organisations, and the
 Studio hides `partner` outside `production` (ADR 0009, "Partners are organisations"). On every

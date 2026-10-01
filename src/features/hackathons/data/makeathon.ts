@@ -35,6 +35,15 @@ export const makeathonEditions: readonly MakeathonEdition[] = [
     note: "The first Makeathon, built on GPT-3 with OpenAI, appliedAI and TUM Venture Labs, and judged by a jury from Cherry Ventures, Microsoft and IBM.",
   },
   {
+    // Source: the old site's edition page (Wayback Machine, tum-ai.com/makeathon-oct21.html).
+    key: "2021-autumn",
+    name: "Virtual Makeathon",
+    start: "2021-10-15",
+    end: "2021-10-17",
+    city: "Online",
+    note: "A virtual 48-hour edition with Microsoft and appliedAI. Team Cabalytics won with CabMate, which predicts where taxis will be needed across the city.",
+  },
+  {
     key: "2022-spring",
     name: "AI4SocialGood",
     start: "2022-04-22",

@@ -15,6 +15,7 @@ import { buildQandaBackfill } from "@/features/qanda/content";
 import { buildResearchBackfill } from "@/features/research/content";
 import { buildRexBackfill } from "@/features/research/rex-content";
 import type { BackfillDocument } from "@/lib/cms-backfill";
+import { buildRedesignEventsBackfill } from "./redesign-events";
 
 /**
  * Every content slice's backfill builder: what `pnpm sanity:backfill`
@@ -57,6 +58,12 @@ export const backfillSlices: readonly {
   { slice: "features/home/content.ts", build: buildHomeBackfill },
   { slice: "features/events/content.ts", build: buildEventsBackfill },
   { slice: "features/hackathons/content.ts", build: buildHackathonsBackfill },
+
+  // Events only the new site's dataset has (earlier hackathons)
+  {
+    slice: "scripts/sanity/redesign-events.ts",
+    build: buildRedesignEventsBackfill,
+  },
 ];
 
 /** The documents of every slice, in registry order. */

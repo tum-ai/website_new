@@ -304,6 +304,56 @@ const pastEvents: PastEvent[] = [
   },
 ];
 
+/** A redesign-only event: a {@link PastEvent} with the key its backfill id comes from. */
+type RedesignOnlyEvent = PastEvent & { key: string };
+
+/**
+ * Hackathons from before the CMS events start (August 2025), found in
+ * 2026-10 from TUM.ai's own posts. They exist only in the new site's
+ * dataset: `pnpm sanity:backfill` creates them there (with these posters,
+ * `docs/asset-sources/events-hackathons.md`), and editors own them in the
+ * Studio after that. Kept apart from {@link pastEvents}, whose co-hosts the
+ * backfill matches against `production`.
+ */
+export const redesignOnlyEvents: readonly RedesignOnlyEvent[] = [
+  {
+    // Sources: the TUM.ai post (linkedin.com/posts/tum-ai_thetensortournament-t3-aihackathon-activity-7180834874352623616-ZR3B)
+    // and the tournament's site (ca-roll.github.io/tensor).
+    key: "tensor-tournament-2024",
+    id: "mock-event-tensor-tournament-2024",
+    title: "The Tensor Tournament T3 2024",
+    description:
+      "A machine learning hackathon at eight universities in Bavaria on one Saturday: three tasks, teams of up to three and six hours, with the TUM.ai Homebase as a Munich site.",
+    event_date: "2024-05-04T08:00:00.000Z",
+    end_date: "2024-05-04T14:00:00.000Z",
+    location: "TUM.ai Homebase",
+    city: "Munich",
+    category: "Hackathon",
+    poster: "/assets/events/hackathons/tensor-tournament-2024-poster.webp",
+  },
+  {
+    // Sources: the TUM.ai announcement and recap posts (linkedin.com/posts/tum-ai_alephalphahackathon-aiinnovation-phariamodels-activity-7259467060093603841-qu1g,
+    // tum-ai_tumaix-aleph-alpha-benchpress-makeathon-activity-7269986457535008768-r4On),
+    // Aleph Alpha's repost and github.com/Aleph-Alpha-Research/benchpress-hackathon.
+    key: "benchpress-makeathon-2024",
+    id: "mock-event-benchpress-makeathon-2024",
+    title: "TUM.ai x Aleph Alpha: BenchPress Makeathon",
+    description:
+      "A weekend with Aleph Alpha at the TUM.ai Homebase: make small language models perform on an expert benchmark with agents, retrieval and prompt engineering.",
+    event_date: "2024-11-23T00:00:00.000Z",
+    end_date: "2024-11-24T00:00:00.000Z",
+    location: "TUM.ai Homebase",
+    city: "Munich",
+    category: "Hackathon",
+    coHosts: [host("aleph-alpha", "Aleph Alpha")],
+    poster: "/assets/events/hackathons/benchpress-makeathon-poster.webp",
+    images: [
+      "/assets/events/hackathons/benchpress-makeathon-poster.webp",
+      "/assets/events/hackathons/benchpress-makeathon-group.webp",
+    ],
+  },
+];
+
 /**
  * The co-hosts of the live events, with the title and start that identify
  * each event: the `hosts` that `pnpm sanity:backfill` adds to its copies of
@@ -375,7 +425,10 @@ export function getMockEvents(now: Date = new Date()): Event[] {
 
   return [
     ...upcoming,
-    ...pastEvents.map((event) => ({
+    ...[
+      ...pastEvents,
+      ...redesignOnlyEvents.map(({ key: _key, ...event }) => event),
+    ].map((event) => ({
       ...event,
       hosts: (event.coHosts ?? []).map(({ name }) => name),
       images: event.images ?? (event.poster ? [event.poster] : []),

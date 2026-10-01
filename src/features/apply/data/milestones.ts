@@ -138,18 +138,20 @@ export const milestones: MilestoneTemplate[] = [
     detail: "Med.ai, TUM.ai Build and TUM.ai Robotics",
   },
   {
+    // The key keeps its old year: it is the CMS document id. The BenchPress
+    // Makeathon with Aleph Alpha took place on 23 and 24 November 2024.
+    key: "2025-hackathon-with-aleph-alpha",
+    year: 2024,
+    kind: "events",
+    title: "Hackathon with Aleph Alpha",
+    detail: "The first smaller hackathon",
+  },
+  {
     key: "2025-icml-and-iclr",
     year: 2025,
     kind: "research",
     title: "ICML and ICLR",
     detail: "A main-track paper at ICML and a publication at ICLR",
-  },
-  {
-    key: "2025-hackathon-with-aleph-alpha",
-    year: 2025,
-    kind: "events",
-    title: "Hackathon with Aleph Alpha",
-    detail: "The first smaller hackathon",
   },
   {
     key: "2025-event-with-openai",

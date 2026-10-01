@@ -346,6 +346,11 @@ export const organizations: readonly Organization[] = [
       width: 303,
       height: 150,
     },
+    logoOnDark: {
+      src: "/assets/events/hosts/aleph-alpha.webp",
+      width: 303,
+      height: 150,
+    },
     partnership: { tier: "supporter", category: "Industry Partners" },
   }),
   defineOrganization({
