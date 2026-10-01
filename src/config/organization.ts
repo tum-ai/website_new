@@ -124,11 +124,13 @@ export const legalEntity = {
    * Entry in the register of associations (Vereinsregister): the Imprint's
    * "Vereinsregisternummer" and the JSON-LD identifier. Confirmed by Justin
    * on 2026-09-28; it replaces the different number the JSON-LD used to carry.
-   *
-   * TODO(content): the register court (Registergericht) is not named
-   * anywhere. Add it here once confirmed, and show it on the Imprint.
    */
   registerNumber: "VR 209059",
+  /**
+   * The court that keeps that register (the Imprint's "Registergericht"),
+   * as North Data lists the entry ("Amtsgericht München VR 209059").
+   */
+  registerCourt: "Amtsgericht München",
   /**
    * The association's mailbox for legal and data-protection requests: the
    * controller contact and the objection address on the Privacy page.
@@ -146,6 +148,7 @@ export const legalEntity = {
   registeredOffice: PostalAddress;
   headquarters: PostalAddress;
   registerNumber: string;
+  registerCourt: string;
   invoiceEmail: string;
   representatives: readonly string[];
 };

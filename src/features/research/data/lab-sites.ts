@@ -61,7 +61,7 @@ export const labSiteTemplates: readonly LabSiteTemplate[] = [
       "lmu",
       "lmu-klinikum",
       "klinikum-rechts-der-isar",
-      // TODO(content): confirm MI4People is based in Munich.
+      // MI4People gGmbH, Maxhofstraße 76, München (its imprint).
       "mi4people",
     ],
   },

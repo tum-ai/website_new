@@ -702,11 +702,13 @@ export const organizations: readonly Organization[] = [
   defineOrganization({
     key: "cohere",
     name: "Cohere",
+    href: "https://cohere.com/",
     logo: { src: "/assets/partners/logos/cohere.svg", width: 118, height: 20 },
   }),
   defineOrganization({
     key: "databricks",
     name: "Databricks",
+    href: "https://www.databricks.com/",
     logo: {
       src: "/assets/partners/logos/databricks.svg",
       width: 713,
@@ -716,11 +718,13 @@ export const organizations: readonly Organization[] = [
   defineOrganization({
     key: "meta",
     name: "Meta",
+    href: "https://about.meta.com/",
     logo: { src: "/assets/partners/logos/meta.svg", width: 50, height: 11 },
   }),
   defineOrganization({
     key: "y-combinator",
     name: "Y Combinator",
+    href: "https://www.ycombinator.com/",
     logo: {
       src: "/assets/e-lab/partners/y-combinator.webp",
       width: 128,
@@ -729,10 +733,15 @@ export const organizations: readonly Organization[] = [
   }),
 
   // Partner case studies (`partners.ts`)
-  defineOrganization({ key: "quantco", name: "QuantCo" }),
+  defineOrganization({
+    key: "quantco",
+    name: "QuantCo",
+    href: "https://www.quantco.com/",
+  }),
   defineOrganization({
     key: "osapiens",
     name: "Osapiens",
+    href: "https://osapiens.com/",
     logo: {
       src: "/assets/partners/logos/osapiens.svg",
       width: 143,
@@ -835,6 +844,7 @@ export const organizations: readonly Organization[] = [
   defineOrganization({
     key: "google-cloud",
     name: "Google Cloud",
+    href: "https://cloud.google.com/",
     logo: {
       src: "/assets/e-lab/partners/google.svg",
       width: 118,
@@ -852,6 +862,7 @@ export const organizations: readonly Organization[] = [
   defineOrganization({
     key: "accel",
     name: "Accel",
+    href: "https://www.accel.com/",
     logo: { src: "/assets/e-lab/partners/accel.svg", width: 1288, height: 413 },
   }),
 
@@ -859,7 +870,6 @@ export const organizations: readonly Organization[] = [
   // research projects cite them, the /research globe places them
   // (features/research/data/lab-sites.ts), and Helmholtz Munich is med.AI's
   // partner on /projects. Named as the project titles name them.
-  // TODO(content): add each one's website.
   defineOrganization({ key: "tum", name: "TUM", href: "https://www.tum.de/" }),
   defineOrganization({
     key: "tum-camp",
@@ -871,8 +881,11 @@ export const organizations: readonly Organization[] = [
     name: "LMU Klinikum",
     href: "https://www.lmu-klinikum.de/",
   }),
-  // TODO(content): the partner "Helmholtz" (helmholtz.de, the association's
-  // wordmark) and the Munich centre may be one partner; merge them if so.
+  // TODO(content): decided 2026-10-01: the partner "Helmholtz" (helmholtz.de,
+  // the association's wordmark) is this Munich centre, shown as "Helmholtz
+  // Munich". Merging the two needs the `redesign` dataset's "Helmholtz"
+  // document and the org-references migration moved with it, and a Helmholtz
+  // Munich logo; until then both entries stay.
   defineOrganization({
     key: "helmholtz-munich",
     name: "Helmholtz Munich",
@@ -896,6 +909,7 @@ export const organizations: readonly Organization[] = [
   defineOrganization({
     key: "beyond-presence",
     name: "Beyond Presence",
+    href: "https://www.beyondpresence.ai/",
     logoOnDark: {
       src: "/assets/events/hosts/beyond-presence.svg",
       width: 226,
@@ -953,6 +967,7 @@ export const organizations: readonly Organization[] = [
   defineOrganization({
     key: "manage-and-more",
     name: "Manage & More",
+    href: "https://www.manageandmore.de/",
     logoOnDark: {
       src: "/assets/events/hosts/manage-and-more.svg",
       width: 484,
@@ -963,6 +978,7 @@ export const organizations: readonly Organization[] = [
   defineOrganization({
     key: "mercura",
     name: "Mercura",
+    href: "https://www.mercura.ai/",
     logoOnDark: {
       src: "/assets/events/hosts/mercura-icon.webp",
       width: 160,
@@ -1003,6 +1019,7 @@ export const organizations: readonly Organization[] = [
   defineOrganization({
     key: "red-bull",
     name: "Red Bull",
+    href: "https://www.redbull.com/",
     logoOnDark: {
       src: "/assets/events/hosts/red-bull.svg",
       width: 224,
@@ -1013,6 +1030,7 @@ export const organizations: readonly Organization[] = [
   defineOrganization({
     key: "tacto",
     name: "Tacto",
+    href: "https://www.tacto.ai/",
     logoOnDark: {
       src: "/assets/events/hosts/tacto.svg",
       width: 124,
@@ -1023,6 +1041,7 @@ export const organizations: readonly Organization[] = [
   defineOrganization({
     key: "yellow",
     name: "Yellow",
+    href: "https://yellow.vc/",
     logoOnDark: {
       src: "/assets/events/hosts/yellow.svg",
       width: 311,

@@ -250,9 +250,9 @@ export const tracedVenture: TracedVenture = {
       source: "https://www.spherecast.ai/",
     },
     {
-      // TODO(content): dated; after September 2026 reword this (past tense,
-      // or the next edition) or drop it.
-      text: "Sphereworld, its own conference in New York, September 2026",
+      // Held on 15 September 2026 (spherecast.ai/sphereworld); switch to
+      // the next edition once Spherecast announces one.
+      text: "Sphereworld, its own forum for supply chain leaders, held in New York in September 2026",
       source: "https://www.spherecast.ai/sphereworld",
     },
   ],

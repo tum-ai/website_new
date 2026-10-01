@@ -74,10 +74,10 @@ export function PrivacyPage() {
                 Diese Datenschutz-Information gilt für die Datenverarbeitung
                 durch die
               </p>
-              {/* TODO(content): the controller is named "TUM e.V." here, while
-                  the Imprint names TUM.ai e.V. (legalEntity.legalName). Which
-                  is right? Legal wording, so it stays until confirmed. */}
-              <AddressCard title="TUM e.V." className="sm:max-w-sm">
+              <AddressCard
+                title={legalEntity.legalName}
+                className="sm:max-w-sm"
+              >
                 {registeredOfficeLinesDe.map((line) => (
                   <p key={line}>{line}</p>
                 ))}
@@ -535,12 +535,11 @@ export function PrivacyPage() {
             </LegalSection>
 
             <LegalSection {...aktualitaet}>
-              {/* TODO(content): the "Stand" date predates the removal of the
-                  Google Analytics section. Should it move to the date that
-                  change goes live? */}
+              {/* The month the redesign goes live with the Google Analytics
+                  section removed; move it if the launch slips. */}
               <p>
                 Diese Datenschutzerklärung ist aktuell gültig und hat den Stand
-                August 2024.
+                Oktober 2026.
               </p>
               <p>
                 Durch die Weiterentwicklung unserer Website und Angebote darüber

@@ -6,6 +6,7 @@ import { LegalNav, LegalSection, legalLinkClass } from "./legal-document";
 /** Organisation facts, shown as a definition list; every value is from config. */
 const organisation = [
   { term: "Vereinsregisternummer", value: legalEntity.registerNumber },
+  { term: "Registergericht", value: legalEntity.registerCourt },
   { term: "Adresse", value: registeredOfficeAddressLine },
   { term: "Vertreter", value: legalEntity.representatives.join(", ") },
   {
@@ -67,14 +68,15 @@ export function ImprintPage() {
 
           <Prose>
             <LegalSection id="haftung-fuer-inhalte" title="Haftung für Inhalte">
-              {/* TODO(content): §§ 7 to 10 TMG are now §§ 7 to 10 DDG (the
-                  Digitale-Dienste-Gesetz replaced the TMG in May 2024). A
-                  maintainer updates the legal wording. */}
+              {/* The DDG replaced the TMG on 14 May 2024. § 7 Abs. 1 TMG has
+                  no successor (liability for own content follows from the
+                  general laws), and the no-monitoring rule of §§ 8 to 10 TMG
+                  is now Art. 8 of the Digital Services Act. */}
               <p>
-                Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene
-                Inhalte auf diesen Seiten nach den allgemeinen Gesetzen
-                verantwortlich. Nach §§ 8 bis 10 TMG sind wir als
-                Diensteanbieter jedoch nicht verpflichtet, übermittelte oder
+                Als Diensteanbieter sind wir für eigene Inhalte auf diesen
+                Seiten nach den allgemeinen Gesetzen verantwortlich. Nach Art. 8
+                der Verordnung (EU) 2022/2065 (Digital Services Act) sind wir
+                als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder
                 gespeicherte fremde Informationen zu überwachen oder nach
                 Umständen zu forschen, die auf eine rechtswidrige Tätigkeit
                 hinweisen. Verpflichtungen zur Entfernung oder Sperrung der
