@@ -910,6 +910,7 @@ export type Campaign = {
   startTime?: string;
   endDate?: string;
   endTime?: string;
+  priority?: number;
   headerCta?: {
     variant?: "member" | "partner" | "elab" | "notify";
     label?: string;
@@ -1272,7 +1273,7 @@ export type APPLICATION_WINDOW_QUERY_RESULT = {
 
 // Source: ../config/schedule-content.ts
 // Variable: CAMPAIGNS_QUERY
-// Query: *[_type == "campaign"] | order(startDate desc, _id asc){  "id": _id,  name,  startDate,  startTime,  endDate,  endTime,  headerCta{ variant, label, notifyUrl, yieldsToRecruiting },  "featuredEventId": featuredEvent._ref}
+// Query: *[_type == "campaign"] | order(startDate desc, _id asc){  "id": _id,  name,  startDate,  startTime,  endDate,  endTime,  priority,  headerCta{ variant, label, notifyUrl, yieldsToRecruiting },  "featuredEventId": featuredEvent._ref}
 export type CAMPAIGNS_QUERY_RESULT = Array<{
   id: string;
   name: string;
@@ -1280,6 +1281,7 @@ export type CAMPAIGNS_QUERY_RESULT = Array<{
   startTime: string | null;
   endDate: string | null;
   endTime: string | null;
+  priority: number | null;
   headerCta: {
     variant: "elab" | "member" | "notify" | "partner" | null;
     label: string | null;

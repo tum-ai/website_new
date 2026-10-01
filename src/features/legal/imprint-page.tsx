@@ -1,22 +1,27 @@
 import { Container, Eyebrow, PageHero, Prose, Section } from "@/components/ds";
-import { contactEmails, registeredOfficeAddressLine } from "@/config/contact";
+import { registeredOfficeAddressLine } from "@/config/contact";
 import { legalEntity } from "@/config/organization";
+import { getSiteFacts } from "@/config/site-settings-content";
 import { LegalNav, LegalSection, legalLinkClass } from "./legal-document";
 
-/** Organisation facts, shown as a definition list; every value is from config. */
-const organisation = [
-  { term: "Vereinsregisternummer", value: legalEntity.registerNumber },
-  { term: "Registergericht", value: legalEntity.registerCourt },
-  { term: "Adresse", value: registeredOfficeAddressLine },
-  { term: "Vertreter", value: legalEntity.representatives.join(", ") },
-  {
-    term: "Mail",
-    value: contactEmails.general,
-    href: `mailto:${contactEmails.general}`,
-  },
-] satisfies { term: string; value: string; href?: string }[];
+/**
+ * Organisation facts, shown as a definition list: the legal entity from
+ * config (legal facts change only through a code review), the contact email
+ * from the site facts, so it follows the CMS like every other page.
+ */
+function organisationFacts(generalEmail: string) {
+  return [
+    { term: "Vereinsregisternummer", value: legalEntity.registerNumber },
+    { term: "Registergericht", value: legalEntity.registerCourt },
+    { term: "Adresse", value: registeredOfficeAddressLine },
+    { term: "Vertreter", value: legalEntity.representatives.join(", ") },
+    { term: "Mail", value: generalEmail, href: `mailto:${generalEmail}` },
+  ] satisfies { term: string; value: string; href?: string }[];
+}
 
-export function ImprintPage() {
+export async function ImprintPage() {
+  const { contactEmails } = await getSiteFacts();
+  const organisation = organisationFacts(contactEmails.general);
   return (
     <main lang="de">
       <PageHero

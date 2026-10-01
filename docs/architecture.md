@@ -273,7 +273,7 @@ Facts that change per semester, cohort or year live once in `src/config/`
 | `membership.ts` | recruiting: open flag, form URL and the current `round` (Munich dates), plus the schedule helpers (`roundSchedule`, `isMembershipApplicationOpen`, `applicationProgress`, `recruitingTimeline`) |
 | `navigation.ts` | header, footer and legal links, `headerCtaSetting`, the dated header CTA schedule (`headerCtaSchedule`, `headerCtaAt`), per-route header options |
 | `calls-to-action.ts` | `callToActionLabels`: "Become a Member", "Become a Partner", "Apply now", "Questions and answers", the one owner of the standing CTA labels |
-| `campaigns.ts` | dated campaigns in Munich time, `resolveActiveCampaigns` (the latest start wins) |
+| `campaigns.ts` | dated campaigns in Munich time, `resolveActiveCampaigns` (the highest priority, then the latest start, wins) |
 | `site-facts.ts` | `SiteFacts` (what the CMS `siteSettings` singleton holds), its code fallback, `deriveSiteFacts` |
 | `site-settings-content.ts`, `schedule-content.ts` | content slices (server only): `getSiteFacts()`; `getMembershipWindow()`, `getELabWindow()`, `getCampaigns()`, `getFeaturedEventId()` |
 | `seo.ts` | per-page metadata and JSON-LD, `rootMetadata` |

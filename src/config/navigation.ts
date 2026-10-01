@@ -217,6 +217,7 @@ export type HeaderCtaSchedule = {
   campaigns: readonly {
     startsAt: number | null;
     endsAt: number | null;
+    priority?: number;
     cta: CampaignHeaderCta;
   }[];
 };
@@ -246,8 +247,17 @@ export function headerCtaSchedule({
       : { override: headerCtaSetting.override }),
     ctas: headerCtasFor(eLabCohortName),
     campaigns: scheduleCampaigns(campaigns).flatMap(
-      ({ startsAt, endsAt, headerCta }) =>
-        headerCta ? [{ startsAt, endsAt, cta: headerCta }] : [],
+      ({ startsAt, endsAt, priority, headerCta }) =>
+        headerCta
+          ? [
+              {
+                startsAt,
+                endsAt,
+                ...(priority === undefined ? {} : { priority }),
+                cta: headerCta,
+              },
+            ]
+          : [],
     ),
   };
 }
@@ -257,8 +267,8 @@ export function headerCtaSchedule({
  *
  * - no campaign running: `override`, else `member` while membership
  *   applications are open, else `fallback` ({@link selectHeaderCta});
- * - a campaign running (the latest started one that sets a CTA, see
- *   `resolveActiveCampaigns`): its variant replaces `fallback` when it
+ * - a campaign running (the one with the highest priority, then the latest
+ *   start, that sets a CTA; see `resolveActiveCampaigns`): its variant replaces `fallback` when it
  *   yields to recruiting, and `override` otherwise.
  *
  * The campaign's label and `notifyUrl` (the `notify` target) apply only when

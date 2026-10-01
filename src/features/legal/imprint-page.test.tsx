@@ -14,8 +14,8 @@ function factValue(term: string) {
 }
 
 describe("ImprintPage", () => {
-  test("reads the association's legal facts from config", () => {
-    render(<ImprintPage />);
+  test("reads the association's legal facts from config", async () => {
+    render(await ImprintPage());
     const { registeredOffice } = legalEntity;
 
     const organisation = screen.getByRole("region", { name: "Organisation" });
@@ -43,7 +43,7 @@ describe("ImprintPage", () => {
   });
 
   test("has no axe violations", async () => {
-    const { container } = render(<ImprintPage />);
+    const { container } = render(await ImprintPage());
     expect(await axe(container)).toHaveNoViolations();
   });
 });

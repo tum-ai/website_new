@@ -131,6 +131,18 @@ describe("resolveActiveCampaigns", () => {
     ).toStrictEqual(["open-ended"]);
   });
 
+  test("a higher priority wins over a later start; equal priorities fall back to it", () => {
+    const list = [
+      { ...dated("pinned", "2026-09-01T00:00:00Z", null), priority: 1 },
+      dated("burst", "2026-10-10T00:00:00Z", "2026-10-12T00:00:00Z"),
+      { ...dated("demoted", "2026-10-11T00:00:00Z", null), priority: -1 },
+      { ...dated("late", "2026-10-05T00:00:00Z", null), priority: 1 },
+    ];
+    expect(
+      ids(resolveActiveCampaigns(list, at("2026-10-11T12:00:00Z"))),
+    ).toStrictEqual(["late", "pinned", "burst", "demoted"]);
+  });
+
   test("equal starts keep their order; a missing start counts as earliest", () => {
     const list = [
       dated("always", null, null),

@@ -10,8 +10,8 @@ import { contentImageField } from "./fields";
  * trailing "+". Derived figures (official members, completed cohorts, the
  * program summary) are computed from these fields, never stored.
  *
- * Kept in code on purpose: the legal entity and Imprint (the board reviews
- * that wording), the site URL and SEO, and the navigation structure.
+ * Kept in code on purpose: the legal entity and Imprint wording (the board
+ * reviews it; the Imprint's contact email is the general role email here), the site URL and SEO, and the navigation structure.
  */
 
 const countField = (name: string, title: string, description: string) =>
@@ -216,7 +216,7 @@ export const siteSettingsType = defineType({
       type: "object",
       group: "contact",
       description:
-        "Shared team inboxes only, never a personal address. The Imprint keeps its own address in code.",
+        "Shared team inboxes only, never a personal address. The general address is also the Imprint's contact.",
       validation: (Rule) => Rule.required(),
       fields: [
         roleEmail(

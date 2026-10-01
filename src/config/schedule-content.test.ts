@@ -86,6 +86,7 @@ const campaignDocuments: BackfillDocument[] = [
     startDate: "2026-08-01",
     endDate: "2026-09-27",
     endTime: "22:00",
+    priority: 2,
     headerCta: { variant: "elab", yieldsToRecruiting: false },
   },
   {
@@ -156,6 +157,7 @@ describe("the campaigns", () => {
         startDate: "01.08.2026",
         endDate: "27.09.2026",
         endTime: "22:00",
+        priority: 2,
         headerCta: { variant: "elab", yieldsToRecruiting: false },
       },
     ]);

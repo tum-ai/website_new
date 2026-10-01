@@ -52,6 +52,7 @@ export const CAMPAIGNS_QUERY =
   startTime,
   endDate,
   endTime,
+  priority,
   headerCta{ variant, label, notifyUrl, yieldsToRecruiting },
   "featuredEventId": featuredEvent._ref
 }`);
@@ -180,6 +181,10 @@ export function campaignsFromQuery(result: CAMPAIGNS_QUERY_RESULT): Campaign[] {
     }
     const headerCta = headerCtaOf(item.headerCta);
     const featuredEventId = item.featuredEventId?.trim();
+    const priority =
+      typeof item.priority === "number" && Number.isInteger(item.priority)
+        ? item.priority
+        : undefined;
     const campaign: Campaign = {
       id: item.id,
       name: item.name ?? item.id,
@@ -187,6 +192,7 @@ export function campaignsFromQuery(result: CAMPAIGNS_QUERY_RESULT): Campaign[] {
       ...(startTime ? { startTime } : {}),
       ...(endDate ? { endDate } : {}),
       ...(endDate && endTime ? { endTime } : {}),
+      ...(priority ? { priority } : {}),
       ...(headerCta ? { headerCta } : {}),
       ...(featuredEventId ? { featuredEventId } : {}),
     };

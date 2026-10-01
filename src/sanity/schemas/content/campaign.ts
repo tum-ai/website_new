@@ -122,11 +122,19 @@ export const campaignType = defineType({
       validation: (Rule) => Rule.custom(validateMunichTime),
     }),
     defineField({
+      name: "priority",
+      title: "Priority",
+      type: "number",
+      description:
+        "Optional, a whole number. When campaigns overlap, the higher priority wins the header button and the featured event; empty counts as 0. Equal priorities: the campaign that started last wins.",
+      validation: (Rule) => Rule.integer().min(-10).max(10),
+    }),
+    defineField({
       name: "headerCta",
       title: "Header button",
       type: "object",
       description:
-        "Optional. The button at the end of the header while the campaign runs. When two campaigns overlap, the one that started last wins.",
+        "Optional. The button at the end of the header while the campaign runs. When two campaigns overlap, the higher priority wins, then the one that started last.",
       options: { collapsible: true, collapsed: false },
       fields: [
         defineField({

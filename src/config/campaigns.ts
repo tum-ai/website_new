@@ -45,6 +45,11 @@ export type Campaign = {
   endDate?: string;
   /** End time on `endDate` (exclusive), "HH:MM"; the end of that day when missing. */
   endTime?: string;
+  /**
+   * Which campaign wins while several run: higher first; missing counts as
+   * 0. Equal priorities fall back to the latest start.
+   */
+  priority?: number;
   headerCta?: CampaignHeaderCta;
   /**
    * The `_id` of the `event` the campaign features: the CMS field is a weak
@@ -111,16 +116,21 @@ export function scheduleCampaigns(
   });
 }
 
-/** The part of a scheduled campaign that decides when it runs. */
-type Dated = { startsAt: number | null; endsAt: number | null };
+/** The part of a scheduled campaign that decides when it runs and wins. */
+type Dated = {
+  startsAt: number | null;
+  endsAt: number | null;
+  priority?: number;
+};
 
 /**
  * The campaigns running at `now` (from `startsAt` inclusive to `endsAt`
  * exclusive; a `null` start means "already running", a `null` end
- * "open-ended"), in precedence order: the latest start first, because the
- * most recently started campaign is the one an editor meant to show now.
- * Ties keep their input order (the query's order). Callers take the first
- * campaign that sets what they need (a header CTA, a featured event).
+ * "open-ended"), in precedence order: the highest `priority` first (missing
+ * is 0), then the latest start, because the most recently started campaign
+ * is the one an editor meant to show now. Remaining ties keep their input
+ * order (the query's order). Callers take the first campaign that sets what
+ * they need (a header CTA, a featured event).
  */
 export function resolveActiveCampaigns<T extends Dated>(
   campaigns: readonly T[],
@@ -128,13 +138,18 @@ export function resolveActiveCampaigns<T extends Dated>(
 ): T[] {
   const at = now.getTime();
   const start = ({ startsAt }: Dated) => startsAt ?? Number.NEGATIVE_INFINITY;
+  const priority = ({ priority }: Dated) => priority ?? 0;
   return campaigns
     .filter(
       ({ startsAt, endsAt }) =>
         (startsAt === null || at >= startsAt) &&
         (endsAt === null || at < endsAt),
     )
-    .sort((a, b) => (start(a) === start(b) ? 0 : start(a) < start(b) ? 1 : -1));
+    .sort(
+      (a, b) =>
+        priority(b) - priority(a) ||
+        (start(a) === start(b) ? 0 : start(a) < start(b) ? 1 : -1),
+    );
 }
 
 /** The instants at which {@link resolveActiveCampaigns} can change. */

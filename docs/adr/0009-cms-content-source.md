@@ -298,7 +298,9 @@ name, so the content types are included); there is nothing to merge.
 ### Risks
 
 - **Legal text stays in code.** Imprint, privacy and disclaimer, and `legalEntity`, are not moved:
-  their wording needs the board, and a CMS edit would bypass review.
+  their wording needs the board, and a CMS edit would bypass review. The Imprint's contact email
+  is the exception: it is the general role email from `siteSettings`, so it never drifts from the
+  rest of the site.
 - **Editor permissions.** The Studio uses the project's roles; the free plan has no per-dataset
   roles, so anyone who can edit in the project can edit page content and both datasets. Review
   who has access before launch.
