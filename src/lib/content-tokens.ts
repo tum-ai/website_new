@@ -44,6 +44,10 @@ export const contentTokenNames = [
   "impact.publicationVenues",
   "impact.hackathonParticipants",
   "community.makeathonSize",
+  "league.cities",
+  "league.cityCount",
+  "league.matchCount",
+  "league.foundedYear",
 ] as const;
 
 type ContentTokenName = (typeof contentTokenNames)[number];

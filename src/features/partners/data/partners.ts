@@ -161,14 +161,14 @@ export const partnerPillarTemplates: readonly Omit<PartnerPillar, "metric">[] =
       title: "Hackathons",
       metricLabel: "Hackers",
       description:
-        "Over all our hackathons (OpenAI, AWS, Anthropic, Google). {{community.makeathonSize}}+ hackers at our signature Makeathon, European Hackathon League across 4 cities (Munich, Berlin, Zurich, Paris), partners host challenges, booths and company pitches.",
+        "Over all our hackathons (OpenAI, AWS, Anthropic, Google). {{community.makeathonSize}}+ hackers at our signature Makeathon, European Hackathon League across {{league.cityCount}} cities ({{league.cities}}), partners host challenges, booths and company pitches.",
       image: {
         src: "/assets/homepage/Makeathon.webp",
         width: 1920,
         height: 1280,
         alt: "The TUM.ai Makeathon team",
       },
-      href: "/events",
+      href: "/hackathons",
     },
   ];
 

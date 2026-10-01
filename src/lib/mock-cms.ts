@@ -136,6 +136,7 @@ const pastEvents: PastEvent[] = [
     description:
       "Powered by BKW Engineering: 40 students and engineers from across the DACH region, 24 hours of building, testing and creating.",
     event_date: "2025-10-18T00:00:00.000Z",
+    end_date: "2025-10-19T00:00:00.000Z",
     location: "Mark, Munich",
     city: "Munich",
     category: "Hackathon",
@@ -182,6 +183,7 @@ const pastEvents: PastEvent[] = [
     description:
       "Ship systems, not prototypes: 48 hours to design high-throughput, cost-efficient data systems, judged by concrete metrics and product impact.",
     event_date: "2026-03-06T00:00:00.000Z",
+    end_date: "2026-03-08T00:00:00.000Z",
     location: "TUM.ai Homebase",
     city: "Munich",
     category: "Hackathon",
@@ -226,6 +228,7 @@ const pastEvents: PastEvent[] = [
     description:
       "Build solutions for better public discourse in 48 hours, and rethink how we debate, share and decide online.",
     event_date: "2026-04-10T16:00:00.000Z",
+    end_date: "2026-04-12T16:00:00.000Z",
     location: "Cafe Luitpold",
     city: "Munich",
     category: "Hackathon",
@@ -247,6 +250,7 @@ const pastEvents: PastEvent[] = [
     title: "Makeathon 2026",
     description: "Less talking, more building: the TUM.ai Makeathon 2026.",
     event_date: "2026-04-17T00:00:00.000Z",
+    end_date: "2026-04-19T00:00:00.000Z",
     location: "TUM Main Campus",
     city: "Munich",
     category: "Hackathon",
@@ -258,6 +262,7 @@ const pastEvents: PastEvent[] = [
     description:
       "Got a startup idea you can't stop thinking about? Project A, Yellow and the TUM.ai E-Lab join forces for an evening of building.",
     event_date: "2026-04-30T16:00:00.000Z",
+    end_date: "2026-05-01T16:00:00.000Z",
     location: "TUM.ai Office, Rosenheimer Straße 116A - 7th floor",
     city: "Munich",
     category: "Hackathon",
@@ -281,6 +286,7 @@ const pastEvents: PastEvent[] = [
     description:
       "A 24-hour hackathon on the energy industry: renewables, the grid, storage and AI for energy.",
     event_date: "2026-06-12T16:00:00.000Z",
+    end_date: "2026-06-13T16:00:00.000Z",
     location: "Location TBA on signup",
     city: "Munich",
     category: "Hackathon",

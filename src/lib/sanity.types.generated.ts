@@ -3020,12 +3020,13 @@ export type PEOPLE_QUERY_RESULT = Array<{
 
 // Source: ../lib/sanity-queries.ts
 // Variable: EVENTS_QUERY
-// Query: *[_type == "event"]{  "id": _id,  title,  "description": coalesce(desc, ""),  event_date,  location,  city,  category,  "hosts": coalesce(hosts, []),  "coHosts": coHosts[]->{ key, name },  "poster": poster.asset->url,  "images": array::compact([poster.asset->url, img.asset->url]),  sign_up}
+// Query: *[_type == "event"]{  "id": _id,  title,  "description": coalesce(desc, ""),  event_date,  end_date,  location,  city,  category,  "hosts": coalesce(hosts, []),  "coHosts": coHosts[]->{ key, name },  "poster": poster.asset->url,  "images": array::compact([poster.asset->url, img.asset->url]),  sign_up}
 export type EVENTS_QUERY_RESULT = Array<{
   id: string;
   title: string;
   description: string | "";
   event_date: string;
+  end_date: string | null;
   location: string | null;
   city: "Munich" | "Online" | null;
   category: "E-Lab" | "Event" | "Hackathon" | "Speaker" | null;

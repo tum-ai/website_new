@@ -190,6 +190,15 @@ const hardcodedFacts: [RegExp, string][] = [
     "research output and hackathon reach: config/impact.ts",
   ],
   [
+    /\behl\.gg\b|\bmakeathon\.tum-ai\.com\b/i,
+    "hackathon sites: config/hackathons.ts",
+  ],
+  [
+    // The league's cities or their count, typed next to its name.
+    /hackathon league\b[^.\n]*?(\b\d+ cities\b|\b(?:Berlin|Paris|Zurich)\b)/i,
+    "league cities: hackathonFacts.league in config/hackathons.ts",
+  ],
+  [
     /\b[a-z]+\.[a-z]+@tum-ai\.com\b/i,
     "personal emails: use a role address from config/contact.ts",
   ],
