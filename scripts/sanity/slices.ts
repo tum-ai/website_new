@@ -6,6 +6,7 @@ import { buildMemberStoriesBackfill } from "@/features/community/people-content"
 import { buildELabBackfill } from "@/features/e-lab/content";
 import { buildVentureBackfill } from "@/features/e-lab/venture-content";
 import { buildEventsBackfill } from "@/features/events/content";
+import { buildHackathonsBackfill } from "@/features/hackathons/content";
 import { buildHomeBackfill } from "@/features/home/content";
 import { buildPartnersBackfill } from "@/features/partners/content";
 import { buildOrganizationBackfill } from "@/features/partners/organization-content";
@@ -55,6 +56,7 @@ export const backfillSlices: readonly {
   { slice: "features/research/content.ts", build: buildResearchBackfill },
   { slice: "features/home/content.ts", build: buildHomeBackfill },
   { slice: "features/events/content.ts", build: buildEventsBackfill },
+  { slice: "features/hackathons/content.ts", build: buildHackathonsBackfill },
 ];
 
 /** The documents of every slice, in registry order. */

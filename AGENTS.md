@@ -7,7 +7,8 @@ hold only adapters (see "Agent setup").
 ## Project
 
 The public website of TUM.ai, the AI student initiative at TUM (tum-ai.com): landing page, events,
-research, projects, E-Lab (startup incubator), partners, community, apply, Q&A and legal pages.
+hackathons, research, projects, E-Lab (startup incubator), partners, community, apply, Q&A and
+legal pages.
 Stack: Next.js 16 App Router, React 19, TypeScript, Tailwind CSS v4 (CSS-first tokens), a Base UI
 design system in `src/components/ds`, Sanity CMS embedded at `/studio`, Vercel. pnpm 10, Node 24.
 Biome lints and formats; Vitest runs unit and component tests; Playwright runs E2E, axe and visual.
@@ -141,7 +142,7 @@ also fails when any `"use client"` module reaches a `server-only` module, `next/
 | Task | Where | Skill |
 |---|---|---|
 | Add a page | route + feature folder + `config/seo.ts` + nav + `siteRoutes` in `e2e/fixtures.ts` | `add-page` |
-| Change a site fact | after launch: the Studio (`/studio`, Site settings or an application window); in code, the matching file in `src/config/` (`e-lab`, `membership`, `organization`, `contact`, `community`, `impact`, `site`), the fallback | `site-facts` |
+| Change a site fact | after launch: the Studio (`/studio`, Site settings or an application window); in code, the matching file in `src/config/` (`e-lab`, `membership`, `organization`, `contact`, `community`, `impact`, `hackathons`, `site`), the fallback | `site-facts` |
 | Change static copy | after launch: the page's singleton in `/studio`; in code, `src/features/<domain>/data/` (the fallback a slice serves) | |
 | Change a standing CTA label | `src/config/calls-to-action.ts` | |
 | Change a CMS type or field | `src/sanity/schemas/` then query, types, mock, UI | `cms-content-model` |

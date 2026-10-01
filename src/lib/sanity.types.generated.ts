@@ -15,6 +15,106 @@
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: ../../node_modules/.cache/sanity/schema.json
+export type SanityImageAssetReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+};
+
+export type HackathonsCopy = {
+  _id: string;
+  _type: "hackathonsCopy";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  hero?: {
+    eyebrow: string;
+    title: string;
+    lead: string;
+    ribbonLabel: string;
+    sliderLabel: string;
+    nextLabel: string;
+    legend?: {
+      makeathon: string;
+      league: string;
+      partner: string;
+    };
+  };
+  makeathon?: {
+    title: string;
+    lead: string;
+    linkLabel: string;
+    photo: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      _type: "image";
+    };
+    photoCaption: string;
+    editions: Array<{
+      key: string;
+      name: string;
+      start: string;
+      end: string;
+      city: string;
+      note: string;
+      link?: {
+        label: string;
+        href: string;
+      };
+      _type: "makeathonEdition";
+      _key: string;
+    }>;
+  };
+  partners?: {
+    title: string;
+    lead: string;
+  };
+  league?: {
+    title: string;
+    lead: string;
+    linkLabel: string;
+  };
+  offer?: {
+    title: string;
+    lead: string;
+    items: Array<string>;
+    addOns: string;
+  };
+  closing?: {
+    title: string;
+    lead: string;
+    student?: {
+      audience: string;
+      text: string;
+      actionLabel: string;
+    };
+    partner?: {
+      audience: string;
+      text: string;
+    };
+  };
+};
+
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop";
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+};
+
+export type SanityImageHotspot = {
+  _type: "sanity.imageHotspot";
+  x: number;
+  y: number;
+  height: number;
+  width: number;
+};
+
 export type EventsCopy = {
   _id: string;
   _type: "eventsCopy";
@@ -43,13 +143,6 @@ export type EventsCopy = {
     nextUp: string;
     membership: string;
   };
-};
-
-export type SanityImageAssetReference = {
-  _ref: string;
-  _type: "reference";
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
 };
 
 export type ELabCopy = {
@@ -123,22 +216,6 @@ export type ELabCopy = {
     partnersReader: string;
     partnersText: string;
   };
-};
-
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop";
-  top: number;
-  bottom: number;
-  left: number;
-  right: number;
-};
-
-export type SanityImageHotspot = {
-  _type: "sanity.imageHotspot";
-  x: number;
-  y: number;
-  height: number;
-  width: number;
 };
 
 export type Milestone = {
@@ -1211,11 +1288,12 @@ export type SanityImageAsset = {
 };
 
 export type AllSanitySchemaTypes =
-  | EventsCopy
   | SanityImageAssetReference
-  | ELabCopy
+  | HackathonsCopy
   | SanityImageCrop
   | SanityImageHotspot
+  | EventsCopy
+  | ELabCopy
   | Milestone
   | ApplyCopy
   | PersonReference
@@ -1948,6 +2026,261 @@ export type EVENTS_COPY_QUERY_RESULT =
     }
   | null;
 
+// Source: ../features/hackathons/content.ts
+// Variable: HACKATHONS_COPY_QUERY
+// Query: *[_id == "hackathonsCopy"][0]{  hero{    eyebrow,    title,    lead,    ribbonLabel,    sliderLabel,    nextLabel,    legend{ makeathon, league, partner }  },  makeathon{    title,    lead,    linkLabel,    "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},    photoCaption,    editions[]{ key, name, start, end, city, note, link{ label, href } }  },  partners{ title, lead },  league{ title, lead, linkLabel },  offer{ title, lead, items, addOns },  closing{    title,    lead,    student{ audience, text, actionLabel },    partner{ audience, text }  }}
+export type HACKATHONS_COPY_QUERY_RESULT =
+  | {
+      hero: null;
+      makeathon: null;
+      partners: null;
+      league: null;
+      offer: null;
+      closing: null;
+    }
+  | {
+      hero: {
+        eyebrow: null;
+        title: string;
+        lead: string;
+        ribbonLabel: null;
+        sliderLabel: null;
+        nextLabel: null;
+        legend: null;
+      } | null;
+      makeathon: null;
+      partners: {
+        title: string;
+        lead: string;
+      } | null;
+      league: null;
+      offer: null;
+      closing: null;
+    }
+  | {
+      hero: null;
+      makeathon: null;
+      partners: null;
+      league: null;
+      offer: null;
+      closing: {
+        title: null;
+        lead: null;
+        student: null;
+        partner: null;
+      } | null;
+    }
+  | {
+      hero: {
+        eyebrow: null;
+        title: string;
+        lead: string;
+        ribbonLabel: null;
+        sliderLabel: null;
+        nextLabel: null;
+        legend: null;
+      } | null;
+      makeathon: null;
+      partners: null;
+      league: null;
+      offer: null;
+      closing: {
+        title: string;
+        lead: null;
+        student: null;
+        partner: null;
+      } | null;
+    }
+  | {
+      hero: {
+        eyebrow: null;
+        title: string;
+        lead: string;
+        ribbonLabel: null;
+        sliderLabel: null;
+        nextLabel: null;
+        legend: null;
+      } | null;
+      makeathon: null;
+      partners: null;
+      league: null;
+      offer: null;
+      closing: {
+        title: string;
+        lead: null;
+        student: {
+          audience: string;
+          text: string;
+          actionLabel: null;
+        } | null;
+        partner: {
+          audience: string;
+          text: string;
+        } | null;
+      } | null;
+    }
+  | {
+      hero: null;
+      makeathon: null;
+      partners: null;
+      league: null;
+      offer: null;
+      closing: {
+        title: string;
+        lead: string;
+        student: null;
+        partner: null;
+      } | null;
+    }
+  | {
+      hero: {
+        eyebrow: null;
+        title: null;
+        lead: null;
+        ribbonLabel: null;
+        sliderLabel: null;
+        nextLabel: null;
+        legend: null;
+      } | null;
+      makeathon: null;
+      partners: null;
+      league: null;
+      offer: null;
+      closing: {
+        title: string;
+        lead: string;
+        student: null;
+        partner: null;
+      } | null;
+    }
+  | {
+      hero: {
+        eyebrow: null;
+        title: string;
+        lead: string;
+        ribbonLabel: null;
+        sliderLabel: null;
+        nextLabel: null;
+        legend: null;
+      } | null;
+      makeathon: null;
+      partners: null;
+      league: null;
+      offer: null;
+      closing: {
+        title: string;
+        lead: string;
+        student: null;
+        partner: null;
+      } | null;
+    }
+  | {
+      hero: {
+        eyebrow: string;
+        title: string;
+        lead: string;
+        ribbonLabel: null;
+        sliderLabel: null;
+        nextLabel: null;
+        legend: null;
+      } | null;
+      makeathon: null;
+      partners: null;
+      league: null;
+      offer: null;
+      closing: {
+        title: string;
+        lead: string;
+        student: {
+          audience: string;
+          text: string;
+          actionLabel: null;
+        } | null;
+        partner: {
+          audience: string;
+          text: string;
+        } | null;
+      } | null;
+    }
+  | {
+      hero: {
+        eyebrow: string;
+        title: string;
+        lead: string;
+        ribbonLabel: string;
+        sliderLabel: string;
+        nextLabel: string;
+        legend: {
+          makeathon: string;
+          league: string;
+          partner: string;
+        } | null;
+      } | null;
+      makeathon: {
+        title: string;
+        lead: string;
+        linkLabel: string;
+        photo: {
+          src: string | null;
+          width: number | null;
+          height: number | null;
+          alt: string | null;
+          hotspot: {
+            x: number;
+            y: number;
+          } | null;
+          crop: {
+            top: number;
+            bottom: number;
+            left: number;
+            right: number;
+          } | null;
+        };
+        photoCaption: string;
+        editions: Array<{
+          key: string;
+          name: string;
+          start: string;
+          end: string;
+          city: string;
+          note: string;
+          link: {
+            label: string;
+            href: string;
+          } | null;
+        }>;
+      } | null;
+      partners: {
+        title: string;
+        lead: string;
+      } | null;
+      league: {
+        title: string;
+        lead: string;
+        linkLabel: string;
+      } | null;
+      offer: {
+        title: string;
+        lead: string;
+        items: Array<string>;
+        addOns: string;
+      } | null;
+      closing: {
+        title: string;
+        lead: string;
+        student: {
+          audience: string;
+          text: string;
+          actionLabel: string;
+        } | null;
+        partner: {
+          audience: string;
+          text: string;
+        } | null;
+      } | null;
+    }
+  | null;
+
 // Source: ../features/home/content.ts
 // Variable: HOME_COPY_QUERY
 // Query: *[_id == "homeCopy"][0]{  hero{    title,    lead,    partnersLabel,    "photos": photos[]{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}  },  mission{ statement, body },  ledger[]{ key, label, note },  programs{    title,    lead,    items[]{      "id": key,      title,      description,      href,      "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}    }  },  room{    title,    lead,    "photos": photos[]{ "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}, caption }  },  join{    title,    lead,    stepsTitle,    steps[]{ title, dates },    quote{ "name": person->name, excerpt }  },  partners{ title, lead, moreLabel, "quote": quote->key }}
@@ -1988,6 +2321,25 @@ export type HOME_COPY_QUERY_RESULT =
       room: null;
       join: null;
       partners: null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+        partnersLabel: null;
+        photos: null;
+      } | null;
+      mission: null;
+      ledger: null;
+      programs: null;
+      room: null;
+      join: null;
+      partners: {
+        title: string;
+        lead: string;
+        moreLabel: null;
+        quote: null;
+      } | null;
     }
   | {
       hero: {
@@ -2403,6 +2755,28 @@ export type PROJECTS_CONTENT_QUERY_RESULT = {
           lead: string;
           student: null;
           partner: null;
+        } | null;
+      }
+    | {
+        hero: {
+          eyebrow: string;
+          title: string;
+          lead: string;
+          figureLabel: null;
+        } | null;
+        openSeat: null;
+        closing: {
+          title: string;
+          lead: string;
+          student: {
+            audience: string;
+            text: string;
+          } | null;
+          partner: {
+            audience: string;
+            text: string;
+            textWithoutPartner: null;
+          } | null;
         } | null;
       }
     | {

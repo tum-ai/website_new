@@ -1,0 +1,41 @@
+/*
+ * /hackathons only: the load moment of the hero ribbon. The axis draws in
+ * from the left, and each hackathon grows out of it as the axis passes its
+ * date (--x, the mark's place on the track): Makeathons rise, the others
+ * drop into their lanes. Transform and opacity only; under reduced motion
+ * the ribbon is simply there.
+ */
+
+@layer components {
+  @keyframes hk-axis-in {
+    from {
+      transform: scaleX(0);
+    }
+  }
+
+  @keyframes hk-mark-in {
+    from {
+      opacity: 0;
+      transform: scaleY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hk-animate .hk-axis {
+      animation: hk-axis-in 1.1s var(--ease-brand) 0.5s both;
+    }
+
+    .hk-animate .hk-mark {
+      animation: hk-mark-in 0.5s var(--ease-brand) both;
+      animation-delay: calc(0.5s + var(--x, 0) * 1.1s);
+    }
+
+    .hk-animate .hk-mark[data-lane="above"] {
+      transform-origin: bottom;
+    }
+
+    .hk-animate .hk-mark[data-lane="below"] {
+      transform-origin: top;
+    }
+  }
+}

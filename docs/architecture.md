@@ -61,6 +61,7 @@ its feature folder:
 | `/apply` | `features/apply/apply-page.tsx` | static + content slices, ISR 1 h (render date) |
 | `/community` | `features/community/community-page.tsx` | static + content slices, ISR 1 h (layout) |
 | `/events` | `features/events/events-page.tsx` (+ `events.css`) | Sanity + content slices, ISR 5 min |
+| `/hackathons` | `features/hackathons/hackathons-page.tsx` (+ `hackathons.css`) | Sanity events + content slice, ISR 5 min |
 | `/e-lab` | `features/e-lab/e-lab-page.tsx` (+ `e-lab.css`) | static + content slices, ISR 5 min (application phase) |
 | `/partners` | `features/partners/partners-page.tsx` (+ `partners.css`) | content slices (partners are organisations), ISR 15 min |
 | `/projects` | `features/projects/projects-page.tsx` (+ `projects.css`) | static + content slice, ISR 1 h (layout) |
@@ -100,6 +101,7 @@ built-in through any chain of imports (Turbopack would fail the production build
 | --- | --- | --- |
 | `community` | `departments`, `memberJourney`, `MembershipPhase` (the recruiting-window switch), types `JourneyStep`, `MemberStory` | `getMemberStories`, `buildMemberStoriesBackfill`, `getJourneyStages`, `memberStoryKey`, `MembershipApplyButton` |
 | `e-lab` | | `getTestimonialCards`, `buildVentureBackfill` |
+| `events` | `Lockup`, `SignUpAction`, `formatEventLocation`, `hostsBeyondTitle` (how /hackathons sets its events) | |
 | `partners` | the directory helpers `getHighlightedPartners`, `getPartnerKey`; `PartnerRotationGrid` (the rotating partner wall, a client island without CSS: its styles are global, `styles/partner-rotation.css`); `organizationByKey`, `organizationsWithKeys` | `getPartners`, `getResearchPartners`, `getPartnersCopy` (the pitch), `getPartnerCaseStudies`, `getPartnerLogos`, `buildOrganizationBackfill` |
 | `qanda` | | `faqs` (the design-system showcase) |
 | `research` | | `getRexInstitutions` |
@@ -269,6 +271,7 @@ Facts that change per semester, cohort or year live once in `src/config/`
 | `contact.ts` | role emails, `partnershipContact` (finder CC and booking page), social links |
 | `community.ts` | community figures quoted in copy (Makeathon size), `yearsSinceFounding()` |
 | `impact.ts` | research and hackathon record: publications, venues, hackathon participants |
+| `hackathons.ts` | the Makeathon's site and the European Hackathon League's season (matches, cities, founding year, site) |
 | `e-lab.ts` | cohort, application URL, deadline (Munich time), program length, funding, the `selection` funnel, phase copy |
 | `membership.ts` | recruiting: open flag, form URL and the current `round` (Munich dates), plus the schedule helpers (`roundSchedule`, `isMembershipApplicationOpen`, `applicationProgress`, `recruitingTimeline`) |
 | `navigation.ts` | header, footer and legal links, `headerCtaSetting`, the dated header CTA schedule (`headerCtaSchedule`, `headerCtaAt`), per-route header options |

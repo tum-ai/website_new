@@ -10,6 +10,7 @@
 import type { Metadata } from "next";
 import { contactEmails, socialLinks } from "./contact";
 import { eLabProgramSummary } from "./e-lab";
+import { hackathonFacts } from "./hackathons";
 import { legalEntity, organizationFacts } from "./organization";
 import { absoluteUrl, siteConfig, siteTitle } from "./site";
 
@@ -123,6 +124,24 @@ const eLabJsonLd = {
   },
 };
 
+/**
+ * The Makeathon as an event series organised by TUM.ai, on /hackathons; its
+ * own site has the current edition.
+ */
+const makeathonJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "EventSeries",
+  name: "TUM.ai Makeathon",
+  description:
+    "TUM.ai's yearly Makeathon in Munich: students and young professionals build AI for challenges that partners bring.",
+  url: hackathonFacts.makeathonUrl,
+  organizer: {
+    "@type": "Organization",
+    name: organizationJsonLd.name,
+    url: organizationJsonLd.url,
+  },
+};
+
 const pages = {
   events: {
     path: "/events",
@@ -134,6 +153,19 @@ const pages = {
       name: "TUM.ai Events",
       description: "Events, Workshops, and Hackathons by TUM.ai",
     },
+  },
+  hackathons: {
+    path: "/hackathons",
+    title: "Hackathons",
+    description:
+      "Every hackathon TUM.ai has run since 2021: the Makeathon each spring, hackathons with partners, and the European Hackathon League. Bring a challenge or build at the next one.",
+    page: {
+      type: "WebPage",
+      name: "TUM.ai Hackathons",
+      description:
+        "The Makeathon, partner hackathons and the European Hackathon League by TUM.ai",
+    },
+    extra: [makeathonJsonLd],
   },
   research: {
     path: "/research",

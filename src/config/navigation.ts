@@ -35,6 +35,7 @@ export type NavLink = {
 /** The main pages, in menu order (header menu, footer "Explore"). */
 export const mainNavigation = [
   { label: "Events", href: "/events" },
+  { label: "Hackathons", href: "/hackathons" },
   { label: "Research", href: "/research" },
   { label: "Projects", href: "/projects" },
   { label: "Entrepreneurship", href: "/e-lab" },

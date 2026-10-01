@@ -16,7 +16,8 @@ singleton and the application windows: pages read the render's values, not the c
   member counts, `brandMission`, legal entity, register number, representatives), `contact.ts`
   (role emails, `partnershipContact`, social links, the Imprint address line), `community.ts`
   (Makeathon size, `yearsSinceFounding()`), `impact.ts` (publications, venues, hackathon
-  participants), `site.ts` (URL, name, tagline, `absoluteUrl()`), `navigation.ts` (links,
+  participants), `hackathons.ts` (the Makeathon's site, the European Hackathon League's season),
+  `site.ts` (URL, name, tagline, `absoluteUrl()`), `navigation.ts` (links,
   `headerCtaSetting`, per-route header options), `calls-to-action.ts` (the standing CTA labels
   "Become a Member", "Become a Partner", "Apply now", "Questions and answers"; pages and CMS copy
   never repeat them), `seo.ts` (metadata, JSON-LD). `site-facts.ts` groups the editable facts as
