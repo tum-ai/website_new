@@ -308,8 +308,10 @@ const pastEvents: PastEvent[] = [
 type RedesignOnlyEvent = PastEvent & { key: string };
 
 /**
- * Hackathons from before the CMS events start (August 2025), found in
- * 2026-10 from TUM.ai's own posts. They exist only in the new site's
+ * Hackathons the old site's events never had: the Makeathon editions before
+ * 2026, the hackathons before August 2025 found in 2026-10 in TUM.ai's own
+ * posts, and the league's matches after the Makeathon 2026. Every hackathon
+ * /hackathons draws is an event too. They exist only in the new site's
  * dataset: `pnpm sanity:backfill` creates them there (with these posters,
  * `docs/asset-sources/events-hackathons.md`), and editors own them in the
  * Studio after that. Kept apart from {@link pastEvents}, whose co-hosts the
@@ -351,6 +353,150 @@ export const redesignOnlyEvents: readonly RedesignOnlyEvent[] = [
       "/assets/events/hackathons/benchpress-makeathon-poster.webp",
       "/assets/events/hackathons/benchpress-makeathon-group.webp",
     ],
+  },
+
+  // The Makeathon editions before 2026 (the 2026 edition is a production
+  // event). Sources as in features/hackathons/data/makeathon.ts; /hackathons
+  // reads each one as its edition (same days, same city).
+  {
+    key: "makeathon-2021-gpt-3",
+    id: "mock-event-makeathon-2021-gpt-3",
+    title: "GPT-3 Makeathon",
+    description:
+      "The first TUM.ai Makeathon, built on GPT-3 with OpenAI, appliedAI and TUM Venture Labs. The finale was judged by a jury from Cherry Ventures, Microsoft and IBM.",
+    // TODO(content): the build days before the finale on 18 April 2021.
+    event_date: "2021-04-18T00:00:00.000Z",
+    city: "Munich",
+    category: "Hackathon",
+  },
+  {
+    key: "makeathon-2021-autumn",
+    id: "mock-event-makeathon-2021-autumn",
+    title: "Virtual Makeathon",
+    description:
+      "A virtual 48-hour Makeathon with Microsoft and appliedAI: teams built an AI application for a real business case. Team Cabalytics won with CabMate, which predicts where taxis will be needed across the city.",
+    event_date: "2021-10-15T00:00:00.000Z",
+    end_date: "2021-10-17T00:00:00.000Z",
+    location: "Online",
+    city: "Online",
+    category: "Hackathon",
+    poster: "/assets/events/hackathons/makeathon-2021-autumn-poster.webp",
+  },
+  {
+    key: "makeathon-2022-spring",
+    id: "mock-event-makeathon-2022-spring",
+    title: "Makeathon 2022: AI4SocialGood",
+    description:
+      "48 hours on challenges in education, environment and medtech from Infineon, Deloitte, NetApp and MI4People.",
+    event_date: "2022-04-22T00:00:00.000Z",
+    end_date: "2022-04-24T00:00:00.000Z",
+    city: "Munich",
+    category: "Hackathon",
+    poster: "/assets/events/hackathons/makeathon-2022-spring-poster.webp",
+  },
+  {
+    key: "makeathon-2022-autumn",
+    id: "mock-event-makeathon-2022-autumn",
+    title: "Makeathon 2022: AI for Global Impact",
+    description:
+      "A hybrid 48-hour Makeathon on social support, healthcare, environment and globalization, with Microsoft, Roche, IBM and TNG Consulting.",
+    event_date: "2022-09-30T00:00:00.000Z",
+    end_date: "2022-10-02T00:00:00.000Z",
+    city: "Munich",
+    category: "Hackathon",
+    poster: "/assets/events/hackathons/makeathon-2022-autumn-poster.webp",
+  },
+  {
+    key: "makeathon-2023",
+    id: "mock-event-makeathon-2023",
+    title: "Makeathon 2023: AI for everyone",
+    description:
+      "Three days on the Garching campus with challenges from ESA, Microsoft, the BMW Group, G-Research, Cohere and Daiki.",
+    event_date: "2023-04-28T00:00:00.000Z",
+    end_date: "2023-04-30T00:00:00.000Z",
+    location: "TUM Campus Garching",
+    city: "Munich",
+    category: "Hackathon",
+    poster: "/assets/events/hackathons/makeathon-2023-poster.webp",
+  },
+  {
+    key: "makeathon-2024",
+    id: "mock-event-makeathon-2024",
+    title: "Makeathon 2024",
+    description:
+      "Three days on the TUM Main Campus with sixteen partners, from Mercedes and Salesforce to Dr. von Hauner Children's Hospital, whose challenge became a paper.",
+    event_date: "2024-04-26T00:00:00.000Z",
+    end_date: "2024-04-28T00:00:00.000Z",
+    location: "TUM Main Campus",
+    city: "Munich",
+    category: "Hackathon",
+    poster: "/assets/events/hackathons/makeathon-2024-poster.webp",
+  },
+  {
+    key: "makeathon-2025",
+    id: "mock-event-makeathon-2025",
+    title: "Makeathon 2025",
+    description:
+      "Three days on the TUM Main Campus with challenges from CHECK24 and Reply and an open track by OpenAI, with QuantCo, Jane Street and Entrepreneur First.",
+    event_date: "2025-04-25T00:00:00.000Z",
+    end_date: "2025-04-27T00:00:00.000Z",
+    location: "TUM Main Campus",
+    city: "Munich",
+    category: "Hackathon",
+    poster: "/assets/events/hackathons/makeathon-2025-poster.webp",
+  },
+
+  // The European Hackathon League's season one after its first match (the
+  // Makeathon 2026), each with TUM.ai's poster for it (the Paris and Zurich
+  // ones co-branded with Iterate and J Floor). Source: the league's site
+  // (config/hackathons.ts). TODO(content): the venues.
+  {
+    key: "ehl-2026-paris",
+    id: "mock-event-ehl-2026-paris",
+    title: "European Hackathon League: Paris",
+    description:
+      "Match 2 of the European Hackathon League: a two-day research hackathon with AI students from France and Germany, guided by Inria and Max Planck researchers.",
+    event_date: "2026-06-27T00:00:00.000Z",
+    end_date: "2026-06-28T00:00:00.000Z",
+    city: "Paris",
+    category: "Hackathon",
+    poster: "/assets/events/hackathons/ehl-2026-paris-poster.webp",
+  },
+  {
+    key: "ehl-2026-munich",
+    id: "mock-event-ehl-2026-munich",
+    title: "European Hackathon League: Munich",
+    description:
+      "Match 3 of the European Hackathon League, with challenges from Viktor, QuantCo and Cognition.",
+    event_date: "2026-08-22T00:00:00.000Z",
+    end_date: "2026-08-23T00:00:00.000Z",
+    city: "Munich",
+    category: "Hackathon",
+    poster: "/assets/events/hackathons/ehl-2026-munich-poster.webp",
+  },
+  {
+    key: "ehl-2026-zurich",
+    id: "mock-event-ehl-2026-zurich",
+    title: "European Hackathon League: Zurich",
+    description:
+      "Match 4 of the European Hackathon League, with challenges from BMW Motorrad and the Agentic Systems Lab.",
+    event_date: "2026-09-12T00:00:00.000Z",
+    end_date: "2026-09-13T00:00:00.000Z",
+    city: "Zurich",
+    category: "Hackathon",
+    poster: "/assets/events/hackathons/ehl-2026-zurich-poster.webp",
+  },
+  {
+    key: "ehl-2026-grand-finale",
+    id: "mock-event-ehl-2026-grand-finale",
+    title: "European Hackathon League: Grand Finale",
+    description:
+      "The season's top 15 teams meet in Munich for the title of the European Hackathon League.",
+    event_date: "2026-10-10T00:00:00.000Z",
+    end_date: "2026-10-11T00:00:00.000Z",
+    city: "Munich",
+    category: "Hackathon",
+    poster: "/assets/events/hackathons/ehl-2026-grand-finale-poster.webp",
   },
 ];
 

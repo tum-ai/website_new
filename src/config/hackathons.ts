@@ -38,8 +38,8 @@ export const hackathonFacts = {
     /**
      * Season one, in calendar order: the Makeathon 2026 was its first match.
      *
-     * TODO(content): confirm who runs the matches outside Munich (Paris,
-     * Zurich), and the Grand Finale's venue.
+     * TUM.ai announced every match with its own poster (Paris with Iterate,
+     * Zurich with J Floor). TODO(content): the Grand Finale's venue.
      */
     matches: [
       {

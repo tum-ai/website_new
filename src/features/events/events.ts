@@ -132,6 +132,26 @@ export function groupEventsBySemester<T extends Dated>(
   return [...groups.values()];
 }
 
+/** How many semesters the register lists; the poster wall shows them all. */
+export const REGISTER_SEMESTERS = 3;
+
+/**
+ * The past events of the `count` most recent semesters that have any, in
+ * input order (newest first): the register's rows. Older events stay on the
+ * page as posters, so the register doesn't run back to the first semester.
+ */
+export function recentSemesterEvents<T extends Dated>(
+  past: readonly T[],
+  count: number = REGISTER_SEMESTERS,
+): T[] {
+  const keep = new Set(
+    groupEventsBySemester(past)
+      .slice(0, count)
+      .map(({ key }) => key),
+  );
+  return past.filter((event) => keep.has(semesterOf(event.event_date).key));
+}
+
 /** An event's co-host as /events shows it. */
 export type EventHost = {
   /**

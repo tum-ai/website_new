@@ -112,11 +112,17 @@ describe("buildMarks", () => {
     expect(mark).toMatchObject({ start: "2025-12-13", end: "2025-12-13" });
   });
 
-  test("the mock events: each Hackathon event once, the Makeathon merged", () => {
+  test("the mock events: every Makeathon and league match is an event, every event drawn once", () => {
     const events = getMockEvents(new Date("2026-10-01T12:00:00Z"));
     const hackathons = events.filter(isHackathonEvent);
-    const partners = build(events).filter(({ kind }) => kind === "partner");
-    expect(partners).toHaveLength(hackathons.length - 1);
+    const marks = build(events);
+    const records = marks.filter(({ kind }) => kind !== "partner");
+    const partners = marks.filter(({ kind }) => kind === "partner");
+    // Hackathons are a subset of events: each edition and match merges one
+    // event, and every other event is its own mark.
+    expect(records.length + partners.length).toBe(hackathons.length);
+    // No event is drawn twice: the partner marks are the rest.
+    expect(new Set(partners.map(({ id }) => id)).size).toBe(partners.length);
   });
 });
 

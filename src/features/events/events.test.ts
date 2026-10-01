@@ -15,6 +15,8 @@ import {
   indexHosts,
   lockupParts,
   pinFeaturedEvent,
+  REGISTER_SEMESTERS,
+  recentSemesterEvents,
   semesterOf,
   splitEvents,
   summarizeEvents,
@@ -565,5 +567,40 @@ describe("pinFeaturedEvent", () => {
     const before = ids(upcoming);
     pinFeaturedEvent(upcoming, "makeathon");
     expect(ids(upcoming)).toEqual(before);
+  });
+});
+
+describe("recentSemesterEvents", () => {
+  const at = (iso: string) => ({ event_date: iso });
+  const past = [
+    at("2026-06-12T16:00:00.000Z"),
+    at("2026-04-17T00:00:00.000Z"),
+    at("2026-03-06T00:00:00.000Z"),
+    at("2025-09-24T00:00:00.000Z"),
+    at("2024-11-23T00:00:00.000Z"),
+    at("2021-04-18T00:00:00.000Z"),
+  ];
+
+  test("keeps the most recent semesters that have events, in order", () => {
+    const recent = recentSemesterEvents(past, 2);
+    expect(recent).toStrictEqual(past.slice(0, 3));
+    expect(
+      new Set(recent.map(({ event_date }) => semesterOf(event_date).key)),
+    ).toStrictEqual(new Set(["2026-summer", "2025-winter"]));
+  });
+
+  test("by default the register's number of semesters", () => {
+    const semesters = new Set(
+      recentSemesterEvents(past).map(
+        ({ event_date }) => semesterOf(event_date).key,
+      ),
+    );
+    expect(semesters.size).toBe(REGISTER_SEMESTERS);
+  });
+
+  test("fewer semesters than the limit: every event", () => {
+    expect(recentSemesterEvents(past.slice(0, 2))).toStrictEqual(
+      past.slice(0, 2),
+    );
   });
 });

@@ -1147,7 +1147,7 @@ export type Event = {
   event_date: string;
   end_date?: string;
   location?: string;
-  city?: "Munich" | "Online";
+  city?: string;
   category?: "Hackathon" | "Speaker" | "Event" | "E-Lab";
   coHosts?: Array<
     {
@@ -3405,7 +3405,7 @@ export type EVENTS_QUERY_RESULT = Array<{
   event_date: string;
   end_date: string | null;
   location: string | null;
-  city: "Munich" | "Online" | null;
+  city: string | null;
   category: "E-Lab" | "Event" | "Hackathon" | "Speaker" | null;
   hosts: Array<string> | Array<never>;
   coHosts: Array<{
@@ -3443,7 +3443,7 @@ export type PUBLIC_EVENTS_QUERY_RESULT = Array<{
   description: string | "";
   event_date: string;
   location: string | null;
-  city: "Munich" | "Online" | null;
+  city: string | null;
   category: "E-Lab" | "Event" | "Hackathon" | "Speaker" | null;
   poster: string | null;
   images: Array<string>;

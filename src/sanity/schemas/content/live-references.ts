@@ -20,6 +20,8 @@ import { researchType } from "../research";
  *   before the colon in the title.
  * - `event.coHosts`: the new site lists these instead of the names in
  *   `hosts`, which it reads only for an event without any.
+ * - `event.city`: any city (the league plays in Paris and Zurich), where the
+ *   old site's list offers Munich and Online only.
  */
 
 /** `fields` with `added` inserted after the field named `after`. */
@@ -82,16 +84,33 @@ const legacyHostsField = (field: FieldDefinition): FieldDefinition =>
       }
     : field;
 
+/** Any city, written as the event's own page names it. */
+const openCityField = (field: FieldDefinition): FieldDefinition =>
+  field.name === "city"
+    ? defineField({
+        name: "city",
+        title: "City",
+        type: "string",
+        description:
+          "Where it takes place: “Munich”, “Paris”, “Zurich”, or “Online” for a virtual event.",
+        validation: (Rule) => Rule.max(40),
+      })
+    : field;
+
 const eventWithCoHosts = defineType({
   ...eventType,
-  fields: withFieldsAfter(eventType.fields.map(legacyHostsField), "category", [
-    organizationList({
-      name: "coHosts",
-      title: "Co-hosts",
-      description:
-        "Companies, labs and initiatives that ran or backed the event with TUM.ai: co-hosts, sponsors and challenge partners. Not speakers or jury members. /events lists every one in its hero, with its logo for dark backgrounds when it has one.",
-    }),
-  ]),
+  fields: withFieldsAfter(
+    eventType.fields.map(legacyHostsField).map(openCityField),
+    "category",
+    [
+      organizationList({
+        name: "coHosts",
+        title: "Co-hosts",
+        description:
+          "Companies, labs and initiatives that ran or backed the event with TUM.ai: co-hosts, sponsors and challenge partners. Not speakers or jury members. /events lists every one in its hero, with its logo for dark backgrounds when it has one.",
+      }),
+    ],
+  ),
 });
 
 /**

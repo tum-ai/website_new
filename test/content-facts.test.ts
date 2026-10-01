@@ -194,8 +194,9 @@ const hardcodedFacts: [RegExp, string][] = [
     "hackathon sites: config/hackathons.ts",
   ],
   [
-    // The league's cities or their count, typed next to its name.
-    /hackathon league\b[^.\n]*?(\b\d+ cities\b|\b(?:Berlin|Paris|Zurich)\b)/i,
+    // The league's cities or their count, typed into copy next to its name
+    // (an event's own title, "European Hackathon League: Paris", is data).
+    /hackathon league\b[^.\n]*?\b\d+ cities\b|hackathon league\b[^.\n:]*?\b(?:Berlin|Paris|Zurich)\b/i,
     "league cities: hackathonFacts.league in config/hackathons.ts",
   ],
   [
