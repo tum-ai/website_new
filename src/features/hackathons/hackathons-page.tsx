@@ -24,13 +24,14 @@ function splitAttribution(attribution: string) {
 }
 
 /**
- * /hackathons, TUM.ai as an organiser of hackathons. The page's one bold
- * element is the ribbon in the hero: every hackathon since the first
- * Makeathon, at its real dates. The bands then read it lane by lane (the
- * Makeathon, the hackathons between, the league), give partners their way
- * in, and the close returns to the ribbon's end with the next hackathon.
- * The copy comes from the content slice (`content.ts`), the other
- * hackathons from the CMS events, the league from `config/hackathons.ts`.
+ * /hackathons, TUM.ai as an organiser of hackathons, and of its two
+ * flagships above all. The hero claims both and draws the ribbon: every
+ * hackathon since the first Makeathon, at its real dates. The league
+ * follows while its season is live, then the Makeathon that opened it,
+ * the hackathons between, the partners' way in, and the close returns to
+ * the ribbon's end with the next hackathon. The copy comes from the content
+ * slice (`content.ts`), the other hackathons from the CMS events, the
+ * league from `config/hackathons.ts`.
  */
 export async function HackathonsPage({
   events,
@@ -72,9 +73,9 @@ export async function HackathonsPage({
   return (
     <main>
       <HackathonsHero hero={view.hero} />
+      <LeagueSection league={view.league} />
       <MakeathonSection makeathon={view.makeathon} />
       <PartnerHackathonsSection partners={view.partners} voice={voice} />
-      <LeagueSection league={view.league} />
       <OfferSection offer={view.offer} outcome={outcome} />
       <ClosingSection closing={view.closing} />
     </main>

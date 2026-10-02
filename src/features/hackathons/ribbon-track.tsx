@@ -4,26 +4,21 @@ import type { DrawnMark } from "./hackathons-view";
 import { RIBBON } from "./ribbon";
 
 /**
- * Lane sizes per use: the hero's ribbon, one year's row of it on a phone,
- * and the closing strip. `--above` is the Makeathons' height above the
+ * Lane sizes per use: the hero's ribbon, and one year's row of it on a
+ * phone. `--above` is the Makeathons' height above the
  * axis; `--lane-step` the pitch of the lanes below it, `--lane-h` a mark's
  * height in them.
  */
 const sizes = {
   hero: {
-    "--above": "clamp(7rem, 24svh, 15rem)",
-    "--lane-step": "2rem",
-    "--lane-h": "1.5rem",
+    "--above": "clamp(4rem, 13svh, 13rem)",
+    "--lane-step": "clamp(1.25rem, 2.8svh, 2rem)",
+    "--lane-h": "clamp(0.875rem, 2svh, 1.5rem)",
   },
   year: {
     "--above": "3rem",
     "--lane-step": "1.125rem",
     "--lane-h": "0.75rem",
-  },
-  strip: {
-    "--above": "5rem",
-    "--lane-step": "1.5rem",
-    "--lane-h": "1.125rem",
   },
 } as const satisfies Record<string, Record<`--${string}`, string>>;
 
@@ -36,14 +31,8 @@ const kindStyles = {
 /** A fraction as a CSS percentage. */
 const percent = (fraction: number) => `${fraction * 100}%`;
 
-function Mark({
-  mark,
-  solidUpcoming,
-}: {
-  mark: DrawnMark;
-  solidUpcoming: boolean;
-}) {
-  const hollow = mark.upcoming && !solidUpcoming;
+function Mark({ mark }: { mark: DrawnMark }) {
+  const hollow = mark.upcoming;
   return (
     <span
       data-lane={mark.lane === 0 ? "above" : "below"}
@@ -76,11 +65,6 @@ type RibbonTrackProps = {
   /** 1 January of each year: a hairline across the track. */
   years?: readonly { year: number; x: number }[];
   size: keyof typeof sizes;
-  /**
-   * Draw hackathons still to come solid, as the close does with the next
-   * one; elsewhere they are hollow.
-   */
-  solidUpcoming?: boolean;
   /** Plays the load moment (`hackathons.css`); the hero only. */
   animate?: boolean;
   className?: string;
@@ -97,7 +81,6 @@ export function RibbonTrack({
   lanes,
   years = [],
   size,
-  solidUpcoming = false,
   animate = false,
   className,
 }: RibbonTrackProps) {
@@ -118,7 +101,7 @@ export function RibbonTrack({
         {marks
           .filter(({ lane }) => lane === 0)
           .map((mark) => (
-            <Mark key={mark.id} mark={mark} solidUpcoming={solidUpcoming} />
+            <Mark key={mark.id} mark={mark} />
           ))}
       </div>
       <div className="hk-axis h-px origin-left bg-hairline-strong" />
@@ -129,7 +112,7 @@ export function RibbonTrack({
         {marks
           .filter(({ lane }) => lane > 0)
           .map((mark) => (
-            <Mark key={mark.id} mark={mark} solidUpcoming={solidUpcoming} />
+            <Mark key={mark.id} mark={mark} />
           ))}
       </div>
     </div>

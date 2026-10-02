@@ -1,4 +1,5 @@
-import { Eyebrow, Section, TopBlend } from "@/components/ds";
+import { Fragment } from "react";
+import { ButtonLink, Eyebrow, Section, TopBlend } from "@/components/ds";
 import { cn } from "@/lib/cn";
 import type { hackathonsView } from "./hackathons-view";
 import type { MarkKind } from "./marks";
@@ -14,9 +15,15 @@ const swatches: Record<MarkKind, string> = {
   partner: "h-2.5 bg-fg/40",
 };
 
+/** "We run X. We founded Y." as its sentences, one line each. */
+const sentencesOf = (text: string) => text.split(/(?<=[.!?])\s+/);
+
 /**
- * The page's opening and its one bold element: every TUM.ai hackathon on
- * one time axis, to scale, full bleed under the heading. On wide screens
+ * The page's opening: the two flagships claimed in the headline, a way to
+ * each one's own site, a line on the league's Grand Finale (its date
+ * until it ends, then its champion), and
+ * every TUM.ai hackathon on one time axis, to scale, full bleed under the
+ * heading. On wide screens
  * with motion allowed, scrolling replays the record (`RibbonReplay`); phones
  * get one row per year on the same scale. Screen readers get the list, each
  * hackathon with its kind and dates.
@@ -64,19 +71,64 @@ export function HackathonsHero({ hero }: { hero: View["hero"] }) {
           w: placed.get(entry.id)?.w ?? 0,
         }))}
         intro={
-          <div className="max-w-3xl">
+          <div className="max-w-4xl">
             <Eyebrow className="motion-safe:animate-rise-sm">
               {hero.eyebrow}
             </Eyebrow>
             <h1
               id="hackathons-hero-title"
-              className="mt-6 text-display-lg text-fg [animation-delay:80ms] motion-safe:animate-rise-sm"
+              className="mt-6 text-balance text-display-lg text-fg [animation-delay:80ms] motion-safe:animate-rise-sm"
             >
-              {hero.title}
+              {sentencesOf(hero.title).map((sentence, position) => (
+                <Fragment key={sentence}>
+                  {/* Between the lines, so the heading's name keeps its spaces. */}
+                  {position > 0 ? " " : null}
+                  <span className="block">{sentence}</span>
+                </Fragment>
+              ))}
             </h1>
             <p className="mt-7 max-w-2xl text-fg-muted text-lead [animation-delay:240ms] motion-safe:animate-rise-sm">
               {hero.lead}
             </p>
+            <div className="mt-9 flex flex-wrap items-center gap-3 [animation-delay:320ms] motion-safe:animate-rise-sm">
+              <ButtonLink href={hero.leagueUrl} size="lg" arrow="external">
+                {hero.leagueAction}
+              </ButtonLink>
+              <ButtonLink
+                href={hero.makeathonUrl}
+                size="lg"
+                variant="inverse"
+                arrow="external"
+              >
+                {hero.makeathonAction}
+              </ButtonLink>
+            </div>
+            {hero.line ? (
+              <a
+                href="#league"
+                className="group mt-7 inline-flex flex-wrap items-baseline gap-x-3 gap-y-1 rounded-sm text-small [animation-delay:400ms] motion-safe:animate-rise-sm"
+              >
+                <span
+                  aria-hidden="true"
+                  className="size-2 translate-y-[-0.1em] self-center rounded-full bg-highlight"
+                />
+                <span className="font-semibold text-highlight text-label-sm">
+                  {hero.line.label}
+                </span>
+                <span className="text-fg underline-offset-4 group-hover:underline">
+                  {"dateTime" in hero.line ? (
+                    <time dateTime={hero.line.dateTime}>{hero.line.text}</time>
+                  ) : (
+                    hero.line.text
+                  )}
+                </span>
+                {"meta" in hero.line && hero.line.meta ? (
+                  <span className="tabular text-fg-muted">
+                    {hero.line.meta}
+                  </span>
+                ) : null}
+              </a>
+            ) : null}
           </div>
         }
         track={

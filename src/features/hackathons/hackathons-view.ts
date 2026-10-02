@@ -1,6 +1,8 @@
 import type { KeyDateItem } from "@/components/ds";
 import { hackathonFacts } from "@/config/hackathons";
 import { formatEventLocation, hostsBeyondTitle } from "@/features/events";
+import { organizationsWithKeys } from "@/features/partners";
+import type { ContentImage } from "@/lib/cms-content-model";
 import { fillPageTokens } from "@/lib/content-copy";
 import { munichIsoDate } from "@/lib/munich-time";
 import type { Event } from "@/lib/types";
@@ -17,6 +19,7 @@ import {
   formatDayRange,
   layoutByYear,
   layoutRibbon,
+  layoutSeason,
   type PlacedMark,
 } from "./ribbon";
 
@@ -49,8 +52,34 @@ export type HackathonEventRow = {
   signUp?: string;
 };
 
-/** The closing strip starts on 1 January of the year a year ago. */
-const STRIP_DAYS = 365;
+/** One match on the league's route, with its place and state on `today`. */
+export type SeasonStopView = {
+  key: string;
+  /** "Match 1", "Grand Finale". */
+  label: string;
+  city: string;
+  /** "17 - 19 Apr". */
+  dates: string;
+  dateTime: string;
+  state: "past" | "next" | "upcoming";
+  /** "In 8 days", on the next match only. */
+  note?: string;
+  /** Under a match that was a Makeathon. */
+  detail?: string;
+  finale: boolean;
+};
+
+/** A league partner's logo for dark bands. */
+export type LeaguePartnerLogo = {
+  name: string;
+  src: string;
+  /** The artwork's width over its height. */
+  aspect: number;
+  href?: string;
+};
+
+/** The other hackathons the page lists; the events page has the rest. */
+const PARTNER_ROWS = 4;
 
 const monthYear = (day: string) =>
   new Intl.DateTimeFormat("en-GB", {
@@ -58,9 +87,6 @@ const monthYear = (day: string) =>
     year: "numeric",
     timeZone: "UTC",
   }).format(new Date(`${day}T00:00:00Z`));
-
-const shiftDays = (day: string, days: number) =>
-  new Date((dayNumber(day) + days) * 86_400_000).toISOString().slice(0, 10);
 
 /**
  * Everything /hackathons renders, shaped on the server from the copy, the
@@ -101,12 +127,20 @@ export function hackathonsView({
     return { ...placed, kind: entry.kind, upcoming: entry.upcoming };
   };
   const continuous = layoutRibbon(marks, today);
-  const closing = layoutRibbon(marks, today, {
-    from: `${shiftDays(today, -STRIP_DAYS).slice(0, 4)}-01-01`,
-  });
 
   const firstEdition = copy.makeathon.editions[0];
   const since = firstEdition ? firstEdition.start.slice(0, 4) : "";
+  const finaleMatch = league.matches.at(-1);
+  const finale = finaleMatch
+    ? finaleView(copy.league.finale, finaleMatch, today)
+    : undefined;
+  const finaleAhead = finale?.phase === "upcoming" || finale?.phase === "live";
+  const route = layoutSeason(league.matches, today);
+  const { figures } = copy.makeathon;
+  const pageTokens = {
+    since,
+    editions: String(copy.makeathon.editions.length),
+  };
   const partnerMarks = marks.filter(({ kind }) => kind === "partner");
   const partnersPast = pastMarks(partnerMarks, today);
 
@@ -117,6 +151,20 @@ export function hackathonsView({
         count: String(pastMarks(marks, today).length),
         since,
       }),
+      leagueUrl: league.url,
+      makeathonUrl: hackathonFacts.makeathonUrl,
+      // The hero's live line: the finale until it ends, then its champion.
+      line:
+        finale && finaleAhead
+          ? {
+              label: finale.label,
+              text: `${finale.city}, ${finale.dates}`,
+              dateTime: finale.dateTime,
+              meta: finale.countdown,
+            }
+          : finale?.result
+            ? { label: finale.result.label, text: finale.result.champion }
+            : undefined,
       ribbon: {
         entries,
         continuous: { ...continuous, marks: continuous.marks.map(draw) },
@@ -128,7 +176,13 @@ export function hackathonsView({
     },
     makeathon: {
       ...copy.makeathon,
-      title: fillPageTokens(copy.makeathon.title, { since }),
+      eyebrow: fillPageTokens(copy.makeathon.eyebrow, pageTokens),
+      figures: [figures.latest, figures.editions, figures.league].map(
+        ({ value, label }) => ({
+          value: fillPageTokens(value, pageTokens),
+          label: fillPageTokens(label, pageTokens),
+        }),
+      ),
       // Newest first, as a record reads.
       editions: [...copy.makeathon.editions].reverse(),
       url: hackathonFacts.makeathonUrl,
@@ -139,19 +193,29 @@ export function hackathonsView({
         count: String(partnersPast.length),
         since: partnersPast[0] ? monthYear(partnersPast[0].start) : "",
       }),
-      rows: hackathonEventRows(partnerMarks, events, today),
+      rows: hackathonEventRows(partnerMarks, events, today).slice(
+        0,
+        PARTNER_ROWS,
+      ),
     },
     league: {
       ...copy.league,
+      name: league.name,
       url: league.url,
-      dates: leagueDates(today),
+      dates: leagueDates(today, copy.league.makeathonDetail),
+      season: seasonStops(today, copy.league.makeathonDetail),
+      progress: route.progress,
+      finale,
+      partners: leaguePartners(),
     },
     offer: copy.offer,
     closing: {
       ...copy.closing,
-      strip: { ...closing, marks: closing.marks.map(draw) },
-      next: next ? byId.get(next.id) : undefined,
-      nextLabel: copy.hero.nextLabel,
+      // Until the finale ends, students can follow it too.
+      finale:
+        finale && finaleAhead
+          ? { label: finale.actionLabel, url: league.url }
+          : undefined,
     },
   };
 }
@@ -191,23 +255,124 @@ function daysUntil(day: string, today: string): string {
   return days === 1 ? "Tomorrow" : `In ${days} days`;
 }
 
-/** The season's matches as a register, each with its state on `today`. */
-function leagueDates(today: string): KeyDateItem[] {
+/** Where the Grand Finale stands on a day. */
+export type FinalePhase = "upcoming" | "live" | "decided" | "champion";
+
+/**
+ * The Grand Finale on `today`, from the season's last match and its copy:
+ * to come (the poster and a countdown), running ("Live now"), over (the
+ * standings link) and, once editors enter the champion, the result with
+ * the recap photo in the poster's place.
+ */
+export function finaleView(
+  copy: HackathonsCopy["league"]["finale"],
+  match: { city: string; start: string; end: string },
+  today: string,
+) {
+  const champion = copy.champion?.trim();
+  const phase: FinalePhase =
+    today < match.start
+      ? "upcoming"
+      : today <= match.end
+        ? "live"
+        : champion
+          ? "champion"
+          : "decided";
+  const over = phase === "decided" || phase === "champion";
+  const recap = phase === "champion" && copy.recapPhoto;
+  return {
+    phase,
+    label: copy.label,
+    city: match.city,
+    dates: formatDayRange(match.start, match.end, { year: false }),
+    dateTime: match.start,
+    /** "In 8 days" before, the live label during; none after. */
+    countdown:
+      phase === "upcoming"
+        ? daysUntil(match.start, today)
+        : phase === "live"
+          ? copy.liveLabel
+          : undefined,
+    /** The sentence under the date; the result replaces it. */
+    text: phase === "champion" ? undefined : over ? copy.pastText : copy.text,
+    actionLabel: over ? copy.standingsLabel : copy.actionLabel,
+    image: recap ? (copy.recapPhoto as ContentImage) : copy.poster,
+    caption: recap ? copy.recapCaption : undefined,
+    result:
+      phase === "champion" && champion
+        ? {
+            label: copy.championLabel,
+            champion,
+            runnersUpLabel: copy.runnersUpLabel,
+            runnersUp: (copy.runnersUp ?? [])
+              .map((team) => team.trim())
+              .filter(Boolean),
+          }
+        : undefined,
+  };
+}
+
+/** The state of each match on `today`: played, the next one, or to come. */
+function matchStates(today: string) {
   const { matches } = hackathonFacts.league;
   const nextIndex = matches.findIndex(({ end }) => end >= today);
-  return matches.map((match, index) => {
-    const state =
-      match.end < today ? "past" : index === nextIndex ? "next" : "upcoming";
-    return {
-      id: match.key,
-      label: `${match.label}, ${match.city}`,
-      ...("makeathon" in match && match.makeathon
-        ? { detail: "The TUM.ai Makeathon" }
-        : {}),
-      date: formatDayRange(match.start, match.end, { short: true }),
-      dateTime: match.start,
-      state,
-      ...(state === "next" ? { note: daysUntil(match.start, today) } : {}),
-    };
-  });
+  return matches.map((match, index) => ({
+    match,
+    state: (match.end < today
+      ? "past"
+      : index === nextIndex
+        ? "next"
+        : "upcoming") as SeasonStopView["state"],
+  }));
+}
+
+/** The season's matches as a register, each with its state on `today`. */
+function leagueDates(today: string, makeathonDetail: string): KeyDateItem[] {
+  return matchStates(today).map(({ match, state }) => ({
+    id: match.key,
+    label: `${match.label}, ${match.city}`,
+    ...("makeathon" in match && match.makeathon
+      ? { detail: makeathonDetail }
+      : {}),
+    date: formatDayRange(match.start, match.end, { short: true }),
+    dateTime: match.start,
+    state,
+    ...(state === "next" ? { note: daysUntil(match.start, today) } : {}),
+  }));
+}
+
+/** The season's matches in order, for the route (see `layoutSeason`). */
+function seasonStops(today: string, makeathonDetail: string): SeasonStopView[] {
+  const { matches } = hackathonFacts.league;
+  return matchStates(today).map(({ match, state }, index) => ({
+    key: match.key,
+    label: match.label,
+    city: match.city,
+    dates: formatDayRange(match.start, match.end, { short: true }),
+    dateTime: match.start,
+    state,
+    ...(state === "next" ? { note: daysUntil(match.start, today) } : {}),
+    ...("makeathon" in match && match.makeathon
+      ? { detail: makeathonDetail }
+      : {}),
+    finale: index === matches.length - 1,
+  }));
+}
+
+/** The league's partners that have artwork for dark bands, in config order. */
+function leaguePartners(): LeaguePartnerLogo[] {
+  return organizationsWithKeys(hackathonFacts.league.partners).flatMap(
+    ({ name, href, logoOnDark }) =>
+      logoOnDark && !logoOnDark.symbolOnly
+        ? [
+            {
+              name,
+              src: logoOnDark.src,
+              aspect:
+                logoOnDark.aspectRatio ?? logoOnDark.width / logoOnDark.height,
+              ...(href ? { href } : {}),
+            },
+          ]
+        : [],
+  );
 }

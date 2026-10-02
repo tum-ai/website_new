@@ -235,3 +235,42 @@ export function formatDayRange(
     ? `${a.date} to ${b.date} ${b.month}${tail}`
     : `${a.date} ${a.month} to ${b.date} ${b.month}${tail}`;
 }
+
+/** The league's season as one route, from {@link layoutSeason}. */
+export type SeasonLayout = {
+  /** Each match's column centre, a fraction of the route's width. */
+  columns: number[];
+  /**
+   * How far the season has come: a fraction of the line from the first
+   * match to the last, which advances between two matches in proportion to
+   * the days that have passed between their starts.
+   */
+  progress: number;
+};
+
+/**
+ * A league season as one route: each match in an even column, so the
+ * names never collide, joined by one line that is lit as far as today.
+ * The columns are even, the light is exact: between two matches it
+ * advances by the share of days gone between their first days.
+ */
+export function layoutSeason(
+  matches: readonly { start: string }[],
+  today: string,
+): SeasonLayout {
+  const count = matches.length;
+  const columns = matches.map((_, index) => (index + 0.5) / count);
+  if (count < 2) return { columns, progress: count === 1 ? 1 : 0 };
+  const now = dayNumber(today);
+  const starts = matches.map(({ start }) => dayNumber(start));
+  let progress = 0;
+  if (now >= starts[count - 1]) {
+    progress = 1;
+  } else if (now > starts[0]) {
+    const segment = starts.findIndex((_, index) => now < starts[index + 1]);
+    const share =
+      (now - starts[segment]) / (starts[segment + 1] - starts[segment]);
+    progress = (segment + share) / (count - 1);
+  }
+  return { columns, progress };
+}

@@ -8,6 +8,7 @@ import {
   formatDayRange,
   layoutByYear,
   layoutRibbon,
+  layoutSeason,
   nearestMark,
   type PlacedMark,
   RIBBON,
@@ -199,5 +200,55 @@ describe("formatDayRange", () => {
     expect(formatDayRange("2025-12-30", "2026-01-02", { year: false })).toBe(
       "30 December 2025 to 2 January 2026",
     );
+  });
+});
+
+describe("layoutSeason", () => {
+  // Starts 10 and then 40 days apart.
+  const season = [
+    { start: "2026-04-01" },
+    { start: "2026-04-11" },
+    { start: "2026-05-21" },
+  ];
+
+  test("columns are even, whatever the dates", () => {
+    expect(layoutSeason(season, "2026-04-01").columns).toStrictEqual([
+      1 / 6,
+      3 / 6,
+      5 / 6,
+    ]);
+  });
+
+  test("the line advances by the share of days gone between two starts", () => {
+    expect(layoutSeason(season, "2026-04-01").progress).toBe(0);
+    expect(layoutSeason(season, "2026-04-06").progress).toBe(0.25);
+    expect(layoutSeason(season, "2026-04-11").progress).toBe(0.5);
+    expect(layoutSeason(season, "2026-05-01").progress).toBe(0.75);
+    expect(layoutSeason(season, "2026-05-21").progress).toBe(1);
+  });
+
+  test("before the season and after it, the line is dark and full", () => {
+    expect(layoutSeason(season, "2025-01-01").progress).toBe(0);
+    expect(layoutSeason(season, "2027-01-01").progress).toBe(1);
+  });
+
+  test("the real season on 2 October: between Zurich and the finale", () => {
+    const { progress } = layoutSeason(
+      hackathonFacts.league.matches,
+      "2026-10-02",
+    );
+    // Zurich starts 12 September, the finale 10 October: 20 of 28 days.
+    expect(progress).toBeCloseTo((3 + 20 / 28) / 4);
+  });
+
+  test("one match or none", () => {
+    expect(layoutSeason([{ start: "2026-04-01" }], today)).toStrictEqual({
+      columns: [0.5],
+      progress: 1,
+    });
+    expect(layoutSeason([], today)).toStrictEqual({
+      columns: [],
+      progress: 0,
+    });
   });
 });

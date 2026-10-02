@@ -21,7 +21,8 @@ export type RexInstitution = LogoItem & { key: string; shortName: string };
  *
  * They live here, not in the partners' organisation table, which holds the
  * partners' logo lists; the lead in the page copy names them. MIT is also a
- * research partner, so it is the partners' organisation (by key).
+ * research partner and Inria a partner of the European Hackathon League, so
+ * both are the partners' organisations (by key).
  *
  * TODO(content): confirm we may show these four logos (Harvard, MIT and Inria
  * from Wikimedia Commons, the University of Cambridge from Wikipedia).
@@ -51,18 +52,6 @@ export const rexOwnOrganizations: Organization[] = [
       height: 53,
       alt: "University of Cambridge logo",
       aspectRatio: 65.974 / 13.978,
-    },
-  },
-  {
-    key: "inria",
-    name: "Inria",
-    shortName: "Inria",
-    logo: {
-      src: "/assets/research/rex/inria.svg",
-      width: 283,
-      height: 83,
-      alt: "Inria logo",
-      aspectRatio: 283.46 / 82.75,
     },
   },
 ];

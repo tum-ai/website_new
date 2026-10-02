@@ -170,7 +170,7 @@ export function RibbonReplay({
   const home = centres[defaultIndex] ?? 1;
   return (
     <div ref={bandRef} className="hk-replay">
-      <div className="hk-stage flex flex-col pt-[calc(var(--header-height)+clamp(2.5rem,6vw,5rem))] pb-[clamp(3rem,6vw,5rem)]">
+      <div className="hk-stage flex flex-col pt-[calc(var(--header-height)+clamp(1.5rem,min(6vw,6svh),5rem))] pb-[clamp(1.5rem,min(6vw,5svh),5rem)]">
         <Container className="grid gap-10 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:items-end lg:gap-16">
           {/* Keyed: Container passes its children on as one list. */}
           <Fragment key="intro">{intro}</Fragment>
@@ -193,7 +193,7 @@ export function RibbonReplay({
             <span className="text-fg-muted text-small">{current.dates}</span>
           </p>
         </Container>
-        <div className="mt-12 px-(--gutter) md:mt-auto md:pt-14">
+        <div className="mt-12 px-(--gutter) md:mt-auto md:pt-[clamp(1.5rem,5svh,3.5rem)]">
           <div
             ref={wideRef}
             className="relative max-md:hidden"

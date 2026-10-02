@@ -32,6 +32,8 @@ export type HackathonsCopy = {
     eyebrow: string;
     title: string;
     lead: string;
+    leagueAction: string;
+    makeathonAction: string;
     ribbonLabel: string;
     sliderLabel: string;
     nextLabel: string;
@@ -42,6 +44,7 @@ export type HackathonsCopy = {
     };
   };
   makeathon?: {
+    eyebrow: string;
     title: string;
     lead: string;
     linkLabel: string;
@@ -54,6 +57,30 @@ export type HackathonsCopy = {
       _type: "image";
     };
     photoCaption: string;
+    figures?: {
+      latest?: {
+        value: string;
+        label: string;
+      };
+      editions?: {
+        value: string;
+        label: string;
+      };
+      league?: {
+        value: string;
+        label: string;
+      };
+    };
+    editionsTitle: string;
+    editionsPhoto: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      _type: "image";
+    };
+    editionsPhotoCaption: string;
     editions: Array<{
       key: string;
       name: string;
@@ -73,11 +100,45 @@ export type HackathonsCopy = {
     title: string;
     lead: string;
     hostsPrefix: string;
+    moreLabel: string;
   };
   league?: {
-    title: string;
+    eyebrow: string;
+    tagline: string;
     lead: string;
     linkLabel: string;
+    routeLabel: string;
+    makeathonDetail: string;
+    finale?: {
+      label: string;
+      text: string;
+      liveLabel: string;
+      pastText: string;
+      actionLabel: string;
+      standingsLabel: string;
+      poster: {
+        asset?: SanityImageAssetReference;
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        alt?: string;
+        _type: "image";
+      };
+      championLabel: string;
+      champion?: string;
+      runnersUpLabel: string;
+      runnersUp?: Array<string>;
+      recapPhoto?: {
+        asset?: SanityImageAssetReference;
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        alt?: string;
+        _type: "image";
+      };
+      recapCaption?: string;
+    };
+    partnersTitle: string;
   };
   offer?: {
     title: string;
@@ -2029,13 +2090,13 @@ export type EVENTS_COPY_QUERY_RESULT =
 
 // Source: ../features/hackathons/content.ts
 // Variable: HACKATHONS_COPY_QUERY
-// Query: *[_id == "hackathonsCopy"][0]{  hero{    eyebrow,    title,    lead,    ribbonLabel,    sliderLabel,    nextLabel,    legend{ makeathon, league, partner }  },  makeathon{    title,    lead,    linkLabel,    "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},    photoCaption,    editions[]{ key, name, start, end, city, note, link{ label, href } }  },  partners{ title, lead, hostsPrefix },  league{ title, lead, linkLabel },  offer{ title, lead, items, addOns },  closing{    title,    lead,    student{ audience, text, actionLabel },    partner{ audience, text }  }}
+// Query: *[_id == "hackathonsCopy"][0]{  hero{    eyebrow,    title,    lead,    leagueAction,    makeathonAction,    ribbonLabel,    sliderLabel,    nextLabel,    legend{ makeathon, league, partner }  },  league{    eyebrow,    tagline,    lead,    linkLabel,    routeLabel,    makeathonDetail,    finale{      label,      text,      liveLabel,      pastText,      actionLabel,      standingsLabel,      "poster": poster{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},      championLabel,      champion,      runnersUpLabel,      runnersUp,      "recapPhoto": recapPhoto{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},      recapCaption    },    partnersTitle  },  makeathon{    eyebrow,    title,    lead,    linkLabel,    "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},    photoCaption,    figures{      latest{ value, label },      editions{ value, label },      league{ value, label }    },    editionsTitle,    "editionsPhoto": editionsPhoto{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},    editionsPhotoCaption,    editions[]{ key, name, start, end, city, note, link{ label, href } }  },  partners{ title, lead, hostsPrefix, moreLabel },  offer{ title, lead, items, addOns },  closing{    title,    lead,    student{ audience, text, actionLabel },    partner{ audience, text }  }}
 export type HACKATHONS_COPY_QUERY_RESULT =
   | {
       hero: null;
+      league: null;
       makeathon: null;
       partners: null;
-      league: null;
       offer: null;
       closing: null;
     }
@@ -2044,26 +2105,29 @@ export type HACKATHONS_COPY_QUERY_RESULT =
         eyebrow: null;
         title: string;
         lead: string;
+        leagueAction: null;
+        makeathonAction: null;
         ribbonLabel: null;
         sliderLabel: null;
         nextLabel: null;
         legend: null;
       } | null;
+      league: null;
       makeathon: null;
       partners: {
         title: string;
         lead: string;
         hostsPrefix: null;
+        moreLabel: string;
       } | null;
-      league: null;
       offer: null;
       closing: null;
     }
   | {
       hero: null;
+      league: null;
       makeathon: null;
       partners: null;
-      league: null;
       offer: null;
       closing: {
         title: null;
@@ -2077,14 +2141,16 @@ export type HACKATHONS_COPY_QUERY_RESULT =
         eyebrow: null;
         title: string;
         lead: string;
+        leagueAction: null;
+        makeathonAction: null;
         ribbonLabel: null;
         sliderLabel: null;
         nextLabel: null;
         legend: null;
       } | null;
+      league: null;
       makeathon: null;
       partners: null;
-      league: null;
       offer: null;
       closing: {
         title: string;
@@ -2098,14 +2164,16 @@ export type HACKATHONS_COPY_QUERY_RESULT =
         eyebrow: null;
         title: string;
         lead: string;
+        leagueAction: null;
+        makeathonAction: null;
         ribbonLabel: null;
         sliderLabel: null;
         nextLabel: null;
         legend: null;
       } | null;
+      league: null;
       makeathon: null;
       partners: null;
-      league: null;
       offer: null;
       closing: {
         title: string;
@@ -2123,9 +2191,9 @@ export type HACKATHONS_COPY_QUERY_RESULT =
     }
   | {
       hero: null;
+      league: null;
       makeathon: null;
       partners: null;
-      league: null;
       offer: null;
       closing: {
         title: string;
@@ -2139,14 +2207,16 @@ export type HACKATHONS_COPY_QUERY_RESULT =
         eyebrow: null;
         title: null;
         lead: null;
+        leagueAction: null;
+        makeathonAction: null;
         ribbonLabel: null;
         sliderLabel: null;
         nextLabel: null;
         legend: null;
       } | null;
+      league: null;
       makeathon: null;
       partners: null;
-      league: null;
       offer: null;
       closing: {
         title: string;
@@ -2160,14 +2230,16 @@ export type HACKATHONS_COPY_QUERY_RESULT =
         eyebrow: null;
         title: string;
         lead: string;
+        leagueAction: null;
+        makeathonAction: null;
         ribbonLabel: null;
         sliderLabel: null;
         nextLabel: null;
         legend: null;
       } | null;
+      league: null;
       makeathon: null;
       partners: null;
-      league: null;
       offer: null;
       closing: {
         title: string;
@@ -2181,14 +2253,16 @@ export type HACKATHONS_COPY_QUERY_RESULT =
         eyebrow: string;
         title: string;
         lead: string;
+        leagueAction: null;
+        makeathonAction: null;
         ribbonLabel: null;
         sliderLabel: null;
         nextLabel: null;
         legend: null;
       } | null;
+      league: null;
       makeathon: null;
       partners: null;
-      league: null;
       offer: null;
       closing: {
         title: string;
@@ -2209,6 +2283,8 @@ export type HACKATHONS_COPY_QUERY_RESULT =
         eyebrow: string;
         title: string;
         lead: string;
+        leagueAction: string;
+        makeathonAction: string;
         ribbonLabel: string;
         sliderLabel: string;
         nextLabel: string;
@@ -2218,7 +2294,62 @@ export type HACKATHONS_COPY_QUERY_RESULT =
           partner: string;
         } | null;
       } | null;
+      league: {
+        eyebrow: string;
+        tagline: string;
+        lead: string;
+        linkLabel: string;
+        routeLabel: string;
+        makeathonDetail: string;
+        finale: {
+          label: string;
+          text: string;
+          liveLabel: string;
+          pastText: string;
+          actionLabel: string;
+          standingsLabel: string;
+          poster: {
+            src: string | null;
+            width: number | null;
+            height: number | null;
+            alt: string | null;
+            hotspot: {
+              x: number;
+              y: number;
+            } | null;
+            crop: {
+              top: number;
+              bottom: number;
+              left: number;
+              right: number;
+            } | null;
+          };
+          championLabel: string;
+          champion: string | null;
+          runnersUpLabel: string;
+          runnersUp: Array<string> | null;
+          recapPhoto: {
+            src: string | null;
+            width: number | null;
+            height: number | null;
+            alt: string | null;
+            hotspot: {
+              x: number;
+              y: number;
+            } | null;
+            crop: {
+              top: number;
+              bottom: number;
+              left: number;
+              right: number;
+            } | null;
+          } | null;
+          recapCaption: string | null;
+        } | null;
+        partnersTitle: string;
+      } | null;
       makeathon: {
+        eyebrow: string;
         title: string;
         lead: string;
         linkLabel: string;
@@ -2239,6 +2370,38 @@ export type HACKATHONS_COPY_QUERY_RESULT =
           } | null;
         };
         photoCaption: string;
+        figures: {
+          latest: {
+            value: string;
+            label: string;
+          } | null;
+          editions: {
+            value: string;
+            label: string;
+          } | null;
+          league: {
+            value: string;
+            label: string;
+          } | null;
+        } | null;
+        editionsTitle: string;
+        editionsPhoto: {
+          src: string | null;
+          width: number | null;
+          height: number | null;
+          alt: string | null;
+          hotspot: {
+            x: number;
+            y: number;
+          } | null;
+          crop: {
+            top: number;
+            bottom: number;
+            left: number;
+            right: number;
+          } | null;
+        };
+        editionsPhotoCaption: string;
         editions: Array<{
           key: string;
           name: string;
@@ -2256,11 +2419,7 @@ export type HACKATHONS_COPY_QUERY_RESULT =
         title: string;
         lead: string;
         hostsPrefix: string;
-      } | null;
-      league: {
-        title: string;
-        lead: string;
-        linkLabel: string;
+        moreLabel: string;
       } | null;
       offer: {
         title: string;
@@ -2340,7 +2499,7 @@ export type HOME_COPY_QUERY_RESULT =
       partners: {
         title: string;
         lead: string;
-        moreLabel: null;
+        moreLabel: string;
         quote: null;
       } | null;
     }

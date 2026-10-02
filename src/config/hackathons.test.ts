@@ -29,6 +29,16 @@ describe("the league season", () => {
     );
   });
 
+  test("the Grand Finale takes a positive whole number of teams", () => {
+    expect(Number.isInteger(league.finaleTeams)).toBe(true);
+    expect(league.finaleTeams).toBeGreaterThan(0);
+  });
+
+  test("partners are unique organisation keys", () => {
+    expect(new Set(league.partners).size).toBe(league.partners.length);
+    for (const key of league.partners) expect(key).toMatch(/^[a-z0-9-]+$/);
+  });
+
   test("links are https", () => {
     expect(new URL(league.url).protocol).toBe("https:");
     expect(new URL(hackathonFacts.makeathonUrl).protocol).toBe("https:");

@@ -5,6 +5,7 @@ import {
   Reveal,
   Section,
   SectionHeader,
+  TextLink,
 } from "@/components/ds";
 import { Lockup, SignUpAction } from "@/features/events";
 import { formatList } from "@/lib/words";
@@ -22,8 +23,9 @@ export type HackathonVoice = {
 
 /**
  * The hackathons between Makeathons on mist: a hairline register of the
- * CMS events, newest first, beside a partner's own words about one of
- * them. Each row is a fact (title, dates, place, co-hosts), no cards.
+ * latest CMS events, newest first, and a link to the rest on /events,
+ * beside a partner's own words about one of them. Each row is a fact
+ * (title, dates, place, co-hosts), no cards.
  */
 export function PartnerHackathonsSection({
   partners,
@@ -79,6 +81,11 @@ export function PartnerHackathonsSection({
                 </div>
               </li>
             ))}
+            <li className="pt-6 md:pt-7">
+              <TextLink href="/events" arrow>
+                {partners.moreLabel}
+              </TextLink>
+            </li>
           </ol>
           {voice ? (
             <Reveal className="lg:col-span-5">

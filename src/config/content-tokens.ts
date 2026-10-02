@@ -90,6 +90,7 @@ export function contentTokensFor({
     "league.cityCount": String(league.cities.length),
     "league.matchCount": String(league.matchCount),
     "league.foundedYear": String(hackathonFacts.league.foundedYear),
+    "league.finaleTeams": String(hackathonFacts.league.finaleTeams),
   };
 }
 

@@ -48,6 +48,7 @@ export const contentTokenNames = [
   "league.cityCount",
   "league.matchCount",
   "league.foundedYear",
+  "league.finaleTeams",
 ] as const;
 
 type ContentTokenName = (typeof contentTokenNames)[number];

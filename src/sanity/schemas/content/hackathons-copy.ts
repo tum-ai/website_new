@@ -102,8 +102,8 @@ export const hackathonsCopyType = defineType({
           name: "title",
           title: "Title",
           description:
-            "The page's headline, over the ribbon of every hackathon: at most two lines on a laptop.",
-          max: 60,
+            "The page's headline, over the ribbon of every hackathon: one sentence per flagship, each set on its own line.",
+          max: 90,
         }),
         copyText({
           name: "lead",
@@ -112,6 +112,18 @@ export const hackathonsCopyType = defineType({
           rows: 4,
           placeholders: true,
           pageTokens: { since: "the year of the first Makeathon" },
+        }),
+        copyString({
+          name: "leagueAction",
+          title: "League button",
+          description: "The button to the league's own site.",
+          max: 40,
+        }),
+        copyString({
+          name: "makeathonAction",
+          title: "Makeathon button",
+          description: "The button to the Makeathon's own site.",
+          max: 40,
         }),
         copyString({
           name: "ribbonLabel",
@@ -151,17 +163,68 @@ export const hackathonsCopyType = defineType({
       type: "object",
       fields: [
         copyString({
-          name: "title",
-          title: "Title",
-          max: 60,
+          name: "eyebrow",
+          title: "Eyebrow",
+          max: 40,
           pageTokens: { since: "the year of the first Makeathon" },
         }),
+        copyString({ name: "title", title: "Title", max: 40 }),
         copyText({ name: "lead", title: "Lead", max: 400, placeholders: true }),
         copyString({ name: "linkLabel", title: "Link label", max: 40 }),
         contentImageField({ name: "photo", title: "Photo", required: true }),
         copyString({
           name: "photoCaption",
           title: "Photo caption",
+          description: "What, where and when the photo shows, factually.",
+          max: 80,
+        }),
+        defineField({
+          name: "figures",
+          title: "Figures",
+          type: "object",
+          description: "Three figures beside the opener, each with its label.",
+          fields: (
+            [
+              ["latest", "The latest edition"],
+              ["editions", "Editions"],
+              ["league", "The league"],
+            ] as const
+          ).map(([name, title]) =>
+            defineField({
+              name,
+              title,
+              type: "object",
+              fields: [
+                copyString({
+                  name: "value",
+                  title: "Figure",
+                  max: 12,
+                  placeholders: true,
+                  pageTokens: { editions: "the editions so far" },
+                }),
+                copyString({
+                  name: "label",
+                  title: "Label",
+                  max: 60,
+                  pageTokens: { since: "the year of the first Makeathon" },
+                }),
+              ],
+            }),
+          ),
+        }),
+        copyString({
+          name: "editionsTitle",
+          title: "Editions title",
+          max: 40,
+        }),
+        contentImageField({
+          name: "editionsPhoto",
+          title: "Editions photo",
+          required: true,
+        }),
+        copyString({
+          name: "editionsPhotoCaption",
+          title: "Editions photo caption",
           description: "What, where and when the photo shows, factually.",
           max: 80,
         }),
@@ -201,6 +264,13 @@ export const hackathonsCopyType = defineType({
             "Before an event's co-hosts: “with” (… with BMW and CDTM).",
           max: 20,
         }),
+        copyString({
+          name: "moreLabel",
+          title: "More link",
+          description:
+            "Under the latest few hackathons, the link to the rest on the events page.",
+          max: 60,
+        }),
       ],
     }),
     defineField({
@@ -208,16 +278,119 @@ export const hackathonsCopyType = defineType({
       title: "League",
       type: "object",
       description:
-        "The league's season and site are site facts; this is the band's wording.",
+        "The league's name, season, partners and site are site facts; this is the band's wording.",
       fields: [
         copyString({
-          name: "title",
-          title: "Title",
+          name: "eyebrow",
+          title: "Eyebrow",
+          max: 40,
+          placeholders: true,
+        }),
+        copyString({
+          name: "tagline",
+          title: "Tagline",
+          description: "The season in one line, under the league's name.",
           max: 80,
           placeholders: true,
         }),
         copyText({ name: "lead", title: "Lead", max: 320, placeholders: true }),
         copyString({ name: "linkLabel", title: "Link label", max: 40 }),
+        copyString({
+          name: "routeLabel",
+          title: "Route label",
+          description: "Read by screen readers for the season's route.",
+          max: 60,
+        }),
+        copyString({
+          name: "makeathonDetail",
+          title: "Makeathon match note",
+          description: "Under the match that was a Makeathon.",
+          max: 30,
+        }),
+        defineField({
+          name: "finale",
+          title: "Grand Finale",
+          type: "object",
+          fields: [
+            copyString({ name: "label", title: "Label", max: 30 }),
+            copyText({
+              name: "text",
+              title: "Before the finale",
+              max: 160,
+              rows: 2,
+              placeholders: true,
+            }),
+            copyString({
+              name: "liveLabel",
+              title: "While it runs",
+              description: "In place of the countdown during the finale.",
+              max: 20,
+            }),
+            copyText({
+              name: "pastText",
+              title: "After the finale",
+              description: "Shown until the champion is entered below.",
+              max: 160,
+              rows: 2,
+              placeholders: true,
+            }),
+            copyString({ name: "actionLabel", title: "Button", max: 40 }),
+            copyString({
+              name: "standingsLabel",
+              title: "Button after the finale",
+              max: 40,
+            }),
+            contentImageField({
+              name: "poster",
+              title: "Poster",
+              required: true,
+            }),
+            copyString({
+              name: "championLabel",
+              title: "Champion label",
+              max: 40,
+            }),
+            copyString({
+              name: "champion",
+              title: "Champion",
+              description:
+                "The winning team, once the finale is over. Filling it in shows the result instead of the poster.",
+              max: 40,
+              required: false,
+            }),
+            copyString({
+              name: "runnersUpLabel",
+              title: "Runners-up label",
+              max: 30,
+            }),
+            copyStringList({
+              name: "runnersUp",
+              title: "Runners-up",
+              description: "Second and third place, in order.",
+              max: 40,
+              maxItems: 2,
+              required: false,
+            }),
+            contentImageField({
+              name: "recapPhoto",
+              title: "Recap photo",
+              description:
+                "A photo from the finale; it replaces the poster once the champion is entered.",
+            }),
+            copyString({
+              name: "recapCaption",
+              title: "Recap photo caption",
+              description: "What, where and when the photo shows, factually.",
+              max: 80,
+              required: false,
+            }),
+          ],
+        }),
+        copyString({
+          name: "partnersTitle",
+          title: "Partners title",
+          max: 40,
+        }),
       ],
     }),
     defineField({

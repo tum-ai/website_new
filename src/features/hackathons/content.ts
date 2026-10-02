@@ -18,7 +18,7 @@ import type { MakeathonEdition } from "./data/makeathon";
 /**
  * The /hackathons content slice: the `hackathonsCopy` singleton, which
  * holds the page's copy and the Makeathon editions. The ribbon's geometry
- * stays in code (`ribbon.ts`), the league season in `config/hackathons.ts`
+ * stays in code (`ribbon.ts`), the league's season in `config/hackathons.ts`
  * and the other hackathons are CMS events; the code fallback is in `data/`.
  */
 
@@ -27,21 +27,55 @@ export const HACKATHONS_COPY_QUERY = defineQuery(`*[_id == "hackathonsCopy"][0]{
     eyebrow,
     title,
     lead,
+    leagueAction,
+    makeathonAction,
     ribbonLabel,
     sliderLabel,
     nextLabel,
     legend{ makeathon, league, partner }
   },
+  league{
+    eyebrow,
+    tagline,
+    lead,
+    linkLabel,
+    routeLabel,
+    makeathonDetail,
+    finale{
+      label,
+      text,
+      liveLabel,
+      pastText,
+      actionLabel,
+      standingsLabel,
+      "poster": poster${CONTENT_IMAGE_PROJECTION},
+      championLabel,
+      champion,
+      runnersUpLabel,
+      runnersUp,
+      "recapPhoto": recapPhoto${CONTENT_IMAGE_PROJECTION},
+      recapCaption
+    },
+    partnersTitle
+  },
   makeathon{
+    eyebrow,
     title,
     lead,
     linkLabel,
     "photo": photo${CONTENT_IMAGE_PROJECTION},
     photoCaption,
+    figures{
+      latest{ value, label },
+      editions{ value, label },
+      league{ value, label }
+    },
+    editionsTitle,
+    "editionsPhoto": editionsPhoto${CONTENT_IMAGE_PROJECTION},
+    editionsPhotoCaption,
     editions[]{ key, name, start, end, city, note, link{ label, href } }
   },
-  partners{ title, lead, hostsPrefix },
-  league{ title, lead, linkLabel },
+  partners{ title, lead, hostsPrefix, moreLabel },
   offer{ title, lead, items, addOns },
   closing{
     title,
@@ -111,15 +145,23 @@ export async function getHackathonsCopy(): Promise<HackathonsCopy> {
 
 /** The /hackathons copy as a document for `pnpm sanity:backfill`. */
 export function buildHackathonsBackfill(): BackfillDocument[] {
-  const { makeathon, ...copy } = hackathonsCopyTemplate;
+  const { makeathon, league, ...copy } = hackathonsCopyTemplate;
   return [
     {
       _id: "hackathonsCopy",
       _type: "hackathonsCopy",
       ...copy,
+      league: {
+        ...league,
+        finale: {
+          ...league.finale,
+          poster: backfillContentImage(league.finale.poster),
+        },
+      },
       makeathon: {
         ...makeathon,
         photo: backfillContentImage(makeathon.photo),
+        editionsPhoto: backfillContentImage(makeathon.editionsPhoto),
         editions: keyedItems(
           "makeathonEdition",
           makeathon.editions,

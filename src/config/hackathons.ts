@@ -6,7 +6,7 @@
  * "Updating site facts" in docs/contributor-guide.md.
  *
  * Source of truth for the league: its own site (`league.url`), as of
- * 2026-10-01. The league's leaderboard and rules live there and are not
+ * 2026-10-02. The league's leaderboard and rules live there and are not
  * repeated on this site.
  */
 
@@ -32,9 +32,28 @@ export const hackathonFacts = {
   makeathonUrl: "https://makeathon.tum-ai.com",
   league: {
     name: "European Hackathon League",
-    url: "https://ehl.gg",
+    /** The league's site, on TUM.ai's domain. */
+    url: "https://ehl.tum-ai.com",
     /** The year TUM.ai founded the league (its first season). */
     foundedYear: 2026,
+    /** The teams the season's standings send to the Grand Finale. */
+    finaleTeams: 15,
+    /**
+     * Season one's partners, as organisation keys with a logo for dark
+     * bands (`features/partners/data/organizations.ts`), in the league
+     * site's order.
+     */
+    partners: [
+      "reply",
+      "google",
+      "amd",
+      "openai",
+      "entire-io",
+      "inria",
+      "tacto",
+      "bmw",
+      "atira",
+    ],
     /**
      * Season one, in calendar order: the Makeathon 2026 was its first match.
      *
