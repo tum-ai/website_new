@@ -2,7 +2,6 @@ import { axe } from "@test/axe";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { stubMatchMedia, stubObservers } from "@/components/ds/testing";
 import {
   partnershipDurations,
   partnershipFinderCopy,
@@ -16,11 +15,36 @@ import { getPartnershipEmailUrl } from "./partnerships";
 const [talent, hackathon] = partnershipIntents;
 const [oneOff, ongoing] = partnershipDurations;
 
+/** Stubs `matchMedia`; `reducedMotion` answers the reduced-motion query. */
+function stubMatchMedia({ reducedMotion }: { reducedMotion: boolean }) {
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn((query: string) => ({
+      matches: query.includes("prefers-reduced-motion: reduce")
+        ? reducedMotion
+        : false,
+      media: query,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    })),
+  );
+}
+
+class NoopObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+  takeRecords() {
+    return [];
+  }
+}
+
 beforeEach(() => {
   // jsdom has no layout: stub what the finder calls. Reduced motion swaps
   // the steps at once, so the flows below stay synchronous.
   stubMatchMedia({ reducedMotion: true });
-  stubObservers();
+  vi.stubGlobal("IntersectionObserver", NoopObserver);
+  vi.stubGlobal("ResizeObserver", NoopObserver);
   Element.prototype.scrollIntoView = vi.fn();
 });
 

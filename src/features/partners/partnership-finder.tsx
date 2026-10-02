@@ -21,7 +21,6 @@ import {
   useState,
 } from "react";
 import { Button, Highlight, IconBadge, Text } from "@/components/ds";
-import { prefersReducedMotion } from "@/components/ds/internal";
 import { cn } from "@/lib/cn";
 import { splitAtPageToken } from "@/lib/content-copy";
 import { ContactActions } from "./contact-actions";
@@ -46,6 +45,11 @@ const LEAVE_MS = 180;
 const ENTER_MS = 700;
 
 type Phase = "idle" | "leaving" | "entering";
+
+/** Read at swap time, so the setting applies without a re-render. */
+function prefersReducedMotion() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
 
 /* Step headings receive focus programmatically; the panel scrolls below the fixed header. */
 const stepHeading =
