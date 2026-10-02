@@ -197,7 +197,9 @@ jobs:
         # add the `update-snapshots` label to the PR (e2e-snapshots.yml).
         run: pnpm test:e2e:visual --shard="$SHARD/2"
       - name: Upload Playwright report
-        if: ${{ !cancelled() }}
+        # The report carries every expected/actual/diff PNG (~450 MB per
+        # shard), so keep it only for failing runs and only for a day.
+        if: ${{ failure() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: visual-report-${{ matrix.shard }}
@@ -205,7 +207,7 @@ jobs:
             playwright-report/
             test-results/
           if-no-files-found: ignore
-          retention-days: 14
+          retention-days: 1
 
   knip:
     name: Knip
