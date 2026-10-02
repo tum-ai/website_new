@@ -5,6 +5,7 @@ import { VisualEditing } from "next-sanity/visual-editing";
 import { MotionProvider } from "@/components/ds";
 import { Footer } from "@/components/shell/footer";
 import { Header } from "@/components/shell/header";
+import { RouteImagePreload } from "@/components/shell/route-image-preload";
 import { SkipLink } from "@/components/shell/skip-link";
 import { eLabCohortNameOf } from "@/config/e-lab";
 import {
@@ -117,6 +118,13 @@ export default async function RootLayout({
             <Footer />
           </MotionProvider>
         </div>
+        {/* Warms the /events hero's co-host logos, so its load roll starts
+            at once. Only the reel shows them, and only with motion allowed. */}
+        <RouteImagePreload
+          route="/events"
+          imagesUrl="/events/hero-images"
+          media="(prefers-reduced-motion: no-preference)"
+        />
         {isSanityConfigured ? <SanityLive includeDrafts={isDraftMode} /> : null}
         {isDraftMode ? <VisualEditing /> : null}
       </body>

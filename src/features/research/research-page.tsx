@@ -219,8 +219,6 @@ export async function ResearchPage({
           <div className="mt-20 grid gap-14 md:mt-28 lg:grid-cols-12 lg:gap-12">
             <div className="lg:col-span-8">
               <h3 className="text-fg-subtle text-meta">{rex.processTitle}</h3>
-              {/* "We" opens the sentence the steps complete. */}
-              <p className="mt-6 font-light text-display-md text-fg">We</p>
               <Steps
                 layout="rows"
                 headingAs="h4"

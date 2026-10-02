@@ -42,8 +42,8 @@ export type ResearchCopy = {
     logosLabel: string;
     processTitle: string;
     /**
-     * One sentence completing "We …", split at its commas into the steps of
-     * the process. The clauses stay lower case: they continue the "We".
+     * The steps of the process, in order: each a capitalised clause that
+     * opens with what we do, without closing punctuation.
      */
     process: string[];
     /** Why REX exists, in the program's own words. */
@@ -114,11 +114,11 @@ export const researchCopyTemplate: ResearchCopy = {
     logosLabel: "Offers from labs at institutions like",
     processTitle: "How REX works",
     process: [
-      "collect project proposals from our partners,",
-      "inform members about the requirements and usual processes,",
-      "preselect applicants based on prior relevant (research) experience,",
-      "recommend them to our partner labs,",
-      "and eventually support their journey abroad with alumni experience in visa processes, housing, etc.",
+      "Collect research projects from our partner labs",
+      "Brief members on the requirements and the process",
+      "Preselect applicants on their research experience",
+      "Recommend the strongest to the labs",
+      "Help them settle abroad, with alumni advice on visas and housing",
     ],
     origin:
       "REX started because members were already doing research abroad and recommending others to follow. It works because researchers in our network trust TUM.ai to send them curious minds, and introduce our members to their fields.",

@@ -8,13 +8,15 @@ import { type EventSummary, formatEventDate, type HostEntry } from "./events";
 import { HeroReel } from "./hero-reel";
 import { getHostArtwork } from "./host-content";
 import { Lockup } from "./lockup";
+import { REEL_ICON_PX, REEL_LOGO_SIZES } from "./reel-images";
 
 /**
  * The page's bold element: the TUM.ai logo and a × as a co-branding lockup,
  * completed by every company, lab and initiative TUM.ai has run an event
  * with, from the CMS (the plain logo while no event has co-hosts). With
  * motion allowed and scripts running, the names roll through the slot after
- * the ×: once on load (a single roll from the last name back to the first),
+ * the ×: once on load, as soon as the logos are in (a single roll from the
+ * last name back to the first),
  * then wherever the reader turns the reel, and the events of the name in the
  * slot show beside it. Otherwise (reduced motion, no JavaScript) it is a
  * static two-column index. Mechanics: `events.css` and {@link HeroReel}.
@@ -181,6 +183,11 @@ function Count({ count }: { count: number }) {
  * `--roll` within one turn, so the copies wrap without a seam). Co-hosts with
  * verified dark-band artwork show their logo, sized to one optical area.
  * Decorative: the list above carries the names for assistive technology.
+ * The images load eagerly: the viewport clips the reel, so lazy loading would
+ * hold back every logo outside the slot until it rolled in, and the load roll
+ * waits for them ({@link HeroReel}). The copies share one URL per logo, and
+ * other pages warm those URLs ahead (`RouteImagePreload` in the site layout), so the sizes
+ * come from `reel-images.ts`.
  */
 function Reel({
   hosts,
@@ -206,7 +213,13 @@ function Reel({
                     width: `${height * logo.aspect}em`,
                   }}
                 >
-                  <Image src={logo.src} alt="" fill sizes="20rem" />
+                  <Image
+                    src={logo.src}
+                    alt=""
+                    fill
+                    sizes={REEL_LOGO_SIZES}
+                    loading="eager"
+                  />
                 </span>
               ) : (
                 <span className="events-name-text">
@@ -214,8 +227,9 @@ function Reel({
                     <Image
                       src={icon}
                       alt=""
-                      width={160}
-                      height={160}
+                      width={REEL_ICON_PX}
+                      height={REEL_ICON_PX}
+                      loading="eager"
                       className="events-name-icon"
                     />
                   ) : null}

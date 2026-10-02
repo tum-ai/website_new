@@ -176,7 +176,7 @@ export const researchCopyType = defineType({
           name: "process",
           title: "Process steps",
           description:
-            "One sentence completing “We …”, split at its commas: each step starts in lower case and ends with its comma; the last one starts with “and” and ends with a full stop.",
+            "One step per item, in order: each starts with a capital letter and what we do (“Collect …”), without closing punctuation.",
           max: 120,
           minItems: 2,
           maxItems: 7,

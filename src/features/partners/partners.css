@@ -1,9 +1,10 @@
 /*
  * /partners mechanics that Tailwind and the design system can't express: the
- * single-instance marquee, the supporter board's pre-hydration row limit
- * and the selection field's entrance (the rotation dissolve, which the
- * homepage shares, is in src/styles/partner-rotation.css). Everything
- * visual lives in the components.
+ * single-instance marquee, the supporter board's pre-hydration row limit,
+ * the selection field's entrance and the finder's step transition (the
+ * rotation dissolve, which the homepage shares, is in
+ * src/styles/partner-rotation.css). Everything visual lives in the
+ * components.
  * Breakpoints are Tailwind's `sm` (40rem), `md` (48rem) and `lg` (64rem).
  */
 
@@ -198,6 +199,45 @@
     [data-reveal="pending"] .selection-field-lit {
       opacity: 0;
       scale: 0.2;
+    }
+  }
+
+  /*
+   * Partnership finder (PartnershipFinder): a step fades out before the next
+   * one rises in, its parts staggered by `--step-order`, while the stage
+   * glides between the heights the component sets. The stage clips only
+   * while it moves, so focus rings stay whole at rest. Without motion the
+   * swap is instant.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    .finder-stage:is([data-phase="leaving"], [data-phase="entering"]) {
+      overflow: hidden;
+      transition: height 520ms var(--ease-brand);
+    }
+
+    .finder-stage[data-phase="leaving"] .finder-step {
+      opacity: 0;
+      transform: translate3d(0, -4px, 0);
+      transition:
+        opacity 180ms var(--ease-brand),
+        transform 180ms var(--ease-brand);
+    }
+
+    .finder-stage[data-phase="entering"] .finder-step-part {
+      animation: finder-step-in 520ms var(--ease-brand) both;
+      animation-delay: calc(var(--step-order, 0) * 50ms);
+    }
+  }
+
+  /* Transform and opacity only (docs/browser-quirks.md). */
+  @keyframes finder-step-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 8px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: none;
     }
   }
 }
