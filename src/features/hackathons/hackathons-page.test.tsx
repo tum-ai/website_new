@@ -66,7 +66,9 @@ test("the hero claims both flagships and links to each one's site", async () => 
     [hackathonsCopyTemplate.hero.leagueAction, hackathonFacts.league.url],
     [hackathonsCopyTemplate.hero.makeathonAction, hackathonFacts.makeathonUrl],
   ]) {
-    const link = within(hero).getByRole("link", { name: new RegExp(label) });
+    const link = within(hero).getByRole("link", {
+      name: (name) => name.includes(label),
+    });
     expect(link).toHaveAttribute("href", url);
     expect(link).toHaveAttribute("target", "_blank");
   }

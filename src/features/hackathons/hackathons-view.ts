@@ -256,7 +256,7 @@ function daysUntil(day: string, today: string): string {
 }
 
 /** Where the Grand Finale stands on a day. */
-export type FinalePhase = "upcoming" | "live" | "decided" | "champion";
+type FinalePhase = "upcoming" | "live" | "decided" | "champion";
 
 /**
  * The Grand Finale on `today`, from the season's last match and its copy:
