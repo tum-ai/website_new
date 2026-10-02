@@ -40,6 +40,8 @@ Retrieved from TUM.ai's own LinkedIn posts (collected with Bright Data). Encoded
 - `makeathon-2022-autumn-stage.webp`: https://www.linkedin.com/posts/tum-ai_aiforglobalimpact-aiforglobalimpact-ai-activity-6982756845622853632-vgAB
 - `makeathon-2023-group.webp`: https://www.linkedin.com/posts/tum-ai_aiforeveryone-ai-experience-activity-7057378816905609216-v73F
 - `e-lab-hackathon-2024-poster.webp`: https://www.linkedin.com/posts/tum-ai_ai-e-lab-hackathon-get-stuff-done-weekend-activity-7267824907823058944-CzSe
+- `phems-kaggle-challenge-2025-poster.webp`: TUM.ai's Instagram announcement (640px, the size
+  Instagram serves), https://www.instagram.com/p/DDyxc_ktXU-/
 - `munich-ai-hack-2025-poster.webp`: page 3 of "TUM.ai's Hackathon Summer",
   https://www.linkedin.com/posts/tum-ai_tumai-s-hackathon-summer-time-to-activity-7367170944223576064-X6Ma
 - `ai4good-hackathon-2026-poster.webp`: https://www.linkedin.com/posts/tum-ai_activity-7474799849087852544-LqCT

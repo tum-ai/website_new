@@ -398,6 +398,20 @@ export const redesignOnlyEvents: readonly RedesignOnlyEvent[] = [
     poster: "/assets/events/hackathons/e-lab-hackathon-2024-poster.webp",
   },
   {
+    // Source: TUM.ai's Instagram announcement (instagram.com/p/DDyxc_ktXU-).
+    key: "phems-kaggle-challenge-2025",
+    id: "mock-event-phems-kaggle-challenge-2025",
+    title: "TUM.ai x PHEMS Online Kaggle Challenge",
+    description:
+      "An online Kaggle hackathon with the EU research project PHEMS: build a machine learning model that detects sepsis early in children in intensive care, for a €2,500 prize pool.",
+    event_date: "2025-01-13T00:00:00.000Z",
+    end_date: "2025-01-31T00:00:00.000Z",
+    location: "Kaggle",
+    city: "Online",
+    category: "Hackathon",
+    poster: "/assets/events/hackathons/phems-kaggle-challenge-2025-poster.webp",
+  },
+  {
     // Source: "TUM.ai's Hackathon Summer" (linkedin.com/posts/tum-ai_tumai-s-hackathon-summer-time-to-activity-7367170944223576064-X6Ma),
     // which lists it with the AWS, Google and Anthropic hackathons.
     key: "munich-ai-hack-2025",
