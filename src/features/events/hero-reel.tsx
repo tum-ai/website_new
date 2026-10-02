@@ -65,7 +65,7 @@ export const REEL_READY_CAP_MS = 2500;
  * Resolves once `img` has loaded or failed (a broken logo must not hold the
  * roll). `stop` detaches the listeners, for a reel that unmounts first.
  */
-export function imageSettled(img: HTMLImageElement, stop: AbortSignal) {
+function imageSettled(img: HTMLImageElement, stop: AbortSignal) {
   return new Promise<void>((resolve) => {
     if (img.complete) return resolve();
     const done = () => resolve();
