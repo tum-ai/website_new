@@ -6,6 +6,7 @@ import { buildMemberStoriesBackfill } from "@/features/community/people-content"
 import { buildELabBackfill } from "@/features/e-lab/content";
 import { buildVentureBackfill } from "@/features/e-lab/venture-content";
 import { buildEventsBackfill } from "@/features/events/content";
+import { buildHackathonsBackfill } from "@/features/hackathons/content";
 import { buildHomeBackfill } from "@/features/home/content";
 import { buildPartnersBackfill } from "@/features/partners/content";
 import { buildOrganizationBackfill } from "@/features/partners/organization-content";
@@ -14,6 +15,7 @@ import { buildQandaBackfill } from "@/features/qanda/content";
 import { buildResearchBackfill } from "@/features/research/content";
 import { buildRexBackfill } from "@/features/research/rex-content";
 import type { BackfillDocument } from "@/lib/cms-backfill";
+import { buildRedesignEventsBackfill } from "./redesign-events";
 
 /**
  * Every content slice's backfill builder: what `pnpm sanity:backfill`
@@ -55,6 +57,13 @@ export const backfillSlices: readonly {
   { slice: "features/research/content.ts", build: buildResearchBackfill },
   { slice: "features/home/content.ts", build: buildHomeBackfill },
   { slice: "features/events/content.ts", build: buildEventsBackfill },
+  { slice: "features/hackathons/content.ts", build: buildHackathonsBackfill },
+
+  // Events only the new site's dataset has (earlier hackathons)
+  {
+    slice: "scripts/sanity/redesign-events.ts",
+    build: buildRedesignEventsBackfill,
+  },
 ];
 
 /** The documents of every slice, in registry order. */

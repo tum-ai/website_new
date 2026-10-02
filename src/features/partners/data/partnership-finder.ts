@@ -82,7 +82,7 @@ export const recommendations = {
   hackathon: {
     name: "Hackathon Participation",
     description:
-      "Bring your challenge to one of our hackathons (our signature Makeathon or a European Hackathon League stop in Munich, Berlin, Zurich or Paris). What you can pack into it: your own challenge track, the participant list including CVs, on-site branding and a booth, a company pitch, and optional add-ons like a workshop slot or catering sponsorship.",
+      "Bring your challenge to one of our hackathons (our signature Makeathon or a European Hackathon League match in {{league.cities}}). What you can pack into it: your own challenge track, the participant list including CVs, on-site branding and a booth, a company pitch, and optional add-ons like a workshop slot or catering sponsorship.",
   },
   talent: {
     name: "Talent Activation",

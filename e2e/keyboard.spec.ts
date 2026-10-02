@@ -281,6 +281,29 @@ test.describe("interactive figures", { tag: "@keyboard" }, () => {
     await expect(globe).toHaveAttribute("aria-valuetext", /^Centred on/);
   });
 
+  test("the hackathon ribbon steps through the hackathons with the arrow keys", async ({
+    page,
+  }) => {
+    await page.goto("/hackathons");
+    const ribbon = page.getByRole("slider", { name: "Hackathon timeline" });
+    const index = async () =>
+      Number(await ribbon.getAttribute("aria-valuenow"));
+
+    await ribbon.focus();
+    await expect(ribbon).toBeFocused();
+    await page.keyboard.press("Home");
+    await expect(ribbon).toHaveAttribute("aria-valuetext", /GPT-3 Makeathon/);
+    await page.keyboard.press("ArrowRight");
+    await expect.poll(index).toBe(1);
+    // The last stop is the next hackathon: the league's Grand Finale at
+    // MOCK_CMS_NOW.
+    await page.keyboard.press("End");
+    await expect
+      .poll(index)
+      .toBe(Number(await ribbon.getAttribute("aria-valuemax")));
+    await expect(ribbon).toHaveAttribute("aria-valuetext", /Grand Finale/);
+  });
+
   test("the events co-host reel steps with the arrow keys", async ({
     page,
   }) => {

@@ -14,7 +14,7 @@ calm light bands for reading. Motion is small, purposeful and always optional.
 
 Every page, including `/partners`, is built from these components. Page-only
 styles are the exception: keyframes or mechanics that belong to one page live in
-`src/features/<domain>/<domain>.css` (today `home.css`, `partners.css`, `research.css`, `events.css`, `e-lab.css` and `projects.css`),
+`src/features/<domain>/<domain>.css` (today `home.css`, `partners.css`, `research.css`, `events.css`, `e-lab.css`, `projects.css` and `hackathons.css`),
 inside cascade layers, imported by the route.
 
 ## Principles

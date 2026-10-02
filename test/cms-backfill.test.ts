@@ -7,13 +7,14 @@ import {
   pendingAssetsBeforeImport,
   plannedAssets,
 } from "@/lib/cms-backfill";
-import { liveEventHosts } from "@/lib/mock-cms";
+import { liveEventHosts, redesignOnlyEvents } from "@/lib/mock-cms";
 import { pinnedDocuments } from "@/sanity/content-structure";
 import { liveSchemaTypes } from "@/sanity/schemas";
 import {
   contentSchemaTypes,
   contentSingletons,
 } from "@/sanity/schemas/content";
+import { liveTypesWithReferences } from "@/sanity/schemas/content/live-references";
 import { backfillTarget } from "../scripts/sanity/backfill-target";
 import {
   copiedTypes,
@@ -39,8 +40,13 @@ import productionFixture from "./fixtures/production-documents.json";
 const documents = collectBackfill();
 
 type Field = { name: string; validation?: unknown };
+// The page content types, plus the old site's `event` in the shape the new
+// site's dataset registers it (the redesign-only events).
 const schemaByName = new Map<string, { name: string; fields: Field[] }>(
-  contentSchemaTypes.map((type) => [
+  [
+    ...contentSchemaTypes,
+    ...liveTypesWithReferences.filter(({ name }) => name === "event"),
+  ].map((type) => [
     type.name,
     type as unknown as { name: string; fields: Field[] },
   ]),
@@ -109,7 +115,7 @@ describe("the CMS backfill", () => {
     for (const id of ids) expect(id).toMatch(/^[a-zA-Z0-9][a-zA-Z0-9-]*$/);
   });
 
-  test("the code content is page content types only", () => {
+  test("the code content is page content types and the redesign-only events", () => {
     const unknown = documents
       .map(({ _type }) => _type)
       .filter((type) => !schemaByName.has(type));
@@ -377,6 +383,24 @@ describe("the copy from production", () => {
   test("the copies and the code content never share an _id", () => {
     const code = new Set(documents.map(({ _id }) => _id));
     expect(copy.documents.filter(({ _id }) => code.has(_id))).toStrictEqual([]);
+  });
+
+  test("the redesign-only events are new hackathons, not copies", () => {
+    const events = documents.filter(({ _type }) => _type === "event");
+    expect(events).toHaveLength(redesignOnlyEvents.length);
+    const copied = copy.documents.filter(({ _type }) => _type === "event");
+    for (const event of events) {
+      expect(event.category).toBe("Hackathon");
+      // Neither the same id nor the same title and start as a copied event.
+      expect(
+        copied.some(
+          (source) =>
+            source._id === event._id ||
+            (source.title === event.title &&
+              source.event_date === event.event_date),
+        ),
+      ).toBe(false);
+    }
   });
 });
 

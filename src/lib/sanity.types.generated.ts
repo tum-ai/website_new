@@ -15,6 +15,168 @@
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: ../../node_modules/.cache/sanity/schema.json
+export type SanityImageAssetReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+};
+
+export type HackathonsCopy = {
+  _id: string;
+  _type: "hackathonsCopy";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  hero?: {
+    eyebrow: string;
+    title: string;
+    lead: string;
+    leagueAction: string;
+    makeathonAction: string;
+    ribbonLabel: string;
+    sliderLabel: string;
+    nextLabel: string;
+    legend?: {
+      makeathon: string;
+      league: string;
+      partner: string;
+    };
+  };
+  makeathon?: {
+    eyebrow: string;
+    title: string;
+    lead: string;
+    linkLabel: string;
+    photo: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      _type: "image";
+    };
+    photoCaption: string;
+    figures?: {
+      latest?: {
+        value: string;
+        label: string;
+      };
+      editions?: {
+        value: string;
+        label: string;
+      };
+      league?: {
+        value: string;
+        label: string;
+      };
+    };
+    editionsTitle: string;
+    editionsPhoto: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      _type: "image";
+    };
+    editionsPhotoCaption: string;
+    editions: Array<{
+      key: string;
+      name: string;
+      start: string;
+      end: string;
+      city: string;
+      note: string;
+      link?: {
+        label: string;
+        href: string;
+      };
+      _type: "makeathonEdition";
+      _key: string;
+    }>;
+  };
+  partners?: {
+    title: string;
+    lead: string;
+    hostsPrefix: string;
+    moreLabel: string;
+  };
+  league?: {
+    eyebrow: string;
+    tagline: string;
+    lead: string;
+    linkLabel: string;
+    routeLabel: string;
+    makeathonDetail: string;
+    finale?: {
+      label: string;
+      text: string;
+      liveLabel: string;
+      pastText: string;
+      actionLabel: string;
+      standingsLabel: string;
+      poster: {
+        asset?: SanityImageAssetReference;
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        alt?: string;
+        _type: "image";
+      };
+      championLabel: string;
+      champion?: string;
+      runnersUpLabel: string;
+      runnersUp?: Array<string>;
+      recapPhoto?: {
+        asset?: SanityImageAssetReference;
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        alt?: string;
+        _type: "image";
+      };
+      recapCaption?: string;
+    };
+    partnersTitle: string;
+  };
+  offer?: {
+    title: string;
+    lead: string;
+    items: Array<string>;
+    addOns: string;
+  };
+  closing?: {
+    title: string;
+    lead: string;
+    student?: {
+      audience: string;
+      text: string;
+      actionLabel: string;
+    };
+    partner?: {
+      audience: string;
+      text: string;
+    };
+  };
+};
+
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop";
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+};
+
+export type SanityImageHotspot = {
+  _type: "sanity.imageHotspot";
+  x: number;
+  y: number;
+  height: number;
+  width: number;
+};
+
 export type EventsCopy = {
   _id: string;
   _type: "eventsCopy";
@@ -43,13 +205,6 @@ export type EventsCopy = {
     nextUp: string;
     membership: string;
   };
-};
-
-export type SanityImageAssetReference = {
-  _ref: string;
-  _type: "reference";
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
 };
 
 export type ELabCopy = {
@@ -123,22 +278,6 @@ export type ELabCopy = {
     partnersReader: string;
     partnersText: string;
   };
-};
-
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop";
-  top: number;
-  bottom: number;
-  left: number;
-  right: number;
-};
-
-export type SanityImageHotspot = {
-  _type: "sanity.imageHotspot";
-  x: number;
-  y: number;
-  height: number;
-  width: number;
 };
 
 export type Milestone = {
@@ -1069,7 +1208,7 @@ export type Event = {
   event_date: string;
   end_date?: string;
   location?: string;
-  city?: "Munich" | "Online";
+  city?: string;
   category?: "Hackathon" | "Speaker" | "Event" | "E-Lab";
   coHosts?: Array<
     {
@@ -1211,11 +1350,12 @@ export type SanityImageAsset = {
 };
 
 export type AllSanitySchemaTypes =
-  | EventsCopy
   | SanityImageAssetReference
-  | ELabCopy
+  | HackathonsCopy
   | SanityImageCrop
   | SanityImageHotspot
+  | EventsCopy
+  | ELabCopy
   | Milestone
   | ApplyCopy
   | PersonReference
@@ -1948,6 +2088,361 @@ export type EVENTS_COPY_QUERY_RESULT =
     }
   | null;
 
+// Source: ../features/hackathons/content.ts
+// Variable: HACKATHONS_COPY_QUERY
+// Query: *[_id == "hackathonsCopy"][0]{  hero{    eyebrow,    title,    lead,    leagueAction,    makeathonAction,    ribbonLabel,    sliderLabel,    nextLabel,    legend{ makeathon, league, partner }  },  league{    eyebrow,    tagline,    lead,    linkLabel,    routeLabel,    makeathonDetail,    finale{      label,      text,      liveLabel,      pastText,      actionLabel,      standingsLabel,      "poster": poster{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},      championLabel,      champion,      runnersUpLabel,      runnersUp,      "recapPhoto": recapPhoto{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},      recapCaption    },    partnersTitle  },  makeathon{    eyebrow,    title,    lead,    linkLabel,    "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},    photoCaption,    figures{      latest{ value, label },      editions{ value, label },      league{ value, label }    },    editionsTitle,    "editionsPhoto": editionsPhoto{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},    editionsPhotoCaption,    editions[]{ key, name, start, end, city, note, link{ label, href } }  },  partners{ title, lead, hostsPrefix, moreLabel },  offer{ title, lead, items, addOns },  closing{    title,    lead,    student{ audience, text, actionLabel },    partner{ audience, text }  }}
+export type HACKATHONS_COPY_QUERY_RESULT =
+  | {
+      hero: null;
+      league: null;
+      makeathon: null;
+      partners: null;
+      offer: null;
+      closing: null;
+    }
+  | {
+      hero: {
+        eyebrow: null;
+        title: string;
+        lead: string;
+        leagueAction: null;
+        makeathonAction: null;
+        ribbonLabel: null;
+        sliderLabel: null;
+        nextLabel: null;
+        legend: null;
+      } | null;
+      league: null;
+      makeathon: null;
+      partners: {
+        title: string;
+        lead: string;
+        hostsPrefix: null;
+        moreLabel: string;
+      } | null;
+      offer: null;
+      closing: null;
+    }
+  | {
+      hero: null;
+      league: null;
+      makeathon: null;
+      partners: null;
+      offer: null;
+      closing: {
+        title: null;
+        lead: null;
+        student: null;
+        partner: null;
+      } | null;
+    }
+  | {
+      hero: {
+        eyebrow: null;
+        title: string;
+        lead: string;
+        leagueAction: null;
+        makeathonAction: null;
+        ribbonLabel: null;
+        sliderLabel: null;
+        nextLabel: null;
+        legend: null;
+      } | null;
+      league: null;
+      makeathon: null;
+      partners: null;
+      offer: null;
+      closing: {
+        title: string;
+        lead: null;
+        student: null;
+        partner: null;
+      } | null;
+    }
+  | {
+      hero: {
+        eyebrow: null;
+        title: string;
+        lead: string;
+        leagueAction: null;
+        makeathonAction: null;
+        ribbonLabel: null;
+        sliderLabel: null;
+        nextLabel: null;
+        legend: null;
+      } | null;
+      league: null;
+      makeathon: null;
+      partners: null;
+      offer: null;
+      closing: {
+        title: string;
+        lead: null;
+        student: {
+          audience: string;
+          text: string;
+          actionLabel: null;
+        } | null;
+        partner: {
+          audience: string;
+          text: string;
+        } | null;
+      } | null;
+    }
+  | {
+      hero: null;
+      league: null;
+      makeathon: null;
+      partners: null;
+      offer: null;
+      closing: {
+        title: string;
+        lead: string;
+        student: null;
+        partner: null;
+      } | null;
+    }
+  | {
+      hero: {
+        eyebrow: null;
+        title: null;
+        lead: null;
+        leagueAction: null;
+        makeathonAction: null;
+        ribbonLabel: null;
+        sliderLabel: null;
+        nextLabel: null;
+        legend: null;
+      } | null;
+      league: null;
+      makeathon: null;
+      partners: null;
+      offer: null;
+      closing: {
+        title: string;
+        lead: string;
+        student: null;
+        partner: null;
+      } | null;
+    }
+  | {
+      hero: {
+        eyebrow: null;
+        title: string;
+        lead: string;
+        leagueAction: null;
+        makeathonAction: null;
+        ribbonLabel: null;
+        sliderLabel: null;
+        nextLabel: null;
+        legend: null;
+      } | null;
+      league: null;
+      makeathon: null;
+      partners: null;
+      offer: null;
+      closing: {
+        title: string;
+        lead: string;
+        student: null;
+        partner: null;
+      } | null;
+    }
+  | {
+      hero: {
+        eyebrow: string;
+        title: string;
+        lead: string;
+        leagueAction: null;
+        makeathonAction: null;
+        ribbonLabel: null;
+        sliderLabel: null;
+        nextLabel: null;
+        legend: null;
+      } | null;
+      league: null;
+      makeathon: null;
+      partners: null;
+      offer: null;
+      closing: {
+        title: string;
+        lead: string;
+        student: {
+          audience: string;
+          text: string;
+          actionLabel: null;
+        } | null;
+        partner: {
+          audience: string;
+          text: string;
+        } | null;
+      } | null;
+    }
+  | {
+      hero: {
+        eyebrow: string;
+        title: string;
+        lead: string;
+        leagueAction: string;
+        makeathonAction: string;
+        ribbonLabel: string;
+        sliderLabel: string;
+        nextLabel: string;
+        legend: {
+          makeathon: string;
+          league: string;
+          partner: string;
+        } | null;
+      } | null;
+      league: {
+        eyebrow: string;
+        tagline: string;
+        lead: string;
+        linkLabel: string;
+        routeLabel: string;
+        makeathonDetail: string;
+        finale: {
+          label: string;
+          text: string;
+          liveLabel: string;
+          pastText: string;
+          actionLabel: string;
+          standingsLabel: string;
+          poster: {
+            src: string | null;
+            width: number | null;
+            height: number | null;
+            alt: string | null;
+            hotspot: {
+              x: number;
+              y: number;
+            } | null;
+            crop: {
+              top: number;
+              bottom: number;
+              left: number;
+              right: number;
+            } | null;
+          };
+          championLabel: string;
+          champion: string | null;
+          runnersUpLabel: string;
+          runnersUp: Array<string> | null;
+          recapPhoto: {
+            src: string | null;
+            width: number | null;
+            height: number | null;
+            alt: string | null;
+            hotspot: {
+              x: number;
+              y: number;
+            } | null;
+            crop: {
+              top: number;
+              bottom: number;
+              left: number;
+              right: number;
+            } | null;
+          } | null;
+          recapCaption: string | null;
+        } | null;
+        partnersTitle: string;
+      } | null;
+      makeathon: {
+        eyebrow: string;
+        title: string;
+        lead: string;
+        linkLabel: string;
+        photo: {
+          src: string | null;
+          width: number | null;
+          height: number | null;
+          alt: string | null;
+          hotspot: {
+            x: number;
+            y: number;
+          } | null;
+          crop: {
+            top: number;
+            bottom: number;
+            left: number;
+            right: number;
+          } | null;
+        };
+        photoCaption: string;
+        figures: {
+          latest: {
+            value: string;
+            label: string;
+          } | null;
+          editions: {
+            value: string;
+            label: string;
+          } | null;
+          league: {
+            value: string;
+            label: string;
+          } | null;
+        } | null;
+        editionsTitle: string;
+        editionsPhoto: {
+          src: string | null;
+          width: number | null;
+          height: number | null;
+          alt: string | null;
+          hotspot: {
+            x: number;
+            y: number;
+          } | null;
+          crop: {
+            top: number;
+            bottom: number;
+            left: number;
+            right: number;
+          } | null;
+        };
+        editionsPhotoCaption: string;
+        editions: Array<{
+          key: string;
+          name: string;
+          start: string;
+          end: string;
+          city: string;
+          note: string;
+          link: {
+            label: string;
+            href: string;
+          } | null;
+        }>;
+      } | null;
+      partners: {
+        title: string;
+        lead: string;
+        hostsPrefix: string;
+        moreLabel: string;
+      } | null;
+      offer: {
+        title: string;
+        lead: string;
+        items: Array<string>;
+        addOns: string;
+      } | null;
+      closing: {
+        title: string;
+        lead: string;
+        student: {
+          audience: string;
+          text: string;
+          actionLabel: string;
+        } | null;
+        partner: {
+          audience: string;
+          text: string;
+        } | null;
+      } | null;
+    }
+  | null;
+
 // Source: ../features/home/content.ts
 // Variable: HOME_COPY_QUERY
 // Query: *[_id == "homeCopy"][0]{  hero{    title,    lead,    partnersLabel,    "photos": photos[]{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}  },  mission{ statement, body },  ledger[]{ key, label, note },  programs{    title,    lead,    items[]{      "id": key,      title,      description,      href,      "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}    }  },  room{    title,    lead,    "photos": photos[]{ "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}, caption }  },  join{    title,    lead,    stepsTitle,    steps[]{ title, dates },    quote{ "name": person->name, excerpt }  },  partners{ title, lead, moreLabel, "quote": quote->key }}
@@ -1988,6 +2483,25 @@ export type HOME_COPY_QUERY_RESULT =
       room: null;
       join: null;
       partners: null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+        partnersLabel: null;
+        photos: null;
+      } | null;
+      mission: null;
+      ledger: null;
+      programs: null;
+      room: null;
+      join: null;
+      partners: {
+        title: string;
+        lead: string;
+        moreLabel: string;
+        quote: null;
+      } | null;
     }
   | {
       hero: {
@@ -2403,6 +2917,28 @@ export type PROJECTS_CONTENT_QUERY_RESULT = {
           lead: string;
           student: null;
           partner: null;
+        } | null;
+      }
+    | {
+        hero: {
+          eyebrow: string;
+          title: string;
+          lead: string;
+          figureLabel: null;
+        } | null;
+        openSeat: null;
+        closing: {
+          title: string;
+          lead: string;
+          student: {
+            audience: string;
+            text: string;
+          } | null;
+          partner: {
+            audience: string;
+            text: string;
+            textWithoutPartner: null;
+          } | null;
         } | null;
       }
     | {
@@ -3020,14 +3556,15 @@ export type PEOPLE_QUERY_RESULT = Array<{
 
 // Source: ../lib/sanity-queries.ts
 // Variable: EVENTS_QUERY
-// Query: *[_type == "event"]{  "id": _id,  title,  "description": coalesce(desc, ""),  event_date,  location,  city,  category,  "hosts": coalesce(hosts, []),  "coHosts": coHosts[]->{ key, name },  "poster": poster.asset->url,  "images": array::compact([poster.asset->url, img.asset->url]),  sign_up}
+// Query: *[_type == "event"]{  "id": _id,  title,  "description": coalesce(desc, ""),  event_date,  end_date,  location,  city,  category,  "hosts": coalesce(hosts, []),  "coHosts": coHosts[]->{ key, name },  "poster": poster.asset->url,  "images": array::compact([poster.asset->url, img.asset->url]),  sign_up}
 export type EVENTS_QUERY_RESULT = Array<{
   id: string;
   title: string;
   description: string | "";
   event_date: string;
+  end_date: string | null;
   location: string | null;
-  city: "Munich" | "Online" | null;
+  city: string | null;
   category: "E-Lab" | "Event" | "Hackathon" | "Speaker" | null;
   hosts: Array<string> | Array<never>;
   coHosts: Array<{
@@ -3065,7 +3602,7 @@ export type PUBLIC_EVENTS_QUERY_RESULT = Array<{
   description: string | "";
   event_date: string;
   location: string | null;
-  city: "Munich" | "Online" | null;
+  city: string | null;
   category: "E-Lab" | "Event" | "Hackathon" | "Speaker" | null;
   poster: string | null;
   images: Array<string>;

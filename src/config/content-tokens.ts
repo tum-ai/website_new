@@ -4,6 +4,7 @@ import {
   eLabApplicationCopyOf,
   eLabWindowFallback,
 } from "./e-lab";
+import { hackathonFacts, leagueSummaryOf } from "./hackathons";
 import {
   type MembershipConfig,
   membershipConfig,
@@ -50,6 +51,7 @@ export function contentTokensFor({
   const derived = deriveSiteFacts(facts);
   const recruiting = recruitingTimelineOf(roundSchedule(membership.round));
   const { organization: org, impact } = facts;
+  const league = leagueSummaryOf(hackathonFacts.league.matches);
   return {
     "recruiting.application": recruiting.application,
     "recruiting.interview": recruiting.interview,
@@ -84,6 +86,11 @@ export function contentTokensFor({
     "impact.hackathonParticipants":
       impact.hackathonParticipants.toLocaleString("en"),
     "community.makeathonSize": String(facts.community.makeathonSize),
+    "league.cities": league.citiesText,
+    "league.cityCount": String(league.cities.length),
+    "league.matchCount": String(league.matchCount),
+    "league.foundedYear": String(hackathonFacts.league.foundedYear),
+    "league.finaleTeams": String(hackathonFacts.league.finaleTeams),
   };
 }
 

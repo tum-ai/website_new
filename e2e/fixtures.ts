@@ -47,6 +47,7 @@ export const siteRoutes: readonly SiteRoute[] = [
   { path: "/apply", title: "Become a Member | TUM.ai" },
   { path: "/community", title: "Community | TUM.ai" },
   { path: "/events", title: "Events | TUM.ai", cms: true },
+  { path: "/hackathons", title: "Hackathons | TUM.ai", cms: true },
   { path: "/e-lab", title: "Entrepreneurship | TUM.ai" },
   { path: "/partners", title: "Partners | TUM.ai", cms: true },
   { path: "/projects", title: "Task Forces and Projects | TUM.ai" },

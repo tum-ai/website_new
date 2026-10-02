@@ -39,6 +39,7 @@ rendering; pass values to client islands as props.
 | Who handles partnership requests: finder CC addresses, the "Book a call" Cal.eu page and its host | `src/config/contact.ts` `partnershipContact` |
 | Community figures quoted in copy (Makeathon size) | `src/config/community.ts` `communityFacts` (the initiative's age comes from `yearsSinceFounding()`) |
 | Research output and hackathon reach (publications, venues, hackathon participants) | `src/config/impact.ts` `impactFacts` |
+| The Makeathon's site and the European Hackathon League (season, cities, site) | `src/config/hackathons.ts` `hackathonFacts` (copy uses `{{league.*}}`) |
 | Page titles, descriptions, canonical URLs, JSON-LD | `src/config/seo.ts` |
 | Site URL, name, tagline, `absoluteUrl()` | `src/config/site.ts` `siteConfig` |
 | Legal identity, registered office, register number, representatives | `src/config/organization.ts` `legalEntity` |

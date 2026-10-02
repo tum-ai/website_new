@@ -3,6 +3,7 @@ import { ClosingSection } from "./closing-section";
 import {
   indexHosts,
   pinFeaturedEvent,
+  recentSemesterEvents,
   splitEvents,
   summarizeEvents,
 } from "./events";
@@ -18,8 +19,9 @@ export { getHeroImagePreloads } from "./hero-images";
 /**
  * /events, set around the co-branding lockup its events already carry
  * ("Anthropic x Lovable x Hugging Face"): the hero completes "TUM.ai ×" with
- * every co-host from the CMS, then come the upcoming events, the archive as
- * a register by semester, the posters as they were announced, and a close
+ * every co-host from the CMS, then come the upcoming events, the recent
+ * semesters as a register, every past event's poster as it was announced
+ * (the whole archive, a pin wall), and a close
  * that completes the lockup with the reader's team. A running campaign's
  * featured event leads the upcoming events and the close while it is
  * upcoming. A server component: it splits the events at `now` and renders
@@ -42,6 +44,9 @@ export function EventsPage({
   const { past } = split;
   const upcoming = pinFeaturedEvent(split.upcoming, featuredEventId);
   const summary = summarizeEvents(events);
+  // The register lists the last few semesters; the poster wall keeps every
+  // past event. Its lead says since when, from the rows it lists.
+  const recent = recentSemesterEvents(past);
 
   return (
     <main>
@@ -51,8 +56,8 @@ export function EventsPage({
         hasUpcoming={upcoming.length > 0}
       />
       <Upcoming events={upcoming} />
-      {past.length > 0 ? (
-        <Register events={past} since={summary.since} />
+      {recent.length > 0 ? (
+        <Register events={recent} since={summarizeEvents(recent).since} />
       ) : null}
       <PosterWall events={past} />
       <ClosingSection next={upcoming[0]} />

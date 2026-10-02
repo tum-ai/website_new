@@ -108,6 +108,7 @@ derive their expectations from config, so a documented edit keeps them green.
 | Legal name, registered office, register entry, representatives | `src/config/organization.ts`: `legalEntity` (legal content: confirm with the board first) |
 | Community figures quoted in copy (Makeathon size) | `src/config/community.ts`: `communityFacts` |
 | Research output and hackathon reach (publications, venues, hackathon participants) | `src/config/impact.ts`: `impactFacts` |
+| The Makeathon's site and the European Hackathon League (season, cities, site) | `src/config/hackathons.ts`: `hackathonFacts` |
 | Role emails and social links | `src/config/contact.ts`: `contactEmails`, `socialLinks` |
 | Who handles partnership requests (CC addresses, booking page) | `src/config/contact.ts`: `partnershipContact` |
 | Site URL, name, tagline | `src/config/site.ts`: `siteConfig` |

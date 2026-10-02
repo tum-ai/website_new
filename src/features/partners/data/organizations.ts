@@ -346,6 +346,11 @@ export const organizations: readonly Organization[] = [
       width: 303,
       height: 150,
     },
+    logoOnDark: {
+      src: "/assets/events/hosts/aleph-alpha.webp",
+      width: 303,
+      height: 150,
+    },
     partnership: { tier: "supporter", category: "Industry Partners" },
   }),
   defineOrganization({
@@ -1029,6 +1034,37 @@ export const organizations: readonly Organization[] = [
       width: 124,
       height: 40,
       aspectRatio: 3.08,
+    },
+  }),
+  defineOrganization({
+    // A REX institution on /research and a partner of the league's season.
+    key: "inria",
+    name: "Inria",
+    shortName: "Inria",
+    href: "https://www.inria.fr/en",
+    logo: {
+      src: "/assets/research/rex/inria.svg",
+      width: 283,
+      height: 83,
+      alt: "Inria logo",
+      aspectRatio: 283.46 / 82.75,
+    },
+    logoOnDark: {
+      src: "/assets/events/hosts/inria.svg",
+      width: 283,
+      height: 83,
+      aspectRatio: 283.46 / 82.75,
+    },
+  }),
+  defineOrganization({
+    key: "atira",
+    name: "Atira",
+    href: "https://atira.ai/",
+    logoOnDark: {
+      src: "/assets/events/hosts/atira.svg",
+      width: 44,
+      height: 18,
+      aspectRatio: 44 / 18,
     },
   }),
   defineOrganization({

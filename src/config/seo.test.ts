@@ -1,6 +1,7 @@
 import { expect, test } from "vitest";
 import { contactEmails } from "@/config/contact";
 import { eLabProgramSummary } from "@/config/e-lab";
+import { hackathonFacts } from "@/config/hackathons";
 import {
   buildMetadata,
   getJsonLd,
@@ -12,6 +13,7 @@ import { absoluteUrl, siteConfig, siteTitle } from "@/config/site";
 const keys: SEOPageKey[] = [
   "home",
   "events",
+  "hackathons",
   "research",
   "projects",
   "entrepreneurship",
@@ -83,6 +85,18 @@ test("/e-lab adds the Venture Department as a TUM.ai sub-organization", () => {
   expect(eLab.description).toContain(eLabProgramSummary);
   // Only /e-lab carries the extra node.
   expect(getJsonLd("events")).toHaveLength(2);
+});
+
+test("/hackathons adds the Makeathon as a series TUM.ai organises", () => {
+  const [organization, , makeathon] = getJsonLd("hackathons") as Record<
+    string,
+    unknown
+  >[];
+  expect(makeathon).toMatchObject({
+    "@type": "EventSeries",
+    url: hackathonFacts.makeathonUrl,
+    organizer: { url: organization.url, name: organization.name },
+  });
 });
 
 test("page fields from the page's content join the page node", () => {

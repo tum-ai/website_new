@@ -24,7 +24,9 @@ deleting the event; references between content types are normal references.
 
 The old site's types (`event`, `partner`, `research`) are not in this table: the backfill copies
 their published documents from `production` into `redesign` unchanged (same `_id`s), adding the
-events' `hosts` from `liveEventHosts` in `lib/mock-cms.ts`. The new site reads partners from
+events' `hosts` from `liveEventHosts` in `lib/mock-cms.ts`. It also creates the events only
+`redesign` has: the earlier hackathons in `redesignOnlyEvents` (`lib/mock-cms.ts`,
+`scripts/sanity/redesign-events.ts`), which editors own in the Studio once imported. The new site reads partners from
 `organization` instead (a partner is an organisation with a `partnerTier`);
 `pnpm sanity:migrate-partners` moves the copied `partner` documents onto organisations, and the
 Studio hides `partner` outside `production` (ADR 0009, "Partners are organisations"). On every
@@ -48,7 +50,7 @@ lists instead of `hosts`); the old site's string fields stay.
 | `milestone` | list | `year`, `kind` (`research`, `programs`, `events`, `organization`), `title`, `detail` | done (C) |
 | `taskForce` | list | `slug`, `name`, `field`, `description`, `detailedDescription`, `work` (`partner`, a reference to the organisation, and `items[]`), optional `photo` | done (C) |
 | `labSite` | list | `city`, `location` (lat, lng), `home`, `organizations[]` (references: the research projects', research partners' and REX institutions' organisations there) | done (C) |
-| `<page>Copy` | singleton per page | the page's hero, section titles and leads, closings and figure copy: `homeCopy` (its quotes reference `person`), `applyCopy`, `communityCopy`, `eventsCopy`, `eLabCopy`, `projectsCopy`, `qandaCopy`, `researchCopy` (with the REX band's copy) (C); `partnersCopy` (B) | done (C, B) |
+| `<page>Copy` | singleton per page | the page's hero, section titles and leads, closings and figure copy: `homeCopy` (its quotes reference `person`), `applyCopy`, `communityCopy`, `eventsCopy`, `eLabCopy`, `hackathonsCopy` (with the Makeathon editions), `projectsCopy`, `qandaCopy`, `researchCopy` (with the REX band's copy) (C); `partnersCopy` (B) | done (C, B) |
 
 `pageCopy` is one singleton type per page, not one generic type: TypeGen then types each page's
 fields, and each owner defines its own schema file.
@@ -123,6 +125,7 @@ fields, and each owner defines its own schema file.
 | Community page copy | inline in `community-page.tsx`, `closing-section.tsx`, `departments-section.tsx`, `member-stories.tsx` (section title), `semester-plan.tsx` | community | **done**: `communityCopy` (recruiting dates as `{{recruiting.*}}`) | C |
 | Home copy | `home/data/homepage.ts`: `heroLead`, `ledgerFacts`, `programs`, `roomPhotos`, `heroPhotos`, `memberQuote`, `partnerQuoteId`; inline in `home-hero.tsx`, `join-section.tsx`, `mission-section.tsx`, `partners-section.tsx` (see B), `programs-section.tsx`, `room-section.tsx` | home | **done**: `homeCopy` (ledger values stay derived facts; photos as `ContentImage`; quotes reference `person`) | C |
 | Projects copy | `projects/data/copy.ts`: `hero`, `figureSeats`, `closing` | `projects-page.tsx`, `closing-section.tsx` | **done**: `projectsCopy` | C |
+| Hackathons copy | `hackathons/data/copy.ts`, `hackathons/data/makeathon.ts` (7 editions) | `hackathons-page.tsx` and its sections | **done**: `hackathonsCopy` (the editions are one structural list: an invalid edition keeps the code list) | C |
 | Task forces | `projects/data/projects.ts`: `taskForces` (5), `openSeat` | projects page, `copy.ts` | **done**: `taskForce` (`openSeat` into `projectsCopy`) | C |
 | Research copy | `research/data/research-copy.ts`: `heroLead`, `abstractStatement`, `getAbstractBody`, `figurePanels`, `closing`; inline in `research-page.tsx` (~15 strings), `research-figure.tsx`, `project-list.tsx`, `research-globe.tsx` (aria) | research | **done**: `researchCopy` (the body stays a template with the live project count) | C |
 | Lab sites | `research/data/lab-sites.ts`: `labSites` (6) | `research/research.ts` → globe, affiliations | **done**: `labSite`; `research-page.tsx` passes `getLabSiteList()` to `getLabSites` | C |
@@ -136,6 +139,8 @@ fields, and each owner defines its own schema file.
 | --- | --- | --- |
 | Dot-field layout | `e-lab/data/field.ts` | geometry (seeded lattice), not content |
 | Task-force overlap figure | `projects/overlaps.ts`, `overlaps-figure.tsx` | geometry |
+| Hackathon ribbon | `hackathons/ribbon.ts`, `marks.ts`, `ribbon-track.tsx` | geometry; the marks come from the editions, the league config and the events |
+| League season | `config/hackathons.ts`: `hackathonFacts` | a site fact in code; move to `siteSettings` when the league needs editors |
 | Logomark and room grid | `home/logomark-construction.ts`, `home/room-layout.ts`, `home/hero-aperture.tsx`, `construction-lines.tsx` | geometry |
 | Legal pages | `features/legal/*`, `legalEntity` | wording needs the board; a CMS edit would bypass review |
 | Site URL, SEO, JSON-LD | `config/site.ts`, `config/seo.ts` | structure and canonical URLs |

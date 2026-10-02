@@ -71,6 +71,21 @@ test("event query: hosts stay an array and default to empty", async () => {
   expect(bare.hosts).toStrictEqual([]);
 });
 
+test("event query: end_date passes through, null when unset", async () => {
+  const [ranged, single] = await run(EVENTS_QUERY, [
+    {
+      _id: "ranged",
+      _type: "event",
+      title: "Makeathon",
+      event_date: "2026-04-17T00:00:00.000Z",
+      end_date: "2026-04-19T00:00:00.000Z",
+    },
+    { _id: "single", _type: "event", title: "Talk", event_date: "2026-02-01" },
+  ]);
+  expect(ranged.end_date).toBe("2026-04-19T00:00:00.000Z");
+  expect(single.end_date).toBeNull();
+});
+
 test("event query: co-hosts resolve to organisations beside the old names", async () => {
   const dataset = [
     { _id: "org-aws", _type: "organization", key: "aws", name: "AWS" },

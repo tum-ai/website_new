@@ -7,12 +7,10 @@ import { organizationFacts } from "./organization";
  */
 export const communityFacts = {
   /**
-   * Size of the signature Makeathon, a lower bound that renders with "+" or
-   * "over" (registrations on /apply, participants on /community).
-   *
-   * TODO(content): confirm the canonical Makeathon size. The copies said
-   * "500+ registrations" and "over 500 participants"; is it 500, and is it
-   * registrations or participants?
+   * Participants at the signature Makeathon, a lower bound that renders
+   * with "+" or "over": 500+ at the Makeathon 2026 (Match 1 of the European
+   * Hackathon League, as its site states). /apply's 2025 milestone quotes
+   * the same figure as registrations, which the 2025 edition also had.
    */
   makeathonSize: 500,
 } as const;

@@ -197,6 +197,11 @@ production would show.
   `liveEventHosts` (`lib/mock-cms.ts`, derived from each event's CMS text), matched by title and
   start; an entry that matches no single event fails the run, and an event that already has its
   own `hosts` keeps them.
+- **The redesign-only events** (`scripts/sanity/redesign-events.ts`). Hackathons from before
+  the CMS events start (August 2025) that `production` never had: `redesignOnlyEvents` in
+  `lib/mock-cms.ts`, with ids from their keys (`event-<key>`), posters and photos from
+  `public/assets/events/hackathons/` and co-hosts as organisation references. Imported into
+  `redesign` on 2026-10-01 (create-only).
 
 `--apply` runs `sanity dataset import` with the editor's CLI login, which uploads the files: no
 write token in the repository or CI.

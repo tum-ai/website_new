@@ -18,6 +18,7 @@ export const EVENTS_QUERY = defineQuery(`*[_type == "event"]{
   title,
   "description": coalesce(desc, ""),
   event_date,
+  end_date,
   location,
   city,
   category,

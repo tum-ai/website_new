@@ -7,6 +7,7 @@ import { departmentType } from "./department";
 import { eLabCopyType } from "./e-lab-copy";
 import { eventsCopyType } from "./events-copy";
 import { faqType } from "./faq";
+import { hackathonsCopyType } from "./hackathons-copy";
 import { homeCopyType } from "./home-copy";
 import { journeyStepType } from "./journey-step";
 import { labSiteType } from "./lab-site";
@@ -56,6 +57,7 @@ export const contentSchemaTypes = [
   milestoneType,
   eLabCopyType,
   eventsCopyType,
+  hackathonsCopyType,
 ];
 
 /**
@@ -79,4 +81,5 @@ export const contentSingletons: readonly { type: string; title: string }[] = [
   { type: "applyCopy", title: "Apply page" },
   { type: "eLabCopy", title: "E-Lab page" },
   { type: "eventsCopy", title: "Events page" },
+  { type: "hackathonsCopy", title: "Hackathons page" },
 ];

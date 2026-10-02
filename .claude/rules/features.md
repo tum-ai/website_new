@@ -5,8 +5,8 @@ paths:
 
 # Feature folders (`src/features/<domain>`)
 
-One folder per domain: `home`, `apply`, `community`, `events`, `e-lab`, `partners`, `projects`,
-`qanda`, `research`, `legal`, `design-system` (dev only).
+One folder per domain: `home`, `apply`, `community`, `events`, `hackathons`, `e-lab`, `partners`,
+`projects`, `qanda`, `research`, `legal`, `design-system` (dev only).
 
 - **Layout:** `<domain>-page.tsx` exports the page component the route renders (for example
   `PartnersPage`). Sections and islands sit beside it (or in `sections/`), static copy in `data/`,
