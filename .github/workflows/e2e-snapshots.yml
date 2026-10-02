@@ -87,7 +87,7 @@ jobs:
             playwright-report/
             test-results/
           if-no-files-found: ignore
-          retention-days: 14
+          retention-days: 1
       - name: Commit baselines
         if: ${{ github.event_name == 'pull_request' || inputs.commit }}
         env:
