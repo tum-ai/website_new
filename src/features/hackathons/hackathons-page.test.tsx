@@ -96,7 +96,7 @@ test("the league and the Makeathon each say Learn more, named by their site", as
     [hackathonsCopyTemplate.makeathon.title, hackathonFacts.makeathonUrl],
   ]) {
     const link = screen.getByRole("link", {
-      name: `${hackathonsCopyTemplate.league.linkLabel}: ${name}`,
+      name: `${hackathonsCopyTemplate.league.linkLabel}: ${name} (opens in a new tab)`,
     });
     expect(link).toHaveTextContent(hackathonsCopyTemplate.league.linkLabel);
     expect(link).toHaveAttribute("href", url);

@@ -67,7 +67,7 @@ export function LeagueSection({ league }: { league: View["league"] }) {
               href={league.url}
               size="lg"
               arrow="external"
-              aria-label={`${league.linkLabel}: ${league.name}`}
+              aria-label={`${league.linkLabel}: ${league.name} (opens in a new tab)`}
             >
               {league.linkLabel}
             </ButtonLink>

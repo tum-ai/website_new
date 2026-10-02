@@ -72,7 +72,7 @@ export function MakeathonSection({
                     href={makeathon.url}
                     size="lg"
                     arrow="external"
-                    aria-label={`${makeathon.linkLabel}: ${makeathon.title}`}
+                    aria-label={`${makeathon.linkLabel}: ${makeathon.title} (opens in a new tab)`}
                   >
                     {makeathon.linkLabel}
                   </ButtonLink>
