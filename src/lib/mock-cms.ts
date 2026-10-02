@@ -40,9 +40,11 @@ type PastEvent = Omit<Event, "id" | "images" | "hosts"> & {
  * their co-hosts filled from each event's title and description: the
  * co-hosts, sponsors and challenge partners the CMS text names, as the
  * organisations `coHosts` references (`pnpm sanity:migrate-org-references`
- * sets them from the names). Speakers and jury members are left out. Posters and photos are local stand-ins (the live
- * posters are square social graphics on the Sanity CDN), and descriptions are
- * shortened and free of names.
+ * sets them from the names). Speakers and jury members are left out. The hackathons carry their live
+ * posters and recap photos (`docs/asset-sources/events-hackathons.md`); the
+ * other events' posters and photos are local stand-ins (the live posters are
+ * square social graphics on the Sanity CDN). Descriptions are shortened and
+ * free of names.
  *
  * The live documents in `production` have no `hosts`: the backfill adds the
  * names to its copies of them in the new site's dataset
@@ -82,7 +84,8 @@ const pastEvents: PastEvent[] = [
       host("lovable", "Lovable"),
       host("n8n", "n8n"),
     ],
-    poster: "/assets/innovation/robotics_writing.webp",
+    poster:
+      "/assets/events/hackathons/aws-lovable-n8n-hackathon-2025-poster.webp",
   },
   {
     id: "mock-event-google",
@@ -90,12 +93,12 @@ const pastEvents: PastEvent[] = [
     description:
       "A two-day hackathon with CDTM and Google Cloud: build agents with Vertex AI and the Agent Development Kit.",
     event_date: "2025-09-08T00:00:00.000Z",
+    end_date: "2025-09-09T00:00:00.000Z",
     location: "Google Office",
     city: "Munich",
     category: "Hackathon",
     coHosts: [host("google-cloud", "Google Cloud"), host("cdtm", "CDTM")],
-    poster: "/assets/homepage/nvidia-5.webp",
-    images: ["/assets/homepage/nvidia-5.webp", "/assets/home_img2.webp"],
+    poster: "/assets/events/hackathons/google-hackathon-2025-poster.webp",
   },
   {
     id: "mock-event-cofounder-matching",
@@ -119,6 +122,7 @@ const pastEvents: PastEvent[] = [
     description:
       "A three-day hackathon with CDTM and our partners Anthropic, Lovable and Hugging Face.",
     event_date: "2025-09-24T00:00:00.000Z",
+    end_date: "2025-09-26T00:00:00.000Z",
     location: "TUM Audimax",
     city: "Munich",
     category: "Hackathon",
@@ -128,7 +132,8 @@ const pastEvents: PastEvent[] = [
       host("hugging-face", "Hugging Face"),
       host("cdtm", "CDTM"),
     ],
-    poster: "/assets/apply/new_section_photo_4.webp",
+    poster:
+      "/assets/events/hackathons/anthropic-lovable-hackathon-2025-poster.webp",
   },
   {
     id: "mock-event-bkw",
@@ -141,6 +146,11 @@ const pastEvents: PastEvent[] = [
     city: "Munich",
     category: "Hackathon",
     coHosts: [host("bkw", "BKW")],
+    poster: "/assets/events/hackathons/bkw-hackathon-2025-poster.webp",
+    images: [
+      "/assets/events/hackathons/bkw-hackathon-2025-poster.webp",
+      "/assets/events/hackathons/bkw-hackathon-2025-group.webp",
+    ],
   },
   {
     id: "mock-event-bmw",
@@ -148,11 +158,16 @@ const pastEvents: PastEvent[] = [
     description:
       "BMW's Open Innovation Robotics AI Hackathon: build AI systems that act, not just answer, with BMW experts and 40 students.",
     event_date: "2025-10-24T00:00:00.000Z",
+    end_date: "2025-10-26T00:00:00.000Z",
     location: "BMW Office",
     city: "Munich",
     category: "Hackathon",
     coHosts: [host("bmw", "BMW")],
-    poster: "/assets/innovation/robotics_arm.webp",
+    poster: "/assets/events/hackathons/bmw-hackathon-2025-poster.webp",
+    images: [
+      "/assets/events/hackathons/bmw-hackathon-2025-poster.webp",
+      "/assets/events/hackathons/bmw-hackathon-2025-group.webp",
+    ],
   },
   {
     id: "mock-event-anthropic-christmas",
@@ -160,11 +175,16 @@ const pastEvents: PastEvent[] = [
     description:
       "An end-of-year hackathon to build intelligent systems with Anthropic's models.",
     event_date: "2025-12-13T00:00:00.000Z",
+    end_date: "2025-12-14T00:00:00.000Z",
     location: "Munich",
     city: "Munich",
     category: "Hackathon",
     coHosts: [host("anthropic", "Anthropic")],
-    poster: "/assets/innovation/robotics_discussion.webp",
+    poster: "/assets/events/hackathons/christmas-hackathon-2025-poster.webp",
+    images: [
+      "/assets/events/hackathons/christmas-hackathon-2025-poster.webp",
+      "/assets/events/hackathons/christmas-hackathon-2025-group.webp",
+    ],
   },
   {
     id: "mock-event-elab-final-winter",
@@ -187,7 +207,11 @@ const pastEvents: PastEvent[] = [
     location: "TUM.ai Homebase",
     city: "Munich",
     category: "Hackathon",
-    poster: "/assets/innovation/accelerated_computing.webp",
+    poster: "/assets/events/hackathons/data-mining-hackathon-2026-poster.webp",
+    images: [
+      "/assets/events/hackathons/data-mining-hackathon-2026-poster.webp",
+      "/assets/events/hackathons/data-mining-hackathon-2026-winners.webp",
+    ],
   },
   {
     id: "mock-event-elab-info",
@@ -220,7 +244,7 @@ const pastEvents: PastEvent[] = [
     location: "Online",
     city: "Online",
     category: "E-Lab",
-    poster: "/assets/home_img4.webp",
+    // No poster: keeps the poster-less path covered now that every hackathon has one.
   },
   {
     id: "mock-event-agora",
@@ -232,7 +256,7 @@ const pastEvents: PastEvent[] = [
     location: "Cafe Luitpold",
     city: "Munich",
     category: "Hackathon",
-    poster: "/assets/apply/new_section_photo_3.webp",
+    poster: "/assets/events/hackathons/agora-hacks-2026-poster.webp",
   },
   {
     id: "mock-event-life-sciences",
@@ -254,7 +278,7 @@ const pastEvents: PastEvent[] = [
     location: "TUM Main Campus",
     city: "Munich",
     category: "Hackathon",
-    poster: "/assets/homepage/Makeathon.webp",
+    poster: "/assets/events/hackathons/makeathon-2026-poster.webp",
   },
   {
     id: "mock-event-project-a-yellow",
@@ -267,7 +291,12 @@ const pastEvents: PastEvent[] = [
     city: "Munich",
     category: "Hackathon",
     coHosts: [host("project-a", "Project A"), host("yellow", "Yellow")],
-    poster: "/assets/home_img2.webp",
+    poster:
+      "/assets/events/hackathons/project-a-yellow-hackathon-2026-poster.webp",
+    images: [
+      "/assets/events/hackathons/project-a-yellow-hackathon-2026-poster.webp",
+      "/assets/events/hackathons/project-a-yellow-hackathon-2026-group.webp",
+    ],
   },
   {
     id: "mock-event-elab-midterm",
@@ -290,7 +319,7 @@ const pastEvents: PastEvent[] = [
     location: "Location TBA on signup",
     city: "Munich",
     category: "Hackathon",
-    poster: "/assets/apply/new_section_photo_1.webp",
+    poster: "/assets/events/hackathons/energy-hack-2026-poster.webp",
   },
   {
     id: "mock-event-elab-final-summer",
@@ -354,6 +383,50 @@ export const redesignOnlyEvents: readonly RedesignOnlyEvent[] = [
       "/assets/events/hackathons/benchpress-makeathon-group.webp",
     ],
   },
+  {
+    // Source: the TUM.ai announcement (linkedin.com/posts/tum-ai_ai-e-lab-hackathon-get-stuff-done-weekend-activity-7267824907823058944-CzSe).
+    key: "e-lab-hackathon-2024",
+    id: "mock-event-e-lab-hackathon-2024",
+    title: "AI E-Lab Hackathon: Get Stuff Done Weekend",
+    description:
+      "A weekend at the TUM.ai Homebase to focus, build and create, open to TUM.ai, Alexandria Hackerhouse, CDTM and every Munich builder with an idea: workspaces, coaches, food and drinks.",
+    event_date: "2024-11-30T00:00:00.000Z",
+    end_date: "2024-12-01T00:00:00.000Z",
+    location: "TUM.ai Homebase",
+    city: "Munich",
+    category: "Hackathon",
+    poster: "/assets/events/hackathons/e-lab-hackathon-2024-poster.webp",
+  },
+  {
+    // Source: "TUM.ai's Hackathon Summer" (linkedin.com/posts/tum-ai_tumai-s-hackathon-summer-time-to-activity-7367170944223576064-X6Ma),
+    // which lists it with the AWS, Google and Anthropic hackathons.
+    key: "munich-ai-hack-2025",
+    id: "mock-event-munich-ai-hack-2025",
+    title: "Munich AI Hack: The Inaugural Event",
+    description:
+      "One day with CoBrowser to build AI personalisation and context tools, part of TUM.ai's Hackathon Summer.",
+    event_date: "2025-08-30T07:30:00.000Z",
+    end_date: "2025-08-30T21:00:00.000Z",
+    city: "Munich",
+    category: "Hackathon",
+    // CoBrowser stays in the description: it has no logo for the dark co-host reel yet.
+    coHosts: [host("cdtm", "CDTM")],
+    poster: "/assets/events/hackathons/munich-ai-hack-2025-poster.webp",
+  },
+  {
+    // Source: the TUM.ai announcement (linkedin.com/posts/tum-ai_…-activity-7474799849087852544-LqCT).
+    key: "ai4good-hackathon-2026",
+    id: "mock-event-ai4good-hackathon-2026",
+    title: "AI4Good Hackathon",
+    description:
+      "Two days at TUM with Namib-AI and the TUM Social AI Club: interdisciplinary teams build AI solutions for real challenges from African nonprofits.",
+    event_date: "2026-06-27T00:00:00.000Z",
+    end_date: "2026-06-28T00:00:00.000Z",
+    location: "Technical University of Munich",
+    city: "Munich",
+    category: "Hackathon",
+    poster: "/assets/events/hackathons/ai4good-hackathon-2026-poster.webp",
+  },
 
   // The Makeathon editions before 2026 (the 2026 edition is a production
   // event). Sources as in features/hackathons/data/makeathon.ts; /hackathons
@@ -364,10 +437,16 @@ export const redesignOnlyEvents: readonly RedesignOnlyEvent[] = [
     title: "GPT-3 Makeathon",
     description:
       "The first TUM.ai Makeathon, built on GPT-3 with OpenAI, appliedAI and TUM Venture Labs. The finale was judged by a jury from Cherry Ventures, Microsoft and IBM.",
-    // TODO(content): the build days before the finale on 18 April 2021.
-    event_date: "2021-04-18T00:00:00.000Z",
+    // The thank-you post of Tue 20 April 2021 calls it "last weekend".
+    event_date: "2021-04-16T00:00:00.000Z",
+    end_date: "2021-04-18T00:00:00.000Z",
     city: "Munich",
     category: "Hackathon",
+    poster: "/assets/events/hackathons/makeathon-2021-gpt-3-poster.webp",
+    images: [
+      "/assets/events/hackathons/makeathon-2021-gpt-3-poster.webp",
+      "/assets/events/hackathons/makeathon-2021-gpt-3-finale.webp",
+    ],
   },
   {
     key: "makeathon-2021-autumn",
@@ -405,6 +484,10 @@ export const redesignOnlyEvents: readonly RedesignOnlyEvent[] = [
     city: "Munich",
     category: "Hackathon",
     poster: "/assets/events/hackathons/makeathon-2022-autumn-poster.webp",
+    images: [
+      "/assets/events/hackathons/makeathon-2022-autumn-poster.webp",
+      "/assets/events/hackathons/makeathon-2022-autumn-stage.webp",
+    ],
   },
   {
     key: "makeathon-2023",
@@ -412,12 +495,17 @@ export const redesignOnlyEvents: readonly RedesignOnlyEvent[] = [
     title: "Makeathon 2023: AI for everyone",
     description:
       "Three days on the Garching campus with challenges from ESA, Microsoft, the BMW Group, G-Research, Cohere and Daiki.",
-    event_date: "2023-04-28T00:00:00.000Z",
+    // The opening ceremony was on Thursday 27 April at 6 pm.
+    event_date: "2023-04-27T00:00:00.000Z",
     end_date: "2023-04-30T00:00:00.000Z",
     location: "TUM Campus Garching",
     city: "Munich",
     category: "Hackathon",
     poster: "/assets/events/hackathons/makeathon-2023-poster.webp",
+    images: [
+      "/assets/events/hackathons/makeathon-2023-poster.webp",
+      "/assets/events/hackathons/makeathon-2023-group.webp",
+    ],
   },
   {
     key: "makeathon-2024",
@@ -461,6 +549,10 @@ export const redesignOnlyEvents: readonly RedesignOnlyEvent[] = [
     city: "Paris",
     category: "Hackathon",
     poster: "/assets/events/hackathons/ehl-2026-paris-poster.webp",
+    images: [
+      "/assets/events/hackathons/ehl-2026-paris-poster.webp",
+      "/assets/events/hackathons/ehl-2026-paris-group.webp",
+    ],
   },
   {
     key: "ehl-2026-munich",
@@ -473,6 +565,10 @@ export const redesignOnlyEvents: readonly RedesignOnlyEvent[] = [
     city: "Munich",
     category: "Hackathon",
     poster: "/assets/events/hackathons/ehl-2026-munich-poster.webp",
+    images: [
+      "/assets/events/hackathons/ehl-2026-munich-poster.webp",
+      "/assets/events/hackathons/ehl-2026-munich-stage.webp",
+    ],
   },
   {
     key: "ehl-2026-zurich",
@@ -485,6 +581,10 @@ export const redesignOnlyEvents: readonly RedesignOnlyEvent[] = [
     city: "Zurich",
     category: "Hackathon",
     poster: "/assets/events/hackathons/ehl-2026-zurich-poster.webp",
+    images: [
+      "/assets/events/hackathons/ehl-2026-zurich-poster.webp",
+      "/assets/events/hackathons/ehl-2026-zurich-winners.webp",
+    ],
   },
   {
     key: "ehl-2026-grand-finale",

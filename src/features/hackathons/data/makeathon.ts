@@ -28,8 +28,8 @@ export const makeathonEditions: readonly MakeathonEdition[] = [
   {
     key: "2021",
     name: "GPT-3 Makeathon",
-    // TODO(content): the build days before the finale on 18 April 2021.
-    start: "2021-04-18",
+    // TUM.ai's thank-you post of Tue 20 April 2021 calls it "last weekend".
+    start: "2021-04-16",
     end: "2021-04-18",
     city: "Munich",
     note: "The first Makeathon, built on GPT-3 with OpenAI, appliedAI and TUM Venture Labs, and judged by a jury from Cherry Ventures, Microsoft and IBM.",
@@ -62,7 +62,8 @@ export const makeathonEditions: readonly MakeathonEdition[] = [
   {
     key: "2023",
     name: "AI for everyone",
-    start: "2023-04-28",
+    // The opening ceremony was on Thursday 27 April at 6 pm (TUM.ai's post).
+    start: "2023-04-27",
     end: "2023-04-30",
     city: "Munich",
     note: "On the Garching campus, with ESA, Microsoft, the BMW Group, G-Research, Cohere and Daiki.",

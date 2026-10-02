@@ -26,3 +26,35 @@ original size (1920px carousel pages scaled to 1080px), without other edits.
 - `ehl-2026-grand-finale-poster.webp`: https://www.linkedin.com/posts/tum-ai_ehl-europeanhackathonleague-tumai-activity-7507106293946548224-p4_D
 
 The GPT-3 Makeathon (2021) has no single poster: its announcement was a set of track cards.
+
+## Added 2026-10-02
+
+Retrieved from TUM.ai's own LinkedIn posts (collected with Bright Data). Encoded as WebP at most
+1080px wide, without other edits unless noted.
+
+- `makeathon-2021-gpt-3-poster.webp`: the four track cards of the announcement (Legal Tech,
+  Healthcare, Marketing, Knowledge Management) set as one 2×2 sheet,
+  https://www.linkedin.com/posts/tum-ai_gpt3-makeathon-tum-activity-6779688441270550528-gOuc
+- `makeathon-2021-gpt-3-finale.webp`: the virtual finale from the thank-you post,
+  https://www.linkedin.com/posts/tum-ai_gpt-tumai-ai-activity-6790248559326310400-zyU2
+- `makeathon-2022-autumn-stage.webp`: https://www.linkedin.com/posts/tum-ai_aiforglobalimpact-aiforglobalimpact-ai-activity-6982756845622853632-vgAB
+- `makeathon-2023-group.webp`: https://www.linkedin.com/posts/tum-ai_aiforeveryone-ai-experience-activity-7057378816905609216-v73F
+- `e-lab-hackathon-2024-poster.webp`: https://www.linkedin.com/posts/tum-ai_ai-e-lab-hackathon-get-stuff-done-weekend-activity-7267824907823058944-CzSe
+- `munich-ai-hack-2025-poster.webp`: page 3 of "TUM.ai's Hackathon Summer",
+  https://www.linkedin.com/posts/tum-ai_tumai-s-hackathon-summer-time-to-activity-7367170944223576064-X6Ma
+- `ai4good-hackathon-2026-poster.webp`: https://www.linkedin.com/posts/tum-ai_activity-7474799849087852544-LqCT
+- `bkw-hackathon-2025-poster.webp`: https://www.linkedin.com/posts/tum-ai_what-happens-when-engineering-experts-activity-7360973168351571968-WOvA
+- `bkw-hackathon-2025-group.webp`: https://www.linkedin.com/posts/tum-ai_bkwengineering-artificialintelligence-activity-7387101167232655360-tg64
+- `bmw-hackathon-2025-group.webp`: https://www.linkedin.com/posts/tum-ai_reflecting-on-an-innovation-filled-bmw-activity-7399067323044700160-W8Tp
+- `christmas-hackathon-2025-group.webp`: https://www.linkedin.com/posts/tum-ai_on-dec-1314-we-hosted-a-christmas-hackathon-activity-7413553791427403776-rssa
+- `data-mining-hackathon-2026-winners.webp`: https://www.linkedin.com/posts/tum-ai_tumai-unite-hackathonrecap-activity-7437853225657176064-GDXW
+- `project-a-yellow-hackathon-2026-group.webp`: https://www.linkedin.com/posts/tum-ai_24-hours-100-builders-countless-ideas-activity-7458802949704560640-4IFG
+- `ehl-2026-paris-group.webp`: https://www.linkedin.com/posts/tum-ai_tumai-ehl-europeanhackathonleague-activity-7481382826521681921-7a4U
+- `ehl-2026-munich-stage.webp`: https://www.linkedin.com/posts/tum-ai_ehl-europeanhackathonleague-tumai-activity-7498771353295122432-WCNZ
+- `ehl-2026-zurich-winners.webp`: https://www.linkedin.com/posts/tum-ai_ehl-europeanhackathonleague-tumai-activity-7505686873454026752-WjKh
+
+The live posters of the hackathons in the copied `production` events, downloaded from the Sanity
+CDN so the mock CMS shows them instead of stock stand-ins: `aws-lovable-n8n-hackathon-2025-poster`,
+`google-hackathon-2025-poster`, `anthropic-lovable-hackathon-2025-poster`, `bmw-hackathon-2025-poster`,
+`christmas-hackathon-2025-poster`, `data-mining-hackathon-2026-poster`, `agora-hacks-2026-poster`,
+`makeathon-2026-poster`, `project-a-yellow-hackathon-2026-poster`, `energy-hack-2026-poster`.
