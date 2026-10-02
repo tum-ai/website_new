@@ -6,7 +6,7 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { HeroReel } from "./hero-reel";
+import { HeroReel, REEL_READY_CAP_MS } from "./hero-reel";
 
 beforeEach(() => {
   // Motion allowed: the reel mode.
@@ -163,4 +163,65 @@ test("marks the new first host's panel when a publish reorders the hosts", () =>
   rerender(<Reel names={["Initech", "Globex", "Acme"]} />);
   setMotion(false);
   expect(activePanels()).toStrictEqual(["0"]);
+});
+
+/** A reel image that has not loaded yet, as on a slow connection. */
+function PendingLogo({ id }: { id: string }) {
+  return (
+    // biome-ignore lint/performance/noImgElement: stands in for next/image's rendered <img>
+    <img
+      alt=""
+      data-testid={id}
+      ref={(img) => {
+        if (img) Object.defineProperty(img, "complete", { value: false });
+      }}
+    />
+  );
+}
+
+function LogoReel() {
+  return (
+    <HeroReel names={["Acme", "Globex"]} aria-label="Hosts">
+      <div className="events-names-window">
+        <div className="events-reel">
+          <PendingLogo id="acme" />
+          <PendingLogo id="globex" />
+        </div>
+      </div>
+    </HeroReel>
+  );
+}
+
+const reelReady = () =>
+  screen.getByRole("region", { name: "Hosts" }).hasAttribute("data-reel-ready");
+
+test("starts the load roll once every reel logo has loaded or failed", async () => {
+  render(<LogoReel />);
+  expect(reelReady()).toBe(false);
+
+  fireEvent.load(screen.getByTestId("acme"));
+  await Promise.resolve();
+  expect(reelReady()).toBe(false);
+
+  // A broken logo must not hold the roll.
+  fireEvent.error(screen.getByTestId("globex"));
+  await waitFor(() => expect(reelReady()).toBe(true));
+});
+
+test("starts the load roll after the cap when a logo never arrives", () => {
+  vi.useFakeTimers();
+  try {
+    render(<LogoReel />);
+    act(() => vi.advanceTimersByTime(REEL_READY_CAP_MS - 1));
+    expect(reelReady()).toBe(false);
+    act(() => vi.advanceTimersByTime(1));
+    expect(reelReady()).toBe(true);
+  } finally {
+    vi.useRealTimers();
+  }
+});
+
+test("starts the load roll at once without logos", async () => {
+  render(<Reel names={["Acme", "Globex"]} />);
+  await waitFor(() => expect(reelReady()).toBe(true));
 });

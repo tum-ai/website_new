@@ -58,6 +58,22 @@ const GLIDE = 0.16;
 /** How long the wheel must rest before the reel snaps to a name. */
 const WHEEL_REST_MS = 140;
 
+/** The longest the load roll waits for the reel's logos. */
+export const REEL_READY_CAP_MS = 2500;
+
+/**
+ * Resolves once `img` has loaded or failed (a broken logo must not hold the
+ * roll). `stop` detaches the listeners, for a reel that unmounts first.
+ */
+export function imageSettled(img: HTMLImageElement, stop: AbortSignal) {
+  return new Promise<void>((resolve) => {
+    if (img.complete) return resolve();
+    const done = () => resolve();
+    img.addEventListener("load", done, { once: true, signal: stop });
+    img.addEventListener("error", done, { once: true, signal: stop });
+  });
+}
+
 /** The host panels in their current document order. */
 const hostPanels = (band: HTMLElement) => [
   ...band.querySelectorAll<HTMLElement>("[data-host-panel]"),
@@ -90,6 +106,11 @@ function showPanel(panels: readonly HTMLElement[], index: number) {
  * rest after a turn. It does nothing under reduced motion, where the hero
  * is a static index (see events.css), and follows the setting when it
  * changes.
+ *
+ * The load roll (CSS) holds on the first name until this marks the band
+ * `data-reel-ready`: once every reel image has loaded or failed, or after
+ * {@link REEL_READY_CAP_MS}, whichever comes first. Set once and kept, as the
+ * roll happens once.
  */
 export function HeroReel({
   names,
@@ -106,6 +127,26 @@ export function HeroReel({
   const ref = useRef<HTMLElement>(null);
   // The same condition as the reel layout in events.css.
   const reelMode = useMediaQuery("(prefers-reduced-motion: no-preference)");
+
+  // On mount only: a later reorder or motion change must not hold the reel
+  // again, the roll has run by then.
+  useEffect(() => {
+    const band = ref.current;
+    if (!band) return;
+    const stop = new AbortController();
+    const ready = () => {
+      if (!stop.signal.aborted) band.toggleAttribute("data-reel-ready", true);
+    };
+    const cap = window.setTimeout(ready, REEL_READY_CAP_MS);
+    const images = band.querySelectorAll<HTMLImageElement>(".events-reel img");
+    Promise.all(
+      Array.from(images, (img) => imageSettled(img, stop.signal)),
+    ).then(ready);
+    return () => {
+      stop.abort();
+      window.clearTimeout(cap);
+    };
+  }, []);
 
   useEffect(() => {
     const band = ref.current;
