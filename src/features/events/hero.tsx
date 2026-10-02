@@ -8,6 +8,7 @@ import { type EventSummary, formatEventDate, type HostEntry } from "./events";
 import { HeroReel } from "./hero-reel";
 import { getHostArtwork } from "./host-content";
 import { Lockup } from "./lockup";
+import { REEL_ICON_PX, REEL_LOGO_SIZES } from "./reel-images";
 
 /**
  * The page's bold element: the TUM.ai logo and a × as a co-branding lockup,
@@ -184,7 +185,9 @@ function Count({ count }: { count: number }) {
  * Decorative: the list above carries the names for assistive technology.
  * The images load eagerly: the viewport clips the reel, so lazy loading would
  * hold back every logo outside the slot until it rolled in, and the load roll
- * waits for them ({@link HeroReel}). The copies share one URL per logo.
+ * waits for them ({@link HeroReel}). The copies share one URL per logo, and
+ * other pages warm those URLs ahead (`RouteImagePreload` in the site layout), so the sizes
+ * come from `reel-images.ts`.
  */
 function Reel({
   hosts,
@@ -214,7 +217,7 @@ function Reel({
                     src={logo.src}
                     alt=""
                     fill
-                    sizes="20rem"
+                    sizes={REEL_LOGO_SIZES}
                     loading="eager"
                   />
                 </span>
@@ -224,8 +227,8 @@ function Reel({
                     <Image
                       src={icon}
                       alt=""
-                      width={160}
-                      height={160}
+                      width={REEL_ICON_PX}
+                      height={REEL_ICON_PX}
                       loading="eager"
                       className="events-name-icon"
                     />

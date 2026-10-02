@@ -11,6 +11,10 @@ import { PosterWall } from "./poster-wall";
 import { Register } from "./register";
 import { Upcoming } from "./upcoming";
 
+// For the hero images route (`app/(site)/events/hero-images`), which may
+// import only this page module.
+export { getHeroImagePreloads } from "./hero-images";
+
 /**
  * /events, set around the co-branding lockup its events already carry
  * ("Anthropic x Lovable x Hugging Face"): the hero completes "TUM.ai ×" with
