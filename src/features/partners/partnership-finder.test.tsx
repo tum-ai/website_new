@@ -2,6 +2,7 @@ import { axe } from "@test/axe";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { stubMatchMedia, stubObservers } from "@/components/ds/testing";
 import {
   partnershipDurations,
   partnershipFinderCopy,
@@ -16,16 +17,10 @@ const [talent, hackathon] = partnershipIntents;
 const [oneOff, ongoing] = partnershipDurations;
 
 beforeEach(() => {
-  // jsdom has no layout: stub what the finder and the ds Reveal call.
-  vi.stubGlobal(
-    "matchMedia",
-    vi.fn((query: string) => ({
-      matches: false,
-      media: query,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-    })),
-  );
+  // jsdom has no layout: stub what the finder calls. Reduced motion swaps
+  // the steps at once, so the flows below stay synchronous.
+  stubMatchMedia({ reducedMotion: true });
+  stubObservers();
   Element.prototype.scrollIntoView = vi.fn();
 });
 
@@ -81,6 +76,41 @@ test("walks goal, timeframe and fit, moving focus to each step's heading", async
   expect(currentStep()).toHaveTextContent("Your fit");
   expect(screen.getByText(recommendations.talent.description)).toBeVisible();
   expect(await axe(container)).toHaveNoViolations();
+});
+
+test("with motion, the progress moves at once and the old step fades, inert, before the next", async () => {
+  stubMatchMedia({ reducedMotion: false });
+  const { user, heading, currentStep } = renderFinder();
+  const option = screen.getByRole("button", { name: new RegExp(talent.label) });
+
+  await user.click(option);
+  expect(currentStep()).toHaveTextContent("Your timeframe");
+  expect(option.closest("[inert]")).not.toBeNull();
+  expect(heading()).toHaveTextContent("What matters most to you right now?");
+
+  const next = await screen.findByRole("heading", {
+    level: 3,
+    name: /one-off activation or an ongoing/,
+  });
+  expect(next).toHaveFocus();
+  expect(next.closest("[inert]")).toBeNull();
+});
+
+test("keeps the leaving step's answers while it fades", async () => {
+  stubMatchMedia({ reducedMotion: false });
+  const { user } = renderFinder();
+  await user.click(
+    screen.getByRole("button", { name: new RegExp(talent.label) }),
+  );
+  await screen.findByRole("button", { name: "Back" });
+
+  await user.click(screen.getByRole("button", { name: "Back" }));
+  // Back clears the goal; the fading step still names it.
+  expect(screen.getByText(talent.label).tagName).toBe("P");
+  await screen.findByRole("heading", {
+    level: 3,
+    name: "What matters most to you right now?",
+  });
 });
 
 test("hands the answers to the email and offers a call", async () => {

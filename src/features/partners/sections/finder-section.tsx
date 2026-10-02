@@ -13,8 +13,9 @@ export function FinderSection({ copy }: { copy: PartnersSections["finder"] }) {
       aria-labelledby="finder-title"
       className="scroll-mt-header"
     >
-      <Container className="grid gap-10 md:gap-12 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-center lg:gap-12 xl:gap-20">
-        <Reveal>
+      {/* Top-aligned: the pitch stays put while the finder changes height. */}
+      <Container className="grid gap-10 md:gap-12 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-start lg:gap-12 xl:gap-20">
+        <Reveal className="lg:pt-9">
           <p className="text-eyebrow text-highlight">{copy.eyebrow}</p>
           <h2 id="finder-title" className="mt-5 text-display-md text-fg">
             <Lines lines={copy.title} />
