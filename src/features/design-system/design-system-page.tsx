@@ -839,14 +839,13 @@ export function DesignSystemPage() {
         </div>
         <div className="mt-24">
           <Label>Steps · rows, for steps that are sentences</Label>
-          <p className="mb-6 font-light text-display-md text-fg">We</p>
           <Steps
             layout="rows"
             items={[
-              { title: "collect project proposals from our partners," },
-              { title: "preselect applicants on their research experience," },
+              { title: "Collect research projects from our partner labs" },
+              { title: "Preselect applicants on their research experience" },
               {
-                title: "and support their stay abroad.",
+                title: "Help them settle abroad",
                 description: "An optional line under a step.",
               },
             ]}
