@@ -1,82 +1,100 @@
-import { afterEach, describe, expect, test, vi } from "vitest";
-import { contentTokens } from "@/config/content-tokens";
-import { fetchContent } from "@/lib/cms-content";
-import { DEPARTMENTS_QUERY, JOURNEY_QUERY } from "@/lib/community-content";
-import { fillCodeCopy } from "@/lib/content-copy";
-import type {
-  COMMUNITY_COPY_QUERY_RESULT,
-  DEPARTMENTS_QUERY_RESULT,
-  JOURNEY_QUERY_RESULT,
-} from "@/lib/sanity.types.generated";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import {
-  buildCommunityBackfill,
-  COMMUNITY_COPY_QUERY,
-  getCommunityContent,
-} from "./content";
-import { communityCopyTemplate } from "./data/copy";
-import { departments } from "./data/departments";
-import { journeySteps, memberJourney } from "./data/member-journey";
+  evaluateMockQuery,
+  getMockContentDocuments,
+} from "@/lib/cms-content-mock";
+import { ContentError } from "@/lib/cms-content-model";
+import type { CmsFixtureDocument } from "@/lib/cms-fixtures/types";
 
+const state = vi.hoisted(() => ({
+  edit: (docs: CmsFixtureDocument[]) => docs,
+}));
+vi.mock("@/lib/cms-content", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/cms-content")>();
+  const fixture = await import("@/lib/cms-content-mock");
+  return {
+    ...actual,
+    loadContent: async <T, R>({
+      query,
+      params = {},
+      select,
+    }: {
+      query: string;
+      params?: Record<string, unknown>;
+      select: (result: R) => T;
+    }) =>
+      select(
+        await fixture.evaluateMockQuery<R>(
+          query,
+          params,
+          state.edit(structuredClone(await fixture.getMockContentDocuments())),
+        ),
+      ),
+  };
+});
+beforeEach(() => {
+  state.edit = (docs) => docs;
+});
 afterEach(() => {
-  vi.unstubAllEnvs();
   vi.restoreAllMocks();
 });
 
-function useSource(source: "code" | "sanity") {
-  vi.stubEnv("CMS_CONTENT_SOURCE", source);
-  vi.stubEnv("USE_MOCK_CMS", "1");
-  vi.stubEnv("VERCEL", "");
-}
+import { COMMUNITY_COPY_QUERY, getCommunityContent } from "./content";
 
-const code = {
-  copy: fillCodeCopy(communityCopyTemplate, contentTokens),
-  journey: memberJourney,
-  // The keys name the backfill documents only; pages never see them.
-  departments: fillCodeCopy(
-    departments.map(({ key: _, ...department }) => department),
-    contentTokens,
-  ),
-};
-
-const fetchBackfill = <T>(query: string) =>
-  fetchContent<T>({
-    query,
-    tags: [],
-    mockDocuments: buildCommunityBackfill,
-    label: "parity",
+test("published community content follows the real projection", async () => {
+  const result = await getCommunityContent();
+  expect(result.copy.hero.title).toBe("A student community");
+  expect(result.copy.hero.photo).toMatchObject({
+    src: "/assets/fixtures/photo.svg",
+    width: 960,
+    height: 640,
   });
-
-describe("the /community content slice", () => {
-  test("code source: the code copy, journey and departments", async () => {
-    useSource("code");
-    await expect(getCommunityContent()).resolves.toStrictEqual(code);
-  });
-
-  test("the mock serves the backfill through the real queries", async () => {
-    useSource("sanity");
-    const copy =
-      await fetchBackfill<COMMUNITY_COPY_QUERY_RESULT>(COMMUNITY_COPY_QUERY);
-    expect(copy?.hero?.photo?.src).toBe(communityCopyTemplate.hero.photo.src);
-    const steps = await fetchBackfill<JOURNEY_QUERY_RESULT>(JOURNEY_QUERY);
-    expect(steps?.map(({ step }) => step)).toStrictEqual(
-      journeySteps.map(({ step }) => step),
+  expect(result.journey.map(({ kind }) => kind)).toEqual(["single", "fork"]);
+  expect(result.departments.map(({ name }) => name)).toEqual(["Example team"]);
+  const raw = await evaluateMockQuery<{ hero: { photo: { src: string } } }>(
+    COMMUNITY_COPY_QUERY,
+    {},
+    await getMockContentDocuments(),
+  );
+  expect(raw.hero.photo.src).toBe("/assets/fixtures/photo.svg");
+});
+test("required page copy fails at its field boundary", async () => {
+  state.edit = (docs) =>
+    docs.map((doc) =>
+      doc._id === "communityCopy" ? { ...doc, hero: {} } : doc,
     );
-    const teams =
-      await fetchBackfill<DEPARTMENTS_QUERY_RESULT>(DEPARTMENTS_QUERY);
-    expect(teams).toHaveLength(departments.length);
+  await expect(getCommunityContent()).rejects.toThrow(
+    /community copy.hero.title/,
+  );
+});
+test("a removed singleton cannot resurrect local copy", async () => {
+  state.edit = (docs) => docs.filter((doc) => doc._id !== "communityCopy");
+  await expect(getCommunityContent()).rejects.toBeInstanceOf(ContentError);
+});
+test("empty departments are intentionally empty", async () => {
+  state.edit = (docs) => docs.filter((doc) => doc._type !== "department");
+  await expect(getCommunityContent()).resolves.toMatchObject({
+    departments: [],
   });
+});
+test("unknown placeholders fail without dropping the department", async () => {
+  state.edit = (docs) =>
+    docs.map((doc) =>
+      doc._type === "department"
+        ? { ...doc, description: "{{missing.token}}" }
+        : doc,
+    );
+  await expect(getCommunityContent()).rejects.toThrow(/unknown placeholder/i);
+});
 
-  test("sanity source over the backfill: the same copy, journey and departments", async () => {
-    useSource("sanity");
-    await expect(getCommunityContent()).resolves.toStrictEqual(code);
-  });
-
-  test("the backfill holds the copy, one step per journey step and one document per department", () => {
-    const documents = buildCommunityBackfill();
-    const count = (type: string) =>
-      documents.filter(({ _type }) => _type === type).length;
-    expect(count("communityCopy")).toBe(1);
-    expect(count("journeyStep")).toBe(journeySteps.length);
-    expect(count("department")).toBe(departments.length);
-  });
+test("cleared optional department photo and caption stay absent", async () => {
+  state.edit = (docs) =>
+    docs.map((doc) =>
+      doc._type === "department"
+        ? { ...doc, photo: null, photoCaption: "" }
+        : doc,
+    );
+  const department = (await getCommunityContent()).departments[0];
+  expect(department?.photo).toBeUndefined();
+  expect(department?.photoCaption).toBe("");
 });

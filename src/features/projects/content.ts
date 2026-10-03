@@ -2,30 +2,24 @@ import "server-only";
 
 import { defineQuery } from "next-sanity";
 import { getContentTokens } from "@/config/content-tokens";
-import { buildOrganizationBackfill } from "@/features/partners/server";
-import { type BackfillDocument, backfillId } from "@/lib/cms-backfill";
 import { loadContent } from "@/lib/cms-content";
-import { CONTENT_IMAGE_PROJECTION } from "@/lib/cms-content-model";
-import { backfillContentImage } from "@/lib/content-backfill";
-import { fillCmsCopy, fillCodeCopy } from "@/lib/content-copy";
-import { organizationReference } from "@/lib/organization-content";
+import {
+  CONTENT_IMAGE_PROJECTION,
+  contentArray,
+  contentError,
+  contentImage,
+  contentObject,
+  contentOptional,
+  contentString,
+  contentText,
+  parseContent,
+  requireArray,
+  requireObject,
+} from "@/lib/cms-content-model";
+import { fillCmsCopy } from "@/lib/content-copy";
 import type { PROJECTS_CONTENT_QUERY_RESULT } from "@/lib/sanity.types.generated";
-import {
-  type ProjectsCopy,
-  projectsCopyTemplate,
-  projectsPageTokens,
-} from "./data/copy";
-import {
-  type TaskForce,
-  taskForces,
-  taskForceTemplates,
-} from "./data/projects";
-
-/**
- * The /projects content slice: the `projectsCopy` singleton (hero, open
- * seat, closing) and the `taskForce` documents. The figure's geometry stays
- * in code (`overlaps.ts`); the code fallbacks are in `data/`.
- */
+import { type ProjectsCopy, projectsPageTokens } from "./data/copy";
+import { openSeatSlug, type TaskForce } from "./data/projects";
 
 export const PROJECTS_CONTENT_QUERY = defineQuery(`{
   "copy": *[_id == "projectsCopy"][0]{
@@ -50,84 +44,96 @@ export const PROJECTS_CONTENT_QUERY = defineQuery(`{
   }
 }`);
 
-/**
- * Everything /projects renders from the slice: site-fact placeholders
- * filled, the page tokens (`{{count}}`, `{{partner}}`) left for
- * `projectsView`.
- */
+/** Complete CMS content consumed by the projects page. */
 export type ProjectsContent = { copy: ProjectsCopy; taskForces: TaskForce[] };
-
-const isTaskForce = (value: unknown): value is TaskForce => {
-  const taskForce = (value ?? {}) as Partial<TaskForce>;
-  return Boolean(
-    taskForce.slug &&
-      taskForce.name &&
-      taskForce.field &&
-      taskForce.description &&
-      taskForce.detailedDescription,
+const audience = contentObject({
+  audience: contentString,
+  text: contentString,
+});
+const copyParser = contentObject({
+  hero: contentObject({
+    eyebrow: contentString,
+    title: contentString,
+    lead: contentString,
+    figureLabel: contentString,
+  }),
+  openSeat: contentObject({ name: contentString, field: contentString }),
+  closing: contentObject({
+    title: contentString,
+    lead: contentString,
+    student: audience,
+    partner: contentObject({
+      audience: contentString,
+      text: contentString,
+      textWithoutPartner: contentString,
+    }),
+  }),
+});
+const forceParser = contentObject({
+  slug: contentString,
+  name: contentString,
+  field: contentString,
+  description: contentString,
+  detailedDescription: contentString,
+  work: contentOptional(
+    contentObject({
+      partner: contentString,
+      items: contentArray(contentString),
+    }),
+  ),
+  photo: contentOptional(contentImage),
+  photoCaption: contentOptional(contentText),
+});
+/** Validate every selected field; a removed optional collection remains empty. */
+export function selectProjectsContent(value: unknown): ProjectsContent {
+  const label = "the /projects content";
+  const result = requireObject(value, label);
+  const forces = requireArray(result.taskForces, label, "taskForces").map(
+    (force) => parseContent(force, forceParser, label),
   );
-};
-
-/** The /projects copy and task forces: the CMS over the code copy. */
+  const seen = new Set<string>();
+  for (const force of forces) {
+    if (
+      !/^[a-z0-9-]+$/.test(force.slug) ||
+      force.slug === openSeatSlug ||
+      seen.has(force.slug)
+    )
+      contentError(
+        label,
+        "taskForces.slug",
+        "anchors must be unique and cannot use the open circle anchor",
+      );
+    if (
+      force.work &&
+      (force.work.items.length < 1 || force.work.items.length > 8)
+    )
+      contentError(
+        label,
+        "taskForces.work.items",
+        "expected one to eight named projects",
+      );
+    seen.add(force.slug);
+  }
+  return {
+    copy: parseContent(result.copy, copyParser, label),
+    taskForces: forces,
+  };
+}
+/** Read the published page singleton and optional task-force collection. */
 export async function getProjectsContent(): Promise<ProjectsContent> {
   const tokens = await getContentTokens();
   return loadContent<ProjectsContent, PROJECTS_CONTENT_QUERY_RESULT>({
-    fallback: {
-      copy: fillCodeCopy(projectsCopyTemplate, tokens, projectsPageTokens),
-      taskForces: fillCodeCopy(taskForces, tokens),
-    },
     query: PROJECTS_CONTENT_QUERY,
     tags: ["content:projectsCopy", "content:taskForce", "content:organization"],
     label: "the /projects content",
-    mockDocuments: () => [
-      ...buildProjectsBackfill(),
-      ...buildOrganizationBackfill(),
-    ],
-    select: ({ copy, taskForces: forces }) => {
-      const filled = fillCmsCopy(forces, tokens, "the task forces");
-      return {
-        copy: fillCmsCopy(
-          copy,
+    select: (result) =>
+      selectProjectsContent(
+        fillCmsCopy(
+          result,
           tokens,
-          "the /projects copy",
+          "the /projects content",
           projectsPageTokens,
         ),
-        taskForces: (Array.isArray(filled) ? filled : [])
-          .filter(isTaskForce)
-          // Named work needs its partner (a resolved organisation) and at
-          // least one item.
-          .map(({ work, ...taskForce }) =>
-            work?.partner && work.items?.length
-              ? { ...taskForce, work }
-              : taskForce,
-          ),
-      };
-    },
+      ),
   });
-}
-
-/**
- * The /projects copy and task forces as documents for `pnpm sanity:backfill`
- * (a task force's partner references the organisation slice's document).
- */
-export function buildProjectsBackfill(): BackfillDocument[] {
-  return [
-    { _id: "projectsCopy", _type: "projectsCopy", ...projectsCopyTemplate },
-    ...taskForceTemplates.map(({ slug, photo, work, ...taskForce }, index) => ({
-      _id: backfillId("task-force", slug),
-      _type: "taskForce",
-      order: (index + 1) * 10,
-      slug: { _type: "slug", current: slug },
-      ...taskForce,
-      ...(work
-        ? {
-            work: {
-              partner: organizationReference(work.partner),
-              items: [...work.items],
-            },
-          }
-        : {}),
-      ...(photo ? { photo: backfillContentImage(photo) } : {}),
-    })),
-  ];
 }

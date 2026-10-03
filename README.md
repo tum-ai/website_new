@@ -67,7 +67,7 @@ src/
 ├── app/api/                      public JSON API and draft-mode routes
 ├── features/<domain>/            everything a page owns: page module, sections, data, logic, tests
 ├── components/shell/             site adapters for @tum.ai/ui-kit/shell
-├── config/                       site facts, navigation and SEO
+├── config/                       CMS fact readers/derivation, navigation and SEO
 ├── lib/                          Sanity fetch layer and queries, mock CMS, time, security
 ├── sanity/                       Studio config and schemas
 └── styles/index.css              kit styles and app-owned partner rotation
@@ -82,8 +82,8 @@ The import rules between these layers are enforced by `src/architecture.test.ts`
 
 | To change | Edit |
 | --- | --- |
-| A deadline, cohort, recruiting round, member count or contact | `src/config/` ([contributor guide](docs/contributor-guide.md#updating-site-facts)) |
-| Page copy | `src/features/<domain>/data/` (content moving to the CMS: [docs/cms-content-inventory.md](docs/cms-content-inventory.md)) |
+| A deadline, cohort, recruiting round, member count or role contact | Site settings/application windows in `/studio`; code contracts in `src/config/` ([contributor guide](docs/contributor-guide.md#updating-site-facts)) |
+| Page copy | The page's singleton in `/studio`; schema/query/parser in its feature ([CMS inventory](docs/cms-content-inventory.md)) |
 | Events, research or partners content | `/studio` (locally or on a preview deployment) |
 | Navigation or the header call to action | `src/config/navigation.ts` |
 | SEO or JSON-LD | `src/config/seo.ts` |

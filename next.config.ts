@@ -22,9 +22,8 @@ const nextConfig: NextConfig = {
   },
   images: {
     qualities: [40, 75],
-    // CMS images (events, partners, research and, with
-    // `CMS_CONTENT_SOURCE=sanity`, page content) are served from Sanity's
-    // CDN; code images stay local /assets/ files. Only this project's assets
+    // Editorial images are served from Sanity's CDN. Brand and synthetic
+    // fixture files stay under local /assets/. Only this project's assets
     // (every dataset): the optimizer never fetches another project's files
     // on the site's behalf.
     remotePatterns: [

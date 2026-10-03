@@ -41,6 +41,8 @@ export type Partner = {
   tier?: PartnerTier;
   /** Leads its tier. */
   featured?: boolean;
+  /** Optional CMS editorial order within its tier. */
+  order?: number;
   /** The logo is a symbol without the name: pages set the name beside it. */
   symbolOnly?: true;
 };

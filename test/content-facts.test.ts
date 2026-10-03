@@ -1,27 +1,29 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative, sep } from "node:path";
-import { expect, test } from "vitest";
+import { beforeEach, expect, test, vi } from "vitest";
+import { getContentTokens } from "@/config/content-tokens";
 import {
-  eLabApplicationsCloseAt,
-  eLabCompletedIterations,
-  eLabConfig,
-  eLabPhaseCopy,
-  eLabProgramSummary,
+  eLabCompletedIterationsOf,
+  eLabPhaseCopyOf,
+  eLabProgramSummaryOf,
+  eLabWindowClock,
   isApplicationWindowOpen,
-} from "../src/config/e-lab.ts";
-import { recruitingTimeline } from "../src/config/membership.ts";
+} from "@/config/e-lab";
+import { recruitingTimelineOf, roundSchedule } from "@/config/membership";
+import { officialMembersOf } from "@/config/organization";
+import { getSiteFacts } from "@/config/site-settings-content";
 import {
-  officialMembers,
-  organizationFacts,
-} from "../src/config/organization.ts";
-import { faq as applyFaq } from "../src/features/apply/data/faq.ts";
-import { faq as eLabFaq } from "../src/features/e-lab/data/faq.ts";
-import { testimonialCards } from "../src/features/e-lab/data/venture-page.ts";
-import { getPartnersCopy } from "../src/features/partners/content.ts";
-import { faqs as qandaFaqs } from "../src/features/qanda/data/qanda.ts";
-import { parseMunichDateTime } from "../src/lib/munich-time.ts";
+  settingsFixtureELabWindow,
+  settingsFixtureFacts,
+  settingsFixtureMembership,
+} from "@/lib/cms-fixtures/settings";
+import { parseMunichDateTime } from "@/lib/munich-time";
 
-test("Munich wall-clock times resolve summer and winter time", () => {
+beforeEach(() => {
+  vi.stubEnv("USE_MOCK_CMS", "1");
+  vi.stubEnv("VERCEL", "");
+});
+test("Munich wall-clock deadlines resolve summer and winter offsets", () => {
   expect(parseMunichDateTime("26.09.2026", "23:59").toISOString()).toBe(
     "2026-09-26T21:59:00.000Z",
   );
@@ -30,105 +32,52 @@ test("Munich wall-clock times resolve summer and winter time", () => {
   );
   expect(() => parseMunichDateTime("2026-09-26", "23:59")).toThrow();
 });
-
-test("E-Lab applications close exactly at the configured deadline", () => {
-  expect(eLabApplicationsCloseAt).toStrictEqual(
-    parseMunichDateTime(
-      eLabConfig.applicationDeadlineDate,
-      eLabConfig.applicationDeadlineTime,
-    ),
-  );
-
-  // The window model, pinned to the E-Lab 6.0 round (27.09.2026 at 22:00).
-  const closesAt = parseMunichDateTime("27.09.2026", "22:00");
-  const at = (iso: string) => ({
+test("CMS application deadlines close at the exact Munich instant", () => {
+  const clock = eLabWindowClock(settingsFixtureELabWindow);
+  const closesAt = new Date(clock.closesAt as number);
+  const at = (offset: number) => ({
     switchedOn: true,
     closesAt,
-    now: new Date(iso),
+    now: new Date(closesAt.getTime() + offset),
   });
-  expect(isApplicationWindowOpen(at("2026-09-27T21:59:59+02:00"))).toBe(true);
-  expect(isApplicationWindowOpen(at("2026-09-27T21:59:59.999+02:00"))).toBe(
-    true,
-  );
-  expect(isApplicationWindowOpen(at("2026-09-27T22:00:00+02:00"))).toBe(false);
-  expect(
-    isApplicationWindowOpen({
-      ...at("2026-09-27T21:00:00+02:00"),
-      switchedOn: false,
-    }),
-  ).toBe(false);
+  expect(isApplicationWindowOpen(at(-1))).toBe(true);
+  expect(isApplicationWindowOpen(at(0))).toBe(false);
+  expect(isApplicationWindowOpen({ ...at(-1), switchedOn: false })).toBe(false);
 });
-
-test("E-Lab teaser status has a variant for each phase", () => {
-  expect(eLabPhaseCopy.open.teaserStatus).toBe(
-    `Applications open until ${eLabConfig.applicationDeadlineDate}`,
+test("phase and program wording derive from supplied CMS facts", () => {
+  const phase = eLabPhaseCopyOf(
+    settingsFixtureFacts.eLab.currentIteration,
+    settingsFixtureELabWindow,
   );
-  expect(eLabPhaseCopy.closed.teaserStatus).toBe(
-    `Applications open in ${eLabConfig.nextApplicationWindow}`,
+  expect(phase.open.teaserStatus).toContain(
+    settingsFixtureELabWindow.applicationDeadlineDate,
   );
+  expect(phase.closed.teaserStatus).toContain(
+    settingsFixtureELabWindow.nextApplicationWindow,
+  );
+  expect(eLabProgramSummaryOf(8)).toBe(
+    "8-week equity-free AI startup incubator",
+  );
+  expect(eLabCompletedIterationsOf("3.0")).toBe(2);
 });
-
-test("E-Lab program length and proof points come from the config", () => {
-  const weeks = `${eLabConfig.programWeeks}-week`;
-  expect(eLabProgramSummary.startsWith(weeks)).toBe(true);
-  const commitment = eLabFaq.find(
-    (item) => item.question === "What is the time commitment for the program?",
+test("CMS member totals and content tokens follow edited published facts", async () => {
+  const facts = await getSiteFacts();
+  expect(officialMembersOf(facts.organization)).toBe(
+    facts.organization.activeMembers + facts.organization.alumni,
   );
-  expect(commitment?.answer).toContain(weeks);
-});
-
-test("E-Lab counts only the cohorts that have finished", () => {
-  expect(Number.isInteger(eLabCompletedIterations)).toBe(true);
-  expect(eLabCompletedIterations).toBeGreaterThan(0);
-  // The current cohort is still running, so it is not among them.
-  expect(Number.parseFloat(eLabConfig.currentIteration)).toBeGreaterThan(
-    eLabCompletedIterations,
+  const tokens = await getContentTokens();
+  expect(tokens["org.officialMembers"]).toBe(
+    String(officialMembersOf(facts.organization)),
   );
-  // Founders quoted as alumni of a cohort ("E-Lab 3.0") come from one of them.
-  for (const card of testimonialCards) {
-    const cohort = /^E-Lab (\d+)/.exec(card.context ?? "")?.[1];
-    if (cohort) {
-      expect(Number(cohort), card.name).toBeLessThanOrEqual(
-        eLabCompletedIterations,
-      );
-    }
-  }
-  // The Q&A states the count it derives.
-  const startups = qandaFaqs.find((entry) => entry.id === "startups");
-  expect(startups?.evidence?.text).toContain(
-    `has run ${eLabCompletedIterations} cohorts`,
+  expect(tokens["org.startedApplications"]).toBe(
+    String(facts.organization.startedApplicationsPerBatch),
   );
 });
-
-test("member figures add up and feed the partner stats", async () => {
-  expect(officialMembers).toBe(
-    organizationFacts.activeMembers + organizationFacts.alumni,
+test("recruiting timeline derives its date labels from the CMS round", () => {
+  const timeline = recruitingTimelineOf(
+    roundSchedule(settingsFixtureMembership.round),
   );
-  // The figures /partners renders from its code copy.
-  const { stats } = await getPartnersCopy();
-  const members = stats.find((stat) => stat.label === "Official members");
-  expect(members?.value).toBe(`${officialMembers}+`);
-});
-
-test("the partner selection stats come from the organization facts", async () => {
-  const { stats } = await getPartnersCopy();
-  const value = (label: string) =>
-    stats.find((stat) => stat.label === label)?.value;
-  expect(value("Started applications per batch")).toBe(
-    `${organizationFacts.startedApplicationsPerBatch}+`,
-  );
-  expect(value("Acceptance rate per batch")).toBe(
-    `${organizationFacts.acceptanceRate}%`,
-  );
-});
-
-test("the Apply FAQ timeline comes from the recruiting config", () => {
-  const timeline = applyFaq.find(
-    (item) => item.question === "What does the application timeline look like?",
-  );
-  for (const window of Object.values(recruitingTimeline)) {
-    expect(timeline?.answer, window).toContain(window);
-  }
+  expect(Object.values(timeline).join(" ")).toContain("October");
 });
 
 /**

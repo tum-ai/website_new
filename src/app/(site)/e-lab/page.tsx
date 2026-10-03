@@ -11,10 +11,10 @@ export const metadata = buildMetadata("entrepreneurship");
  * the page regenerates every 5 minutes and its HTML follows the deadline. */
 export const revalidate = 300;
 
-export default function Page() {
+export default async function Page() {
   return (
     <>
-      <JsonLd data={getJsonLd("entrepreneurship")} />
+      <JsonLd data={await getJsonLd("entrepreneurship")} />
       <ELabPage />
     </>
   );

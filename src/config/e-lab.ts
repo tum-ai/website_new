@@ -3,21 +3,7 @@ import type { ContentImage } from "@/lib/cms-content-model";
 import { parseMunichDateTime } from "@/lib/munich-time";
 import { callToActionLabels } from "./calls-to-action";
 
-/**
- * Single source for E-Lab facts: the cohort, the application phase, the
- * deadline and the program length. Every page (the E-Lab page, the landing
- * page's E-Lab card, the FAQ, JSON-LD) derives its copy from here, so a new
- * cohort or phase is one edit in this file. See "Updating site facts" in
- * docs/contributor-guide.md.
- *
- * The facts split in two for the CMS: the program facts
- * ({@link ELabFacts}) go to the `siteSettings` document
- * (`config/site-settings-content.ts`), the application phase
- * ({@link ELabApplicationWindow}) to the E-Lab `applicationWindow` document
- * (`config/schedule-content.ts`). `eLabConfig` stays their code fallback;
- * the derived copy below is a function of both, so pages can derive it from
- * the values resolved for a render.
- */
+/** Pure E-Lab facts, application-window shapes and derived phase copy. Values come from CMS settings and windows for each render. */
 
 /** The program: cohort, length, funding, the selection funnel and the logo. */
 export type ELabFacts = {
@@ -69,62 +55,6 @@ export type ELabApplicationWindow = {
 
 export type ELabConfig = ELabFacts & ELabApplicationWindow;
 
-/**
- * Update this when the next E-Lab cohort launches, e.g. "6.0".
- * If the cohort logo changes, update heroLogo at the same time.
- */
-const currentIteration = "6.0";
-
-export const eLabConfig: ELabConfig = {
-  currentIteration,
-  // TODO(content): the 27.09.2026 deadline has passed. The site closes the
-  // round by itself at the deadline, but should this switch be set to false
-  // (and nextApplicationWindow confirmed) now that E-Lab 6.0 is selected?
-  applicationsOpen: true,
-  applicationUrl: "https://tally.so/r/xXBkW9",
-  applicationDeadlineDate: "27.09.2026",
-  applicationDeadlineTime: "22:00",
-  nextApplicationWindow: "August",
-  programWeeks: 12,
-  ventureFundingMillions: 8,
-  selection: {
-    applications: 500,
-    // TODO(content): placeholders. How many teams are admitted, pitch at the
-    // Midterm Pitch, are evaluated on Selection Day and pitch at the Final
-    // Pitch in a typical cohort? Ask the Venture team.
-    admitted: 30,
-    midterm: 24,
-    selectionDay: 16,
-    finalPitch: 10,
-  },
-  heroLogo: {
-    // TODO(content): E-Lab 6.0 still shows the E-Lab 5 artwork. Is there an
-    // E-Lab 6 logo, or is the 5.0 lockup intended for this cohort?
-    src: "/assets/e-lab/E-Lab5Logo.svg",
-    width: 2717,
-    height: 530,
-    alt: `E-LAB ${currentIteration}`,
-  },
-};
-
-/** The program facts of {@link eLabConfig}: the `siteSettings` code fallback. */
-export const eLabFactsFallback: ELabFacts = {
-  currentIteration: eLabConfig.currentIteration,
-  programWeeks: eLabConfig.programWeeks,
-  ventureFundingMillions: eLabConfig.ventureFundingMillions,
-  selection: eLabConfig.selection,
-  heroLogo: eLabConfig.heroLogo,
-};
-
-/** The application phase of {@link eLabConfig}: the `applicationWindow` code fallback. */
-export const eLabWindowFallback: ELabApplicationWindow = {
-  applicationsOpen: eLabConfig.applicationsOpen,
-  applicationUrl: eLabConfig.applicationUrl,
-  applicationDeadlineDate: eLabConfig.applicationDeadlineDate,
-  applicationDeadlineTime: eLabConfig.applicationDeadlineTime,
-  nextApplicationWindow: eLabConfig.nextApplicationWindow,
-};
-
 /** The instant applications close: the deadline itself, in Munich time. */
 function eLabClosesAt(window: ELabApplicationWindow): Date {
   return parseMunichDateTime(
@@ -145,9 +75,6 @@ export function eLabWindowClock(window: ELabApplicationWindow): ClockWindow {
   };
 }
 
-/** {@link eLabClosesAt} for the code window. */
-export const eLabApplicationsCloseAt = eLabClosesAt(eLabWindowFallback);
-
 /** Whether an application window is open at `now`. */
 export function isApplicationWindowOpen({
   switchedOn,
@@ -162,16 +89,6 @@ export function isApplicationWindowOpen({
     { switchedOn, opensAt: null, closesAt: closesAt.getTime() },
     now,
   );
-}
-
-/**
- * Whether E-Lab applications are open at `now` in the code window. Pages
- * must not cache this in a module constant: render with it (the E-Lab route
- * revalidates) and let <ELabPhase> flip the page live at the deadline.
- * Per render, use `isClockWindowOpen(eLabWindowClock(await getELabWindow()), now)`.
- */
-export function isELabApplicationOpen(now: Date): boolean {
-  return isClockWindowOpen(eLabWindowClock(eLabWindowFallback), now);
 }
 
 /** "12-week equity-free AI startup incubator". */
@@ -245,23 +162,3 @@ export function eLabPhaseCopyOf(
     closed: phaseCopy(false, currentIteration, window),
   } as const;
 }
-
-/** {@link eLabProgramSummaryOf} the code facts. */
-export const eLabProgramSummary = eLabProgramSummaryOf(eLabConfig.programWeeks);
-
-/** {@link eLabCompletedIterationsOf} the code facts. */
-export const eLabCompletedIterations = eLabCompletedIterationsOf(
-  eLabConfig.currentIteration,
-);
-
-/** {@link eLabApplicationCopyOf} the code facts and window. */
-export const eLabApplicationCopy = eLabApplicationCopyOf(
-  eLabConfig.currentIteration,
-  eLabWindowFallback,
-);
-
-/** {@link eLabPhaseCopyOf} the code facts and window. */
-export const eLabPhaseCopy = eLabPhaseCopyOf(
-  eLabConfig.currentIteration,
-  eLabWindowFallback,
-);

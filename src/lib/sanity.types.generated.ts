@@ -15,6 +15,13 @@
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: ../../node_modules/.cache/sanity/schema.json
+export type CaseStudyReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "caseStudy";
+};
+
 export type SanityImageAssetReference = {
   _ref: string;
   _type: "reference";
@@ -28,6 +35,8 @@ export type HackathonsCopy = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
+  voiceCaseStudy?: CaseStudyReference;
+  outcomeCaseStudy?: CaseStudyReference;
   hero?: {
     eyebrow: string;
     title: string;
@@ -198,6 +207,13 @@ export type EventsCopy = {
   };
 };
 
+export type PersonReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "person";
+};
+
 export type ELabCopy = {
   _id: string;
   _type: "eLabCopy";
@@ -260,6 +276,16 @@ export type ELabCopy = {
   voices?: {
     title: string;
     lead: string;
+    founders?: Array<
+      {
+        _key: string;
+      } & PersonReference
+    >;
+    investors?: Array<
+      {
+        _key: string;
+      } & PersonReference
+    >;
     foundersLabel: string;
     investorsLabel: string;
   };
@@ -294,7 +320,7 @@ export type ApplyCopy = {
   heroLead: string;
   faqLabel: string;
   datesTitle: string;
-  scope?: {
+  scope: {
     title: string;
     inScopeTitle: string;
     notRequiredTitle: string;
@@ -326,7 +352,7 @@ export type ApplyCopy = {
       _type: "image";
     };
   };
-  tracks?: {
+  tracks: {
     title: string;
     lead: string;
     offeringsTitle: string;
@@ -346,7 +372,7 @@ export type ApplyCopy = {
     };
     journeyLink: string;
   };
-  selection?: {
+  selection: {
     title: string;
     lead: string;
     stages: Array<{
@@ -357,20 +383,13 @@ export type ApplyCopy = {
       _key: string;
     }>;
   };
-  history?: {
+  history: {
     title: string;
     lead: string;
   };
-  closing?: {
+  closing: {
     companiesReader: string;
   };
-};
-
-export type PersonReference = {
-  _ref: string;
-  _type: "reference";
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: "person";
 };
 
 export type HomeCopy = {
@@ -379,7 +398,7 @@ export type HomeCopy = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  hero?: {
+  hero: {
     title: string;
     lead: string;
     partnersLabel: string;
@@ -393,7 +412,7 @@ export type HomeCopy = {
       _key: string;
     }>;
   };
-  mission?: {
+  mission: {
     statement: string;
     body: string;
   };
@@ -410,7 +429,7 @@ export type HomeCopy = {
     _type: "ledgerRow";
     _key: string;
   }>;
-  programs?: {
+  programs: {
     title: string;
     lead: string;
     items: Array<{
@@ -430,7 +449,7 @@ export type HomeCopy = {
       _key: string;
     }>;
   };
-  room?: {
+  room: {
     title: string;
     lead: string;
     photos: Array<{
@@ -447,7 +466,7 @@ export type HomeCopy = {
       _key: string;
     }>;
   };
-  join?: {
+  join: {
     title: string;
     lead: string;
     stepsTitle: string;
@@ -457,12 +476,12 @@ export type HomeCopy = {
       _type: "recruitingStep";
       _key: string;
     }>;
-    quote?: {
+    quote: {
       person: PersonReference;
       excerpt: string;
     };
   };
-  partners?: {
+  partners: {
     title: string;
     lead: string;
     moreLabel: string;
@@ -679,7 +698,7 @@ export type CommunityCopy = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  hero?: {
+  hero: {
     title: string;
     lead: string;
     photo: {
@@ -692,19 +711,19 @@ export type CommunityCopy = {
     };
     photoCaption: string;
   };
-  journey?: {
+  journey: {
     title: string;
     lead: string;
   };
-  departments?: {
+  departments: {
     title: string;
     lead: string;
   };
-  stories?: {
+  stories: {
     title: string;
     lead: string;
   };
-  closing?: {
+  closing: {
     title: string;
     lead: string;
     companiesReader: string;
@@ -721,17 +740,17 @@ export type QandaCopy = {
   missionQuestion: string;
   missionLead: string;
   missionPassage: string;
-  closing?: {
+  closing: {
     title: string;
     lead: string;
     action: string;
   };
-  forks?: {
-    students?: {
+  forks: {
+    students: {
       reader: string;
       text: string;
     };
-    companies?: {
+    companies: {
       reader: string;
     };
   };
@@ -841,6 +860,14 @@ export type PartnersCopy = {
   };
   sections?: {
     hero?: {
+      image: {
+        asset?: SanityImageAssetReference;
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        alt: string;
+        _type: "image";
+      };
       eyebrow?: string;
       title?: Array<string>;
       lead?: string;
@@ -970,6 +997,7 @@ export type LogoList = {
   _updatedAt: string;
   _rev: string;
   surface:
+    | "ehl-partners"
     | "alumni-destinations"
     | "partner-marquee"
     | "e-lab-ventures"
@@ -1013,6 +1041,7 @@ export type Organization = {
   };
   partnerTier?: "gold" | "silver" | "bronze" | "supporter";
   partnerFeatured?: boolean;
+  partnerOrder?: number;
   partnerCategory?:
     | "Industry Partners"
     | "Technical Partners"
@@ -1087,7 +1116,7 @@ export type SiteSettings = {
     universities: number;
     nationalities: number;
     acceptanceRate: number;
-    startedApplicationsPerBatch?: number;
+    startedApplicationsPerBatch: number;
     linkedinAudience: number;
   };
   brandMission: string;
@@ -1139,6 +1168,23 @@ export type SiteSettings = {
       _type: "image";
     };
   };
+  hackathons: {
+    makeathonUrl: string;
+    league: {
+      name: string;
+      url: string;
+      foundedYear: number;
+      finaleTeams: number;
+      matches: Array<{
+        key: string;
+        label: string;
+        event: EventReference;
+        makeathon?: boolean;
+        _type: "leagueMatch";
+        _key: string;
+      }>;
+    };
+  };
   footerTagline: string;
   headerCtaFallback: "partner" | "member" | "elab";
 };
@@ -1158,8 +1204,8 @@ export type Faq = {
   spans?: Array<string>;
   evidence?: {
     text?: string;
-    label?: string;
-    href?: string;
+    label: string;
+    href: string;
   };
 };
 
@@ -1341,15 +1387,16 @@ export type SanityImageAsset = {
 };
 
 export type AllSanitySchemaTypes =
+  | CaseStudyReference
   | SanityImageAssetReference
   | HackathonsCopy
   | SanityImageCrop
   | SanityImageHotspot
   | EventsCopy
+  | PersonReference
   | ELabCopy
   | Milestone
   | ApplyCopy
-  | PersonReference
   | HomeCopy
   | OrganizationReference
   | LabSite
@@ -1386,7 +1433,7 @@ export type AllSanitySchemaTypes =
 
 // Source: ../config/schedule-content.ts
 // Variable: APPLICATION_WINDOW_QUERY
-// Query: *[_type == "applicationWindow" && program == $program] | order(_updatedAt desc)[0]{  roundName,  switchedOn,  opens,  deadlineDate,  deadlineTime,  applicationUrl,  nextWindowLabel,  milestones[]{ key, from, to }}
+// Query: *[_type == "applicationWindow" && program == $program && _id == $id] | order(_updatedAt desc)[0]{  roundName,  switchedOn,  opens,  deadlineDate,  deadlineTime,  applicationUrl,  nextWindowLabel,  milestones[]{ key, from, to }}
 export type APPLICATION_WINDOW_QUERY_RESULT = {
   roundName: string | null;
   switchedOn: boolean;
@@ -1424,7 +1471,7 @@ export type CAMPAIGNS_QUERY_RESULT = Array<{
 
 // Source: ../config/site-settings-content.ts
 // Variable: SITE_SETTINGS_QUERY
-// Query: *[_type == "siteSettings" && _id == "siteSettings"][0]{  organization{    foundingYear,    activeMembers,    alumni,    majors,    universities,    nationalities,    acceptanceRate,    startedApplicationsPerBatch,    linkedinAudience  },  brandMission,  impact{ publications, publicationVenues, hackathonParticipants },  community{ makeathonSize },  contactEmails{ general, partners, venture, recruitment },  socialLinks{ linkedin, instagram, github, x, youtube, facebook, tiktok, slack },  partnershipBooking{ bookingUrl, bookingHost },  eLab{    currentIteration,    programWeeks,    ventureFundingMillions,    selection{ applications, admitted, midterm, selectionDay, finalPitch },    "heroLogo": heroLogo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}  },  footerTagline,  headerCtaFallback}
+// Query: *[_type == "siteSettings" && _id == "siteSettings"][0]{ organization{foundingYear,activeMembers,alumni,majors,universities,nationalities,acceptanceRate,startedApplicationsPerBatch,linkedinAudience}, brandMission,impact{publications,publicationVenues,hackathonParticipants},community{makeathonSize}, contactEmails{general,partners,venture,recruitment},socialLinks{linkedin,instagram,github,x,youtube,facebook,tiktok,slack}, partnershipBooking{bookingUrl,bookingHost}, eLab{currentIteration,programWeeks,ventureFundingMillions,selection{applications,admitted,midterm,selectionDay,finalPitch},"heroLogo":heroLogo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}}, hackathons{makeathonUrl,league{name,url,foundedYear,finaleTeams,matches[]{key,label,makeathon,"city":event->city,"start":event->event_date,"end":coalesce(event->end_date,event->event_date)}}}, footerTagline,headerCtaFallback}
 export type SITE_SETTINGS_QUERY_RESULT = {
   organization: {
     foundingYear: number;
@@ -1434,7 +1481,7 @@ export type SITE_SETTINGS_QUERY_RESULT = {
     universities: number;
     nationalities: number;
     acceptanceRate: number;
-    startedApplicationsPerBatch: number | null;
+    startedApplicationsPerBatch: number;
     linkedinAudience: number;
   };
   brandMission: string;
@@ -1494,6 +1541,23 @@ export type SITE_SETTINGS_QUERY_RESULT = {
       } | null;
     };
   };
+  hackathons: {
+    makeathonUrl: string;
+    league: {
+      name: string;
+      url: string;
+      foundedYear: number;
+      finaleTeams: number;
+      matches: Array<{
+        key: string;
+        label: string;
+        makeathon: boolean | null;
+        city: string | null;
+        start: string;
+        end: string;
+      }>;
+    };
+  };
   footerTagline: string;
   headerCtaFallback: "elab" | "member" | "partner";
 } | null;
@@ -1515,19 +1579,6 @@ export type APPLY_CONTENT_QUERY_RESULT = {
         closing: null;
       }
     | {
-        heroTitle: null;
-        heroLead: null;
-        faqLabel: null;
-        datesTitle: null;
-        scope: null;
-        tracks: null;
-        selection: null;
-        history: null;
-        closing: {
-          companiesReader: null;
-        } | null;
-      }
-    | {
         heroTitle: string;
         heroLead: null;
         faqLabel: null;
@@ -1538,7 +1589,7 @@ export type APPLY_CONTENT_QUERY_RESULT = {
         history: null;
         closing: {
           companiesReader: null;
-        } | null;
+        };
       }
     | {
         heroTitle: null;
@@ -1551,7 +1602,7 @@ export type APPLY_CONTENT_QUERY_RESULT = {
         history: null;
         closing: {
           companiesReader: string;
-        } | null;
+        };
       }
     | {
         heroTitle: string;
@@ -1591,7 +1642,7 @@ export type APPLY_CONTENT_QUERY_RESULT = {
               right: number;
             } | null;
           };
-        } | null;
+        };
         tracks: {
           title: string;
           lead: string;
@@ -1617,7 +1668,7 @@ export type APPLY_CONTENT_QUERY_RESULT = {
             } | null;
           };
           journeyLink: string;
-        } | null;
+        };
         selection: {
           title: string;
           lead: string;
@@ -1626,13 +1677,26 @@ export type APPLY_CONTENT_QUERY_RESULT = {
             when: "after-deadline" | "deadline" | "interviews" | "onboarding";
             text: string;
           }>;
-        } | null;
+        };
         history: {
           title: string;
           lead: string;
-        } | null;
+        };
         closing: {
           companiesReader: string;
+        };
+      }
+    | {
+        heroTitle: null;
+        heroLead: null;
+        faqLabel: null;
+        datesTitle: null;
+        scope: null;
+        tracks: null;
+        selection: null;
+        history: null;
+        closing: {
+          companiesReader: null;
         } | null;
       }
     | null;
@@ -1646,7 +1710,7 @@ export type APPLY_CONTENT_QUERY_RESULT = {
 
 // Source: ../features/community/content.ts
 // Variable: COMMUNITY_COPY_QUERY
-// Query: *[_id == "communityCopy"][0]{  hero{ title, lead, "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}, photoCaption },  journey{ title, lead },  departments{ title, lead },  stories{ title, lead },  closing{ title, lead, companiesReader }}
+// Query: *[_id == "communityCopy"][0]{  hero{ title, lead, "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}, photoCaption },  journey{ title, lead }, departments{ title, lead }, stories{ title, lead },  closing{ title, lead, companiesReader }}
 export type COMMUNITY_COPY_QUERY_RESULT =
   | {
       hero: null;
@@ -1661,27 +1725,11 @@ export type COMMUNITY_COPY_QUERY_RESULT =
         lead: string;
         photo: null;
         photoCaption: null;
-      } | null;
+      };
       journey: null;
       departments: null;
       stories: null;
       closing: null;
-    }
-  | {
-      hero: {
-        title: string;
-        lead: string;
-        photo: null;
-        photoCaption: null;
-      } | null;
-      journey: null;
-      departments: null;
-      stories: null;
-      closing: {
-        title: string;
-        lead: null;
-        companiesReader: null;
-      } | null;
     }
   | {
       hero: null;
@@ -1692,39 +1740,7 @@ export type COMMUNITY_COPY_QUERY_RESULT =
         title: string;
         lead: string;
         companiesReader: null;
-      } | null;
-    }
-  | {
-      hero: {
-        title: null;
-        lead: null;
-        photo: null;
-        photoCaption: null;
-      } | null;
-      journey: null;
-      departments: null;
-      stories: null;
-      closing: {
-        title: string;
-        lead: string;
-        companiesReader: null;
-      } | null;
-    }
-  | {
-      hero: {
-        title: string;
-        lead: string;
-        photo: null;
-        photoCaption: null;
-      } | null;
-      journey: null;
-      departments: null;
-      stories: null;
-      closing: {
-        title: string;
-        lead: string;
-        companiesReader: null;
-      } | null;
+      };
     }
   | {
       hero: null;
@@ -1735,7 +1751,7 @@ export type COMMUNITY_COPY_QUERY_RESULT =
         title: null;
         lead: null;
         companiesReader: string;
-      } | null;
+      };
     }
   | {
       hero: {
@@ -1758,23 +1774,71 @@ export type COMMUNITY_COPY_QUERY_RESULT =
           } | null;
         };
         photoCaption: string;
-      } | null;
+      };
       journey: {
         title: string;
         lead: string;
-      } | null;
+      };
       departments: {
         title: string;
         lead: string;
-      } | null;
+      };
       stories: {
         title: string;
         lead: string;
-      } | null;
+      };
       closing: {
         title: string;
         lead: string;
         companiesReader: string;
+      };
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+        photo: null;
+        photoCaption: null;
+      } | null;
+      journey: null;
+      departments: null;
+      stories: null;
+      closing: {
+        title: string;
+        lead: null;
+        companiesReader: null;
+      } | null;
+    }
+  | {
+      hero: {
+        title: null;
+        lead: null;
+        photo: null;
+        photoCaption: null;
+      } | null;
+      journey: null;
+      departments: null;
+      stories: null;
+      closing: {
+        title: string;
+        lead: string;
+        companiesReader: null;
+      } | null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+        photo: null;
+        photoCaption: null;
+      } | null;
+      journey: null;
+      departments: null;
+      stories: null;
+      closing: {
+        title: string;
+        lead: string;
+        companiesReader: null;
       } | null;
     }
   | null;
@@ -1795,7 +1859,7 @@ export type ELAB_COPY_QUERY_RESULT =
       hero: {
         title: string;
         lead: string;
-      } | null;
+      };
       gates: null;
       field: null;
       ventures: null;
@@ -1813,7 +1877,7 @@ export type ELAB_COPY_QUERY_RESULT =
         followLabel: null;
         partnersReader: null;
         partnersText: null;
-      } | null;
+      };
     }
   | {
       hero: null;
@@ -1826,7 +1890,23 @@ export type ELAB_COPY_QUERY_RESULT =
         followLabel: null;
         partnersReader: null;
         partnersText: null;
-      } | null;
+      };
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+      };
+      gates: null;
+      field: null;
+      ventures: null;
+      voices: null;
+      closing: {
+        title: string;
+        followLabel: null;
+        partnersReader: null;
+        partnersText: null;
+      };
     }
   | {
       hero: {
@@ -1943,12 +2023,17 @@ export type ELAB_COPY_QUERY_RESULT =
 
 // Source: ../features/e-lab/venture-content.ts
 // Variable: VENTURE_TRACE_QUERY
-// Query: *[_id == "ventureTrace"][0]{  "startupId": venture->key,  "testimonialId": person->key,  "founderContext": person->context,  cohort,  now,  "after": milestones[]{ text, source }}
+// Query: *[_id == "ventureTrace"][0]{"startupId":venture->key,"testimonialId":person->key,"founderContext":person->context,"founderPlacement":person->placement,"startupListed":venture._ref in *[_id == "logolist-e-lab-ventures"][0].organizations[]._ref,cohort,now,"after":milestones[]{text,source}}
 export type VENTURE_TRACE_QUERY_RESULT =
   | {
       startupId: string;
       testimonialId: string;
       founderContext: string | null;
+      founderPlacement:
+        | "e-lab-testimonial"
+        | "member-story"
+        | "partner-profile";
+      startupListed: boolean | null;
       cohort: string;
       now: string | null;
       after: Array<{
@@ -1960,6 +2045,8 @@ export type VENTURE_TRACE_QUERY_RESULT =
       startupId: null;
       testimonialId: null;
       founderContext: null;
+      founderPlacement: null;
+      startupListed: false | null;
       cohort: null;
       now: null;
       after: null;
@@ -1968,12 +2055,35 @@ export type VENTURE_TRACE_QUERY_RESULT =
       startupId: null;
       testimonialId: null;
       founderContext: null;
+      founderPlacement: null;
+      startupListed: false | null;
       cohort: null;
       now: null;
       after: Array<{
         text: null;
         source: null;
       }> | null;
+    }
+  | null;
+
+// Source: ../features/e-lab/venture-content.ts
+// Variable: E_LAB_VOICES_QUERY
+// Query: *[_id == "eLabCopy"][0]{voices{"founders":founders[]->{key,placement},"investors":investors[]->{key,placement}}}
+export type E_LAB_VOICES_QUERY_RESULT =
+  | {
+      voices: null;
+    }
+  | {
+      voices: {
+        founders: Array<{
+          key: string;
+          placement: "e-lab-testimonial" | "member-story" | "partner-profile";
+        }> | null;
+        investors: Array<{
+          key: string;
+          placement: "e-lab-testimonial" | "member-story" | "partner-profile";
+        }> | null;
+      } | null;
     }
   | null;
 
@@ -1991,7 +2101,7 @@ export type EVENTS_COPY_QUERY_RESULT =
   | {
       hero: {
         emptyLead: null;
-      } | null;
+      };
       upcoming: null;
       past: null;
       posters: null;
@@ -2008,7 +2118,35 @@ export type EVENTS_COPY_QUERY_RESULT =
         studentsReader: null;
         nextUp: null;
         membership: null;
-      } | null;
+      };
+    }
+  | {
+      hero: null;
+      upcoming: null;
+      past: null;
+      posters: null;
+      closing: {
+        title: string;
+        lead: string;
+        studentsReader: null;
+        nextUp: null;
+        membership: null;
+      };
+    }
+  | {
+      hero: {
+        emptyLead: null;
+      };
+      upcoming: null;
+      past: null;
+      posters: null;
+      closing: {
+        title: string;
+        lead: string;
+        studentsReader: null;
+        nextUp: null;
+        membership: null;
+      };
     }
   | {
       hero: {
@@ -2020,19 +2158,6 @@ export type EVENTS_COPY_QUERY_RESULT =
       closing: {
         title: string;
         lead: null;
-        studentsReader: null;
-        nextUp: null;
-        membership: null;
-      } | null;
-    }
-  | {
-      hero: null;
-      upcoming: null;
-      past: null;
-      posters: null;
-      closing: {
-        title: string;
-        lead: string;
         studentsReader: null;
         nextUp: null;
         membership: null;
@@ -2081,9 +2206,13 @@ export type EVENTS_COPY_QUERY_RESULT =
 
 // Source: ../features/hackathons/content.ts
 // Variable: HACKATHONS_COPY_QUERY
-// Query: *[_id == "hackathonsCopy"][0]{  hero{    eyebrow,    title,    lead,    leagueAction,    makeathonAction,    ribbonLabel,    sliderLabel,    nextLabel,    legend{ makeathon, league, partner }  },  league{    eyebrow,    tagline,    lead,    linkLabel,    routeLabel,    makeathonDetail,    finale{      label,      text,      liveLabel,      pastText,      actionLabel,      standingsLabel,      "poster": poster{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},      championLabel,      champion,      runnersUpLabel,      runnersUp,      "recapPhoto": recapPhoto{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},      recapCaption    },    partnersTitle  },  makeathon{    eyebrow,    title,    lead,    linkLabel,    figures{      latest{ value, label },      editions{ value, label },      league{ value, label }    },    editionsTitle,    "editionsPhoto": editionsPhoto{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},    editionsPhotoCaption,    editions[]{ key, name, start, end, city, note, link{ label, href } }  },  partners{ title, lead, hostsPrefix, moreLabel },  offer{ title, lead, items, addOns },  closing{    title,    lead,    student{ audience, text, actionLabel },    partner{ audience, text }  }}
+// Query: *[_id == "hackathonsCopy"][0]{  "voiceCaseStudyRef": voiceCaseStudy,  "voiceCaseStudy": select(voiceCaseStudy->_type == "caseStudy" => voiceCaseStudy->_id),  "outcomeCaseStudyRef": outcomeCaseStudy,  "outcomeCaseStudy": select(outcomeCaseStudy->_type == "caseStudy" => outcomeCaseStudy->_id),  hero{    eyebrow,    title,    lead,    leagueAction,    makeathonAction,    ribbonLabel,    sliderLabel,    nextLabel,    legend{ makeathon, league, partner }  },  league{    eyebrow,    tagline,    lead,    linkLabel,    routeLabel,    makeathonDetail,    finale{      label,      text,      liveLabel,      pastText,      actionLabel,      standingsLabel,      "poster": poster{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},      championLabel,      champion,      runnersUpLabel,      runnersUp,      "recapPhoto": recapPhoto{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},      recapCaption    },    partnersTitle  },  makeathon{    eyebrow,    title,    lead,    linkLabel,    figures{      latest{ value, label },      editions{ value, label },      league{ value, label }    },    editionsTitle,    "editionsPhoto": editionsPhoto{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},    editionsPhotoCaption,    editions[]{ key, name, start, end, city, note, link{ label, href } }  },  partners{ title, lead, hostsPrefix, moreLabel },  offer{ title, lead, items, addOns },  closing{    title,    lead,    student{ audience, text, actionLabel },    partner{ audience, text }  }}
 export type HACKATHONS_COPY_QUERY_RESULT =
   | {
+      voiceCaseStudyRef: null;
+      voiceCaseStudy: null;
+      outcomeCaseStudyRef: null;
+      outcomeCaseStudy: null;
       hero: null;
       league: null;
       makeathon: null;
@@ -2092,6 +2221,10 @@ export type HACKATHONS_COPY_QUERY_RESULT =
       closing: null;
     }
   | {
+      voiceCaseStudyRef: null;
+      voiceCaseStudy: null;
+      outcomeCaseStudyRef: null;
+      outcomeCaseStudy: null;
       hero: {
         eyebrow: null;
         title: string;
@@ -2102,7 +2235,7 @@ export type HACKATHONS_COPY_QUERY_RESULT =
         sliderLabel: null;
         nextLabel: null;
         legend: null;
-      } | null;
+      };
       league: null;
       makeathon: null;
       partners: {
@@ -2110,11 +2243,15 @@ export type HACKATHONS_COPY_QUERY_RESULT =
         lead: string;
         hostsPrefix: null;
         moreLabel: string;
-      } | null;
+      };
       offer: null;
       closing: null;
     }
   | {
+      voiceCaseStudyRef: null;
+      voiceCaseStudy: null;
+      outcomeCaseStudyRef: null;
+      outcomeCaseStudy: null;
       hero: null;
       league: null;
       makeathon: null;
@@ -2125,9 +2262,57 @@ export type HACKATHONS_COPY_QUERY_RESULT =
         lead: null;
         student: null;
         partner: null;
-      } | null;
+      };
     }
   | {
+      voiceCaseStudyRef: null;
+      voiceCaseStudy: null;
+      outcomeCaseStudyRef: null;
+      outcomeCaseStudy: null;
+      hero: null;
+      league: null;
+      makeathon: null;
+      partners: null;
+      offer: null;
+      closing: {
+        title: string;
+        lead: string;
+        student: null;
+        partner: null;
+      };
+    }
+  | {
+      voiceCaseStudyRef: null;
+      voiceCaseStudy: null;
+      outcomeCaseStudyRef: null;
+      outcomeCaseStudy: null;
+      hero: {
+        eyebrow: null;
+        title: string;
+        lead: string;
+        leagueAction: null;
+        makeathonAction: null;
+        ribbonLabel: null;
+        sliderLabel: null;
+        nextLabel: null;
+        legend: null;
+      };
+      league: null;
+      makeathon: null;
+      partners: null;
+      offer: null;
+      closing: {
+        title: string;
+        lead: string;
+        student: null;
+        partner: null;
+      };
+    }
+  | {
+      voiceCaseStudyRef: null;
+      voiceCaseStudy: null;
+      outcomeCaseStudyRef: null;
+      outcomeCaseStudy: null;
       hero: {
         eyebrow: null;
         title: string;
@@ -2151,6 +2336,10 @@ export type HACKATHONS_COPY_QUERY_RESULT =
       } | null;
     }
   | {
+      voiceCaseStudyRef: null;
+      voiceCaseStudy: null;
+      outcomeCaseStudyRef: null;
+      outcomeCaseStudy: null;
       hero: {
         eyebrow: null;
         title: string;
@@ -2181,19 +2370,10 @@ export type HACKATHONS_COPY_QUERY_RESULT =
       } | null;
     }
   | {
-      hero: null;
-      league: null;
-      makeathon: null;
-      partners: null;
-      offer: null;
-      closing: {
-        title: string;
-        lead: string;
-        student: null;
-        partner: null;
-      } | null;
-    }
-  | {
+      voiceCaseStudyRef: null;
+      voiceCaseStudy: null;
+      outcomeCaseStudyRef: null;
+      outcomeCaseStudy: null;
       hero: {
         eyebrow: null;
         title: null;
@@ -2217,29 +2397,10 @@ export type HACKATHONS_COPY_QUERY_RESULT =
       } | null;
     }
   | {
-      hero: {
-        eyebrow: null;
-        title: string;
-        lead: string;
-        leagueAction: null;
-        makeathonAction: null;
-        ribbonLabel: null;
-        sliderLabel: null;
-        nextLabel: null;
-        legend: null;
-      } | null;
-      league: null;
-      makeathon: null;
-      partners: null;
-      offer: null;
-      closing: {
-        title: string;
-        lead: string;
-        student: null;
-        partner: null;
-      } | null;
-    }
-  | {
+      voiceCaseStudyRef: null;
+      voiceCaseStudy: null;
+      outcomeCaseStudyRef: null;
+      outcomeCaseStudy: null;
       hero: {
         eyebrow: string;
         title: string;
@@ -2270,6 +2431,10 @@ export type HACKATHONS_COPY_QUERY_RESULT =
       } | null;
     }
   | {
+      voiceCaseStudyRef: CaseStudyReference | null;
+      voiceCaseStudy: string | null;
+      outcomeCaseStudyRef: CaseStudyReference | null;
+      outcomeCaseStudy: string | null;
       hero: {
         eyebrow: string;
         title: string;
@@ -2419,7 +2584,7 @@ export type HACKATHONS_COPY_QUERY_RESULT =
 
 // Source: ../features/home/content.ts
 // Variable: HOME_COPY_QUERY
-// Query: *[_id == "homeCopy"][0]{  hero{    title,    lead,    partnersLabel,    "photos": photos[]{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}  },  mission{ statement, body },  ledger[]{ key, label, note },  programs{    title,    lead,    items[]{      "id": key,      title,      description,      href,      "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}    }  },  room{    title,    lead,    "photos": photos[]{ "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}, caption }  },  join{    title,    lead,    stepsTitle,    steps[]{ title, dates },    quote{ "name": person->name, excerpt }  },  partners{ title, lead, moreLabel, "quote": quote->key }}
+// Query: *[_id == "homeCopy"][0]{  hero{    title,    lead,    partnersLabel,    "photos": photos[]{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}  },  mission{ statement, body },  ledger[]{ key, label, note },  programs{    title,    lead,    items[]{      "id": key,      title,      description,      href,      "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}    }  },  room{    title,    lead,    "photos": photos[]{ "key": _key, "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}, caption }  },  join{    title,    lead,    stepsTitle,    steps[]{ title, dates },    quote{ "key": person->key, "name": person->name, "story": person->story, "placement": person->placement, excerpt }  },  partners{ title, lead, moreLabel, "quote": quote->key, "quotePlacement": quote->placement }}
 export type HOME_COPY_QUERY_RESULT =
   | {
       hero: null;
@@ -2429,6 +2594,134 @@ export type HOME_COPY_QUERY_RESULT =
       room: null;
       join: null;
       partners: null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+        partnersLabel: null;
+        photos: null;
+      };
+      mission: null;
+      ledger: null;
+      programs: null;
+      room: null;
+      join: null;
+      partners: null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+        partnersLabel: string;
+        photos: Array<{
+          src: string | null;
+          width: number | null;
+          height: number | null;
+          alt: string | null;
+          hotspot: {
+            x: number;
+            y: number;
+          } | null;
+          crop: {
+            top: number;
+            bottom: number;
+            left: number;
+            right: number;
+          } | null;
+        }>;
+      };
+      mission: {
+        statement: string;
+        body: string;
+      };
+      ledger: Array<{
+        key:
+          | "founded"
+          | "funding"
+          | "makeathon"
+          | "members"
+          | "nationalities"
+          | "publications";
+        label: string;
+        note: string;
+      }>;
+      programs: {
+        title: string;
+        lead: string;
+        items: Array<{
+          id: string;
+          title: string;
+          description: string;
+          href: string;
+          image: {
+            src: string | null;
+            width: number | null;
+            height: number | null;
+            alt: string | null;
+            hotspot: {
+              x: number;
+              y: number;
+            } | null;
+            crop: {
+              top: number;
+              bottom: number;
+              left: number;
+              right: number;
+            } | null;
+          };
+        }>;
+      };
+      room: {
+        title: string;
+        lead: string;
+        photos: Array<{
+          key: string;
+          image: {
+            src: string | null;
+            width: number | null;
+            height: number | null;
+            alt: string | null;
+            hotspot: {
+              x: number;
+              y: number;
+            } | null;
+            crop: {
+              top: number;
+              bottom: number;
+              left: number;
+              right: number;
+            } | null;
+          };
+          caption: string;
+        }>;
+      };
+      join: {
+        title: string;
+        lead: string;
+        stepsTitle: string;
+        steps: Array<{
+          title: string;
+          dates: string;
+        }>;
+        quote: {
+          key: string;
+          name: string;
+          story: string | null;
+          placement: "e-lab-testimonial" | "member-story" | "partner-profile";
+          excerpt: string;
+        };
+      };
+      partners: {
+        title: string;
+        lead: string;
+        moreLabel: string;
+        quote: string;
+        quotePlacement:
+          | "e-lab-testimonial"
+          | "member-story"
+          | "partner-profile";
+      };
     }
   | {
       hero: {
@@ -2475,119 +2768,14 @@ export type HOME_COPY_QUERY_RESULT =
         lead: string;
         moreLabel: string;
         quote: null;
-      } | null;
-    }
-  | {
-      hero: {
-        title: string;
-        lead: string;
-        partnersLabel: string;
-        photos: Array<{
-          src: string | null;
-          width: number | null;
-          height: number | null;
-          alt: string | null;
-          hotspot: {
-            x: number;
-            y: number;
-          } | null;
-          crop: {
-            top: number;
-            bottom: number;
-            left: number;
-            right: number;
-          } | null;
-        }>;
-      } | null;
-      mission: {
-        statement: string;
-        body: string;
-      } | null;
-      ledger: Array<{
-        key:
-          | "founded"
-          | "funding"
-          | "makeathon"
-          | "members"
-          | "nationalities"
-          | "publications";
-        label: string;
-        note: string;
-      }>;
-      programs: {
-        title: string;
-        lead: string;
-        items: Array<{
-          id: string;
-          title: string;
-          description: string;
-          href: string;
-          image: {
-            src: string | null;
-            width: number | null;
-            height: number | null;
-            alt: string | null;
-            hotspot: {
-              x: number;
-              y: number;
-            } | null;
-            crop: {
-              top: number;
-              bottom: number;
-              left: number;
-              right: number;
-            } | null;
-          };
-        }>;
-      } | null;
-      room: {
-        title: string;
-        lead: string;
-        photos: Array<{
-          image: {
-            src: string | null;
-            width: number | null;
-            height: number | null;
-            alt: string | null;
-            hotspot: {
-              x: number;
-              y: number;
-            } | null;
-            crop: {
-              top: number;
-              bottom: number;
-              left: number;
-              right: number;
-            } | null;
-          };
-          caption: string;
-        }>;
-      } | null;
-      join: {
-        title: string;
-        lead: string;
-        stepsTitle: string;
-        steps: Array<{
-          title: string;
-          dates: string;
-        }>;
-        quote: {
-          name: string;
-          excerpt: string;
-        } | null;
-      } | null;
-      partners: {
-        title: string;
-        lead: string;
-        moreLabel: string;
-        quote: string;
+        quotePlacement: null;
       } | null;
     }
   | null;
 
 // Source: ../features/partners/content.ts
 // Variable: PARTNERS_COPY_QUERY
-// Query: *[_id == "partnersCopy"][0]{  pitch,  intents{    talent{ label, shortLabel, detail },    hackathon{ label, shortLabel, detail },    brand{ label, shortLabel, detail },    research{ label, shortLabel, detail }  },  durations{    oneOff{ label, detail },    ongoing{ label, detail }  },  recommendations{    longTerm{ name, description },    hackathon{ name, description },    talent{ name, description },    brand{ name, description },    research{ name, description }  },  reasons[]{ icon, name, title, description },  stats[]{ value, label, detail },  pillars[]{    key,    title,    metricLabel,    description,    "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},    href  },  prompts{    intentQuestion,    durationQuestion,    resultQuestion,    firstChoice,    bookingTitle,    bookingLead,    bookingSlow  },  sections{    hero{ eyebrow, title, lead, contactLabel, fitLabel, caption },    marquee{ label, link },    finder{ eyebrow, title, lead, note },    reasons{ title, lead, contact },    proof{ title, caption },    pillars{ title, lead },    people{ title, lead, statLabel, tagline, alumniTitle },    directory{ title, lead, supportersTitle },    cases{ title, lead, contact },    contact{ title, lead, emailLabel }  }}
+// Query: *[_id == "partnersCopy"][0]{  pitch,  intents{    talent{ label, shortLabel, detail },    hackathon{ label, shortLabel, detail },    brand{ label, shortLabel, detail },    research{ label, shortLabel, detail }  },  durations{    oneOff{ label, detail },    ongoing{ label, detail }  },  recommendations{    longTerm{ name, description },    hackathon{ name, description },    talent{ name, description },    brand{ name, description },    research{ name, description }  },  reasons[]{ icon, name, title, description },  stats[]{ value, label, detail },  pillars[]{    key,    title,    metricLabel,    description,    "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},    href  },  prompts{    intentQuestion,    durationQuestion,    resultQuestion,    firstChoice,    bookingTitle,    bookingLead,    bookingSlow  },  sections{    hero{ eyebrow, title, lead, contactLabel, fitLabel, caption, "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }} },    marquee{ label, link },    finder{ eyebrow, title, lead, note },    reasons{ title, lead, contact },    proof{ title, caption },    pillars{ title, lead },    people{ title, lead, statLabel, tagline, alumniTitle },    directory{ title, lead, supportersTitle },    cases{ title, lead, contact },    contact{ title, lead, emailLabel }  }}
 export type PARTNERS_COPY_QUERY_RESULT =
   | {
       pitch: null;
@@ -2707,6 +2895,22 @@ export type PARTNERS_COPY_QUERY_RESULT =
           contactLabel: string | null;
           fitLabel: string | null;
           caption: Array<string> | null;
+          image: {
+            src: string | null;
+            width: number | null;
+            height: number | null;
+            alt: string;
+            hotspot: {
+              x: number;
+              y: number;
+            } | null;
+            crop: {
+              top: number;
+              bottom: number;
+              left: number;
+              right: number;
+            } | null;
+          };
         } | null;
         marquee: {
           label: string | null;
@@ -2759,8 +2963,9 @@ export type PARTNERS_COPY_QUERY_RESULT =
 
 // Source: ../features/partners/content.ts
 // Variable: PARTNER_CASE_STUDIES_QUERY
-// Query: *[_type == "caseStudy"] | order(order asc){  "organization": organization->key,  "name": organization->name,  metric,  label,  summary,  copy,  attribution,  "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}}
+// Query: *[_type == "caseStudy"] | order(order asc){  "id": _id,  "organization": organization->key,  "name": organization->name,  metric,  label,  summary,  copy,  attribution,  "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}}
 export type PARTNER_CASE_STUDIES_QUERY_RESULT = Array<{
+  id: string;
   organization: string;
   name: string;
   metric: string;
@@ -2802,7 +3007,7 @@ export type PROJECTS_CONTENT_QUERY_RESULT = {
           title: string;
           lead: string;
           figureLabel: null;
-        } | null;
+        };
         openSeat: null;
         closing: null;
       }
@@ -2814,7 +3019,32 @@ export type PROJECTS_CONTENT_QUERY_RESULT = {
           lead: null;
           student: null;
           partner: null;
-        } | null;
+        };
+      }
+    | {
+        hero: null;
+        openSeat: null;
+        closing: {
+          title: string;
+          lead: string;
+          student: null;
+          partner: null;
+        };
+      }
+    | {
+        hero: {
+          eyebrow: null;
+          title: string;
+          lead: string;
+          figureLabel: null;
+        };
+        openSeat: null;
+        closing: {
+          title: string;
+          lead: string;
+          student: null;
+          partner: null;
+        };
       }
     | {
         hero: {
@@ -2854,35 +3084,10 @@ export type PROJECTS_CONTENT_QUERY_RESULT = {
         } | null;
       }
     | {
-        hero: null;
-        openSeat: null;
-        closing: {
-          title: string;
-          lead: string;
-          student: null;
-          partner: null;
-        } | null;
-      }
-    | {
         hero: {
           eyebrow: null;
           title: null;
           lead: null;
-          figureLabel: null;
-        } | null;
-        openSeat: null;
-        closing: {
-          title: string;
-          lead: string;
-          student: null;
-          partner: null;
-        } | null;
-      }
-    | {
-        hero: {
-          eyebrow: null;
-          title: string;
-          lead: string;
           figureLabel: null;
         } | null;
         openSeat: null;
@@ -2993,8 +3198,40 @@ export type QANDA_CONTENT_QUERY_RESULT = {
           title: null;
           lead: null;
           action: null;
-        } | null;
+        };
         forks: null;
+      }
+    | {
+        heroTitle: null;
+        missionQuestion: null;
+        missionLead: null;
+        missionPassage: null;
+        closing: {
+          title: string;
+          lead: string;
+          action: null;
+        };
+        forks: null;
+      }
+    | {
+        heroTitle: string;
+        missionQuestion: string;
+        missionLead: string;
+        missionPassage: string;
+        closing: {
+          title: string;
+          lead: string;
+          action: string;
+        };
+        forks: {
+          students: {
+            reader: string;
+            text: string;
+          };
+          companies: {
+            reader: string;
+          };
+        };
       }
     | {
         heroTitle: null;
@@ -3020,26 +3257,6 @@ export type QANDA_CONTENT_QUERY_RESULT = {
         } | null;
         forks: null;
       }
-    | {
-        heroTitle: string;
-        missionQuestion: string;
-        missionLead: string;
-        missionPassage: string;
-        closing: {
-          title: string;
-          lead: string;
-          action: string;
-        } | null;
-        forks: {
-          students: {
-            reader: string;
-            text: string;
-          } | null;
-          companies: {
-            reader: string;
-          } | null;
-        } | null;
-      }
     | null;
   faqs: Array<{
     id: string | null;
@@ -3049,8 +3266,8 @@ export type QANDA_CONTENT_QUERY_RESULT = {
     spans: Array<string> | null;
     evidence: {
       text: string | null;
-      label: string | null;
-      href: string | null;
+      label: string;
+      href: string;
     } | null;
   }>;
 };
@@ -3073,7 +3290,7 @@ export type RESEARCH_COPY_QUERY_RESULT =
       hero: {
         title: string;
         lead: string;
-      } | null;
+      };
       partnersLabel: null;
       abstract: null;
       figurePanels: null;
@@ -3095,7 +3312,7 @@ export type RESEARCH_COPY_QUERY_RESULT =
         openSlot: null;
         partner: null;
         student: null;
-      } | null;
+      };
     }
   | {
       hero: null;
@@ -3110,7 +3327,25 @@ export type RESEARCH_COPY_QUERY_RESULT =
         openSlot: null;
         partner: null;
         student: null;
-      } | null;
+      };
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+      };
+      partnersLabel: null;
+      abstract: null;
+      figurePanels: null;
+      ongoing: null;
+      completed: null;
+      rex: null;
+      closing: {
+        title: string;
+        openSlot: null;
+        partner: null;
+        student: null;
+      };
     }
   | {
       hero: {
@@ -3252,7 +3487,7 @@ export type LAB_SITES_QUERY_RESULT = Array<{
 
 // Source: ../lib/community-content.ts
 // Variable: JOURNEY_QUERY
-// Query: *[_type == "journeyStep"] | order(order asc){  "step": number,  name,  description,  iconKey,  fromSemester,  span,  stage,  evidence{ "name": person->name, excerpt }}
+// Query: *[_type == "journeyStep"] | order(order asc){  "step": number, name, description, iconKey, fromSemester, span, stage,  evidence{ "key": person->key, "name": person->name, "story": person->story, "placement": person->placement, excerpt }}
 export type JOURNEY_QUERY_RESULT = Array<{
   step: string;
   name: string;
@@ -3268,14 +3503,17 @@ export type JOURNEY_QUERY_RESULT = Array<{
   span: "event" | "ongoing";
   stage: number;
   evidence: {
+    key: string;
     name: string;
+    story: string | null;
+    placement: "e-lab-testimonial" | "member-story" | "partner-profile";
     excerpt: string;
   } | null;
 }>;
 
 // Source: ../lib/community-content.ts
 // Variable: DEPARTMENTS_QUERY
-// Query: *[_type == "department"] | order(order asc){  name,  description,  "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  photoCaption}
+// Query: *[_type == "department"] | order(order asc){  name, description, "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}, photoCaption}
 export type DEPARTMENTS_QUERY_RESULT = Array<{
   name: string;
   description: string;
@@ -3300,7 +3538,7 @@ export type DEPARTMENTS_QUERY_RESULT = Array<{
 
 // Source: ../lib/faq-content.ts
 // Variable: FAQ_QUERY
-// Query: *[_type == "faq" && collection == $collection] | order(order asc){  question,  answer}
+// Query: *[_type == "faq" && collection == $collection] | order(order asc){ question, answer }
 export type FAQ_QUERY_RESULT = Array<{
   question: string;
   answer: string;
@@ -3308,11 +3546,12 @@ export type FAQ_QUERY_RESULT = Array<{
 
 // Source: ../lib/organization-content.ts
 // Variable: LOGO_LISTS_QUERY
-// Query: *[_type == "logoList" && _id in $ids]{  surface,  "organizations": organizations[]->{  key,  name,  shortName,  href,  "logo": logo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "logoSymbolOnly": logo.symbolOnly,  "logoAspectRatio": logo.aspectRatio,  "logoOnDark": logoOnDark{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "logoOnDarkSymbolOnly": logoOnDark.symbolOnly,  "logoOnDarkAspectRatio": logoOnDark.aspectRatio,  partnerTier,  partnerCategory,  partnerFeatured}}
+// Query: *[_type == "logoList" && surface in $surfaces]{surface,"organizations":organizations[]->{ key, name, shortName, href, "logo": logo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}, "logoSymbolOnly": logo.symbolOnly, "logoAspectRatio": logo.aspectRatio, "logoOnDark": logoOnDark{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}, "logoOnDarkSymbolOnly": logoOnDark.symbolOnly, "logoOnDarkAspectRatio": logoOnDark.aspectRatio, partnerTier, partnerCategory, partnerFeatured, partnerOrder}}
 export type LOGO_LISTS_QUERY_RESULT = Array<{
   surface:
     | "alumni-destinations"
     | "e-lab-ventures"
+    | "ehl-partners"
     | "partner-marquee"
     | "rex-institutions";
   organizations: Array<{
@@ -3365,12 +3604,13 @@ export type LOGO_LISTS_QUERY_RESULT = Array<{
       | "Venture Capital"
       | null;
     partnerFeatured: boolean | null;
+    partnerOrder: number | null;
   }>;
 }>;
 
 // Source: ../lib/organization-content.ts
 // Variable: PARTNER_ORGANIZATIONS_QUERY
-// Query: *[_type == "organization" && defined(partnerTier)] | order(key asc){  key,  name,  shortName,  href,  "logo": logo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "logoSymbolOnly": logo.symbolOnly,  "logoAspectRatio": logo.aspectRatio,  "logoOnDark": logoOnDark{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "logoOnDarkSymbolOnly": logoOnDark.symbolOnly,  "logoOnDarkAspectRatio": logoOnDark.aspectRatio,  partnerTier,  partnerCategory,  partnerFeatured}
+// Query: *[_type == "organization" && defined(partnerTier)]{ key, name, shortName, href, "logo": logo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}, "logoSymbolOnly": logo.symbolOnly, "logoAspectRatio": logo.aspectRatio, "logoOnDark": logoOnDark{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}, "logoOnDarkSymbolOnly": logoOnDark.symbolOnly, "logoOnDarkAspectRatio": logoOnDark.aspectRatio, partnerTier, partnerCategory, partnerFeatured, partnerOrder}
 export type PARTNER_ORGANIZATIONS_QUERY_RESULT = Array<{
   key: string;
   name: string;
@@ -3421,11 +3661,12 @@ export type PARTNER_ORGANIZATIONS_QUERY_RESULT = Array<{
     | "Venture Capital"
     | null;
   partnerFeatured: boolean | null;
+  partnerOrder: number | null;
 }>;
 
 // Source: ../lib/organization-content.ts
 // Variable: ORGANIZATIONS_BY_KEY_QUERY
-// Query: *[_type == "organization" && key in $keys]{  key,  name,  shortName,  href,  "logo": logo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "logoSymbolOnly": logo.symbolOnly,  "logoAspectRatio": logo.aspectRatio,  "logoOnDark": logoOnDark{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "logoOnDarkSymbolOnly": logoOnDark.symbolOnly,  "logoOnDarkAspectRatio": logoOnDark.aspectRatio,  partnerTier,  partnerCategory,  partnerFeatured}
+// Query: *[_type == "organization" && key in $keys]{ key, name, shortName, href, "logo": logo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}, "logoSymbolOnly": logo.symbolOnly, "logoAspectRatio": logo.aspectRatio, "logoOnDark": logoOnDark{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}, "logoOnDarkSymbolOnly": logoOnDark.symbolOnly, "logoOnDarkAspectRatio": logoOnDark.aspectRatio, partnerTier, partnerCategory, partnerFeatured, partnerOrder}
 export type ORGANIZATIONS_BY_KEY_QUERY_RESULT = Array<{
   key: string;
   name: string;
@@ -3476,11 +3717,12 @@ export type ORGANIZATIONS_BY_KEY_QUERY_RESULT = Array<{
     | "Venture Capital"
     | null;
   partnerFeatured: boolean | null;
+  partnerOrder: number | null;
 }>;
 
 // Source: ../lib/person-content.ts
 // Variable: PEOPLE_QUERY
-// Query: *[_type == "person" && placement == $placement] | order(order asc){  key,  name,  role,  context,  quote,  story,  "portrait": portrait{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},  "organization": organization->{    key,    name,    shortName,    "logo": logo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}  },  roleAtOrganization}
+// Query: *[_type == "person" && placement == $placement] | order(order asc){ key,name,role,context,quote,story,"portrait":portrait{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}, "organizationRef":organization._ref, "organization":organization->{key,name,shortName,"logo":logo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}},roleAtOrganization}
 export type PEOPLE_QUERY_RESULT = Array<{
   key: string;
   name: string;
@@ -3504,6 +3746,7 @@ export type PEOPLE_QUERY_RESULT = Array<{
       right: number;
     } | null;
   };
+  organizationRef: string | null;
   organization: {
     key: string;
     name: string;

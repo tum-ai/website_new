@@ -10,12 +10,8 @@ import {
   useRef,
   useState,
 } from "react";
+import type { PartnershipFinderCopy } from "./data/partnership-finder";
 import {
-  type PartnershipFinderCopy,
-  partnershipFinderCopy,
-} from "./data/partnership-finder";
-import {
-  codePartnershipContact,
   initialFunnelState,
   type PartnershipContact,
   type PartnershipFunnelAction,
@@ -45,16 +41,16 @@ const PartnershipContext = createContext<{
  * same context. The dialog's code loads on the first "Book a call", and
  * closing it returns focus to the control that opened it. `copy` is the
  * finder's wording from the page's content slice, `contact` where requests
- * go from the site facts (both the code values by default).
+ * go from the render’s CMS site facts.
  */
 export function PartnershipProvider({
   children,
-  copy = partnershipFinderCopy,
-  contact = codePartnershipContact,
+  copy,
+  contact,
 }: {
   children: ReactNode;
-  copy?: PartnershipFinderCopy;
-  contact?: PartnershipContact;
+  copy: PartnershipFinderCopy;
+  contact: PartnershipContact;
 }) {
   const [selection, dispatch] = useReducer(
     partnershipFunnelReducer,

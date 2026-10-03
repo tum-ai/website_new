@@ -1,16 +1,16 @@
 import "server-only";
 
 import { defineQuery } from "next-sanity";
-import {
-  type BackfillDocument,
-  type BackfillImage,
-  backfillId,
-  backfillImage,
-} from "./cms-backfill";
 import { loadContent } from "./cms-content";
 import {
   CONTENT_IMAGE_PROJECTION,
+  ContentError,
+  contentImage,
+  optionalString,
   type ProjectedImage,
+  requireArray,
+  requireObject,
+  requireString,
   toContentImage,
 } from "./cms-content-model";
 import {
@@ -23,68 +23,28 @@ import {
   type Organization,
   type Partnership,
 } from "./people-and-logos";
-import type {
-  LOGO_LISTS_QUERY_RESULT,
-  ORGANIZATIONS_BY_KEY_QUERY_RESULT,
-  PARTNER_ORGANIZATIONS_QUERY_RESULT,
-} from "./sanity.types.generated";
 import { isHttpsUrl } from "./security";
 
-/**
- * The `organization` and `logoList` content types, shared by every page that
- * shows logos (/partners, /e-lab, /events, /research and the homepage).
- *
- * - An `organization` document holds one company's name, link and artwork
- *   (a logo for light and one for dark backgrounds); pages never list
- *   organisations directly.
- * - A `logoList` document per page section (fixed `_id`, see
- *   {@link logoListId}) holds references to organisations in the order the
- *   section shows them. Order and membership live on the list, not on the
- *   organisation, because one organisation appears in several sections in
- *   different orders (Anthropic: partner marquee and events hero).
- *
- * - An `organization` with a `partnerTier` is a TUM.ai partner
- *   ({@link getPartnerOrganizations}): the partner directory lists every
- *   one, so partnership lives on the organisation, not on a list.
- *
- * Each feature keeps its code fallback and passes it in (like
- * `lib/faq-content.ts`); this module is the query, the mapping and the
- * backfill builders they share.
- */
-
-/** GROQ projection of an `organization` into what {@link toOrganization} reads. */
+/** Shared organization projection, including editorial partnership order. */
 const ORGANIZATION_PROJECTION = `{
-  key,
-  name,
-  shortName,
-  href,
-  "logo": logo${CONTENT_IMAGE_PROJECTION},
-  "logoSymbolOnly": logo.symbolOnly,
-  "logoAspectRatio": logo.aspectRatio,
-  "logoOnDark": logoOnDark${CONTENT_IMAGE_PROJECTION},
-  "logoOnDarkSymbolOnly": logoOnDark.symbolOnly,
-  "logoOnDarkAspectRatio": logoOnDark.aspectRatio,
-  partnerTier,
-  partnerCategory,
-  partnerFeatured
+ key, name, shortName, href,
+ "logo": logo${CONTENT_IMAGE_PROJECTION},
+ "logoSymbolOnly": logo.symbolOnly, "logoAspectRatio": logo.aspectRatio,
+ "logoOnDark": logoOnDark${CONTENT_IMAGE_PROJECTION},
+ "logoOnDarkSymbolOnly": logoOnDark.symbolOnly, "logoOnDarkAspectRatio": logoOnDark.aspectRatio,
+ partnerTier, partnerCategory, partnerFeatured, partnerOrder
 }`;
-
-const LOGO_LISTS_QUERY = defineQuery(`*[_type == "logoList" && _id in $ids]{
-  surface,
-  "organizations": organizations[]->${ORGANIZATION_PROJECTION}
-}`);
-
-/** Every partner: the organisations with a partner tier. */
-const PARTNER_ORGANIZATIONS_QUERY = defineQuery(
-  `*[_type == "organization" && defined(partnerTier)] | order(key asc)${ORGANIZATION_PROJECTION}`,
+const LOGO_LISTS_QUERY = defineQuery(
+  `*[_type == "logoList" && surface in $surfaces]{surface,"organizations":organizations[]->${ORGANIZATION_PROJECTION}}`,
 );
-
-/** The organisations with the given keys (`$keys`), in no order. */
+const PARTNER_ORGANIZATIONS_QUERY = defineQuery(
+  `*[_type == "organization" && defined(partnerTier)]${ORGANIZATION_PROJECTION}`,
+);
 const ORGANIZATIONS_BY_KEY_QUERY = defineQuery(
   `*[_type == "organization" && key in $keys]${ORGANIZATION_PROJECTION}`,
 );
 
-/** An organisation as {@link ORGANIZATION_PROJECTION} returns it. */
+/** Projected CMS organization. Required identity is validated before rendering. */
 export type ProjectedOrganization = {
   key: string | null;
   name: string | null;
@@ -99,249 +59,211 @@ export type ProjectedOrganization = {
   partnerTier?: string | null;
   partnerCategory?: string | null;
   partnerFeatured?: boolean | null;
+  partnerOrder?: number | null;
 };
-
-/** The fixed `_id` of a section's `logoList` document. */
+/** Fixed section document id. */
 export function logoListId(surface: LogoListSurface): string {
   return logoListDocumentId(surface);
 }
-
-/** The backfill `_id` of an organisation, from its key. */
+/** Stable organization id used by historical migration tooling. */
 export function organizationId(key: string): string {
-  return backfillId("organization", key);
+  return `organization-${key}`;
 }
 
-function toArtwork(
+function artwork(
   image: ProjectedImage,
   symbolOnly: boolean | null | undefined,
   aspectRatio: number | null | undefined,
+  label: string,
 ): LogoArtwork | undefined {
+  if (image == null) return undefined;
+  // GROQ projects absent images as null; an object with an empty asset is an invalid upload.
   const content = toContentImage(image);
-  if (!content) return undefined;
-  const artwork: LogoArtwork = content;
-  if (symbolOnly) artwork.symbolOnly = true;
-  if (typeof aspectRatio === "number" && aspectRatio > 0) {
-    artwork.aspectRatio = aspectRatio;
-  }
-  return artwork;
-}
-
-/**
- * The partnership of a projected organisation: its tier, and the category
- * and featured flag when set. `undefined` without a known tier (not a
- * partner), and an unknown category is left out.
- */
-function toPartnership({
-  partnerTier,
-  partnerCategory,
-  partnerFeatured,
-}: ProjectedOrganization): Partnership | undefined {
-  if (!isPartnerTier(partnerTier)) return undefined;
+  if (!content)
+    throw new ContentError(
+      "organization",
+      "",
+      `${label}: uploaded artwork needs an asset URL and dimensions`,
+    );
+  contentImage(content, label, "image");
+  requireString(content.alt, label, "alt");
+  if (symbolOnly != null && typeof symbolOnly !== "boolean")
+    throw new ContentError(
+      "organization",
+      "",
+      `${label}: symbolOnly must be boolean`,
+    );
+  if (
+    aspectRatio != null &&
+    (!Number.isFinite(aspectRatio) || aspectRatio <= 0)
+  )
+    throw new ContentError(
+      "organization",
+      "",
+      `${label}: aspect ratio must be positive`,
+    );
   return {
-    tier: partnerTier,
-    ...(isPartnerCategory(partnerCategory)
-      ? { category: partnerCategory }
-      : {}),
-    ...(partnerFeatured === true ? { featured: true } : {}),
+    ...content,
+    ...(symbolOnly ? { symbolOnly: true as const } : {}),
+    ...(aspectRatio != null ? { aspectRatio } : {}),
   };
 }
 
-/**
- * A projected organisation as the code shape, or `null` when it lacks a key
- * or a name (a dangling reference or an unfinished draft). Empty optional
- * fields are left out, like in code.
- */
+/** Parse a resolved organization. Dangling references and malformed fields fail visibly. */
 export function toOrganization(
-  projected: ProjectedOrganization | null | undefined,
-): Organization | null {
-  const key = projected?.key?.trim();
-  const name = projected?.name?.trim();
-  if (!projected || !key || !name) return null;
+  value: ProjectedOrganization | null | undefined,
+): Organization {
+  const projected = requireObject(
+    value,
+    "organization",
+  ) as unknown as ProjectedOrganization;
+  const key = requireString(projected.key, "organization.key");
+  const name = requireString(projected.name, `organization ${key}.name`);
   const organization: Organization = { key, name };
-  const shortName = projected.shortName?.trim();
-  if (shortName) organization.shortName = shortName;
-  const href = projected.href?.trim();
-  if (href && isHttpsUrl(href)) organization.href = href;
-  const logo = toArtwork(
+  if (projected.shortName != null)
+    organization.shortName = optionalString(
+      projected.shortName,
+      `${key}.shortName`,
+    );
+  if (projected.href != null && projected.href !== "") {
+    if (!isHttpsUrl(projected.href))
+      throw new ContentError(
+        "organization",
+        "",
+        `${key}.href: expected HTTPS URL`,
+      );
+    organization.href = projected.href;
+  }
+  const logo = artwork(
     projected.logo,
     projected.logoSymbolOnly,
     projected.logoAspectRatio,
+    `${key}.logo`,
   );
-  if (logo) organization.logo = logo;
-  const logoOnDark = toArtwork(
+  const logoOnDark = artwork(
     projected.logoOnDark,
     projected.logoOnDarkSymbolOnly,
     projected.logoOnDarkAspectRatio,
+    `${key}.logoOnDark`,
   );
+  if (logo) organization.logo = logo;
   if (logoOnDark) organization.logoOnDark = logoOnDark;
-  const partnership = toPartnership(projected);
-  if (partnership) organization.partnership = partnership;
+  if (projected.partnerTier != null && projected.partnerTier !== "") {
+    if (!isPartnerTier(projected.partnerTier))
+      throw new ContentError(
+        "organization",
+        "",
+        `${key}.partnerTier: unknown tier`,
+      );
+    const partnership: Partnership = { tier: projected.partnerTier };
+    if (projected.partnerCategory != null && projected.partnerCategory !== "") {
+      if (!isPartnerCategory(projected.partnerCategory))
+        throw new ContentError(
+          "organization",
+          "",
+          `${key}.partnerCategory: unknown category`,
+        );
+      partnership.category = projected.partnerCategory;
+    }
+    if (
+      projected.partnerFeatured != null &&
+      typeof projected.partnerFeatured !== "boolean"
+    )
+      throw new ContentError(
+        "organization",
+        "",
+        `${key}.partnerFeatured: expected boolean`,
+      );
+    if (projected.partnerFeatured) partnership.featured = true;
+    if (projected.partnerOrder != null) {
+      if (!Number.isFinite(projected.partnerOrder))
+        throw new ContentError(
+          "organization",
+          "",
+          `${key}.partnerOrder: expected finite number`,
+        );
+      partnership.order = projected.partnerOrder;
+    }
+    organization.partnership = partnership;
+  }
   return organization;
 }
 
-/**
- * The organisations of each section in `lists`: the CMS list when the source
- * is `sanity` and that section's list has any organisation, otherwise the
- * code list (per section; see `mergeOverFallback`).
- */
+/** Select sections by surface so editor-owned document ids are respected. Empty optional lists stay empty. */
 export function getLogoLists<S extends LogoListSurface>({
-  lists,
+  surfaces,
   label,
-  mockDocuments,
 }: {
-  /** The code lists, one per section this page reads. */
-  lists: LogoLists<S>;
+  surfaces: readonly S[];
   label: string;
-  /** The documents the mock CMS queries: the slice's backfill. */
-  mockDocuments: () => readonly BackfillDocument[];
 }): Promise<LogoLists<S>> {
-  const surfaces = Object.keys(lists) as S[];
-  return loadContent<LogoLists<S>, LOGO_LISTS_QUERY_RESULT>({
-    fallback: lists,
+  return loadContent<
+    LogoLists<S>,
+    {
+      surface: string | null;
+      organizations: (ProjectedOrganization | null)[] | null;
+    }[]
+  >({
     query: LOGO_LISTS_QUERY,
-    params: { ids: surfaces.map(logoListId) },
+    params: { surfaces: [...surfaces] },
     tags: ["content:logoList", "content:organization"],
     label,
-    mockDocuments,
-    select: (result) =>
-      Object.fromEntries(
-        result.flatMap(({ surface, organizations }) =>
-          surface && (surfaces as string[]).includes(surface)
-            ? [
-                [
-                  surface,
-                  (organizations ?? []).flatMap(
-                    (organization) => toOrganization(organization) ?? [],
-                  ),
-                ],
-              ]
-            : [],
-        ),
-      ),
+    select: (result) => {
+      const lists = Object.fromEntries(
+        surfaces.map((surface) => [surface, []]),
+      ) as unknown as LogoLists<S>;
+      const seen = new Set<string>();
+      requireArray(result, label);
+      for (const item of result) {
+        requireObject(item, label);
+        const surface = requireString(item.surface, `${label}.surface`);
+        if (!surfaces.includes(surface as S) || seen.has(surface))
+          throw new ContentError(
+            "organization",
+            "",
+            `${label}: unexpected or duplicate surface ${surface}`,
+          );
+        seen.add(surface);
+        if (item.organizations != null)
+          requireArray(item.organizations, `${label}.${surface}`);
+        lists[surface as S] = (item.organizations ?? []).map(toOrganization);
+      }
+      return lists;
+    },
   });
 }
-
-/**
- * Every partner organisation: the CMS's (each organisation with a partner
- * tier) when the source is `sanity` and it has any, otherwise `fallback`,
- * the code's. Unordered: the partner directory sorts it.
- */
+/** All CMS partners; display ordering is a pure directory concern. */
 export function getPartnerOrganizations({
-  fallback,
   label,
-  mockDocuments,
 }: {
-  /** The code's partner organisations. */
-  fallback: readonly Organization[];
   label: string;
-  /** The documents the mock CMS queries: the slice's backfill. */
-  mockDocuments: () => readonly BackfillDocument[];
 }): Promise<Organization[]> {
-  return loadContent<Organization[], PARTNER_ORGANIZATIONS_QUERY_RESULT>({
-    fallback: [...fallback],
+  return loadContent<Organization[], ProjectedOrganization[]>({
     query: PARTNER_ORGANIZATIONS_QUERY,
     tags: ["content:organization"],
     label,
-    mockDocuments,
-    select: (result) =>
-      result.flatMap((projected) => {
-        const organization = toOrganization(projected);
-        return organization?.partnership ? [organization] : [];
-      }),
+    select: (result) => {
+      requireArray(result, label);
+      return result.map(toOrganization);
+    },
   });
 }
-
-/**
- * The organisations with `keys` (references elsewhere name them, such as an
- * event's co-hosts): the CMS's when the source is `sanity` and any exists,
- * otherwise `fallback`, the code's. Unordered; a key without an
- * organisation is left out.
- */
+/** CMS organization artwork for referenced keys; no local organization catalog. */
 export function getOrganizationsByKey({
   keys,
-  fallback,
   label,
-  mockDocuments,
 }: {
   keys: readonly string[];
-  /** The code's organisations with those keys. */
-  fallback: readonly Organization[];
   label: string;
-  /** The documents the mock CMS queries: the slice's backfill. */
-  mockDocuments: () => readonly BackfillDocument[];
 }): Promise<Organization[]> {
-  return loadContent<Organization[], ORGANIZATIONS_BY_KEY_QUERY_RESULT>({
-    fallback: [...fallback],
+  return loadContent<Organization[], ProjectedOrganization[]>({
     query: ORGANIZATIONS_BY_KEY_QUERY,
     params: { keys: [...keys] },
     tags: ["content:organization"],
     label,
-    mockDocuments,
-    select: (result) =>
-      result.flatMap((projected) => toOrganization(projected) ?? []),
+    select: (result) => {
+      requireArray(result, label);
+      return result.map(toOrganization);
+    },
   });
-}
-
-function artworkImage(artwork: LogoArtwork) {
-  const image: BackfillImage & { symbolOnly?: true; aspectRatio?: number } =
-    backfillImage(artwork.src, {
-      alt: artwork.alt,
-      objectPosition: artwork.objectPosition,
-    });
-  if (artwork.symbolOnly) image.symbolOnly = true;
-  if (artwork.aspectRatio !== undefined)
-    image.aspectRatio = artwork.aspectRatio;
-  return image;
-}
-
-/** The `organization` document that recreates a code organisation. */
-export function buildOrganizationDocument(
-  organization: Organization,
-): BackfillDocument {
-  const { key, name, shortName, href, logo, logoOnDark, partnership } =
-    organization;
-  return {
-    _id: organizationId(key),
-    _type: "organization",
-    key,
-    name,
-    ...(shortName ? { shortName } : {}),
-    ...(href ? { href } : {}),
-    ...(logo ? { logo: artworkImage(logo) } : {}),
-    ...(logoOnDark ? { logoOnDark: artworkImage(logoOnDark) } : {}),
-    ...(partnership
-      ? {
-          partnerTier: partnership.tier,
-          ...(partnership.category
-            ? { partnerCategory: partnership.category }
-            : {}),
-          ...(partnership.featured ? { partnerFeatured: true } : {}),
-        }
-      : {}),
-  };
-}
-
-/** A reference to an organisation's backfill document, by key. */
-export function organizationReference(key: string) {
-  return { _type: "reference", _ref: organizationId(key) } as const;
-}
-
-/**
- * The `logoList` document of a section: references to the organisations'
- * backfill documents, in order. The organisations themselves are built by
- * whichever slice owns them (`buildOrganizationDocument`).
- */
-export function buildLogoListDocument(
-  surface: LogoListSurface,
-  organizations: readonly Pick<Organization, "key">[],
-): BackfillDocument {
-  return {
-    _id: logoListId(surface),
-    _type: "logoList",
-    surface,
-    organizations: organizations.map(({ key }) => ({
-      _key: key,
-      ...organizationReference(key),
-    })),
-  };
 }

@@ -90,7 +90,7 @@ describe("the Q&A mission phrase validation", () => {
     ).resolves.toBe(true);
   });
 
-  test("passes while no passage is published (the page uses the code one)", async () => {
+  test("rejects phrases until a passage is published", async () => {
     await expect(
       validateEntrySpans(
         ["anything"],
@@ -99,7 +99,7 @@ describe("the Q&A mission phrase validation", () => {
           documents.slice(1),
         ),
       ),
-    ).resolves.toBe(true);
+    ).resolves.toMatch(/Publish the Q&A mission passage/);
   });
 });
 

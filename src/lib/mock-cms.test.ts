@@ -37,9 +37,9 @@ describe("MOCK_CMS_NOW", () => {
   });
 });
 
-test("mock events cover upcoming and past events across filters", () => {
+test("mock events cover upcoming and past events across filters", async () => {
   const now = new Date("2026-09-25T12:00:00Z");
-  const events = getMockEvents(now);
+  const events = await getMockEvents(now);
   const upcoming = events.filter((event) => new Date(event.event_date) >= now);
   const past = events.filter((event) => new Date(event.event_date) < now);
 
@@ -66,14 +66,19 @@ test("mock events cover upcoming and past events across filters", () => {
   expect(upcoming.some((event) => !event.sign_up)).toBe(true);
 });
 
-test("mock event dates follow the given now, so fixed dates render stably", () => {
+test("mock event dates follow the given now, so fixed dates render stably", async () => {
   const now = new Date("2026-09-25T12:00:00Z");
-  expect(getMockEvents(now)).toStrictEqual(getMockEvents(new Date(now)));
-  expect(getMockEvents(now)[0].event_date).toBe("2026-10-04T18:00:00.000Z");
+  expect(await getMockEvents(now)).toStrictEqual(
+    await getMockEvents(new Date(now)),
+  );
+  expect(
+    (await getMockEvents(now)).find(({ id }) => id === "fixture-event-0")
+      ?.event_date,
+  ).toBe("2026-10-04T18:00:00.000Z");
 });
 
-test("mock sign-up links are neutral placeholders, not real forms", () => {
-  const signUps = getMockEvents().flatMap((event) =>
+test("mock sign-up links are neutral placeholders, not real forms", async () => {
+  const signUps = (await getMockEvents()).flatMap((event) =>
     event.sign_up ? [event.sign_up] : [],
   );
   expect(signUps.length).toBeGreaterThan(0);
@@ -82,8 +87,8 @@ test("mock sign-up links are neutral placeholders, not real forms", () => {
   }
 });
 
-test("mock research covers both statuses, events and research use local images only", () => {
-  const projects = getMockResearchProjects();
+test("mock research covers both statuses, events and research use local images only", async () => {
+  const projects = await getMockResearchProjects();
   expect(projects.some((project) => project.status === "ongoing")).toBe(true);
   expect(projects.some((project) => project.status === "completed")).toBe(true);
   expect(projects.some((project) => project.publication)).toBe(true);
@@ -92,7 +97,7 @@ test("mock research covers both statuses, events and research use local images o
   );
 
   const images = [
-    ...getMockEvents().flatMap((event) => [
+    ...(await getMockEvents()).flatMap((event) => [
       event.poster,
       ...(event.images ?? []),
     ]),

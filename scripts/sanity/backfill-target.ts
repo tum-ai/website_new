@@ -1,5 +1,5 @@
 /**
- * Where `pnpm sanity:backfill` and the content migrations
+ * Where `pnpm sanity:copy-production` and the content migrations
  * (`pnpm sanity:migrate-partners`, `pnpm sanity:migrate-content-dedup`) may
  * write: the guard behind their `--dataset` flag, kept apart from the scripts
  * so tests can call it.
@@ -22,7 +22,7 @@ export function backfillTarget(
   dataset: string | undefined,
   env: Env,
   /** The command, for the message when `--dataset` is missing. */
-  command = "pnpm sanity:backfill",
+  command = "pnpm sanity:copy-production",
 ): BackfillTarget {
   if (!dataset) {
     throw new Error(`Name the target dataset: ${command} --dataset redesign`);

@@ -2,7 +2,6 @@ import type { Organization } from "@/lib/people-and-logos";
 import { isPartnerTier, partnerTiers } from "@/lib/people-and-logos";
 import { getSafeExternalUrl } from "@/lib/security";
 import type { Partner } from "@/lib/types";
-import { partnerLaunchOrder } from "./data/organizations";
 import { getPartnerKey } from "./partner-key";
 
 /** Gold, silver and bronze partners: the homepage and the /partners hero. */
@@ -37,22 +36,15 @@ export function partnerOf({
     ...(partnership?.category ? { category: partnership.category } : {}),
     tier: partnership?.tier ?? "supporter",
     ...(partnership?.featured ? { featured: true } : {}),
+    ...(partnership?.order != null ? { order: partnership.order } : {}),
     ...(logo?.symbolOnly ? { symbolOnly: true } : {}),
   };
 }
 
-const launchIndex = new Map(
-  partnerLaunchOrder.map((key, index) => [key, index]),
-);
-
-const launchRank = (partner: Partner) =>
-  launchIndex.get(partner.id) ?? partnerLaunchOrder.length;
-
 /**
  * The partner directory: `partners` in tier order (gold, silver, bronze,
  * supporter; an unknown or missing tier is a supporter), within a tier the
- * ones that lead it first, then the launch brief's order
- * (`partnerLaunchOrder`), then by name. Entries without a name are dropped,
+ * ones that lead it first, then the CMS editorial order, then by name. Entries without a name are dropped,
  * two entries for one company (the same {@link getPartnerKey}) keep the
  * higher-ranked one, and unsafe links are removed.
  */
@@ -72,7 +64,8 @@ export function getPartnerDirectory(partners: Partner[]): Partner[] {
         tierOrder.indexOf(a.tier ?? "supporter") -
           tierOrder.indexOf(b.tier ?? "supporter") ||
         Number(Boolean(b.featured)) - Number(Boolean(a.featured)) ||
-        launchRank(a) - launchRank(b) ||
+        (a.order ?? Number.POSITIVE_INFINITY) -
+          (b.order ?? Number.POSITIVE_INFINITY) ||
         a.name.localeCompare(b.name),
     );
   const seen = new Set<string>();

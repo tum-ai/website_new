@@ -2,7 +2,7 @@ import { axe } from "@test/axe";
 import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { labSites } from "./data/lab-sites";
+import { labSitesFixture as labSites } from "@/lib/cms-fixtures/programmes";
 import { getLabSites } from "./research";
 import { ResearchGlobe } from "./research-globe";
 
@@ -26,10 +26,7 @@ beforeEach(() => {
   );
 });
 
-const { sites } = getLabSites(
-  [{ name: "MIT" }, { name: "IBM Almaden" }, { key: "inria", name: "Inria" }],
-  labSites,
-);
+const { sites } = getLabSites([{ name: "Example Lab" }], labSites);
 
 describe("ResearchGlobe", () => {
   test("is a named slider that says which places it shows", async () => {
@@ -38,9 +35,9 @@ describe("ResearchGlobe", () => {
       name: "Globe of our research sites",
     });
     expect(globe).toHaveAccessibleDescription(
-      /Arcs run from Munich to Boston \(MIT\); San Jose \(IBM Almaden\); Paris \(Inria\)/,
+      /Arcs run from Example Home to Example Remote \(Example Lab\)/,
     );
-    expect(globe).toHaveAttribute("aria-valuetext", "Centred on 28° west");
+    expect(globe).toHaveAttribute("aria-valuetext", "Centred on 29° west");
     expect(await axe(container)).toHaveNoViolations();
   });
 

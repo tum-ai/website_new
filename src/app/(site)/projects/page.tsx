@@ -5,10 +5,10 @@ import "@/features/projects/projects.css";
 
 export const metadata = buildMetadata("projects");
 
-export default function Page() {
+export default async function Page() {
   return (
     <>
-      <JsonLd data={getJsonLd("projects")} />
+      <JsonLd data={await getJsonLd("projects")} />
       <ProjectsPage />
     </>
   );

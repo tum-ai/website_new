@@ -43,17 +43,20 @@ batch the fixes into one push. Never close and reopen a PR to re-run CI. Details
 `pnpm build` writes `.next-prod`; `pnpm start` serves it. `test:perf` reads that build.
 `pnpm sanity:typegen` regenerates `src/lib/sanity.types.generated.ts` after a schema or query
 change (CI fails when it's stale; `pnpm sanity:typegen:check` shows it locally).
-`pnpm sanity:backfill --dataset redesign` (required; never `production`) is the one migration
-command: it writes the content slices' documents plus a read-only copy of `production`'s published
-events, partners and research (with the events' co-hosts) to `.sanity-backfill/<dataset>.ndjson`
-(a dry run; needs `NEXT_PUBLIC_SANITY_PROJECT_ID`); its `--apply` imports them into Sanity and is
-a maintainer's launch step, never part of a change (docs/adr/0009-cms-content-source.md).
-`pnpm sanity:migrate-partners --dataset redesign` (same guard) is a dry run that plans moving the
-copied partner documents onto organisations (partners are organisations with a `partnerTier`);
-its `--apply` is a launch step too, as are those of `pnpm sanity:migrate-content-dedup` and
-`pnpm sanity:migrate-org-references` (dry runs by default). In the Claude sandbox, run
-`sanity:typegen`, `sanity:backfill` and the `sanity:migrate-*` scripts unsandboxed (tsx and the
-Sanity CLI fail with EPERM there).
+CMS maintainer commands are independent and default to dry run/read-only:
+`pnpm sanity:copy-production --dataset redesign` reads live published events, partners and
+research and skips existing target IDs (no overwrite); `sanity:migrate-partners` uses existing
+CMS records only; `sanity:migrate-org-references` matches existing CMS keys/names without creating
+organizations; `sanity:migrate-content-dedup` preserves historical comparators and revision guards.
+`sanity:migrate-single-source` plans remaining known content/reference gaps. It atomically records
+CMS completion with target writes to preserve later editor deletion/unset, uses a separate
+`single-source-assets.json` digest upload cache, and reports draft visibility unknown without
+authenticated raw preflight. Preserve upload cache/source files until authorized links are confirmed.
+`pnpm sanity:repair-assets --dataset redesign` independently inspects the pending-assets ledger;
+its future maintainer `--apply` preserves editor removal and revisions. No apply, dataset creation
+or import belongs in code delivery. `pnpm sanity:ready --dataset redesign` uses the real published
+runtime queries/parsers with mocking disabled and reports actionable readiness gaps without CMS
+writes. See ADR 0009; synthetic CI success does not certify live readiness.
 
 ## Architecture
 
@@ -66,7 +69,7 @@ src/app/studio/[[...tool]]/       Sanity Studio (one workspace at /studio), own 
 src/app/global-not-found.tsx      404 for unmatched URLs (there are two root layouts)
 src/app/api/                      getNotes | getPartners | getResearch (public JSON API), draft-mode,
                                   revalidate (Sanity webhook → revalidateTag)
-src/features/<domain>/            <domain>-page.tsx, sections, data/ (static copy), logic, tests,
+src/features/<domain>/            <domain>-page.tsx, sections, data/ (types and logic), tests,
                                   content.ts and <topic>-content.ts (CMS content slices, server
                                   only), optional index.ts (isomorphic) and server.ts (server
                                   only): the only entries for other features
@@ -76,17 +79,16 @@ src/config/                       site facts and their slices (site-settings-con
                                   schedule-content), content-tokens, navigation (incl. header CTA),
                                   calls-to-action (CTA labels), campaigns and SEO
 src/lib/                          cn, sanity-config, sanity client/queries/fetch, mock-cms, cms-content
-                                  (+ -model, -mock), cms-backfill, content-tokens, content-copy,
-                                  content-backfill, faq-content, community-model/-content,
+                                  (+ -model, -mock), cms-fixtures, content-tokens, content-copy,
+                                  faq-content, community-model/-content,
                                   people-and-logos, organization-content, person-content,
                                   passage-spans, quote-excerpt, program-duration, clock-window,
                                   munich-time, words, use-clock-switch, use-media-query, security,
                                   redirects
 src/sanity/                       Studio config, desk structure and schemas (TypeGen writes
                                   src/lib/sanity.types.generated.ts)
-scripts/sanity/                   backfill script, slice registry, copy from production, content
-                                  migrations (migrate-partners, migrate-content-dedup,
-                                  migrate-org-references)
+scripts/sanity/                   create-only production copy, targeted migrations, real readiness
+                                  checks, independent asset repair and script-only ledger helpers
 src/styles/index.css              kit Tailwind/shell CSS imports + app-specific partner rotation
 src/proxy.ts                      host redirects (join.tum-ai.com to /apply)
 test/                             repo-wide fitness tests (content facts, assets, perf budget)
@@ -94,7 +96,11 @@ e2e/                              Playwright specs, fixtures (siteRoutes) and Li
 ```
 
 Import rules. `src/architecture.test.ts` is authoritative; Biome `noRestrictedImports` repeats
-the rules it can express.
+the rules it can express. Fixtures may use erased type-only imports of domain/config/lib types
+for shape checks. Fixture runtime imports stay within fixture modules/tests and the mock
+entrypoints. Production readers may dynamically import `cms-content-mock.ts` or `mock-cms.ts`
+only inside the exact `if (process.env.USE_MOCK_CMS === "1" && !process.env.VERCEL)` branch,
+from `cms-content.ts` or `sanity.ts` respectively; no static production path to fixtures.
 
 | Module | May import |
 |---|---|
@@ -130,11 +136,10 @@ also fails when any `"use client"` module reaches a `server-only` module, `next/
   `slate-*`, `purple-*`) in app markup or styles. Shared tokens belong to the kit.
   Use the type-scale utilities, not arbitrary sizes.
   Biome sorts classes inside `className`, `cn()` and `cva()`.
-- Site facts (dates, counts, emails, links, URLs) come from `src/config`, never from page code
-  (`test/content-facts.test.ts` enforces this). Pages read them per render: `await
-  getSiteFacts()`, the windows (`getMembershipWindow()`, `getELabWindow()`), and
-  `await getContentTokens()` for `{{placeholders}}` in copy; the config constants are only the
-  code fallback. Client islands get them as props.
+- Editable site facts come from the CMS through `src/config` readers, never duplicate literals
+  in page code. Read `getSiteFacts()`, the application windows and `getContentTokens()` per render.
+  Required facts fail visibly if missing/malformed; optional clearing stays cleared. Config owns
+  types and derivation plus reviewed code concerns. Client islands receive plain props.
 - TSDoc on exported APIs and non-obvious contracts; no comments that restate the code.
 - Tests live next to the code (`x.test.ts`, `x.test.tsx`); `test/` is for repo-wide checks only.
 - Every Biome rule is an error (`--error-on-warnings`); a `biome-ignore` needs a reason.
@@ -144,11 +149,11 @@ also fails when any `"use client"` module reaches a `server-only` module, `next/
 | Task | Where | Skill |
 |---|---|---|
 | Add a page | route + feature folder + `config/seo.ts` + nav + `siteRoutes` in `e2e/fixtures.ts` | `add-page` |
-| Change a site fact | after launch: the Studio (`/studio`, Site settings or an application window); in code, the matching file in `src/config/` (`e-lab`, `membership`, `organization`, `contact`, `community`, `impact`, `hackathons`, `site`), the fallback | `site-facts` |
-| Change static copy | after launch: the page's singleton in `/studio`; in code, `src/features/<domain>/data/` (the fallback a slice serves) | |
+| Change a site fact | the Studio (`/studio`, Site settings or an application window); types/parsers/derivation in `src/config/` | `site-facts` |
+| Change static copy | the page's singleton in `/studio`; code owns its schema, query and parser | |
 | Change a standing CTA label | `src/config/calls-to-action.ts` | |
 | Change a CMS type or field | `src/sanity/schemas/` then query, types, mock, UI | `cms-content-model` |
-| Move hard-coded content to the CMS | a content slice: schema in `src/sanity/schemas/content/`, `features/<x>/content.ts`, `scripts/sanity/slices.ts`, parity test; owners in `docs/cms-content-inventory.md` | `cms-content-model` |
+| Move hard-coded content to the CMS | schema, server-only query/parser, synthetic fixture and contract tests; owners in `docs/cms-content-inventory.md` | `cms-content-model` |
 | Add or change a shared UI primitive | upstream UI kit release, then exact dependency version + showcase | `ds-component` |
 | Change navigation or the header CTA | `src/config/navigation.ts` (links, `headerCtaSetting`, `getHeaderOptions`) | |
 | Change SEO or JSON-LD | `src/config/seo.ts` | |
@@ -162,7 +167,7 @@ also fails when any `"use client"` module reaches a `server-only` module, `next/
 |---|---|
 | Logic in `lib/`, `config/`, `features/**/*.ts` | unit test next to it (`*.test.ts`, node) |
 | Interactive UI (islands, app adapters) | component test (`*.test.tsx`: Testing Library, user-event, `axe()` from `@test/axe`) |
-| Site facts | `content-facts` and `e-lab-content` tests stay green; derive expectations from config |
+| Site facts | `content-facts` and `e-lab-content` contract/derivation tests stay green |
 | New route or user flow | the route in `siteRoutes` (`e2e/fixtures.ts`) and a spec for the flow; axe runs on every route |
 | Visible UI change | Visual baselines regenerated in CI: add the `update-snapshots` label to the PR. The bot commits only the changed PNG files and starts no CI; the next push runs it. Restore foreign PNG files in a `[skip ci]` commit, and list each intended diff in the PR's Visual changes table |
 | Homepage markup or images | the homepage budget (`test:perf`, CI's Build job) |
@@ -213,20 +218,20 @@ Hard rules:
 
 - **Dist dirs.** `pnpm dev` uses `.next-dev`, build/start/typecheck use `.next-prod`, Vercel uses its
   default. Don't run bare `next build`; `pnpm build` never deletes a running dev server's output.
-- **Mock CMS.** `USE_MOCK_CMS=1` serves `src/lib/mock-cms.ts` fixtures and is ignored on Vercel.
-  It is read at **build** time (`next.config.ts` inlines it), so `USE_MOCK_CMS=1 pnpm build`;
-  setting it only for `pnpm start` does nothing. `MOCK_CMS_NOW` (ISO date, or date-time with an
-  offset) fixes the "now" the fixtures and the `/events` and `/apply` render dates use; E2E sets
-  `2026-10-01T12:00:00Z`. Without Sanity env vars, CMS pages render empty lists.
-- **CMS content source.** `CMS_CONTENT_SOURCE` (server only) is `code` by default: content slices
-  return their code fallbacks and make no request. `sanity` reads the page content of the one
-  dataset, `NEXT_PUBLIC_SANITY_DATASET` (`redesign` for the new site), and merges it over the
-  fallbacks; with `USE_MOCK_CMS=1` it queries the backfill documents locally. On `production`
-  (the default, the old site's dataset) the Studio has no content types and `sanity` renders the
-  code content, logged once: page content never goes there. Drafts and `SanityLive` cover events
-  and research only (partners are organisations, page content). A slice tags its query
-  `content:<type>` for every type it reads (`lib/cache-tags.ts`): the Sanity webhook at `/api/revalidate`
-  (`SANITY_REVALIDATE_SECRET`) expires those tags on publish.
+- **Mock CMS.** The literal `USE_MOCK_CMS=1 && !VERCEL` gate selects synthetic CMS-shaped
+  documents in `src/lib/cms-fixtures/` and event/research fixtures in `src/lib/mock-cms.ts`.
+  It is inlined at build time and ignored on Vercel. Set it for `pnpm build` or `pnpm dev`, not
+  only `pnpm start`. CI Build/perf and Playwright fix `MOCK_CMS_NOW=2026-10-01T12:00:00Z`.
+  Fixtures evaluate actual GROQ with groq-js and never seed live content.
+- **CMS content.** Editable copy/facts come from the explicitly configured page-content dataset,
+  `NEXT_PUBLIC_SANITY_DATASET=redesign`, through server-only readers. Required singletons and
+  facts fail visibly on missing/malformed data or configuration; optional lists may be empty and
+  editor clearing is respected. No local editorial fallback or source selector remains.
+  The Studio hides page-content types on `production`, which page-content readers reject.
+  Existing event/research drafts and live preview remain; page-content drafts are not expanded.
+  Readers tag all queried/dereferenced types as `content:<type>`; the Sanity webhook at
+  `/api/revalidate` expires them on publish. Timer-stale ISR may retain an older render when
+  refresh fails; cold, hard-expired and on-demand reads can propagate the required-content error.
 - **Draft mode and Studio.** Presentation in `/studio` enables drafts via `/api/draft-mode/enable`,
   which needs `SANITY_API_READ_TOKEN` (server only; never expose it to the browser; 503 without
   it). `/api/draft-mode/disable` leaves draft mode. `SANITY_API_BROWSER_TOKEN` is a separate,

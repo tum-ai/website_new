@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { socialLinks } from "@/config/contact";
+import { eventsCopyFixture } from "@/lib/cms-fixtures/hackathons";
+import { settingsFixtureFacts } from "@/lib/cms-fixtures/settings";
 import { Upcoming } from "./upcoming";
 
 /*
@@ -8,6 +9,8 @@ import { Upcoming } from "./upcoming";
  * needs no IntersectionObserver.
  */
 beforeEach(() => {
+  vi.stubEnv("USE_MOCK_CMS", "1");
+  vi.stubEnv("VERCEL", "");
   vi.stubGlobal(
     "matchMedia",
     vi.fn((query: string) => ({
@@ -21,20 +24,27 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
 });
 
 test("with nothing scheduled, it says where new dates are announced, with links", async () => {
   render(await Upcoming({ events: [] }));
-  const note = screen.getByText(/Nothing is scheduled right now\./);
-  expect(note).toHaveTextContent(
-    /^Nothing is scheduled right now\. We announce new dates on Instagram.* and LinkedIn.*\.$/,
+  const note = screen.getByText(
+    (_, element) =>
+      element?.tagName === "P" &&
+      Boolean(
+        element.textContent?.startsWith(
+          eventsCopyFixture.upcoming.empty.split("{{")[0],
+        ),
+      ),
   );
+  expect(note).toHaveTextContent(/Instagram.* and LinkedIn/);
   expect(screen.getByRole("link", { name: /^Instagram/ })).toHaveAttribute(
     "href",
-    socialLinks.instagram,
+    settingsFixtureFacts.socialLinks.instagram,
   );
   expect(screen.getByRole("link", { name: /^LinkedIn/ })).toHaveAttribute(
     "href",
-    socialLinks.linkedin,
+    settingsFixtureFacts.socialLinks.linkedin,
   );
 });

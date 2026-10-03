@@ -46,8 +46,8 @@ const ANCHOR_TAKEN_QUERY = `count(*[_type == "faq" && collection == "qanda" && a
 
 /**
  * One question and answer on a page's FAQ. A page shows the entries of its
- * `collection`, sorted by `order`; `lib/faq-content.ts` reads them and falls
- * back to the code list when the collection is empty.
+ * `collection`, sorted by `order`; `lib/faq-content.ts` reads them and
+ * preserves an intentionally empty collection.
  *
  * Answers are plain text (the page renders them as one paragraph) with
  * `{{placeholders}}` for site facts. The Q&A-only fields (anchor, points,
@@ -97,7 +97,7 @@ export const faqType = defineType({
         "Q&A only: the link target, as in /qanda#<anchor>. Lowercase letters, digits and hyphens.",
       hidden: unlessQanda,
       // The anchor is the question's element id and link target on /qanda,
-      // so it must be unique there; the page also drops a duplicate.
+      // so it must be unique there; the reader rejects duplicates.
       validation: (Rule) =>
         Rule.custom(async (value, { document, getClient }) => {
           const problem = anchorProblem(value, document?.collection);
@@ -157,7 +157,12 @@ export const faqType = defineType({
           validation: (Rule) =>
             Rule.custom((value) => validatePlaceholders(value)),
         }),
-        defineField({ name: "label", title: "Link label", type: "string" }),
+        defineField({
+          name: "label",
+          title: "Link label",
+          type: "string",
+          validation: (Rule) => Rule.required(),
+        }),
         defineField({
           name: "href",
           title: "Link",
@@ -165,7 +170,7 @@ export const faqType = defineType({
           description:
             "A page of this site (/research) or an https:// address.",
           validation: (Rule) =>
-            Rule.custom((value) => validateSiteOrHttpsLink(value)),
+            Rule.required().custom((value) => validateSiteOrHttpsLink(value)),
         }),
       ],
     }),

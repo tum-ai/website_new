@@ -2,11 +2,13 @@ import { axe } from "@test/axe";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { partnershipContact } from "@/config/contact";
 import { ContactActions } from "./contact-actions";
+import {
+  partnershipFinderCopy,
+  testPartnershipContact,
+} from "./partnership.test-fixtures";
 import { PartnershipProvider } from "./partnership-context";
 import {
-  codePartnershipContact,
   getPartnershipEmailUrl,
   type PartnershipContact,
 } from "./partnerships";
@@ -28,7 +30,7 @@ vi.mock("@calcom/embed-react", () => ({
   getCalApi: cal.getCalApi,
 }));
 
-const dialogName = "Let’s talk about your partnership.";
+const dialogName = partnershipFinderCopy.prompts.bookingTitle;
 
 beforeEach(() => {
   cal.listeners.clear();
@@ -55,11 +57,11 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-function renderContact(contact?: PartnershipContact) {
+function renderContact(contact: PartnershipContact = testPartnershipContact) {
   const user = userEvent.setup();
   const view = render(
     <div id="app-root">
-      <PartnershipProvider contact={contact}>
+      <PartnershipProvider copy={partnershipFinderCopy} contact={contact}>
         <ContactActions />
       </PartnershipProvider>
     </div>,
@@ -84,11 +86,11 @@ test("loads the dialog and the calendar embed only once a call is requested", as
   await user.click(trigger);
   const dialog = await screen.findByRole("dialog", { name: dialogName });
   expect(dialog).toHaveAccessibleDescription(
-    new RegExp(partnershipContact.bookingHost),
+    new RegExp(testPartnershipContact.bookingHost),
   );
   expect(screen.getByTestId("cal-embed")).toHaveAttribute(
     "data-cal-link",
-    new URL(partnershipContact.bookingUrl).pathname.slice(1),
+    new URL(testPartnershipContact.bookingUrl).pathname.slice(1),
   );
   expect(screen.getByRole("status")).toHaveTextContent(
     "Loading available times…",
@@ -110,19 +112,28 @@ test("offers the booking page and email when the embed fails", async () => {
   act(() => cal.listeners.get("linkFailed")?.());
 
   expect(screen.getByRole("status")).toHaveTextContent(
-    /Open the booking page below, or email us/,
+    partnershipFinderCopy.prompts.bookingSlow,
   );
   expect(
     screen.getByRole("link", { name: /Open booking page/ }),
   ).toHaveAttribute(
     "href",
     expect.stringMatching(
-      new RegExp(`^${partnershipContact.bookingUrl.replaceAll(".", "\\.")}\\?`),
+      new RegExp(
+        `^${testPartnershipContact.bookingUrl.replaceAll(".", "\\.")}\\?`,
+      ),
     ),
   );
   expect(
     screen.getByRole("link", { name: "Email us instead" }),
-  ).toHaveAttribute("href", getPartnershipEmailUrl());
+  ).toHaveAttribute(
+    "href",
+    getPartnershipEmailUrl(
+      { intent: null, duration: null },
+      partnershipFinderCopy,
+      testPartnershipContact,
+    ),
+  );
   expect(await axe(dialog)).toHaveNoViolations();
 });
 
@@ -134,7 +145,7 @@ test("falls back when the embed never answers", async () => {
   );
   act(() => vi.advanceTimersByTime(15_000));
   expect(screen.getByRole("status")).toHaveTextContent(
-    /Open the booking page below, or email us/,
+    partnershipFinderCopy.prompts.bookingSlow,
   );
 });
 
@@ -156,7 +167,7 @@ test("returns focus to the button that opened it", async () => {
 
 test("never loads an embed script from a booking page off Cal", async () => {
   const { user, trigger } = renderContact({
-    ...codePartnershipContact,
+    ...testPartnershipContact,
     bookingUrl: "https://evil.example/ada/intro",
   });
   await user.click(trigger);

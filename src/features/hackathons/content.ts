@@ -2,27 +2,35 @@ import "server-only";
 
 import { defineQuery } from "next-sanity";
 import { getContentTokens } from "@/config/content-tokens";
-import type { BackfillDocument } from "@/lib/cms-backfill";
 import { loadContent } from "@/lib/cms-content";
-import { CONTENT_IMAGE_PROJECTION } from "@/lib/cms-content-model";
-import { backfillContentImage, keyedItems } from "@/lib/content-backfill";
-import { fillCmsCopy, fillCodeCopy } from "@/lib/content-copy";
+import {
+  CONTENT_IMAGE_PROJECTION,
+  type ContentParser,
+  contentArray,
+  contentError,
+  contentImage,
+  contentObject,
+  contentOptional,
+  contentString,
+  contentText,
+  parseContent,
+  requireObject,
+  requireString,
+} from "@/lib/cms-content-model";
+import { fillCmsCopy } from "@/lib/content-copy";
 import type { HACKATHONS_COPY_QUERY_RESULT } from "@/lib/sanity.types.generated";
 import {
   type HackathonsCopy,
-  hackathonsCopyTemplate,
   hackathonsPageTokens,
-} from "./data/copy";
-import type { MakeathonEdition } from "./data/makeathon";
+  type MakeathonEdition,
+} from "./model";
 
-/**
- * The /hackathons content slice: the `hackathonsCopy` singleton, which
- * holds the page's copy and the Makeathon editions. The ribbon's geometry
- * stays in code (`ribbon.ts`), the league's season in `config/hackathons.ts`
- * and the other hackathons are CMS events; the code fallback is in `data/`.
- */
-
+/** Published page copy; league facts and logos have their own CMS owners. */
 export const HACKATHONS_COPY_QUERY = defineQuery(`*[_id == "hackathonsCopy"][0]{
+  "voiceCaseStudyRef": voiceCaseStudy,
+  "voiceCaseStudy": select(voiceCaseStudy->_type == "caseStudy" => voiceCaseStudy->_id),
+  "outcomeCaseStudyRef": outcomeCaseStudy,
+  "outcomeCaseStudy": select(outcomeCaseStudy->_type == "caseStudy" => outcomeCaseStudy->_id),
   hero{
     eyebrow,
     title,
@@ -83,88 +91,166 @@ export const HACKATHONS_COPY_QUERY = defineQuery(`*[_id == "hackathonsCopy"][0]{
   }
 }`);
 
-const isDay = (value: unknown): value is string =>
-  typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value);
-
-/** An edition the ribbon can draw: every field set, the dates in order. */
-const isEdition = (value: unknown): value is MakeathonEdition => {
-  const edition = (value ?? {}) as Partial<MakeathonEdition>;
-  return Boolean(
-    edition.key &&
-      edition.name &&
-      edition.city &&
-      edition.note &&
-      isDay(edition.start) &&
-      isDay(edition.end) &&
-      edition.end >= edition.start,
-  );
+const day: ContentParser<string> = (value, label, path) => {
+  const text = requireString(value, label, path);
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(text) ||
+    !Number.isFinite(Date.parse(text)) ||
+    new Date(text).toISOString().slice(0, 10) !== text
+  ) {
+    return contentError(
+      label,
+      path,
+      "expected a valid calendar day (YYYY-MM-DD)",
+    );
+  }
+  return text;
 };
+const link = contentObject({ label: contentString, href: contentString });
+const edition: ContentParser<MakeathonEdition> = (value, label, path) => {
+  const item = contentObject({
+    key: contentString,
+    name: contentString,
+    start: day,
+    end: day,
+    city: contentString,
+    note: contentString,
+    link: contentOptional(link),
+  })(value, label, path);
+  if (!/^[a-z0-9-]+$/.test(item.key))
+    contentError(label, `${path}.key`, "expected a stable lowercase key");
+  if (item.end < item.start)
+    contentError(label, path, "edition ends before it starts");
+  if (item.link && !item.link.href.startsWith("https://"))
+    contentError(label, `${path}.link.href`, "expected an https:// address");
+  return item;
+};
+const editions: ContentParser<MakeathonEdition[]> = (value, label, path) => {
+  const items = contentArray(edition)(value, label, path);
+  if (items.length === 0)
+    contentError(label, path, "at least one edition is required");
+  if (new Set(items.map(({ key }) => key)).size !== items.length)
+    contentError(label, path, "edition keys must be unique");
+  if (
+    items.some(
+      (item, index) => index > 0 && item.start < items[index - 1].start,
+    )
+  )
+    contentError(label, path, "editions must be oldest first");
+  return items;
+};
+const figure = contentObject({ value: contentString, label: contentString });
+const copyParser = contentObject({
+  voiceCaseStudy: contentOptional(contentString),
+  outcomeCaseStudy: contentOptional(contentString),
+  hero: contentObject({
+    eyebrow: contentString,
+    title: contentString,
+    lead: contentString,
+    leagueAction: contentString,
+    makeathonAction: contentString,
+    ribbonLabel: contentString,
+    sliderLabel: contentString,
+    nextLabel: contentString,
+    legend: contentObject({
+      makeathon: contentString,
+      league: contentString,
+      partner: contentString,
+    }),
+  }),
+  league: contentObject({
+    eyebrow: contentString,
+    tagline: contentString,
+    lead: contentString,
+    linkLabel: contentString,
+    routeLabel: contentString,
+    makeathonDetail: contentString,
+    partnersTitle: contentString,
+    finale: contentObject({
+      label: contentString,
+      text: contentString,
+      liveLabel: contentString,
+      pastText: contentString,
+      actionLabel: contentString,
+      standingsLabel: contentString,
+      poster: contentImage,
+      championLabel: contentString,
+      champion: contentOptional(contentText),
+      runnersUpLabel: contentString,
+      runnersUp: contentOptional(contentArray(contentText)),
+      recapPhoto: contentOptional(contentImage),
+      recapCaption: contentOptional(contentText),
+    }),
+  }),
+  makeathon: contentObject({
+    eyebrow: contentString,
+    title: contentString,
+    lead: contentString,
+    linkLabel: contentString,
+    figures: contentObject({
+      latest: figure,
+      editions: figure,
+      league: figure,
+    }),
+    editionsTitle: contentString,
+    editionsPhoto: contentImage,
+    editionsPhotoCaption: contentString,
+    editions,
+  }),
+  partners: contentObject({
+    title: contentString,
+    lead: contentString,
+    hostsPrefix: contentString,
+    moreLabel: contentString,
+  }),
+  offer: contentObject({
+    title: contentString,
+    lead: contentString,
+    items: contentArray(contentString),
+    addOns: contentString,
+  }),
+  closing: contentObject({
+    title: contentString,
+    lead: contentString,
+    student: contentObject({
+      audience: contentString,
+      text: contentString,
+      actionLabel: contentString,
+    }),
+    partner: contentObject({ audience: contentString, text: contentString }),
+  }),
+});
 
-/**
- * The /hackathons copy: the CMS over the code copy, site-fact placeholders
- * filled and the page tokens (`{{count}}`, `{{since}}`) left for the page.
- */
+/** Validate a complete singleton without restoring deleted or malformed content. */
+export function parseHackathonsCopy(value: unknown): HackathonsCopy {
+  const label = "the /hackathons copy";
+  const record = requireObject(value, label);
+  for (const field of ["voiceCaseStudy", "outcomeCaseStudy"] as const) {
+    if (record[`${field}Ref`] != null && !record[field])
+      contentError(
+        label,
+        field,
+        "selected case-study reference does not resolve",
+      );
+  }
+  return parseContent(record, copyParser, label);
+}
+
+/** Published copy with site tokens filled and page-derived tokens preserved. */
 export async function getHackathonsCopy(): Promise<HackathonsCopy> {
   const tokens = await getContentTokens();
   return loadContent<HackathonsCopy, HACKATHONS_COPY_QUERY_RESULT>({
-    fallback: fillCodeCopy(
-      hackathonsCopyTemplate,
-      tokens,
-      hackathonsPageTokens,
-    ),
     query: HACKATHONS_COPY_QUERY,
-    tags: ["content:hackathonsCopy"],
+    tags: ["content:hackathonsCopy", "content:caseStudy"],
     label: "the /hackathons copy",
-    mockDocuments: buildHackathonsBackfill,
-    select: (result) => {
-      const copy = fillCmsCopy(
-        result,
-        tokens,
-        "the /hackathons copy",
-        hackathonsPageTokens,
-      ) as Partial<HackathonsCopy> | undefined;
-      // Structural: the ribbon draws the editions as a whole, so an edition
-      // dropped (an unknown placeholder) or unusable keeps the code list.
-      const editions = copy?.makeathon?.editions;
-      const complete =
-        Array.isArray(editions) &&
-        editions.length === (result?.makeathon?.editions?.length ?? -1) &&
-        editions.every(isEdition);
-      return {
-        ...copy,
-        makeathon: {
-          ...copy?.makeathon,
-          editions: complete ? editions : undefined,
-        },
-      };
-    },
-  });
-}
-
-/** The /hackathons copy as a document for `pnpm sanity:backfill`. */
-export function buildHackathonsBackfill(): BackfillDocument[] {
-  const { makeathon, league, ...copy } = hackathonsCopyTemplate;
-  return [
-    {
-      _id: "hackathonsCopy",
-      _type: "hackathonsCopy",
-      ...copy,
-      league: {
-        ...league,
-        finale: {
-          ...league.finale,
-          poster: backfillContentImage(league.finale.poster),
-        },
-      },
-      makeathon: {
-        ...makeathon,
-        editionsPhoto: backfillContentImage(makeathon.editionsPhoto),
-        editions: keyedItems(
-          "makeathonEdition",
-          makeathon.editions,
-          ({ key }) => key,
+    select: (result) =>
+      parseHackathonsCopy(
+        fillCmsCopy(
+          result,
+          tokens,
+          "the /hackathons copy",
+          hackathonsPageTokens,
         ),
-      },
-    },
-  ];
+      ),
+  });
 }

@@ -8,8 +8,8 @@ import {
   legalLinks,
   mainNavigation,
 } from "@/config/navigation";
-import { siteFactsFallback } from "@/config/site-facts";
 import { getSiteFacts } from "@/config/site-settings-content";
+import { settingsFixtureFacts as siteFactsFallback } from "@/lib/cms-fixtures/settings";
 import { Footer } from "./footer";
 
 vi.mock("@/config/site-settings-content", () => ({ getSiteFacts: vi.fn() }));

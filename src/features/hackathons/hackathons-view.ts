@@ -1,12 +1,12 @@
 import type { KeyDateItem } from "@tum.ai/ui-kit";
-import { hackathonFacts } from "@/config/hackathons";
+import type { LeagueMatch } from "@/config/hackathons";
+import type { SiteFacts } from "@/config/site-facts";
 import { formatEventLocation, hostsBeyondTitle } from "@/features/events";
-import { organizationsWithKeys } from "@/features/partners";
+
 import type { ContentImage } from "@/lib/cms-content-model";
 import { fillPageTokens } from "@/lib/content-copy";
 import { munichIsoDate } from "@/lib/munich-time";
 import type { Event } from "@/lib/types";
-import type { HackathonsCopy } from "./data/copy";
 import {
   buildMarks,
   type HackathonMark,
@@ -14,6 +14,7 @@ import {
   nextMark,
   pastMarks,
 } from "./marks";
+import type { HackathonsCopy } from "./model";
 import {
   dayNumber,
   formatDayRange,
@@ -96,15 +97,19 @@ const monthYear = (day: string) =>
  */
 export function hackathonsView({
   copy,
+  facts,
+  logos,
   events,
   now,
 }: {
   copy: HackathonsCopy;
+  facts: SiteFacts["hackathons"];
+  logos: readonly LeaguePartnerLogo[];
   events: readonly Event[];
   now: Date;
 }) {
   const today = munichIsoDate(now);
-  const { league } = hackathonFacts;
+  const { league } = facts;
   const marks = buildMarks({
     editions: copy.makeathon.editions,
     matches: league.matches,
@@ -152,7 +157,7 @@ export function hackathonsView({
         since,
       }),
       leagueUrl: league.url,
-      makeathonUrl: hackathonFacts.makeathonUrl,
+      makeathonUrl: facts.makeathonUrl,
       // The hero's live line: the finale until it ends, then its champion.
       line:
         finale && finaleAhead
@@ -185,7 +190,7 @@ export function hackathonsView({
       ),
       // Newest first, as a record reads.
       editions: [...copy.makeathon.editions].reverse(),
-      url: hackathonFacts.makeathonUrl,
+      url: facts.makeathonUrl,
     },
     partners: {
       ...copy.partners,
@@ -202,11 +207,11 @@ export function hackathonsView({
       ...copy.league,
       name: league.name,
       url: league.url,
-      dates: leagueDates(today, copy.league.makeathonDetail),
-      season: seasonStops(today, copy.league.makeathonDetail),
+      dates: leagueDates(league.matches, today, copy.league.makeathonDetail),
+      season: seasonStops(league.matches, today, copy.league.makeathonDetail),
       progress: route.progress,
       finale,
-      partners: leaguePartners(),
+      partners: logos,
     },
     offer: copy.offer,
     closing: {
@@ -313,8 +318,7 @@ export function finaleView(
 }
 
 /** The state of each match on `today`: played, the next one, or to come. */
-function matchStates(today: string) {
-  const { matches } = hackathonFacts.league;
+function matchStates(matches: readonly LeagueMatch[], today: string) {
   const nextIndex = matches.findIndex(({ end }) => end >= today);
   return matches.map((match, index) => ({
     match,
@@ -327,8 +331,12 @@ function matchStates(today: string) {
 }
 
 /** The season's matches as a register, each with its state on `today`. */
-function leagueDates(today: string, makeathonDetail: string): KeyDateItem[] {
-  return matchStates(today).map(({ match, state }) => ({
+function leagueDates(
+  matches: readonly LeagueMatch[],
+  today: string,
+  makeathonDetail: string,
+): KeyDateItem[] {
+  return matchStates(matches, today).map(({ match, state }) => ({
     id: match.key,
     label: `${match.label}, ${match.city}`,
     ...("makeathon" in match && match.makeathon
@@ -342,9 +350,12 @@ function leagueDates(today: string, makeathonDetail: string): KeyDateItem[] {
 }
 
 /** The season's matches in order, for the route (see `layoutSeason`). */
-function seasonStops(today: string, makeathonDetail: string): SeasonStopView[] {
-  const { matches } = hackathonFacts.league;
-  return matchStates(today).map(({ match, state }, index) => ({
+function seasonStops(
+  matches: readonly LeagueMatch[],
+  today: string,
+  makeathonDetail: string,
+): SeasonStopView[] {
+  return matchStates(matches, today).map(({ match, state }, index) => ({
     key: match.key,
     label: match.label,
     city: match.city,
@@ -357,22 +368,4 @@ function seasonStops(today: string, makeathonDetail: string): SeasonStopView[] {
       : {}),
     finale: index === matches.length - 1,
   }));
-}
-
-/** The league's partners that have artwork for dark bands, in config order. */
-function leaguePartners(): LeaguePartnerLogo[] {
-  return organizationsWithKeys(hackathonFacts.league.partners).flatMap(
-    ({ name, href, logoOnDark }) =>
-      logoOnDark && !logoOnDark.symbolOnly
-        ? [
-            {
-              name,
-              src: logoOnDark.src,
-              aspect:
-                logoOnDark.aspectRatio ?? logoOnDark.width / logoOnDark.height,
-              ...(href ? { href } : {}),
-            },
-          ]
-        : [],
-  );
 }

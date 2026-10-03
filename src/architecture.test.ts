@@ -69,11 +69,59 @@ type ModuleImport = {
   specifier: string;
   /** Erased by the compiler (`import type`, `{ type A }` only, `import("x").T`). */
   typeOnly: boolean;
+  /** Only import() can cross from production code into an opt-in mock loader. */
+  dynamic?: boolean;
+  /** The import occurs inside the literal build-time mock condition's true branch. */
+  mockGated?: boolean;
 };
 
 const namedTypeOnly = (
   elements: ts.NodeArray<ts.ImportSpecifier | ts.ExportSpecifier>,
 ) => elements.length > 0 && elements.every((element) => element.isTypeOnly);
+
+/** Exact environment access, so a helper cannot hide a build-time fixture gate. */
+function isEnvironmentField(node: ts.Expression, field: string): boolean {
+  return (
+    ts.isPropertyAccessExpression(node) &&
+    node.name.text === field &&
+    ts.isPropertyAccessExpression(node.expression) &&
+    node.expression.name.text === "env" &&
+    ts.isIdentifier(node.expression.expression) &&
+    node.expression.expression.text === "process"
+  );
+}
+
+function isMockCondition(node: ts.Expression): boolean {
+  return (
+    ts.isBinaryExpression(node) &&
+    node.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken &&
+    ts.isBinaryExpression(node.left) &&
+    node.left.operatorToken.kind === ts.SyntaxKind.EqualsEqualsEqualsToken &&
+    isEnvironmentField(node.left.left, "USE_MOCK_CMS") &&
+    ts.isStringLiteral(node.left.right) &&
+    node.left.right.text === "1" &&
+    ts.isPrefixUnaryExpression(node.right) &&
+    node.right.operator === ts.SyntaxKind.ExclamationToken &&
+    isEnvironmentField(node.right.operand, "VERCEL")
+  );
+}
+
+/** An import in the false branch is never guarded, even under the same condition. */
+function hasMockGate(node: ts.Node): boolean {
+  for (
+    let child = node, parent = node.parent;
+    parent;
+    child = parent, parent = parent.parent
+  ) {
+    if (
+      ts.isIfStatement(parent) &&
+      child === parent.thenStatement &&
+      isMockCondition(parent.expression)
+    )
+      return true;
+  }
+  return false;
+}
 
 /**
  * Every import of `source`, from its syntax tree: static imports and
@@ -85,7 +133,7 @@ function moduleImports(source: string): ModuleImport[] {
     "module.tsx",
     source,
     ts.ScriptTarget.Latest,
-    false,
+    true,
     ts.ScriptKind.TSX,
   );
   const imports: ModuleImport[] = [];
@@ -139,7 +187,12 @@ function moduleImports(source: string): ModuleImport[] {
         callee.kind === ts.SyntaxKind.ImportKeyword ||
         (ts.isIdentifier(callee) && callee.text === "require");
       if (loads && argument && ts.isStringLiteralLike(argument)) {
-        imports.push({ specifier: argument.text, typeOnly: false });
+        imports.push({
+          specifier: argument.text,
+          typeOnly: false,
+          dynamic: callee.kind === ts.SyntaxKind.ImportKeyword,
+          mockGated: hasMockGate(node),
+        });
       }
     } else if (
       ts.isImportTypeNode(node) &&
@@ -243,7 +296,39 @@ const isPageModule = (to: Module) =>
 const isStylesheet = (to: Module) => to.path.endsWith(".css");
 
 /** Why `from` may not import `to`, or null when the import is allowed. */
-function importViolation(from: Module, to: Module): string | null {
+function importViolation(
+  from: Module,
+  to: Module,
+  imported: Pick<ModuleImport, "typeOnly" | "dynamic" | "mockGated"> = {
+    typeOnly: false,
+  },
+): string | null {
+  const fromFixture = from.path.startsWith("lib/cms-fixtures/");
+  const toFixture = to.path.startsWith("lib/cms-fixtures/");
+  const fromTest = /\.test\.tsx?$/.test(from.path);
+  const mockLoaders = ["lib/cms-content-mock.ts", "lib/mock-cms.ts"];
+  const fromMock = mockLoaders.includes(from.path);
+  if (toFixture) {
+    return fromFixture || fromTest || fromMock
+      ? null
+      : "CMS fixtures belong only to tests and opt-in mock loaders";
+  }
+  if (fromFixture) {
+    // Erased domain types check fixture shape without loading domain code.
+    return imported.typeOnly && ["features", "config", "lib"].includes(to.layer)
+      ? null
+      : "CMS fixtures may not load production modules at runtime";
+  }
+  if (mockLoaders.includes(to.path)) {
+    if (fromTest || fromMock) return null;
+    const entry =
+      (from.path === "lib/cms-content.ts" &&
+        to.path === "lib/cms-content-mock.ts") ||
+      (from.path === "lib/sanity.ts" && to.path === "lib/mock-cms.ts");
+    return entry && imported.dynamic && imported.mockGated
+      ? null
+      : "load CMS mocks dynamically inside the literal USE_MOCK_CMS gate";
+  }
   if (
     from.path.startsWith("components/ds/") ||
     to.path.startsWith("components/ds/")
@@ -595,6 +680,81 @@ function serverOnlyChains(
   return chains;
 }
 
+describe("CMS fixture isolation", () => {
+  test.each([
+    ["features/home/home-page.tsx", "lib/cms-fixtures/index.ts"],
+    ["lib/cms-content-model.ts", "lib/cms-fixtures/types.ts"],
+    ["sanity/schemas/content/home-copy.ts", "lib/cms-fixtures/community.ts"],
+    ["lib/cms-fixtures/community.ts", "features/community/content.ts"],
+  ])("rejects runtime import %s → %s", (from, to) => {
+    expect(importViolation(moduleOf(from), moduleOf(to))).not.toBeNull();
+  });
+
+  test("allows fixture shape checks with erased domain types only", () => {
+    expect(
+      importViolation(
+        moduleOf("lib/cms-fixtures/settings.ts"),
+        moduleOf("config/site-facts.ts"),
+        { typeOnly: true },
+      ),
+    ).toBeNull();
+    expect(
+      importViolation(
+        moduleOf("lib/cms-fixtures/programmes.ts"),
+        moduleOf("features/e-lab/data/copy.ts"),
+        { typeOnly: true },
+      ),
+    ).toBeNull();
+    expect(
+      importViolation(
+        moduleOf("config/site-facts.ts"),
+        moduleOf("lib/cms-fixtures/types.ts"),
+        { typeOnly: true },
+      ),
+    ).not.toBeNull();
+  });
+
+  test.each([
+    ["lib/cms-fixtures/index.ts", "lib/cms-fixtures/settings.ts"],
+    ["lib/cms-content-mock.ts", "lib/cms-fixtures/index.ts"],
+    ["lib/mock-cms.ts", "lib/cms-content-mock.ts"],
+    ["features/legal/imprint-page.test.tsx", "lib/cms-fixtures/settings.ts"],
+  ])("allows test support import %s → %s", (from, to) => {
+    expect(importViolation(moduleOf(from), moduleOf(to))).toBeNull();
+  });
+
+  test.each([
+    ['import "./cms-content-mock";', false],
+    ['const mock = import("./cms-content-mock");', false],
+    [
+      'if (process.env.USE_MOCK_CMS === "1") { import("./cms-content-mock"); }',
+      false,
+    ],
+    [
+      'if (process.env.USE_MOCK_CMS === "1" && !process.env.VERCEL) {} else { import("./cms-content-mock"); }',
+      false,
+    ],
+    [
+      'if (process.env.USE_MOCK_CMS === "1" && !process.env.VERCEL) { require("./cms-content-mock"); }',
+      false,
+    ],
+    [
+      'if (process.env.USE_MOCK_CMS === "1" && !process.env.VERCEL) { import("./cms-content-mock"); }',
+      true,
+    ],
+  ])("validates the opt-in fixture gate in %s", (source, allowed) => {
+    const imported = moduleImports(source)[0];
+    expect(imported).toBeDefined();
+    expect(
+      importViolation(
+        moduleOf("lib/cms-content.ts"),
+        moduleOf("lib/cms-content-mock.ts"),
+        imported,
+      ) === null,
+    ).toBe(allowed);
+  });
+});
+
 describe("import rules", () => {
   test("every local import follows the layer rules", () => {
     const violations: string[] = [];
@@ -602,7 +762,10 @@ describe("import rules", () => {
 
     for (const file of sourceFiles(srcDir)) {
       const from = moduleOf(relative(srcDir, file));
-      for (const specifier of localSpecifiers(readFileSync(file, "utf8"))) {
+      for (const imported of moduleImports(readFileSync(file, "utf8")).filter(
+        ({ specifier }) => isLocal(specifier),
+      )) {
+        const { specifier } = imported;
         const target = resolveImport(file, specifier);
         if (!target) {
           violations.push(`${from.path} → ${specifier} (does not resolve)`);
@@ -612,6 +775,7 @@ describe("import rules", () => {
         const reason = importViolation(
           from,
           moduleOf(relative(srcDir, target)),
+          imported,
         );
         if (reason) violations.push(`${from.path} → ${specifier} (${reason})`);
       }

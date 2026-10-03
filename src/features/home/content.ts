@@ -2,37 +2,24 @@ import "server-only";
 
 import { defineQuery } from "next-sanity";
 import { getContentTokens } from "@/config/content-tokens";
-import { departments } from "@/features/community";
-import {
-  buildMemberStoriesBackfill,
-  memberStoryKey,
-} from "@/features/community/server";
-import { buildVentureBackfill } from "@/features/e-lab/server";
-import type { BackfillDocument } from "@/lib/cms-backfill";
 import { loadContent } from "@/lib/cms-content";
-import { CONTENT_IMAGE_PROJECTION, whole } from "@/lib/cms-content-model";
-import { getDepartments } from "@/lib/community-content";
-import { backfillContentImage, keyedItems } from "@/lib/content-backfill";
-import { fillCmsCopy, fillCodeCopy } from "@/lib/content-copy";
-import { personId } from "@/lib/person-content";
+import {
+  CONTENT_IMAGE_PROJECTION,
+  contentArray,
+  contentError,
+  contentImage,
+  contentObject,
+  contentString,
+  parseContent,
+  requireEnum,
+  requireObject,
+  requireString,
+} from "@/lib/cms-content-model";
+import { getDepartments, parseMemberEvidence } from "@/lib/community-content";
+import { fillCmsCopy } from "@/lib/content-copy";
 import type { HOME_COPY_QUERY_RESULT } from "@/lib/sanity.types.generated";
 import { getSafeSitePath } from "@/lib/security";
-import {
-  type HomeCopy,
-  homeCopyTemplate,
-  homePageTokens,
-  ledgerKeys,
-  type RoomPhoto,
-} from "./data/homepage";
-
-/**
- * The homepage content slice: the `homeCopy` singleton (hero, mission,
- * ledger labels, programs, room photos, join band, partner band). The
- * ledger figures are the site facts (`home-view.ts`); the department count
- * comes from the shared department list (`lib/community-content.ts`); the
- * quotes reference `person` documents. The code fallback is
- * `data/homepage.ts`.
- */
+import { type HomeCopy, homePageTokens, ledgerKeys } from "./data/homepage";
 
 export const HOME_COPY_QUERY = defineQuery(`*[_id == "homeCopy"][0]{
   hero{
@@ -57,185 +44,153 @@ export const HOME_COPY_QUERY = defineQuery(`*[_id == "homeCopy"][0]{
   room{
     title,
     lead,
-    "photos": photos[]{ "image": image${CONTENT_IMAGE_PROJECTION}, caption }
+    "photos": photos[]{ "key": _key, "image": image${CONTENT_IMAGE_PROJECTION}, caption }
   },
   join{
     title,
     lead,
     stepsTitle,
     steps[]{ title, dates },
-    quote{ "name": person->name, excerpt }
+    quote{ "key": person->key, "name": person->name, "story": person->story, "placement": person->placement, excerpt }
   },
-  partners{ title, lead, moreLabel, "quote": quote->key }
+  partners{ title, lead, moreLabel, "quote": quote->key, "quotePlacement": quote->placement }
 }`);
 
-/** Everything the homepage renders from the slice. */
-export type HomeContent = {
-  /** Site-fact placeholders filled; page tokens left for `homeView`. */
-  copy: HomeCopy;
-  /** How many departments /community lists. */
-  departmentCount: number;
-};
-
-type Filled = Partial<Record<keyof HomeCopy, Record<string, unknown>>> & {
-  ledger?: { key?: string; label?: string; note?: string }[];
-};
-
-/**
- * The join band's quote as a whole: the excerpt with the member it
- * references, or nothing (the code quote shows). An excerpt whose person
- * did not resolve is never attributed to the code member.
- */
-function joinQuote(quote: unknown) {
-  const { name, excerpt } = (quote ?? {}) as {
-    name?: string;
-    excerpt?: string;
-  };
-  return name && excerpt ? whole({ name, excerpt }) : undefined;
-}
-
-/**
- * A filled CMS copy, with incomplete list items dropped and the join quote
- * whole or left out. Exported for tests.
- */
-export function selectHomeCopy(copy: Filled | null) {
-  if (!copy) return null;
-  const photos = (copy.room?.photos ?? []) as {
-    image?: RoomPhoto;
-    caption?: string;
-  }[];
-  return {
-    ...copy,
-    ledger: (copy.ledger ?? []).filter(
-      (row) =>
-        (ledgerKeys as readonly unknown[]).includes(row.key) &&
-        row.label &&
-        row.note,
+/** Published home copy and its derived department figure. */
+export type HomeContent = { copy: HomeCopy; departmentCount: number };
+const homeCopyParser = contentObject({
+  hero: contentObject({
+    title: contentString,
+    lead: contentString,
+    partnersLabel: contentString,
+    photos: contentArray(contentImage),
+  }),
+  mission: contentObject({ statement: contentString, body: contentString }),
+  ledger: contentArray(
+    contentObject({
+      key: (value, label, path) => requireEnum(value, ledgerKeys, label, path),
+      label: contentString,
+      note: contentString,
+    }),
+  ),
+  programs: contentObject({
+    title: contentString,
+    lead: contentString,
+    items: contentArray(
+      contentObject({
+        id: contentString,
+        title: contentString,
+        description: contentString,
+        href: (value, label, path) => {
+          const href = requireString(value, label, path);
+          return (
+            getSafeSitePath(href) ??
+            contentError(label, path, "requires a safe site path")
+          );
+        },
+        image: contentImage,
+      }),
     ),
-    programs: copy.programs && {
-      ...copy.programs,
-      items: (
-        (copy.programs.items ?? []) as Partial<
-          HomeCopy["programs"]["items"][number]
-        >[]
-      ).filter(
-        (item) =>
-          item.id &&
-          item.title &&
-          item.description &&
-          getSafeSitePath(item.href) &&
-          item.image,
-      ),
+  }),
+  room: contentObject({
+    title: contentString,
+    lead: contentString,
+    photos: contentArray((value, label, path) => {
+      const photo = contentObject({
+        key: contentString,
+        image: contentImage,
+        caption: contentString,
+      })(value, label, path);
+      return { ...photo.image, key: photo.key, caption: photo.caption };
+    }),
+  }),
+  join: contentObject({
+    title: contentString,
+    lead: contentString,
+    stepsTitle: contentString,
+    steps: contentArray(
+      contentObject({ title: contentString, dates: contentString }),
+    ),
+    quote: (value, label, path) => {
+      const quote = requireObject(value, label, path);
+      const evidence = parseMemberEvidence(quote, label, path);
+      if (!evidence)
+        return contentError(label, path, "requires a member quote");
+      return evidence;
     },
-    room: copy.room && {
-      ...copy.room,
-      photos: photos.flatMap(({ image, caption }) =>
-        image && caption ? [{ ...image, caption }] : [],
-      ),
-    },
-    join: copy.join && {
-      ...copy.join,
-      steps: (
-        (copy.join.steps ?? []) as { title?: string; dates?: string }[]
-      ).filter((step) => step.title && step.dates),
-      quote: joinQuote(copy.join.quote),
-    },
-  };
+  }),
+  partners: (value, label, path) => {
+    const source = requireObject(value, label, path);
+    if (source.quotePlacement !== "e-lab-testimonial")
+      return contentError(
+        label,
+        `${path}.quote`,
+        "requires a resolved E-Lab testimonial",
+      );
+    return contentObject({
+      title: contentString,
+      lead: contentString,
+      moreLabel: contentString,
+      quote: contentString,
+    })(source, label, path);
+  },
+});
+
+/** The quote is a plain complete group; CMS text cannot acquire a local author. */
+export function selectHomeCopy(value: unknown): HomeCopy {
+  const copy = parseContent(value, homeCopyParser, "the homepage copy");
+  if (copy.hero.photos.length < 1 || copy.hero.photos.length > 5)
+    contentError("the homepage copy", "hero.photos", "requires 1 to 5 photos");
+  if (copy.ledger.length < 3 || copy.ledger.length > 8)
+    contentError("the homepage copy", "ledger", "requires 3 to 8 figures");
+  if (copy.programs.items.length < 1 || copy.programs.items.length > 7)
+    contentError(
+      "the homepage copy",
+      "programs.items",
+      "requires 1 to 7 programs",
+    );
+  if (copy.room.photos.length !== 5)
+    contentError(
+      "the homepage copy",
+      "room.photos",
+      "requires exactly 5 photos for the spread",
+    );
+  if (copy.join.steps.length < 1 || copy.join.steps.length > 4)
+    contentError(
+      "the homepage copy",
+      "join.steps",
+      "requires 1 to 4 recruiting steps",
+    );
+  for (const [path, keys] of [
+    ["ledger", copy.ledger.map(({ key }) => key)],
+    ["programs.items", copy.programs.items.map(({ id }) => id)],
+    ["room.photos", copy.room.photos.map(({ key }) => key)],
+    ["join.steps", copy.join.steps.map(({ title }) => title)],
+  ] as const) {
+    if (new Set(keys).size !== keys.length)
+      contentError(
+        "the homepage copy",
+        path,
+        "item identifiers must be unique",
+      );
+  }
+  return copy;
 }
 
-/** The homepage copy and the department count: the CMS over the code copy. */
+/** Published homepage copy; the department collection may deliberately be empty. */
 export async function getHomeContent(): Promise<HomeContent> {
   const tokens = await getContentTokens();
   const [copy, teams] = await Promise.all([
     loadContent<HomeCopy, HOME_COPY_QUERY_RESULT>({
-      fallback: fillCodeCopy(homeCopyTemplate, tokens, homePageTokens),
       query: HOME_COPY_QUERY,
       tags: ["content:homeCopy", "content:person"],
       label: "the homepage copy",
-      // The quotes reference people from the member stories and E-Lab slices.
-      mockDocuments: () => [
-        ...buildHomeBackfill(),
-        ...buildMemberStoriesBackfill(),
-        ...buildVentureBackfill(),
-      ],
       select: (result) =>
         selectHomeCopy(
-          fillCmsCopy(
-            result,
-            tokens,
-            "the homepage copy",
-            homePageTokens,
-          ) as Filled | null,
+          fillCmsCopy(result, tokens, "the homepage copy", homePageTokens),
         ),
     }),
-    getDepartments(departments, tokens),
+    getDepartments(tokens),
   ]);
   return { copy, departmentCount: teams.length };
-}
-
-/** A strong reference to a person document of the backfill. */
-const personReference = (...id: Parameters<typeof personId>) => ({
-  _type: "reference",
-  _ref: personId(...id),
-});
-
-/**
- * The homepage copy as a document for `pnpm sanity:backfill`. Its quotes
- * reference the people the member stories and E-Lab slices backfill.
- */
-export function buildHomeBackfill(): BackfillDocument[] {
-  const { hero, ledger, programs, room, join, partners, ...copy } =
-    homeCopyTemplate;
-  return [
-    {
-      _id: "homeCopy",
-      _type: "homeCopy",
-      ...copy,
-      hero: {
-        ...hero,
-        photos: keyedItems(
-          "image",
-          hero.photos.map((photo) => backfillContentImage(photo)),
-        ),
-      },
-      ledger: keyedItems("ledgerRow", ledger, ({ key }) => key),
-      programs: {
-        ...programs,
-        items: keyedItems(
-          "program",
-          programs.items.map(({ id, image, ...program }) => ({
-            key: id,
-            ...program,
-            image: backfillContentImage(image),
-          })),
-          ({ key }) => key,
-        ),
-      },
-      room: {
-        ...room,
-        photos: keyedItems(
-          "roomPhoto",
-          room.photos.map(({ caption, ...image }) => ({
-            image: backfillContentImage(image),
-            caption,
-          })),
-        ),
-      },
-      join: {
-        ...join,
-        steps: keyedItems("recruitingStep", join.steps),
-        quote: {
-          person: personReference(
-            "member-story",
-            memberStoryKey(join.quote.name),
-          ),
-          excerpt: join.quote.excerpt,
-        },
-      },
-      partners: {
-        ...partners,
-        quote: personReference("e-lab-testimonial", partners.quote),
-      },
-    },
-  ];
 }

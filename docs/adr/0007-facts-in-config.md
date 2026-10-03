@@ -1,7 +1,14 @@
 # 0007: Site facts live once in config
 
-- **Status:** Accepted
+- **Status:** Accepted; editable fact storage superseded by [ADR 0009](0009-cms-content-source.md)
 - **Date:** 2026-09-25 (redesign, #262); extended 2026-09-26 to 2026-09-28 (#267, W2 streams)
+
+## Current ownership
+
+As of 2026-10-03, editable facts live once in CMS settings/windows/campaigns and are read through
+`src/config` readers. Config keeps types, derivation and reviewed code-only concerns, with no
+local editorial fallback. Required CMS facts fail visibly if missing/malformed. The original
+centralization rationale below remains; use ADR 0009 and the `site-facts` skill for current work.
 
 ## Context
 

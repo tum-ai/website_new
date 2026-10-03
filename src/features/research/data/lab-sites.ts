@@ -1,12 +1,10 @@
-import { organizationByKey } from "@/features/partners";
 import type { Organization } from "@/lib/people-and-logos";
-import { rexOwnOrganizations } from "./rex";
 
 /**
  * Where the institutions on /research are, for the hero globe. One site per
  * city: labs a few kilometres apart would draw one marker anyway. Each site
  * lists the organisations there that the research projects, the research
- * partners and the REX institutions name. The code fallback of the
+ * partners and the REX institutions name. The CMS model of the
  * `labSite` documents (`../content.ts`).
  */
 
@@ -29,89 +27,3 @@ export type LabSite = {
   /** The organisations here, in the Studio's order. */
   organizations: LabSiteOrganization[];
 };
-
-const rexOwnByKey = new Map(
-  rexOwnOrganizations.map((organization) => [organization.key, organization]),
-);
-
-/** The organisation with `key`, from the partners' table or the REX list. */
-function siteOrganization(key: string): LabSiteOrganization {
-  const { name, shortName } = rexOwnByKey.get(key) ?? organizationByKey(key);
-  return { key, name, ...(shortName ? { shortName } : {}) };
-}
-
-/** A lab site as code writes it: its organisations by key. */
-type LabSiteTemplate = Omit<LabSite, "organizations"> & {
-  organizations: string[];
-};
-
-/** The lab sites, their organisations by key (the backfill references them). */
-export const labSiteTemplates: readonly LabSiteTemplate[] = [
-  {
-    id: "munich",
-    city: "Munich",
-    // TUM main campus.
-    location: [48.1497, 11.5679],
-    home: true,
-    organizations: [
-      "tum",
-      "tum-camp",
-      "helmholtz-munich",
-      "lmu",
-      "lmu-klinikum",
-      "klinikum-rechts-der-isar",
-      // MI4People gGmbH, Maxhofstraße 76, München (its imprint).
-      "mi4people",
-    ],
-  },
-  {
-    id: "boston",
-    city: "Boston",
-    // MIT; Harvard is 3 km away.
-    location: [42.3601, -71.0942],
-    organizations: ["mit", "harvard-university", "harvard-medical-school"],
-  },
-  {
-    id: "cambridge",
-    city: "Cambridge",
-    location: [52.2043, 0.1149],
-    organizations: ["university-of-cambridge"],
-  },
-  {
-    id: "san-jose",
-    city: "San Jose",
-    // IBM Research Almaden. The research partner IBM sits at both of its
-    // labs TUM.ai works with, here and in Zurich.
-    location: [37.2106, -121.8077],
-    organizations: ["ibm-almaden", "ibm"],
-  },
-  {
-    id: "zurich",
-    city: "Zurich",
-    // IBM Research Europe in Rüschlikon: the number-token-loss paper
-    // (ICML 2025) is with its Zurich lab.
-    location: [47.3163, 8.5528],
-    organizations: ["ibm-research", "ibm"],
-  },
-  {
-    id: "hamburg",
-    city: "Hamburg",
-    // Flower Labs' headquarters (flower.ai/imprint).
-    location: [53.5745, 10.0265],
-    organizations: ["flower-labs"],
-  },
-  {
-    id: "paris",
-    city: "Paris",
-    // TODO(content): which Inria centre hosts REX offers? Paris for now.
-    location: [48.8566, 2.3522],
-    organizations: ["inria"],
-  },
-];
-
-export const labSites: LabSite[] = labSiteTemplates.map(
-  ({ organizations, ...site }) => ({
-    ...site,
-    organizations: organizations.map(siteOrganization),
-  }),
-);

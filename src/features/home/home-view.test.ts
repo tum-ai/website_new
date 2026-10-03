@@ -1,66 +1,47 @@
-import { expect, test } from "vitest";
-import { contentTokens } from "@/config/content-tokens";
-import { officialMembers } from "@/config/organization";
-import { siteFactsFallback } from "@/config/site-facts";
-import { getRexInstitutions } from "@/features/research/server";
-import { fillCodeCopy } from "@/lib/content-copy";
-import { homeCopyTemplate, homePageTokens } from "./data/homepage";
+import { afterAll, beforeAll, expect, test, vi } from "vitest";
+import { settingsFixtureFacts } from "@/lib/cms-fixtures/settings";
+import { getHomeContent } from "./content";
+import type { HomeCopy } from "./data/homepage";
 import { homeView } from "./home-view";
 
-const copy = fillCodeCopy(homeCopyTemplate, contentTokens, homePageTokens);
-const rexInstitutions = await getRexInstitutions();
+let copy: HomeCopy;
+beforeAll(async () => {
+  vi.stubEnv("USE_MOCK_CMS", "1");
+  vi.stubEnv("VERCEL", "");
+  copy = (await getHomeContent()).copy;
+});
+afterAll(() => vi.unstubAllEnvs());
 const sources = {
-  facts: siteFactsFallback,
-  departmentCount: 7,
-  rexInstitutions,
+  facts: settingsFixtureFacts,
+  departmentCount: 2,
+  rexInstitutions: [{ shortName: "Example Lab" }],
 };
-
-test("the ledger takes its labels from the copy and its figures from the facts", () => {
+test("ledger labels come from copy and figures from CMS settings", () => {
   const { ledger } = homeView(copy, sources);
-  expect(ledger.map(({ label }) => label)).toStrictEqual(
-    homeCopyTemplate.ledger.map(({ label }) => label),
+  expect(ledger.map(({ label }) => label)).toEqual(
+    copy.ledger.map(({ label }) => label),
   );
   expect(ledger.find(({ label }) => label === "Members")).toMatchObject({
-    value: officialMembers,
+    value: 30,
     suffix: "+",
   });
 });
-
-test("the programs name the REX institutions and count the departments", () => {
+test("program descriptions derive department and institution labels", () => {
   const { programs } = homeView(copy, sources);
-  const text = programs.map(({ description }) => String(description)).join(" ");
-  expect(text).toContain("seven departments");
-  for (const { shortName } of rexInstitutions)
-    expect(text).toContain(shortName);
-  expect(text).not.toMatch(/\{\{/);
-  expect(
-    programs.find(({ id }) => id === "entrepreneurship")?.image,
-  ).toStrictEqual({
-    src: "/assets/homepage/elab.webp",
-    position: "50% 40%",
-  });
-});
-
-test("the ledger follows edited facts", () => {
-  const facts = {
-    ...siteFactsFallback,
-    organization: { ...siteFactsFallback.organization, nationalities: 99 },
-  };
-  const { ledger } = homeView(copy, { ...sources, facts });
-  expect(ledger).toContainEqual(
-    expect.objectContaining({ value: 99, suffix: "+" }),
+  expect(programs[0]?.description).toBe(
+    "Members work in two teams with Example Lab.",
   );
+  expect(programs[0]?.image).toEqual({ src: "/assets/fixtures/photo.svg" });
 });
-
-test("the funding figure keeps the fact's decimals", () => {
-  const withFunding = (ventureFundingMillions: number) =>
+test("the funding ledger preserves fact precision", () => {
+  const funding = (value: number) =>
     homeView(copy, {
       ...sources,
       facts: {
-        ...siteFactsFallback,
-        eLab: { ...siteFactsFallback.eLab, ventureFundingMillions },
+        ...sources.facts,
+        eLab: { ...sources.facts.eLab, ventureFundingMillions: value },
       },
-    }).ledger.find(({ value }) => value === ventureFundingMillions);
-  expect(withFunding(7.5)).toMatchObject({ prefix: "€", decimals: 1 });
-  expect(withFunding(12)).toMatchObject({ prefix: "€", decimals: 0 });
+    }).ledger.find(({ label }) => label === "Funding");
+  expect(funding(7.5)).toMatchObject({ value: 7.5, prefix: "€", decimals: 1 });
+  expect(funding(12)).toMatchObject({ value: 12, prefix: "€", decimals: 0 });
 });

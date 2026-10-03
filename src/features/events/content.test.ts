@@ -1,50 +1,58 @@
-import { afterEach, describe, expect, test, vi } from "vitest";
-import { contentTokens } from "@/config/content-tokens";
-import { fetchContent } from "@/lib/cms-content";
-import { fillCodeCopy } from "@/lib/content-copy";
-import type { EVENTS_COPY_QUERY_RESULT } from "@/lib/sanity.types.generated";
-import {
-  buildEventsBackfill,
-  EVENTS_COPY_QUERY,
-  getEventsCopy,
-} from "./content";
-import { eventsCopyTemplate, eventsPageTokens } from "./data/copy";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { evaluateMockQuery } from "@/lib/cms-content-mock";
+import { eventsCopyFixture } from "@/lib/cms-fixtures/hackathons";
+import type { CmsFixtureDocument } from "@/lib/cms-fixtures/types";
+import { EVENTS_COPY_QUERY, getEventsCopy } from "./content";
 
-/**
- * Parity: the backfill document, read back through the real GROQ query
- * under the mock CMS, renders exactly what the code renders.
- */
-afterEach(() => {
-  vi.unstubAllEnvs();
-});
-
-function useSource(source: "code" | "sanity") {
-  vi.stubEnv("CMS_CONTENT_SOURCE", source);
+const mock = vi.hoisted(() => ({ documents: [] as CmsFixtureDocument[] }));
+vi.mock("@/config/content-tokens", () => ({
+  getContentTokens: async () => ({}),
+}));
+vi.mock("@/lib/cms-content-mock", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/cms-content-mock")>()),
+  getMockContentDocuments: () => mock.documents,
+}));
+beforeEach(() => {
   vi.stubEnv("USE_MOCK_CMS", "1");
   vi.stubEnv("VERCEL", "");
-}
+  mock.documents = [
+    {
+      _id: "eventsCopy",
+      _type: "eventsCopy",
+      ...structuredClone(eventsCopyFixture),
+    },
+  ];
+});
+afterEach(() => vi.unstubAllEnvs());
 
-const code = fillCodeCopy(eventsCopyTemplate, contentTokens, eventsPageTokens);
-
-describe("the /events content slice", () => {
-  test("code source: the code copy", async () => {
-    useSource("code");
-    await expect(getEventsCopy()).resolves.toStrictEqual(code);
+describe("published events copy", () => {
+  test("the real query reads editor content and leaves page tokens for sections", async () => {
+    expect(
+      await evaluateMockQuery(EVENTS_COPY_QUERY, {}, mock.documents),
+    ).toEqual(eventsCopyFixture);
+    expect(await getEventsCopy()).toEqual(eventsCopyFixture);
   });
-
-  test("the mock serves the backfill through the real query", async () => {
-    useSource("sanity");
-    const result = await fetchContent<EVENTS_COPY_QUERY_RESULT>({
-      query: EVENTS_COPY_QUERY,
-      tags: [],
-      mockDocuments: buildEventsBackfill,
-      label: "parity",
-    });
-    expect(result?.closing?.title).toBe(eventsCopyTemplate.closing.title);
+  test("missing singleton fails instead of restoring local wording", async () => {
+    mock.documents = [];
+    await expect(getEventsCopy()).rejects.toThrow(
+      /events copy.*required object/,
+    );
   });
-
-  test("sanity source over the backfill: the same copy", async () => {
-    useSource("sanity");
-    await expect(getEventsCopy()).resolves.toStrictEqual(code);
+  test.each([null, "", 42])(
+    "an invalid required field %s fails",
+    async (emptyLead) => {
+      mock.documents[0].hero = { emptyLead };
+      await expect(getEventsCopy()).rejects.toThrow(/hero.emptyLead/);
+    },
+  );
+  test("an unknown token fails visibly", async () => {
+    mock.documents[0].hero = { emptyLead: "{{unknown.example}}" };
+    await expect(getEventsCopy()).rejects.toThrow(/unknown/);
+  });
+  test("editor changes are returned exactly", async () => {
+    mock.documents[0].hero = { emptyLead: "An edited introduction." };
+    expect((await getEventsCopy()).hero.emptyLead).toBe(
+      "An edited introduction.",
+    );
   });
 });

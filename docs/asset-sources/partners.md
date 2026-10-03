@@ -2,6 +2,12 @@
 
 File paths below are relative to `public/assets/partners/`. This note lives in `docs/`, not next to the files, because everything under `public/` is served as part of the site.
 
+The dated paths and processing notes below preserve retrieval history. Some local artwork
+paths have been retired as editable logos moved to CMS assets; they are not a current runtime
+asset manifest. Organizations and logo-list references now own partner artwork and ordering.
+Keep any remaining pending source files until the separately authorized migration upload/link
+is confirmed.
+
 Retrieved 2026-09-16. Original artwork and portraits from TUM.ai’s published CMS or official company / university sites. Raster assets are resized and encoded as WebP; logo margins are trimmed without altering artwork.
 
 - `logos/hrt.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/59ac543e0b01136b5adaf88786ad2ff0a01474e8-616x479.png
@@ -40,7 +46,7 @@ Copyright © 2026 JetBrains s.r.o. JetBrains and the JetBrains logo are trademar
 - `marquee/spherecast.svg`: https://cdn.prod.website-files.com/68d1019362216d12f87a9446/68d1019362216d12f87a9597_Spherecast%20Logo.svg (official white wordmark and blue sphere from https://spherecast.ai/, unchanged).
 - `marquee/dryft.png`: https://framerusercontent.com/images/eC07qoVQXlEGhgr5GzEj2PjxMWM.png (official transparent blue symbol from https://dryft.ai/, unchanged; displayed beside a readable partner-name label).
 
-The marquee reuses transparent HRT, Unite, and Mutagent artwork above. All ten curated partners have local marquee artwork. New CMS partners without a verified dark-background asset retain a readable name fallback. The white-card partner wall retains its existing full-color logos.
+At the 2026-09-17 snapshot, the marquee reused transparent HRT, Unite and Mutagent artwork above, and all ten curated partners had local marquee artwork. Those local runtime paths are retired; the current marquee reads organization/logo-list CMS assets. Partners without a usable dark-background CMS asset retain the interface's readable name placeholder. The source URLs and artwork transformations above are historical provenance.
 
 ## Partner refresh (2026-09-19)
 
@@ -74,7 +80,7 @@ NVIDIA, McKinsey, and AWS card artwork reuse the existing sourced assets above. 
 
 ## Partner directory (2026-09-29)
 
-Every partner of the old site is an organisation with a partner tier (`src/features/partners/data/organizations.ts`). Retrieved 2026-09-29 from the old site's published `partner` documents in the `production` dataset (the original uploads, TUM.ai's CMS artwork). Raster logos are trimmed of uniform margins, scaled down (never up) to fit 500 × 150 px and encoded as WebP (quality 90); SVG files are unchanged. BKW, Hugging Face, Lovable, n8n and Project A already had dark-band artwork (`docs/asset-sources/events-hosts.md`); these are their light-background logos.
+The 2026-09-29 directory snapshot represented old-site partners as organizations with a partner tier in `src/features/partners/data/organizations.ts`. That local catalog has been deleted; organizations and legacy partner compatibility now come from CMS records. Retrieved 2026-09-29 from the old site's published `partner` documents in the `production` dataset (the original uploads, TUM.ai's CMS artwork). Raster logos are trimmed of uniform margins, scaled down (never up) to fit 500 × 150 px and encoded as WebP (quality 90); SVG files are unchanged. BKW, Hugging Face, Lovable, n8n and Project A already had dark-band artwork (`docs/asset-sources/events-hosts.md`); these are their light-background logos.
 
 - `logos/10x-founders.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/47daf7f716073c632e34e3d05d2bcf8c9c4f1474-987x303.png
 - `logos/aleph-alpha.webp`: https://cdn.sanity.io/images/o9uuv2sq/production/abbf7081d2afc03ee80f7ed49eebfeca3bd0e357-744x454.png

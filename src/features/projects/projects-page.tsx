@@ -11,7 +11,7 @@ import { TaskForceChapter } from "./task-force-chapter";
  * overlap is a task force and links to its chapter. The chapters follow the
  * figure clockwise, and the close returns to it with the open circle, the
  * next task force, drawn solid. The copy and task forces come from the
- * content slice (`content.ts`: the CMS or the code copy).
+ * published content slice (`content.ts`).
  */
 export async function ProjectsPage() {
   const { copy, taskForces } = await getProjectsContent();

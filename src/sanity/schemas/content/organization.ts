@@ -114,6 +114,15 @@ export const organizationType = defineType({
       // partner or not. The site reads empty as off.
     }),
     defineField({
+      name: "partnerOrder",
+      title: "Directory position",
+      type: "number",
+      group: "partnership",
+      description:
+        "Optional position within its tier, after featured partners. Empty positions sort by name.",
+      hidden: (context) => !isPartner(context),
+    }),
+    defineField({
       name: "partnerCategory",
       title: "Partner category",
       type: "string",

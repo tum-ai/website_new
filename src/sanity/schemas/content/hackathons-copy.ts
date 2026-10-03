@@ -82,16 +82,32 @@ const makeathonEdition = defineArrayMember({
 
 /**
  * The /hackathons page's own copy (one document, `_id` `hackathonsCopy`),
- * including the Makeathon editions the ribbon draws. The league season is a
- * site fact in code, and the other hackathons are events. Read by
- * `features/hackathons/content.ts`, over the code copy in
- * `features/hackathons/data/copy.ts`.
+ * including the Makeathon editions the ribbon draws. League facts are in
+ * siteSettings; logos are in the ehl-partners logo list. Other hackathons are events.
  */
 export const hackathonsCopyType = defineType({
   name: "hackathonsCopy",
   title: "Hackathons page",
   type: "document",
   fields: [
+    defineField({
+      name: "voiceCaseStudy",
+      title: "Partner voice",
+      type: "reference",
+      to: [{ type: "caseStudy" }],
+      weak: true,
+      description:
+        "Optional case study whose quote appears beside the partner hackathons.",
+    }),
+    defineField({
+      name: "outcomeCaseStudy",
+      title: "Challenge outcome",
+      type: "reference",
+      to: [{ type: "caseStudy" }],
+      weak: true,
+      description:
+        "Optional case study whose result supports the challenge offer.",
+    }),
     defineField({
       name: "hero",
       title: "Hero",
@@ -226,7 +242,7 @@ export const hackathonsCopyType = defineType({
           title: "Editions",
           type: "array",
           description:
-            "Every Makeathon, oldest first. The ribbon draws them all: if one is incomplete, the page shows the built-in list.",
+            "Every Makeathon, oldest first. The ribbon draws them all: incomplete editions fail the page content validation.",
           of: [makeathonEdition],
           validation: (Rule) => Rule.required().min(1),
         }),

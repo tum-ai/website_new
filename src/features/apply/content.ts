@@ -2,44 +2,31 @@ import "server-only";
 
 import { defineQuery } from "next-sanity";
 import { getContentTokens } from "@/config/content-tokens";
-import { memberJourney } from "@/features/community";
-import {
-  buildMemberStoriesBackfill,
-  memberStoryKey,
-} from "@/features/community/server";
-import { type BackfillDocument, backfillId } from "@/lib/cms-backfill";
 import { loadContent } from "@/lib/cms-content";
-import { CONTENT_IMAGE_PROJECTION } from "@/lib/cms-content-model";
+import {
+  CONTENT_IMAGE_PROJECTION,
+  contentArray,
+  contentError,
+  contentImage,
+  contentObject,
+  contentOptional,
+  contentString,
+  contentText,
+  parseContent,
+  requireEnum,
+  requireNumber,
+} from "@/lib/cms-content-model";
 import { getMemberJourney } from "@/lib/community-content";
 import type { JourneyStage } from "@/lib/community-model";
-import { backfillContentImage, keyedItems } from "@/lib/content-backfill";
-import { fillCmsCopy, fillCodeCopy } from "@/lib/content-copy";
-import { buildFaqBackfill, type FaqEntry, getFaqs } from "@/lib/faq-content";
+import { fillCmsCopy } from "@/lib/content-copy";
+import { type FaqEntry, getFaqs } from "@/lib/faq-content";
 import type { APPLY_CONTENT_QUERY_RESULT } from "@/lib/sanity.types.generated";
-import {
-  type ApplyCopy,
-  applyCopyTemplate,
-  applyPageTokens,
-  type Point,
-  stageTimings,
-} from "./data/apply";
-import { faqTemplates } from "./data/faq";
-import { type Milestone, milestoneKinds, milestones } from "./data/milestones";
+import { type ApplyCopy, applyPageTokens, stageTimings } from "./data/apply";
+import { type Milestone, milestoneKinds } from "./data/milestones";
 
-/**
- * The /apply content slice: what the page reads through the CMS content
- * source (`lib/cms-content.ts`): the FAQ (`faq`, collection `apply`), the
- * `applyCopy` singleton, the `milestone` documents and the member journey's
- * tracks (shared with /community, `lib/community-content.ts`). The code
- * fallbacks are in `data/` and the community feature.
- */
-
-/** The /apply FAQ: the CMS `apply` collection, or the code list. */
+/** Published application FAQs; no code FAQ can replenish deleted entries. */
 export async function getApplyFaqs(): Promise<FaqEntry[]> {
-  return getFaqs("apply", {
-    templates: faqTemplates,
-    tokens: await getContentTokens(),
-  });
+  return getFaqs("apply", { tokens: await getContentTokens() });
 }
 
 export const APPLY_CONTENT_QUERY = defineQuery(`{
@@ -78,140 +65,129 @@ export const APPLY_CONTENT_QUERY = defineQuery(`{
   }
 }`);
 
-/**
- * Everything /apply renders from the slice besides the FAQ: site-fact
- * placeholders filled, the page tokens left for the sections.
- */
+/** Validated application copy with optional historical milestones and a required journey. */
 export type ApplyContent = {
   copy: ApplyCopy;
   milestones: Milestone[];
-  /** The member journey; /apply shows its fork's two tracks. */
   journey: JourneyStage[];
 };
-
-const isPoint = (value: unknown): value is Point => {
-  const { title, text } = (value ?? {}) as Partial<Point>;
-  return Boolean(title && text);
-};
-
-const kinds: readonly unknown[] = milestoneKinds.map(({ id }) => id);
-
-const isMilestone = (value: unknown): value is Milestone => {
-  const { year, kind, title } = (value ?? {}) as Partial<Milestone>;
-  return Number.isInteger(year) && kinds.includes(kind) && Boolean(title);
-};
-
-type FilledCopy = {
-  scope?: Record<string, unknown>;
-  tracks?: Record<string, unknown>;
-  selection?: Record<string, unknown>;
-};
-
-/** Drops incomplete list items from a filled CMS copy. */
-function selectCopy(copy: (FilledCopy & Record<string, unknown>) | null) {
-  if (!copy) return null;
-  const points = (list: unknown) =>
-    Array.isArray(list) ? list.filter(isPoint) : [];
-  return {
-    ...copy,
-    scope: copy.scope && {
-      ...copy.scope,
-      qualities: points(copy.scope.qualities),
-      notRequired: points(copy.scope.notRequired),
-      values: points(copy.scope.values),
+const point = contentObject({ title: contentString, text: contentString });
+const points = contentArray(point);
+const applyCopyParser = contentObject({
+  heroTitle: contentString,
+  heroLead: contentString,
+  faqLabel: contentString,
+  datesTitle: contentString,
+  scope: contentObject({
+    title: contentString,
+    inScopeTitle: contentString,
+    notRequiredTitle: contentString,
+    valuesTitle: contentString,
+    qualities: points,
+    notRequired: points,
+    values: points,
+    photo: contentImage,
+  }),
+  tracks: contentObject({
+    title: contentString,
+    lead: contentString,
+    offeringsTitle: contentString,
+    offerings: points,
+    photo: contentImage,
+    journeyLink: contentString,
+  }),
+  selection: contentObject({
+    title: contentString,
+    lead: contentString,
+    stages: contentArray(
+      contentObject({
+        title: contentString,
+        text: contentString,
+        when: (value, label, path) =>
+          requireEnum(value, stageTimings, label, path),
+      }),
+    ),
+  }),
+  history: contentObject({ title: contentString, lead: contentString }),
+  closing: contentObject({ companiesReader: contentString }),
+});
+const milestoneParser = contentArray(
+  contentObject({
+    year: (value, label, path) => {
+      const year = requireNumber(value, label, path);
+      if (!Number.isInteger(year) || year < 2020 || year > 2100)
+        return contentError(
+          label,
+          path,
+          "must be an integer year from 2020 to 2100",
+        );
+      return year;
     },
-    tracks: copy.tracks && {
-      ...copy.tracks,
-      offerings: points(copy.tracks.offerings),
-    },
-    selection: copy.selection && {
-      ...copy.selection,
-      stages: points(copy.selection.stages).filter((stage) =>
-        (stageTimings as readonly unknown[]).includes(
-          (stage as { when?: unknown }).when,
-        ),
+    kind: (value, label, path) =>
+      requireEnum(
+        value,
+        milestoneKinds.map(({ id }) => id),
+        label,
+        path,
       ),
-    },
-  };
+    title: contentString,
+    detail: contentOptional(contentText),
+  }),
+);
+
+/** Validate the whole singleton before sections dereference their required fields. */
+export function selectApplyContent(
+  value: unknown,
+): Omit<ApplyContent, "journey"> {
+  const parsed = parseContent(
+    value,
+    contentObject({ copy: applyCopyParser, milestones: milestoneParser }),
+    "the /apply content",
+  );
+  for (const [path, list, min, max] of [
+    ["scope.qualities", parsed.copy.scope.qualities, 2, 6],
+    ["scope.notRequired", parsed.copy.scope.notRequired, 1, 4],
+    ["scope.values", parsed.copy.scope.values, 2, 4],
+    ["tracks.offerings", parsed.copy.tracks.offerings, 1, 3],
+    ["selection.stages", parsed.copy.selection.stages, 1, 6],
+  ] as const) {
+    if (list.length < min || list.length > max)
+      contentError(
+        "the /apply content",
+        path,
+        `requires ${min} to ${max} entries`,
+      );
+    if (new Set(list.map(({ title }) => title)).size !== list.length)
+      contentError("the /apply content", path, "titles must be unique");
+  }
+  const cells = new Set<string>();
+  for (const milestone of parsed.milestones) {
+    const key = `${milestone.year}:${milestone.title}`;
+    if (cells.has(key))
+      contentError(
+        "the /apply content",
+        "milestones",
+        "titles must be unique within a year",
+      );
+    cells.add(key);
+  }
+  return parsed;
 }
 
-/** The /apply copy, milestones and journey: the CMS over the code copy. */
+/** Published application content. Empty optional lists remain empty. */
 export async function getApplyContent(): Promise<ApplyContent> {
   const tokens = await getContentTokens();
   const [content, journey] = await Promise.all([
     loadContent<Omit<ApplyContent, "journey">, APPLY_CONTENT_QUERY_RESULT>({
-      fallback: {
-        copy: fillCodeCopy(applyCopyTemplate, tokens, applyPageTokens),
-        milestones: fillCodeCopy(
-          milestones.map(({ key: _, ...milestone }) => milestone),
-          tokens,
-        ),
-      },
       query: APPLY_CONTENT_QUERY,
       tags: ["content:applyCopy", "content:milestone"],
       label: "the /apply content",
-      mockDocuments: buildApplyBackfill,
-      select: (result) => {
-        const filled = fillCmsCopy(result.milestones, tokens, "the milestones");
-        return {
-          copy: selectCopy(
-            fillCmsCopy(
-              result.copy,
-              tokens,
-              "the /apply copy",
-              applyPageTokens,
-            ) as (FilledCopy & Record<string, unknown>) | null,
-          ),
-          milestones: (Array.isArray(filled) ? filled : []).filter(isMilestone),
-        };
-      },
+      select: (result) =>
+        selectApplyContent(
+          fillCmsCopy(result, tokens, "the /apply content", applyPageTokens),
+        ),
     }),
-    getMemberJourney(memberJourney, tokens, {
-      people: buildMemberStoriesBackfill,
-      storyKey: memberStoryKey,
-    }),
+    getMemberJourney(tokens),
   ]);
   return { ...content, journey };
-}
-
-/**
- * The /apply FAQ, copy and milestones as documents for
- * `pnpm sanity:backfill` (the journey is the community slice's).
- */
-export function buildApplyBackfill(): BackfillDocument[] {
-  const { scope, tracks, selection, ...copy } = applyCopyTemplate;
-  return [
-    ...buildFaqBackfill("apply", faqTemplates),
-    {
-      _id: "applyCopy",
-      _type: "applyCopy",
-      ...copy,
-      scope: {
-        ...scope,
-        qualities: keyedItems("point", scope.qualities),
-        notRequired: keyedItems("point", scope.notRequired),
-        values: keyedItems("point", scope.values),
-        photo: backfillContentImage(scope.photo),
-      },
-      tracks: {
-        ...tracks,
-        offerings: keyedItems("point", tracks.offerings),
-        photo: backfillContentImage(tracks.photo),
-      },
-      selection: {
-        ...selection,
-        stages: keyedItems(
-          "selectionStage",
-          selection.stages,
-          ({ when }) => when,
-        ),
-      },
-    },
-    ...milestones.map(({ key, ...milestone }, index) => ({
-      _id: backfillId("milestone", key),
-      _type: "milestone",
-      order: (index + 1) * 10,
-      ...milestone,
-    })),
-  ];
 }

@@ -105,7 +105,16 @@ function cropRect(
 export function toContentImage(
   image: ProjectedImage,
 ): ContentImage | undefined {
-  if (!image?.src || !image.width || !image.height) return undefined;
+  if (
+    !image?.src ||
+    !Number.isFinite(image.width) ||
+    !Number.isFinite(image.height) ||
+    !image.width ||
+    !image.height ||
+    image.width <= 0 ||
+    image.height <= 0
+  )
+    return undefined;
   const rect = cropRect(image.crop, image.width, image.height);
   const src = rect
     ? `${image.src}${image.src.includes("?") ? "&" : "?"}rect=${rect.left},${rect.top},${rect.width},${rect.height}`
@@ -131,95 +140,218 @@ export function toContentImage(
   return result;
 }
 
-type PlainObject = Record<string, unknown>;
-
-const isPlainObject = (value: unknown): value is PlainObject =>
-  typeof value === "object" &&
-  value !== null &&
-  !Array.isArray(value) &&
-  Object.getPrototypeOf(value) === Object.prototype;
-
-const isContentImage = (value: unknown): value is ContentImage =>
-  isPlainObject(value) && typeof value.src === "string" && value.src !== "";
-
-/**
- * A group of fields that belong together, marked by a slice's `select` so
- * {@link mergeOverFallback} takes it whole: the fetched group replaces the
- * code group, optional fields included, instead of being merged field by
- * field. For groups whose fields describe one thing (a quote and who said
- * it, a venture and what it does now): mixed with the code group, the CMS
- * quote would be attributed to the code person. `select` returns
- * `whole(group)` only when the group is complete, otherwise leaves it out,
- * so the code group shows as a whole.
- *
- * The marker never reaches a page: the merge unwraps it. Use it where the
- * fallback has an object (a singleton or a group), not inside lists, which
- * replace the fallback wholesale anyway.
- */
-export class Whole<T> {
-  constructor(readonly value: T) {}
-}
-
-/** Marks `group` to replace the fallback group as a whole; see {@link Whole}. */
-export function whole<T>(group: T): Whole<T> {
-  return new Whole(group);
-}
-
-/** `null`, `undefined`, a blank string and an empty list count as "not set". */
-export function isEmptyContent(value: unknown): boolean {
-  if (value === null || value === undefined) return true;
-  if (typeof value === "string") return value.trim() === "";
-  if (Array.isArray(value)) return value.length === 0;
-  return false;
-}
-
-/**
- * The fetched CMS value laid over the code fallback, so a missing, empty or
- * malformed field never breaks a page:
- *
- * - **Not set** (`null`, `undefined`, blank string, empty list): the fallback.
- * - **Lists** replace the fallback wholesale when non-empty. Items are not
- *   merged one by one: an editor's list is the list (shape each item in the
- *   slice's `select` before merging).
- * - **Plain objects** (singletons, groups of fields) merge field by field,
- *   recursively. A fetched field that is not in the fallback is added when
- *   it is set. Consequence: the CMS cannot clear a field that code fills;
- *   remove it from the code fallback instead.
- * - **Images** (objects with a non-empty `src`, see {@link ContentImage})
- *   are atomic: a fetched image replaces the fallback image as a whole, so
- *   the code `alt` or position never mixes with an uploaded file.
- * - **Whole groups** (`whole(group)` from the slice's `select`, see
- *   {@link Whole}) replace the fallback as they are, never mixed with it.
- * - **Primitives** (strings, numbers, booleans; `false` and `0` count as
- *   set): the fetched value when its type matches the fallback's, otherwise
- *   the fallback.
- */
-export function mergeOverFallback<T>(fallback: T, fetched: unknown): T {
-  if (fetched instanceof Whole) return fetched.value as T;
-  if (isEmptyContent(fetched)) return fallback;
-
-  if (Array.isArray(fallback)) {
-    return (Array.isArray(fetched) ? fetched : fallback) as T;
+/** Reader failure naming the invalid CMS document and field. */
+export class ContentError extends Error {
+  constructor(
+    label: string,
+    path: string,
+    message: string,
+    options?: ErrorOptions,
+  ) {
+    super(
+      `[cms-content] ${label}${path ? `.${path}` : ""}: ${message}`,
+      options,
+    );
+    this.name = "ContentError";
   }
-
-  if (isPlainObject(fallback)) {
-    if (!isPlainObject(fetched)) return fallback;
-    if (isContentImage(fallback)) {
-      return (isContentImage(fetched) ? fetched : fallback) as T;
-    }
-    const merged: PlainObject = { ...fallback };
-    for (const [key, value] of Object.entries(fetched)) {
-      if (key in fallback) {
-        merged[key] = mergeOverFallback(fallback[key], value);
-      } else if (value instanceof Whole) {
-        merged[key] = value.value;
-      } else if (!isEmptyContent(value)) {
-        merged[key] = value;
-      }
-    }
-    return merged as T;
-  }
-
-  if (fallback === null || fallback === undefined) return fetched as T;
-  return (typeof fetched === typeof fallback ? fetched : fallback) as T;
 }
+/** Reject malformed required content at the reader boundary. */
+export function contentError(
+  label: string,
+  path: string,
+  message: string,
+): never {
+  throw new ContentError(label, path, message);
+}
+/** Required object, including singleton results. */
+export function requireObject(
+  value: unknown,
+  label: string,
+  path = "",
+): Record<string, unknown> {
+  if (typeof value !== "object" || value === null || Array.isArray(value))
+    return contentError(label, path, "required object is missing or malformed");
+  return value as Record<string, unknown>;
+}
+/** Required nonblank text, preserving the editor's whitespace. */
+export function requireString(
+  value: unknown,
+  label: string,
+  path = "",
+): string {
+  if (typeof value !== "string" || value.trim() === "")
+    return contentError(label, path, "required text is missing or blank");
+  return value;
+}
+/** Optional text preserves intentional blanks. */
+export function optionalString(
+  value: unknown,
+  label: string,
+  path = "",
+): string | undefined {
+  if (value == null) return undefined;
+  if (typeof value !== "string")
+    return contentError(label, path, "expected optional text");
+  return value;
+}
+/** Required finite numeric fact. */
+export function requireNumber(
+  value: unknown,
+  label: string,
+  path = "",
+): number {
+  if (typeof value !== "number" || !Number.isFinite(value))
+    return contentError(
+      label,
+      path,
+      "required finite number is missing or malformed",
+    );
+  return value;
+}
+/** Required boolean, retaining false. */
+export function requireBoolean(
+  value: unknown,
+  label: string,
+  path = "",
+): boolean {
+  if (typeof value !== "boolean")
+    return contentError(
+      label,
+      path,
+      "required boolean is missing or malformed",
+    );
+  return value;
+}
+/** Required array, retaining explicit empty lists. */
+export function requireArray(
+  value: unknown,
+  label: string,
+  path = "",
+): unknown[] {
+  if (!Array.isArray(value))
+    return contentError(label, path, "expected an array");
+  return value;
+}
+/** Enumerated value, validated before narrowing. */
+export function requireEnum<const T extends readonly string[]>(
+  value: unknown,
+  choices: T,
+  label: string,
+  path = "",
+): T[number] {
+  if (typeof value !== "string" || !choices.includes(value))
+    return contentError(label, path, `expected one of ${choices.join(", ")}`);
+  return value as T[number];
+}
+/** Explicit structural descriptor; no local content values serve as shapes. */
+export type ContentParser<T> = (
+  value: unknown,
+  label: string,
+  path: string,
+) => T;
+export const contentString: ContentParser<string> = requireString;
+export const contentNumber: ContentParser<number> = requireNumber;
+export const contentBoolean: ContentParser<boolean> = requireBoolean;
+/** Text that may intentionally be blank, such as decorative image alt. */
+export const contentText: ContentParser<string> = (value, label, path) => {
+  if (typeof value !== "string")
+    return contentError(label, path, "expected text");
+  return value;
+};
+/** Optional field descriptor. */
+export function contentOptional<T>(
+  parser: ContentParser<T>,
+): ContentParser<T | undefined> {
+  return (value, label, path) =>
+    value == null ? undefined : parser(value, label, path);
+}
+/** List descriptor validates each item with its indexed field path. */
+export function contentArray<T>(parser: ContentParser<T>): ContentParser<T[]> {
+  return (value, label, path) =>
+    requireArray(value, label, path).map((item, index) =>
+      parser(item, label, `${path}[${index}]`),
+    );
+}
+/** Object descriptor validates each declared field and returns precisely that shape. */
+export function contentObject<S extends Record<string, ContentParser<unknown>>>(
+  shape: S,
+): ContentParser<{ [K in keyof S]: ReturnType<S[K]> }> {
+  return (value, label, path) => {
+    const record = requireObject(value, label, path);
+    return Object.fromEntries(
+      Object.entries(shape).map(([key, parser]) => [
+        key,
+        parser(record[key], label, path ? `${path}.${key}` : key),
+      ]),
+    ) as { [K in keyof S]: ReturnType<S[K]> };
+  };
+}
+/** Execute an explicit descriptor at a CMS boundary. */
+export function parseContent<T>(
+  value: unknown,
+  parser: ContentParser<T>,
+  label: string,
+): T {
+  return parser(value, label, "");
+}
+
+/** A complete normalized image after fillCmsCopy applies Sanity crop/hotspot. */
+export const contentImage: ContentParser<ContentImage> = (
+  value,
+  label,
+  path,
+) => {
+  const image = contentObject({
+    src: contentString,
+    width: contentNumber,
+    height: contentNumber,
+    alt: contentText,
+    objectPosition: contentOptional(contentString),
+  })(value, label, path);
+  if (image.width <= 0 || image.height <= 0)
+    return contentError(label, path, "image dimensions must be positive");
+  return image;
+};
+
+/** Validate a present Sanity image projection before applying crop and hotspot. */
+export const contentProjectedImage: ContentParser<ContentImage> = (
+  value,
+  label,
+  path,
+) => {
+  const coordinate: ContentParser<number> = (value, label, path) => {
+    const n = requireNumber(value, label, path);
+    if (n < 0 || n > 1)
+      return contentError(label, path, "expected fraction in 0..1");
+    return n;
+  };
+  const image = contentObject({
+    src: contentString,
+    width: contentNumber,
+    height: contentNumber,
+    alt: contentOptional(contentText),
+    hotspot: contentOptional(contentObject({ x: coordinate, y: coordinate })),
+    crop: contentOptional(
+      contentObject({
+        top: coordinate,
+        bottom: coordinate,
+        left: coordinate,
+        right: coordinate,
+      }),
+    ),
+  })(value, label, path);
+  if (
+    image.crop &&
+    (image.crop.top + image.crop.bottom >= 1 ||
+      image.crop.left + image.crop.right >= 1)
+  )
+    return contentError(label, path, "crop must retain some image area");
+  const parsed = toContentImage(image);
+  if (!parsed)
+    return contentError(
+      label,
+      path,
+      "present image requires valid URL and positive dimensions",
+    );
+  return parsed;
+};

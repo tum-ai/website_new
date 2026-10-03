@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { phaseWeeksProblem, validateStages } from "./e-lab-copy";
+import { eLabCopyType, phaseWeeksProblem, validateStages } from "./e-lab-copy";
 
 const gate = (figure: string) => ({ _type: "gateStage", figure });
 const phase = { _type: "phaseStage" };
@@ -83,4 +83,28 @@ describe("the phases against the program length", () => {
     expect(phaseWeeksProblem(all, 14)).toBe(true);
     expect(phaseWeeksProblem(undefined, 14)).toBe(true);
   });
+});
+
+test("voice selections reference the E-Lab testimonial collection", () => {
+  const fields = ["founders", "investors"].map((name) =>
+    expect.objectContaining({
+      name,
+      type: "array",
+      of: [
+        expect.objectContaining({
+          type: "reference",
+          to: [{ type: "person" }],
+          options: { filter: 'placement == "e-lab-testimonial"' },
+        }),
+      ],
+    }),
+  );
+  expect(eLabCopyType.fields).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "voices",
+        fields: expect.arrayContaining(fields),
+      }),
+    ]),
+  );
 });

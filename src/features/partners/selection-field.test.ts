@@ -1,9 +1,8 @@
 import { describe, expect, test } from "vitest";
-import { admittedPerBatchOf, organizationFacts } from "@/config/organization";
 import { selectionField } from "./selection-field";
 
-const marks = organizationFacts.startedApplicationsPerBatch;
-const lit = admittedPerBatchOf(organizationFacts);
+const marks = 1000;
+const lit = 40;
 
 describe("selectionField", () => {
   for (const columns of [70, 42]) {
@@ -46,9 +45,9 @@ describe("selectionField", () => {
   test("lights the admitted share of the marks, to within one mark", () => {
     const field = selectionField({ marks, lit, columns: 70 });
     const share = field.lit.length / field.marks;
-    expect(
-      Math.abs(share - organizationFacts.acceptanceRate / 100),
-    ).toBeLessThanOrEqual(1 / (2 * field.marks));
+    expect(Math.abs(share - lit / marks)).toBeLessThanOrEqual(
+      1 / (2 * field.marks),
+    );
   });
 
   test("is deterministic, so server and client draw the same field", () => {

@@ -5,7 +5,7 @@ import { contentImageField } from "./fields";
 /**
  * One core department on /community (the roster under "The departments that
  * run TUM.ai"); the homepage counts them. Read by `lib/community-content.ts`,
- * over the code list in `features/community/data/departments.ts`.
+ * which preserves an intentionally empty department collection.
  */
 export const departmentType = defineType({
   name: "department",

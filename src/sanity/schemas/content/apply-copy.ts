@@ -21,6 +21,7 @@ function points(options: {
         name: "point",
         title: "Point",
         type: "object",
+        validation: (Rule) => Rule.required(),
         fields: [
           copyString({ name: "title", title: "Title", max: options.titleMax }),
           copyText({
@@ -50,8 +51,7 @@ const stageTimings = [
  * The /apply page's own copy (one document, `_id` `applyCopy`). The FAQ,
  * the milestones and the member journey are documents of their own; the
  * round's dates and state come from the membership round. Read by
- * `features/apply/content.ts`, over the code copy in
- * `features/apply/data/apply.ts`.
+ * `features/apply/content.ts`, without a local copy source.
  */
 export const applyCopyType = defineType({
   name: "applyCopy",
@@ -92,6 +92,7 @@ export const applyCopyType = defineType({
       name: "scope",
       title: "Who should apply",
       type: "object",
+      validation: (Rule) => Rule.required(),
       description:
         "The call's scope; its lead is the site's brand mission (site settings).",
       fields: [
@@ -144,6 +145,7 @@ export const applyCopyType = defineType({
       name: "tracks",
       title: "What you'll work on",
       type: "object",
+      validation: (Rule) => Rule.required(),
       description:
         "The member journey's two tracks come from the Member journey steps.",
       fields: [
@@ -181,6 +183,7 @@ export const applyCopyType = defineType({
       name: "selection",
       title: "How selection works",
       type: "object",
+      validation: (Rule) => Rule.required(),
       fields: [
         copyString({ name: "title", title: "Title", max: 40 }),
         copyText({
@@ -202,6 +205,7 @@ export const applyCopyType = defineType({
               name: "selectionStage",
               title: "Stage",
               type: "object",
+              validation: (Rule) => Rule.required(),
               fields: [
                 copyString({ name: "title", title: "Title", max: 30 }),
                 defineField({
@@ -231,6 +235,7 @@ export const applyCopyType = defineType({
       name: "history",
       title: "Since the founding",
       type: "object",
+      validation: (Rule) => Rule.required(),
       description:
         "The milestone grid's heading; the entries are Milestone documents.",
       fields: [
@@ -256,6 +261,7 @@ export const applyCopyType = defineType({
       name: "closing",
       title: "Closing",
       type: "object",
+      validation: (Rule) => Rule.required(),
       description:
         "The submission box at the end; its statement and dates follow the membership round.",
       fields: [

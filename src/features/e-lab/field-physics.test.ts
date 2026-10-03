@@ -1,6 +1,15 @@
 import { describe, expect, test } from "vitest";
+import {
+  eLabCopyFixture,
+  eLabSelectionFixture,
+} from "@/lib/cms-fixtures/programmes";
 import { applicationField } from "./data/field";
-import { gates } from "./data/selection";
+import { buildStages, gatesOf } from "./data/selection";
+
+const gates = gatesOf(
+  buildStages(eLabCopyFixture.gates.stages, eLabSelectionFixture),
+);
+
 import {
   createFieldSim,
   type FieldBodies,

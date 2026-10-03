@@ -8,7 +8,7 @@ import { stegaClean } from "next-sanity";
 import type { LeagueMatch } from "@/config/hackathons";
 import { munichIsoDate } from "@/lib/munich-time";
 import type { Event, EventCategory } from "@/lib/types";
-import type { MakeathonEdition } from "./data/makeathon";
+import type { MakeathonEdition } from "./model";
 
 /**
  * `makeathon`: an edition of the flagship. `league`: a match of the league

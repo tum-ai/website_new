@@ -14,7 +14,7 @@ export function RoomSpread({ photos }: { photos: readonly RoomPhoto[] }) {
       {photos.map((photo, index) => {
         const layout = ROOM_CELLS[index];
         return (
-          <figure key={photo.src} className={cn("flex flex-col", layout?.cell)}>
+          <figure key={photo.key} className={cn("flex flex-col", layout?.cell)}>
             <div
               className={cn(
                 "group/zoom relative flex-1 overflow-hidden rounded-4xl bg-sunken",

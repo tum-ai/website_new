@@ -1,18 +1,13 @@
 import { describe, expect, test } from "vitest";
 import {
-  type ContentImage,
-  isEmptyContent,
-  mergeOverFallback,
+  contentArray,
+  contentObject,
+  contentOptional,
+  contentString,
+  contentText,
+  parseContent,
   toContentImage,
-  whole,
 } from "./cms-content-model";
-
-const image: ContentImage = {
-  src: "/assets/logo_new_white_standard.png",
-  width: 400,
-  height: 200,
-  alt: "TUM.ai",
-};
 
 describe("toContentImage", () => {
   test("maps a projected asset and turns the hotspot into objectPosition", () => {
@@ -94,113 +89,19 @@ describe("toContentImage", () => {
   });
 });
 
-describe("isEmptyContent", () => {
-  test.each([null, undefined, "", "  ", []])("%j is not set", (value) => {
-    expect(isEmptyContent(value)).toBe(true);
+test("explicit descriptors reject required fields and retain optional blanks", () => {
+  const parser = contentObject({
+    title: contentString,
+    note: contentOptional(contentText),
+    items: contentArray(contentString),
   });
-
-  test.each([0, false, "x", [1], {}])("%j is set", (value) => {
-    expect(isEmptyContent(value)).toBe(false);
-  });
-});
-
-describe("mergeOverFallback", () => {
-  const fallback = {
-    title: "Code title",
-    count: 3,
-    open: true,
-    items: ["a", "b"],
-    image,
-    nested: { lead: "Code lead", note: "Code note" },
-  };
-
-  test("returns the fallback when nothing was fetched", () => {
-    expect(mergeOverFallback(fallback, null)).toBe(fallback);
-    expect(mergeOverFallback(fallback, undefined)).toBe(fallback);
-  });
-
-  test("lets set fields win and keeps the fallback for empty ones", () => {
-    expect(
-      mergeOverFallback(fallback, {
-        title: "CMS title",
-        count: 0,
-        open: false,
-        items: [],
-        nested: { lead: " ", note: "CMS note" },
-      }),
-    ).toStrictEqual({
-      ...fallback,
-      title: "CMS title",
-      count: 0,
-      open: false,
-      nested: { lead: "Code lead", note: "CMS note" },
-    });
-  });
-
-  test("replaces lists wholesale only when the fetched list has items", () => {
-    expect(mergeOverFallback(["a", "b"], ["c"])).toStrictEqual(["c"]);
-    expect(mergeOverFallback(["a", "b"], [])).toStrictEqual(["a", "b"]);
-    expect(mergeOverFallback(["a"], "not a list")).toStrictEqual(["a"]);
-  });
-
-  test("treats images as atomic", () => {
-    const uploaded = {
-      src: "https://cdn.sanity.io/x.png",
-      width: 10,
-      height: 5,
-      alt: "",
-    };
-    expect(
-      mergeOverFallback(fallback, { image: uploaded }).image,
-    ).toStrictEqual(uploaded);
-    expect(
-      mergeOverFallback(fallback, { image: { src: "", alt: "Only alt" } })
-        .image,
-    ).toBe(image);
-  });
-
-  test("adds set fields the fallback lacks, and skips empty ones", () => {
-    const merged = mergeOverFallback<Record<string, unknown>>(
-      { title: "Code" },
-      { extra: "CMS", empty: null, blank: "" },
-    );
-    expect(merged).toStrictEqual({ title: "Code", extra: "CMS" });
-  });
-
-  test("keeps the fallback when the fetched type does not match", () => {
-    expect(mergeOverFallback("text", 42)).toBe("text");
-    expect(mergeOverFallback({ a: 1 }, "text")).toStrictEqual({ a: 1 });
-    expect(mergeOverFallback(fallback, { nested: "text" }).nested).toBe(
-      fallback.nested,
-    );
-  });
-
-  test("takes any set value where the fallback has none", () => {
-    expect(mergeOverFallback<string | undefined>(undefined, "CMS")).toBe("CMS");
-    expect(
-      mergeOverFallback<{ note?: string }>({}, { note: "CMS" }),
-    ).toStrictEqual({ note: "CMS" });
-  });
-
-  test("takes a whole group as it is, optional fields left out included", () => {
-    const fallback = {
-      title: "Code",
-      quote: { name: "Code member", excerpt: "Code words", role: "Code role" },
-    };
-    expect(
-      mergeOverFallback(fallback, {
-        quote: whole({ name: "CMS member", excerpt: "CMS words" }),
-      }),
-    ).toStrictEqual({
-      title: "Code",
-      quote: { name: "CMS member", excerpt: "CMS words" },
-    });
-    expect(mergeOverFallback(fallback, whole({ title: "CMS" }))).toStrictEqual({
-      title: "CMS",
-    });
-    // Left out by `select` (incomplete): the code group, whole.
-    expect(mergeOverFallback(fallback, { quote: undefined })).toStrictEqual(
-      fallback,
-    );
-  });
+  expect(
+    parseContent({ title: "CMS", note: "", items: [] }, parser, "copy"),
+  ).toEqual({ title: "CMS", note: "", items: [] });
+  expect(() => parseContent({ title: "", items: [] }, parser, "copy")).toThrow(
+    /copy.title/,
+  );
+  expect(() =>
+    parseContent({ title: "CMS", items: [null] }, parser, "copy"),
+  ).toThrow(/items\[0\]/);
 });

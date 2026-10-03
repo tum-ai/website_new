@@ -11,10 +11,7 @@ import {
 import { type RefObject, useEffect, useMemo, useState } from "react";
 import { fillPageTokens } from "@/lib/content-copy";
 import { type CalBooking, getCalBooking } from "@/lib/security";
-import {
-  type PartnershipFinderCopy,
-  partnershipFinderCopy,
-} from "./data/partnership-finder";
+import type { PartnershipFinderCopy } from "./data/partnership-finder";
 import {
   getPartnershipBookingUrl,
   getPartnershipContext,
@@ -39,7 +36,7 @@ export function BookingDialog({
   open,
   onOpenChange,
   selection,
-  copy = partnershipFinderCopy,
+  copy,
   contact,
   finalFocus,
 }: {
@@ -47,7 +44,7 @@ export function BookingDialog({
   onOpenChange: (open: boolean) => void;
   selection: PartnershipSelection;
   /** The finder's wording, for the booking notes and the email. */
-  copy?: PartnershipFinderCopy;
+  copy: PartnershipFinderCopy;
   /** Where requests go (the site facts): the booking page, host and guest. */
   contact: PartnershipContact;
   finalFocus: RefObject<HTMLElement | null>;

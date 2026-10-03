@@ -13,7 +13,7 @@ import { type AnswerItem, MissionAnswers } from "./mission-answers";
 function Answer({ faq }: { faq: QandaEntry }) {
   return (
     <>
-      {faq.spans ? (
+      {faq.spans?.length ? (
         // Below lg the passage is out of sight, so each answer quotes the
         // words that mark it; from lg the marks show it, and the quote stays
         // for screen readers, which can't see the marks.
@@ -22,7 +22,7 @@ function Answer({ faq }: { faq: QandaEntry }) {
         </p>
       ) : null}
       <p>{faq.answer}</p>
-      {faq.points ? (
+      {faq.points?.length ? (
         <BulletList items={[...faq.points]} className="mt-5" />
       ) : null}
       {faq.evidence ? (

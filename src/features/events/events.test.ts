@@ -1,6 +1,5 @@
 import { stegaEncode } from "@test/stega";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
-import { getMockEvents } from "@/lib/mock-cms";
 import type { Event } from "@/lib/types";
 import {
   eventHosts,
@@ -495,10 +494,8 @@ describe("formatHosts", () => {
 });
 
 describe("toEventDetails", () => {
-  const [base] = getMockEvents(new Date("2026-10-01T12:00:00Z"));
-  if (!base) throw new Error("expected a mock event");
   const event: Event = {
-    ...base,
+    id: "example-dialog-event",
     title: "  Anthropic x Lovable  ",
     event_date: "2026-10-10T16:30:00Z",
     location: "Munich Urban Colab",

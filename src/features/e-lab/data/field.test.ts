@@ -1,6 +1,14 @@
 import { expect, test } from "vitest";
+import {
+  eLabCopyFixture,
+  eLabSelectionFixture,
+} from "@/lib/cms-fixtures/programmes";
 import { applicationField } from "./field";
-import { gates } from "./selection";
+import { buildStages, gatesOf } from "./selection";
+
+const gates = gatesOf(
+  buildStages(eLabCopyFixture.gates.stages, eLabSelectionFixture),
+);
 
 const field = applicationField(gates);
 const allDots = field.groups.flatMap((group) => group.dots);

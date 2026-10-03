@@ -17,13 +17,7 @@ import {
   resolveActiveCampaigns,
   scheduleCampaigns,
 } from "./campaigns";
-import {
-  type ContactEmails,
-  contactEmails,
-  type SocialLinks,
-  socialLinks,
-} from "./contact";
-import { eLabApplicationCopy } from "./e-lab";
+import type { ContactEmails, SocialLinks } from "./contact";
 import { type MembershipConfig, membershipWindowClock } from "./membership";
 
 export type NavLink = {
@@ -44,10 +38,8 @@ export const mainNavigation = [
   { label: "Q&A", href: "/qanda" },
 ] as const satisfies readonly NavLink[];
 
-/** The contact facts the link lists are built from (`getSiteFacts()` or the code constants). */
+/** The contact facts the link lists are built from (`getSiteFacts()`). */
 type LinkFacts = { socialLinks: SocialLinks; contactEmails: ContactEmails };
-
-const codeLinkFacts: LinkFacts = { socialLinks, contactEmails };
 
 function contactLinks({ socialLinks, contactEmails }: LinkFacts) {
   return {
@@ -70,12 +62,6 @@ export function headerConnectLinksFor(facts: LinkFacts): readonly NavLink[] {
   return [linkedin, instagram, email];
 }
 
-/** {@link connectLinksFor} the code facts. */
-export const connectLinks = connectLinksFor(codeLinkFacts);
-
-/** {@link headerConnectLinksFor} the code facts. */
-export const headerConnectLinks = headerConnectLinksFor(codeLinkFacts);
-
 /** The legal pages (footer "Legal", the legal pages' own navigation). */
 export const legalLinks = [
   { label: "Imprint", href: "/imprint" },
@@ -90,9 +76,6 @@ export function contributeLinksFor({
   return [{ label: "GitHub", href: socialLinks.github }];
 }
 
-/** {@link contributeLinksFor} the code facts. */
-export const contributeLinks = contributeLinksFor(codeLinkFacts);
-
 /** A header call to action: `href` is `null` while it has nowhere to go yet. */
 type HeaderCtaOption = { label: string; href: string | null };
 
@@ -100,7 +83,7 @@ type HeaderCtaOption = { label: string; href: string | null };
  * The calls to action the header can show, by variant, for the current
  * E-Lab cohort's name ("E-Lab 6.0"). {@link headerCtaSetting} picks one.
  */
-function headerCtasFor(eLabCohortName: string) {
+export function headerCtasFor(eLabCohortName: string) {
   return {
     member: { label: callToActionLabels.member, href: "/apply" },
     partner: { label: callToActionLabels.partner, href: "/partners" },
@@ -112,19 +95,10 @@ function headerCtasFor(eLabCohortName: string) {
   } as const satisfies Record<string, HeaderCtaOption>;
 }
 
-/** {@link headerCtasFor} the code cohort. */
-export const headerCtas = headerCtasFor(eLabApplicationCopy.cohortName);
-
-/** Every header CTA variant, including ones without a target yet. */
-export type HeaderCtaVariant = keyof typeof headerCtas;
-
-/** The variants that have an href: the only ones the setting accepts. */
-export type LinkedHeaderCtaVariant = {
-  [Variant in HeaderCtaVariant]: (typeof headerCtas)[Variant]["href"] extends string
-    ? Variant
-    : never;
-}[HeaderCtaVariant];
-
+/** Every header CTA variant. */
+export type HeaderCtaVariant = "member" | "partner" | "elab" | "notify";
+/** Variants with a standing destination. */
+export type LinkedHeaderCtaVariant = "member" | "partner" | "elab";
 /** A table of CTA variants, for tests and future sources of the same shape. */
 export type HeaderCtaTable = Readonly<
   Record<HeaderCtaVariant, HeaderCtaOption>
@@ -137,14 +111,6 @@ export type HeaderCtaSetting = {
   /** Shows this variant regardless of the recruiting round. */
   override?: LinkedHeaderCtaVariant;
 };
-
-/**
- * The header CTA: `member` while membership applications are open
- * (`isMembershipApplicationOpen`, dated by the round), `fallback` otherwise. Change
- * `fallback` for a different call to action between recruiting rounds, or
- * set `override` to pin one.
- */
-export const headerCtaSetting: HeaderCtaSetting = { fallback: "partner" };
 
 /**
  * The plain input {@link selectHeaderCta} decides on. Kept free of config
@@ -168,7 +134,7 @@ export type HeaderCtaChoice = {
  */
 export function selectHeaderCta(
   { membershipOpen, fallback, override }: HeaderCtaChoice,
-  ctas: HeaderCtaTable = headerCtas,
+  ctas: HeaderCtaTable,
 ): HeaderCtaVariant | null {
   const wanted = override ?? (membershipOpen ? "member" : fallback);
   for (const variant of [wanted, "member"] as const) {
@@ -180,7 +146,7 @@ export function selectHeaderCta(
 /** The link for a CTA variant, or `null` for none or one without a target. */
 export function headerCtaLink(
   variant: HeaderCtaVariant | null,
-  ctas: HeaderCtaTable = headerCtas,
+  ctas: HeaderCtaTable,
 ): NavLink | null {
   if (variant === null) return null;
   const { label, href } = ctas[variant];
@@ -201,7 +167,7 @@ export type HeaderOptions = {
 
 /**
  * Everything the header's call to action depends on, as plain data: the
- * layout resolves it on the server (from code or the CMS) and the header
+ * layout resolves it on the server (from the CMS) and the header
  * re-evaluates it in the browser with {@link headerCtaAt}, so the CTA
  * changes on time at every boundary even on a cached page.
  */
@@ -210,7 +176,7 @@ export type HeaderCtaSchedule = {
   membership: ClockWindow;
   /** Shown while membership applications are closed and no campaign says otherwise. */
   fallback: HeaderCtaVariant;
-  /** Shown regardless of the round (code only: `headerCtaSetting.override`). */
+  /** Shown regardless of the round (explicit schedule override). */
   override?: HeaderCtaVariant;
   /** Labels and targets by variant. */
   ctas: HeaderCtaTable;
@@ -226,7 +192,7 @@ export type HeaderCtaSchedule = {
 /** Input for {@link headerCtaSchedule}: the values resolved for a render. */
 export type HeaderCtaSources = {
   membership: MembershipConfig;
-  /** `siteSettings.headerCtaFallback`, or `headerCtaSetting.fallback` in code. */
+  /** `siteSettings.headerCtaFallback`, resolved for this render. */
   fallback: LinkedHeaderCtaVariant;
   /** The current E-Lab cohort's name, for the `elab` label. */
   eLabCohortName: string;
@@ -243,9 +209,6 @@ export function headerCtaSchedule({
   return {
     membership: membershipWindowClock(membership),
     fallback,
-    ...(headerCtaSetting.override === undefined
-      ? {}
-      : { override: headerCtaSetting.override }),
     ctas: headerCtasFor(eLabCohortName),
     campaigns: scheduleCampaigns(campaigns).flatMap(
       ({ startsAt, endsAt, priority, headerCta }) =>
@@ -323,13 +286,6 @@ export function headerCtaBoundaries(schedule: HeaderCtaSchedule): Date[] {
   ];
 }
 
-/** The site-wide header CTA in code for a membership state (no campaigns). */
-function defaultHeaderCta(membershipOpen: boolean): NavLink | null {
-  return headerCtaLink(
-    selectHeaderCta({ ...headerCtaSetting, membershipOpen }),
-  );
-}
-
 /** Per-route overrides, keyed by exact pathname. */
 const routeHeaderOptions: Readonly<Record<string, Partial<HeaderOptions>>> = {
   // The partner page keeps the pill frosted and swaps the CTA for its
@@ -344,16 +300,15 @@ const routeHeaderOptions: Readonly<Record<string, Partial<HeaderOptions>>> = {
  * The header options for `pathname`: the defaults plus the route's overrides.
  * Matching is exact, so `/partners/x` gets the defaults. The site-wide CTA is
  * either given (`cta`, from {@link headerCtaAt}, which the header keeps
- * current in the browser) or derived from the code setting for a membership
- * state (`membershipOpen`, the dated window from `isMembershipApplicationOpen`).
+ * current in the browser).
  */
 export function getHeaderOptions(
   pathname: string,
-  source: { membershipOpen: boolean } | { cta: NavLink | null },
+  source: { cta: NavLink | null },
 ): HeaderOptions {
   return {
     solid: false,
-    cta: "cta" in source ? source.cta : defaultHeaderCta(source.membershipOpen),
+    cta: source.cta,
     ...routeHeaderOptions[pathname],
   };
 }

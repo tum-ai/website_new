@@ -6,8 +6,7 @@ import { validatePassageSpans } from "./qanda-spans";
  * The /qanda page's own copy (one document, `_id` `qandaCopy`). The
  * questions are FAQ entries on the Q&A page (`faq`, collection `qanda`); the
  * short mission above the passage is the site's brand mission (site
- * settings). Read by `features/qanda/content.ts`, over the code copy in
- * `features/qanda/data/qanda.ts`.
+ * settings). Read and validated by `features/qanda/content.ts`.
  */
 export const qandaCopyType = defineType({
   name: "qandaCopy",
@@ -40,16 +39,17 @@ export const qandaCopyType = defineType({
       type: "text",
       rows: 8,
       description:
-        "The long mission paragraph. Each Q&A entry quotes the words of it that answer its question (its mission phrases), and the page marks them while the question is open. Editing it can break those quotes: publish the passage, then fix the phrases the warning names. At most 900 characters.",
+        "The long mission paragraph. Each Q&A entry quotes the words of it that answer its question (its mission phrases), and the page marks them while the question is open. Editing it can break those quotes: update the passage and its phrases together. At most 900 characters.",
       validation: (Rule) => [
         Rule.required().max(900),
-        Rule.custom(validatePassageSpans).warning(),
+        Rule.custom(validatePassageSpans),
       ],
     }),
     defineField({
       name: "closing",
       title: "Closing",
       type: "object",
+      validation: (Rule) => Rule.required(),
       description: "The ink band at the end of the page.",
       fields: [
         copyString({
@@ -72,6 +72,7 @@ export const qandaCopyType = defineType({
       name: "forks",
       title: "Next steps",
       type: "object",
+      validation: (Rule) => Rule.required(),
       description:
         "Each reader's next step, beside the closing. The companies' text is the partners page pitch, edited there.",
       fields: [
@@ -79,6 +80,7 @@ export const qandaCopyType = defineType({
           name: "students",
           title: "For students",
           type: "object",
+          validation: (Rule) => Rule.required(),
           fields: [
             copyString({ name: "reader", title: "Reader", max: 30 }),
             copyText({ name: "text", title: "Text", max: 200, rows: 2 }),
@@ -88,6 +90,7 @@ export const qandaCopyType = defineType({
           name: "companies",
           title: "For companies",
           type: "object",
+          validation: (Rule) => Rule.required(),
           fields: [copyString({ name: "reader", title: "Reader", max: 30 })],
         }),
       ],

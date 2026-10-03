@@ -39,9 +39,9 @@ const pillar = (key: PartnerPillar["key"], title: string, href: string) => ({
   metricLabel: "Figure",
   description: `What ${title} offers partners.`,
   image: {
-    src: "/assets/homepage/IBM_visit.webp",
-    width: 1920,
-    height: 1440,
+    src: "/assets/fixtures/photo.svg",
+    width: 960,
+    height: 640,
     alt: `${title} photo`,
   },
   href,

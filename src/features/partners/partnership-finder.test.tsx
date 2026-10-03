@@ -7,7 +7,8 @@ import {
   partnershipFinderCopy,
   partnershipIntents,
   recommendations,
-} from "./data/partnership-finder";
+  testPartnershipContact,
+} from "./partnership.test-fixtures";
 import { PartnershipProvider } from "./partnership-context";
 import { PartnershipFinder } from "./partnership-finder";
 import { getPartnershipEmailUrl } from "./partnerships";
@@ -55,7 +56,10 @@ afterEach(() => {
 function renderFinder() {
   const user = userEvent.setup();
   const view = render(
-    <PartnershipProvider>
+    <PartnershipProvider
+      copy={partnershipFinderCopy}
+      contact={testPartnershipContact}
+    >
       <PartnershipFinder />
     </PartnershipProvider>,
   );
@@ -69,7 +73,9 @@ function renderFinder() {
 
 test("starts on the goal question with every intent as a button", async () => {
   const { container, heading, currentStep } = renderFinder();
-  expect(heading()).toHaveTextContent("What matters most to you right now?");
+  expect(heading()).toHaveTextContent(
+    partnershipFinderCopy.prompts.intentQuestion,
+  );
   expect(currentStep()).toHaveTextContent("Your goal");
   for (const intent of partnershipIntents) {
     expect(
@@ -85,7 +91,9 @@ test("walks goal, timeframe and fit, moving focus to each step's heading", async
   await user.click(
     screen.getByRole("button", { name: new RegExp(talent.label) }),
   );
-  expect(heading()).toHaveTextContent(/one-off activation or an ongoing/);
+  expect(heading()).toHaveTextContent(
+    partnershipFinderCopy.prompts.durationQuestion,
+  );
   expect(heading()).toHaveFocus();
   expect(currentStep()).toHaveTextContent("Your timeframe");
   expect(screen.getByText(talent.label)).toBeInTheDocument();
@@ -94,7 +102,7 @@ test("walks goal, timeframe and fit, moving focus to each step's heading", async
     screen.getByRole("button", { name: new RegExp(oneOff.label) }),
   );
   expect(heading()).toHaveTextContent(
-    `Sounds like a ${recommendations.talent.name} is a good fit.`,
+    `Try ${recommendations.talent.name} first.`,
   );
   expect(heading()).toHaveFocus();
   expect(currentStep()).toHaveTextContent("Your fit");
@@ -110,11 +118,13 @@ test("with motion, the progress moves at once and the old step fades, inert, bef
   await user.click(option);
   expect(currentStep()).toHaveTextContent("Your timeframe");
   expect(option.closest("[inert]")).not.toBeNull();
-  expect(heading()).toHaveTextContent("What matters most to you right now?");
+  expect(heading()).toHaveTextContent(
+    partnershipFinderCopy.prompts.intentQuestion,
+  );
 
   const next = await screen.findByRole("heading", {
     level: 3,
-    name: /one-off activation or an ongoing/,
+    name: partnershipFinderCopy.prompts.durationQuestion,
   });
   expect(next).toHaveFocus();
   expect(next.closest("[inert]")).toBeNull();
@@ -133,7 +143,7 @@ test("keeps the leaving step's answers while it fades", async () => {
   expect(screen.getByText(talent.label).tagName).toBe("P");
   await screen.findByRole("heading", {
     level: 3,
-    name: "What matters most to you right now?",
+    name: partnershipFinderCopy.prompts.intentQuestion,
   });
 });
 
@@ -147,16 +157,20 @@ test("hands the answers to the email and offers a call", async () => {
   );
 
   expect(
-    screen.getByRole("heading", { level: 3, name: /is a good fit/ }),
+    screen.getByRole("heading", { level: 3, name: /first/ }),
   ).toHaveTextContent(recommendations.longTerm.name);
   expect(
-    screen.getByText("With first choice on hackathon slots."),
+    screen.getByText(partnershipFinderCopy.prompts.firstChoice),
   ).toBeVisible();
   expect(
     screen.getByRole("link", { name: "Request via email" }),
   ).toHaveAttribute(
     "href",
-    getPartnershipEmailUrl({ intent: "hackathon", duration: "ongoing" }),
+    getPartnershipEmailUrl(
+      { intent: "hackathon", duration: "ongoing" },
+      partnershipFinderCopy,
+      testPartnershipContact,
+    ),
   );
   expect(screen.getByRole("button", { name: "Book a call" })).toBeVisible();
 });
@@ -167,7 +181,9 @@ test("Back returns to the previous question and Start again clears the answers",
     screen.getByRole("button", { name: new RegExp(talent.label) }),
   );
   await user.click(screen.getByRole("button", { name: "Back" }));
-  expect(heading()).toHaveTextContent("What matters most to you right now?");
+  expect(heading()).toHaveTextContent(
+    partnershipFinderCopy.prompts.intentQuestion,
+  );
   expect(heading()).toHaveFocus();
   expect(screen.queryByRole("button", { name: "Back" })).toBeNull();
 
@@ -178,13 +194,17 @@ test("Back returns to the previous question and Start again clears the answers",
     screen.getByRole("button", { name: new RegExp(ongoing.label) }),
   );
   await user.click(screen.getByRole("button", { name: "Back" }));
-  expect(heading()).toHaveTextContent(/one-off activation or an ongoing/);
+  expect(heading()).toHaveTextContent(
+    partnershipFinderCopy.prompts.durationQuestion,
+  );
 
   await user.click(
     screen.getByRole("button", { name: new RegExp(ongoing.label) }),
   );
   await user.click(screen.getByRole("button", { name: "Start again" }));
-  expect(heading()).toHaveTextContent("What matters most to you right now?");
+  expect(heading()).toHaveTextContent(
+    partnershipFinderCopy.prompts.intentQuestion,
+  );
   expect(heading()).toHaveFocus();
   expect(screen.queryByRole("link", { name: "Request via email" })).toBeNull();
 });
@@ -196,6 +216,7 @@ test.each(["Try {{format}} first.", "Try {{ format }} first."])(
     const user = userEvent.setup();
     render(
       <PartnershipProvider
+        contact={testPartnershipContact}
         copy={{
           ...partnershipFinderCopy,
           prompts: {
@@ -229,6 +250,7 @@ test("puts the recommended format at every {{format}} of the result question", a
   const user = userEvent.setup();
   render(
     <PartnershipProvider
+      contact={testPartnershipContact}
       copy={{
         ...partnershipFinderCopy,
         prompts: {

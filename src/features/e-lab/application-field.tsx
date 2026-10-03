@@ -100,7 +100,7 @@ function fieldDots(
  * that reach the Final Pitch stay lit; with reduced motion it renders in
  * that end state. Pointing at a dot pushes the field aside (see FieldDots),
  * and lit dots open into ventures that came out of the E-Lab (the venture
- * slice: the CMS list or the code list). `gates` are the cohort as drawn
+ * slice: the published CMS list). `gates` are the cohort as drawn
  * (from the site facts' selection figures), `cohortName` the current one's.
  */
 export async function ApplicationField({

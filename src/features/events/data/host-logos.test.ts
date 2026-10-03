@@ -1,24 +1,35 @@
-import { existsSync } from "node:fs";
-import path from "node:path";
 import { expect, test } from "vitest";
-import { organizationsWithKeys } from "@/features/partners";
-import { getMockEvents } from "@/lib/mock-cms";
 import { hostArtworkOf } from "./host-logos";
 
-const publicDir = path.resolve(import.meta.dirname, "../../../../public");
-
-test("every co-host of the fixtures has artwork that ships in public/", () => {
-  const keys = [
-    ...new Set(
-      getMockEvents().flatMap((event) =>
-        (event.coHosts ?? []).map(({ key }) => key),
-      ),
-    ),
-  ];
-  const { logos, icons } = hostArtworkOf(organizationsWithKeys(keys));
-  for (const key of keys) {
-    const src = logos[key]?.src ?? icons[key];
-    expect(src, key).toBeDefined();
-    if (src) expect(existsSync(path.join(publicDir, src)), key).toBe(true);
-  }
+test("wordmarks use optical aspect and symbol-only logos become icons", () => {
+  expect(
+    hostArtworkOf([
+      {
+        key: "word",
+        name: "Word",
+        logoOnDark: {
+          src: "/assets/fixtures/logo.svg",
+          alt: "Word",
+          width: 200,
+          height: 80,
+          aspectRatio: 3,
+        },
+      },
+      {
+        key: "icon",
+        name: "Icon",
+        logoOnDark: {
+          src: "/assets/fixtures/logo.svg",
+          alt: "Icon",
+          width: 200,
+          height: 80,
+          symbolOnly: true,
+        },
+      },
+      { key: "plain", name: "Plain" },
+    ]),
+  ).toEqual({
+    logos: { word: { src: "/assets/fixtures/logo.svg", aspect: 3 } },
+    icons: { icon: "/assets/fixtures/logo.svg" },
+  });
 });

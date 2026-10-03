@@ -55,10 +55,6 @@ import {
 } from "@tum.ai/ui-kit";
 import { Brain, Handshake, Inbox, Rocket, Sparkles } from "lucide-react";
 import type { ReactNode } from "react";
-import { socialLinks } from "@/config/contact";
-import { eLabConfig } from "@/config/e-lab";
-import { organizationFacts } from "@/config/organization";
-import { faqs } from "@/features/qanda/server";
 import { DesignSystemInteractive } from "./design-system-interactive";
 
 /*
@@ -76,14 +72,45 @@ const tones: { tone: Tone; name: string; hex: string }[] = [
   { tone: "night", name: "Black", hex: "#0D0214" },
 ];
 
+// Standalone component examples, independent of published CMS facts and copy.
+const demoPhoto = "/assets/fixtures/photo.svg";
+const demoLogo = "/assets/fixtures/logo.svg";
+const demoExternalUrl = "https://example.com";
 const logos = [
-  { name: "NVIDIA", src: "/assets/partners/logos/nvidia.webp" },
-  { name: "Google", src: "/assets/partners/logos/google.webp" },
-  { name: "IBM", src: "/assets/partners/logos/ibm.png" },
-  { name: "Meta", src: "/assets/partners/logos/meta.svg" },
-  { name: "Databricks", src: "/assets/partners/logos/databricks.svg" },
-  { name: "BMW", src: "/assets/partners/logos/bmw.svg" },
-  { name: "Helmholtz Munich" },
+  { name: "Example studio", src: demoLogo },
+  { name: "Example lab", src: demoLogo },
+  { name: "Example team", src: demoLogo },
+  { name: "Example group", src: demoLogo },
+  { name: "Example collective", src: demoLogo },
+  { name: "Example workshop", src: demoLogo },
+  { name: "Text-only example" },
+];
+const faqs = [
+  {
+    question: "How does this accordion open?",
+    answer: "Activate a question with a pointer, Enter or Space.",
+  },
+  {
+    question: "Can an answer contain several lines?",
+    answer:
+      "The panel grows with its content while the question remains visible.",
+  },
+  {
+    question: "Can a question have an anchor?",
+    answer: "An item id lets a link open the matching answer.",
+  },
+  {
+    question: "How does the section heading behave?",
+    answer: "The heading stays beside the questions on wide screens.",
+  },
+  {
+    question: "How are the examples styled?",
+    answer: "Each component inherits the surrounding tone tokens.",
+  },
+  {
+    question: "Can the first answer start open?",
+    answer: "Pass the question as the default accordion value.",
+  },
 ];
 
 const revealVariants: RevealVariant[] = [
@@ -94,7 +121,7 @@ const revealVariants: RevealVariant[] = [
   "right",
 ];
 
-const figures = ["1.2M+", "20k+", "2.3%", "~500", "2,100+", "24/7"];
+const figures = ["1.2M+", "18k+", "3.8%", "~500", "1,250+", "24/7"];
 
 /** CountUp's first frame for a figure, or a note when it stays as text. */
 function startFrame(figure: string) {
@@ -155,8 +182,8 @@ export function DesignSystemPage() {
         media={
           <figure className="group/zoom relative isolate min-h-72 overflow-hidden rounded-signature bg-sunken">
             <FallbackImage
-              src="/assets/open_ai_speaker_event.webp"
-              alt="A speaker on stage at a TUM.ai event"
+              src={demoPhoto}
+              alt="Geometric illustration used to demonstrate a media frame"
               fill
               preload
               sizes="(min-width: 1024px) 45vw, 100vw"
@@ -171,8 +198,8 @@ export function DesignSystemPage() {
         classNames={{ grid: "lg:items-stretch" }}
       >
         <Actions>
-          <StatusBadge>Applications open until 26.09.2026</StatusBadge>
-          <StatusBadge status="idle">Next cohort in spring</StatusBadge>
+          <StatusBadge>Example open state</StatusBadge>
+          <StatusBadge status="idle">Example idle state</StatusBadge>
           <StatusBadge status="closed">Applications closed</StatusBadge>
         </Actions>
       </PageHero>
@@ -235,12 +262,12 @@ export function DesignSystemPage() {
               Heading sm
             </Heading>
             <Text size="lead">
-              Lead: To bridge the gap between theory and practice by empowering
-              students to build the future of AI.
+              Lead: a larger opening paragraph introduces a section and gives
+              the reader a clear starting point.
             </Text>
             <Text className="max-w-2xl">
-              Body (muted): We combine academic rigor with a make-it-happen
-              mindset to solve real-world challenges.
+              Body (muted): longer paragraphs use a comfortable reading size and
+              the surrounding tone’s muted foreground.
             </Text>
             <Text size="small" emphasis="default">
               Small, default emphasis.
@@ -275,11 +302,11 @@ export function DesignSystemPage() {
               <TextLink href="/research" emphasis="muted">
                 Muted text link
               </TextLink>
-              <TextLink href={socialLinks.github} arrow>
+              <TextLink href={demoExternalUrl} arrow>
                 External text link
               </TextLink>
               <Anchor
-                href={socialLinks.github}
+                href={demoExternalUrl}
                 className="text-fg text-small underline underline-offset-4"
               >
                 Anchor: unstyled, route-aware
@@ -362,7 +389,7 @@ export function DesignSystemPage() {
             <ButtonLink href="#buttons" variant="link" arrow>
               Link
             </ButtonLink>
-            <ButtonLink href={socialLinks.github} arrow="external">
+            <ButtonLink href={demoExternalUrl} arrow="external">
               External
             </ButtonLink>
           </Actions>
@@ -422,15 +449,15 @@ export function DesignSystemPage() {
           <Label>Photo · rounded 3/2, 4/5, 4/3, 1/1, bleed 16/10</Label>
           <Photo
             className="md:col-start-1"
-            src="/assets/homepage/Onboarding25.webp"
-            alt="A new TUM.ai batch in matching black T-shirts"
+            src={demoPhoto}
+            alt="Geometric illustration in the default photo frame"
             caption="Caption: what, where and when"
             sizes="(min-width: 768px) 30vw, 100vw"
           />
           <Photo
             aspect="4/5"
-            src="/assets/homepage/venture_onboarding25.webp"
-            alt="The venture team around a meeting table"
+            src={demoPhoto}
+            alt="Geometric illustration in a portrait frame"
             caption="aspect 4/5, position 50% 60%"
             position="50% 60%"
             sizes="(min-width: 768px) 30vw, 100vw"
@@ -438,20 +465,20 @@ export function DesignSystemPage() {
           <Photo
             shape="bleed"
             aspect="16/10"
-            src="/assets/homepage/IBM_visit.webp"
-            alt="Members on a company visit to IBM"
+            src={demoPhoto}
+            alt="Geometric illustration in a wide frame"
             sizes="(min-width: 768px) 30vw, 100vw"
           />
           <Photo
             aspect="4/3"
-            src="/assets/homepage/Makeathon.webp"
-            alt="The Makeathon team on stage"
+            src={demoPhoto}
+            alt="Geometric illustration in a four-by-three frame"
             sizes="(min-width: 768px) 30vw, 100vw"
           />
           <Photo
             aspect="1/1"
-            src="/assets/homepage/getaway24.webp"
-            alt="Members at a long table in a vaulted restaurant"
+            src={demoPhoto}
+            alt="Geometric illustration in a square frame"
             sizes="(min-width: 768px) 30vw, 100vw"
           />
         </div>
@@ -459,34 +486,34 @@ export function DesignSystemPage() {
           <Label>Photo · panorama (4/3, 2/1 from sm, 24/7 from lg)</Label>
           <Photo
             aspect="panorama"
-            src="/assets/apply/new_section_photo_1.webp"
-            alt="A batch of members in winter jackets in front of a baroque building"
+            src={demoPhoto}
+            alt="Geometric illustration in a panoramic frame"
             caption="aspect panorama, position 50% 45%"
             position="50% 45%"
           />
         </div>
         <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           <QuoteCard
-            quote="Truly impressive what the team has built. We’re just getting started."
-            name="Axel Täubert"
-            byline="Head of Startups @ Google Cloud"
+            quote="A short example quote shows the default card and its attribution."
+            name="Example speaker"
+            byline="Role at an example studio"
             logo={{
-              src: "/assets/partners/logos/google.webp",
-              alt: "Google",
+              src: demoLogo,
+              alt: "Example logo",
             }}
           />
           <QuoteCard
             variant="ruled"
             quote="Ruled: a list of quotes under hairlines, without a card."
-            name="Leon Hergert"
-            byline="Co-Founder @ Spherecast"
-            portrait={{ src: "/assets/e-lab/testimonials/leon_hergert.png" }}
+            name="Example contributor"
+            byline="Role at an example team"
+            portrait={{ src: demoPhoto }}
           />
           <PersonCard
-            name="Leonie Freisinger"
-            byline="Co-Founder & CTO · unoptimized, object position"
+            name="Example participant"
+            byline="Example role · unoptimized, object position"
             image={{
-              src: "/assets/partners/people/leonie-portrait.webp",
+              src: demoPhoto,
               position: "50% 20%",
             }}
             unoptimized
@@ -526,11 +553,11 @@ export function DesignSystemPage() {
           <div className="grid gap-6 md:grid-cols-2">
             <QuoteCard
               variant="glass"
-              quote="The E-Lab put us in front of the right people, fast."
-              name="Leonie Freisinger"
-              byline="Co-Founder & CTO"
-              portrait={{ src: "/assets/partners/people/leonie.webp" }}
-              context={<Tag>E-Lab 4</Tag>}
+              quote="The glass variant brings a quote and its portrait onto a dark band."
+              name="Example participant"
+              byline="Example role"
+              portrait={{ src: demoPhoto }}
+              context={<Tag>Example context</Tag>}
               footer={
                 <div className="mt-6 flex items-center gap-3 border-hairline border-t pt-5">
                   <LogoTile
@@ -551,14 +578,14 @@ export function DesignSystemPage() {
                 <LogoTile
                   variant="chip"
                   fixed
-                  name="Google"
-                  src="/assets/partners/logos/google.webp"
+                  name="Example studio"
+                  src={demoLogo}
                 />
                 <LogoTile
                   variant="chip"
-                  name="NVIDIA"
-                  src="/assets/partners/logos/nvidia.webp"
-                  href="https://www.nvidia.com"
+                  name="Example lab"
+                  src={demoLogo}
+                  href={demoExternalUrl}
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -588,24 +615,24 @@ export function DesignSystemPage() {
           <StatGrid
             items={[
               {
-                value: organizationFacts.alumni,
+                value: 320,
                 suffix: "+",
-                label: "Alumni Members",
+                label: "Example count",
               },
               {
-                value: String(organizationFacts.foundingYear),
-                label: "Founding Year",
+                value: String(2024),
+                label: "Example year",
               },
               {
-                value: organizationFacts.nationalities,
+                value: 12,
                 suffix: "+",
-                label: "Nationalities",
+                label: "Example categories",
               },
               {
-                value: eLabConfig.ventureFundingMillions,
+                value: 1.5,
                 prefix: "€",
                 suffix: "M",
-                label: "Raised",
+                label: "Example amount",
               },
             ]}
           />
@@ -623,7 +650,7 @@ export function DesignSystemPage() {
             columns={3}
             items={[
               { value: "1.2M+", count: true, label: "Reach (sm, counted)" },
-              { value: "2.3%", count: true, label: "Conversion" },
+              { value: "3.8%", count: true, label: "Conversion" },
               { value: "24/7", label: "Not a single number" },
             ]}
           />
@@ -631,21 +658,21 @@ export function DesignSystemPage() {
             size="xl"
             columns={2}
             items={[
-              { value: "2,100+", count: true, label: "Members (xl)" },
-              { value: 40, suffix: "+", label: "Nationalities" },
+              { value: "1,250+", count: true, label: "Example total (xl)" },
+              { value: 40, suffix: "+", label: "Example categories" },
             ]}
           />
           <div className="grid gap-10 lg:grid-cols-2">
             <Ledger
               items={[
                 {
-                  label: "Founded",
-                  value: String(organizationFacts.foundingYear),
+                  label: "Example year",
+                  value: String(2024),
                   note: "Ledger md: a string figure",
                 },
                 {
-                  label: "Nationalities",
-                  value: organizationFacts.nationalities,
+                  label: "Example categories",
+                  value: 12,
                   suffix: "+",
                   note: "Counted up on scroll",
                 },
@@ -655,8 +682,8 @@ export function DesignSystemPage() {
               size="lg"
               items={[
                 {
-                  label: "Raised",
-                  value: eLabConfig.ventureFundingMillions,
+                  label: "Example amount",
+                  value: 1.5,
                   prefix: "€",
                   suffix: "M",
                   note: "Ledger lg",
@@ -693,7 +720,7 @@ export function DesignSystemPage() {
                 title: "Research",
                 description: "Projects with universities and labs.",
                 href: "/research",
-                image: { src: "/assets/innovation/robotics_discussion.webp" },
+                image: { src: demoPhoto },
               },
               {
                 id: "events",
@@ -701,7 +728,7 @@ export function DesignSystemPage() {
                 description: "Talks, workshops and hackathons.",
                 detail: "With a detail",
                 href: "/events",
-                image: { src: "/assets/open_ai_speaker_event.webp" },
+                image: { src: demoPhoto },
               },
               {
                 id: "no-image",
@@ -713,10 +740,10 @@ export function DesignSystemPage() {
           />
           <QuoteCard
             variant="editorial"
-            quote="The density of real builders at the Final Pitch is what pre-seed funds look for."
+            quote="The editorial variant gives a longer example quote room to lead a section."
             name="Editorial variant"
             byline="Role @ Organization"
-            portrait={{ src: "/assets/partners/people/leonie.webp" }}
+            portrait={{ src: demoPhoto }}
             className="max-w-3xl"
           />
         </div>
@@ -886,54 +913,28 @@ export function DesignSystemPage() {
             layout="strip"
             label="Logo strip"
             logos={[
+              ...logos.map((logo) => ({
+                ...logo,
+                ...(logo.src ? { aspectRatio: 200 / 80 } : {}),
+              })),
               {
-                name: "NVIDIA",
-                src: "/assets/partners/logos/nvidia.webp",
-                aspectRatio: 204 / 150,
-              },
-              {
-                name: "Google",
-                src: "/assets/partners/logos/google.webp",
-                aspectRatio: 270 / 82,
-                href: "https://about.google",
-              },
-              {
-                name: "IBM",
-                src: "/assets/partners/logos/ibm.png",
-                aspectRatio: 500 / 200,
-              },
-              {
-                name: "Meta",
-                src: "/assets/partners/logos/meta.svg",
-                aspectRatio: 50 / 11,
-              },
-              {
-                name: "Databricks",
-                src: "/assets/partners/logos/databricks.svg",
-                aspectRatio: 712.77 / 112.97,
-              },
-              {
-                name: "BMW",
-                src: "/assets/partners/logos/bmw.svg",
+                name: "TUM.ai",
+                src: "/assets/favicon.svg",
                 aspectRatio: 1,
+                wordmark: "TUM.ai",
               },
-              { name: "Helmholtz Munich" },
             ]}
           />
         </div>
         <div className="mt-12 grid gap-3 sm:grid-cols-4">
           <LogoTile
-            name="Google"
-            src="/assets/partners/logos/google.webp"
-            href="https://about.google"
+            name="Example studio"
+            src={demoLogo}
+            href={demoExternalUrl}
             size="xl"
             responsive
           />
-          <LogoTile
-            name="NVIDIA"
-            src="/assets/partners/logos/nvidia.webp"
-            size="lg"
-          />
+          <LogoTile name="Example lab" src={demoLogo} size="lg" />
           <LogoTile name="Missing artwork" src="/missing/logo.png" />
           <LogoTile name="No artwork" size="sm" />
         </div>

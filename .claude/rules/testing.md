@@ -11,8 +11,9 @@ paths:
   Testing Library, jest-dom and the axe matcher from `vitest.setup.ts`. Colocate tests with the
   code; `test/` is only for repo-wide checks (content facts, public assets, favicon, perf).
 - **Test behaviour, not source text.** No reading source files to grep for strings, no
-  change-detector assertions on literals. Derive expected values from config so a documented
-  config edit keeps tests green.
+  change-detector assertions on literals. Query/parser/render tests use independent synthetic
+  CMS documents; pure helper tests derive behavior from explicit fact/window inputs. Cover
+  required failures and optional clearing, without frozen editorial config payloads.
 - **Component tests:**
   ```tsx
   import { axe } from "@test/axe";

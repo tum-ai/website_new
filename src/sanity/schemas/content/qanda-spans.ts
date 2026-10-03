@@ -41,8 +41,8 @@ export async function validateEntrySpans(
       }`,
       { id },
     );
-  // Without a published passage the page shows the code passage; the
-  // passage's own check covers the quotes once it is published.
+  if (!passage && spans.length > 0)
+    return "Publish the Q&A mission passage before adding mission phrases.";
   if (!passage) return true;
   const problems = spanProblems(passage, [
     ...spans.map((text) => ({ id, text: String(text) })),
@@ -79,5 +79,5 @@ export async function validatePassageSpans(
         entries.find((entry) => entry.id === span.id)?.question ?? span.id,
     ),
   );
-  return `These answers' mission phrases no longer match the passage, so the page shows them unmarked: ${[...questions].join("; ")}. Update their phrases after publishing.`;
+  return `These answers' mission phrases no longer match the passage, and prevent the page from rendering: ${[...questions].join("; ")}. Update their phrases after publishing.`;
 }

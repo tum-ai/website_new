@@ -1,231 +1,104 @@
 import { redirect } from "next/navigation";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
 
-/**
- * The content read path (lib/cms-content.ts) with next-sanity mocked. The
- * module reads the project and dataset at import time, so each test stubs
- * the env and imports a fresh copy.
- */
-const mocks = vi.hoisted(() => ({
-  fetch: vi.fn(),
-  createClient: vi.fn(),
-}));
-
+const mocks = vi.hoisted(() => ({ fetch: vi.fn() }));
 vi.mock("next-sanity", () => ({
-  createClient: mocks.createClient.mockImplementation((config: unknown) => ({
-    config,
-    fetch: mocks.fetch,
-  })),
+  createClient: () => ({ fetch: mocks.fetch }),
 }));
-
-async function loadCmsContent(env: Record<string, string> = {}) {
-  vi.stubEnv("NEXT_PUBLIC_SANITY_PROJECT_ID", "abc123");
+const options = {
+  query: '*[_type == "siteSettings"][0]{brandMission}',
+  tags: ["content:siteSettings"],
+  label: "settings",
+};
+async function reader(env: Record<string, string | undefined> = {}) {
+  vi.stubEnv("NEXT_PUBLIC_SANITY_PROJECT_ID", "fixture");
   vi.stubEnv("NEXT_PUBLIC_SANITY_DATASET", "redesign");
-  vi.stubEnv("CMS_CONTENT_SOURCE", "sanity");
   vi.stubEnv("USE_MOCK_CMS", "");
   vi.stubEnv("VERCEL", "");
-  for (const [key, value] of Object.entries(env)) vi.stubEnv(key, value);
+  for (const [k, v] of Object.entries(env)) vi.stubEnv(k, v ?? "");
   vi.resetModules();
   return import("./cms-content");
 }
-
-const doc = { _id: "t-1", _type: "thing", title: "From the mock" };
-const options = {
-  query: `*[_type == "thing"][0]{ title }`,
-  tags: ["content:thing"],
-  mockDocuments: () => [doc],
-  label: "the thing",
-};
-
 beforeEach(() => {
   mocks.fetch.mockReset();
-  mocks.createClient.mockClear();
-  vi.spyOn(console, "error").mockImplementation(() => {});
 });
-
-afterEach(() => {
-  vi.unstubAllEnvs();
-  vi.restoreAllMocks();
-});
-
-describe("getContentSource", () => {
-  test("defaults to code and accepts either source, in any case", async () => {
-    const { getContentSource } = await loadCmsContent();
-    expect(getContentSource("")).toBe("code");
-    expect(getContentSource(" Sanity ")).toBe("sanity");
-    expect(getContentSource("code")).toBe("code");
+afterEach(() => vi.unstubAllEnvs());
+test("published fetch keeps cache tags and revalidation", async () => {
+  const { fetchContent } = await reader();
+  mocks.fetch.mockResolvedValue({ title: "CMS" });
+  await expect(fetchContent({ ...options, revalidate: 60 })).resolves.toEqual({
+    title: "CMS",
   });
-
-  test("throws on anything else, so a typo fails the build", async () => {
-    const { getContentSource } = await loadCmsContent();
-    expect(() => getContentSource("cms")).toThrow(/CMS_CONTENT_SOURCE/);
-  });
-
-  test("reads CMS_CONTENT_SOURCE by default", async () => {
-    const { getContentSource } = await loadCmsContent({
-      CMS_CONTENT_SOURCE: "",
-    });
-    expect(getContentSource()).toBe("code");
-  });
-});
-
-test("the content client reads the site's dataset, published, from the CDN", async () => {
-  await loadCmsContent();
-  expect(mocks.createClient).toHaveBeenCalledWith(
-    expect.objectContaining({
-      projectId: "abc123",
-      dataset: "redesign",
-      perspective: "published",
-      useCdn: true,
-    }),
+  expect(mocks.fetch).toHaveBeenCalledWith(
+    options.query,
+    {},
+    { next: { tags: options.tags, revalidate: 60 } },
   );
 });
-
-describe("on production, the old site's dataset", () => {
-  test.each([
-    ["by default", ""],
-    ["when named", "production"],
-  ])("(%s) there is no content client", async (_, value) => {
-    const { contentClient } = await loadCmsContent({
-      NEXT_PUBLIC_SANITY_DATASET: value,
-    });
-    expect(contentClient).toBeNull();
-    expect(mocks.createClient).not.toHaveBeenCalled();
-  });
-
-  test("the sanity source renders the code content, and says so once", async () => {
-    vi.spyOn(console, "warn").mockImplementation(() => {});
-    mocks.fetch.mockResolvedValue({ title: "CMS" });
-    const { fetchContent, loadContent } = await loadCmsContent({
-      NEXT_PUBLIC_SANITY_DATASET: "",
-    });
-    const fallback = { title: "Code" };
-    const load = { ...options, fallback, select: (result: unknown) => result };
-
-    await expect(loadContent(load)).resolves.toBe(fallback);
-    await expect(loadContent(load)).resolves.toBe(fallback);
-    await expect(fetchContent(options)).resolves.toBeNull();
-    expect(mocks.fetch).not.toHaveBeenCalled();
-    expect(console.warn).toHaveBeenCalledExactlyOnceWith(
-      expect.stringContaining("NEXT_PUBLIC_SANITY_DATASET"),
-    );
-  });
-
-  test("the mock CMS still serves the backfill", async () => {
-    const { loadContent } = await loadCmsContent({
-      NEXT_PUBLIC_SANITY_DATASET: "",
-      USE_MOCK_CMS: "1",
-    });
-    await expect(
-      loadContent({
-        ...options,
-        fallback: { title: "Code" },
-        select: (result: unknown) => result,
-      }),
-    ).resolves.toStrictEqual({ title: "From the mock" });
-  });
+test.each([
+  { NEXT_PUBLIC_SANITY_PROJECT_ID: "" },
+  { NEXT_PUBLIC_SANITY_DATASET: "" },
+  { NEXT_PUBLIC_SANITY_DATASET: "production" },
+])("configuration fails at reader boundary", async (env) => {
+  const { fetchContent } = await reader(env);
+  await expect(fetchContent(options)).rejects.toThrow(/configuration/);
+  expect(mocks.fetch).not.toHaveBeenCalled();
 });
-
-describe("fetchContent", () => {
-  test("fetches with the tags and params, and revalidate only when given", async () => {
-    mocks.fetch.mockResolvedValue({ title: "CMS" });
-    const { fetchContent } = await loadCmsContent();
-
-    await expect(
-      fetchContent({ ...options, params: { a: 1 } }),
-    ).resolves.toStrictEqual({ title: "CMS" });
-    expect(mocks.fetch).toHaveBeenLastCalledWith(
-      options.query,
-      { a: 1 },
-      { next: { tags: ["content:thing"] } },
-    );
-
-    await fetchContent({ ...options, revalidate: 60 });
-    expect(mocks.fetch).toHaveBeenLastCalledWith(
-      options.query,
-      {},
-      { next: { tags: ["content:thing"], revalidate: 60 } },
-    );
-  });
-
-  test("returns null for an empty result", async () => {
-    mocks.fetch.mockResolvedValue(null);
-    const { fetchContent } = await loadCmsContent();
-    await expect(fetchContent(options)).resolves.toBeNull();
-  });
-
-  test("returns null without a request when no project is configured", async () => {
-    const { fetchContent } = await loadCmsContent({
-      NEXT_PUBLIC_SANITY_PROJECT_ID: "",
-    });
-    await expect(fetchContent(options)).resolves.toBeNull();
-    expect(mocks.fetch).not.toHaveBeenCalled();
-  });
-
-  test("logs a failed request and returns null", async () => {
-    mocks.fetch.mockRejectedValue(new Error("offline"));
-    const { fetchContent } = await loadCmsContent();
-    await expect(fetchContent(options)).resolves.toBeNull();
-    expect(console.error).toHaveBeenCalledWith(
-      expect.stringContaining("the thing"),
-      expect.any(Error),
-    );
-  });
-
-  test("rethrows Next.js control flow", async () => {
-    mocks.fetch.mockImplementation(() => redirect("/elsewhere"));
-    const { fetchContent } = await loadCmsContent();
-    await expect(fetchContent(options)).rejects.toThrow("NEXT_REDIRECT");
-  });
-
-  test("evaluates the query over the mock documents under the mock CMS", async () => {
-    const { fetchContent } = await loadCmsContent({ USE_MOCK_CMS: "1" });
-    await expect(fetchContent(options)).resolves.toStrictEqual({
-      title: "From the mock",
-    });
-    expect(mocks.fetch).not.toHaveBeenCalled();
-  });
-
-  test("never uses the mock on Vercel", async () => {
-    mocks.fetch.mockResolvedValue({ title: "CMS" });
-    const { fetchContent } = await loadCmsContent({
-      USE_MOCK_CMS: "1",
-      VERCEL: "1",
-    });
-    await expect(fetchContent(options)).resolves.toStrictEqual({
-      title: "CMS",
-    });
-  });
+test("CMS outage propagates a useful failure", async () => {
+  const { fetchContent } = await reader();
+  mocks.fetch.mockRejectedValue(new Error("offline"));
+  let failure: unknown;
+  try {
+    await fetchContent(options);
+  } catch (error) {
+    failure = error;
+  }
+  expect(failure).toBeInstanceOf(Error);
+  expect((failure as Error).message).toMatch(/could not fetch/);
 });
-
-describe("loadContent", () => {
-  const fallback = { title: "Code", lead: "Code lead" };
-  const load = {
-    ...options,
-    fallback,
-    select: (result: { title: string }) => result,
-  };
-
-  test("the code source returns the fallback without a request", async () => {
-    const { loadContent } = await loadCmsContent({
-      CMS_CONTENT_SOURCE: "code",
-    });
-    await expect(loadContent(load)).resolves.toBe(fallback);
-    expect(mocks.fetch).not.toHaveBeenCalled();
+test("Next control flow survives wrapping", async () => {
+  const { fetchContent } = await reader();
+  let control: unknown;
+  try {
+    redirect("/apply");
+  } catch (error) {
+    control = error;
+  }
+  mocks.fetch.mockRejectedValue(control);
+  let failure: unknown;
+  try {
+    await fetchContent(options);
+  } catch (error) {
+    failure = error;
+  }
+  expect(failure).toBe(control);
+});
+test("select owns required content validation", async () => {
+  const { loadContent } = await reader();
+  mocks.fetch.mockResolvedValue(null);
+  await expect(
+    loadContent({
+      ...options,
+      select: () => {
+        throw new Error("required document");
+      },
+    }),
+  ).rejects.toThrow("required document");
+});
+test("Vercel ignores mock flag", async () => {
+  const { fetchContent } = await reader({ USE_MOCK_CMS: "1", VERCEL: "1" });
+  mocks.fetch.mockResolvedValue([]);
+  await expect(fetchContent(options)).resolves.toEqual([]);
+  expect(mocks.fetch).toHaveBeenCalled();
+});
+test("local mock evaluates actual GROQ without live configuration", async () => {
+  const { fetchContent } = await reader({
+    USE_MOCK_CMS: "1",
+    NEXT_PUBLIC_SANITY_PROJECT_ID: "",
+    NEXT_PUBLIC_SANITY_DATASET: "",
   });
-
-  test("the sanity source merges the selected result over the fallback", async () => {
-    mocks.fetch.mockResolvedValue({ title: "CMS" });
-    const { loadContent } = await loadCmsContent();
-    await expect(loadContent(load)).resolves.toStrictEqual({
-      title: "CMS",
-      lead: "Code lead",
-    });
+  await expect(fetchContent(options)).resolves.toEqual({
+    brandMission: "Build and learn together.",
   });
-
-  test("a failed request renders the fallback", async () => {
-    mocks.fetch.mockRejectedValue(new Error("offline"));
-    const { loadContent } = await loadCmsContent();
-    await expect(loadContent(load)).resolves.toBe(fallback);
-  });
+  expect(mocks.fetch).not.toHaveBeenCalled();
 });

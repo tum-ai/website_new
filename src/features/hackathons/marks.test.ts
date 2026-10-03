@@ -1,7 +1,11 @@
 import { describe, expect, test } from "vitest";
-import { hackathonFacts } from "@/config/hackathons";
-import { getMockEvents } from "@/lib/mock-cms";
-import { makeathonEditions } from "./data/makeathon";
+import {
+  hackathonsFactsFixture as hackathonFacts,
+  hackathonsFixture,
+} from "@/lib/cms-fixtures/hackathons";
+
+const makeathonEditions = hackathonsFixture.makeathon.editions;
+
 import {
   buildMarks,
   type HackathonEvent,
@@ -66,7 +70,7 @@ describe("buildMarks", () => {
     ]);
     expect(marks.some(({ id }) => id === "event-cms-makeathon")).toBe(false);
     const edition = marks.find(({ id }) => id === "makeathon-2026");
-    expect(edition?.title).toBe("Makeathon 2026");
+    expect(edition?.title).toBe(makeathonEditions.at(-1)?.name);
     expect(edition?.href).toBe("https://example.com/makeathon");
   });
 
@@ -112,17 +116,32 @@ describe("buildMarks", () => {
     expect(mark).toMatchObject({ start: "2025-12-13", end: "2025-12-13" });
   });
 
-  test("the mock events: every Makeathon and league match is an event, every event drawn once", () => {
-    const events = getMockEvents(new Date("2026-10-01T12:00:00Z"));
-    const hackathons = events.filter(isHackathonEvent);
+  test("a fetched event for each record is drawn once", () => {
+    const events = [
+      ...makeathonEditions.map((edition) =>
+        event({
+          id: edition.key,
+          title: edition.name,
+          event_date: `${edition.start}T12:00:00Z`,
+          end_date: `${edition.end}T12:00:00Z`,
+          city: edition.city,
+        }),
+      ),
+      ...league.matches
+        .filter((match) => !match.makeathon)
+        .map((match) =>
+          event({
+            id: match.key,
+            event_date: `${match.start}T12:00:00Z`,
+            end_date: `${match.end}T12:00:00Z`,
+            city: match.city,
+          }),
+        ),
+      event({ id: "other" }),
+    ];
     const marks = build(events);
-    const records = marks.filter(({ kind }) => kind !== "partner");
-    const partners = marks.filter(({ kind }) => kind === "partner");
-    // Hackathons are a subset of events: each edition and match merges one
-    // event, and every other event is its own mark.
-    expect(records.length + partners.length).toBe(hackathons.length);
-    // No event is drawn twice: the partner marks are the rest.
-    expect(new Set(partners.map(({ id }) => id)).size).toBe(partners.length);
+    expect(marks).toHaveLength(events.filter(isHackathonEvent).length);
+    expect(new Set(marks.map(({ id }) => id)).size).toBe(marks.length);
   });
 });
 

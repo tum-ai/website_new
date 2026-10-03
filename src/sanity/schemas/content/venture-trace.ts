@@ -7,10 +7,8 @@ const published = '!(_id in path("drafts.**"))';
 /**
  * The trace's cohort must be the founder's context, word for word: the
  * lead names the cohort and the founder's quote card names the context, so
- * two different cohorts would contradict each other. The page renders the
- * code trace instead of a mismatched one (`features/e-lab/venture-content.ts`),
- * also when the founder's published testimonial has no context. Exported
- * for tests.
+ * two different cohorts would contradict each other. The runtime reader rejects
+ * a mismatched trace or a founder without a published context.
  */
 export function cohortProblem(
   cohort: unknown,
@@ -40,8 +38,7 @@ async function validateCohort(cohort: unknown, context: ValidationContext) {
 
 /**
  * The venture must be in the published E-Lab ventures logo list: the
- * section finds the traced venture there and hides without it. Without a
- * published list the page shows the code list, which this cannot check.
+ * runtime reader rejects a trace whose organization is not in that list.
  * Exported for tests.
  */
 export async function validateListedVenture(

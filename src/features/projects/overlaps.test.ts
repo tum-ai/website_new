@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { taskForces } from "./data/projects";
+
 import {
   AI_RADIUS,
   figureExtent,
@@ -17,7 +17,7 @@ const distance = (x: number, y: number) => Math.hypot(x, y);
 
 // The page seats every task force plus one open seat; the ring must also
 // hold when task forces are added or retired.
-const pageCount = taskForces.length + 1;
+const pageCount = 6;
 const counts = [3, 4, 5, 6, 7, 8, pageCount];
 
 describe.each(counts)("a ring of %i seats", (count) => {
