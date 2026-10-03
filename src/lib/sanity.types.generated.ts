@@ -48,15 +48,6 @@ export type HackathonsCopy = {
     title: string;
     lead: string;
     linkLabel: string;
-    photo: {
-      asset?: SanityImageAssetReference;
-      media?: unknown;
-      hotspot?: SanityImageHotspot;
-      crop?: SanityImageCrop;
-      alt?: string;
-      _type: "image";
-    };
-    photoCaption: string;
     figures?: {
       latest?: {
         value: string;
@@ -2090,7 +2081,7 @@ export type EVENTS_COPY_QUERY_RESULT =
 
 // Source: ../features/hackathons/content.ts
 // Variable: HACKATHONS_COPY_QUERY
-// Query: *[_id == "hackathonsCopy"][0]{  hero{    eyebrow,    title,    lead,    leagueAction,    makeathonAction,    ribbonLabel,    sliderLabel,    nextLabel,    legend{ makeathon, league, partner }  },  league{    eyebrow,    tagline,    lead,    linkLabel,    routeLabel,    makeathonDetail,    finale{      label,      text,      liveLabel,      pastText,      actionLabel,      standingsLabel,      "poster": poster{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},      championLabel,      champion,      runnersUpLabel,      runnersUp,      "recapPhoto": recapPhoto{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},      recapCaption    },    partnersTitle  },  makeathon{    eyebrow,    title,    lead,    linkLabel,    "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},    photoCaption,    figures{      latest{ value, label },      editions{ value, label },      league{ value, label }    },    editionsTitle,    "editionsPhoto": editionsPhoto{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},    editionsPhotoCaption,    editions[]{ key, name, start, end, city, note, link{ label, href } }  },  partners{ title, lead, hostsPrefix, moreLabel },  offer{ title, lead, items, addOns },  closing{    title,    lead,    student{ audience, text, actionLabel },    partner{ audience, text }  }}
+// Query: *[_id == "hackathonsCopy"][0]{  hero{    eyebrow,    title,    lead,    leagueAction,    makeathonAction,    ribbonLabel,    sliderLabel,    nextLabel,    legend{ makeathon, league, partner }  },  league{    eyebrow,    tagline,    lead,    linkLabel,    routeLabel,    makeathonDetail,    finale{      label,      text,      liveLabel,      pastText,      actionLabel,      standingsLabel,      "poster": poster{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},      championLabel,      champion,      runnersUpLabel,      runnersUp,      "recapPhoto": recapPhoto{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},      recapCaption    },    partnersTitle  },  makeathon{    eyebrow,    title,    lead,    linkLabel,    figures{      latest{ value, label },      editions{ value, label },      league{ value, label }    },    editionsTitle,    "editionsPhoto": editionsPhoto{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},    editionsPhotoCaption,    editions[]{ key, name, start, end, city, note, link{ label, href } }  },  partners{ title, lead, hostsPrefix, moreLabel },  offer{ title, lead, items, addOns },  closing{    title,    lead,    student{ audience, text, actionLabel },    partner{ audience, text }  }}
 export type HACKATHONS_COPY_QUERY_RESULT =
   | {
       hero: null;
@@ -2353,23 +2344,6 @@ export type HACKATHONS_COPY_QUERY_RESULT =
         title: string;
         lead: string;
         linkLabel: string;
-        photo: {
-          src: string | null;
-          width: number | null;
-          height: number | null;
-          alt: string | null;
-          hotspot: {
-            x: number;
-            y: number;
-          } | null;
-          crop: {
-            top: number;
-            bottom: number;
-            left: number;
-            right: number;
-          } | null;
-        };
-        photoCaption: string;
         figures: {
           latest: {
             value: string;

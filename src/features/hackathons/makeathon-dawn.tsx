@@ -7,7 +7,7 @@ import { type ReactNode, useRef } from "react";
  * The Makeathon opener's sky: the hour before the Makeathon site's sunrise.
  * The Makeathon's amber dots gather above a horizon and thin out upward,
  * and its sun waits just below the line, showing only its glow and the top
- * of its arc. On makeathon.tum-ai.com the sun rises, so following the link
+ * of its arc. On the Makeathon's own site the sun rises, so following the link
  * finishes the picture. The dots and sun are from `@tum.ai/ui-kit/halftone`
  * (shared with that site). The dots keep clear of `children`, and the sun
  * lifts a little while the band scrolls by (hackathons.css). Decorative
