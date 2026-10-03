@@ -14,7 +14,7 @@ import {
   MIN_SCALE,
   settleField,
   stepField,
-} from "./field-physics";
+} from "@/lib/spring-field";
 
 /**
  * A venture a lit dot opens into: its name, logo artwork and, when it has

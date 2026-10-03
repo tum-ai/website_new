@@ -10,7 +10,7 @@ import {
 import { buildVentureBackfill } from "@/features/e-lab/server";
 import type { BackfillDocument } from "@/lib/cms-backfill";
 import { loadContent } from "@/lib/cms-content";
-import { CONTENT_IMAGE_PROJECTION, whole } from "@/lib/cms-content-model";
+import { CONTENT_IMAGE_PROJECTION } from "@/lib/cms-content-model";
 import { getDepartments } from "@/lib/community-content";
 import { backfillContentImage, keyedItems } from "@/lib/content-backfill";
 import { fillCmsCopy, fillCodeCopy } from "@/lib/content-copy";
@@ -64,7 +64,7 @@ export const HOME_COPY_QUERY = defineQuery(`*[_id == "homeCopy"][0]{
     lead,
     stepsTitle,
     steps[]{ title, dates },
-    quote{ "name": person->name, excerpt }
+    quotes[]{ "name": person->name, excerpt }
   },
   partners{ title, lead, moreLabel, "quote": quote->key }
 }`);
@@ -82,21 +82,19 @@ type Filled = Partial<Record<keyof HomeCopy, Record<string, unknown>>> & {
 };
 
 /**
- * The join band's quote as a whole: the excerpt with the member it
- * references, or nothing (the code quote shows). An excerpt whose person
- * did not resolve is never attributed to the code member.
+ * The join band's quotes whose member resolved and whose excerpt is set.
+ * The list replaces the code quotes as a whole (none left: the code quotes
+ * show), so an excerpt is never attributed to a code member.
  */
-function joinQuote(quote: unknown) {
-  const { name, excerpt } = (quote ?? {}) as {
-    name?: string;
-    excerpt?: string;
-  };
-  return name && excerpt ? whole({ name, excerpt }) : undefined;
+function joinQuotes(quotes: unknown) {
+  return ((quotes ?? []) as { name?: string; excerpt?: string }[]).flatMap(
+    ({ name, excerpt }) => (name && excerpt ? [{ name, excerpt }] : []),
+  );
 }
 
 /**
- * A filled CMS copy, with incomplete list items dropped and the join quote
- * whole or left out. Exported for tests.
+ * A filled CMS copy, with incomplete list items dropped. Exported for
+ * tests.
  */
 export function selectHomeCopy(copy: Filled | null) {
   if (!copy) return null;
@@ -138,7 +136,7 @@ export function selectHomeCopy(copy: Filled | null) {
       steps: (
         (copy.join.steps ?? []) as { title?: string; dates?: string }[]
       ).filter((step) => step.title && step.dates),
-      quote: joinQuote(copy.join.quote),
+      quotes: joinQuotes(copy.join.quotes),
     },
   };
 }
@@ -224,13 +222,14 @@ export function buildHomeBackfill(): BackfillDocument[] {
       join: {
         ...join,
         steps: keyedItems("recruitingStep", join.steps),
-        quote: {
-          person: personReference(
-            "member-story",
-            memberStoryKey(join.quote.name),
-          ),
-          excerpt: join.quote.excerpt,
-        },
+        quotes: keyedItems(
+          "memberQuote",
+          join.quotes.map(({ name, excerpt }) => ({
+            person: personReference("member-story", memberStoryKey(name)),
+            excerpt,
+          })),
+          ({ person }) => person._ref,
+        ),
       },
       partners: {
         ...partners,

@@ -457,10 +457,12 @@ export type HomeCopy = {
       _type: "recruitingStep";
       _key: string;
     }>;
-    quote?: {
+    quotes: Array<{
       person: PersonReference;
       excerpt: string;
-    };
+      _type: "memberQuote";
+      _key: string;
+    }>;
   };
   partners?: {
     title: string;
@@ -2419,7 +2421,7 @@ export type HACKATHONS_COPY_QUERY_RESULT =
 
 // Source: ../features/home/content.ts
 // Variable: HOME_COPY_QUERY
-// Query: *[_id == "homeCopy"][0]{  hero{    title,    lead,    partnersLabel,    "photos": photos[]{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}  },  mission{ statement, body },  ledger[]{ key, label, note },  programs{    title,    lead,    items[]{      "id": key,      title,      description,      href,      "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}    }  },  room{    title,    lead,    "photos": photos[]{ "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}, caption }  },  join{    title,    lead,    stepsTitle,    steps[]{ title, dates },    quote{ "name": person->name, excerpt }  },  partners{ title, lead, moreLabel, "quote": quote->key }}
+// Query: *[_id == "homeCopy"][0]{  hero{    title,    lead,    partnersLabel,    "photos": photos[]{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}  },  mission{ statement, body },  ledger[]{ key, label, note },  programs{    title,    lead,    items[]{      "id": key,      title,      description,      href,      "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}    }  },  room{    title,    lead,    "photos": photos[]{ "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}, caption }  },  join{    title,    lead,    stepsTitle,    steps[]{ title, dates },    quotes[]{ "name": person->name, excerpt }  },  partners{ title, lead, moreLabel, "quote": quote->key }}
 export type HOME_COPY_QUERY_RESULT =
   | {
       hero: null;
@@ -2571,10 +2573,10 @@ export type HOME_COPY_QUERY_RESULT =
           title: string;
           dates: string;
         }>;
-        quote: {
+        quotes: Array<{
           name: string;
           excerpt: string;
-        } | null;
+        }>;
       } | null;
       partners: {
         title: string;

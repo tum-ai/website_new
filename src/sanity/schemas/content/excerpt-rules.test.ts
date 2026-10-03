@@ -16,10 +16,18 @@ const documents = [
     _id: "homeCopy",
     _type: "homeCopy",
     join: {
-      quote: {
-        person: { _type: "reference", _ref: "person-ada" },
-        excerpt: "Within a semester I led a team of seven.",
-      },
+      quotes: [
+        {
+          _key: "grace",
+          person: { _type: "reference", _ref: "person-grace" },
+          excerpt: "Someone else's words.",
+        },
+        {
+          _key: "ada",
+          person: { _type: "reference", _ref: "person-ada" },
+          excerpt: "Within a semester I led a team of seven.",
+        },
+      ],
     },
   },
   {

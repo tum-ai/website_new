@@ -5,7 +5,7 @@ import { copyText } from "./copy-fields";
 
 /**
  * A quote taken from a member's story (`person.story`): the homepage's
- * member quote (`homeCopy.join.quote`) and a journey step's evidence
+ * member quotes (`homeCopy.join.quotes`) and a journey step's evidence
  * (`journeyStep.evidence`). Both hold a `person` reference and the
  * `excerpt`; the story is the source, so the excerpt must stay a passage
  * of it (`lib/quote-excerpt.ts`, the rule the tests apply to the code
@@ -83,8 +83,15 @@ export async function validateQuotedStory(
     .fetch<QuotingDocument[]>(
       `*[${published} && (
         (_type == "journeyStep" && evidence.person._ref == $id) ||
-        (_id == "homeCopy" && join.quote.person._ref == $id)
-      )]{ _id, number, "excerpt": coalesce(evidence.excerpt, join.quote.excerpt) }`,
+        (_id == "homeCopy" && $id in join.quotes[].person._ref)
+      )]{
+        _id,
+        number,
+        "excerpt": coalesce(
+          evidence.excerpt,
+          join.quotes[person._ref == $id][0].excerpt
+        )
+      }`,
       { id },
     );
   const broken = quoting.filter(

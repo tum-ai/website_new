@@ -267,23 +267,46 @@ export const homeCopyType = defineType({
           validation: (Rule) => Rule.required().min(1).max(4),
         }),
         defineField({
-          name: "quote",
-          title: "Member quote",
-          type: "object",
+          name: "quotes",
+          title: "Member quotes",
+          type: "array",
           description:
-            "A sentence from a member's story on the community page; the story supplies the name, role and portrait.",
-          fields: [
-            defineField({
-              name: "person",
-              title: "Member",
-              type: "reference",
-              to: [{ type: "person" }],
-              options: { filter: 'placement == "member-story"' },
-              description: "One of the member stories.",
-              validation: (Rule) => Rule.required(),
+            "The members whose faces stand beside the steps, in order; visitors pick a face to read that member's quote, and the first is quoted until they do. Each quote is a sentence from the member's story on the community page; the story supplies the name, role and portrait.",
+          of: [
+            defineArrayMember({
+              name: "memberQuote",
+              title: "Member quote",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "person",
+                  title: "Member",
+                  type: "reference",
+                  to: [{ type: "person" }],
+                  options: { filter: 'placement == "member-story"' },
+                  description: "One of the member stories.",
+                  validation: (Rule) => Rule.required(),
+                }),
+                storyExcerptField(),
+              ],
+              preview: {
+                select: { title: "person.name", subtitle: "excerpt" },
+              },
             }),
-            storyExcerptField(),
           ],
+          validation: (Rule) =>
+            Rule.required()
+              .min(1)
+              .max(8)
+              .custom((quotes) => {
+                const refs = (quotes ?? []).map(
+                  (quote) =>
+                    (quote as { person?: { _ref?: string } }).person?._ref,
+                );
+                return new Set(refs).size === refs.length
+                  ? true
+                  : "Quote each member once.";
+              }),
         }),
       ],
     }),

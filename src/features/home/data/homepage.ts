@@ -61,11 +61,13 @@ export type HomeCopy = {
     /** The recruiting round in order; the dates are placeholders. */
     steps: { title: string; dates: string }[];
     /**
-     * The member quoted in the join band: a sentence from their story on
-     * /community (the member stories), which supplies the name, role and
-     * portrait. In the CMS, `name` is a reference to that story's person.
+     * The members quoted in the join band, in the order of their faces; the
+     * first is quoted until a visitor picks another face. Each excerpt is a
+     * sentence from that member's story on /community (the member stories),
+     * which supplies the name, role and portrait. In the CMS, `name` is a
+     * reference to that story's person.
      */
-    quote: { name: string; excerpt: string };
+    quotes: { name: string; excerpt: string }[];
   };
   /** The partner band: the case for partners, their quote, the partner wall. */
   partners: {
@@ -291,11 +293,40 @@ export const homeCopyTemplate: HomeCopy = {
       { title: "Interview", dates: "{{recruiting.interview}}" },
       { title: "Onboarding", dates: "{{recruiting.onboarding}}" },
     ],
-    quote: {
-      name: "Sami Haddouti",
-      excerpt:
-        "The breadth of responsibilities and leadership opportunities here is truly unmatched.",
-    },
+    // Only Sami chose his sentence; the others are placeholder picks from
+    // their stories until they choose their own (#315).
+    quotes: [
+      {
+        name: "Sami Haddouti",
+        excerpt:
+          "The breadth of responsibilities and leadership opportunities here is truly unmatched.",
+      },
+      {
+        name: "Jasmin El-Wafi",
+        excerpt:
+          "Being part of such an ambitious and intelligent community inspires learning, aiming high, and building lasting friendships.",
+      },
+      {
+        name: "Zexin Gong",
+        excerpt:
+          "Being part of this community not only enhanced my technical, leadership, and project management skills, but also helped me forge incredible friendships.",
+      },
+      {
+        name: "Xabier Irizar",
+        excerpt:
+          "TUM.ai helped me immensely in expanding my horizons of what is possible to do during university.",
+      },
+      {
+        name: "Simon Huang",
+        excerpt:
+          "Within one semester at TUM.ai, I went from joining the software development team to leading a group of seven.",
+      },
+      {
+        name: "Marco Lorenz",
+        excerpt:
+          "The inspiring people I met at TUM.ai have motivated me to pursue new opportunities and push my own ambitions further.",
+      },
+    ],
   },
   partners: {
     title: "Partners who build with us",

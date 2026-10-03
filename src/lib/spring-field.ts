@@ -1,13 +1,35 @@
-/** A dot's rest position, in lattice units (neighbours sit 1 apart). */
+/**
+ * A field of discs as a small spring simulation: one disc grows while aimed
+ * at and shoves the others aside, which shove theirs in turn, and every
+ * disc springs back home. Units are the caller's: the E-Lab field
+ * (`features/e-lab/field-dots.tsx`) works in lattice units, the homepage's
+ * member faces (`features/home/member-faces.tsx`) in pixels.
+ */
+
+/** A dot's rest position (on the E-Lab lattice, neighbours sit 1 apart). */
 type FieldPoint = { x: number; y: number };
 
 /** The fixed side of the simulation: where the dots rest and how big they get. */
 export type FieldBodies = {
   rest: readonly FieldPoint[];
-  /** Dot radius at rest, in lattice units. */
+  /** Dot radius at rest. */
   radius: number;
   /** Each dot's scale while aimed at, as a multiple of `radius`. */
   peaks: readonly number[];
+  /**
+   * Clearance two dots keep between their edges; {@link GAP} by default.
+   * Negative for discs that overlap at rest, like a stack of portraits: at
+   * `2 * radius + gap` apart they touch, so the stack rests as laid out.
+   */
+  gap?: number;
+  /** Damping of the position spring (per second); {@link DAMPING} by default. */
+  damping?: number;
+  /**
+   * Damping of the size spring (per second); {@link DAMPING} by default.
+   * `2 * Math.sqrt(STIFFNESS)` is critical: a shrinking dot then never dips
+   * below its rest size.
+   */
+  scaleDamping?: number;
 };
 
 /**
@@ -26,9 +48,9 @@ export type FieldSim = {
 };
 
 /** Spring stiffness and damping (per second): lively, with a small overshoot. */
-const STIFFNESS = 180;
+export const STIFFNESS = 180;
 const DAMPING = 16;
-/** Clearance two dots keep between their edges; the lattice rests at 0.4. */
+/** Default clearance between two dots' edges; the E-Lab lattice rests at 0.4. */
 export const GAP = 0.25;
 /** Smallest drawn and colliding scale, so a spring's overshoot never inverts a dot. */
 export const MIN_SCALE = 0.2;
@@ -79,7 +101,7 @@ const targetScale = (bodies: FieldBodies, index: number, aimed: number) =>
  * Advances the field by `dt` seconds with `aimed` as the open dot (-1 for
  * none) and returns whether anything still moves. Every dot springs back
  * toward its rest position and size; then dots that overlap (closer than
- * their radii plus {@link GAP}) are pushed apart, and the push becomes
+ * their radii plus the bodies' `gap`) are pushed apart, and the push becomes
  * velocity, so an opening dot shoves its neighbours, which shove theirs:
  * the field ripples outward and settles. The aimed dot has infinite mass
  * and stays under the pointer. Time advances in fixed steps of
@@ -102,6 +124,8 @@ export function stepField(
   sim.lag = Math.max(sim.lag - steps * STEP, 0);
   const count = bodies.rest.length;
   const h = STEP;
+  const damping = bodies.damping ?? DAMPING;
+  const scaleDamping = bodies.scaleDamping ?? DAMPING;
   const startX = Float32Array.from(sim.ox);
   const startY = Float32Array.from(sim.oy);
   const cx = new Float32Array(count);
@@ -113,10 +137,11 @@ export function stepField(
       const ox = sim.ox[index] ?? 0;
       const oy = sim.oy[index] ?? 0;
       const s = sim.s[index] ?? 1;
-      const vx = (sim.vx[index] ?? 0) * (1 - DAMPING * h) - STIFFNESS * ox * h;
-      const vy = (sim.vy[index] ?? 0) * (1 - DAMPING * h) - STIFFNESS * oy * h;
+      const vx = (sim.vx[index] ?? 0) * (1 - damping * h) - STIFFNESS * ox * h;
+      const vy = (sim.vy[index] ?? 0) * (1 - damping * h) - STIFFNESS * oy * h;
       const vs =
-        (sim.vs[index] ?? 0) * (1 - DAMPING * h) + STIFFNESS * (ts - s) * h;
+        (sim.vs[index] ?? 0) * (1 - scaleDamping * h) +
+        STIFFNESS * (ts - s) * h;
       sim.vx[index] = vx;
       sim.vy[index] = vy;
       sim.vs[index] = vs;
@@ -193,9 +218,9 @@ function separate(
   passes: number,
   corrections?: Corrections,
 ) {
-  const { rest, radius } = bodies;
+  const { rest, radius, gap = GAP } = bodies;
   const count = rest.length;
-  const cell = 2 * radius + GAP;
+  const cell = 2 * radius + gap;
   const x = (index: number) => (rest[index]?.x ?? 0) + (sim.ox[index] ?? 0);
   const y = (index: number) => (rest[index]?.y ?? 0) + (sim.oy[index] ?? 0);
   const scale = (index: number) => Math.max(sim.s[index] ?? 1, MIN_SCALE);
@@ -207,7 +232,7 @@ function separate(
     let dx = x(b) - x(a);
     let dy = y(b) - y(a);
     let distance = Math.hypot(dx, dy);
-    const reach = radius * (scale(a) + scale(b)) + GAP;
+    const reach = radius * (scale(a) + scale(b)) + gap;
     if (distance >= reach) return;
     if (distance < 1e-6) {
       dx = 1;

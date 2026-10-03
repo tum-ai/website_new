@@ -28,6 +28,7 @@
     "sanity:migrate-partners": "tsx --tsconfig scripts/sanity/tsconfig.json scripts/sanity/migrate-partners.ts",
     "sanity:migrate-content-dedup": "tsx --tsconfig scripts/sanity/tsconfig.json scripts/sanity/migrate-content-dedup.ts",
     "sanity:migrate-org-references": "tsx --tsconfig scripts/sanity/tsconfig.json scripts/sanity/migrate-org-references.ts",
+    "sanity:migrate-home-quotes": "tsx --tsconfig scripts/sanity/tsconfig.json scripts/sanity/migrate-home-quotes.ts",
     "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm test:perf"
   },
   "dependencies": {
