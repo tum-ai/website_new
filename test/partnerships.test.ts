@@ -103,7 +103,7 @@ test("email and booking carry readable, encoded intent, timeframe, and recommend
   );
   const booking = new URL(getPartnershipBookingUrl(selection));
   assert.equal(booking.origin, "https://cal.eu");
-  assert.equal(booking.pathname, "/silaszamzow/tumai-quick-chat");
+  assert.equal(booking.pathname, "/silaszamzow/tumai-quick-chat-partners");
   assert.deepEqual(booking.searchParams.getAll("guest"), [
     "partners@tum-ai.com",
   ]);

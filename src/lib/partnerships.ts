@@ -12,7 +12,7 @@ export const PARTNER_EMAIL_CC = [
   "kim.schlemmer@tum-ai.com",
 ] as const;
 export const PARTNER_BOOKING_URL =
-  "https://cal.eu/silaszamzow/tumai-quick-chat";
+  "https://cal.eu/silaszamzow/tumai-quick-chat-partners";
 
 export interface PartnershipSelection {
   intent: PartnershipIntent | null;
