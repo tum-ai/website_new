@@ -36,8 +36,8 @@ Notes:
   match `@playwright/test`. Each of those jobs runs `.github/actions/check-playwright-image`, which
   fails when the image lacks the browser builds the installed package expects, and names the tag
   to set. A Dependabot Playwright update therefore fails until the tags are bumped in the same PR.
-- **Knip** gates `Verify`. Its ignores (generated Sanity types, the design system's exported prop
-  types, dependencies that are open questions) are listed with reasons in `knip.json`. Before it
+- **Knip** gates `Verify`. Its ignores (generated Sanity types and dependencies that are open
+  questions) are listed with reasons in `knip.json`. Before it
   became a gate it ran with step-level `continue-on-error`, which kept the job green but still
   left a "Process completed with exit code 1" annotation on the run.
 - **Verify** runs even when a dependency failed (`if: always()`), so it fails instead of being

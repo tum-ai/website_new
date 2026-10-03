@@ -1,4 +1,4 @@
-import { Container, PageHero, Section } from "@/components/ds";
+import { Container, PageHero, Section } from "@tum.ai/ui-kit";
 import { ClosingSection } from "./closing-section";
 import { getProjectsContent } from "./content";
 import { OverlapsFigure } from "./overlaps-figure";

@@ -1,4 +1,4 @@
-import { Container, PageHero, Section } from "@/components/ds";
+import { Container, PageHero, Section } from "@tum.ai/ui-kit";
 import { LegalNav } from "./legal-document";
 
 /**

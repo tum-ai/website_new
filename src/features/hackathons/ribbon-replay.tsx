@@ -1,5 +1,6 @@
 "use client";
 
+import { Container } from "@tum.ai/ui-kit";
 import {
   type CSSProperties,
   Fragment,
@@ -10,7 +11,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { Container } from "@/components/ds";
 import { useMediaQuery } from "@/lib/use-media-query";
 import { nearestMark } from "./ribbon";
 

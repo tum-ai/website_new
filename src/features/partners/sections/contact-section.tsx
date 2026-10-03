@@ -1,4 +1,4 @@
-import { CtaBand } from "@/components/ds";
+import { CtaBand } from "@tum.ai/ui-kit";
 import { ContactActions } from "../contact-actions";
 import type { PartnersSections } from "../data/partners";
 import { BatchRow } from "./batch-row";

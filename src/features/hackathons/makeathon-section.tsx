@@ -8,7 +8,8 @@ import {
   Section,
   SectionHeader,
   TextLink,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
+import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
 import type { hackathonsView } from "./hackathons-view";
 import { MakeathonDawn } from "./makeathon-dawn";
 import { formatDayRange } from "./ribbon";
@@ -98,6 +99,9 @@ export function MakeathonSection({
                 <Reveal className="mt-12 md:mt-16">
                   <Photo
                     src={makeathon.editionsPhoto.src}
+                    unoptimized={isUnoptimizedRemoteImage(
+                      makeathon.editionsPhoto.src,
+                    )}
                     alt={makeathon.editionsPhoto.alt}
                     position={makeathon.editionsPhoto.objectPosition}
                     caption={makeathon.editionsPhotoCaption}

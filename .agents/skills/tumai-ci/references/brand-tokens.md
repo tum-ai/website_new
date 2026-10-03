@@ -1,7 +1,10 @@
 # TUM.ai brand tokens
 
-Summary of `docs/brand/source/` (brand guide PDF and `colors.jpeg`) as implemented in
-`src/styles/index.css`. If this file and `index.css` disagree, `index.css` wins; fix this file.
+Site identity and composition summary of `docs/brand/source/` (brand guide PDF and
+`colors.jpeg`). Runtime tokens are owned by `@tum.ai/ui-kit/tailwind.css` from the exact
+0.2.0 package, imported in `src/styles/index.css`. For token/API details use the
+[versioned kit brand guide](https://github.com/tum-ai/ui-kit/tree/v0.2.0/docs/brand.md);
+update this summary when deliberately upgrading the package.
 
 ## Identity
 
@@ -80,15 +83,15 @@ from size and weight, not decoration.
 - `public/assets/tum_ai_logo_new.svg`: the primary logo (preloaded on every page by the header).
 - `public/assets/logo_new_white_standard.png`: white logo, only on dark enough backgrounds.
 - `public/assets/favicon.svg`, `favicon-96.png`, `apple-touch-icon.png`, `src/app/icon.svg`: icons.
-- `BrandMark` (`src/components/ds/brand-mark.tsx`): the logomark geometry as a large tonal
+- `BrandMark` (public export of `@tum.ai/ui-kit`): the logomark geometry as a large tonal
   background shape, as on the brand guide's section slides. Decoration only, never a logo.
 
 Never redraw, recolour, crop or rebuild the logo.
 
 ## Buttons and interaction
 
-Canonical implementation: `src/components/ds/button.tsx` (`buttonStyles`, `Button`,
-`ButtonLink`, `IconButton`).
+Canonical implementation: the pinned kit public `buttonStyles`, `Button`,
+`ButtonLink` and `IconButton` exports. Do not restyle shared interaction behaviour locally.
 
 - `primary`: a flat violet-600 fill with a hairline highlight, white label, dark purple on hover.
   No glow or sheen.

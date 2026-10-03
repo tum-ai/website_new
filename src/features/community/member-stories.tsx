@@ -1,11 +1,11 @@
-import Image from "next/image";
 import {
   Container,
   QuoteMark,
   Reveal,
   Section,
   SectionHeader,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
+import Image from "next/image";
 import type { CommunityCopy } from "./data/copy";
 import type { MemberStory } from "./data/member-stories";
 

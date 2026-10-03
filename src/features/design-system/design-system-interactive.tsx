@@ -1,7 +1,5 @@
 "use client";
 
-import { Menu, SlidersHorizontal } from "lucide-react";
-import { useState } from "react";
 import {
   BrandMark,
   Button,
@@ -17,7 +15,9 @@ import {
   DialogTrigger,
   IconButton,
   TextLink,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
+import { Menu, SlidersHorizontal } from "lucide-react";
+import { useState } from "react";
 
 /** Stateful demos for the /design-system reference page. */
 export function DesignSystemInteractive() {

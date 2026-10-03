@@ -1,5 +1,5 @@
+import { Actions, ButtonLink, Container, TopBlend } from "@tum.ai/ui-kit";
 import Image from "next/image";
-import { Actions, ButtonLink, Container, TopBlend } from "@/components/ds";
 import { callToActionLabels } from "@/config/calls-to-action";
 import type { Event } from "@/lib/types";
 import { getEventsCopy } from "./content";

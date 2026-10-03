@@ -4,7 +4,8 @@ import {
   Reveal,
   Section,
   SectionHeader,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
+import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
 import type { ApplyCopy } from "./data/apply";
 
 /**
@@ -110,6 +111,7 @@ export function WhoShouldApply({
           <Photo
             aspect="panorama"
             src={photo.src}
+            unoptimized={isUnoptimizedRemoteImage(photo.src)}
             alt={photo.alt}
             position={photo.objectPosition}
             sizes="(min-width: 80rem) 80rem, 100vw"

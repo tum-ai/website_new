@@ -1,6 +1,6 @@
+import { ButtonLink, PageHero, SplitWords } from "@tum.ai/ui-kit";
 import Image from "next/image";
 import { Fragment } from "react";
-import { ButtonLink, PageHero, SplitWords } from "@/components/ds";
 import type { Partner } from "@/lib/types";
 import { HeroContact } from "../contact-actions";
 import type { PartnersSections } from "../data/partners";

@@ -1,4 +1,4 @@
-import { FaqSection } from "@/components/ds";
+import { FaqSection } from "@tum.ai/ui-kit";
 import { getMembershipWindow } from "@/config/schedule-content";
 import { getSiteFacts } from "@/config/site-settings-content";
 import { getMemberStories } from "@/features/community/server";

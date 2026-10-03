@@ -1,11 +1,11 @@
-import type { CSSProperties } from "react";
 import {
   Container,
   Ledger,
   Reveal,
   Section,
   SectionHeader,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
+import type { CSSProperties } from "react";
 import type { PartnerStat, PartnersSections } from "../data/partners";
 import {
   MARK_RADIUS,

@@ -1,4 +1,4 @@
-import type { KeyDateItem } from "@/components/ds";
+import type { KeyDateItem } from "@tum.ai/ui-kit";
 import { hackathonFacts } from "@/config/hackathons";
 import { formatEventLocation, hostsBeyondTitle } from "@/features/events";
 import { organizationsWithKeys } from "@/features/partners";

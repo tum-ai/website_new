@@ -45,8 +45,8 @@ each intended visual diff.
 ## 5. Docs and guidance
 
 If paths, commands, conventions, env vars or component APIs changed, update `AGENTS.md`,
-`.claude/rules/`, `.agents/skills/` and `docs/` in the same PR (a ds prop change updates the API
-reference in `docs/design-system.md`). Run the `docs-sync` subagent to find stale spots.
+`.claude/rules/`, `.agents/skills/` and `docs/` in the same PR. A kit upgrade updates the
+versioned API links and app integration guidance in `docs/design-system.md`. Run the `docs-sync` subagent to find stale spots.
 
 ## 6. Push once, then let CI run
 

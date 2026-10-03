@@ -1,6 +1,5 @@
 "use client";
 
-import type { ReactNode } from "react";
 import {
   BrandPanel,
   Button,
@@ -10,7 +9,8 @@ import {
   DialogTitle,
   DialogTrigger,
   FallbackImage,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
+import type { ReactNode } from "react";
 import type { EventDetails } from "./events";
 import { categoryLabel } from "./filters";
 import { HostLine } from "./host-line";

@@ -6,8 +6,9 @@ import {
   Section,
   SectionHeader,
   TextLink,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
 import { Lockup, SignUpAction } from "@/features/events";
+import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
 import { formatList } from "@/lib/words";
 import type { hackathonsView } from "./hackathons-view";
 
@@ -91,6 +92,7 @@ export function PartnerHackathonsSection({
             <Reveal className="lg:col-span-5">
               <Photo
                 src={voice.image.src}
+                unoptimized={isUnoptimizedRemoteImage(voice.image.src)}
                 alt={voice.image.alt}
                 position={voice.image.position}
                 aspect="4/3"

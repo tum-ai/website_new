@@ -1,4 +1,4 @@
-import { Button, ButtonLink } from "@/components/ds";
+import { Button, ButtonLink } from "@tum.ai/ui-kit";
 import { getSafeExternalUrl } from "@/lib/security";
 
 /**

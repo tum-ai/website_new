@@ -1,5 +1,5 @@
+import { ButtonLink } from "@tum.ai/ui-kit";
 import type { ReactNode } from "react";
-import { ButtonLink } from "@/components/ds";
 import { cn } from "@/lib/cn";
 
 /**

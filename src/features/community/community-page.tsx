@@ -1,6 +1,7 @@
-import { ButtonLink, PageHero, Photo } from "@/components/ds";
+import { ButtonLink, PageHero, Photo } from "@tum.ai/ui-kit";
 import { callToActionLabels } from "@/config/calls-to-action";
 import { getPartnersCopy } from "@/features/partners/server";
+import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
 import { ClosingSection } from "./closing-section";
 import { getCommunityContent } from "./content";
 import { DepartmentsSection } from "./departments-section";
@@ -45,6 +46,7 @@ export async function CommunityPage() {
         media={
           <Photo
             src={photo.src}
+            unoptimized={isUnoptimizedRemoteImage(photo.src)}
             alt={photo.alt}
             position={photo.objectPosition}
             caption={copy.hero.photoCaption}

@@ -1,4 +1,3 @@
-import Image from "next/image";
 import {
   Actions,
   BrandMark,
@@ -7,7 +6,8 @@ import {
   Reveal,
   Section,
   TextLink,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
+import Image from "next/image";
 import { callToActionLabels } from "@/config/calls-to-action";
 import type { MemberStory } from "@/features/community";
 import { MembershipApplyButton } from "@/features/community/server";

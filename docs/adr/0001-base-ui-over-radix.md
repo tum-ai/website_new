@@ -3,6 +3,14 @@
 - **Status:** Accepted
 - **Date:** 2026-09-25 (redesign, #262)
 
+## Current ownership
+
+The redesign decision below remains in force. Shared primitives and token definitions
+now ship in [`@tum.ai/ui-kit` 0.2.0](https://github.com/tum-ai/ui-kit/tree/v0.2.0);
+the former local implementation paths describe the historical redesign. The app
+imports the kit and owns page composition and integration. See
+[ADR 0010](0010-ui-kit-consumption.md).
+
 ## Context
 
 Before the redesign, interactive UI came from shadcn-style wrappers in `src/components/ui/`

@@ -1,4 +1,4 @@
-import { PageHero } from "@/components/ds";
+import { PageHero } from "@tum.ai/ui-kit";
 import { getSiteFacts } from "@/config/site-settings-content";
 import { getPartnersCopy } from "@/features/partners/server";
 import { ClosingSection } from "./closing-section";

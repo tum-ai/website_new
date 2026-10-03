@@ -1,4 +1,4 @@
-import type { IndexListItem, LedgerItem } from "@/components/ds";
+import type { IndexListItem, LedgerItem } from "@tum.ai/ui-kit";
 import { deriveSiteFacts, type SiteFacts } from "@/config/site-facts";
 import { fillPageTokens } from "@/lib/content-copy";
 import { formatList, spellCount } from "@/lib/words";

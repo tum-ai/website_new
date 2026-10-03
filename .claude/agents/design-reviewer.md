@@ -16,8 +16,8 @@ The caller may give a base ref or a file list. Otherwise diff against the PR bas
 ## Procedure
 
 1. List the change: `git diff --stat <base>...HEAD`, then read the full diff of `src/**`.
-2. Read the rules you judge against: `docs/design-system.md`, the header of
-   `src/components/ds/index.ts` (ds API conventions), `.claude/rules/features.md`,
+2. Read the rules you judge against: `docs/design-system.md`, the versioned kit public API and
+   conventions linked there, `.claude/rules/features.md`,
    `.claude/rules/design-system.md`, `.claude/rules/styles.md` and
    `.agents/skills/tumai-ci/references/brand-tokens.md`.
 3. Scan the added lines, then read the surrounding code for anything suspicious:
@@ -30,9 +30,9 @@ The caller may give a base ref or a file list. Otherwise diff against the PR bas
 
 ## Checklist
 
-- **Tokens:** colours only through tone tokens or theme colours; no raw hex or `rgb()` outside
-  `src/styles/`; no stock palette; violet scale only where the docs allow it. No arbitrary font
-  sizes, line heights or tracking; type-scale utilities instead.
+- **Tokens:** colours only through tone tokens or theme colours; no raw hex or `rgb()` in
+  app markup or styles; shared token definitions belong upstream. No stock palette; violet scale
+  only where the docs allow it. No arbitrary font sizes, line heights or tracking; type-scale utilities instead.
 - **Tones and anatomy:** `PageHero` first (the `h1`), full-bleed `<Section tone>` bands with
   `SectionHeader`, last band light or ink before the night footer. Text contrast relies on the
   band's tokens.
@@ -40,10 +40,11 @@ The caller may give a base ref or a file list. Otherwise diff against the PR bas
   `KeyDates`, `DayRuler`, `Steps`, `IndexList`, `Photo`, `QuoteCard` (`editorial`, `ruled`),
   `PersonCard`, `LogoTile`, `LogoWall`, `FaqSection`/`FaqList`, `CtaBand`, `BulletList`,
   `Actions`, `Button`/`ButtonLink`; links with their own styling use `Anchor`, not a raw `<a>` or
-  next/link. Imports come from `@/components/ds`.
-- **ds API (ds changes):** cva variants, `as` vs `headingAs`, `tone` for bands only and
-  `emphasis` for text colour, `ComponentProps` with ref as prop, exported `XProps`, TSDoc on
-  every export and prop, showcase and docs row updated.
+  next/link. Imports come from `@tum.ai/ui-kit`; generic shell components use `/shell`.
+- **Kit ownership:** no copied primitives or local primitive barrel, no deep imports or package
+  patches. Shared behaviour and token changes require an upstream kit release; app upgrades
+  update the exact version, showcase and integration guidance together. Check consumers against
+  the installed public types and the versioned API links in `docs/design-system.md`.
 - **Motion:** only `transform` and `opacity`; no `filter` on text; `motion-safe:` on entrances and
   loops and a `motion-reduce:` path for moving transitions; `ease-brand`, no literal easing;
   300 ms to 1.2 s; no `Reveal` above the fold; hover effects small (1.04 zoom, 4px lift).

@@ -1,7 +1,7 @@
 "use client";
 
+import { DayRuler, KeyDates } from "@tum.ai/ui-kit";
 import { useCallback, useMemo } from "react";
-import { DayRuler, KeyDates } from "@/components/ds";
 import type { MembershipConfig } from "@/config/membership";
 import { useClockState } from "@/lib/use-clock-switch";
 import {

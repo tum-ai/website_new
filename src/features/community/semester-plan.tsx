@@ -1,7 +1,7 @@
+import { Container, Reveal, Section, SectionHeader } from "@tum.ai/ui-kit";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import type { CSSProperties } from "react";
-import { Container, Reveal, Section, SectionHeader } from "@/components/ds";
 import { cn } from "@/lib/cn";
 import type { CommunityCopy } from "./data/copy";
 import {

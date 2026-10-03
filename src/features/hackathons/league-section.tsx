@@ -7,7 +7,8 @@ import {
   Photo,
   Reveal,
   Section,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
+import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
 import { formatList } from "@/lib/words";
 import type { hackathonsView } from "./hackathons-view";
 import { SeasonRoute } from "./season-route";
@@ -89,6 +90,7 @@ export function LeagueSection({ league }: { league: View["league"] }) {
             <Reveal className="lg:col-span-5">
               <Photo
                 src={finale.image.src}
+                unoptimized={isUnoptimizedRemoteImage(finale.image.src)}
                 alt={finale.image.alt}
                 position={finale.image.objectPosition}
                 caption={finale.caption}
@@ -162,6 +164,7 @@ export function LeagueSection({ league }: { league: View["league"] }) {
                     variant="bare"
                     name={partner.name}
                     src={partner.src}
+                    unoptimized={isUnoptimizedRemoteImage(partner.src ?? "")}
                     href={partner.href}
                     className="size-full"
                   />

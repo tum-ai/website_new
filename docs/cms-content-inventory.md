@@ -151,7 +151,7 @@ fields, and each owner defines its own schema file.
 | Logic with embedded wording | `apply/round.ts` status lines and date notes, `config/e-lab.ts` phase copy, the events hero's counted lead, `e-lab/data/venture-page.ts` `tracedVentureLead`, `events/events.ts`, `events/filters.ts`, `partners/partnerships.ts` mail templates, `research/research.ts` | grammar follows dates and counts; tied to code paths and tests |
 | JSON-LD facts | `config/seo.ts` (emails, social links, E-Lab summary, organisation figures) | SEO structure and synchronous metadata; reads the code facts (a follow-up could pass the render's facts) |
 | Event and research mock fixtures | `lib/mock-cms.ts` | test data for events and research (partners are organisations: the mock queries their backfill); its `liveEventHosts` is the source of the co-hosts the backfill adds to the copied events |
-| Design system showcase | `features/design-system/*` | development only |
+| Design system showcase | `features/design-system/*` | development and Vercel previews only |
 
 ## Assets (`public/assets/`)
 

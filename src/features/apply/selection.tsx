@@ -1,4 +1,4 @@
-import { Container, Section, SectionHeader, Steps } from "@/components/ds";
+import { Container, Section, SectionHeader, Steps } from "@tum.ai/ui-kit";
 import { fillPageTokens } from "@/lib/content-copy";
 import { spellCountCapitalized } from "@/lib/words";
 import type { ApplyCopy, StageTiming } from "./data/apply";

@@ -5,7 +5,7 @@ import {
   Reveal,
   Section,
   TextLink,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
 import { callToActionLabels } from "@/config/calls-to-action";
 import type { MembershipConfig } from "@/config/membership";
 import { isCmsClockFixed } from "@/lib/mock-cms-env";

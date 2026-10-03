@@ -1,14 +1,14 @@
 "use client";
 
 import Cal, { getCalApi } from "@calcom/embed-react";
-import { type RefObject, useEffect, useMemo, useState } from "react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogTitle,
   TextLink,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
+import { type RefObject, useEffect, useMemo, useState } from "react";
 import { fillPageTokens } from "@/lib/content-copy";
 import { type CalBooking, getCalBooking } from "@/lib/security";
 import {

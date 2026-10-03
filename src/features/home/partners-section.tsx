@@ -7,10 +7,11 @@ import {
   Reveal,
   Section,
   SectionHeader,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
 import { callToActionLabels } from "@/config/calls-to-action";
 import { getTestimonialCards } from "@/features/e-lab/server";
 import { getPartnerCaseStudies } from "@/features/partners/server";
+import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
 import type { Partner } from "@/lib/types";
 import type { HomeCopy } from "./data/homepage";
 import { PartnerWall } from "./partner-wall";
@@ -75,11 +76,15 @@ export async function PartnersSection({
                 name={quote.name}
                 byline={quote.role}
                 portrait={{
+                  unoptimized: isUnoptimizedRemoteImage(quote.portraitSrc),
                   src: quote.portraitSrc,
                   alt: "",
                   position: quote.portraitPosition,
                 }}
                 logo={{
+                  unoptimized: isUnoptimizedRemoteImage(
+                    quote.organizationLogoSrc,
+                  ),
                   src: quote.organizationLogoSrc,
                   alt: quote.organizationLogoAlt,
                 }}

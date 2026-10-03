@@ -1,4 +1,4 @@
-import { ButtonLink, PageHero } from "@/components/ds";
+import { ButtonLink, PageHero } from "@tum.ai/ui-kit";
 import type { MembershipConfig } from "@/config/membership";
 import { fillPageTokens } from "@/lib/content-copy";
 import { isCmsClockFixed } from "@/lib/mock-cms-env";

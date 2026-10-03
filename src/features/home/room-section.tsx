@@ -1,4 +1,4 @@
-import { Container, Section, SectionHeader } from "@/components/ds";
+import { Container, Section, SectionHeader } from "@tum.ai/ui-kit";
 import type { HomeCopy } from "./data/homepage";
 import { DeferredRoomSpread } from "./deferred-room-spread";
 

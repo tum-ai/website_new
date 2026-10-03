@@ -4,8 +4,9 @@ import {
   Reveal,
   Section,
   SectionHeader,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
 import { cn } from "@/lib/cn";
+import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
 import { formatDuration } from "@/lib/program-duration";
 import type { ELabCopy } from "./data/copy";
 import {
@@ -221,6 +222,7 @@ function PhaseRow({ phase }: { phase: Phase }) {
         {phase.photo ? (
           <Photo
             src={phase.photo.src}
+            unoptimized={isUnoptimizedRemoteImage(phase.photo.src)}
             alt={phase.photo.alt}
             caption={phase.photoCaption}
             position={phase.photo.objectPosition}

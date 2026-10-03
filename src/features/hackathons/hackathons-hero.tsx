@@ -1,5 +1,5 @@
+import { ButtonLink, Eyebrow, Section, TopBlend } from "@tum.ai/ui-kit";
 import { Fragment } from "react";
-import { ButtonLink, Eyebrow, Section, TopBlend } from "@/components/ds";
 import { cn } from "@/lib/cn";
 import type { hackathonsView } from "./hackathons-view";
 import type { MarkKind } from "./marks";

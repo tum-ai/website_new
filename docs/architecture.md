@@ -37,15 +37,14 @@ src/
 │   └── api/                       public JSON API, draft-mode and revalidation routes
 ├── features/<domain>/             one folder per page domain (see below)
 ├── components/
-│   ├── ds/                        design system, imported only through `@/components/ds`
-│   ├── shell/                     header, footer, skip link, header scroll logic
+│   ├── shell/                     site data adapters for @tum.ai/ui-kit/shell
 │   └── json-ld.tsx                the JSON-LD script tag
 ├── config/                        site facts and their content slices, navigation, CTA labels, SEO
 ├── lib/                           cn, Sanity config, fetch layers and queries, content source and its
 │                                  shared slices (FAQ, people and logos, community), copy filling,
 │                                  mock CMS, time, security, redirects
 ├── sanity/                        Studio config (one workspace), desk structure, CLI config, schemas
-├── styles/index.css               tokens, tones, cascade layers, utilities
+├── styles/index.css               kit stylesheet imports and app-owned partner rotation
 ├── proxy.ts                       host redirects (Next 16's replacement for middleware)
 └── architecture.test.ts           the import-rule fitness test
 ```
@@ -113,18 +112,20 @@ built-in through any chain of imports (Turbopack would fail the production build
 | `app` | `features/<x>/<name>-page.tsx` and page `.css`, components, config, lib, styles, app (not sanity or the studio) |
 | `src/*.ts` (`proxy.ts`) | config, lib |
 | `app/studio` | sanity, lib (no site shell, CSS or features) |
-| `features/<x>` | its own files except `.css`, `features/<y>` through its `index.ts` or `server.ts`, `components/{ds,shell}`, `components/json-ld`, config, lib |
+| `features/<x>` | its own files except `.css`, `features/<y>` through its `index.ts` or `server.ts`, `components/shell`, `@tum.ai/ui-kit`, `components/json-ld`, config, lib |
 | `features/<x>/index.ts`, `server.ts` | its own feature's files except pages; an index reaches no server-only module |
-| `components/ds` | its own files and `lib/cn` |
-| `components/shell` | its own files, ds, config, lib |
-| `components/*.tsx` | ds, config, lib |
+| `components/shell` | its own files, `@tum.ai/ui-kit` and `/shell`, config, lib |
+| `components/*.tsx` | `@tum.ai/ui-kit`, config, lib |
 | `config` | config, lib |
 | `lib` | lib |
 | `sanity` | sanity, lib |
 | `styles` | styles |
 
-Every module outside `components/ds` imports the design system through its barrel,
-`@/components/ds`, never a file inside it.
+The design system is the exact dependency `@tum.ai/ui-kit@0.2.0`. Import primitives and public
+types from its root and generic shell components from `@tum.ai/ui-kit/shell`. Kit internals are
+private; shared primitive and token changes ship upstream before the app upgrades. Site-specific
+content, CMS queries, routing, imagery and shell adapters stay here. See
+[design-system.md](design-system.md) for the versioned public API and consumer contract.
 
 Why routes import page modules and indexes never re-export pages: Turbopack keeps every
 re-exported module that has client islands or a CSS import, even when the importer uses none of
@@ -315,9 +316,10 @@ Facts that change per semester, cohort or year live once in `src/config/`
 
 ## Styling
 
-`src/styles/index.css` is the only global stylesheet: Tailwind v4 configured in CSS (`@theme`),
-the brand scales, type scale, motion tokens and the `data-tone` surfaces. Every rule lives in a
-cascade layer or an `@utility`, so utilities always win without `!important`
+`src/styles/index.css` imports Tailwind v4, the pinned kit `tailwind.css` and `shell.css`,
+and app-owned `partner-rotation.css`. The kit owns brand scales, type scale, motion tokens,
+`data-tone` surfaces and shared utilities. The site keeps its Next.js Manrope font loader.
+App and route CSS lives in cascade layers or `@utility`, so utilities win without `!important`
 ([ADR 0002](adr/0002-tone-tokens-and-cascade-layers.md)). Usage rules are in
 [design-system.md](design-system.md).
 

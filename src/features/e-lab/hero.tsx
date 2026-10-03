@@ -1,6 +1,6 @@
+import { PageHero } from "@tum.ai/ui-kit";
 import Image from "next/image";
 import type { ReactNode } from "react";
-import { PageHero } from "@/components/ds";
 import type { ContentImage } from "@/lib/cms-content-model";
 import { ELabApplicationCta, ELabApplicationStatus } from "./application-cta";
 import type { ELabCopy } from "./data/copy";

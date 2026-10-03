@@ -6,7 +6,8 @@ import {
   Reveal,
   Section,
   SectionHeader,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
+import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
 import type { AlumniDestination } from "../data/partner-logos";
 import type { PartnerProfile, PartnersSections } from "../data/partners";
 import { Lines } from "./lines";
@@ -86,6 +87,7 @@ export function PeopleSection({
             logos={alumniDestinations.map((company) => ({
               name: company.name,
               src: company.image,
+              unoptimized: isUnoptimizedRemoteImage(company.image ?? ""),
               aspectRatio: company.aspectRatio,
             }))}
           />

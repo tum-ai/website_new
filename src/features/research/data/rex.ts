@@ -2,7 +2,7 @@
  * The Research Exchange (REX) institutions on /research. The band's copy is
  * part of the page copy (`research-copy.ts`, `researchCopy.rex`).
  */
-import type { LogoItem } from "@/components/ds";
+import type { LogoItem } from "@tum.ai/ui-kit";
 import { organizationByKey } from "@/features/partners";
 import type { Organization } from "@/lib/people-and-logos";
 

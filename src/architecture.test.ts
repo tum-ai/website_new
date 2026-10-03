@@ -15,20 +15,19 @@ import { describe, expect, test } from "vitest";
  * | src/*.ts            | config, lib (proxy.ts)                              |
  * | features/<x>        | its own files except .css, features/<y> (index or  |
  * |                     | server entry),                                      |
- * |                     | components/{ds,shell}, components/json-ld, config,  |
- * |                     | lib                                                 |
+ * |                     | components/shell, components/json-ld, config, lib   |
  * | features/<x>/index  | its own feature's files except pages                |
  * | features/<x>/server | the same; starts with `import "server-only"`        |
- * | components/ds       | its own files and lib/cn                            |
- * | components/shell    | its own files, ds, config, lib                      |
- * | components/*.tsx    | ds, config, lib                                     |
+ * | components/shell    | its own files, config, lib                          |
+ * | components/*.tsx    | config, lib                                         |
  * | config              | config, lib                                         |
  * | lib                 | lib                                                 |
  * | sanity              | sanity, lib                                         |
  * | styles              | styles                                              |
  *
- * Outside the design system, ds is imported through its barrel
- * (`@/components/ds`), the one public API its docs and showcase describe.
+ * Shared UI comes from the public @tum.ai/ui-kit entry points. Website
+ * modules never import copied primitives or the package's private files.
+ * Kit CSS is imported by routes or the site stylesheet, never by Studio.
  *
  * A route imports exactly its page module. A feature's `index.ts` is its API
  * for other features and exists only where another feature needs something;
@@ -46,7 +45,8 @@ import { describe, expect, test } from "vitest";
  * There are no exceptions: a new import that breaks a rule changes the code
  * or, deliberately, the rule (here and in docs/architecture.md).
  *
- * Only local modules (`@/…` and relative paths) are checked; packages are not.
+ * Local modules (`@/…` and relative paths) and UI kit entry points are checked.
+ * Other external packages are outside these layer rules.
  * Imports are read from the TypeScript syntax tree (`ts.createSourceFile`):
  * `import … from`, `export … from`, side-effect `import "…"`, `import x =
  * require("…")`, and `import("…")` or `require("…")` calls with a string or
@@ -193,7 +193,6 @@ type Module = {
     | "app"
     | "studio"
     | "features"
-    | "ds"
     | "shell"
     | "components"
     | "config"
@@ -211,7 +210,6 @@ function moduleOf(pathFromSrc: string): Module {
   if (path.startsWith("app/studio/")) return { path, layer: "studio" };
   if (top === "features") return { path, layer: "features", feature: second };
   if (top === "components") {
-    if (second === "ds") return { path, layer: "ds" };
     if (second === "shell") return { path, layer: "shell" };
     return { path, layer: "components" };
   }
@@ -244,12 +242,13 @@ const isPageModule = (to: Module) =>
 
 const isStylesheet = (to: Module) => to.path.endsWith(".css");
 
-const dsBarrel = "components/ds/index.ts";
-
 /** Why `from` may not import `to`, or null when the import is allowed. */
 function importViolation(from: Module, to: Module): string | null {
-  if (to.layer === "ds" && from.layer !== "ds" && to.path !== dsBarrel) {
-    return "import the design system from @/components/ds (its barrel)";
+  if (
+    from.path.startsWith("components/ds/") ||
+    to.path.startsWith("components/ds/")
+  ) {
+    return "shared UI belongs to @tum.ai/ui-kit, not local copies";
   }
   switch (from.layer) {
     case "app":
@@ -286,7 +285,6 @@ function importViolation(from: Module, to: Module): string | null {
           : `import @/features/${to.feature} (the index) or its server entry, not its files`;
       }
       if (
-        to.layer === "ds" ||
         to.layer === "shell" ||
         to.layer === "config" ||
         to.layer === "lib" ||
@@ -295,16 +293,12 @@ function importViolation(from: Module, to: Module): string | null {
         return null;
       }
       return `features may not import ${to.layer}`;
-    case "ds":
-      return to.layer === "ds" || to.path === "lib/cn.ts"
-        ? null
-        : "the design system may import only lib/cn and its own files";
     case "shell":
-      return ["shell", "ds", "config", "lib"].includes(to.layer)
+      return ["shell", "config", "lib"].includes(to.layer)
         ? null
         : `the shell may not import ${to.layer}`;
     case "components":
-      return ["ds", "config", "lib"].includes(to.layer)
+      return ["config", "lib"].includes(to.layer)
         ? null
         : `components may not import ${to.layer}`;
     case "config":
@@ -320,6 +314,40 @@ function importViolation(from: Module, to: Module): string | null {
     case "styles":
       return to.layer === "styles" ? null : "styles may import only styles";
   }
+}
+
+/** Public package entry points consumed by this application. */
+const kitEntries = new Set([
+  "@tum.ai/ui-kit",
+  "@tum.ai/ui-kit/shell",
+  "@tum.ai/ui-kit/halftone",
+  "@tum.ai/ui-kit/tailwind.css",
+  "@tum.ai/ui-kit/shell.css",
+  "@tum.ai/ui-kit/halftone.css",
+  "@tum.ai/ui-kit/fonts.css",
+  "@tum.ai/ui-kit/package.json",
+]);
+
+/** Keep shared UI out of data/Studio layers and enforce public package APIs. */
+function kitImportViolation(from: Module, specifier: string): string | null {
+  if (
+    specifier !== "@tum.ai/ui-kit" &&
+    !specifier.startsWith("@tum.ai/ui-kit/")
+  )
+    return null;
+  if (
+    !kitEntries.has(specifier) &&
+    !specifier.startsWith("@tum.ai/ui-kit/assets/")
+  ) {
+    return "import the UI kit through its public entry points";
+  }
+  if (!["app", "features", "shell", "components"].includes(from.layer)) {
+    return "the UI kit belongs to the site UI, not data or Studio layers";
+  }
+  if (specifier.endsWith(".css") && from.layer !== "app") {
+    return "import kit CSS from the site layout or route";
+  }
+  return null;
 }
 
 /**
@@ -594,6 +622,38 @@ describe("import rules", () => {
     expect(checked).toBeGreaterThan(200);
   });
 
+  test("UI kit imports use public entry points in the site UI only", () => {
+    const violations: string[] = [];
+    for (const file of sourceFiles(srcDir)) {
+      const from = moduleOf(relative(srcDir, file));
+      for (const { specifier } of moduleImports(readFileSync(file, "utf8"))) {
+        const reason = kitImportViolation(from, specifier);
+        if (reason) violations.push(`${from.path} → ${specifier} (${reason})`);
+      }
+    }
+    expect(violations).toStrictEqual([]);
+  });
+
+  test.each([
+    ["app/studio/[[...tool]]/layout.tsx", "@tum.ai/ui-kit/shell"],
+    ["app/studio/[[...tool]]/layout.tsx", "@tum.ai/ui-kit/tailwind.css"],
+    ["lib/sanity.ts", "@tum.ai/ui-kit"],
+    ["features/home/home-page.tsx", "@tum.ai/ui-kit/dist/components/button.js"],
+    ["features/home/home-page.tsx", "@tum.ai/ui-kit/src/index.ts"],
+    ["features/home/home-page.tsx", "@tum.ai/ui-kit/shell.css"],
+  ])("rejects kit import %s → %s", (from, specifier) => {
+    expect(kitImportViolation(moduleOf(from), specifier)).not.toBeNull();
+  });
+
+  test.each([
+    ["features/home/home-page.tsx", "@tum.ai/ui-kit"],
+    ["components/shell/header.tsx", "@tum.ai/ui-kit/shell"],
+    ["features/hackathons/makeathon-dawn.tsx", "@tum.ai/ui-kit/halftone"],
+    ["app/(site)/hackathons/page.tsx", "@tum.ai/ui-kit/halftone.css"],
+  ])("allows kit import %s → %s", (from, specifier) => {
+    expect(kitImportViolation(moduleOf(from), specifier)).toBeNull();
+  });
+
   test("a route file imports one page and only its feature's CSS", () => {
     const violations: string[] = [];
 
@@ -661,14 +721,11 @@ describe("import rules", () => {
   });
 
   test.each([
-    ["components/ds/card.tsx", "lib/cn.ts"],
     ["features/home/home-page.tsx", "features/partners/index.ts"],
     ["features/home/home-page.tsx", "features/home/data/homepage.ts"],
     ["app/(site)/page.tsx", "features/home/home-page.tsx"],
     ["app/(site)/page.tsx", "features/home/home.css"],
     ["app/studio/[[...tool]]/page.tsx", "sanity/sanity.config.ts"],
-    ["features/home/home-page.tsx", "components/ds/index.ts"],
-    ["components/ds/dialog.tsx", "components/ds/refs.ts"],
     ["proxy.ts", "lib/redirects.ts"],
     ["features/home/home-page.tsx", "features/partners/server.ts"],
   ])("allows %s → %s", (from, to) => {

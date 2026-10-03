@@ -1,4 +1,4 @@
-import { Container, PageHero, Prose, Section } from "@/components/ds";
+import { Container, PageHero, Prose, Section } from "@tum.ai/ui-kit";
 import { legalEntity, registeredOfficeLinesDe } from "@/config/organization";
 import { absoluteUrl } from "@/config/site";
 import {
