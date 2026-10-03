@@ -1,7 +1,7 @@
 import type { ContentImage } from "@/lib/cms-content-model";
 
 /** A named point with one or two sentences of copy. */
-export type Point = { title: string; text: string };
+type Point = { title: string; text: string };
 
 /** When a selection stage happens, filled in from the round's dates. */
 export type StageTiming =

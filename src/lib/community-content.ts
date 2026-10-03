@@ -7,6 +7,7 @@ import {
   contentArray,
   contentError,
   contentImage,
+  contentNumber,
   contentObject,
   contentOptional,
   contentString,
@@ -14,9 +15,7 @@ import {
   parseContent,
   requireArray,
   requireEnum,
-  requireNumber,
   requireObject,
-  requireString,
 } from "./cms-content-model";
 import {
   type Department,
@@ -39,7 +38,7 @@ export const JOURNEY_QUERY =
   evidence{ "key": person->key, "name": person->name, "story": person->story, "placement": person->placement, excerpt }
 }`);
 
-export const DEPARTMENTS_QUERY =
+const DEPARTMENTS_QUERY =
   defineQuery(`*[_type == "department"] | order(order asc){
   name, description, "photo": photo${CONTENT_IMAGE_PROJECTION}, photoCaption
 }`);
@@ -52,10 +51,10 @@ export function parseMemberEvidence(
 ): JourneyStep["evidence"] {
   if (value == null) return undefined;
   const quote = requireObject(value, label, path);
-  const key = requireString(quote.key, label, `${path}.key`);
-  const name = requireString(quote.name, label, `${path}.name`);
-  const excerpt = requireString(quote.excerpt, label, `${path}.excerpt`);
-  const story = requireString(quote.story, label, `${path}.story`);
+  const key = contentString(quote.key, label, `${path}.key`);
+  const name = contentString(quote.name, label, `${path}.name`);
+  const excerpt = contentString(quote.excerpt, label, `${path}.excerpt`);
+  const story = contentString(quote.story, label, `${path}.story`);
   if (quote.placement !== "member-story" || !isExcerptOf(excerpt, story)) {
     return contentError(
       label,
@@ -72,11 +71,11 @@ export function selectMemberJourney(value: unknown): JourneyStage[] {
   const steps = requireArray(value, label).map((raw, index) => {
     const path = `[${index}]`;
     const record = requireObject(raw, label, path);
-    const step = requireString(record.step, label, `${path}.step`);
+    const step = contentString(record.step, label, `${path}.step`);
     if (!/^\d{2}[A-Z]?$/.test(step))
       contentError(label, `${path}.step`, "invalid step anchor");
-    const stage = requireNumber(record.stage, label, `${path}.stage`);
-    const fromSemester = requireNumber(
+    const stage = contentNumber(record.stage, label, `${path}.stage`);
+    const fromSemester = contentNumber(
       record.fromSemester,
       label,
       `${path}.fromSemester`,
@@ -98,8 +97,8 @@ export function selectMemberJourney(value: unknown): JourneyStage[] {
       step,
       stage,
       fromSemester,
-      name: requireString(record.name, label, `${path}.name`),
-      description: requireString(
+      name: contentString(record.name, label, `${path}.name`),
+      description: contentString(
         record.description,
         label,
         `${path}.description`,

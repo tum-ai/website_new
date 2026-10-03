@@ -1,5 +1,6 @@
 import { axe } from "@test/axe";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { getMockEvents } from "@/lib/mock-cms";
 import { indexHosts, summarizeEvents } from "./events";
@@ -55,12 +56,46 @@ describe("EventsHero", () => {
   test("sets the × before the co-host index when there are co-hosts", async () => {
     const events = await getMockEvents(new Date("2026-10-01T12:00:00Z"));
     const hosts = indexHosts(events);
-    expect(hosts.length).toBeGreaterThan(0);
+    expect(hosts.length).toBeGreaterThan(1);
     await renderHero(events);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("×");
     expect(
       screen.getByRole("list", { name: /co-hosts/i }).children,
     ).toHaveLength(hosts.length);
+  });
+
+  test("synthetic referenced and typed co-hosts enable keyboard stepping and wraparound", async () => {
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn((media: string) => ({
+        matches: media === "(prefers-reduced-motion: no-preference)",
+        media,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      })),
+    );
+    const user = userEvent.setup();
+    const events = await getMockEvents(new Date("2026-10-01T12:00:00Z"));
+    const hosts = indexHosts(events);
+    expect(hosts.some(({ key }) => key)).toBe(true);
+    expect(hosts.some(({ key }) => !key)).toBe(true);
+    const { container } = await renderHero(events);
+    const reel = await screen.findByRole("group", { name: /^Co-hosts:/ });
+    const panels = [...container.querySelectorAll("[data-host-panel]")];
+    expect(panels).toHaveLength(hosts.length);
+    expect(panels.length).toBeGreaterThan(1);
+    expect(panels[0]).toHaveAttribute("data-active", "");
+    reel.focus();
+    expect(reel).toHaveFocus();
+    await user.keyboard("{ArrowDown}");
+    await waitFor(() => expect(panels[1]).toHaveAttribute("data-active", ""));
+    expect(panels[0]).not.toHaveAttribute("data-active");
+    await user.keyboard("{ArrowUp}");
+    await waitFor(() => expect(panels[0]).toHaveAttribute("data-active", ""));
+    await user.keyboard("{ArrowUp}");
+    await waitFor(() =>
+      expect(panels.at(-1)).toHaveAttribute("data-active", ""),
+    );
   });
 
   test("the reel shows a referenced co-host's dark logo, a typed name as text", async () => {

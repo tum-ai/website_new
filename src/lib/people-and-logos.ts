@@ -113,7 +113,7 @@ export type Organization = {
 /**
  * The page sections that show an ordered list of logos, one `logoList`
  * document each (its `_id` is fixed per section, see
- * `logoListId` in `lib/organization-content.ts`).
+ * `logoListDocumentId` below).
  */
 export const logoListSurfaces = [
   {

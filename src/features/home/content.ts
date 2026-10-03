@@ -13,7 +13,6 @@ import {
   parseContent,
   requireEnum,
   requireObject,
-  requireString,
 } from "@/lib/cms-content-model";
 import { getDepartments, parseMemberEvidence } from "@/lib/community-content";
 import { fillCmsCopy } from "@/lib/content-copy";
@@ -21,7 +20,7 @@ import type { HOME_COPY_QUERY_RESULT } from "@/lib/sanity.types.generated";
 import { getSafeSitePath } from "@/lib/security";
 import { type HomeCopy, homePageTokens, ledgerKeys } from "./data/homepage";
 
-export const HOME_COPY_QUERY = defineQuery(`*[_id == "homeCopy"][0]{
+const HOME_COPY_QUERY = defineQuery(`*[_id == "homeCopy"][0]{
   hero{
     title,
     lead,
@@ -82,7 +81,7 @@ const homeCopyParser = contentObject({
         title: contentString,
         description: contentString,
         href: (value, label, path) => {
-          const href = requireString(value, label, path);
+          const href = contentString(value, label, path);
           return (
             getSafeSitePath(href) ??
             contentError(label, path, "requires a safe site path")
@@ -137,7 +136,7 @@ const homeCopyParser = contentObject({
 });
 
 /** The quote is a plain complete group; CMS text cannot acquire a local author. */
-export function selectHomeCopy(value: unknown): HomeCopy {
+function selectHomeCopy(value: unknown): HomeCopy {
   const copy = parseContent(value, homeCopyParser, "the homepage copy");
   if (copy.hero.photos.length < 1 || copy.hero.photos.length > 5)
     contentError("the homepage copy", "hero.photos", "requires 1 to 5 photos");

@@ -4,16 +4,17 @@ import { loadContent } from "./cms-content";
 import {
   CONTENT_IMAGE_PROJECTION,
   ContentError,
+  contentBoolean,
+  contentString,
   optionalString,
   requireArray,
-  requireBoolean,
   requireObject,
-  requireString,
 } from "./cms-content-model";
 import type { PersonPlacement } from "./people-and-logos";
 import type { PEOPLE_QUERY_RESULT } from "./sanity.types.generated";
+
 /** People are CMS documents; placement and order select the display collection. */
-export const PEOPLE_QUERY =
+const PEOPLE_QUERY =
   defineQuery(`*[_type == "person" && placement == $placement] | order(order asc){
  key,name,role,context,quote,story,"portrait":portrait${CONTENT_IMAGE_PROJECTION},
  "organizationRef":organization._ref,
@@ -21,20 +22,16 @@ export const PEOPLE_QUERY =
 }`);
 /** One projected person. */
 export type PersonResult = PEOPLE_QUERY_RESULT[number];
-/** Stable historical person id used by migration tools. */
-export function personId(placement: PersonPlacement, key: string): string {
-  return `person-${placement}-${key}`;
-}
 /** Validate identity and attribution before a domain maps its required portrait or quote. */
-export function readPerson(person: PersonResult, label: string): PersonResult {
+function readPerson(person: PersonResult, label: string): PersonResult {
   requireObject(person, label);
-  requireString(person.key, label, "key");
-  requireString(person.name, label, "name");
-  requireString(person.role, label, "role");
+  contentString(person.key, label, "key");
+  contentString(person.name, label, "name");
+  contentString(person.role, label, "role");
   for (const field of ["context", "quote", "story"] as const)
     optionalString(person[field], label, field);
   if (person.roleAtOrganization != null)
-    requireBoolean(person.roleAtOrganization, label, "roleAtOrganization");
+    contentBoolean(person.roleAtOrganization, label, "roleAtOrganization");
   const ref = (person as PersonResult & { organizationRef?: string | null })
     .organizationRef;
   if (ref && !person.organization)
@@ -50,8 +47,8 @@ export function readPerson(person: PersonResult, label: string): PersonResult {
       "requires a resolved organization",
     );
   if (person.organization) {
-    requireString(person.organization.key, label, "organization.key");
-    requireString(person.organization.name, label, "organization.name");
+    contentString(person.organization.key, label, "organization.key");
+    contentString(person.organization.name, label, "organization.name");
   }
   return person;
 }

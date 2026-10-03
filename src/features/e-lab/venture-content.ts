@@ -4,10 +4,10 @@ import { loadContent } from "@/lib/cms-content";
 import {
   ContentError,
   contentImage,
+  contentString,
   optionalString,
   requireArray,
   requireObject,
-  requireString,
   toContentImage,
 } from "@/lib/cms-content-model";
 import { getLogoLists } from "@/lib/organization-content";
@@ -37,7 +37,7 @@ function voiceKey(value: unknown, path: string): string {
       path,
       "must reference an E-Lab testimonial",
     );
-  return requireString(person.key, "E-Lab voices", `${path}.key`);
+  return contentString(person.key, "E-Lab voices", `${path}.key`);
 }
 
 /** Editorial selections are references, rather than hardcoded testimonial keys. */
@@ -95,12 +95,12 @@ export function getTestimonialCards(): Promise<TestimonialCard[]> {
         );
       contentImage(portrait, "E-Lab testimonials", "portrait");
       contentImage(logo, "E-Lab testimonials", "organization.logo");
-      requireString(logo.alt, "E-Lab testimonials", "organization.logo.alt");
+      contentString(logo.alt, "E-Lab testimonials", "organization.logo.alt");
       return {
-        id: requireString(person.key, "E-Lab testimonials", "key"),
-        name: requireString(person.name, "E-Lab testimonials", "name"),
+        id: contentString(person.key, "E-Lab testimonials", "key"),
+        name: contentString(person.name, "E-Lab testimonials", "name"),
         role: personRoleLine(
-          requireString(person.role, "E-Lab testimonials", "role"),
+          contentString(person.role, "E-Lab testimonials", "role"),
           person.organization,
           person.roleAtOrganization,
         ),
@@ -113,7 +113,7 @@ export function getTestimonialCards(): Promise<TestimonialCard[]> {
               ),
             }
           : {}),
-        quote: requireString(person.quote, "E-Lab testimonials", "quote"),
+        quote: contentString(person.quote, "E-Lab testimonials", "quote"),
         portraitSrc: portrait.src,
         ...(portrait.objectPosition
           ? { portraitPosition: portrait.objectPosition }
@@ -127,13 +127,13 @@ export function getTestimonialCards(): Promise<TestimonialCard[]> {
 /** Validate an indivisible venture/founder narrative, including the sourced milestones. */
 export function selectTracedVenture(value: unknown): TracedVenture {
   const raw = requireObject(value, "ventureTrace");
-  const startupId = requireString(raw.startupId, "ventureTrace", "venture");
-  const testimonialId = requireString(
+  const startupId = contentString(raw.startupId, "ventureTrace", "venture");
+  const testimonialId = contentString(
     raw.testimonialId,
     "ventureTrace",
     "person",
   );
-  const cohort = requireString(raw.cohort, "ventureTrace", "cohort");
+  const cohort = contentString(raw.cohort, "ventureTrace", "cohort");
   if (raw.founderPlacement !== "e-lab-testimonial")
     throw new ContentError(
       "ventureTrace",
@@ -147,7 +147,7 @@ export function selectTracedVenture(value: unknown): TracedVenture {
       "must be in the E-Lab ventures logo list",
     );
   if (
-    requireString(
+    contentString(
       raw.founderContext,
       "ventureTrace",
       "person.context",
@@ -165,12 +165,12 @@ export function selectTracedVenture(value: unknown): TracedVenture {
         "ventureTrace",
         `milestones[${index}]`,
       );
-      const text = requireString(
+      const text = contentString(
         milestone.text,
         "ventureTrace",
         `milestones[${index}].text`,
       );
-      const source = requireString(
+      const source = contentString(
         milestone.source,
         "ventureTrace",
         `milestones[${index}].source`,

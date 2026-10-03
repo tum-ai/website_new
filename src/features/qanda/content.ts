@@ -22,7 +22,7 @@ import { getSafeSitePath, isHttpsUrl } from "@/lib/security";
 import type { QandaCopy, QandaEntry } from "./data/qanda";
 import { withJourneyTracks } from "./journey-tracks";
 
-export const QANDA_CONTENT_QUERY = defineQuery(`{
+const QANDA_CONTENT_QUERY = defineQuery(`{
   "copy": *[_id == "qandaCopy"][0]{
     heroTitle,
     missionQuestion,
@@ -85,7 +85,7 @@ const faqParser = contentArray(
 );
 
 /** Every question keeps its CMS identity; malformed anchors fail instead of dropping content. */
-export function selectFaqs(faqs: unknown, tokens: ContentTokens): QandaEntry[] {
+function selectFaqs(faqs: unknown, tokens: ContentTokens): QandaEntry[] {
   const entries = parseContent(
     fillCmsCopy(faqs, tokens, "the Q&A entries"),
     faqParser,
@@ -109,7 +109,7 @@ export function selectFaqs(faqs: unknown, tokens: ContentTokens): QandaEntry[] {
 }
 
 /** Spans are an exact published-content contract, including uniqueness and overlap. */
-export function validateQandaSpans(content: QandaContent): QandaContent {
+function validateQandaSpans(content: QandaContent): QandaContent {
   const problems = spanProblems(
     content.copy.missionPassage,
     content.faqs.flatMap((faq) =>

@@ -5,7 +5,7 @@ import type { PartnershipFinderCopy } from "./partnership-finder";
 /** CMS content models and pure metric helpers shared by the partner page. */
 
 /** The icon beside a reason, mapped to a Lucide icon by the section. */
-export type PartnerReasonIcon = "users" | "briefcase" | "network";
+type PartnerReasonIcon = "users" | "briefcase" | "network";
 
 /** A reason to partner: an icon, a label, a title and a paragraph. */
 export type PartnerReason = {

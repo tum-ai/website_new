@@ -2,7 +2,7 @@ import "server-only";
 
 import {
   contentImage,
-  requireString,
+  contentString,
   toContentImage,
 } from "@/lib/cms-content-model";
 import { getPeople } from "@/lib/person-content";
@@ -20,10 +20,10 @@ export function getMemberStories(): Promise<MemberStory[]> {
         "portrait",
       );
       return {
-        key: requireString(key, "the member stories.key"),
-        name: requireString(name, "the member stories.name"),
-        role: requireString(role, "the member stories.role"),
-        story: requireString(story, "the member stories.story"),
+        key: contentString(key, "the member stories.key"),
+        name: contentString(name, "the member stories.name"),
+        role: contentString(role, "the member stories.role"),
+        story: contentString(story, "the member stories.story"),
         image: image.src,
         ...(image.objectPosition
           ? { imagePosition: image.objectPosition }

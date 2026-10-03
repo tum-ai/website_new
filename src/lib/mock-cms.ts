@@ -42,7 +42,14 @@ export function getMockEventDocuments(now: Date): CmsFixtureDocument[] {
     location: index === 3 ? "Online" : "Example campus",
     city: index === 3 ? "Online" : "Munich",
     category,
-    hosts: index === 0 ? ["Example team", "Example community"] : [],
+    // References take precedence over legacy host names. A separate typed
+    // co-host keeps the hero's interactive reel exercised by the mock dataset.
+    hosts:
+      index === 0
+        ? ["Example team", "Example community"]
+        : index === 1
+          ? ["Example community"]
+          : [],
     coHosts:
       index === 0
         ? [

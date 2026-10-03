@@ -3,7 +3,7 @@ export type PartnershipDuration = "one-off" | "ongoing";
 
 /** Isomorphic finder models; all editorial wording is passed by the server. */
 
-export type PartnershipIntentCopy = {
+type PartnershipIntentCopy = {
   id: PartnershipIntent;
   label: string;
   /** For the email subject: "Partnership request: …". */
@@ -12,7 +12,7 @@ export type PartnershipIntentCopy = {
 };
 
 /** A timeframe the finder offers. */
-export type PartnershipDurationCopy = {
+type PartnershipDurationCopy = {
   id: PartnershipDuration;
   label: string;
   detail: string;
@@ -22,7 +22,7 @@ export type PartnershipDurationCopy = {
 type PartnershipRecommendation = { name: string; description: string };
 
 /** The formats by key; `partnerships.ts` picks one from the answers. */
-export type PartnershipRecommendations = Record<
+type PartnershipRecommendations = Record<
   "longTerm" | "hackathon" | "talent" | "brand" | "research",
   PartnershipRecommendation
 >;
@@ -32,7 +32,7 @@ export type PartnershipRecommendations = Record<
  * (the step names, "Back", "Book a call") and the mail templates stay in
  * code.
  */
-export type PartnershipPrompts = {
+type PartnershipPrompts = {
   /** The first question, over the goals. */
   intentQuestion: string;
   /** The second question, over the timeframes. */

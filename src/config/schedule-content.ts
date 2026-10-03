@@ -3,14 +3,14 @@ import { defineQuery } from "next-sanity";
 import { cache } from "react";
 import { loadContent } from "@/lib/cms-content";
 import {
+  contentBoolean,
   contentError,
+  contentNumber,
+  contentString,
   optionalString,
   requireArray,
-  requireBoolean,
   requireEnum,
-  requireNumber,
   requireObject,
-  requireString,
 } from "@/lib/cms-content-model";
 import { getCmsNow } from "@/lib/mock-cms-env";
 import { isMunichTime, munichDateFromIsoDay } from "@/lib/munich-time";
@@ -34,7 +34,7 @@ export const APPLICATION_WINDOW_QUERY =
   milestones[]{ key, from, to }
 }`);
 
-export const CAMPAIGNS_QUERY =
+const CAMPAIGNS_QUERY =
   defineQuery(`*[_type == "campaign"] | order(startDate desc, _id asc){
   "id": _id,
   name,
@@ -53,19 +53,19 @@ export const applicationWindowId = (program: Program) =>
   `applicationwindow-${program}`;
 const label = "applicationWindow";
 function day(value: unknown, path: string): string {
-  const raw = requireString(value, label, path);
+  const raw = contentString(value, label, path);
   const result = munichDateFromIsoDay(raw);
   if (!result) return contentError(label, path, "expected an ISO calendar day");
   return result;
 }
 function time(value: unknown, path: string): string {
-  const raw = requireString(value, label, path);
+  const raw = contentString(value, label, path);
   if (!isMunichTime(raw))
     return contentError(label, path, "expected HH:MM Munich time");
   return raw;
 }
 function https(value: unknown, path: string): string {
-  const raw = requireString(value, label, path);
+  const raw = contentString(value, label, path);
   try {
     if (new URL(raw).protocol === "https:") return raw;
   } catch {}
@@ -97,22 +97,22 @@ function span(
 export function selectMembershipWindow(value: unknown): MembershipConfig {
   const result = requireObject(value, label, "membership");
   const config: MembershipConfig = {
-    applicationsOpen: requireBoolean(result.switchedOn, label, "switchedOn"),
+    applicationsOpen: contentBoolean(result.switchedOn, label, "switchedOn"),
     applicationUrl: https(result.applicationUrl, "applicationUrl"),
     round: {
-      name: requireString(result.roundName, label, "roundName"),
+      name: contentString(result.roundName, label, "roundName"),
       opens: day(result.opens, "opens"),
       deadlineDate: day(result.deadlineDate, "deadlineDate"),
       deadlineTime: time(result.deadlineTime, "deadlineTime"),
       interviews: span(
         result,
         "interviews",
-        requireString(result.deadlineDate, label, "deadlineDate"),
+        contentString(result.deadlineDate, label, "deadlineDate"),
       ),
       onboarding: span(
         result,
         "onboarding",
-        requireString(result.deadlineDate, label, "deadlineDate"),
+        contentString(result.deadlineDate, label, "deadlineDate"),
       ),
     },
   };
@@ -125,11 +125,11 @@ export function selectMembershipWindow(value: unknown): MembershipConfig {
 export function selectELabWindow(value: unknown): ELabApplicationWindow {
   const result = requireObject(value, label, "e-lab");
   return {
-    applicationsOpen: requireBoolean(result.switchedOn, label, "switchedOn"),
+    applicationsOpen: contentBoolean(result.switchedOn, label, "switchedOn"),
     applicationUrl: https(result.applicationUrl, "applicationUrl"),
     applicationDeadlineDate: day(result.deadlineDate, "deadlineDate"),
     applicationDeadlineTime: time(result.deadlineTime, "deadlineTime"),
-    nextApplicationWindow: requireString(
+    nextApplicationWindow: contentString(
       result.nextWindowLabel,
       label,
       "nextWindowLabel",
@@ -189,7 +189,7 @@ function headerCtaOf(
     yieldsToRecruiting:
       cta.yieldsToRecruiting == null
         ? true
-        : requireBoolean(
+        : contentBoolean(
             cta.yieldsToRecruiting,
             "campaign",
             `${path}.yieldsToRecruiting`,
@@ -202,8 +202,8 @@ export function campaignsFromQuery(value: unknown): Campaign[] {
     (v, index): Campaign => {
       const path = `[${index}]`;
       const item = requireObject(v, "campaign", path);
-      const id = requireString(item.id, "campaign", `${path}.id`);
-      const name = requireString(item.name, "campaign", `${path}.name`);
+      const id = contentString(item.id, "campaign", `${path}.id`);
+      const name = contentString(item.name, "campaign", `${path}.name`);
       const startDate = day(item.startDate, `${path}.startDate`);
       const startTime =
         item.startTime == null
@@ -224,7 +224,7 @@ export function campaignsFromQuery(value: unknown): Campaign[] {
       const priority =
         item.priority == null
           ? undefined
-          : requireNumber(item.priority, "campaign", `${path}.priority`);
+          : contentNumber(item.priority, "campaign", `${path}.priority`);
       if (
         priority !== undefined &&
         (!Number.isInteger(priority) || priority < -10 || priority > 10)

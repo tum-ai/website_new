@@ -17,7 +17,7 @@ export type FaqCollection = Faq["collection"];
 /** Validated FAQ entry as a page renders it. */
 export type FaqEntry = { question: string; answer: string };
 
-export const FAQ_QUERY = defineQuery(
+const FAQ_QUERY = defineQuery(
   `*[_type == "faq" && collection == $collection] | order(order asc){ question, answer }`,
 );
 const faqParser = contentArray(

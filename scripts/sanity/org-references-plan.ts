@@ -33,7 +33,7 @@ import { getPartnerKey } from "../../src/features/partners/partner-key";
 import { splitResearchTitle } from "../../src/features/research/research-title";
 
 /** A document as the dataset holds it. */
-export type StoredDocument = Record<string, unknown> & {
+type StoredDocument = Record<string, unknown> & {
   _id: string;
   _type: string;
   _rev?: string;
@@ -59,7 +59,7 @@ export type PlanDataset = {
 type FieldChange = { path: string; before: unknown; after: unknown };
 
 /** The patch for one document: `set` and `unset` by Sanity patch path. */
-export type PlannedPatch = {
+type PlannedPatch = {
   id: string;
   /** The revision the plan read; the apply step patches only that one. */
   rev?: string;

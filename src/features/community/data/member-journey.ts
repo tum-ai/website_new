@@ -15,7 +15,6 @@ import {
 } from "@/lib/community-model";
 
 export type { JourneyStage, JourneyStep };
-export { stageSteps };
 
 /** The Lucide icon of each step icon key (the CMS stores the key). */
 export const journeyIcons: Record<JourneyIconKey, LucideIcon> = {

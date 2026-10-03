@@ -5,6 +5,7 @@ import { getContentTokens } from "@/config/content-tokens";
 import { loadContent } from "@/lib/cms-content";
 import {
   CONTENT_IMAGE_PROJECTION,
+  contentBoolean,
   contentError,
   contentImage,
   contentObject,
@@ -13,10 +14,8 @@ import {
   contentText,
   parseContent,
   requireArray,
-  requireBoolean,
   requireEnum,
   requireObject,
-  requireString,
 } from "@/lib/cms-content-model";
 import { fillCmsCopy } from "@/lib/content-copy";
 import { type FaqEntry, getFaqs } from "@/lib/faq-content";
@@ -30,7 +29,7 @@ export async function getELabFaqs(): Promise<FaqEntry[]> {
   return getFaqs("e-lab", { tokens: await getContentTokens() });
 }
 
-export const ELAB_COPY_QUERY = defineQuery(`*[_id == "eLabCopy"][0]{
+const ELAB_COPY_QUERY = defineQuery(`*[_id == "eLabCopy"][0]{
   hero{ title, lead },
   gates{
     title,
@@ -85,8 +84,8 @@ export function selectStages(value: unknown): StageCopy[] {
         return {
           kind: "gate",
           figure: requireEnum(stage.figure, figures, label, `${path}.figure`),
-          name: requireString(stage.name, label, `${path}.name`),
-          description: requireString(
+          name: contentString(stage.name, label, `${path}.name`),
+          description: contentString(
             stage.description,
             label,
             `${path}.description`,
@@ -94,7 +93,7 @@ export function selectStages(value: unknown): StageCopy[] {
           ...(stage.approximate == null
             ? {}
             : {
-                approximate: requireBoolean(
+                approximate: contentBoolean(
                   stage.approximate,
                   label,
                   `${path}.approximate`,
@@ -165,7 +164,7 @@ const copyParser = contentObject({
   }),
 });
 /** Reject missing or malformed required copy before it reaches the page. */
-export function selectELabCopy(value: unknown): ELabCopy {
+function selectELabCopy(value: unknown): ELabCopy {
   return parseContent(value, copyParser, "the /e-lab copy");
 }
 /** Read the required published E-Lab copy singleton. */

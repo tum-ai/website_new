@@ -8,13 +8,13 @@ import {
   contentArray,
   contentError,
   contentImage,
+  contentNumber,
   contentObject,
   contentOptional,
   contentString,
   contentText,
   parseContent,
   requireEnum,
-  requireNumber,
 } from "@/lib/cms-content-model";
 import { getMemberJourney } from "@/lib/community-content";
 import type { JourneyStage } from "@/lib/community-model";
@@ -29,7 +29,7 @@ export async function getApplyFaqs(): Promise<FaqEntry[]> {
   return getFaqs("apply", { tokens: await getContentTokens() });
 }
 
-export const APPLY_CONTENT_QUERY = defineQuery(`{
+const APPLY_CONTENT_QUERY = defineQuery(`{
   "copy": *[_id == "applyCopy"][0]{
     heroTitle,
     heroLead,
@@ -114,7 +114,7 @@ const applyCopyParser = contentObject({
 const milestoneParser = contentArray(
   contentObject({
     year: (value, label, path) => {
-      const year = requireNumber(value, label, path);
+      const year = contentNumber(value, label, path);
       if (!Number.isInteger(year) || year < 2020 || year > 2100)
         return contentError(
           label,
@@ -136,9 +136,7 @@ const milestoneParser = contentArray(
 );
 
 /** Validate the whole singleton before sections dereference their required fields. */
-export function selectApplyContent(
-  value: unknown,
-): Omit<ApplyContent, "journey"> {
+function selectApplyContent(value: unknown): Omit<ApplyContent, "journey"> {
   const parsed = parseContent(
     value,
     contentObject({ copy: applyCopyParser, milestones: milestoneParser }),

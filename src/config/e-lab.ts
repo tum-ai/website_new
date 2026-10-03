@@ -53,8 +53,6 @@ export type ELabApplicationWindow = {
   nextApplicationWindow: string;
 };
 
-export type ELabConfig = ELabFacts & ELabApplicationWindow;
-
 /** The instant applications close: the deadline itself, in Munich time. */
 function eLabClosesAt(window: ELabApplicationWindow): Date {
   return parseMunichDateTime(

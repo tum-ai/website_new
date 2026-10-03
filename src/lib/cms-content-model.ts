@@ -174,7 +174,7 @@ export function requireObject(
   return value as Record<string, unknown>;
 }
 /** Required nonblank text, preserving the editor's whitespace. */
-export function requireString(
+export function contentString(
   value: unknown,
   label: string,
   path = "",
@@ -195,7 +195,7 @@ export function optionalString(
   return value;
 }
 /** Required finite numeric fact. */
-export function requireNumber(
+export function contentNumber(
   value: unknown,
   label: string,
   path = "",
@@ -209,7 +209,7 @@ export function requireNumber(
   return value;
 }
 /** Required boolean, retaining false. */
-export function requireBoolean(
+export function contentBoolean(
   value: unknown,
   label: string,
   path = "",
@@ -249,9 +249,6 @@ export type ContentParser<T> = (
   label: string,
   path: string,
 ) => T;
-export const contentString: ContentParser<string> = requireString;
-export const contentNumber: ContentParser<number> = requireNumber;
-export const contentBoolean: ContentParser<boolean> = requireBoolean;
 /** Text that may intentionally be blank, such as decorative image alt. */
 export const contentText: ContentParser<string> = (value, label, path) => {
   if (typeof value !== "string")
@@ -320,7 +317,7 @@ export const contentProjectedImage: ContentParser<ContentImage> = (
   path,
 ) => {
   const coordinate: ContentParser<number> = (value, label, path) => {
-    const n = requireNumber(value, label, path);
+    const n = contentNumber(value, label, path);
     if (n < 0 || n > 1)
       return contentError(label, path, "expected fraction in 0..1");
     return n;

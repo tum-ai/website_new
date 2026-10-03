@@ -9,13 +9,13 @@ import {
   contentBoolean,
   contentError,
   contentImage,
+  contentNumber,
   contentObject,
   contentOptional,
   contentString,
   contentText,
   parseContent,
   requireArray,
-  requireNumber,
   requireObject,
 } from "@/lib/cms-content-model";
 import { fillCmsCopy } from "@/lib/content-copy";
@@ -26,7 +26,7 @@ import type {
 import type { LabSite } from "./data/lab-sites";
 import { type ResearchCopy, researchPageTokens } from "./data/research-copy";
 
-export const RESEARCH_COPY_QUERY = defineQuery(`*[_id == "researchCopy"][0]{
+const RESEARCH_COPY_QUERY = defineQuery(`*[_id == "researchCopy"][0]{
   hero{ title, lead },
   partnersLabel,
   abstract{ label, statement, body, runningOne, runningMany },
@@ -42,8 +42,7 @@ export const RESEARCH_COPY_QUERY = defineQuery(`*[_id == "researchCopy"][0]{
   }
 }`);
 
-export const LAB_SITES_QUERY =
-  defineQuery(`*[_type == "labSite"] | order(order asc){
+const LAB_SITES_QUERY = defineQuery(`*[_type == "labSite"] | order(order asc){
   "id": key.current,
   city,
   "location": [location.lat, location.lng],
@@ -86,7 +85,7 @@ const copyParser = contentObject({
   }),
 });
 /** Validate all required research copy and flatten validated figure panels. */
-export function selectResearchCopy(value: unknown): ResearchCopy {
+function selectResearchCopy(value: unknown): ResearchCopy {
   const { figurePanels, ...copy } = parseContent(
     value,
     copyParser,
@@ -143,8 +142,8 @@ export function selectLabSites(value: unknown): LabSite[] {
     const raw = requireObject(value, label, `[${index}]`);
     const site = parseContent(raw, siteParser, label);
     const location = requireArray(raw.location, label, `[${index}].location`);
-    const lat = requireNumber(location[0], label, `[${index}].location[0]`);
-    const lng = requireNumber(location[1], label, `[${index}].location[1]`);
+    const lat = contentNumber(location[0], label, `[${index}].location[0]`);
+    const lng = contentNumber(location[1], label, `[${index}].location[1]`);
     if (location.length !== 2 || Math.abs(lat) > 90 || Math.abs(lng) > 180)
       contentError(
         label,

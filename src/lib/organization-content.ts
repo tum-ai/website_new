@@ -6,11 +6,11 @@ import {
   CONTENT_IMAGE_PROJECTION,
   ContentError,
   contentImage,
+  contentString,
   optionalString,
   type ProjectedImage,
   requireArray,
   requireObject,
-  requireString,
   toContentImage,
 } from "./cms-content-model";
 import {
@@ -19,7 +19,6 @@ import {
   type LogoArtwork,
   type LogoListSurface,
   type LogoLists,
-  logoListDocumentId,
   type Organization,
   type Partnership,
 } from "./people-and-logos";
@@ -61,10 +60,6 @@ export type ProjectedOrganization = {
   partnerFeatured?: boolean | null;
   partnerOrder?: number | null;
 };
-/** Fixed section document id. */
-export function logoListId(surface: LogoListSurface): string {
-  return logoListDocumentId(surface);
-}
 /** Stable organization id used by historical migration tooling. */
 export function organizationId(key: string): string {
   return `organization-${key}`;
@@ -86,7 +81,7 @@ function artwork(
       `${label}: uploaded artwork needs an asset URL and dimensions`,
     );
   contentImage(content, label, "image");
-  requireString(content.alt, label, "alt");
+  contentString(content.alt, label, "alt");
   if (symbolOnly != null && typeof symbolOnly !== "boolean")
     throw new ContentError(
       "organization",
@@ -117,8 +112,8 @@ export function toOrganization(
     value,
     "organization",
   ) as unknown as ProjectedOrganization;
-  const key = requireString(projected.key, "organization.key");
-  const name = requireString(projected.name, `organization ${key}.name`);
+  const key = contentString(projected.key, "organization.key");
+  const name = contentString(projected.name, `organization ${key}.name`);
   const organization: Organization = { key, name };
   if (projected.shortName != null)
     organization.shortName = optionalString(
@@ -216,7 +211,7 @@ export function getLogoLists<S extends LogoListSurface>({
       requireArray(result, label);
       for (const item of result) {
         requireObject(item, label);
-        const surface = requireString(item.surface, `${label}.surface`);
+        const surface = contentString(item.surface, `${label}.surface`);
         if (!surfaces.includes(surface as S) || seen.has(surface))
           throw new ContentError(
             "organization",

@@ -4,7 +4,7 @@ import { legacyDataset } from "@/lib/sanity-config";
 import type { BackfillDocument } from "./asset-ledger";
 
 /** The document types the old site has, copied as they are. */
-export const copiedTypes = ["event", "partner", "research"] as const;
+const copiedTypes = ["event", "partner", "research"] as const;
 
 /** A document as the Sanity API returns it. */
 export type SourceDocument = {
@@ -58,7 +58,7 @@ const serverFields = new Set(["_rev", "_updatedAt", "_system"]);
  * The CDN URL of an image asset (`image-<sha1>-<w>x<h>-<ext>`) in
  * `dataset`. Anything else throws: the import could not upload it.
  */
-export function imageAssetUrl(
+function imageAssetUrl(
   ref: string,
   projectId: string,
   dataset: string,

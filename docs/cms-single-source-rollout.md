@@ -33,6 +33,14 @@ record that boundary as unknown. An available `SANITY_API_READ_TOKEN` enables au
 raw draft preflight; future apply also reads raw drafts and guards their revisions. Those
 remain separate rollout checks after the maintainer authorizes migration apply.
 
+[Vercel deployment](https://vercel.com/tum-ai/website/7CkixqLL99JTVoNnJ8Rmp1g5Pn6y) of commit `fcbfb8e` compiled
+successfully and finished TypeScript checks on 2026-10-03. It then failed during
+`/_not-found` prerendering at 19:32:47Z with `ContentError` at
+`siteSettings.configuration`: `NEXT_PUBLIC_SANITY_DATASET` must explicitly select a
+page-content dataset other than `production`. The logs establish a deployment configuration
+failure; they do not establish successful non-mock rendering or CMS readiness. Deployment
+environment settings were not changed.
+
 The [asset removal inventory](asset-sources/cms-single-source-cleanup.json) records every deleted
 path, byte size, SHA-1 and matching CMS asset ID; [asset notes](asset-sources/cms-single-source-cleanup.md)
 record retained migration sources and the proof boundary. The four migration images, official

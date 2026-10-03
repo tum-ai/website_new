@@ -19,7 +19,6 @@ import {
   requireArray,
   requireEnum,
   requireObject,
-  requireString,
   toContentImage,
 } from "@/lib/cms-content-model";
 import { fillCmsCopy } from "@/lib/content-copy";
@@ -40,7 +39,7 @@ import {
   partnershipIntentIds,
 } from "./data/partnership-finder";
 
-export const PARTNERS_COPY_QUERY = defineQuery(`*[_id == "partnersCopy"][0]{
+const PARTNERS_COPY_QUERY = defineQuery(`*[_id == "partnersCopy"][0]{
   pitch,
   intents{
     talent{ label, shortLabel, detail },
@@ -92,7 +91,7 @@ export const PARTNERS_COPY_QUERY = defineQuery(`*[_id == "partnersCopy"][0]{
   }
 }`);
 
-export const PARTNER_CASE_STUDIES_QUERY =
+const PARTNER_CASE_STUDIES_QUERY =
   defineQuery(`*[_type == "caseStudy"] | order(order asc){
   "id": _id,
   "organization": organization->key,
@@ -235,7 +234,7 @@ const copyParser = contentObject({
 });
 
 /** Complete CMS pillar cards, carrying figures derived from this render's site facts. */
-export function selectPillars(
+function selectPillars(
   value: unknown,
   tokens: ContentTokens,
   metrics: ReturnType<typeof partnerPillarMetricsOf>,
@@ -251,7 +250,7 @@ export function selectPillars(
       );
       const image = toContentImage(pillar.image as ProjectedImage);
       const href = getSafeSitePath(
-        requireString(pillar.href, "partnersCopy", `pillars[${index}].href`),
+        contentString(pillar.href, "partnersCopy", `pillars[${index}].href`),
       );
       if (!image || !href)
         throw new ContentError(
@@ -260,7 +259,7 @@ export function selectPillars(
           "requires an uploaded image and safe site path",
         );
       contentImage(image, "partnersCopy", `pillars[${index}].image`);
-      requireString(image.alt, "partnersCopy", `pillars[${index}].image.alt`);
+      contentString(image.alt, "partnersCopy", `pillars[${index}].image.alt`);
       const wording = parseContent(
         fillCmsCopy(pillar, tokens, "partnersCopy"),
         contentObject({
@@ -327,7 +326,7 @@ export function getPartnerCaseStudies(): Promise<PartnerCaseStudy[]> {
             "requires an uploaded image",
           );
         contentImage(image, "partner cases", `${index}.image`);
-        requireString(image.alt, "partner cases", `${index}.image.alt`);
+        contentString(image.alt, "partner cases", `${index}.image.alt`);
         const caseStudy = parseContent(
           raw,
           contentObject({
@@ -366,10 +365,10 @@ export function getPartnerProfiles(): Promise<PartnerProfile[]> {
         );
       contentImage(image, "partner profiles", "portrait");
       return {
-        key: requireString(person.key, "partner profiles", "key"),
-        name: requireString(person.name, "partner profiles", "name"),
+        key: contentString(person.key, "partner profiles", "key"),
+        name: contentString(person.name, "partner profiles", "name"),
         role: personRoleLine(
-          requireString(person.role, "partner profiles", "role"),
+          contentString(person.role, "partner profiles", "role"),
           person.organization,
           person.roleAtOrganization,
         ),

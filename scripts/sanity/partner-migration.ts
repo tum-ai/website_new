@@ -87,7 +87,7 @@ const text = (value: unknown): string | undefined =>
 const isMissing = (value: unknown) => value === undefined;
 
 /** Lowercase words joined by hyphens, as the organisation `key` must be. */
-export function keyFromName(name: string): string {
+function keyFromName(name: string): string {
   return name
     .normalize("NFKD")
     .replace(/[̀-ͯ]/g, "")

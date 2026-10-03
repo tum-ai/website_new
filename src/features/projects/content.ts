@@ -21,7 +21,7 @@ import type { PROJECTS_CONTENT_QUERY_RESULT } from "@/lib/sanity.types.generated
 import { type ProjectsCopy, projectsPageTokens } from "./data/copy";
 import { openSeatSlug, type TaskForce } from "./data/projects";
 
-export const PROJECTS_CONTENT_QUERY = defineQuery(`{
+const PROJECTS_CONTENT_QUERY = defineQuery(`{
   "copy": *[_id == "projectsCopy"][0]{
     hero{ eyebrow, title, lead, figureLabel },
     openSeat{ name, field },

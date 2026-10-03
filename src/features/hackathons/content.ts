@@ -15,7 +15,6 @@ import {
   contentText,
   parseContent,
   requireObject,
-  requireString,
 } from "@/lib/cms-content-model";
 import { fillCmsCopy } from "@/lib/content-copy";
 import type { HACKATHONS_COPY_QUERY_RESULT } from "@/lib/sanity.types.generated";
@@ -92,7 +91,7 @@ export const HACKATHONS_COPY_QUERY = defineQuery(`*[_id == "hackathonsCopy"][0]{
 }`);
 
 const day: ContentParser<string> = (value, label, path) => {
-  const text = requireString(value, label, path);
+  const text = contentString(value, label, path);
   if (
     !/^\d{4}-\d{2}-\d{2}$/.test(text) ||
     !Number.isFinite(Date.parse(text)) ||
