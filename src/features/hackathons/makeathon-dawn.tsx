@@ -17,31 +17,25 @@ export function MakeathonDawn({ children }: { children: ReactNode }) {
   const sunRef = useRef<HTMLSpanElement>(null);
   const clearRef = useRef<HTMLDivElement>(null);
   return (
-    <div className="relative isolate flex min-h-[88svh] flex-col">
-      <div className="relative flex flex-1 flex-col justify-end">
-        <div
-          aria-hidden="true"
-          className="mk-sky absolute inset-x-0 bottom-0 -z-10 h-[64%]"
-        >
-          <HalftoneField
-            cell={15}
-            fps={30}
-            speed={0.6}
-            rise={false}
-            sunRef={sunRef}
-            clearRef={clearRef}
-            initial={{ alpha: 0.9, edge: 0.3, fadeTop: [0, 0.78] }}
-          />
-        </div>
-        <div ref={clearRef}>{children}</div>
-        <div aria-hidden="true" className="mk-dawn">
-          <Sun ref={sunRef} />
-        </div>
-      </div>
+    <div className="relative isolate flex min-h-[88svh] flex-col justify-end">
       <div
         aria-hidden="true"
-        className="h-8 border-fg/40 border-t bg-sunken md:h-12"
-      />
+        className="mk-sky absolute inset-x-0 bottom-0 -z-10 h-[64%]"
+      >
+        <HalftoneField
+          cell={15}
+          fps={30}
+          speed={0.6}
+          rise={false}
+          sunRef={sunRef}
+          clearRef={clearRef}
+          initial={{ alpha: 0.9, edge: 0.3, fadeTop: [0, 0.78] }}
+        />
+      </div>
+      <div ref={clearRef}>{children}</div>
+      <div aria-hidden="true" className="mk-dawn">
+        <Sun ref={sunRef} />
+      </div>
     </div>
   );
 }
