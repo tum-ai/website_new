@@ -1,5 +1,4 @@
 import type { Organization } from "@/lib/people-and-logos";
-import { partnerLogoLists } from "./organizations";
 
 /** A company in "Where they go afterwards": its name and light logo. */
 export type AlumniDestination = {
@@ -40,11 +39,3 @@ export function symbolOnlyLogosOf(
       .flatMap((artwork) => (artwork?.symbolOnly ? [artwork.src] : [])),
   );
 }
-
-export const symbolOnlyLogos = symbolOnlyLogosOf(
-  Object.values(partnerLogoLists),
-);
-
-export const alumniDestinations = alumniDestinationsOf(
-  partnerLogoLists["alumni-destinations"],
-);

@@ -24,7 +24,7 @@ export type StoredDocument = Record<string, unknown> & {
 type FieldChange = { path: string; before: unknown; after: unknown };
 
 /** The patch for one document: `set` and `unset` by Sanity patch path. */
-export type PlannedPatch = {
+type PlannedPatch = {
   id: string;
   /** The revision the plan read; the apply step patches only that one. */
   rev?: string;
@@ -54,7 +54,7 @@ const phaseDurations: Readonly<
  * E: the new `siteSettings.organization` facts, set only where the field is
  * empty (the values of `organizationFacts` in `config/organization.ts`).
  */
-export const organizationFacts = {
+const organizationFacts = {
   acceptanceRate: 2.3,
   linkedinAudience: 20000,
 } as const;

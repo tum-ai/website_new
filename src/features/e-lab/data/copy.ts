@@ -1,7 +1,7 @@
-import { type StageCopy, stageCopy } from "./selection";
+import type { StageCopy } from "./selection";
 
 /**
- * The /e-lab page's own copy as code writes it: the code fallback of the
+ * The /e-lab page's published CMS copy model for the
  * `eLabCopy` singleton (see `../content.ts`). Text may hold `{{name}}`
  * placeholders for site facts, filled on the server, and page tokens
  * (`eLabPageTokens`) the sections fill from what they draw. The application
@@ -62,42 +62,3 @@ export const eLabPageTokens = [
   "open",
   "applications",
 ] as const;
-
-export const eLabCopyTemplate: ELabCopy = {
-  hero: {
-    title: "{{eLab.programWeeks}} weeks from kickoff to the Final Pitch.",
-    lead: "The E-Lab is TUM.ai's equity-free AI startup incubator, in person in Munich; its ventures have raised €{{eLab.ventureFundingMillions}}M so far. Apply alone or as a team, with or without an idea. You don't need to be enrolled anywhere.",
-  },
-  gates: {
-    title: "Every team passes the same gates.",
-    lead: "Each bar is drawn to scale: the teams that reach a gate, out of every team that applied. Between the gates, you build.",
-    scaleLabel: "Teams",
-    stages: stageCopy,
-  },
-  field: {
-    caption: "Every dot is a team that applied. Be the one that stands out.",
-    inviteLabel: "Your team",
-  },
-  ventures: {
-    title: "One team, all the way through.",
-    fundingNote:
-      "raised so far by ventures from {{eLab.completedCohorts}} E-Lab cohorts, including these.",
-    logosLabel: "Ventures from the E-Lab",
-  },
-  voices: {
-    title: "Founders and investors on the E-Lab.",
-    lead: "Founders from earlier cohorts, and investors and partners who work with the E-Lab.",
-    foundersLabel: "Founders",
-    investorsLabel: "Investors and partners",
-  },
-  closing: {
-    title:
-      "Every Final Pitch starts as one of about {{applications}} applications.",
-    followLabel: "Follow TUM.ai on LinkedIn",
-    partnersReader: "For investors and companies",
-    // TODO(content): confirm with the Venture team that partners mentor
-    // teams and attend the Final Pitch.
-    partnersText:
-      "Mentor a team, give feedback and meet the founders at the Final Pitch.",
-  },
-};

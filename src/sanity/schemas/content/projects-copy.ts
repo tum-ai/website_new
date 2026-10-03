@@ -27,8 +27,7 @@ const audience = (name: string, title: string, extra = {}) =>
 /**
  * The /projects page's own copy (one document, `_id` `projectsCopy`). The
  * task forces are documents of their own; the figure's geometry is code.
- * Read by `features/projects/content.ts`, over the code copy in
- * `features/projects/data/copy.ts`.
+ * Read and validated by `features/projects/content.ts`.
  */
 export const projectsCopyType = defineType({
   name: "projectsCopy",

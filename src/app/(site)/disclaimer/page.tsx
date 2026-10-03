@@ -4,10 +4,10 @@ import { DisclaimerPage } from "@/features/legal/disclaimer-page";
 
 export const metadata = buildMetadata("disclaimer");
 
-export default function Page() {
+export default async function Page() {
   return (
     <>
-      <JsonLd data={getJsonLd("disclaimer")} />
+      <JsonLd data={await getJsonLd("disclaimer")} />
       <DisclaimerPage />
     </>
   );

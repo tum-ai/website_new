@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
+import { labSitesFixture as labSites } from "@/lib/cms-fixtures/programmes";
 import { getMockResearchProjects } from "@/lib/mock-cms";
 import type { Partner, ResearchProject } from "@/lib/types";
-import { labSites } from "./data/lab-sites";
 import {
   cleanKeywords,
   distanceKm,
@@ -97,8 +97,8 @@ describe("getResearchIndex", () => {
     ]);
   });
 
-  test("every citation points at the institution it names", () => {
-    const index = getResearchIndex(getMockResearchProjects());
+  test("every citation points at the institution it names", async () => {
+    const index = getResearchIndex(await getMockResearchProjects());
     for (const entry of [...index.ongoing, ...index.completed]) {
       for (const { name, index: position } of entry.affiliations) {
         expect(index.affiliations[position - 1]?.name).toBe(name);
@@ -216,7 +216,7 @@ describe("getPartnerLogos", () => {
         partner({ name: "No artwork", link: "https://example.org" }),
         partner({
           name: "Local",
-          image: "/assets/partners/logos/ibm.png",
+          image: "/assets/fixtures/logo.svg",
           link: "javascript:alert(1)",
         }),
         partner({ name: "  ", image: "/x.png" }),
@@ -230,7 +230,7 @@ describe("getPartnerLogos", () => {
       },
       {
         name: "Local",
-        src: "/assets/partners/logos/ibm.png",
+        src: "/assets/fixtures/logo.svg",
         href: undefined,
         aspectRatio: undefined,
       },
@@ -239,29 +239,10 @@ describe("getPartnerLogos", () => {
 });
 
 describe("getLabSites", () => {
-  // The institutions the live CMS titles, the partners and REX copy name
-  // (2026-09): titles without references, partners and REX by key.
   const liveInstitutions: Institution[] = [
-    { name: "University of Cambridge" },
-    { name: "IBM Almaden" },
-    { name: "Helmholtz Zentrum" },
-    { name: "TUM CAMP" },
-    { name: "LMU Klinikum" },
-    { name: "MIT" },
-    { name: "IBM Research" },
-    { key: "klinikum-rechts-der-isar", name: "Klinikum rechts der Isar" },
-    { key: "ibm", name: "IBM" },
-    { key: "lmu", name: "LMU" },
-    { key: "flower-labs", name: "Flower Labs" },
-    { key: "helmholtz-munich", name: "Helmholtz Munich" },
-    { key: "harvard-medical-school", name: "Harvard Medical School" },
-    { key: "mit", name: "MIT" },
-    { key: "mi4people", name: "MI4People" },
-    { key: "harvard-university", name: "Harvard University" },
-    { key: "university-of-cambridge", name: "University of Cambridge" },
-    { key: "inria", name: "Inria" },
+    { key: "example-company", name: "Example Company" },
+    { name: "Example Lab" },
   ];
-
   const zurich = {
     id: "zurich",
     city: "Zurich",
@@ -303,58 +284,18 @@ describe("getLabSites", () => {
     ).toEqual(["ETH Zürich"]);
   });
 
-  test("places every live institution", () => {
+  test("places institutions by key and short name", () => {
     const { sites, unplaced } = getLabSites(liveInstitutions, labSites);
     expect(unplaced).toEqual([]);
-    expect(sites.map(({ id }) => id)).toEqual([
-      "munich",
-      "boston",
-      "cambridge",
-      "san-jose",
-      "zurich",
-      "hamburg",
-      "paris",
-    ]);
-    expect(sites.find(({ id }) => id === "munich")?.institutions).toEqual([
-      "Helmholtz Zentrum",
-      "TUM CAMP",
-      "LMU Klinikum",
-      "Klinikum rechts der Isar",
-      "LMU",
-      "Helmholtz Munich",
-      "MI4People",
-    ]);
-    expect(sites.find(({ id }) => id === "boston")?.institutions).toEqual([
-      "MIT",
-      "Harvard Medical School",
-      "Harvard University",
-    ]);
-  });
-
-  test("places referenced institutions by their organisations", () => {
-    const { sites, unplaced } = getLabSites(
-      [
-        { key: "helmholtz-munich", name: "Helmholtz Munich" },
-        { key: "ibm-almaden", name: "IBM Almaden" },
-      ],
-      labSites,
-    );
-    expect(unplaced).toEqual([]);
+    expect(sites.map((site) => site.id)).toEqual(["home", "remote"]);
     expect(
-      sites.map(({ id, institutions }) => [id, institutions]),
-    ).toStrictEqual([
-      ["munich", ["Helmholtz Munich"]],
-      ["san-jose", ["IBM Almaden"]],
-    ]);
+      getLabSites([{ name: "Lab" }], labSites).sites.at(-1)?.institutions,
+    ).toEqual(["Lab"]);
   });
-
-  test("always includes home, where the arcs start", () => {
-    const { sites } = getLabSites([{ name: "mit" }], labSites);
-    expect(sites.map(({ id, home }) => [id, Boolean(home)])).toEqual([
-      ["munich", true],
-      ["boston", false],
+  test("always includes the supplied home site", () => {
+    expect(getLabSites([], labSites).sites.map((site) => site.id)).toEqual([
+      "home",
     ]);
-    expect(sites[0]?.institutions).toEqual([]);
   });
 
   test("every site sits on the globe", () => {
@@ -392,18 +333,10 @@ test("distanceKm measures great circles", () => {
   expect(distanceKm([10, 20], [10, 20])).toBe(0);
 });
 
-test("each site knows how far its nearest neighbour is", () => {
-  const { sites } = getLabSites(
-    [{ name: "MIT" }, { name: "IBM Research" }],
-    labSites,
-  );
-  const km = Object.fromEntries(
-    sites.map(({ id, nearestKm }) => [id, Math.round(nearestKm)]),
-  );
-  // Munich and Zurich are each other's nearest; Boston's is Zurich.
-  expect(km.munich).toBe(km.zurich);
-  expect(km.munich).toBeLessThan(300);
-  expect(km.boston).toBeGreaterThan(5000);
+test("each site measures its nearest neighbour", () => {
+  const { sites } = getLabSites([{ name: "Example Lab" }], labSites);
+  expect(sites[0]?.nearestKm).toBe(sites[1]?.nearestKm);
+  expect(sites[0]?.nearestKm).toBeGreaterThan(5000);
   expect(getLabSites([], labSites).sites[0]?.nearestKm).toBe(
     Number.POSITIVE_INFINITY,
   );

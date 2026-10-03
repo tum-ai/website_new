@@ -11,7 +11,7 @@ import { contentImageField } from "./fields";
  * A task force on /projects: a small team of members that takes AI into one
  * other field. The hero figure draws one circle per task force in `order`,
  * clockwise from the top, and a chapter per task force follows. Read by
- * `features/projects/content.ts`, over `features/projects/data/projects.ts`.
+ * `features/projects/content.ts`.
  */
 export const taskForceType = defineType({
   name: "taskForce",

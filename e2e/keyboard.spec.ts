@@ -1,14 +1,16 @@
 import type { Locator, Page } from "@playwright/test";
-import { campaignsFallback } from "@/config/campaigns";
 import { eLabCohortNameOf } from "@/config/e-lab";
-import { membershipConfig } from "@/config/membership";
 import {
   getHeaderOptions,
   headerCtaAt,
   headerCtaSchedule,
   mainNavigation,
 } from "@/config/navigation";
-import { siteFactsFallback } from "@/config/site-facts";
+import { hackathonsFixture } from "@/lib/cms-fixtures/hackathons";
+import {
+  settingsFixtureFacts,
+  settingsFixtureMembership,
+} from "@/lib/cms-fixtures/settings";
 import { expect, MOCK_CMS_NOW, test } from "./fixtures";
 
 /*
@@ -33,14 +35,16 @@ async function pressTab(page: Page, backwards = false) {
 /**
  * The header CTA the server renders on `path` at the mock clock, computed
  * the way the site layout does (`headerCtaAt(headerCtaSchedule(…))`, with
- * campaigns), from the code facts the E2E build serves.
+ * campaigns), from the synthetic CMS facts the E2E build serves.
  */
 function headerCtaOn(path: string) {
   const schedule = headerCtaSchedule({
-    membership: membershipConfig,
-    fallback: siteFactsFallback.headerCtaFallback,
-    eLabCohortName: eLabCohortNameOf(siteFactsFallback.eLab.currentIteration),
-    campaigns: campaignsFallback,
+    membership: settingsFixtureMembership,
+    fallback: settingsFixtureFacts.headerCtaFallback,
+    eLabCohortName: eLabCohortNameOf(
+      settingsFixtureFacts.eLab.currentIteration,
+    ),
+    campaigns: [],
   });
   return getHeaderOptions(path, {
     cta: headerCtaAt(schedule, new Date(MOCK_CMS_NOW)),
@@ -285,23 +289,32 @@ test.describe("interactive figures", { tag: "@keyboard" }, () => {
     page,
   }) => {
     await page.goto("/hackathons");
-    const ribbon = page.getByRole("slider", { name: "Hackathon timeline" });
+    const ribbon = page.getByRole("slider", {
+      name: hackathonsFixture.hero.sliderLabel,
+    });
     const index = async () =>
       Number(await ribbon.getAttribute("aria-valuenow"));
 
     await ribbon.focus();
     await expect(ribbon).toBeFocused();
     await page.keyboard.press("Home");
-    await expect(ribbon).toHaveAttribute("aria-valuetext", /GPT-3 Makeathon/);
+    await expect(ribbon).toHaveAttribute(
+      "aria-valuetext",
+      new RegExp(hackathonsFixture.makeathon.editions[0].name),
+    );
     await page.keyboard.press("ArrowRight");
     await expect.poll(index).toBe(1);
-    // The last stop is the next hackathon: the league's Grand Finale at
-    // MOCK_CMS_NOW.
+    // The last stop is the next match in the synthetic CMS season.
     await page.keyboard.press("End");
     await expect
       .poll(index)
       .toBe(Number(await ribbon.getAttribute("aria-valuemax")));
-    await expect(ribbon).toHaveAttribute("aria-valuetext", /Grand Finale/);
+    const finale = settingsFixtureFacts.hackathons.league.matches.at(-1);
+    if (!finale) throw new Error("the synthetic season needs its final match");
+    await expect(ribbon).toHaveAttribute(
+      "aria-valuetext",
+      new RegExp(finale.label),
+    );
   });
 
   test("the events co-host reel steps with the arrow keys", async ({
@@ -356,7 +369,7 @@ test.describe("deep links", { tag: "@keyboard" }, () => {
     await page.goto("/qanda#member-journey");
     const question = page
       .getByRole("main")
-      .getByRole("button", { name: "What does the member journey look like?" });
+      .getByRole("button", { name: "How does membership work?" });
     await expect(question).toHaveAttribute("aria-expanded", "true");
   });
 });

@@ -1,30 +1,13 @@
-import {
-  isEmptyContent,
-  type ProjectedImage,
-  toContentImage,
-} from "./cms-content-model";
+import { contentError, contentProjectedImage } from "./cms-content-model";
 import {
   type ContentTokens,
-  fillTemplate,
+  templateTokenNames,
   unknownTokenNames,
 } from "./content-tokens";
 
-/**
- * Placeholder filling and cleanup for page copy: the `<page>Copy` singletons
- * and the copy lists (departments, task forces, ...) that the content slices
- * serve. Isomorphic and free of Next or Sanity runtime imports, so data
- * files (the code fallbacks) and slices share it.
- *
- * Code copy is written as templates with `{{placeholders}}`
- * (`lib/content-tokens.ts`) and filled once per render; CMS copy is the same
- * template text, filled by {@link fillCmsCopy} before it is merged over the
- * code fallback (`mergeOverFallback`).
- *
- * **Page tokens.** A few templates state a figure only the page knows, such
- * as how many task forces it lists (`{{count}}`). Those names are passed as
- * `keep`: filling leaves them in place, and the page fills them with
- * {@link fillPageTokens} once it has the content. The Studio accepts them
- * only on the fields that declare them (`copy-fields.ts`).
+/** Fill CMS placeholders per render and normalize image projections without changing
+ * optional blanks or dropping list entries. Page tokens declared in `keep` remain
+ * available for the renderer to insert text or an element.
  */
 
 type PlainObject = Record<string, unknown>;
@@ -40,23 +23,25 @@ const placeholder = /\{\{\s*([\w.-]+)\s*\}\}/g;
 /** `fillTemplate`, leaving the page tokens in `keep` as they are. */
 function fill(
   template: string,
-  tokens: ContentTokens,
+  tokens: Partial<ContentTokens>,
   keep: readonly string[],
 ): string | null {
-  if (keep.length === 0) return fillTemplate(template, tokens);
-  const unknown = unknownTokenNames(template).filter(
-    (name) => !keep.includes(name),
+  const unresolved = templateTokenNames(template).filter(
+    (name) =>
+      !keep.includes(name) &&
+      typeof tokens[name as keyof ContentTokens] !== "string",
   );
-  if (unknown.length > 0) return null;
+  if (unresolved.length) return null;
   return template.replace(placeholder, (match, name: string) =>
-    keep.includes(name) ? match : tokens[name as keyof ContentTokens],
+    keep.includes(name)
+      ? match
+      : (tokens[name as keyof ContentTokens] ?? match),
   );
 }
 
 /**
  * `copy` with every string's placeholders filled, deeply (objects and lists
- * keep their shape), except the page tokens in `keep`. For code fallbacks,
- * which a developer controls: an unknown placeholder throws.
+ * keep their shape), except the page tokens in `keep`. An unknown placeholder throws.
  */
 export function fillCodeCopy<T>(
   copy: T,
@@ -117,92 +102,49 @@ export function splitAtPageToken(template: string, name: string): string[] {
   return parts;
 }
 
-/** A value {@link fillCmsCopy} drops because it holds an unknown placeholder. */
-const rejected = Symbol("rejected");
-
-/**
- * An image as `CONTENT_IMAGE_PROJECTION` projects it: `src`, `width`,
- * `height` and `hotspot` are always present (possibly `null`).
- */
-const isProjectedImage = (value: PlainObject) =>
-  "src" in value && "width" in value && "height" in value && "hotspot" in value;
-
-function clean(
-  value: unknown,
-  tokens: ContentTokens,
-  label: string,
-  keep: readonly string[],
-): unknown {
-  if (typeof value === "string") {
-    const filled = fill(value, tokens, keep);
-    if (filled === null) {
-      console.warn(
-        `[cms-content] Skipping text in ${label}: unknown placeholder ${unknownTokenNames(
-          value,
-        )
-          .filter((name) => !keep.includes(name))
-          .join(", ")}.`,
-      );
-      return rejected;
-    }
-    return filled;
-  }
-  if (Array.isArray(value)) {
-    // A list item with a broken placeholder is dropped as a whole: a list
-    // replaces the code list wholesale, so a half item would render as is.
-    return value
-      .map((item) => clean(item, tokens, label, keep))
-      .filter((item) => item !== rejected && !isEmptyContent(item));
-  }
-  if (isPlainObject(value)) {
-    if (isProjectedImage(value)) {
-      return toContentImage(value as ProjectedImage) ?? null;
-    }
-    const entries: [string, unknown][] = [];
-    for (const [key, field] of Object.entries(value)) {
-      const cleaned = clean(field, tokens, label, keep);
-      if (cleaned === rejected) return rejected;
-      if (!isEmptyContent(cleaned)) entries.push([key, cleaned]);
-    }
-    return entries.length > 0 ? Object.fromEntries(entries) : null;
-  }
-  return value;
-}
-
-/**
- * A copy query result, ready for `mergeOverFallback`:
- *
- * - strings are filled with `fillTemplate`;
- * - unset values (`null`, blank strings, empty lists and objects) are left
- *   out, so the code value shows and optional fields stay absent, as in code;
- * - projected images become `ContentImage`s (`toContentImage`);
- * - text with an unknown placeholder is dropped (and logged): a field then
- *   shows the code copy; an object or list item that holds it is dropped as a
- *   whole, so no half-filled item reaches the page. A slice whose list is
- *   structural (the E-Lab stages, the member journey) compares the count
- *   with the query result and keeps the code list when an item was dropped.
- *
- * `label` names the content in the log line; `keep` lists the page tokens
- * to leave for {@link fillPageTokens}.
- */
+/** Fill CMS text without dropping fields, blank values, or list items. */
 export function fillCmsCopy(
   value: unknown,
-  tokens: ContentTokens,
+  tokens: Partial<ContentTokens>,
   label: string,
   keep: readonly string[] = [],
 ): unknown {
-  if (!isPlainObject(value) || isProjectedImage(value)) {
-    const cleaned = clean(value, tokens, label, keep);
-    return cleaned === rejected ? null : cleaned;
-  }
-  // Outside lists (a singleton and its groups of fields), a broken field
-  // falls back on its own instead of taking its neighbours with it.
-  const entries: [string, unknown][] = [];
-  for (const [key, field] of Object.entries(value)) {
-    const cleaned = fillCmsCopy(field, tokens, label, keep);
-    if (cleaned !== rejected && !isEmptyContent(cleaned)) {
-      entries.push([key, cleaned]);
+  function visit(value: unknown, path: string): unknown {
+    if (typeof value === "string") {
+      const filled = fill(value, tokens, keep);
+      if (filled === null)
+        return contentError(
+          label,
+          path,
+          `unknown placeholder ${templateTokenNames(value)
+            .filter(
+              (name) =>
+                !keep.includes(name) &&
+                typeof tokens[name as keyof ContentTokens] !== "string",
+            )
+            .join(", ")}`,
+        );
+      return filled;
     }
+    if (Array.isArray(value))
+      return value.map((item, index) => visit(item, `${path}[${index}]`));
+    if (isPlainObject(value)) {
+      if (
+        "src" in value &&
+        "width" in value &&
+        "height" in value &&
+        "hotspot" in value
+      ) {
+        return contentProjectedImage(value, label, path);
+      }
+      return Object.fromEntries(
+        Object.entries(value).map(([key, field]) => [
+          key,
+          visit(field, path ? `${path}.${key}` : key),
+        ]),
+      );
+    }
+    return value;
   }
-  return entries.length > 0 ? Object.fromEntries(entries) : null;
+  return visit(value, "");
 }

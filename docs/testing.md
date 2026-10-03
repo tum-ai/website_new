@@ -65,17 +65,23 @@ Playwright's axe run covers them on real pages.
 `pnpm test` never builds the app. Anything that needs build output goes in `test/perf/` and runs
 with `pnpm test:perf` after `pnpm build`.
 
-**Content slices under the mock CMS.** A slice's tests stub `CMS_CONTENT_SOURCE` and
-`USE_MOCK_CMS=1`; `fetchContent` then imports `lib/cms-content-mock` dynamically and queries the
-backfill documents with groq-js. A test that edits those documents with
-`vi.mock("@/lib/cms-content-mock", ...)` must call one getter at a time, never several loads
-concurrently (`Promise.all`, or a getter that runs several `loadContent` calls at once): Vitest
-resolves only the first of several concurrent dynamic imports of a mocked module to the mock,
-and the others to the real module, so their edits silently don't apply (checked with Vitest
-5.0.2: two concurrent `fetchContent` calls return the mock's value and the real module's). This
-is a Vitest artefact, not a bug in the loader: without `vi.mock` every concurrent import gets the
-same module, as in Node and Next, and whole pages render identically in both sources
-(`lib/community-content.test.ts` and the Q&A slice's tests show the pattern).
+**Content slices under the mock CMS.** Tests select `USE_MOCK_CMS=1` and ensure `VERCEL` is unset.
+`fetchContent` dynamically loads `lib/cms-content-mock`, which evaluates the actual GROQ over the
+small independent CMS-shaped fixtures in `lib/cms-fixtures/`. Test query/parser behavior, missing
+or malformed required content, valid empty optional collections, intentionally cleared optional
+fields and reference failures. There is no code-source parity contract or fixture-from-builder
+path. Erased type-only fixture imports are allowed; runtime imports of config/feature readers
+are not.
+
+When a test changes documents using `vi.mock("@/lib/cms-content-mock", ...)`, call one getter at a
+time. Vitest can resolve only the first concurrent dynamic import to the mock, leaving other
+imports real. This caveat concerns tests mocking the module, not normal concurrent runtime reads.
+
+**Real readiness.** `pnpm sanity:ready --dataset redesign` disables mocking and invokes the real
+published runtime queries and parsers. It writes an actionable
+`.sanity-backfill/<dataset>.readiness.json` report without CMS writes or request-time draft APIs.
+A synthetic test/build cannot certify live completeness. Inspect a fresh report and real pages
+before launch; an asset/reference-only audit does not prove required-field readiness.
 
 ### Playwright
 
@@ -124,17 +130,17 @@ keeps them in `knownIssues`; the list is empty today.
 | Logic in `lib/`, `config/`, `features/**/*.ts` | unit test next to the file (`*.test.ts`) |
 | Interactive UI: islands, app adapters | component test (`*.test.tsx`) with role queries, user-event and `axe()` |
 | UI kit upgrade or app adapter change | app integration test, showcase coverage against installed exports, versioned API links; primitive tests stay upstream |
-| Site facts | `content-facts` and `e-lab-content` stay green without editing them; expectations derive from config |
-| CMS schema or query | a groq-js case in `src/lib/sanity-queries.test.ts`, fixtures in `mock-cms.ts` |
+| Site facts | `content-facts` guards plus parser/derivation and fact-dependent feature tests |
+| CMS schema or query | a groq-js case, runtime parser contract cases and the affected synthetic fixture |
 | New route or user flow | the route in `siteRoutes` (`e2e/fixtures.ts`), a spec for the flow, and a visual baseline |
 | Visible UI change | intended visual diffs accepted with the `update-snapshots` label (below) and listed in the PR |
 | Homepage markup or images | the homepage budget (`test:perf`) in CI's Build job |
 | New folder or import path | `src/architecture.test.ts` passes without new exceptions |
-| A content slice or a page reading one | the slice's parity test (code and mock `sanity` sources equal); `test/cms-backfill.test.ts`; `src/architecture.test.ts` (no client island reaches `server-only`) |
+| A content slice or a page reading one | real GROQ/parser contracts, required failures and optional clearing; `src/architecture.test.ts` (no client island reaches `server-only`) |
 
 Test behaviour, not source text: no reading source files to grep for strings, and no
-change-detector assertions on literals. A documented config edit (a new deadline, a new cohort)
-must keep every test green.
+change-detector assertions on literals. Tests derive from input facts/windows rather than
+freezing live deadlines or cohorts.
 
 ## Visual baselines
 
@@ -191,3 +197,31 @@ WebKit on Linux doesn't reproduce Safari 26's tinted status bar and toolbar. Cha
 header, footer, dialogs, page tops and bottoms, or the root background need the manual iPhone
 checklist in `.agents/skills/ui-verify/references/iphone-safari.md`. The workarounds are listed in
 [browser-quirks.md](browser-quirks.md).
+
+## CMS cutover readiness
+
+`pnpm sanity:ready --dataset redesign` runs all required published-content getters and their
+runtime parsers against the real API. It writes `.sanity-backfill/redesign.readiness.json` and
+fails on missing or malformed content. For a reviewed dry-run plan, append
+`--plan .sanity-backfill/redesign.single-source-migration.json`: this applies the proposed
+changes in memory and evaluates the same queries and parsers, writing
+`redesign.projected-readiness.json`. Planned local images use simulated asset metadata; a
+passing projection proves content/query compatibility, not successful uploads or live readiness.
+Neither command changes CMS documents, assets or ledgers. A projected parser pass does not
+certify draft safety. Migration preflight uses raw-perspective draft inspection when
+`SANITY_API_READ_TOKEN` is available; without authentication it reports
+`draftVisibility: unknown`, because the public published API cannot prove draft absence. Keep
+that boundary alongside readiness results and resolve it before authorizing launch.
+
+Focused migration retries have two independent stores: the CMS
+`migration-single-source-2026-10` completion receipt, atomically written with each target
+mutation, and `.sanity-backfill/<dataset>.single-source-assets.json`, a source-path/digest cache
+of completed upload IDs. Test completed-create deletion and completed-field unset so reruns
+preserve editor removal; test write failure after upload so retry uses the cached asset. Retain
+source files and this cache until authorized apply confirms links. This mechanism is separate
+from `sanity:repair-assets` and its historical `pending-assets.json` recovery ledger.
+
+Check failures at both cache boundaries during rollout. Timer-stale ISR can serve an existing
+render while a failed background refresh retains the cache. Cold requests and hard tag expiry
+or on-demand revalidation can block on the new render and propagate required-content errors.
+A retained render after one failure does not prove all requests remain available.

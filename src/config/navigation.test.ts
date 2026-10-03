@@ -2,30 +2,71 @@ import { globSync } from "node:fs";
 import { dirname, relative, sep } from "node:path";
 import { describe, expect, test } from "vitest";
 import type { Campaign } from "@/config/campaigns";
-import { contactEmails, socialLinks } from "@/config/contact";
-import { eLabApplicationCopy, eLabConfig } from "@/config/e-lab";
+
+import { eLabApplicationCopyOf } from "@/config/e-lab";
 import type { MembershipConfig } from "@/config/membership";
 import {
-  connectLinks,
   connectLinksFor,
-  contributeLinks,
   contributeLinksFor,
-  getHeaderOptions,
+  getHeaderOptions as getHeaderOptionsFrom,
   type HeaderCtaSetting,
   type HeaderCtaTable,
-  headerConnectLinks,
   headerConnectLinksFor,
   headerCtaAt,
   headerCtaBoundaries,
-  headerCtaLink,
+  headerCtaLink as headerCtaLinkFrom,
   headerCtaSchedule,
-  headerCtaSetting,
-  headerCtas,
+  headerCtasFor,
   legalLinks,
   mainNavigation,
-  selectHeaderCta,
+  selectHeaderCta as selectHeaderCtaFrom,
 } from "@/config/navigation";
+import {
+  settingsFixtureELabWindow,
+  settingsFixtureFacts,
+} from "@/lib/cms-fixtures/settings";
 
+const { contactEmails, socialLinks } = settingsFixtureFacts;
+const eLabConfig = {
+  ...settingsFixtureFacts.eLab,
+  ...settingsFixtureELabWindow,
+};
+const eLabApplicationCopy = eLabApplicationCopyOf(
+  eLabConfig.currentIteration,
+  settingsFixtureELabWindow,
+);
+const connectLinks = connectLinksFor(settingsFixtureFacts),
+  contributeLinks = contributeLinksFor(settingsFixtureFacts),
+  headerConnectLinks = headerConnectLinksFor(settingsFixtureFacts);
+const headerCtaSetting: HeaderCtaSetting = {
+  fallback: settingsFixtureFacts.headerCtaFallback,
+};
+const headerCtas = headerCtasFor(eLabApplicationCopy.cohortName);
+const selectHeaderCta = (
+  choice: Parameters<typeof selectHeaderCtaFrom>[0],
+  ctas: HeaderCtaTable = headerCtas,
+) => selectHeaderCtaFrom(choice, ctas);
+const headerCtaLink = (
+  variant: Parameters<typeof headerCtaLinkFrom>[0],
+  ctas: HeaderCtaTable = headerCtas,
+) => headerCtaLinkFrom(variant, ctas);
+const getHeaderOptions = (
+  path: string,
+  source:
+    | { membershipOpen: boolean }
+    | { cta: Parameters<typeof getHeaderOptionsFrom>[1]["cta"] },
+) =>
+  getHeaderOptionsFrom(path, {
+    cta:
+      "cta" in source
+        ? source.cta
+        : headerCtaLink(
+            selectHeaderCta({
+              ...headerCtaSetting,
+              membershipOpen: source.membershipOpen,
+            }),
+          ),
+  });
 const siteDir = new URL("../app/(site)/", import.meta.url).pathname;
 
 /** URL paths served by `(site)` pages, e.g. `/events`. */

@@ -29,9 +29,9 @@ export const logoListType = defineType({
       title: "Organisations",
       type: "array",
       description:
-        "In the order the section shows them. A section shows its code list while this is empty.",
+        "In the order the section shows them. An empty list hides all logos in that section.",
       of: [{ type: "reference", to: [{ type: "organization" }] }],
-      validation: (Rule) => Rule.required().min(1).unique(),
+      validation: (Rule) => Rule.required().unique(),
     }),
   ],
   preview: {

@@ -1,44 +1,19 @@
-import { type CommunityFacts, communityFacts } from "./community";
-import {
-  type ContactEmails,
-  contactEmails,
-  type PartnershipBooking,
-  partnershipContact,
-  type SocialLinks,
-  socialLinks,
-} from "./contact";
+import type { CommunityFacts } from "./community";
+import type { ContactEmails, PartnershipBooking, SocialLinks } from "./contact";
 import {
   type ELabFacts,
   eLabCohortNameOf,
   eLabCompletedIterationsOf,
-  eLabFactsFallback,
   eLabProgramSummaryOf,
 } from "./e-lab";
-import {
-  type ImpactFacts,
-  impactFacts,
-  publicationVenuesTextOf,
-} from "./impact";
-import { headerCtaSetting, type LinkedHeaderCtaVariant } from "./navigation";
-import {
-  brandMission,
-  type OrganizationFacts,
-  officialMembersOf,
-  organizationFacts,
-} from "./organization";
-
-/**
- * The site facts editors own: the fields of the CMS `siteSettings`
- * singleton. `getSiteFacts()` (`config/site-settings-content.ts`, server
- * only) resolves them for a render: the CMS document laid over
- * {@link siteFactsFallback}, which is built from the config constants.
- *
- * Out of scope, and kept in code: the legal entity (wording needs the
- * board), the site URL and SEO structure, navigation structure, and the
- * partnership CC addresses (they name people).
- */
+import type { HackathonFacts } from "./hackathons";
+import { type ImpactFacts, publicationVenuesTextOf } from "./impact";
+import type { LinkedHeaderCtaVariant } from "./navigation";
+import { type OrganizationFacts, officialMembersOf } from "./organization";
+/** CMS site-settings facts and pure derived values. Legal identity, canonical site identity and navigation remain code-owned. */
 export type SiteFacts = {
   organization: OrganizationFacts;
+  hackathons: HackathonFacts;
   /** The mission as the brand guide states it (/apply, /qanda). */
   brandMission: string;
   impact: ImpactFacts;
@@ -55,23 +30,6 @@ export type SiteFacts = {
    * and no campaign runs.
    */
   headerCtaFallback: LinkedHeaderCtaVariant;
-};
-
-/** Today's facts from the config files: what renders without the CMS. */
-export const siteFactsFallback: SiteFacts = {
-  organization: organizationFacts,
-  brandMission,
-  impact: impactFacts,
-  community: communityFacts,
-  contactEmails,
-  socialLinks,
-  partnershipBooking: {
-    bookingUrl: partnershipContact.bookingUrl,
-    bookingHost: partnershipContact.bookingHost,
-  },
-  eLab: eLabFactsFallback,
-  footerTagline: "Empowering students to build the future of AI.",
-  headerCtaFallback: headerCtaSetting.fallback,
 };
 
 /** Values computed from the facts, never stored. */

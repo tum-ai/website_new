@@ -1,119 +1,93 @@
-import { afterEach, describe, expect, test, vi } from "vitest";
-import { contentTokens } from "@/config/content-tokens";
-import { departments } from "@/features/community";
-import { buildMemberStoriesBackfill } from "@/features/community/server";
-import { buildVentureBackfill } from "@/features/e-lab/server";
-import { fetchContent } from "@/lib/cms-content";
-import { mergeOverFallback } from "@/lib/cms-content-model";
-import { fillCodeCopy } from "@/lib/content-copy";
-import type { HOME_COPY_QUERY_RESULT } from "@/lib/sanity.types.generated";
-import {
-  buildHomeBackfill,
-  getHomeContent,
-  HOME_COPY_QUERY,
-  selectHomeCopy,
-} from "./content";
-import { homeCopyTemplate, homePageTokens } from "./data/homepage";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { ContentError } from "@/lib/cms-content-model";
+import type { CmsFixtureDocument } from "@/lib/cms-fixtures/types";
 
-/**
- * Parity: the backfill document, read back through the real GROQ query
- * under the mock CMS, renders exactly what the code renders.
- */
+const state = vi.hoisted(() => ({
+  edit: (docs: CmsFixtureDocument[]) => docs,
+}));
+vi.mock("@/lib/cms-content", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/cms-content")>();
+  const fixture = await import("@/lib/cms-content-mock");
+  return {
+    ...actual,
+    loadContent: async <T, R>({
+      query,
+      params = {},
+      select,
+    }: {
+      query: string;
+      params?: Record<string, unknown>;
+      select: (result: R) => T;
+    }) =>
+      select(
+        await fixture.evaluateMockQuery<R>(
+          query,
+          params,
+          state.edit(structuredClone(await fixture.getMockContentDocuments())),
+        ),
+      ),
+  };
+});
+beforeEach(() => {
+  state.edit = (docs) => docs;
+});
 afterEach(() => {
-  vi.unstubAllEnvs();
+  vi.restoreAllMocks();
 });
 
-function useSource(source: "code" | "sanity") {
-  vi.stubEnv("CMS_CONTENT_SOURCE", source);
-  vi.stubEnv("USE_MOCK_CMS", "1");
-  vi.stubEnv("VERCEL", "");
-}
+import { getHomeContent } from "./content";
 
-const code = {
-  copy: fillCodeCopy(homeCopyTemplate, contentTokens, homePageTokens),
-  departmentCount: departments.length,
-};
-
-describe("the homepage content slice", () => {
-  test("code source: the code copy and department count", async () => {
-    useSource("code");
-    await expect(getHomeContent()).resolves.toStrictEqual(code);
+test("home copy has serializable complete quote groups and resolved artwork", async () => {
+  const content = await getHomeContent();
+  expect(content.copy.hero.title).toBe("A place to build");
+  expect(content.copy.room.photos).toHaveLength(5);
+  expect(content.copy.join.quote).toEqual({
+    key: "example-member",
+    name: "Example Member",
+    excerpt: "I built a small project with the team.",
   });
-
-  test("the mock serves the backfill through the real query", async () => {
-    useSource("sanity");
-    const result = await fetchContent<HOME_COPY_QUERY_RESULT>({
-      query: HOME_COPY_QUERY,
-      tags: [],
-      mockDocuments: buildHomeBackfill,
-      label: "parity",
-    });
-    expect(result?.room?.photos).toHaveLength(
-      homeCopyTemplate.room.photos.length,
-    );
-    expect(result?.programs?.items?.map(({ id }) => id)).toStrictEqual(
-      homeCopyTemplate.programs.items.map(({ id }) => id),
-    );
-  });
-
-  test("the quotes resolve their person references", async () => {
-    useSource("sanity");
-    const result = await fetchContent<HOME_COPY_QUERY_RESULT>({
-      query: HOME_COPY_QUERY,
-      tags: [],
-      mockDocuments: () => [
-        ...buildHomeBackfill(),
-        ...buildMemberStoriesBackfill(),
-        ...buildVentureBackfill(),
-      ],
-      label: "parity",
-    });
-    expect(result?.join?.quote?.name).toBe(homeCopyTemplate.join.quote.name);
-    expect(result?.partners?.quote).toBe(homeCopyTemplate.partners.quote);
-  });
-
-  test("sanity source over the backfill: the same copy and count", async () => {
-    useSource("sanity");
-    await expect(getHomeContent()).resolves.toStrictEqual(code);
-  });
-
-  test("the backfill holds one homeCopy document", () => {
-    expect(buildHomeBackfill().map(({ _id }) => _id)).toStrictEqual([
-      "homeCopy",
-    ]);
-  });
+  expect(Object.getPrototypeOf(content.copy.join.quote)).toBe(Object.prototype);
+  expect(JSON.parse(JSON.stringify(content.copy))).toEqual(content.copy);
+  expect(content.copy.partners.quote).toBe("example-founder");
+  expect(content.departmentCount).toBe(1);
 });
-
-describe("CMS copy over the code copy", () => {
-  const merged = (copy: Parameters<typeof selectHomeCopy>[0]) =>
-    mergeOverFallback(code.copy, selectHomeCopy(copy));
-
-  test("the join quote takes the CMS member and words together", () => {
-    const { join } = merged({
-      join: { quote: { name: "Ada Lovelace", excerpt: "CMS words" } },
-    });
-    expect(join.quote).toStrictEqual({
-      name: "Ada Lovelace",
-      excerpt: "CMS words",
-    });
-  });
-
-  test("words whose member did not resolve never go to the code member", () => {
-    const { join } = merged({ join: { quote: { excerpt: "CMS words" } } });
-    expect(join.quote).toStrictEqual(code.copy.join.quote);
-  });
-
-  test("a program links only to a page of this site", () => {
-    const [first] = code.copy.programs.items;
-    const { programs } = merged({
-      programs: {
-        items: [
-          { ...first, id: "kept", href: "/research" },
-          { ...first, id: "away", href: "//evil.example" },
-          { ...first, id: "backslash", href: "/\\evil.example" },
-        ],
-      },
-    });
-    expect(programs.items.map(({ id }) => id)).toStrictEqual(["kept"]);
-  });
+test("empty departments yield zero without a local count", async () => {
+  state.edit = (docs) => docs.filter((doc) => doc._type !== "department");
+  expect((await getHomeContent()).departmentCount).toBe(0);
+});
+test("a missing member reference cannot acquire another author", async () => {
+  state.edit = (docs) =>
+    docs.filter((doc) => doc._id !== "person-member-story-example-member");
+  await expect(getHomeContent()).rejects.toThrow(/quote.key/);
+});
+test("the quoted excerpt must still occur in the resolved story", async () => {
+  state.edit = (docs) =>
+    docs.map((doc) =>
+      doc._id === "person-member-story-example-member"
+        ? { ...doc, story: "A different story." }
+        : doc,
+    );
+  await expect(getHomeContent()).rejects.toThrow(/word for word/);
+});
+test("partner quote must resolve to an E-Lab testimonial", async () => {
+  state.edit = (docs) =>
+    docs.map((doc) =>
+      doc._id === "person-e-lab-testimonial-example-founder"
+        ? { ...doc, placement: "member-story" }
+        : doc,
+    );
+  await expect(getHomeContent()).rejects.toThrow(/resolved E-Lab testimonial/);
+});
+test("structural home lists retain required counts", async () => {
+  state.edit = (docs) =>
+    docs.map((doc) =>
+      doc._id === "homeCopy"
+        ? { ...doc, room: { title: "Room", lead: "Lead", photos: [] } }
+        : doc,
+    );
+  await expect(getHomeContent()).rejects.toThrow(/exactly 5 photos/);
+});
+test("missing required singleton fails visibly", async () => {
+  state.edit = (docs) => docs.filter((doc) => doc._id !== "homeCopy");
+  await expect(getHomeContent()).rejects.toBeInstanceOf(ContentError);
 });

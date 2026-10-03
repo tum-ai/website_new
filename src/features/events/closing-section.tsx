@@ -9,7 +9,7 @@ import {
 import { callToActionLabels } from "@/config/calls-to-action";
 import type { Event } from "@/lib/types";
 import { getEventsCopy } from "./content";
-import type { EventsCopy } from "./data/copy";
+import type { EventsCopy } from "./copy-model";
 import { formatEventDate } from "./events";
 import { Lockup } from "./lockup";
 import { SignUpAction } from "./sign-up-action";

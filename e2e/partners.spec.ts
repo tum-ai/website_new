@@ -1,4 +1,5 @@
 import type { Locator, Page } from "@playwright/test";
+import { settingsFixtureFacts } from "@/lib/cms-fixtures/settings";
 import { expect, test } from "./fixtures";
 
 /*
@@ -80,21 +81,21 @@ test.describe("partnership finder", () => {
     await page.goto("/partners");
     const finder = page.locator("#find-your-fit");
     const heading = finder.locator("h3");
-    await expect(heading).toHaveText("What matters most to you right now?");
+    await expect(heading).toHaveText("What would you like to explore?");
 
-    await finder.getByRole("button", { name: /Hiring top AI talent/ }).click();
-    await expect(heading).toHaveText(/one-off activation or an ongoing/);
+    await finder.getByRole("button", { name: /^Find builders/ }).click();
+    await expect(heading).toHaveText("How long would you like to collaborate?");
     await expect(heading).toBeFocused();
 
     await finder.getByRole("button", { name: "Back" }).click();
-    await expect(heading).toHaveText("What matters most to you right now?");
+    await expect(heading).toHaveText("What would you like to explore?");
     await expect(heading).toBeFocused();
 
-    await finder.getByRole("button", { name: /Hiring top AI talent/ }).click();
+    await finder.getByRole("button", { name: /^Find builders/ }).click();
     await finder
-      .getByRole("button", { name: /An ongoing, strategic relationship/ })
+      .getByRole("button", { name: /^An ongoing collaboration/ })
       .click();
-    await expect(heading).toHaveText(/is a good fit\.$/);
+    await expect(heading).toHaveText("Try Sample collaboration first.");
     await expect(heading).toBeFocused();
     await expect(finder.locator('[aria-current="step"]')).toContainText(
       "Your fit",
@@ -104,10 +105,15 @@ test.describe("partnership finder", () => {
     const email = finder.getByRole("link", { name: "Request via email" });
     await expect(email).toHaveAttribute("href", /^mailto:/);
     const href = decodeURIComponent((await email.getAttribute("href")) ?? "");
-    expect(href).toMatch(/talent/i);
+    expect(href).toContain(
+      `mailto:${settingsFixtureFacts.contactEmails.partners}`,
+    );
+    expect(href).toContain("Interest: Find builders");
+    expect(href).toContain("Relationship: An ongoing collaboration");
+    expect(href).toContain("Recommended format: Sample collaboration");
 
     await finder.getByRole("button", { name: "Start again" }).click();
-    await expect(heading).toHaveText("What matters most to you right now?");
+    await expect(heading).toHaveText("What would you like to explore?");
   });
 });
 
@@ -123,19 +129,27 @@ test.describe("booking dialog", () => {
       .click();
 
     const dialog = page.getByRole("dialog", {
-      name: "Let’s talk about your partnership.",
+      name: "Discuss a collaboration",
     });
     await expect(dialog).toBeVisible();
-    await expect(
-      dialog.getByRole("link", { name: /Open booking page/ }),
-    ).toHaveAttribute("href", /^https:\/\/cal\.(eu|com)\//);
+    const bookingLink = dialog.getByRole("link", { name: /Open booking page/ });
+    await expect(bookingLink).toHaveAttribute("href", /^https:/);
+    const booking = new URL((await bookingLink.getAttribute("href")) ?? "");
+    const configuredBooking = new URL(
+      settingsFixtureFacts.partnershipBooking.bookingUrl,
+    );
+    expect(booking.origin).toBe(configuredBooking.origin);
+    expect(booking.pathname).toBe(configuredBooking.pathname);
+    expect(booking.searchParams.get("guest")).toBe(
+      settingsFixtureFacts.contactEmails.partners,
+    );
     await expect(
       dialog.getByRole("link", { name: "Email us instead" }),
     ).toHaveAttribute("href", /^mailto:/);
 
     // The embed never reports ready, so the status turns into the fallback.
     await expect(dialog.getByRole("status")).toHaveText(
-      /Open the booking page below, or email us/,
+      "Open the booking page to continue.",
       { timeout: 20_000 },
     );
 

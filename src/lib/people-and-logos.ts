@@ -3,7 +3,7 @@ import type { ContentImage } from "./cms-content-model";
 /**
  * The shapes and option lists shared by the `organization`, `logoList` and
  * `person` content types (docs/cms-content-inventory.md, phase 3):
- * isomorphic, so the Studio schemas, the code fallbacks in features and the
+ * isomorphic, so the Studio schemas, the isomorphic feature models and the
  * server-only slices (`lib/organization-content.ts`,
  * `lib/person-content.ts`) agree on one vocabulary.
  */
@@ -66,6 +66,8 @@ export type Partnership = {
   category?: PartnerCategory;
   /** Leads its tier. Only present when true. */
   featured?: true;
+  /** Editorial position within a tier; missing positions use alphabetical order. */
+  order?: number;
 };
 
 const tierValues: ReadonlySet<string> = new Set(
@@ -86,9 +88,7 @@ export function isPartnerCategory(value: unknown): value is PartnerCategory {
 }
 
 /**
- * One company, lab or institution the site shows a logo for: the code
- * fallback and the CMS `organization` document share this shape. Optional
- * fields are left out, not `undefined`, so code and CMS values compare equal.
+ * One company, lab or institution with validated CMS artwork.
  */
 export type Organization = {
   /**
@@ -113,9 +113,13 @@ export type Organization = {
 /**
  * The page sections that show an ordered list of logos, one `logoList`
  * document each (its `_id` is fixed per section, see
- * `logoListId` in `lib/organization-content.ts`).
+ * `logoListDocumentId` below).
  */
 export const logoListSurfaces = [
+  {
+    value: "ehl-partners",
+    title: "Hackathons: European Hackathon League partners",
+  },
   {
     value: "alumni-destinations",
     title: "Partners: where alumni go (/partners)",
@@ -135,7 +139,7 @@ export type LogoListSurface = (typeof logoListSurfaces)[number]["value"];
 
 /**
  * The fixed `_id` of a section's `logoList` document. The Studio pins these
- * documents and the backfill creates them; pages query them by id.
+ * documents; pages query them by id.
  */
 export function logoListDocumentId(surface: LogoListSurface): string {
   return `logolist-${surface}`;

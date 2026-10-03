@@ -45,6 +45,7 @@ export function OverlapsFigure({
   label,
   className,
 }: OverlapsFigureProps) {
+  if (seats.length < 2) return null;
   const layout = layoutSeats(seats.length);
   const isIndex = variant === "index";
   const Seats = isIndex ? "ul" : "div";

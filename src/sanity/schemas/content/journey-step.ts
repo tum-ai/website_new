@@ -22,8 +22,8 @@ async function validateStage(stage: unknown, context: ValidationContext) {
 /**
  * One step of the member journey: /community draws the steps as a
  * membership timetable, /apply shows the fork's two tracks. Steps with the
- * same stage number form a fork. Read by `lib/community-content.ts`, over
- * the code journey in `features/community/data/member-journey.ts`.
+ * same stage number form a fork. Read and validated as a complete structural
+ * journey by `lib/community-content.ts`.
  */
 export const journeyStepType = defineType({
   name: "journeyStep",

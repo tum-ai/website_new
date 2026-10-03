@@ -1,22 +1,6 @@
 import { expect, test } from "vitest";
-import {
-  eLabApplicationCopy,
-  eLabCompletedIterations,
-  eLabProgramSummary,
-} from "./e-lab";
-import { publicationVenuesText } from "./impact";
-import { officialMembers } from "./organization";
-import { deriveSiteFacts, siteFactsFallback } from "./site-facts";
-
-test("the derived facts of the code facts are the config's constants", () => {
-  expect(deriveSiteFacts(siteFactsFallback)).toStrictEqual({
-    officialMembers,
-    publicationVenuesText,
-    eLabProgramSummary,
-    eLabCompletedIterations,
-    eLabCohortName: eLabApplicationCopy.cohortName,
-  });
-});
+import { settingsFixtureFacts as siteFactsFallback } from "@/lib/cms-fixtures/settings";
+import { deriveSiteFacts } from "./site-facts";
 
 test("derived facts follow edited base facts", () => {
   const derived = deriveSiteFacts({

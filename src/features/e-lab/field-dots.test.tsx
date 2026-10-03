@@ -11,9 +11,9 @@ const dots: FieldDotData[] = [
     x: 0.5,
     y: 0.866,
     venture: {
-      name: "Spherecast",
-      href: "https://www.spherecast.ai/",
-      logoSrc: "/assets/e-lab/startups/Spherecast.webp",
+      name: "Example Venture",
+      href: "https://example.org/venture",
+      logoSrc: "/assets/fixtures/logo.svg",
     },
   },
 ];
@@ -36,9 +36,9 @@ describe("FieldDots", () => {
       <FieldDots dots={dots} viewBox="-1 -1 3 3" radius={0.3} />,
     );
     const link = screen.getByRole("link", {
-      name: "Spherecast, an E-Lab venture (opens in a new tab)",
+      name: "Example Venture, an E-Lab venture (opens in a new tab)",
     });
-    expect(link).toHaveAttribute("href", "https://www.spherecast.ai/");
+    expect(link).toHaveAttribute("href", "https://example.org/venture");
     expect(link).toHaveAttribute("target", "_blank");
     expect(screen.getAllByRole("link")).toHaveLength(1);
     expect(await axe(container)).toHaveNoViolations();
@@ -97,8 +97,8 @@ describe("FieldDots", () => {
         x: 1,
         y: 0,
         venture: {
-          name: "Spherecast",
-          logoSrc: "/assets/e-lab/startups/Spherecast.webp",
+          name: "Example Venture",
+          logoSrc: "/assets/fixtures/logo.svg",
         },
       },
     ];
@@ -109,7 +109,7 @@ describe("FieldDots", () => {
     svg.getScreenCTM = () => ({ inverse: () => ({}) }) as unknown as DOMMatrix;
     expect(container.querySelector("a")).toBeNull();
     const logo = container.querySelector(
-      'image[href="/assets/e-lab/startups/Spherecast.webp"]',
+      'image[href="/assets/fixtures/logo.svg"]',
     )?.parentElement;
     expect(logo).toHaveAttribute("data-expanded", "false");
     fireEvent.pointerMove(svg, { clientX: 1, clientY: 0 });

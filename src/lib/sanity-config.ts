@@ -8,9 +8,9 @@
  * `production`, the old site's dataset, because the deployments of `main`
  * and the existing environments rely on it. Nothing in this repository
  * writes to `production`, and page content never goes there: on
- * `production` the Studio does not register the content types and the
- * `sanity` content source renders the code content
- * ({@link datasetHoldsPageContent}).
+ * `production` the Studio does not register the content types
+ * ({@link datasetHoldsPageContent}). Required page-content readers reject an
+ * unset dataset or `production`; the default remains for legacy CMS compatibility.
  *
  * Only public values: this module is shared by the server fetch layers
  * (`lib/sanity.ts`, `lib/cms-content.ts`) and the Studio config, which runs
@@ -34,9 +34,9 @@ export const sanityDataset =
 
 /**
  * Whether `dataset` may hold the page content types: every dataset except
- * {@link legacyDataset}. On `production` the Studio has no content types and
- * the `sanity` content source renders the code content, so nobody can create
- * page content in the old site's dataset.
+ * {@link legacyDataset}. The Studio omits content types on `production`, and
+ * required page-content readers reject that dataset. Existing event, research,
+ * and public API compatibility remains available through the legacy readers.
  */
 export function datasetHoldsPageContent(dataset: string): boolean {
   return dataset.trim() !== legacyDataset;
@@ -62,8 +62,9 @@ export const sanityClientConfig = {
 } as const;
 
 /**
- * Whether a real project is configured. Without one the fetch layers return
- * their empty or fallback values and make no request.
+ * Whether a real project is configured. Required page-content readers throw
+ * when it is missing. Legacy event, research, and public API readers retain
+ * their existing empty-result behavior without making a request.
  */
 export const isSanityConfigured = Boolean(
   process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,

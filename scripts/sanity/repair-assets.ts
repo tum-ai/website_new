@@ -1,16 +1,16 @@
 /**
- * The backfill's recovery of images an import left without a file.
+ * Recovery of image imports recorded in the pending-asset ledger.
  * `sanity dataset import` creates each document before it uploads the
  * document's images, so a failed upload (or an import that stopped) leaves
  * `{_type: "image"}` with no `asset`, and the next `--missing` import skips
  * the document because it exists. The dataset alone cannot tell that from an
- * editor's Remove in the Studio (which also keeps `alt`), so the backfill
+ * editor's Remove in the Studio (which also keeps `alt`), so create-only copy
  * keeps a ledger of the uploads its own imports started,
  * `.sanity-backfill/<dataset>.pending-assets.json` (gitignored, per machine):
  *
  * - `BACKFILL_STAGE=before`, right before the import: adds every image of
- *   each planned document the import will create (all of them with
- *   `--overwrite`) to the ledger, keeping the entries still unconfirmed.
+ *   each planned document the create-only import will create to the ledger,
+ *   keeping entries whose uploads are still unconfirmed.
  * - `BACKFILL_STAGE=after`, after the import (also a failed one): for each
  *   entry whose published document holds the image without `asset`, uploads
  *   the file and sets only that reference, on the published document and on
@@ -20,8 +20,8 @@
  *   succeeded).
  *   An image without `asset` that is not in the ledger stays removed.
  *
- * `backfill.ts` runs both through `sanity exec --with-user-token` (the same
- * CLI login as the import), with `BACKFILL_STAGE`, `BACKFILL_FILE` (the
+ * `copy-production.ts` runs both stages through `sanity exec --with-user-token`.
+ * The independent repair command runs only the after stage, with `BACKFILL_STAGE`, `BACKFILL_FILE` (the
  * NDJSON it imports), `BACKFILL_PENDING_FILE` (the ledger),
  * `BACKFILL_OVERWRITE`, `BACKFILL_DATASET` and
  * `NEXT_PUBLIC_SANITY_PROJECT_ID` in the environment. Imports are relative:
@@ -35,6 +35,7 @@ import {
 } from "node:fs";
 import { basename } from "node:path";
 import { pathToFileURL } from "node:url";
+import { sanityApiVersion } from "../../src/lib/sanity-config";
 import {
   assetFileOf,
   type BackfillDocument,
@@ -43,8 +44,7 @@ import {
   pendingAssetsBeforeImport,
   plannedAssets,
   settlePendingAssets,
-} from "../../src/lib/cms-backfill";
-import { sanityApiVersion } from "../../src/lib/sanity-config";
+} from "./asset-ledger";
 
 /** A document as the dataset holds it. */
 type StoredDocument = Record<string, unknown> & { _id: string; _rev: string };
@@ -162,7 +162,7 @@ export async function repairPendingAssets(
 
 function readLedger(file: string): PendingAsset[] {
   if (!existsSync(file)) return [];
-  const entries: unknown = JSON.parse(readFileSync(file, "utf8"));
+  const entries: unknown = JSON.parse(readFileSync(file as string, "utf8"));
   if (
     !Array.isArray(entries) ||
     !entries.every(
@@ -192,13 +192,14 @@ async function main() {
   const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
   if (
     (stage !== "before" && stage !== "after") ||
-    !file ||
+    (stage === "before" && !file) ||
     !ledger ||
     !dataset ||
-    !projectId
+    !projectId ||
+    dataset === "production"
   ) {
     throw new Error(
-      "repair-assets runs from `pnpm sanity:backfill --apply`, which sets BACKFILL_STAGE (before or after), BACKFILL_FILE, BACKFILL_PENDING_FILE, BACKFILL_DATASET and NEXT_PUBLIC_SANITY_PROJECT_ID.",
+      "Run through sanity:copy-production --apply or sanity:repair-assets --apply; stage, ledger, dataset and project are required, with an import file for the before stage.",
     );
   }
   const { getCliClient } = await import("sanity/cli");
@@ -235,7 +236,7 @@ async function main() {
   };
 
   if (stage === "before") {
-    const documents = readFileSync(file, "utf8")
+    const documents = readFileSync(file as string, "utf8")
       .split("\n")
       .filter(Boolean)
       .map((line) => JSON.parse(line) as BackfillDocument);

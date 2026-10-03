@@ -192,7 +192,7 @@ function StepRow({
   connect?: "down" | "up";
 }) {
   const story = step.evidence
-    ? stories.find((entry) => entry.name === step.evidence?.name)
+    ? stories.find((entry) => entry.key === step.evidence?.key)
     : undefined;
   return (
     <div

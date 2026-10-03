@@ -5,7 +5,7 @@ import {
   Section,
   SectionHeader,
 } from "@tum.ai/ui-kit";
-import type { HackathonsCopy } from "./data/copy";
+import type { HackathonsCopy } from "./model";
 
 /** A partner's result from one hackathon, as its case study states it. */
 export type HackathonOutcome = {

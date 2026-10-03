@@ -1,28 +1,10 @@
-/**
- * The backfill's copy of the old site's content: every published `event`,
- * `partner` and `research` document in `production`, read over the public
- * API (no token, read only) and turned into documents for
- * `sanity dataset import`, so the new site's dataset holds everything the new
- * site reads (docs/adr/0009-cms-content-source.md).
- *
- * - `_id`s stay the same, so the public API and links keep their ids.
- * - Drafts and release versions are skipped (only published documents).
- * - Every image asset reference becomes an `_sanityAsset` with the asset's
- *   CDN URL, so the import uploads the file into the target dataset; hotspot,
- *   crop and the image's other fields are kept.
- * - Events get the `hosts` from `liveEventHosts` (lib/mock-cms.ts), matched
- *   by title and start; an entry that matches no event, or several, fails
- *   the run.
- *
- * The fetch is a parameter (`fetchDocuments`), so tests run the transform on
- * a fixture without the network.
- */
-import type { BackfillDocument } from "@/lib/cms-backfill";
-import { liveEventHosts } from "@/lib/mock-cms";
+/** Live published production documents copied without local editorial enrichment. */
+
 import { legacyDataset } from "@/lib/sanity-config";
+import type { BackfillDocument } from "./asset-ledger";
 
 /** The document types the old site has, copied as they are. */
-export const copiedTypes = ["event", "partner", "research"] as const;
+const copiedTypes = ["event", "partner", "research"] as const;
 
 /** A document as the Sanity API returns it. */
 export type SourceDocument = {
@@ -36,13 +18,6 @@ export type FetchDocuments = (source: {
   projectId: string;
   dataset: string;
 }) => Promise<SourceDocument[]>;
-
-/** Co-hosts for the event with this title and start. */
-export type EventHosts = {
-  title: string;
-  event_date: string;
-  hosts: readonly string[];
-};
 
 /** Published documents only: drafts and release versions are skipped. */
 const PUBLISHED_QUERY = `*[_type in $types && !(_id in path("drafts.**")) && !(_id in path("versions.**"))] | order(_type asc, _id asc)`;
@@ -83,7 +58,7 @@ const serverFields = new Set(["_rev", "_updatedAt", "_system"]);
  * The CDN URL of an image asset (`image-<sha1>-<w>x<h>-<ext>`) in
  * `dataset`. Anything else throws: the import could not upload it.
  */
-export function imageAssetUrl(
+function imageAssetUrl(
   ref: string,
   projectId: string,
   dataset: string,
@@ -125,38 +100,22 @@ function withImportableAssets(
   };
 }
 
-const normalizedTitle = (title: unknown) =>
-  typeof title === "string" ? title.trim().replace(/\s+/g, " ") : "";
-
-const sameInstant = (a: unknown, b: string) =>
-  typeof a === "string" && Date.parse(a) === Date.parse(b);
-
-/** What the copy did, for the script's output. */
-export type ProductionCopy = {
-  documents: BackfillDocument[];
-  /** Events that got `hosts` from the code data. */
-  hostsAdded: number;
-  /** Events whose own `hosts` were kept (an editor filled them). */
-  hostsKept: number;
-};
+/** Published create-only import payload, without locally authored enrichment. */
+export type ProductionCopy = { documents: BackfillDocument[] };
 
 /**
- * The import documents for `documents` (the source dataset's response):
- * published documents of `copiedTypes` only, same `_id`s, server fields
- * dropped, assets importable, and `hosts` added to the events from
- * `eventHosts`. Each entry must match exactly one event by title (trimmed)
- * and start instant, or this throws with every entry that did not.
+ * Importable published source documents: preserve IDs and editorial fields, remove
+ * server revision fields and resolve image references to original CDN asset URLs.
+ * No local hosts, organizations or editorial catalog is consulted.
  */
 export function copyProductionDocuments(
   documents: readonly SourceDocument[],
   {
     projectId,
     dataset = legacyDataset,
-    eventHosts = liveEventHosts,
   }: {
     projectId: string;
     dataset?: string;
-    eventHosts?: readonly EventHosts[];
   },
 ): ProductionCopy {
   const types = new Set<string>(copiedTypes);
@@ -172,40 +131,11 @@ export function copyProductionDocuments(
       }) as BackfillDocument;
     });
 
-  const unmatched: string[] = [];
-  let hostsAdded = 0;
-  let hostsKept = 0;
-  for (const entry of eventHosts) {
-    const matches = copies.filter(
-      (document) =>
-        document._type === "event" &&
-        normalizedTitle(document.title) === normalizedTitle(entry.title) &&
-        sameInstant(document.event_date, entry.event_date),
-    );
-    const [event] = matches;
-    if (matches.length !== 1 || !event) {
-      unmatched.push(
-        `"${entry.title}" on ${entry.event_date} (${matches.length} events match)`,
-      );
-      continue;
-    }
-    if (Array.isArray(event.hosts) && event.hosts.length > 0) {
-      hostsKept++;
-    } else {
-      event.hosts = [...entry.hosts];
-      hostsAdded++;
-    }
-  }
-  if (unmatched.length > 0) {
-    throw new Error(
-      `Co-hosts in lib/mock-cms.ts (liveEventHosts) that match no single event in "${dataset}"; fix the title or date there:\n  ${unmatched.join("\n  ")}`,
-    );
-  }
-  return { documents: copies, hostsAdded, hostsKept };
+  return { documents: copies };
 }
 
 /**
- * The copy of `production` for the backfill: `fetchDocuments` (the public
+ * The live copy of `production`: `fetchDocuments` (the public
  * API by default; a fixture in tests), then {@link copyProductionDocuments}.
  */
 export async function copyFromProduction({

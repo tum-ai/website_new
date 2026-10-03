@@ -16,7 +16,7 @@ function sourceFiles(dir: string): string[] {
   return readdirSync(dir).flatMap((name) => {
     const path = join(dir, name);
     if (statSync(path).isDirectory()) return sourceFiles(path);
-    return /\.(ts|tsx|css)$/.test(name) ? [path] : [];
+    return /\.(ts|tsx|css|json)$/.test(name) ? [path] : [];
   });
 }
 
@@ -24,6 +24,7 @@ test("literal /assets/ references point to files in public/", () => {
   const files = [
     ...sourceFiles(join(root, "src")),
     ...sourceFiles(join(root, "test")),
+    ...sourceFiles(join(root, "scripts")),
   ];
   const missing: string[] = [];
   let references = 0;
@@ -40,8 +41,11 @@ test("literal /assets/ references point to files in public/", () => {
   }
 
   expect(missing).toStrictEqual([]);
-  // Guards the pattern: the site references well over a hundred assets.
-  expect(references).toBeGreaterThan(100);
+  // A deliberate fixture proves the matcher still recognizes supported paths.
+  expect('"/assets/fixtures/photo.svg"'.match(assetReference)).toStrictEqual([
+    '"/assets/fixtures/photo.svg',
+  ]);
+  expect(references).toBeGreaterThan(0);
 });
 
 test("public/ holds no notes, since every file in it is served", () => {

@@ -1,5 +1,4 @@
 import { expect, test } from "vitest";
-import { memberJourney } from "@/features/community";
 import type { JourneyStage } from "@/lib/community-model";
 import type { QandaEntry } from "./data/qanda";
 import {
@@ -55,8 +54,4 @@ test("the member-journey answer lists the tracks; other entries stay", () => {
 test("without a fork, the answer keeps what it has", () => {
   const answer = entry(memberJourneyAnswerId, ["Kept."]);
   expect(withJourneyTracks([answer], [journey[0]])).toStrictEqual([answer]);
-});
-
-test("the code journey has a fork, so the code answer lists its tracks", () => {
-  expect(journeyTrackPoints(memberJourney)).toHaveLength(2);
 });

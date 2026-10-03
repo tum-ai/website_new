@@ -8,7 +8,9 @@ export default async function Page() {
   return (
     <>
       <JsonLd
-        data={getJsonLd("qanda", { mainEntity: await getQandaMainEntity() })}
+        data={
+          await getJsonLd("qanda", { mainEntity: await getQandaMainEntity() })
+        }
       />
       <QandAPage />
     </>

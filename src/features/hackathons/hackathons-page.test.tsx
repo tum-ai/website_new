@@ -1,10 +1,14 @@
 import { axe } from "@test/axe";
 import { render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { hackathonFacts } from "@/config/hackathons";
-import { getMockEvents } from "@/lib/mock-cms";
-import { hackathonsCopyTemplate } from "./data/copy";
-import { makeathonEditions } from "./data/makeathon";
+import {
+  hackathonsFactsFixture as hackathonFacts,
+  hackathonsFixture as hackathonsCopyTemplate,
+  hackathonsFixture,
+} from "@/lib/cms-fixtures/hackathons";
+
+const makeathonEditions = hackathonsFixture.makeathon.editions;
+
 import { HackathonsPage } from "./hackathons-page";
 
 /*
@@ -31,9 +35,22 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
+vi.mock("./content", () => ({
+  getHackathonsCopy: async () => hackathonsCopyTemplate,
+}));
+vi.mock("@/config/site-settings-content", () => ({
+  getSiteFacts: async () => ({ hackathons: hackathonFacts }),
+}));
+vi.mock("@/features/partners/server", () => ({
+  getPartnerCaseStudies: async () => [],
+}));
+vi.mock("@/lib/organization-content", () => ({
+  getLogoLists: async () => ({ "ehl-partners": [] }),
+}));
+
 const now = new Date("2026-10-01T12:00:00Z");
 const renderPage = async () =>
-  render(await HackathonsPage({ events: getMockEvents(now), now }));
+  render(await HackathonsPage({ events: [], now }));
 
 test("one h1, ordered bands, and no axe violations", async () => {
   const { container } = await renderPage();

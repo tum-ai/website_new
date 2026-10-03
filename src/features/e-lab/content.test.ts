@@ -1,163 +1,102 @@
-import { afterEach, describe, expect, test, vi } from "vitest";
-import { contentTokens } from "@/config/content-tokens";
-import { fetchContent } from "@/lib/cms-content";
-import { fillCodeCopy } from "@/lib/content-copy";
-import { FAQ_QUERY } from "@/lib/faq-content";
-import type {
-  ELAB_COPY_QUERY_RESULT,
-  FAQ_QUERY_RESULT,
-} from "@/lib/sanity.types.generated";
-import {
-  buildELabBackfill,
-  ELAB_COPY_QUERY,
-  getELabCopy,
-  getELabFaqs,
-  selectStages,
-} from "./content";
-import { eLabCopyTemplate, eLabPageTokens } from "./data/copy";
-import { faq } from "./data/faq";
-import { buildStages, selectionStages } from "./data/selection";
+import { evaluate, parse } from "groq-js";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { programmesFixtureDocuments } from "@/lib/cms-fixtures/programmes";
+import type { CmsFixtureDocument } from "@/lib/cms-fixtures/types";
 
-/**
- * Parity: the backfill documents, read back through the real GROQ query
- * under the mock CMS, render exactly what the code renders. If this fails,
- * the query, `select` or the builder lost or changed something on the way to
- * the CMS.
- */
-afterEach(() => {
-  vi.unstubAllEnvs();
-});
-
-function useSource(source: "code" | "sanity") {
-  vi.stubEnv("CMS_CONTENT_SOURCE", source);
+let documents: readonly CmsFixtureDocument[];
+vi.mock("@/config/content-tokens", () => ({
+  getContentTokens: async () => ({}),
+}));
+vi.mock("@/lib/cms-content-mock", () => ({
+  getMockContentDocuments: () => documents,
+  evaluateMockQuery: async (
+    query: string,
+    params: Record<string, unknown>,
+    dataset: readonly CmsFixtureDocument[],
+  ) => {
+    const result = await evaluate(parse(query, { params }), {
+      params,
+      dataset,
+    });
+    return result.get();
+  },
+}));
+beforeEach(() => {
+  documents = structuredClone(programmesFixtureDocuments);
   vi.stubEnv("USE_MOCK_CMS", "1");
   vi.stubEnv("VERCEL", "");
-}
-
-describe("the /e-lab content slice", () => {
-  test("code source: the code FAQ", async () => {
-    useSource("code");
-    await expect(getELabFaqs()).resolves.toStrictEqual(faq);
-  });
-
-  test("the mock serves the backfill through the real query", async () => {
-    useSource("sanity");
-    const result = await fetchContent<FAQ_QUERY_RESULT>({
-      query: FAQ_QUERY,
-      params: { collection: "e-lab" },
-      tags: [],
-      mockDocuments: buildELabBackfill,
-      label: "parity",
-    });
-    expect(result).toHaveLength(faq.length);
-  });
-
-  test("sanity source over the backfill: the same FAQ", async () => {
-    useSource("sanity");
-    await expect(getELabFaqs()).resolves.toStrictEqual(faq);
-  });
-
-  test("the backfill holds one e-lab FAQ document per question", () => {
-    const documents = buildELabBackfill().filter(
-      ({ _type }) => _type === "faq",
-    );
-    expect(documents.map(({ question }) => question)).toStrictEqual(
-      faq.map(({ question }) => question),
-    );
-    expect(
-      new Set(documents.map(({ collection }) => collection)),
-    ).toStrictEqual(new Set(["e-lab"]));
-  });
 });
+afterEach(() => vi.unstubAllEnvs());
 
-describe("the /e-lab copy", () => {
-  const code = fillCodeCopy(eLabCopyTemplate, contentTokens, eLabPageTokens);
+import { eLabCopyFixture } from "@/lib/cms-fixtures/programmes";
+import { getELabCopy, getELabFaqs, selectStages } from "./content";
 
-  test("code source: the code copy, whose stages draw the code cohort", async () => {
-    useSource("code");
-    const copy = await getELabCopy();
-    expect(copy).toStrictEqual(code);
-    expect(buildStages(copy.gates.stages)).toStrictEqual(selectionStages);
-  });
-
-  test("the mock serves the backfill through the real query", async () => {
-    useSource("sanity");
-    const result = await fetchContent<ELAB_COPY_QUERY_RESULT>({
-      query: ELAB_COPY_QUERY,
-      tags: [],
-      mockDocuments: buildELabBackfill,
-      label: "parity",
-    });
-    expect(result?.gates?.stages).toHaveLength(
-      eLabCopyTemplate.gates.stages.length,
-    );
-  });
-
-  test("sanity source over the backfill: the same copy", async () => {
-    useSource("sanity");
-    await expect(getELabCopy()).resolves.toStrictEqual(code);
-  });
+const stages = eLabCopyFixture.gates.stages.map((stage) =>
+  stage.kind === "gate"
+    ? { ...stage, _type: "gateStage" }
+    : { ...stage, _type: "phaseStage" },
+);
+test("real queries read synthetic CMS copy and FAQ", async () => {
+  expect((await getELabCopy()).hero.title).toBe("Example programme");
+  expect(await getELabFaqs()).toHaveLength(1);
 });
-
-describe("the CMS stages", () => {
-  const { stages } = fillCodeCopy(
-    eLabCopyTemplate,
-    contentTokens,
-    eLabPageTokens,
-  ).gates;
-  // The stages as the query returns them, before `toStage`.
-  const raw = stages.map(({ kind, ...stage }) => ({
-    _type: kind === "gate" ? "gateStage" : "phaseStage",
-    ...stage,
-  }));
-
-  test("a whole list is served as it is", () => {
-    expect(selectStages(raw, raw.length)).toStrictEqual(stages);
-  });
-
-  test.each([
-    ["a stage dropped for an unknown placeholder", raw.slice(1), raw.length],
-    [
-      "a gate figure missing",
-      raw.filter((stage) => !("figure" in stage) || stage.figure !== "midterm"),
-      raw.length - 1,
-    ],
-    [
-      "a gate figure twice",
-      raw.map((stage) =>
-        "figure" in stage && stage.figure === "midterm"
-          ? { ...stage, figure: "admitted" }
+test("deleted optional FAQ collection stays empty", async () => {
+  documents = documents.filter((doc) => doc._type !== "faq");
+  expect(await getELabFaqs()).toEqual([]);
+});
+test("missing copy singleton fails with its label", async () => {
+  documents = documents.filter((doc) => doc._id !== "eLabCopy");
+  await expect(getELabCopy()).rejects.toThrow("/e-lab copy");
+});
+test("required nested copy is validated", async () => {
+  documents = documents.map((doc) =>
+    doc._id === "eLabCopy" ? { ...doc, hero: { title: "Example" } } : doc,
+  );
+  await expect(getELabCopy()).rejects.toThrow("hero.lead");
+});
+test("unknown tokens fail without silently dropping stages", async () => {
+  documents = documents.map((doc) =>
+    doc._id === "eLabCopy"
+      ? { ...doc, hero: { title: "{{unknown}}", lead: "Example" } }
+      : doc,
+  );
+  await expect(getELabCopy()).rejects.toThrow(/unknown/i);
+});
+test("all five gate figures are required in funnel order", () => {
+  expect(selectStages(stages)).toHaveLength(stages.length);
+  expect(() => selectStages(stages.slice(1))).toThrow(/funnel order/);
+  expect(() => selectStages([...stages.slice(0, -1), stages[0]])).toThrow(
+    /funnel order/,
+  );
+  expect(() => selectStages([...stages].reverse())).toThrow(/funnel order/);
+});
+test("phase duration and image shape are required when supplied", () => {
+  expect(() =>
+    selectStages(
+      stages.map((stage) =>
+        stage._type === "phaseStage"
+          ? { ...stage, duration: { amount: -1, unit: "weeks" } }
           : stage,
       ),
-      raw.length,
-    ],
-    [
-      "the Midterm and Final Pitch gates swapped",
-      raw.map((stage) =>
-        "figure" in stage && stage.figure === "midterm"
-          ? { ...stage, figure: "finalPitch" }
-          : "figure" in stage && stage.figure === "finalPitch"
-            ? { ...stage, figure: "midterm" }
-            : stage,
+    ),
+  ).toThrow(/duration/);
+  expect(() =>
+    selectStages(
+      stages.map((stage) =>
+        stage._type === "phaseStage"
+          ? { ...stage, photo: { src: "x" } }
+          : stage,
       ),
-      raw.length,
-    ],
-    [
-      "a phase whose duration is text, not an amount and a unit",
-      raw.map((stage) =>
-        "duration" in stage ? { ...stage, duration: "4 weeks" } : stage,
+    ),
+  ).toThrow(/width/);
+});
+
+test("phase anchors cannot collide with a gate anchor", () => {
+  expect(() =>
+    selectStages(
+      stages.map((stage) =>
+        stage._type === "phaseStage" ? { ...stage, id: "final-pitch" } : stage,
       ),
-      raw.length,
-    ],
-    [
-      "an incomplete stage",
-      raw.map((stage, index) => (index === 0 ? { ...stage, name: "" } : stage)),
-      raw.length,
-    ],
-  ])("%s keeps the code cohort", (_, list, fetched) => {
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-    expect(selectStages(list, fetched)).toStrictEqual([]);
-    expect(warn).toHaveBeenCalled();
-    warn.mockRestore();
-  });
+    ),
+  ).toThrow(/unique/);
 });

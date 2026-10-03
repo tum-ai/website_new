@@ -12,24 +12,6 @@ import { faqCollections } from "./schemas/content/faq";
 const singletonTypes = new Set(contentSingletons.map(({ type }) => type));
 
 /**
- * The documents the structure opens by id: the singletons (id = type),
- * each program's application window and each section's logo list. The backfill must create exactly
- * these ids (`test/cms-backfill.test.ts`), or editors would edit an empty
- * document beside the imported one.
- */
-export const pinnedDocuments: readonly { id: string; type: string }[] = [
-  ...contentSingletons.map(({ type }) => ({ id: type, type })),
-  ...applicationPrograms.map(({ documentId }) => ({
-    id: documentId,
-    type: "applicationWindow",
-  })),
-  ...logoListSurfaces.map(({ value }) => ({
-    id: logoListDocumentId(value),
-    type: "logoList",
-  })),
-];
-
-/**
  * Types whose documents are fixed: singletons, the application windows
  * (one pinned document per program) and the logo lists (one per section). Editors change them in place; they
  * cannot create, duplicate or delete them.

@@ -6,8 +6,8 @@ import { isMunichTime } from "../../../lib/munich-time";
  * and the closing bands) or the E-Lab application round (/e-lab). There is
  * one document per program, pinned in the Studio; editors update it in place
  * for each round. Read by `getMembershipWindow()` and `getELabWindow()` in
- * `src/config/schedule-content.ts`, laid over the config
- * (`membershipConfig`, `eLabConfig`).
+ * `src/config/schedule-content.ts`, which validates the required published
+ * window directly; there is no local application-window payload or merge.
  *
  * Dates are Sanity `date` fields (a calendar picker, stored as
  * "YYYY-MM-DD" without a timezone) and times are "HH:MM" strings; the site

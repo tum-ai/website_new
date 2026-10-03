@@ -7,8 +7,8 @@ import {
 } from "@tum.ai/ui-kit";
 import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
 import type { ELabCopy } from "./data/copy";
-import { eLabVoices, type TestimonialCard } from "./data/venture-page";
-import { getTestimonialCards } from "./venture-content";
+import type { TestimonialCard } from "./data/venture-page";
+import { getELabVoices, getTestimonialCards } from "./venture-content";
 
 /** The testimonials with `ids`, in that order; unknown ids are skipped. */
 const pick = (cards: readonly TestimonialCard[], ids: readonly string[]) =>
@@ -61,11 +61,14 @@ function VoiceColumn({
 /**
  * Founders from earlier cohorts beside the investors and partners who work
  * with them, as two columns of ruled quotes. The quotes come from the
- * venture slice (the CMS or the code), picked by id (`eLabVoices`); the
+ * venture slice, picked by the page singleton's person references; the
  * headings from the page copy.
  */
 export async function VoicesSection({ copy }: { copy: ELabCopy["voices"] }) {
-  const cards = await getTestimonialCards();
+  const [cards, voices] = await Promise.all([
+    getTestimonialCards(),
+    getELabVoices(),
+  ]);
   return (
     <Section tone="mist" spacing="lg" aria-labelledby="voices-title">
       <Container>
@@ -79,12 +82,12 @@ export async function VoicesSection({ copy }: { copy: ELabCopy["voices"] }) {
         <div className="grid gap-16 lg:grid-cols-2 lg:gap-24">
           <VoiceColumn
             label={copy.foundersLabel}
-            voices={pick(cards, eLabVoices.founders)}
+            voices={pick(cards, voices.founders)}
             delay={0}
           />
           <VoiceColumn
             label={copy.investorsLabel}
-            voices={pick(cards, eLabVoices.investors)}
+            voices={pick(cards, voices.investors)}
             delay={100}
           />
         </div>

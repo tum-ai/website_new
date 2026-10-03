@@ -23,8 +23,8 @@ const fork = (name: string, title: string) =>
  * The /research page's own copy (one document, `_id` `researchCopy`), set
  * like a paper's first page. The projects come from the `research`
  * documents, the REX band from its own copy, and the
- * globe from Lab site documents. Read by `features/research/content.ts`, over the code copy in
- * `features/research/data/research-copy.ts`.
+ * globe from Lab site documents. Read and validated by
+ * `features/research/content.ts`.
  */
 export const researchCopyType = defineType({
   name: "researchCopy",

@@ -32,7 +32,7 @@ export function JoinSection({
   stories: readonly MemberStory[];
 }) {
   const { quote } = join;
-  const quoted = stories.find((story) => story.name === quote.name);
+  const quoted = stories.find((story) => story.key === quote.key);
   return (
     <Section
       tone="ink"
@@ -103,7 +103,7 @@ export function JoinSection({
                   <div className="flex -space-x-3">
                     {stories.map((story) => (
                       <Image
-                        key={story.name}
+                        key={story.key}
                         src={story.image}
                         alt=""
                         width={48}

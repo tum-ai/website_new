@@ -1,131 +1,132 @@
-import { afterEach, describe, expect, test, vi } from "vitest";
-import { contentTokens } from "@/config/content-tokens";
-import { fetchContent } from "@/lib/cms-content";
-import { fillCodeCopy } from "@/lib/content-copy";
-import type { HACKATHONS_COPY_QUERY_RESULT } from "@/lib/sanity.types.generated";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { evaluateMockQuery } from "@/lib/cms-content-mock";
 import {
-  buildHackathonsBackfill,
+  hackathonsFixture,
+  hackathonsFixtureDocuments,
+} from "@/lib/cms-fixtures/hackathons";
+import type { CmsFixtureDocument } from "@/lib/cms-fixtures/types";
+import {
   getHackathonsCopy,
   HACKATHONS_COPY_QUERY,
+  parseHackathonsCopy,
 } from "./content";
-import { hackathonsCopyTemplate, hackathonsPageTokens } from "./data/copy";
-import { makeathonEditions } from "./data/makeathon";
 
-/**
- * Parity: the backfill document, read back through the real GROQ query
- * under the mock CMS, renders exactly what the code renders.
- */
-/** Lets a test change the backfill documents the mock CMS serves. */
-const tamper = vi.hoisted(() => ({
-  edit: null as null | ((document: Record<string, unknown>) => unknown),
+const mock = vi.hoisted(() => ({ documents: [] as CmsFixtureDocument[] }));
+vi.mock("@/config/content-tokens", () => ({
+  getContentTokens: async () => ({}),
 }));
-
-vi.mock("@/lib/cms-content-mock", async (importOriginal) => {
-  const actual =
-    await importOriginal<typeof import("@/lib/cms-content-mock")>();
-  return {
-    ...actual,
-    evaluateMockQuery: (
-      query: string,
-      params: Record<string, unknown>,
-      documents: readonly Record<string, unknown>[],
-    ) =>
-      actual.evaluateMockQuery(
-        query,
-        params,
-        (tamper.edit ? documents.map(tamper.edit) : documents) as never,
-      ),
-  };
-});
-
-afterEach(() => {
-  tamper.edit = null;
-  vi.unstubAllEnvs();
-});
-
-function useSource(source: "code" | "sanity") {
-  vi.stubEnv("CMS_CONTENT_SOURCE", source);
+vi.mock("@/lib/cms-content-mock", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/cms-content-mock")>()),
+  getMockContentDocuments: () => mock.documents,
+}));
+beforeEach(() => {
   vi.stubEnv("USE_MOCK_CMS", "1");
   vi.stubEnv("VERCEL", "");
-}
+  mock.documents = structuredClone([
+    ...hackathonsFixtureDocuments,
+    {
+      _id: "fixture-photo",
+      _type: "sanity.imageAsset",
+      url: hackathonsFixture.makeathon.editionsPhoto.src,
+      metadata: { dimensions: { width: 960, height: 640 } },
+    },
+  ]);
+});
+afterEach(() => vi.unstubAllEnvs());
 
-const code = fillCodeCopy(
-  hackathonsCopyTemplate,
-  contentTokens,
-  hackathonsPageTokens,
-);
+const edit = () => mock.documents[0] as Record<string, unknown>;
 
-type Editions = { editions: Record<string, unknown>[] };
-
-/** The backfill with its editions replaced by `edit(editions)`. */
-const withEditions =
-  (edit: (editions: Record<string, unknown>[]) => unknown[]) =>
-  (document: Record<string, unknown>) => {
-    if (document._id !== "hackathonsCopy") return document;
-    const makeathon = document.makeathon as Editions;
-    return {
-      ...document,
-      makeathon: { ...makeathon, editions: edit(makeathon.editions) },
-    };
-  };
-
-describe("the /hackathons content slice", () => {
-  test("code source: the code copy, page tokens left for the page", async () => {
-    useSource("code");
-    const copy = await getHackathonsCopy();
-    expect(copy).toStrictEqual(code);
-    expect(copy.hero.lead).toContain("{{since}}");
-    expect(copy.hero.lead).not.toContain("{{impact.");
-  });
-
-  test("the mock serves the backfill through the real query", async () => {
-    useSource("sanity");
-    const result = await fetchContent<HACKATHONS_COPY_QUERY_RESULT>({
-      query: HACKATHONS_COPY_QUERY,
-      tags: [],
-      mockDocuments: buildHackathonsBackfill,
-      label: "parity",
+describe("published hackathons copy", () => {
+  test("the real query reads synthetic editions and leaves page tokens for the view", async () => {
+    const projected = await evaluateMockQuery(
+      HACKATHONS_COPY_QUERY,
+      {},
+      mock.documents,
+    );
+    expect(projected).toMatchObject({
+      makeathon: { editions: hackathonsFixture.makeathon.editions },
     });
-    expect(result?.hero?.title).toBe(hackathonsCopyTemplate.hero.title);
-    expect(result?.makeathon?.editions?.map(({ key }) => key)).toStrictEqual(
-      makeathonEditions.map(({ key }) => key),
+    const copy = await getHackathonsCopy();
+    expect(copy.hero.lead).toContain("{{since}}");
+    expect(copy.makeathon.editions).toEqual(
+      hackathonsFixture.makeathon.editions,
     );
   });
-
-  test("sanity source over the backfill: the same copy", async () => {
-    useSource("sanity");
-    await expect(getHackathonsCopy()).resolves.toStrictEqual(code);
+  test("missing required singleton fails visibly", async () => {
+    mock.documents = [];
+    await expect(getHackathonsCopy()).rejects.toThrow(
+      /hackathons copy.*required object/,
+    );
   });
-
-  test("editors' editions replace the code list as a whole", async () => {
-    useSource("sanity");
-    tamper.edit = withEditions((editions) => editions.slice(-2));
-    const copy = await getHackathonsCopy();
-    expect(copy.makeathon.editions).toStrictEqual(makeathonEditions.slice(-2));
-  });
-
   test.each([
-    ["an end before its start", { end: "2020-01-01" }],
-    ["a missing name", { name: null }],
-    ["a date that is not a day", { start: "April 2021" }],
-  ])("an edition with %s keeps the code editions", async (_, change) => {
-    useSource("sanity");
-    tamper.edit = withEditions(([first, ...rest]) => [
-      { ...first, ...change },
-      ...rest,
-    ]);
-    const copy = await getHackathonsCopy();
-    expect(copy.makeathon.editions).toStrictEqual(code.makeathon.editions);
-  });
-
-  test("the backfill is one document with every edition keyed", () => {
-    const documents = buildHackathonsBackfill();
-    expect(documents).toHaveLength(1);
-    const { editions } = documents[0].makeathon as {
-      editions: { _key: string }[];
+    ["missing title", { name: null }],
+    ["reversed dates", { end: "2020-01-01" }],
+    ["invalid date", { start: "2025-02-30" }],
+    ["unknown placeholder", { note: "{{unknown.fact}}" }],
+  ])("an edition with %s fails as a whole", async (_, change) => {
+    const makeathon = edit().makeathon as {
+      editions: Record<string, unknown>[];
     };
-    expect(editions.map(({ _key }) => _key)).toStrictEqual(
-      makeathonEditions.map(({ key }) => key),
+    Object.assign(makeathon.editions[0], change);
+    await expect(getHackathonsCopy()).rejects.toThrow();
+  });
+  test("editor deletions replace editions, without restoring the removed edition", async () => {
+    const makeathon = edit().makeathon as {
+      editions: Record<string, unknown>[];
+    };
+    makeathon.editions = makeathon.editions.slice(-1);
+    expect((await getHackathonsCopy()).makeathon.editions).toHaveLength(1);
+  });
+  test("empty structural editions, duplicate keys and wrong order fail", () => {
+    for (const editions of [
+      [],
+      [
+        hackathonsFixture.makeathon.editions[0],
+        hackathonsFixture.makeathon.editions[0],
+      ],
+      [...hackathonsFixture.makeathon.editions].reverse(),
+    ]) {
+      expect(() =>
+        parseHackathonsCopy({
+          ...hackathonsFixture,
+          makeathon: { ...hackathonsFixture.makeathon, editions },
+        }),
+      ).toThrow();
+    }
+  });
+  test("blank optional results and empty runners-up stay cleared", async () => {
+    const league = edit().league as { finale: Record<string, unknown> };
+    Object.assign(league.finale, {
+      champion: "",
+      runnersUp: [],
+      recapCaption: "",
+    });
+    expect((await getHackathonsCopy()).league.finale).toMatchObject({
+      champion: "",
+      runnersUp: [],
+      recapCaption: "",
+    });
+  });
+  test("a selected unresolved case-study fails", async () => {
+    edit().voiceCaseStudy = { _type: "reference", _ref: "missing-case" };
+    await expect(getHackathonsCopy()).rejects.toThrow(
+      /voiceCaseStudy.*does not resolve/,
     );
+  });
+  test("case-study selection comes from the owner reference", async () => {
+    edit().outcomeCaseStudy = { _type: "reference", _ref: "case-example" };
+    mock.documents.push({ _id: "case-example", _type: "caseStudy" });
+    expect((await getHackathonsCopy()).outcomeCaseStudy).toBe("case-example");
+  });
+  test("missing required and malformed optional images fail", async () => {
+    const league = edit().league as { finale: Record<string, unknown> };
+    league.finale.recapPhoto = {
+      _type: "image",
+      asset: { _type: "reference", _ref: "missing-image" },
+    };
+    await expect(getHackathonsCopy()).rejects.toThrow();
+    delete league.finale.recapPhoto;
+    league.finale.poster = null;
+    await expect(getHackathonsCopy()).rejects.toThrow();
   });
 });

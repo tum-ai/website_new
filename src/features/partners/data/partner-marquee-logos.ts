@@ -1,6 +1,5 @@
 import type { Organization } from "@/lib/people-and-logos";
 import { getPartnerKey } from "../partner-key";
-import { partnerLogoLists } from "./organizations";
 
 /**
  * Dark-band artwork by partner key (`getPartnerKey` of the name). Only
@@ -17,5 +16,3 @@ export function marqueeLogosOf(
     ),
   );
 }
-
-export const marqueeLogos = marqueeLogosOf(partnerLogoLists["partner-marquee"]);

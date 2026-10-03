@@ -1,17 +1,18 @@
 import { axe } from "@test/axe";
 import { render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { contentTokens } from "@/config/content-tokens";
-import { fillCodeCopy } from "@/lib/content-copy";
+import {
+  labSitesFixture,
+  researchCopyFixture as researchCopy,
+} from "@/lib/cms-fixtures/programmes";
 import { getMockResearchProjects } from "@/lib/mock-cms";
 import type { Partner } from "@/lib/types";
-import { researchCopyTemplate, researchPageTokens } from "./data/research-copy";
 
-const researchCopy = fillCodeCopy(
-  researchCopyTemplate,
-  contentTokens,
-  researchPageTokens,
-);
+vi.mock("./content", () => ({
+  getResearchCopy: async () => researchCopy,
+  getLabSiteList: async () => labSitesFixture,
+}));
+vi.mock("./rex-content", () => ({ getRexInstitutions: async () => [] }));
 
 import { getResearchIndex } from "./research";
 import { ResearchPage } from "./research-page";
@@ -40,12 +41,12 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-const projects = getMockResearchProjects();
+const projects = await getMockResearchProjects();
 const partners = vi.hoisted((): Partner[] => [
   {
     id: "ibm",
     name: "IBM",
-    image: "/assets/partners/logos/ibm.png",
+    image: "/assets/fixtures/logo.svg",
     link: "https://www.ibm.com/",
     category: "Research Partners",
   },

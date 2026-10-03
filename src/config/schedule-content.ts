@@ -1,39 +1,29 @@
 import "server-only";
-
 import { defineQuery } from "next-sanity";
 import { cache } from "react";
-import { type BackfillDocument, backfillId } from "@/lib/cms-backfill";
 import { loadContent } from "@/lib/cms-content";
-import { getCmsNow } from "@/lib/mock-cms-env";
 import {
-  isMunichTime,
-  isoDayFromMunichDate,
-  munichDateFromIsoDay,
-} from "@/lib/munich-time";
-import type {
-  APPLICATION_WINDOW_QUERY_RESULT,
-  CAMPAIGNS_QUERY_RESULT,
-} from "@/lib/sanity.types.generated";
+  contentBoolean,
+  contentError,
+  contentNumber,
+  contentString,
+  optionalString,
+  requireArray,
+  requireEnum,
+  requireObject,
+} from "@/lib/cms-content-model";
+import { getCmsNow } from "@/lib/mock-cms-env";
+import { isMunichTime, munichDateFromIsoDay } from "@/lib/munich-time";
 import {
   type Campaign,
   type CampaignHeaderCta,
-  campaignsFallback,
   featuredEventIdAt,
   scheduleCampaigns,
 } from "./campaigns";
-import { type ELabApplicationWindow, eLabWindowFallback } from "./e-lab";
-import { type MembershipConfig, membershipConfig } from "./membership";
-import type { HeaderCtaVariant } from "./navigation";
-
-/**
- * The dated-content slice: the application windows (membership and E-Lab)
- * and the campaigns in the CMS, or their code fallbacks
- * (`membershipConfig`, `eLabConfig`, no campaigns). Server only; islands get
- * the resolved windows as props (`ClockWindow`, `lib/clock-window.ts`).
- */
-
+import type { ELabApplicationWindow } from "./e-lab";
+import { type MembershipConfig, roundSchedule } from "./membership";
 export const APPLICATION_WINDOW_QUERY =
-  defineQuery(`*[_type == "applicationWindow" && program == $program] | order(_updatedAt desc)[0]{
+  defineQuery(`*[_type == "applicationWindow" && program == $program && _id == $id] | order(_updatedAt desc)[0]{
   roundName,
   switchedOn,
   opens,
@@ -44,7 +34,7 @@ export const APPLICATION_WINDOW_QUERY =
   milestones[]{ key, from, to }
 }`);
 
-export const CAMPAIGNS_QUERY =
+const CAMPAIGNS_QUERY =
   defineQuery(`*[_type == "campaign"] | order(startDate desc, _id asc){
   "id": _id,
   name,
@@ -58,205 +48,230 @@ export const CAMPAIGNS_QUERY =
 }`);
 
 type Program = "membership" | "e-lab";
-
-type WindowResult = NonNullable<APPLICATION_WINDOW_QUERY_RESULT>;
-
-/** The pinned document of a program's window (the Studio pins the same ids). */
+/** Pinned singleton identifier used by Studio and the reader. */
 export const applicationWindowId = (program: Program) =>
-  backfillId("applicationWindow", program);
-
-/** A CMS `date` ("2026-10-27") as "27.10.2026", or `undefined` when unusable. */
-const day = (value: string | null | undefined) =>
-  (value && munichDateFromIsoDay(value)) || undefined;
-
-const time = (value: string | null | undefined) =>
-  value && isMunichTime(value) ? value : undefined;
-
-const https = (value: string | null | undefined) =>
-  value?.startsWith("https://") ? value : undefined;
-
-/** A milestone as a day span, only with both days usable. */
-function span(result: WindowResult, key: "interviews" | "onboarding") {
-  const milestone = result.milestones?.find((item) => item.key === key);
-  const from = day(milestone?.from);
-  const to = day(milestone?.to);
-  return from && to ? { from, to } : undefined;
+  `applicationwindow-${program}`;
+const label = "applicationWindow";
+function day(value: unknown, path: string): string {
+  const raw = contentString(value, label, path);
+  const result = munichDateFromIsoDay(raw);
+  if (!result) return contentError(label, path, "expected an ISO calendar day");
+  return result;
 }
-
-function loadWindow<T>(
-  program: Program,
-  fallback: T,
-  select: (result: WindowResult) => unknown,
-): Promise<T> {
-  return loadContent<T, APPLICATION_WINDOW_QUERY_RESULT>({
-    fallback,
-    query: APPLICATION_WINDOW_QUERY,
-    params: { program },
-    tags: ["content:applicationWindow"],
-    label: `the ${program} application window`,
-    mockDocuments: buildScheduleBackfill,
-    select: (result) => (result ? select(result) : null),
-  });
+function time(value: unknown, path: string): string {
+  const raw = contentString(value, label, path);
+  if (!isMunichTime(raw))
+    return contentError(label, path, "expected HH:MM Munich time");
+  return raw;
 }
-
-/**
- * The membership recruiting window for this render: the `membership`
- * application window over `membershipConfig`. Malformed dates and links are
- * left out, so the code value shows there instead of breaking the page.
- */
-export const getMembershipWindow = cache(
-  (): Promise<MembershipConfig> =>
-    loadWindow("membership", membershipConfig, (result) => ({
-      applicationsOpen: result.switchedOn,
-      applicationUrl: https(result.applicationUrl),
-      round: {
-        name: result.roundName,
-        opens: day(result.opens),
-        deadlineDate: day(result.deadlineDate),
-        deadlineTime: time(result.deadlineTime),
-        interviews: span(result, "interviews"),
-        onboarding: span(result, "onboarding"),
-      },
-    })),
-);
-
-/** The E-Lab application window for this render: the `e-lab` window over `eLabConfig`. */
-export const getELabWindow = cache(
-  (): Promise<ELabApplicationWindow> =>
-    loadWindow("e-lab", eLabWindowFallback, (result) => ({
-      applicationsOpen: result.switchedOn,
-      applicationUrl: https(result.applicationUrl),
-      applicationDeadlineDate: day(result.deadlineDate),
-      applicationDeadlineTime: time(result.deadlineTime),
-      nextApplicationWindow: result.nextWindowLabel,
-    })),
-);
-
-const ctaVariants: readonly string[] = [
-  "member",
-  "partner",
-  "elab",
-  "notify",
-] satisfies HeaderCtaVariant[];
-
-type CampaignResult = CAMPAIGNS_QUERY_RESULT[number];
-
-function headerCtaOf(
-  cta: CampaignResult["headerCta"],
-): CampaignHeaderCta | undefined {
-  if (!cta?.variant || !ctaVariants.includes(cta.variant)) return undefined;
-  const label = cta.label?.trim();
-  const notifyUrl =
-    cta.notifyUrl && /^(https:\/\/|mailto:)/.test(cta.notifyUrl)
-      ? cta.notifyUrl
-      : undefined;
+function https(value: unknown, path: string): string {
+  const raw = contentString(value, label, path);
+  try {
+    if (new URL(raw).protocol === "https:") return raw;
+  } catch {}
+  return contentError(label, path, "expected HTTPS URL");
+}
+function span(
+  result: Record<string, unknown>,
+  key: "interviews" | "onboarding",
+  deadline: string,
+) {
+  const items = requireArray(result.milestones, label, "milestones").map(
+    (v, index) => requireObject(v, label, `milestones[${index}]`),
+  );
+  const matches = items.filter((item) => item.key === key);
+  if (matches.length !== 1)
+    return contentError(label, `milestones.${key}`, "required exactly once");
+  const value = matches[0];
+  const from = day(value.from, `milestones.${key}.from`);
+  const to = day(value.to, `milestones.${key}.to`);
+  if (String(value.to) < String(value.from) || String(value.from) < deadline)
+    return contentError(
+      label,
+      `milestones.${key}`,
+      "invalid milestone ordering",
+    );
+  return { from, to };
+}
+/** Complete membership window; malformed dates or missing milestones fail atomically. */
+export function selectMembershipWindow(value: unknown): MembershipConfig {
+  const result = requireObject(value, label, "membership");
+  const config: MembershipConfig = {
+    applicationsOpen: contentBoolean(result.switchedOn, label, "switchedOn"),
+    applicationUrl: https(result.applicationUrl, "applicationUrl"),
+    round: {
+      name: contentString(result.roundName, label, "roundName"),
+      opens: day(result.opens, "opens"),
+      deadlineDate: day(result.deadlineDate, "deadlineDate"),
+      deadlineTime: time(result.deadlineTime, "deadlineTime"),
+      interviews: span(
+        result,
+        "interviews",
+        contentString(result.deadlineDate, label, "deadlineDate"),
+      ),
+      onboarding: span(
+        result,
+        "onboarding",
+        contentString(result.deadlineDate, label, "deadlineDate"),
+      ),
+    },
+  };
+  const schedule = roundSchedule(config.round);
+  if (schedule.closesAt < schedule.opensAt)
+    return contentError(label, "deadlineDate", "deadline precedes opening");
+  return config;
+}
+/** Complete E-Lab application window. */
+export function selectELabWindow(value: unknown): ELabApplicationWindow {
+  const result = requireObject(value, label, "e-lab");
   return {
-    variant: cta.variant as HeaderCtaVariant,
-    ...(label ? { label } : {}),
-    ...(notifyUrl ? { notifyUrl } : {}),
-    yieldsToRecruiting: cta.yieldsToRecruiting ?? true,
+    applicationsOpen: contentBoolean(result.switchedOn, label, "switchedOn"),
+    applicationUrl: https(result.applicationUrl, "applicationUrl"),
+    applicationDeadlineDate: day(result.deadlineDate, "deadlineDate"),
+    applicationDeadlineTime: time(result.deadlineTime, "deadlineTime"),
+    nextApplicationWindow: contentString(
+      result.nextWindowLabel,
+      label,
+      "nextWindowLabel",
+    ),
   };
 }
-
-/**
- * The campaigns as code shapes them. A campaign with a missing or malformed
- * date or time is dropped (and logged) rather than guessed at.
- */
-export function campaignsFromQuery(result: CAMPAIGNS_QUERY_RESULT): Campaign[] {
-  return result.flatMap((item) => {
-    const startDate = day(item.startDate);
-    const endDate = item.endDate ? day(item.endDate) : undefined;
-    const startTime = item.startTime ? time(item.startTime) : undefined;
-    const endTime = item.endTime ? time(item.endTime) : undefined;
-    const malformed =
-      !startDate ||
-      (item.endDate && !endDate) ||
-      (item.startTime && !startTime) ||
-      (item.endTime && !endTime);
-    if (malformed) {
-      console.warn(
-        `[cms-content] Skipping the campaign "${item.name}": a date or time is malformed.`,
-      );
-      return [];
-    }
-    const headerCta = headerCtaOf(item.headerCta);
-    const featuredEventId = item.featuredEventId?.trim();
-    const priority =
-      typeof item.priority === "number" && Number.isInteger(item.priority)
-        ? item.priority
-        : undefined;
-    const campaign: Campaign = {
-      id: item.id,
-      name: item.name ?? item.id,
-      startDate,
-      ...(startTime ? { startTime } : {}),
-      ...(endDate ? { endDate } : {}),
-      ...(endDate && endTime ? { endTime } : {}),
-      ...(priority ? { priority } : {}),
-      ...(headerCta ? { headerCta } : {}),
-      ...(featuredEventId ? { featuredEventId } : {}),
-    };
-    return [campaign];
+function loadWindow<T>(
+  program: Program,
+  select: (value: unknown) => T,
+): Promise<T> {
+  return loadContent({
+    query: APPLICATION_WINDOW_QUERY,
+    params: { program, id: applicationWindowId(program) },
+    tags: ["content:applicationWindow"],
+    label: `${program} application window`,
+    select,
   });
 }
-
-/** Every campaign, from the CMS (code has none), as written; see `config/campaigns.ts`. */
-export const getCampaigns = cache(
-  (): Promise<readonly Campaign[]> =>
-    loadContent<readonly Campaign[], CAMPAIGNS_QUERY_RESULT>({
-      fallback: campaignsFallback,
-      query: CAMPAIGNS_QUERY,
-      tags: ["content:campaign"],
-      label: "the campaigns",
-      mockDocuments: buildScheduleBackfill,
-      select: campaignsFromQuery,
-    }),
+export const getMembershipWindow = cache(() =>
+  loadWindow("membership", selectMembershipWindow),
 );
-
-/**
- * The `_id` of the `event` a running campaign features at `now`
- * (the render clock by default), or `null`. /events pins that event first
- * among its upcoming events and in its closing band (`pinFeaturedEvent`),
- * as long as it is upcoming.
- */
+export const getELabWindow = cache(() => loadWindow("e-lab", selectELabWindow));
+function headerCtaOf(
+  value: unknown,
+  path: string,
+): CampaignHeaderCta | undefined {
+  if (value == null) return undefined;
+  const cta = requireObject(value, "campaign", path);
+  const variant = requireEnum(
+    cta.variant,
+    ["member", "partner", "elab", "notify"] as const,
+    "campaign",
+    `${path}.variant`,
+  );
+  const label = optionalString(cta.label, "campaign", `${path}.label`);
+  const notifyUrl = optionalString(
+    cta.notifyUrl,
+    "campaign",
+    `${path}.notifyUrl`,
+  );
+  if (notifyUrl && !/^(https:\/\/|mailto:)/.test(notifyUrl))
+    return contentError(
+      "campaign",
+      `${path}.notifyUrl`,
+      "expected HTTPS or mailto URL",
+    );
+  if (variant === "notify" && !notifyUrl)
+    return contentError(
+      "campaign",
+      `${path}.notifyUrl`,
+      "notify requires a target",
+    );
+  return {
+    variant,
+    ...(label === undefined ? {} : { label }),
+    ...(notifyUrl === undefined ? {} : { notifyUrl }),
+    yieldsToRecruiting:
+      cta.yieldsToRecruiting == null
+        ? true
+        : contentBoolean(
+            cta.yieldsToRecruiting,
+            "campaign",
+            `${path}.yieldsToRecruiting`,
+          ),
+  };
+}
+/** Parse every published campaign; explicit empty lists are valid, invalid entries fail. */
+export function campaignsFromQuery(value: unknown): Campaign[] {
+  const campaigns = requireArray(value, "campaign", "").map(
+    (v, index): Campaign => {
+      const path = `[${index}]`;
+      const item = requireObject(v, "campaign", path);
+      const id = contentString(item.id, "campaign", `${path}.id`);
+      const name = contentString(item.name, "campaign", `${path}.name`);
+      const startDate = day(item.startDate, `${path}.startDate`);
+      const startTime =
+        item.startTime == null
+          ? undefined
+          : time(item.startTime, `${path}.startTime`);
+      const endDate =
+        item.endDate == null ? undefined : day(item.endDate, `${path}.endDate`);
+      const endTime =
+        item.endTime == null
+          ? undefined
+          : time(item.endTime, `${path}.endTime`);
+      if (endTime && !endDate)
+        return contentError(
+          "campaign",
+          `${path}.endTime`,
+          "requires an end date",
+        );
+      const priority =
+        item.priority == null
+          ? undefined
+          : contentNumber(item.priority, "campaign", `${path}.priority`);
+      if (
+        priority !== undefined &&
+        (!Number.isInteger(priority) || priority < -10 || priority > 10)
+      )
+        return contentError(
+          "campaign",
+          `${path}.priority`,
+          "expected integer in -10..10",
+        );
+      const headerCta = headerCtaOf(item.headerCta, `${path}.headerCta`);
+      const featuredEventId = optionalString(
+        item.featuredEventId,
+        "campaign",
+        `${path}.featuredEventId`,
+      );
+      return {
+        id,
+        name,
+        startDate,
+        ...(startTime === undefined ? {} : { startTime }),
+        ...(endDate === undefined ? {} : { endDate }),
+        ...(endTime === undefined ? {} : { endTime }),
+        ...(priority === undefined ? {} : { priority }),
+        ...(headerCta === undefined ? {} : { headerCta }),
+        ...(featuredEventId === undefined ? {} : { featuredEventId }),
+      };
+    },
+  );
+  if (scheduleCampaigns(campaigns).length !== campaigns.length)
+    return contentError(
+      "campaign",
+      "dates",
+      "every campaign must end after it starts",
+    );
+  return campaigns;
+}
+export const getCampaigns = cache(() =>
+  loadContent({
+    query: CAMPAIGNS_QUERY,
+    tags: ["content:campaign"],
+    label: "campaigns",
+    select: campaignsFromQuery,
+  }),
+);
+/** Currently promoted published event; dangling weak references cannot match a rendered event. */
 export async function getFeaturedEventId(
   now: Date = getCmsNow(),
 ): Promise<string | null> {
   return featuredEventIdAt(scheduleCampaigns(await getCampaigns()), now);
-}
-
-/** The two application windows recreating the code config, for `pnpm sanity:backfill`. */
-export function buildScheduleBackfill(): BackfillDocument[] {
-  const { round } = membershipConfig;
-  const e = eLabWindowFallback;
-  return [
-    {
-      _id: applicationWindowId("membership"),
-      _type: "applicationWindow",
-      program: "membership",
-      roundName: round.name,
-      switchedOn: membershipConfig.applicationsOpen,
-      opens: isoDayFromMunichDate(round.opens),
-      deadlineDate: isoDayFromMunichDate(round.deadlineDate),
-      deadlineTime: round.deadlineTime,
-      applicationUrl: membershipConfig.applicationUrl,
-      milestones: (["interviews", "onboarding"] as const).map((key) => ({
-        _key: key,
-        _type: "milestone",
-        key,
-        from: isoDayFromMunichDate(round[key].from),
-        to: isoDayFromMunichDate(round[key].to),
-      })),
-    },
-    {
-      _id: applicationWindowId("e-lab"),
-      _type: "applicationWindow",
-      program: "e-lab",
-      switchedOn: e.applicationsOpen,
-      deadlineDate: isoDayFromMunichDate(e.applicationDeadlineDate),
-      deadlineTime: e.applicationDeadlineTime,
-      applicationUrl: e.applicationUrl,
-      nextWindowLabel: e.nextApplicationWindow,
-    },
-  ];
 }

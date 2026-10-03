@@ -1,386 +1,170 @@
-# 0009: Page content in the site's one dataset, behind a source gate
+# 0009: CMS as the single source of editable content
 
-- **Status:** Accepted (foundation; content moves slice by slice)
-- **Date:** 2026-09-29 (#286, on the redesign branch #287); revised the same day from two datasets
-  to one
+- **Status:** Accepted, revised for the approved single-source architecture
+- **Date:** 2026-09-29; revised 2026-10-03
 
 ## Context
 
-Everything on the site except events, partners and research is typed into the repository: FAQs,
-campaigns and application windows, logos, people, page copy. Editors need a pull request to change
-a sentence or swap a logo. Issue #286 moves that content into Sanity.
+The initial migration used code payloads as fallback content, slice builders as a full backfill,
+and a source selector. That made a missing CMS field look valid and prevented editors from
+clearing content. The revised decision removes that parallel editorial source. The new site
+reads editable content from its one Sanity dataset; small synthetic fixtures support local
+work and CI.
 
-Three constraints shape how:
-
-- **The old site owns `production`.** The site on `main` embeds its own Studio at `/studio` and
-  reads the `production` dataset, rendering every `event`, `partner` and `research` document it
-  finds. Nothing may add documents or types there, or write to it at all, before the switch.
-- **The free plan** allows two public datasets and no cross-dataset references. The project
-  (`o9uuv2sq`) has `production` and `redesign`.
-- **Nothing may change for visitors** until the content is migrated and reviewed, and a CMS outage
-  or an empty field must never break a page.
-
-A first version split the new site over two datasets (the live types in `production`, the page
-content in a second one, with two Studio workspaces). It was replaced before launch by the model
-below: one dataset is simpler for editors, needs no cross-dataset ids, and lets Presentation and
-the Studio see everything in one place.
+The old site owns `production`. Its published events, partners and research remain available
+for a read-only copy into `redesign`. Migration tools refuse `production` as a target, preserve
+existing target documents, and require a separate maintainer launch action for CMS writes.
 
 ## Decision
 
-### One dataset: `redesign`
+### One explicit page-content dataset
 
-**The new site reads one dataset, `redesign`, which holds everything it needs:**
+`NEXT_PUBLIC_SANITY_PROJECT_ID` and `NEXT_PUBLIC_SANITY_DATASET=redesign` configure the site and
+its embedded Studio. Page-content readers require an explicitly selected dataset with page
+content. A missing project, an unset dataset, or `production` is a configuration error for those
+readers. There is no source selector and no implicit local editorial content.
 
-- copies of the old site's content: every published `event`, `partner` and `research` document
-  from `production`, with the same `_id`s (so the public API and links keep their ids) and their
-  images, and the events' `hosts` filled from the co-host data in the repository;
-- every page content type (FAQs, campaigns, application windows, logos, people, copy).
+`CMS_CONTENT_SOURCE`, local editable payloads, `build*Backfill` builders and the slice registry
+are removed. Domain types, parsers, derived logic and structural interface wording remain in
+code. Legal wording, canonical URLs, SEO structure, navigation and standing CTA labels remain
+reviewed code concerns. Rendered editable facts come from CMS readers, including the layout,
+copy tokens and fact-dependent metadata.
 
-`NEXT_PUBLIC_SANITY_DATASET` names it (`lib/sanity-config.ts`), for the events, partners and
-research (`lib/sanity.ts`), the page content (`lib/cms-content.ts`; both share
-`sanityClientConfig`) and the Studio alike. The default when it is unset stays `production`,
-because `main`'s deployments and the existing environments rely on it. The old site keeps reading
-`production`, and nothing ever writes to it. At launch the new site's Vercel environment switches
-to `redesign`.
+### Required content and optional collections
 
-**Page content never goes to `production`.** `datasetHoldsPageContent(dataset)` is false for
-`production` only, and while the site runs on it (the default, or `main`):
+Server-only slices run real GROQ through `fetchContent` / `loadContent` in
+`src/lib/cms-content.ts`, then validate the result. Required page-copy singletons, site settings,
+application windows and required structural content fail visibly when absent or malformed.
+Errors identify the content and reason; a failed request does not quietly recreate a page from
+repository payloads. Studio validation complements the runtime parser, since published legacy
+documents can predate the schema.
 
-- the Studio does not register the page content types, so nobody can create page content there;
-- the `sanity` content source renders the code content (`loadContent` logs this once per server
-  process) and makes no request;
-- `pnpm sanity:backfill` refuses it as a target.
+An optional collection may be empty and renders its normal empty or omitted state. Empty
+arrays replace content wholesale. Optional text or images that an editor clears stay cleared;
+there is no field-level merge or per-item resurrection. An unresolved required reference is an
+error, while an optional reference follows its documented empty-state contract. Shape coupled
+values such as a quote and its speaker together so they cannot be paired with unrelated data.
 
-A campaign's featured event is a weak reference to the event, so the campaign never blocks
-deleting the event (a deleted one leaves a dangling reference, which the site ignores: /events
-pins the featured event only while it is among the upcoming events).
+Facts inside CMS copy remain `{{placeholders}}`, filled from `getContentTokens()` per render.
+Page tokens represent counts known only to the page and use `fillPageTokens`. Client islands
+receive plain props and never import CMS readers or fixture modules.
 
-### The source gate
+### Independent local fixtures
 
-`CMS_CONTENT_SOURCE` (server only, read at render time; `lib/cms-content.ts`):
+The small CMS-shaped document set lives under `src/lib/cms-fixtures/`, split into `settings`,
+`organizations`, `community`, `programmes` and `hackathons`. It contains synthetic copy,
+references and synthetic image assets. It is neither production content nor a seed for a
+maintainer import. `src/lib/cms-content-mock.ts` evaluates the actual GROQ with `groq-js` over
+those documents, so projections and dereferences have the same semantics as the runtime query.
 
-- `code` (default): every slice returns its code fallback and makes no request. This is the site
-  as it was, byte for byte.
-- `sanity`: slices query the site's dataset (published perspective, CDN, no token) and lay the
-  result over the code fallback; on `production` they render the code content (above).
-- Anything else throws, so a typo fails the build instead of silently serving code.
+The literal gate is `USE_MOCK_CMS=1 && !VERCEL`, inlined at build time by `next.config.ts`.
+Fixtures are ignored on Vercel. Fixtures may use erased type-only domain imports but must not
+import feature/config readers at runtime. Select the gate when building or starting development; setting
+it only for `pnpm start` cannot change a completed build. CI's Build and performance job and
+Playwright use `MOCK_CMS_NOW=2026-10-01T12:00:00Z` for reproducible time-dependent views.
+Mock CI proves query/parser/UI behavior against synthetic data. It does not prove that the live
+dataset is complete or ready.
 
-Pages are static or ISR, so a change takes effect with the next build or revalidation.
+### Legacy CMS compatibility and public APIs
 
-### The fallback merge
+Partners on page-content datasets are `organization` records with a `partnerTier`. Logo lists
+own section membership and ordering through references. The old `partner` representation stays
+readable for production compatibility and migration. The public `/api/getPartners` getter
+preserves its organization-versus-legacy-partner fallback and stable `legacyPartnerId` mapping.
+This compatibility is between CMS representations, not a return to local page content.
 
-`mergeOverFallback(fallback, fetched)` (`lib/cms-content-model.ts`) decides per value:
+`/api/getNotes`, `/api/getPartners` and `/api/getResearch` retain their published perspective and
+response shapes. Change both partner public projections together. Event `coHosts` and research
+`institutions` can refer to organizations on page-content datasets; legacy CMS text remains
+readable where that compatibility is required.
 
-- not set (`null`, missing, blank string, empty list): the code value;
-- lists: replaced wholesale when the fetched list has items;
-- plain objects (singletons, field groups): merged field by field, recursively; set fields the
-  fallback lacks are added;
-- images (`ContentImage`, objects with a `src`): atomic, never mixed with the code image. The
-  Studio's image fields have `options.hotspot`, which also offers the crop tool; the crop is
-  honoured, not ignored: `toContentImage` requests the cropped area from the CDN (`rect=`), states
-  the cropped size, and measures the hotspot (`objectPosition`) within it;
-- whole groups (`whole(group)` from a slice's `select`): fields that describe one thing (a quote
-  and its person, the traced venture and its story, the booking page and its host) are taken
-  complete or not at all, so a CMS quote is never attributed to the code person;
-- primitives: the fetched value when its type matches.
+### Published page content and existing preview behavior
 
-So a failed request, an empty collection or a half-filled singleton renders the code content for
-whatever is missing. The cost: the CMS cannot clear a value that code fills; remove it from the
-fallback instead.
+Page-content slices use published content and `content:<type>` tags for every type they read,
+dereferenced targets included. The Sanity webhook at `/api/revalidate` expires those tags on
+publish. The site's hourly layout revalidation remains a safety net. Timer-stale ISR may serve
+an older render after a refresh error; cold, hard-expired and on-demand reads may propagate the
+required-content error. This decision does not
+expand draft mode, Presentation or live editing to page-content slices; the existing preview
+behavior of the live event/research readers remains unchanged.
 
-### Links, ids and scripts from the CMS
+## Maintainer runbook
 
-CMS values that become links, element ids or script sources are checked on the page, not only in
-the Studio (a document can be written without the Studio's rules), with the helpers in
-`lib/security.ts` and `lib/page-anchors.ts`; a value that fails keeps the code value or drops the
-item:
+These commands are separate responsibilities. They default to dry-run/read-only behavior;
+none of their `--apply` modes is part of normal code delivery. Inspect the emitted plan and
+readiness report before a separately authorized maintainer launch action. No apply or launch
+readiness is implied by a successful mock build.
 
-- links inside the site (home programs, partner pillars, Q&A evidence) must resolve to the site's
-  origin (`getSafeSitePath`: `//host`, backslashes and tabs are refused); links out
-  (organisation websites, Q&A evidence, the traced venture's sources) must be `https:`
-  (`isHttpsUrl`);
-- the partnership booking page must be a Cal page on `cal.eu` or `cal.com` (`getCalBooking`),
-  because the dialog loads the embed script from its origin;
-- a Q&A anchor id must be well formed, unique and not an id the layout or /qanda renders
-  (`reservedQandaIds`), because it is the question's element id.
+| Command | Responsibility |
+| --- | --- |
+| `pnpm sanity:copy-production --dataset redesign` | Read live published `event`, `partner` and `research` documents from `production`, preserve IDs, and plan create-only copies. Existing target IDs are skipped; there is no overwrite mode. |
+| `pnpm sanity:migrate-partners --dataset redesign` | Plan organization/partner changes from existing CMS records only; no local partner catalog and no uploads. |
+| `pnpm sanity:migrate-org-references --dataset redesign` | Resolve existing organization keys, names and short names; report unmatched references and create no organizations. |
+| `pnpm sanity:migrate-content-dedup --dataset redesign` | Preserve the exact historical comparators and revision guards for previously migrated fields. |
+| `pnpm sanity:migrate-single-source --dataset redesign` | Plan only the remaining single-source content/reference gaps, preserving editor changes; not a full content backfill. |
+| `pnpm sanity:repair-assets --dataset redesign` | Inspect the existing pending-assets ledger independently; only a future authorized `--apply` uploads or attaches assets. |
+| `pnpm sanity:ready --dataset redesign` | Read the real published dataset through the runtime queries and parsers, with mocking disabled; report actionable missing/malformed content and references without CMS writes. |
 
-### Partners are organisations
+The single-source migration focuses on missing Makeathon editions in `hackathonsCopy`, Atira,
+`siteSettings.hackathons` league references, the `ehl-partners` logo list, partner hero imagery,
+organization partner ordering, E-Lab voice references and hackathon case-study references.
+Do not regenerate all page content from fixtures or recover missing optional content by
+copying arbitrary repository strings.
 
-On every dataset but `production`, a partner is an `organization` with a `partnerTier`, not a
-`partner` document. The organisation already held one company's name, link and logos for every
-surface; the `partner` type repeated them, and its tiers lived only in code (`featuredPartners`),
-so a tier set in the Studio never reached the homepage. The organisation's "Partnership" group
-holds `partnerTier` (gold, silver, bronze, supporter; set means "is a partner"),
-`partnerFeatured` ("lead its tier"), `partnerCategory` (the old site's five categories, for
-/research and the API) and a hidden `legacyPartnerId`.
+### Focused migration completion and upload retries
 
-- **Code fallback:** `features/partners/data/organizations.ts` holds every partner: the 18
-  highlighted ones with their tiers and the old site's 56 `partner` documents (54 companies) as
-  supporters with their category, link and logo (`docs/asset-sources/partners.md`). MIT, a
-  research partner, moved there from the REX list, which picks it by key.
-- **Readers:** the organisation slice's `getPartners()` (`features/partners/server.ts`, tag
-  `content:organization`) feeds /partners, the homepage hero and partner wall, and /research
-  (the "Research Partners" category). The directory sorts by tier, "lead its tier", the launch
-  brief's order (`partnerLaunchOrder`), then name.
-- **Public API:** `/api/getPartners` keeps its frozen shape. On a dataset with page content it
-  answers from the partner organisations (`PUBLIC_PARTNER_ORGANIZATIONS_QUERY`) with
-  `id` = `legacyPartnerId`, the `_id` of the old `partner` document the organisation replaced,
-  so consumers keep the ids they know; an organisation without one (a highlighted partner the old
-  site never had, or a partner added since) answers with its own `_id`. While no organisation
-  has a tier (before the migration) it answers from the copied `partner` documents, and on
-  `production` it always does. IBM and CDTM had two `partner` documents each (one per category);
-  each is one organisation now, so the API lists 54 partners instead of 56, and the merged
-  documents' ids and categories are gone (IBM keeps "Research Partners", CDTM "Initiatives").
-- **Studio:** `partner` stays registered on every dataset (the old site reads it on
-  `production`; the migration and the API's fallback read the copies), but on the new site's
-  dataset the desk hides it and offers no way to create one; "Partners" lists the organisations
-  with a tier instead.
-- **Migration:** `pnpm sanity:migrate-partners --dataset redesign` (`scripts/sanity/`; same
-  target guard as the backfill, `production` refused) moves the copied `partner` documents onto
-  organisations: per company it finds the organisation by key and sets only the fields it lacks
-  (tier, category, featured, `legacyPartnerId`, and a website and light logo when missing), or
-  creates the organisation from its code document (from the `partner` document when the code
-  has none). Values an editor set on the `partner` document (tier, featured, category, link) win
-  over the code's. An organisation that already has a `legacyPartnerId` gets no partnership
-  fields again, so a tier an editor cleared stays cleared (a highlighted partner the old site
-  never had has no such marker: a re-run gives it its code tier back). It is a dry run by default
-  (public API, no token; the plan goes to `.sanity-backfill/<dataset>.partner-migration.json`);
-  `--apply` carries that plan out through `sanity exec --with-user-token` with
-  `createIfNotExists` and `setIfMissing` on the published document and its draft in one
-  transaction (so a failure leaves both for the next plan), uploading the code's logo files.
+The focused migration keeps the operational CMS receipt `migration-single-source-2026-10`
+(`_type: migrationCompletion`), pinned to its migration, project and dataset. Entries use stable
+target-ID keys and record completed creates or encoded field paths. A target mutation and its
+completion receipt are committed in the same transaction, guarded by the existing ledger
+revision; concurrent first-ledger creation conflicts safely. Completed creates stay hands-off
+if an editor later deletes the document. Completed field paths stay hands-off after an editor
+unsets the value. These receipts prevent reruns from resurrecting editorial removals while
+allowing incomplete steps to retry.
 
-### Content slices
+The CLI checks drafts with a raw-perspective authenticated read when `SANITY_API_READ_TOKEN` is
+available. Without it, the public published read cannot establish whether drafts exist: the
+plan reports `draftVisibility: unknown`. An empty published result is not proof of no draft.
+Inspect this report boundary before approving a plan; apply rechecks targets/drafts and revisions.
 
-Each domain owns a slice next to its data: `features/<x>/content.ts` (or
-`config/<x>-content.ts` for facts), server only, exporting typed getters (`getApplyFaqs()`), and
-`build<X>Backfill()`. Queries use `defineQuery` so TypeGen types them. Types shared by several
-features (the `faq` type) keep their shared part in `lib` (`lib/faq-content.ts`), with the
-fallback passed in. Schemas live in `src/sanity/schemas/content/`.
+Images are uploaded before their references are linked. The separate local cache
+`.sanity-backfill/<dataset>.single-source-assets.json` records completed upload IDs by source
+path and file digest. A successful upload can therefore be reused after a revision conflict or
+other document-write failure. Preserve this cache and source files until the separately
+authorized apply has confirmed the document links. Digest-based upload retry is not historical
+empty-image recovery and must not be routed through `sanity:repair-assets`.
 
-Facts that copy states (recruiting dates, deadlines, role emails) stay derived: the text holds a
-`{{placeholder}}` (`lib/content-tokens.ts`), filled per render from `await getContentTokens()`
-(`config/content-tokens.ts`, which reads the `siteSettings` singleton and the application
-windows), in code and CMS text alike. The Studio validates the names; an unknown one drops that
-entry. Facts a page renders outside copy come from `await getSiteFacts()`; client islands get
-them as props. Server-only slices reach other features through a feature's `server.ts` entry,
-never its isomorphic `index.ts` (`src/architecture.test.ts`).
+### Historical import asset repair
 
-### Mock and parity
+Historical recovery keeps `.sanity-backfill/<dataset>.pending-assets.json` as a per-machine ledger.
+Only an upload previously recorded there may be recovered. Repairs compare document revisions
+and image paths, preserve editor removal and concurrent changes, and retain failed entries for
+a later retry. An empty CMS image alone is not evidence that an upload should be restored.
+Historical pending source files stay local with this ledger until the separately authorized
+repair succeeds. Focused migration sources use the distinct upload-cache lifecycle above.
+Ledger and migration helpers live
+under `scripts/sanity/asset-ledger.ts` and `scripts/sanity/content-migration.ts`, outside the app
+runtime.
 
-With `USE_MOCK_CMS=1` and `CMS_CONTENT_SOURCE=sanity`, `fetchContent` evaluates the real GROQ
-query with groq-js over the slice's backfill documents, their `_sanityAsset` images turned into
-`sanity.imageAsset` documents whose `url` is the shipped `/assets/...` path and whose dimensions
-are read from the file. The module and groq-js (a devDependency) load behind the same build-time
-gate as `lib/mock-cms.ts`. Each slice has a **parity test**: under the mock, the `sanity` source
-returns exactly the `code` source's value. That proves the schema, backfill, query and mapping
-lose nothing, and keeps E2E and visual runs deterministic.
+Production-copy plans write `.sanity-backfill/<dataset>.production-copy.ndjson`. Readiness invokes
+configuration/page readers without request-time draft APIs and writes
+`.sanity-backfill/<dataset>.readiness.json`. With a reviewed `--plan`, readiness evaluates the
+proposed changes in memory and writes `<dataset>.projected-readiness.json`. Planned images use
+simulated metadata; a passing projection proves query/parser compatibility, not successful
+uploads, linked CDN assets, draft safety or live completeness.
 
-Image sizes in the mock come from the file header, as Sanity reports them, not from sizes typed in
-code: a slice whose code image states another size fails its parity test, which is the mismatch
-production would show.
-
-### Backfill by NDJSON import: the one migration command
-
-`pnpm sanity:backfill --dataset redesign` fills the new dataset and writes
-`.sanity-backfill/<dataset>.ndjson` (gitignored) with a count per type:
-
-- **The code content.** Every builder registered in `scripts/sanity/slices.ts`. Documents have
-  deterministic, public `_id`s (`[a-z0-9-]`; a `.` would make them private) from explicit keys in
-  the code data (a FAQ's `id`, a milestone's, department's or person's `key`), never from visible
-  text, so a copy edit in code finds the same document instead of adding a second one. Images use
-  the import convention `{"_type":"image","_sanityAsset":"image@file://<abs path>"}`.
-- **The copy from production** (`scripts/sanity/production-copy.ts`). Every published `event`,
-  `partner` and `research` document, read from `production` over the public HTTP API (no token,
-  read only; drafts and release versions are skipped), with the same `_id`s. Each image asset
-  reference becomes `{"_type":"image","_sanityAsset":"image@<asset CDN URL>", ...}`, keeping
-  hotspot and crop, so the import uploads the file into `redesign`. The events get `hosts` from
-  `liveEventHosts` (`lib/mock-cms.ts`, derived from each event's CMS text), matched by title and
-  start; an entry that matches no single event fails the run, and an event that already has its
-  own `hosts` keeps them.
-- **The redesign-only events** (`scripts/sanity/redesign-events.ts`). Hackathons from before
-  the CMS events start (August 2025) that `production` never had: `redesignOnlyEvents` in
-  `lib/mock-cms.ts`, with ids from their keys (`event-<key>`), posters and photos from
-  `public/assets/events/hackathons/` and co-hosts as organisation references. Imported into
-  `redesign` on 2026-10-01 (create-only).
-
-`--apply` runs `sanity dataset import` with the editor's CLI login, which uploads the files: no
-write token in the repository or CI.
-
-- `--apply` imports with `--missing`: it creates the documents the dataset lacks and **never
-  touches an existing one**, so running it again after editors started is safe. A re-run before
-  launch adds what code gained since and the events, partners and research projects added to
-  `production` since; **edits in `production` to documents already copied are not copied again**
-  (without `--overwrite`). That is intended: from the first import on, `redesign` is the source of
-  truth, and an edit made on the old site after it has to be repeated in the new Studio.
-- `--apply --overwrite` imports with `--replace`: **every existing document with an id in the file
-  is replaced by the code content or the copy from `production`, and the editors' edits to it are
-  lost.** It prints a warning and waits 10 seconds before it starts. Use it only on a dataset
-  nobody has edited, or to reset one on purpose.
-- Around either import, a recovery step (`scripts/sanity/repair-assets.ts`, through
-  `sanity exec --with-user-token`) attaches the images an import left without a file. The import
-  creates each document before it uploads its images, so a failed upload or an interrupted import
-  leaves `{_type: "image"}`, and `--missing` would skip that document on every re-run. The
-  dataset cannot tell that from an editor's Remove in the Studio (which keeps `alt`), so before
-  the import the step records the images of the documents the import creates (every document
-  with `--overwrite`) in a per-machine ledger, `.sanity-backfill/<dataset>.pending-assets.json`
-  (gitignored); if that fails, nothing is imported. After the import, even a failed one, it
-  uploads only the ledger's images that still lack a file and sets those `asset` references on
-  the document and its draft, guarded by the revision. Entries drop once the image has its file
-  or is gone; failed ones stay (only for the draft when the published document's repair
-  succeeded), so running the backfill again recovers without `--overwrite`,
-  keeps the editors' edits and never restores an image an editor removed. Images an import left
-  without a file before the ledger existed, or on another machine, are not repaired: attach them
-  in the Studio.
-
-**Content migrations.** `--missing` never updates a document that already exists, so a model
-change that reshapes existing content ships a migration script instead:
-`pnpm sanity:migrate-content-dedup --dataset redesign` (the content-dedup changes of #287: phase
-durations, the partner figures' placeholders, the Q&A journey points, the campaigns' featured
-event) prints each planned change as before and after; `--apply` writes it with the editor's CLI
-login (`sanity exec --with-user-token`), drafts included, patching only fields that still hold
-the value the backfill wrote and only at the revision it read. Like `--apply` above, it is a
-maintainer's step, never part of a change.
-
-`pnpm sanity:migrate-org-references --dataset redesign` (same pattern) gives the documents already
-in the dataset the references to organisations that replaced names (#287): research
-`institutions` from the names before the title's colon, event `coHosts` from `hosts`, the lab
-sites' `organizations` from their alias strings, a person's `organization` and position from a
-role's "@ Company" (`roleAtOrganization`), the task force's `work.partner` from its name, and it
-deletes the `event-hosts` logo list, which nothing reads any more. Names match organisations by
-`getPartnerKey` (with its aliases). It only fills empty fields; a document whose names don't all
-find an organisation is left alone and listed (it never invents one), and it creates only the
-logo-less institutions the change added to the code (TUM, TUM CAMP, LMU Klinikum, Helmholtz
-Munich, IBM Almaden, IBM Research). On `production` nothing changes: the old site's types there
-keep their string fields, and the Studio registers the reference fields only where the
-`organization` type exists.
-
-`--dataset` is required (no default), and `production` is always refused
-(`scripts/sanity/backfill-target.ts`; there is no override). The script loads `.env.local` and
-`.env` like Next, because the Sanity CLI runs from `src/sanity` and would not find them, needs
-`NEXT_PUBLIC_SANITY_PROJECT_ID` (it reads `production` of that project), and prints the project
-and dataset before it writes the file and before it imports. `test/cms-backfill.test.ts` checks
-the registry (unique ids, registered types, required fields, existing files), the target guard,
-and the copy on a trimmed snapshot of `production` (`test/fixtures/production-documents.json`):
-assets converted, drafts skipped, hosts matched, `_id`s kept.
-
-### The Studio
-
-`src/sanity/sanity.config.ts` has one workspace at `/studio` (the catch-all route
-`src/app/studio/[[...tool]]`) on `NEXT_PUBLIC_SANITY_DATASET`, with Presentation for draft
-previews. On every dataset but `production` it registers the page content types too, with one desk
-structure (`siteStructure` in `src/sanity/content-structure.ts`): Events (latest first), Partners
-(the organisations with a partner tier; the `partner` type is hidden there) and Research projects,
-then the pinned singletons (fixed `_id`, no create, duplicate or delete),
-the application windows and campaigns, FAQs by page, logos and people, and every other type.
-Stega's `studioUrl` is `/studio`. TypeGen extracts that one workspace (with a placeholder dataset
-name, so the content types are included); there is nothing to merge.
+Before launch, inspect live readiness, complete the reviewed missing content/assets, then rerun
+readiness against `redesign` without mocks. Check the real pages, the webhook and existing draft
+preview, and preserve the public API response contracts. Report the dataset and time of that
+check, including the plan's draft-visibility boundary. A published parser result does not prove
+that unpublished drafts were inspected; unauthenticated draft status remains unknown. Repository
+changes and synthetic CI do not certify fresh live readiness.
 
 ## Consequences
 
-- The `code` source is the default everywhere, so this change and every slice that follows ship
-  without a visible difference until the environment flips.
-- Drafts, Presentation's click-to-edit and live updates cover events and research only
-  (`lib/sanity.ts`); the page content, partners included (they are organisations), is read without draft mode or `<SanityLive>` (follow-up:
-  route `fetchContent` through `sanityFetch`, with stega kept off the values the pages validate).
-  Content edits appear when a page revalidates, which the Sanity webhook on `/api/revalidate`
-  triggers on publish by expiring the changed type's `content:<type>` tag (static routes
-  included). As a safety net for a missed delivery, the site layout sets `revalidate = 3600`: every route renders again at
-  least hourly (the ISR routes keep their shorter windows), and pages stay prerendered at build.
-- **Clock islands act on the window they were rendered with.** The header CTA, the membership
-  and E-Lab phase switches and the apply buttons receive the application windows and campaigns
-  as instants in their props and switch in the browser at those instants. If an editor moves a
-  deadline, a page that has not regenerated yet still switches at the old instant, in the
-  browser too; the webhook (or at the latest the hourly timer) regenerates it with the new one.
-- Code fallbacks remain the source of truth for shape and the safety net for content, so they are
-  kept up to date until the CMS content is reviewed; after launch they can shrink to minimal
-  defaults, slice by slice.
-- `test/content-facts.test.ts` guards literals in source files. Content that moves to the CMS is
-  guarded instead by placeholders and parity tests; the fact patterns stay for code.
-- Nothing here changes `main`'s Studio or `production`: until launch, editors keep using the old
-  site's Studio for events, partners and research, and the backfill's re-run before launch copies
-  what they added.
-
-### Risks
-
-- **Legal text stays in code.** Imprint, privacy and disclaimer, and `legalEntity`, are not moved:
-  their wording needs the board, and a CMS edit would bypass review. The Imprint's contact email
-  is the exception: it is the general role email from `siteSettings`, so it never drifts from the
-  rest of the site.
-- **Editor permissions.** The Studio uses the project's roles; the free plan has no per-dataset
-  roles, so anyone who can edit in the project can edit page content and both datasets. Review
-  who has access before launch.
-- **Placeholders are a contract.** Renaming one breaks CMS text that uses it (the entry is
-  dropped and logged); names are append-only.
-- **Two copies of the old site's content until launch.** Edits made in `production` after the
-  first import do not reach `redesign` (only new documents do, on a re-run). Ask editors to hold
-  event, partner and research edits between the last re-run and the switch, or to repeat them in
-  the new Studio. For partners the migration adds only what an organisation lacks, so a tier or
-  category changed in `production` after it ran has to be changed on the organisation.
-
-## Launch runbook
-
-The Studio is at `/studio`; it edits whatever `NEXT_PUBLIC_SANITY_DATASET` names. `redesign`
-exists (public) and already holds the page content from the first backfill.
-
-1. **Backfill.** `pnpm sanity:backfill --dataset redesign` (a dry run; needs
-   `NEXT_PUBLIC_SANITY_PROJECT_ID`; in the Claude sandbox, unsandboxed), review
-   `.sanity-backfill/redesign.ndjson` and the per-type counts (the code content plus `event`,
-   `partner` and `research` copied from `production`), then
-   `pnpm sanity:backfill --dataset redesign --apply`. It imports everything in one file, so the
-   references between documents (logo lists, testimonials, the traced venture, the homepage
-   quotes, the journey evidence) resolve; asset files upload with the import (a re-run on the
-   same machine attaches any whose upload failed; keep `.sanity-backfill/` between runs). It creates missing
-   documents only (`--missing`); never add `--overwrite` once editors have started, because it
-   replaces their documents. **Re-run it right before launch** to copy the events, partners and
-   research projects added to `production` since (edits to copied ones are not re-copied).
-   Then move the partners onto organisations: `pnpm sanity:migrate-partners --dataset redesign`
-   (a dry run; review the plan it prints), then the same with `--apply`. Run it again after the
-   re-run before launch, for partners added since; it only fills what is missing.
-   `redesign` was filled before the content-dedup changes: run
-   `pnpm sanity:migrate-content-dedup --dataset redesign` (dry run), then with `--apply`, once
-   (see "Content migrations"). Then, after the partner migration,
-   `pnpm sanity:migrate-org-references --dataset redesign` (dry run; check the unmatched names it
-   lists), then with `--apply`; run it again after the re-run before launch, for events and
-   research copied since.
-2. **Review.** Editors review and correct the content at `/studio` on a preview deployment with
-   `NEXT_PUBLIC_SANITY_DATASET=redesign` (or locally with it in `.env.local`): the Site settings
-   and both Application windows first (the open `TODO(content)` facts: the E-Lab window's open
-   switch and next window, the membership round's placeholder dates, the selection funnel), then
-   Campaigns, the page singletons, the lists, Logos and people, and the events' co-hosts. Open the
-   Studio in a real browser once: the pinned documents, the references' pickers and the date
-   fields have only been checked by schema extraction.
-3. **Vercel env.** On **Preview**: `NEXT_PUBLIC_SANITY_DATASET=redesign` and
-   `CMS_CONTENT_SOURCE=sanity`, then redeploy (the dataset is inlined at build, the source is read
-   on the server at render, and static routes render at build); check the preview. At launch, set
-   both on **Production** and redeploy.
-4. **Webhook.** So edits show on the next request instead of within the pages' `revalidate`
-   windows (up to an hour):
-   1. Generate a secret (`openssl rand -hex 32`) and set it as `SANITY_REVALIDATE_SECRET` on
-      Vercel **Preview** and **Production**; redeploy. Until it is set, `/api/revalidate`
-      answers 503.
-   2. In sanity.io/manage, project, API, Webhooks, create a GROQ webhook: name "Revalidate site
-      (redesign)", URL `https://<production domain>/api/revalidate`, dataset `redesign`, trigger
-      on create, update and delete, filter empty (every type), projection `{_type}`, HTTP method
-      POST, API version `v2025-02-19` or later, drafts and versions **off**, and the secret from
-      step 1.
-   3. Publish a small edit and check the webhook's attempt log in sanity.io/manage: 200 with the
-      tags it expired. 401 means the secret differs; 503 means the env var is missing on that
-      deployment.
-
-   Preview deployments are not covered (the webhook points at production); they refresh on their
-   `revalidate` timers or a redeploy. Without the webhook, a content edit shows within 5 minutes
-   on `/e-lab` and `/events`, 15 minutes on `/partners` and `/research`, and within an hour
-   everywhere else (the layout's `revalidate = 3600`).
-5. **CORS.** Add the Vercel preview and production domains as Sanity CORS origins with
-   credentials allowed (sanity.io/manage, API, CORS origins); the embedded Studio needs them. Today
-   only `http://localhost:3333`, `http://localhost:3000` and
-   `https://website-softdevtumai-tum-ai.vercel.app` are allowed.
-
-## Sources
-
-- #286 (move hard-coded content to Sanity), #287 (redesign)
-- `lib/sanity-config.ts`, `lib/cms-content.ts`, `lib/cms-content-model.ts`,
-  `lib/cms-content-mock.ts`, `lib/cms-backfill.ts`, `lib/content-tokens.ts`,
-  `lib/faq-content.ts`, `lib/mock-cms.ts` (`liveEventHosts`), `src/sanity/sanity.config.ts`,
-  `src/sanity/content-structure.ts`, `scripts/sanity/` (`production-copy.ts`)
-- [cms-content-inventory.md](../cms-content-inventory.md): what moves, when and by whom
+Editors have one source for editable content and can intentionally clear optional values.
+Incomplete required content now blocks rendering or a real build and must be repaired in the
+CMS, which makes readiness a launch prerequisite. Mock development remains credential-free
+and deterministic, with deliberately small fixtures independent of live editorial content.
+Maintenance tools target precise gaps and recorded asset failures rather than overwriting the
+dataset from a second source of truth.

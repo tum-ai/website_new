@@ -1,35 +1,17 @@
 import { expect, test } from "vitest";
-import { organizationFacts } from "@/config/organization";
-import {
-  milestoneKinds,
-  milestones,
-  milestonesIn,
-  milestoneYearsOf,
-} from "./milestones";
+import { type Milestone, milestonesIn, milestoneYearsOf } from "./milestones";
 
-const milestoneYears = milestoneYearsOf(milestones);
-
-test("the matrix spans every year from the founding, without gaps", () => {
-  expect(milestoneYears[0]).toBe(organizationFacts.foundingYear);
-  milestoneYears.forEach((year, index) => {
-    expect(year).toBe(organizationFacts.foundingYear + index);
-    expect(milestones.some((milestone) => milestone.year === year)).toBe(true);
-  });
+const list: Milestone[] = [
+  { year: 2022, kind: "research", title: "An example" },
+  { year: 2024, kind: "programs", title: "Another example" },
+];
+test("milestone years include gaps in chronological order", () => {
+  expect(milestoneYearsOf(list)).toEqual([2022, 2023, 2024]);
 });
-
-test("every milestone sits in exactly one cell, once", () => {
-  const placed = milestoneKinds.flatMap((kind) =>
-    milestoneYears.flatMap((year) => milestonesIn(milestones, kind.id, year)),
-  );
-  expect(placed).toHaveLength(milestones.length);
-  expect(new Set(placed).size).toBe(milestones.length);
+test("a deliberately empty history has no year columns", () => {
+  expect(milestoneYearsOf([])).toEqual([]);
 });
-
-test("titles are unique within a year (they key the cells' lists)", () => {
-  for (const year of milestoneYears) {
-    const titles = milestones
-      .filter((milestone) => milestone.year === year)
-      .map((milestone) => milestone.title);
-    expect(new Set(titles).size).toBe(titles.length);
-  }
+test("cell selection preserves its input's order and identity", () => {
+  expect(milestonesIn(list, "research", 2022)).toEqual([list[0]]);
+  expect(milestonesIn(list, "events", 2023)).toEqual([]);
 });

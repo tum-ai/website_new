@@ -1,407 +1,54 @@
-import { existsSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 import {
-  assetFileOf,
-  collectSanityAssets,
   findUnattachedAssets,
   pendingAssetsBeforeImport,
   plannedAssets,
-} from "@/lib/cms-backfill";
-import { liveEventHosts, redesignOnlyEvents } from "@/lib/mock-cms";
-import { pinnedDocuments } from "@/sanity/content-structure";
-import { liveSchemaTypes } from "@/sanity/schemas";
+} from "../scripts/sanity/asset-ledger";
 import {
-  contentSchemaTypes,
-  contentSingletons,
-} from "@/sanity/schemas/content";
-import { liveTypesWithReferences } from "@/sanity/schemas/content/live-references";
-import { backfillTarget } from "../scripts/sanity/backfill-target";
-import {
-  copiedTypes,
-  copyFromProduction,
   copyProductionDocuments,
-  imageAssetUrl,
   localizeCdnAssets,
   matchesExtension,
-  type SourceDocument,
 } from "../scripts/sanity/production-copy";
 import {
   type RepairClient,
   recordPendingAssets,
   repairPendingAssets,
 } from "../scripts/sanity/repair-assets";
-import { backfillSlices, collectBackfill } from "../scripts/sanity/slices";
-import productionFixture from "./fixtures/production-documents.json";
 
-/**
- * Every registered content slice's backfill (scripts/sanity/slices.ts) is
- * importable as is: what `pnpm sanity:backfill --apply` would send.
- */
-const documents = collectBackfill();
-
-type Field = { name: string; validation?: unknown };
-// The page content types, plus the old site's `event` in the shape the new
-// site's dataset registers it (the redesign-only events).
-const schemaByName = new Map<string, { name: string; fields: Field[] }>(
-  [
-    ...contentSchemaTypes,
-    ...liveTypesWithReferences.filter(({ name }) => name === "event"),
-  ].map((type) => [
-    type.name,
-    type as unknown as { name: string; fields: Field[] },
-  ]),
-);
-
-/**
- * Whether a field's `validation` calls `Rule.required()`: runs it against a
- * stand-in Rule whose every method chains and records `required`.
- */
-function isRequired(validation: unknown): boolean {
-  if (typeof validation !== "function") return false;
-  let required = false;
-  const rule: unknown = new Proxy(() => rule, {
-    get: (_, method) => () => {
-      if (method === "required") required = true;
-      return rule;
-    },
-  });
-  validation(rule);
-  return required;
-}
-
-const isSet = (value: unknown) =>
-  value !== undefined &&
-  value !== null &&
-  !(typeof value === "string" && value.trim() === "") &&
-  !(Array.isArray(value) && value.length === 0);
-
-describe("the CMS backfill", () => {
-  test("every slice builds documents", () => {
-    for (const { slice, build } of backfillSlices) {
-      expect(build().length, slice).toBeGreaterThan(0);
-    }
-  });
-
-  test("every reference points at a backfilled document", () => {
-    const ids = new Set(documents.map(({ _id }) => _id));
-    const dangling: string[] = [];
-    const walk = (value: unknown, path: string) => {
-      if (Array.isArray(value)) {
-        for (const [index, item] of value.entries()) {
-          walk(item, `${path}[${index}]`);
-        }
-      } else if (value && typeof value === "object") {
-        const { _ref } = value as { _ref?: unknown };
-        if (typeof _ref === "string" && !ids.has(_ref)) {
-          dangling.push(`${path} → ${_ref}`);
-        }
-        for (const [key, item] of Object.entries(value)) {
-          walk(item, `${path}.${key}`);
-        }
-      }
-    };
-    for (const document of documents) walk(document, document._id);
-    // Strong references to a missing document fail the whole import.
-    expect(dangling).toStrictEqual([]);
-  });
-
-  test("ids are unique and public (no dots, no drafts prefix)", () => {
-    const ids = documents.map(({ _id }) => _id);
-    expect(ids.filter((id, index) => ids.indexOf(id) !== index)).toStrictEqual(
-      [],
-    );
-    // Letters (a singleton's id is its camelCase type name), digits and
-    // hyphens: a `.` would make the document private.
-    for (const id of ids) expect(id).toMatch(/^[a-zA-Z0-9][a-zA-Z0-9-]*$/);
-  });
-
-  test("the code content is page content types and the redesign-only events", () => {
-    const unknown = documents
-      .map(({ _type }) => _type)
-      .filter((type) => !schemaByName.has(type));
-    expect([...new Set(unknown)]).toStrictEqual([]);
-  });
-
-  test("singletons use their type as the id", () => {
-    const singletons = new Set(contentSingletons.map(({ type }) => type));
-    for (const { _id, _type } of documents) {
-      if (singletons.has(_type)) expect(_id).toBe(_type);
-    }
-  });
-
-  test("every document the Studio pins by id is backfilled with that id", () => {
-    for (const { id, type } of pinnedDocuments) {
-      expect(
-        documents.find(({ _id }) => _id === id)?._type,
-        `pinned document ${id}`,
-      ).toBe(type);
-    }
-  });
-
-  test("every required field is set", () => {
-    let checked = 0;
-    const missing = documents.flatMap((document) =>
-      (schemaByName.get(document._type)?.fields ?? [])
-        .filter((field) => isRequired(field.validation))
-        .filter((field) => {
-          checked++;
-          return !isSet(document[field.name]);
-        })
-        .map((field) => `${document._id}.${field.name}`),
-    );
-    expect(missing).toStrictEqual([]);
-    // Guards the Rule stand-in: the content types do have required fields.
-    expect(checked).toBeGreaterThan(documents.length);
-  });
-
-  test("every image file exists", () => {
-    const missing = collectSanityAssets(documents).filter((asset) => {
-      const file = assetFileOf(asset);
-      return !file || !existsSync(file);
-    });
-    expect(missing).toStrictEqual([]);
-  });
-
-  test("the required-field check sees Rule.required()", () => {
-    expect(
-      isRequired((rule: { required: () => unknown }) => rule.required()),
-    ).toBe(true);
-    expect(isRequired(undefined)).toBe(false);
-    expect(
-      isRequired((rule: { integer: () => unknown }) => rule.integer()),
-    ).toBe(false);
-  });
-});
-
-describe("the backfill target", () => {
-  test("needs an explicit dataset", () => {
-    expect(() => backfillTarget(undefined, {})).toThrow(/--dataset/);
-    expect(() => backfillTarget("", {})).toThrow(/--dataset/);
-    expect(() => backfillTarget("Not a name", {})).toThrow(/dataset name/);
-  });
-
-  test("never production, the old site's dataset", () => {
-    expect(() => backfillTarget("production", {})).toThrow(/old site/);
-    expect(() =>
-      backfillTarget("production", { NEXT_PUBLIC_SANITY_DATASET: "redesign" }),
-    ).toThrow(/old site/);
-  });
-
-  test("names the new site's dataset and the configured project", () => {
-    expect(
-      backfillTarget("redesign", {
-        NEXT_PUBLIC_SANITY_PROJECT_ID: "abc123",
-        NEXT_PUBLIC_SANITY_DATASET: "redesign",
-      }),
-    ).toStrictEqual({ dataset: "redesign", projectId: "abc123" });
-    expect(backfillTarget("redesign", {})).toStrictEqual({
-      dataset: "redesign",
-      projectId: null,
-    });
-  });
-});
-
-/**
- * The copy of the old site's content, on a snapshot of `production`
- * (test/fixtures/production-documents.json: every published event and a few
- * partners and research projects, from the public API, trimmed to the
- * fields the copy handles) plus the documents a response could also hold.
- */
-describe("the copy from production", () => {
-  const projectId = "o9uuv2sq";
-  const published = productionFixture as SourceDocument[];
-  const eventId = "XNCTBM8X9vP2N4tjVzgD4y";
-  const extra: SourceDocument[] = [
-    { _id: `drafts.${eventId}`, _type: "event", title: "Draft" },
-    { _id: `versions.r1.${eventId}`, _type: "event", title: "In a release" },
-    { _id: "image-abc-1x1-png", _type: "sanity.imageAsset" },
-    {
-      _id: "partner-with-crop",
-      _type: "partner",
-      name: "Cropped",
-      image: {
-        _type: "image",
-        asset: { _type: "reference", _ref: "image-abc123-640x480-jpg" },
-        hotspot: {
-          _type: "sanity.imageHotspot",
-          x: 0.4,
-          y: 0.5,
-          width: 1,
-          height: 1,
-        },
-        crop: {
-          _type: "sanity.imageCrop",
-          top: 0.1,
-          bottom: 0,
-          left: 0,
-          right: 0.2,
-        },
+test("production copy preserves live fields, ignores drafts and does not enrich from local seeds", () => {
+  const result = copyProductionDocuments(
+    [
+      {
+        _id: "event-a",
+        _type: "event",
+        _rev: "r1",
+        title: "Example event",
+        hosts: ["Live host"],
+        poster: { asset: { _ref: "image-abc-10x10-webp" } },
       },
-    },
-  ];
-  const copy = copyProductionDocuments([...published, ...extra], { projectId });
-  const byId = new Map(
-    copy.documents.map((document) => [document._id, document]),
+      { _id: "drafts.event-b", _type: "event", title: "Draft" },
+      { _id: "settings", _type: "siteSettings", name: "Do not copy" },
+    ],
+    { projectId: "example" },
   );
-
-  test("copies the old site's types, the ones the Studio registers everywhere", () => {
-    expect([...copiedTypes]).toStrictEqual(
-      expect.arrayContaining(liveSchemaTypes.map(({ name }) => name)),
-    );
-    expect(copiedTypes).toHaveLength(liveSchemaTypes.length);
-  });
-
-  test("keeps every published _id and skips drafts, versions and other types", () => {
-    expect(copy.documents.map(({ _id }) => _id)).toStrictEqual([
-      ...published.map(({ _id }) => _id),
-      "partner-with-crop",
-    ]);
-    const events = copy.documents.filter(({ _type }) => _type === "event");
-    expect(events).toHaveLength(20);
-  });
-
-  test("drops the source's revision fields and keeps the content", () => {
-    for (const document of copy.documents) {
-      expect(Object.keys(document)).not.toEqual(
-        expect.arrayContaining(["_rev"]),
-      );
-      expect(document).not.toHaveProperty("_updatedAt");
-      expect(document).not.toHaveProperty("_system");
-    }
-    const source = published.find(({ _id }) => _id === eventId);
-    expect(byId.get(eventId)).toMatchObject({
+  expect(result.documents).toStrictEqual([
+    {
+      _id: "event-a",
       _type: "event",
-      _createdAt: source?._createdAt,
-      title: source?.title,
-      event_date: source?.event_date,
-    });
-  });
-
-  test("turns every asset reference into an upload from the CDN", () => {
-    const serialized = JSON.stringify(copy.documents);
-    expect(serialized).not.toContain('"asset"');
-    expect(serialized).not.toContain("_ref");
-    const assets = collectSanityAssets(copy.documents);
-    expect(assets.length).toBeGreaterThan(20);
-    for (const asset of assets) {
-      expect(asset).toMatch(
-        /^image@https:\/\/cdn\.sanity\.io\/images\/o9uuv2sq\/production\/[a-f0-9]+-\d+x\d+\.[a-z]+$/,
-      );
-    }
-    expect(byId.get("partner-with-crop")?.image).toStrictEqual({
-      _type: "image",
-      _sanityAsset:
-        "image@https://cdn.sanity.io/images/o9uuv2sq/production/abc123-640x480.jpg",
-      hotspot: {
-        _type: "sanity.imageHotspot",
-        x: 0.4,
-        y: 0.5,
-        width: 1,
-        height: 1,
+      title: "Example event",
+      hosts: ["Live host"],
+      poster: {
+        _sanityAsset:
+          "image@https://cdn.sanity.io/images/example/production/abc-10x10.webp",
       },
-      crop: {
-        _type: "sanity.imageCrop",
-        top: 0.1,
-        bottom: 0,
-        left: 0,
-        right: 0.2,
-      },
-    });
-  });
-
-  test("refuses an asset it could not upload", () => {
-    expect(() =>
-      imageAssetUrl("file-abc-pdf", projectId, "production"),
-    ).toThrow(/image asset/);
-  });
-
-  // Titles in production carry stray and non-breaking spaces.
-  const titleOf = (document: SourceDocument) =>
-    String(document.title).replace(/\s+/g, " ").trim();
-
-  test("gives every live event its co-hosts, matched by title and start", () => {
-    expect(liveEventHosts.length).toBeGreaterThan(0);
-    expect(copy.hostsAdded).toBe(liveEventHosts.length);
-    for (const { title, event_date, hosts } of liveEventHosts) {
-      const event = copy.documents.find(
-        (document) =>
-          document._type === "event" &&
-          titleOf(document) === title &&
-          Date.parse(String(document.event_date)) === Date.parse(event_date),
-      );
-      expect(event?.hosts, title).toStrictEqual(hosts);
-    }
-    const withHosts = copy.documents.filter(({ hosts }) => hosts !== undefined);
-    expect(withHosts).toHaveLength(liveEventHosts.length);
-  });
-
-  test("keeps the hosts an event already has", () => {
-    const [entry] = liveEventHosts;
-    const own = published.map((document) =>
-      document._type === "event" && titleOf(document) === entry?.title
-        ? { ...document, hosts: ["Their own"] }
-        : document,
-    );
-    const result = copyProductionDocuments(own, { projectId });
-    expect(result.hostsKept).toBe(1);
-    expect(result.hostsAdded).toBe(liveEventHosts.length - 1);
-  });
-
-  test("fails on co-hosts that match no single event", () => {
-    expect(() =>
-      copyProductionDocuments(published, {
-        projectId,
-        eventHosts: [
-          {
-            title: "Google Hackathon",
-            event_date: "2025-09-09T00:00:00Z",
-            hosts: ["X"],
-          },
-          {
-            title: "No such event",
-            event_date: "2025-01-01T00:00:00Z",
-            hosts: ["Y"],
-          },
-        ],
-      }),
-    ).toThrow(/Google Hackathon[\s\S]*No such event/);
-  });
-
-  test("reads production through the fetch it is given", async () => {
-    const sources: unknown[] = [];
-    const result = await copyFromProduction({
-      projectId,
-      fetchDocuments: async (source) => {
-        sources.push(source);
-        return published;
-      },
-    });
-    expect(sources).toStrictEqual([{ projectId, dataset: "production" }]);
-    expect(result.documents).toHaveLength(published.length);
-  });
-
-  test("the copies and the code content never share an _id", () => {
-    const code = new Set(documents.map(({ _id }) => _id));
-    expect(copy.documents.filter(({ _id }) => code.has(_id))).toStrictEqual([]);
-  });
-
-  test("the redesign-only events are new hackathons, not copies", () => {
-    const events = documents.filter(({ _type }) => _type === "event");
-    expect(events).toHaveLength(redesignOnlyEvents.length);
-    const copied = copy.documents.filter(({ _type }) => _type === "event");
-    for (const event of events) {
-      expect(event.category).toBe("Hackathon");
-      // Neither the same id nor the same title and start as a copied event.
-      expect(
-        copied.some(
-          (source) =>
-            source._id === event._id ||
-            (source.title === event.title &&
-              source.event_date === event.event_date),
-        ),
-      ).toBe(false);
-    }
-  });
+    },
+  ]);
+  expect(
+    copyProductionDocuments(
+      [{ _id: "event-b", _type: "event", title: "Unseeded event" }],
+      { projectId: "example" },
+    ).documents[0],
+  ).not.toHaveProperty("hosts");
 });
 
 describe("copied images", () => {
@@ -680,18 +327,18 @@ describe("the recovery of images an import left without a file", () => {
     ]);
   });
 
-  test("finds every image of the real backfill by the path it records", () => {
+  test("finds every planned image by the path it records", () => {
     // As an import that created the documents and uploaded nothing.
-    const created = JSON.parse(JSON.stringify(documents), (key, value) =>
+    const created = JSON.parse(JSON.stringify(planned), (key, value) =>
       key === "_sanityAsset" ? undefined : value,
     ) as { _id: string }[];
-    const entries = pendingAssetsBeforeImport(documents, {
+    const entries = pendingAssetsBeforeImport(planned, {
       existingIds: new Set(),
       previous: [],
       overwrite: false,
     });
     expect(entries.length).toBe(
-      documents.flatMap((document) => plannedAssets(document)).length,
+      planned.flatMap((document) => plannedAssets(document)).length,
     );
     expect(entries.length).toBeGreaterThan(0);
     expect(findUnattachedAssets(entries, created).open).toStrictEqual(entries);

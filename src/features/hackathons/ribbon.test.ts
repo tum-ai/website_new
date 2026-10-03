@@ -1,7 +1,11 @@
 import { describe, expect, test } from "vitest";
-import { hackathonFacts } from "@/config/hackathons";
-import { getMockEvents } from "@/lib/mock-cms";
-import { makeathonEditions } from "./data/makeathon";
+import {
+  hackathonsFactsFixture as hackathonFacts,
+  hackathonsFixture,
+} from "@/lib/cms-fixtures/hackathons";
+
+const makeathonEditions = hackathonsFixture.makeathon.editions;
+
 import { buildMarks, type HackathonMark } from "./marks";
 import {
   dayNumber,
@@ -19,7 +23,7 @@ const marks = buildMarks({
   editions: makeathonEditions,
   matches: hackathonFacts.league.matches,
   leagueName: hackathonFacts.league.name,
-  events: getMockEvents(new Date(`${today}T12:00:00Z`)),
+  events: [],
 });
 
 const mark = (
@@ -74,10 +78,8 @@ describe("layoutRibbon", () => {
   });
 
   test("the axis starts on 1 January of the first year, with a tick per year", () => {
-    expect(layout.years[0]).toStrictEqual({ year: 2021, x: 0 });
-    expect(layout.years.map(({ year }) => year)).toStrictEqual([
-      2021, 2022, 2023, 2024, 2025, 2026,
-    ]);
+    expect(layout.years[0]).toStrictEqual({ year: 2025, x: 0 });
+    expect(layout.years.map(({ year }) => year)).toStrictEqual([2025, 2026]);
   });
 
   test("Makeathons sit above the axis, everything else below", () => {
@@ -89,7 +91,7 @@ describe("layoutRibbon", () => {
 
   test("no lane collides at the narrowest width it is shown at", () => {
     expectNoCollisions(layout.marks, RIBBON.referenceWidth.continuous);
-    expect(layout.lanes).toBeGreaterThanOrEqual(2);
+    expect(layout.lanes).toBeGreaterThanOrEqual(1);
   });
 
   test("a mark too close to the last one takes the next lane", () => {
@@ -128,9 +130,7 @@ describe("layoutByYear", () => {
   const rows = layoutByYear(marks);
 
   test("a row per year, every mark in the row of its start", () => {
-    expect(rows.map(({ year }) => year)).toStrictEqual([
-      2021, 2022, 2023, 2024, 2025, 2026,
-    ]);
+    expect(rows.map(({ year }) => year)).toStrictEqual([2025, 2026]);
     expect(rows.flatMap((row) => row.marks).length).toBe(marks.length);
     for (const row of rows) {
       for (const placed of row.marks) {
@@ -232,13 +232,16 @@ describe("layoutSeason", () => {
     expect(layoutSeason(season, "2027-01-01").progress).toBe(1);
   });
 
-  test("the real season on 2 October: between Zurich and the finale", () => {
+  test("the example season on 2 October: approaching the finale", () => {
     const { progress } = layoutSeason(
       hackathonFacts.league.matches,
       "2026-10-02",
     );
-    // Zurich starts 12 September, the finale 10 October: 20 of 28 days.
-    expect(progress).toBeCloseTo((3 + 20 / 28) / 4);
+    // Progress follows the dates of the fetched synthetic season.
+    expect(progress).toBeCloseTo(
+      (dayNumber("2026-10-02") - dayNumber("2026-04-17")) /
+        (dayNumber("2026-10-10") - dayNumber("2026-04-17")),
+    );
   });
 
   test("one match or none", () => {

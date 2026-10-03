@@ -2,43 +2,31 @@ import "server-only";
 
 import { defineQuery } from "next-sanity";
 import { getContentTokens } from "@/config/content-tokens";
-import { buildOrganizationBackfill } from "@/features/partners/server";
-import { type BackfillDocument, backfillId } from "@/lib/cms-backfill";
 import { loadContent } from "@/lib/cms-content";
 import {
   CONTENT_IMAGE_PROJECTION,
-  type ContentImage,
+  contentArray,
+  contentBoolean,
+  contentError,
+  contentImage,
+  contentNumber,
+  contentObject,
+  contentOptional,
+  contentString,
+  contentText,
+  parseContent,
+  requireArray,
+  requireObject,
 } from "@/lib/cms-content-model";
-import { backfillContentImage, keyedItems } from "@/lib/content-backfill";
-import { fillCmsCopy, fillCodeCopy } from "@/lib/content-copy";
-import { organizationReference } from "@/lib/organization-content";
+import { fillCmsCopy } from "@/lib/content-copy";
 import type {
   LAB_SITES_QUERY_RESULT,
   RESEARCH_COPY_QUERY_RESULT,
 } from "@/lib/sanity.types.generated";
-import {
-  type LabSite,
-  type LabSiteOrganization,
-  labSites,
-  labSiteTemplates,
-} from "./data/lab-sites";
-import {
-  type FigurePanel,
-  type ResearchCopy,
-  researchCopyTemplate,
-  researchPageTokens,
-} from "./data/research-copy";
-import { buildRexBackfill } from "./rex-content";
+import type { LabSite } from "./data/lab-sites";
+import { type ResearchCopy, researchPageTokens } from "./data/research-copy";
 
-/**
- * The /research content slice: the `researchCopy` singleton (hero, abstract,
- * Figure 1, section headings, closing) and the `labSite` documents that
- * place institutions on the hero globe by their organisations. The projects come from the
- * `research` documents (`lib/sanity.ts`) and the REX institutions from their logo list (`rex-content.ts`);
- * the code fallbacks are in `data/`.
- */
-
-export const RESEARCH_COPY_QUERY = defineQuery(`*[_id == "researchCopy"][0]{
+const RESEARCH_COPY_QUERY = defineQuery(`*[_id == "researchCopy"][0]{
   hero{ title, lead },
   partnersLabel,
   abstract{ label, statement, body, runningOne, runningMany },
@@ -54,8 +42,7 @@ export const RESEARCH_COPY_QUERY = defineQuery(`*[_id == "researchCopy"][0]{
   }
 }`);
 
-export const LAB_SITES_QUERY =
-  defineQuery(`*[_type == "labSite"] | order(order asc){
+const LAB_SITES_QUERY = defineQuery(`*[_type == "labSite"] | order(order asc){
   "id": key.current,
   city,
   "location": [location.lat, location.lng],
@@ -63,143 +50,130 @@ export const LAB_SITES_QUERY =
   "organizations": organizations[]->{ key, name, shortName }
 }`);
 
-/**
- * The /research copy: the CMS `researchCopy` over the code copy, site-fact
- * placeholders filled, the abstract's page tokens left for
- * `getAbstractBody`.
- */
+const audience = contentObject({
+  audience: contentString,
+  text: contentString,
+});
+const copyParser = contentObject({
+  hero: contentObject({ title: contentString, lead: contentString }),
+  partnersLabel: contentString,
+  abstract: contentObject({
+    label: contentString,
+    statement: contentString,
+    body: contentString,
+    runningOne: contentString,
+    runningMany: contentString,
+  }),
+  figurePanels: contentArray(
+    contentObject({ image: contentImage, caption: contentString }),
+  ),
+  ongoing: contentObject({ title: contentString, empty: contentString }),
+  completed: contentObject({ title: contentString, lead: contentString }),
+  rex: contentObject({
+    title: contentString,
+    lead: contentString,
+    logosLabel: contentString,
+    processTitle: contentString,
+    process: contentArray(contentString),
+    origin: contentString,
+  }),
+  closing: contentObject({
+    title: contentString,
+    openSlot: contentString,
+    partner: audience,
+    student: audience,
+  }),
+});
+/** Validate all required research copy and flatten validated figure panels. */
+function selectResearchCopy(value: unknown): ResearchCopy {
+  const { figurePanels, ...copy } = parseContent(
+    value,
+    copyParser,
+    "the /research copy",
+  );
+  if (figurePanels.length < 2 || figurePanels.length > 4)
+    contentError(
+      "the /research copy",
+      "figurePanels",
+      "expected two to four required figure panels",
+    );
+  if (copy.rex.process.length < 2 || copy.rex.process.length > 7)
+    contentError(
+      "the /research copy",
+      "rex.process",
+      "expected two to seven required process steps",
+    );
+  return {
+    ...copy,
+    figurePanels: figurePanels.map(({ image, caption }) => ({
+      ...image,
+      caption,
+    })),
+  };
+}
+/** Read the required published research copy singleton. */
 export async function getResearchCopy(): Promise<ResearchCopy> {
   const tokens = await getContentTokens();
   return loadContent<ResearchCopy, RESEARCH_COPY_QUERY_RESULT>({
-    fallback: fillCodeCopy(researchCopyTemplate, tokens, researchPageTokens),
     query: RESEARCH_COPY_QUERY,
     tags: ["content:researchCopy"],
     label: "the /research copy",
-    mockDocuments: buildResearchBackfill,
-    select: (result) => {
-      const copy = fillCmsCopy(
-        result,
-        tokens,
-        "the /research copy",
-        researchPageTokens,
-      ) as Partial<Record<keyof ResearchCopy, unknown>> | null;
-      if (!copy) return null;
-      const panels = (
-        (copy.figurePanels ?? []) as {
-          image?: ContentImage;
-          caption?: string;
-        }[]
-      ).flatMap(({ image, caption }): FigurePanel[] =>
-        image && caption ? [{ ...image, caption }] : [],
+    select: (result) =>
+      selectResearchCopy(
+        fillCmsCopy(result, tokens, "the /research copy", researchPageTokens),
+      ),
+  });
+}
+const organizationParser = contentObject({
+  key: contentString,
+  name: contentString,
+  shortName: contentOptional(contentText),
+});
+const siteParser = contentObject({
+  id: contentString,
+  city: contentString,
+  home: contentOptional(contentBoolean),
+  organizations: contentArray(organizationParser),
+});
+/** Validate optional sites and their resolved organization references as a whole. */
+export function selectLabSites(value: unknown): LabSite[] {
+  const label = "the lab sites";
+  const sites = requireArray(value, label).map((value, index): LabSite => {
+    const raw = requireObject(value, label, `[${index}]`);
+    const site = parseContent(raw, siteParser, label);
+    const location = requireArray(raw.location, label, `[${index}].location`);
+    const lat = contentNumber(location[0], label, `[${index}].location[0]`);
+    const lng = contentNumber(location[1], label, `[${index}].location[1]`);
+    if (location.length !== 2 || Math.abs(lat) > 90 || Math.abs(lng) > 180)
+      contentError(
+        label,
+        `[${index}].location`,
+        "expected latitude and longitude on the globe",
       );
-      return { ...copy, figurePanels: panels };
-    },
+    if (site.organizations.length === 0)
+      contentError(
+        label,
+        `[${index}].organizations`,
+        "a site requires a resolved organization",
+      );
+    return { ...site, location: [lat, lng] };
   });
+  if (new Set(sites.map((site) => site.id)).size !== sites.length)
+    contentError(label, "id", "site identifiers must be unique");
+  if (sites.length && sites.filter((site) => site.home).length !== 1)
+    contentError(
+      label,
+      "home",
+      "a nonempty globe requires exactly one home site",
+    );
+  return sites;
 }
-
-type ProjectedSite = LAB_SITES_QUERY_RESULT[number];
-
-/** The site's organisations that resolve, without empty short names. */
-function siteOrganizations(
-  organizations: ProjectedSite["organizations"],
-): LabSiteOrganization[] {
-  return (organizations ?? []).flatMap((organization) => {
-    const key = organization?.key?.trim();
-    const name = organization?.name?.trim();
-    if (!key || !name) return [];
-    const shortName = organization?.shortName?.trim();
-    return [{ key, name, ...(shortName ? { shortName } : {}) }];
-  });
-}
-
-/** A projected site the globe can draw, or `null`. */
-function toLabSite({
-  id,
-  city,
-  location,
-  home,
-  organizations,
-}: ProjectedSite): LabSite | null {
-  const [lat, lng] = location ?? [];
-  const placed = siteOrganizations(organizations);
-  if (
-    !id ||
-    !city ||
-    typeof lat !== "number" ||
-    typeof lng !== "number" ||
-    placed.length === 0
-  ) {
-    return null;
-  }
-  return {
-    id,
-    city,
-    location: [lat, lng],
-    ...(home ? { home } : {}),
-    organizations: placed,
-  };
-}
-
-/**
- * The cities on the hero globe and the organisations there: the CMS
- * `labSite` list when there is one, otherwise the code list. The page
- * places its institutions on it with `getLabSites` (`research.ts`).
- */
+/** Read the optional published city collection; an empty collection stays empty. */
 export async function getLabSiteList(): Promise<LabSite[]> {
-  const tokens = await getContentTokens();
   return loadContent<LabSite[], LAB_SITES_QUERY_RESULT>({
-    fallback: labSites,
     query: LAB_SITES_QUERY,
     tags: ["content:labSite", "content:organization"],
     label: "the lab sites",
-    mockDocuments: () => [
-      ...buildResearchBackfill(),
-      ...buildRexBackfill(),
-      ...buildOrganizationBackfill(),
-    ],
-    select: (result) => {
-      const filled = fillCmsCopy(result, tokens, "the lab sites");
-      return (Array.isArray(filled) ? (filled as ProjectedSite[]) : [])
-        .map(toLabSite)
-        .filter((site) => site !== null);
-    },
+    select: selectLabSites,
   });
-}
-
-/**
- * The /research copy and lab sites as documents for `pnpm sanity:backfill`
- * (the sites reference the organisation slice's and the REX slice's
- * organisations).
- */
-export function buildResearchBackfill(): BackfillDocument[] {
-  const { figurePanels, ...copy } = researchCopyTemplate;
-  return [
-    {
-      _id: "researchCopy",
-      _type: "researchCopy",
-      ...copy,
-      figurePanels: keyedItems(
-        "figurePanel",
-        figurePanels.map(({ caption, ...image }) => ({
-          image: backfillContentImage(image),
-          caption,
-        })),
-      ),
-    },
-    ...labSiteTemplates.map(
-      ({ id, location: [lat, lng], home, organizations, ...site }, index) => ({
-        _id: backfillId("lab-site", id),
-        _type: "labSite",
-        order: (index + 1) * 10,
-        key: { _type: "slug", current: id },
-        ...site,
-        organizations: organizations.map((key) => ({
-          _key: key,
-          ...organizationReference(key),
-        })),
-        location: { _type: "geopoint", lat, lng },
-        ...(home ? { home } : {}),
-      }),
-    ),
-  ];
 }

@@ -8,67 +8,70 @@
  * canonical link and structured-data node follows a change there.
  */
 import type { Metadata } from "next";
-import { contactEmails, socialLinks } from "./contact";
-import { eLabProgramSummary } from "./e-lab";
-import { hackathonFacts } from "./hackathons";
-import { legalEntity, organizationFacts } from "./organization";
+import { eLabProgramSummaryOf } from "./e-lab";
+import { legalEntity } from "./organization";
 import { absoluteUrl, siteConfig, siteTitle } from "./site";
+import type { SiteFacts } from "./site-facts";
+import { getSiteFacts } from "./site-settings-content";
 
-/** Profiles on other sites that describe TUM.ai (JSON-LD `sameAs`). */
-const externalProfiles = [
-  socialLinks.linkedin,
-  socialLinks.instagram,
-  socialLinks.facebook,
-  socialLinks.x,
-  socialLinks.youtube,
-  "http://www.wikidata.org/entity/Q128339659",
-  socialLinks.github,
-  "https://www.crunchbase.com/organization/tum-ai",
-  "https://www.reddit.com/r/TUM_ai/",
-  socialLinks.tiktok,
-  "https://tum-ai.podbean.com/",
-  "https://theorg.com/org/tum-ai",
-  "https://www.eventbrite.de/o/tumai-31793295023",
-];
+/** Organization JSON-LD uses the same published facts as the page shell. */
+function organizationJsonLdFor(facts: SiteFacts) {
+  const { contactEmails, socialLinks } = facts;
+  /** Profiles on other sites that describe TUM.ai (JSON-LD `sameAs`). */
+  const externalProfiles = [
+    socialLinks.linkedin,
+    socialLinks.instagram,
+    socialLinks.facebook,
+    socialLinks.x,
+    socialLinks.youtube,
+    "http://www.wikidata.org/entity/Q128339659",
+    socialLinks.github,
+    "https://www.crunchbase.com/organization/tum-ai",
+    "https://www.reddit.com/r/TUM_ai/",
+    socialLinks.tiktok,
+    "https://tum-ai.podbean.com/",
+    "https://theorg.com/org/tum-ai",
+    "https://www.eventbrite.de/o/tumai-31793295023",
+  ];
 
-/** The Organization node every page starts its JSON-LD with. */
-const organizationJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: siteConfig.name,
-  legalName: legalEntity.legalName,
-  alternateName: [...legalEntity.alternateNames],
-  description: siteConfig.description,
-  url: absoluteUrl(),
-  logo: "https://upload.wikimedia.org/wikipedia/commons/a/a2/TUM.ai_Logo_Blue_%26_Violet.svg",
-  sameAs: externalProfiles,
-  email: contactEmails.general,
-  foundingDate: String(organizationFacts.foundingYear),
-  foundingLocation: legalEntity.foundingLocation,
-  location: [
-    {
-      "@type": "PostalAddress",
-      ...legalEntity.headquarters,
-      contactType: "Headquarters",
+  /** The Organization node every page starts its JSON-LD with. */
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: siteConfig.name,
+    legalName: legalEntity.legalName,
+    alternateName: [...legalEntity.alternateNames],
+    description: siteConfig.description,
+    url: absoluteUrl(),
+    logo: "https://upload.wikimedia.org/wikipedia/commons/a/a2/TUM.ai_Logo_Blue_%26_Violet.svg",
+    sameAs: externalProfiles,
+    email: contactEmails.general,
+    foundingDate: String(facts.organization.foundingYear),
+    foundingLocation: legalEntity.foundingLocation,
+    location: [
+      {
+        "@type": "PostalAddress",
+        ...legalEntity.headquarters,
+        contactType: "Headquarters",
+      },
+      {
+        "@type": "PostalAddress",
+        ...legalEntity.registeredOffice,
+        contactType: "Registered office",
+      },
+    ],
+    identifier: {
+      "@type": "PropertyValue",
+      name: "Register of Associations",
+      value: legalEntity.registerNumber,
     },
-    {
-      "@type": "PostalAddress",
-      ...legalEntity.registeredOffice,
-      contactType: "Registered office",
+    contactPoint: {
+      "@type": "ContactPoint",
+      email: contactEmails.partners,
+      contactType: "Partner and sponsorship inquiries",
     },
-  ],
-  identifier: {
-    "@type": "PropertyValue",
-    name: "Register of Associations",
-    value: legalEntity.registerNumber,
-  },
-  contactPoint: {
-    "@type": "ContactPoint",
-    email: contactEmails.partners,
-    contactType: "Partner and sponsorship inquiries",
-  },
-};
-
+  };
+}
 type PageSeo = {
   /** Site path; the canonical URL is `absoluteUrl(path)`. */
   path: string;
@@ -90,57 +93,65 @@ type PageSeo = {
  * The Venture Department (E-Lab) as its own Organization, a sub-organization
  * of TUM.ai, on /e-lab.
  */
-const eLabJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "Venture Department",
-  alternateName: [
-    "AI Entrepreneurship Lab",
-    "E-Lab",
-    "E-Lab by TUM.ai",
-    "AI Entrepreneurship Lab by TUM.ai",
-  ],
-  description: `The Venture Department is the entrepreneurial arm of TUM.ai and organizes the AI Entrepreneurship Lab, a ${eLabProgramSummary}.`,
-  url: absoluteUrl("/e-lab"),
-  email: contactEmails.venture,
-  sameAs: [
-    "https://www.startbase.de/organization/ai-e-lab/",
-    "https://www.startup-insider.com/investor/ai-e-lab-by-tum-ai",
-    "https://www.munich-startup.de/startups/tum-ai-entrepreneurship-lab/",
-  ],
-  parentOrganization: {
+function eLabJsonLdFor(facts: SiteFacts) {
+  const organizationJsonLd = organizationJsonLdFor(facts);
+  const { contactEmails } = facts;
+  const eLabProgramSummary = eLabProgramSummaryOf(facts.eLab.programWeeks);
+  return {
+    "@context": "https://schema.org",
     "@type": "Organization",
-    name: organizationJsonLd.name,
-    legalName: organizationJsonLd.legalName,
-    alternateName: organizationJsonLd.alternateName,
-    url: organizationJsonLd.url,
-    logo: organizationJsonLd.logo,
-    email: organizationJsonLd.email,
-  },
-  contactPoint: {
-    "@type": "ContactPoint",
+    name: "Venture Department",
+    alternateName: [
+      "AI Entrepreneurship Lab",
+      "E-Lab",
+      "E-Lab by TUM.ai",
+      "AI Entrepreneurship Lab by TUM.ai",
+    ],
+    description: `The Venture Department is the entrepreneurial arm of TUM.ai and organizes the AI Entrepreneurship Lab, a ${eLabProgramSummary}.`,
+    url: absoluteUrl("/e-lab"),
     email: contactEmails.venture,
-    contactType: "Venture Department",
-  },
-};
+    sameAs: [
+      "https://www.startbase.de/organization/ai-e-lab/",
+      "https://www.startup-insider.com/investor/ai-e-lab-by-tum-ai",
+      "https://www.munich-startup.de/startups/tum-ai-entrepreneurship-lab/",
+    ],
+    parentOrganization: {
+      "@type": "Organization",
+      name: organizationJsonLd.name,
+      legalName: organizationJsonLd.legalName,
+      alternateName: organizationJsonLd.alternateName,
+      url: organizationJsonLd.url,
+      logo: organizationJsonLd.logo,
+      email: organizationJsonLd.email,
+    },
+    contactPoint: {
+      "@type": "ContactPoint",
+      email: contactEmails.venture,
+      contactType: "Venture Department",
+    },
+  };
+}
 
 /**
  * The Makeathon as an event series organised by TUM.ai, on /hackathons; its
  * own site has the current edition.
  */
-const makeathonJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "EventSeries",
-  name: "TUM.ai Makeathon",
-  description:
-    "TUM.ai's yearly Makeathon in Munich: students and young professionals build AI for challenges that partners bring.",
-  url: hackathonFacts.makeathonUrl,
-  organizer: {
-    "@type": "Organization",
-    name: organizationJsonLd.name,
-    url: organizationJsonLd.url,
-  },
-};
+function makeathonJsonLdFor(facts: SiteFacts) {
+  const organizationJsonLd = organizationJsonLdFor(facts);
+  return {
+    "@context": "https://schema.org",
+    "@type": "EventSeries",
+    name: "TUM.ai Makeathon",
+    description:
+      "TUM.ai's yearly Makeathon in Munich: students and young professionals build AI for challenges that partners bring.",
+    url: facts.hackathons.makeathonUrl,
+    organizer: {
+      "@type": "Organization",
+      name: organizationJsonLd.name,
+      url: organizationJsonLd.url,
+    },
+  };
+}
 
 const pages = {
   events: {
@@ -165,7 +176,6 @@ const pages = {
       description:
         "The Makeathon, partner hackathons and the European Hackathon League by TUM.ai",
     },
-    extra: [makeathonJsonLd],
   },
   research: {
     path: "/research",
@@ -201,7 +211,6 @@ const pages = {
       name: "TUM.ai Entrepreneurship",
       description: "Startup Incubator by TUM.ai",
     },
-    extra: [eLabJsonLd],
   },
   community: {
     path: "/community",
@@ -333,10 +342,12 @@ export function buildMetadata(key: SEOPageKey): Metadata {
  * page-specific nodes. `pageFields` adds properties to the page node that
  * the page's own content supplies, such as an FAQPage's `mainEntity`.
  */
-export function getJsonLd(
+export async function getJsonLd(
   key: SEOPageKey,
   pageFields: Record<string, unknown> = {},
-): object[] {
+): Promise<object[]> {
+  const facts = await getSiteFacts();
+  const organizationJsonLd = organizationJsonLdFor(facts);
   if (key === "home") {
     return [
       organizationJsonLd,
@@ -349,7 +360,13 @@ export function getJsonLd(
     ];
   }
 
-  const { path, page, extra = [] } = pages[key] as PageSeo;
+  const { path, page } = pages[key] as PageSeo;
+  const extra =
+    key === "entrepreneurship"
+      ? [eLabJsonLdFor(facts)]
+      : key === "hackathons"
+        ? [makeathonJsonLdFor(facts)]
+        : [];
   return [
     organizationJsonLd,
     {

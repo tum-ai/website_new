@@ -1,47 +1,15 @@
-import { describe, expect, test } from "vitest";
-import { contentTokens } from "@/config/content-tokens";
-import { impactFacts } from "@/config/impact";
-import { fillCodeCopy } from "@/lib/content-copy";
-import {
-  getAbstractBody as bodyOf,
-  researchCopyTemplate,
-  researchPageTokens,
-} from "./research-copy";
+import { expect, test } from "vitest";
+import { getAbstractBody } from "./research-copy";
 
-const { abstract } = fillCodeCopy(
-  researchCopyTemplate,
-  contentTokens,
-  researchPageTokens,
-);
-const getAbstractBody = (
-  count: number,
-  copy: Parameters<typeof bodyOf>[1] = abstract,
-) => bodyOf(count, copy);
-
-describe("getAbstractBody", () => {
-  test("names one running project in the singular", () => {
-    expect(getAbstractBody(1)).toContain("One project is running now,");
-  });
-
-  test("counts several running projects in digits", () => {
-    expect(getAbstractBody(4)).toContain("4 projects are running now,");
-  });
-
-  test("quotes the publication count from the impact facts", () => {
-    expect(getAbstractBody(3)).toContain(
-      `published ${impactFacts.publications}+ papers`,
-    );
-  });
-});
-
-test("the running sentence and body come from the copy passed in", () => {
-  expect(
-    getAbstractBody(2, {
-      label: "",
-      statement: "",
-      body: "Now: {{running}}.",
-      runningOne: "one",
-      runningMany: "{{count}} teams",
-    }),
-  ).toBe("Now: 2 teams.");
+const abstract = {
+  label: "Example",
+  statement: "Example",
+  body: "Now: {{running}}.",
+  runningOne: "one team",
+  runningMany: "{{count}} teams",
+};
+test("abstract uses the supplied count and grammar", () => {
+  expect(getAbstractBody(1, abstract)).toBe("Now: one team.");
+  expect(getAbstractBody(4, abstract)).toBe("Now: 4 teams.");
+  expect(getAbstractBody(0, abstract)).toBe("Now: 0 teams.");
 });

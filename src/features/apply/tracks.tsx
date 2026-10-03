@@ -20,7 +20,7 @@ function Track({
   step: JourneyStep;
   stories: readonly MemberStory[];
 }) {
-  const story = stories.find((entry) => entry.name === step.evidence?.name);
+  const story = stories.find((entry) => entry.key === step.evidence?.key);
   return (
     <article className="border-hairline-strong border-t pt-8">
       <h3 className="text-display-md text-fg">{step.name}</h3>

@@ -60,8 +60,13 @@ export function PartnersHero({
       media={
         <figure className="group/zoom relative isolate min-h-72 overflow-hidden rounded-4xl bg-sunken md:min-h-108 lg:min-h-120">
           <Image
-            src="/assets/partners/hero.webp"
-            alt="A speaker presenting to a packed auditorium at a TUM.ai event"
+            src={copy.image.src}
+            alt={copy.image.alt}
+            style={
+              copy.image.objectPosition
+                ? { objectPosition: copy.image.objectPosition }
+                : undefined
+            }
             fill
             preload
             sizes="(min-width: 1024px) 45vw, 100vw"

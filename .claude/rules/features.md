@@ -9,7 +9,7 @@ One folder per domain: `home`, `apply`, `community`, `events`, `hackathons`, `e-
 `projects`, `qanda`, `research`, `legal`, `design-system` (development and Vercel previews only).
 
 - **Layout:** `<domain>-page.tsx` exports the page component the route renders (for example
-  `PartnersPage`). Sections and islands sit beside it (or in `sections/`), static copy in `data/`,
+  `PartnersPage`). Sections and islands sit beside it (or in `sections/`), types/logic in `data/`,
   domain logic in `*.ts`, tests next to the file they test. Every folder needs a `-page.tsx`.
 - **Imports:** own files; `@tum.ai/ui-kit` (public primitives and types); `@/components/shell/*`;
   `@/components/json-ld`; `@/config/*`; `@/lib/*`. Another feature only through its entries,
@@ -20,7 +20,7 @@ One folder per domain: `home`, `apply`, `community`, `events`, `hackathons`, `e-
   and styles to every page importing the index. It stays isomorphic: nothing it reaches imports
   `server-only`, so client islands may use it.
 - **`server.ts`** is the optional server-only entry: it starts with `import "server-only"` and
-  exports what reads the CMS (content getters, their backfill builders, async server components
+  exports what reads the CMS (content getters and async server components
   such as `MembershipApplyButton`). Import it only from server modules; the architecture test
   fails when any `"use client"` module reaches `server-only`, `next/headers`, `next/cache` or a
   Node built-in.
@@ -37,8 +37,8 @@ One folder per domain: `home`, `apply`, `community`, `events`, `hackathons`, `e-
 - **Tokens only:** no hex, `rgb()`, stock palette or arbitrary font sizes. Use the `zoom-media`
   (with `group/zoom`) and `scroll-mt-header` utilities for hover zoom and anchor offsets.
 - **Copy and facts:** facts per render from `await getSiteFacts()` and the windows
-  (`@/config/*-content`), the config constants only as the code fallback; copy from the page's
-  content slice (`content.ts`), with its code fallback in `data/`; the standing CTA labels from
+  (`@/config/*-content`); editable copy from the page's CMS slice (`content.ts`), with required
+  validation and optional clearing preserved; the standing CTA labels from
   `@/config/calls-to-action`; no em or en dashes in visible text.
 - **Tests:** logic in `*.test.ts`; islands in `*.test.tsx` with Testing Library and `axe()`; the
   E2E specs cover every route in `siteRoutes` (`e2e/fixtures.ts`). CI runs them; locally only

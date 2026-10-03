@@ -1,18 +1,7 @@
 import { type ClockWindow, isClockWindowOpen } from "@/lib/clock-window";
 import { munichDayNumber, parseMunichDateTime } from "@/lib/munich-time";
 
-/**
- * Single source for TUM.ai membership recruiting. The Apply page (its
- * important dates, day ruler, actions and FAQ), the header CTA and the home
- * and Community closing bands read it, so a new recruiting round is one edit
- * to `membershipConfig.round`. See "Updating site facts" in
- * docs/contributor-guide.md.
- *
- * `membershipConfig` is the code fallback of the membership
- * `applicationWindow` document (`getMembershipWindow()` in
- * `config/schedule-content.ts`); the helpers below take the resolved config
- * as input, so pages can use the window resolved for a render.
- */
+/** Pure membership window shapes, Munich-time schedules and derived recruiting copy. Callers provide the CMS window explicitly. */
 
 /** A span of whole days in Munich, written "DD.MM.YYYY" like the E-Lab dates. */
 type DateSpan = { from: string; to: string };
@@ -44,22 +33,6 @@ export type MembershipConfig = {
   round: RecruitingRound;
 };
 
-export const membershipConfig: MembershipConfig = {
-  applicationsOpen: true,
-  applicationUrl: "https://tally.so/r/BzWNEK",
-  round: {
-    // TODO(content): confirm the 2026 round. `opens` is the day the form
-    // went live on main (2026-09-28); the other dates repeat the 2025 round's
-    // days in 2026 as placeholders, and the name and 23:59 are assumptions.
-    name: "Winter semester 2026/27",
-    opens: "28.09.2026",
-    deadlineDate: "27.10.2026",
-    deadlineTime: "23:59",
-    interviews: { from: "02.11.2026", to: "08.11.2026" },
-    onboarding: { from: "14.11.2026", to: "16.11.2026" },
-  },
-};
-
 /** The instants and Munich days of a round, parsed once. */
 export type RoundSchedule = {
   opensAt: Date;
@@ -85,9 +58,6 @@ export function roundSchedule(round: RecruitingRound): RoundSchedule {
   };
 }
 
-/** The code round's schedule. */
-const recruitingSchedule = roundSchedule(membershipConfig.round);
-
 /**
  * The window as a {@link ClockWindow} for the phase islands and the header:
  * open from Munich midnight on the opening day until the deadline minute,
@@ -109,7 +79,7 @@ export function membershipWindowClock(config: MembershipConfig): ClockWindow {
  */
 export function isMembershipApplicationOpen(
   now: Date,
-  config: MembershipConfig = membershipConfig,
+  config: MembershipConfig,
 ): boolean {
   return isClockWindowOpen(membershipWindowClock(config), now);
 }
@@ -127,7 +97,7 @@ export type ApplicationProgress = {
 /** The application window's progress at `now`, counted in Munich days. */
 export function applicationProgress(
   now: Date,
-  schedule: RoundSchedule = recruitingSchedule,
+  schedule: RoundSchedule,
 ): ApplicationProgress {
   const opens = munichDayNumber(schedule.opensAt);
   const closes = munichDayNumber(schedule.closesAt);
@@ -187,9 +157,3 @@ export function recruitingTimelineOf(
     onboarding: `${spoken(schedule.onboarding.from)} - ${spoken(schedule.onboarding.to)}`,
   };
 }
-
-/**
- * {@link recruitingTimelineOf} the code round; per render, derive it from
- * `roundSchedule((await getMembershipWindow()).round)`.
- */
-export const recruitingTimeline = recruitingTimelineOf(recruitingSchedule);

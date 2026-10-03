@@ -231,10 +231,25 @@ describe("mock CMS gate", () => {
     const events = await sanity.getSanityEvents();
     const projects = await sanity.getSanityResearchProjects();
 
-    expect(events.length).toBeGreaterThan(0);
-    expect(events[0].id).toMatch(/^mock-/);
-    expect(events[0].event_date).toBe("2026-10-04T18:00:00.000Z");
-    expect(projects.length).toBeGreaterThan(0);
+    expect(events).toHaveLength(9);
+    expect(events).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: "settings-fixture-match",
+          title: "Fixture match",
+        }),
+        expect.objectContaining({
+          id: "fixture-event-0",
+          title: "Example hackathon 1",
+          event_date: "2026-10-04T18:00:00.000Z",
+          poster: "/assets/fixtures/photo.svg",
+        }),
+      ]),
+    );
+    expect(projects.map(({ id }) => id)).toEqual([
+      "fixture-research-ongoing",
+      "fixture-research-complete",
+    ]);
     expect(mocks.sanityFetch).not.toHaveBeenCalled();
   });
 

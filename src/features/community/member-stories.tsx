@@ -38,7 +38,7 @@ export function MemberStories({ copy, stories }: MemberStoriesProps) {
         />
         <ul className="grid gap-x-16 gap-y-14 md:grid-cols-2 md:gap-y-20 xl:gap-x-24">
           {stories.map((story, index) => (
-            <Reveal as="li" key={story.name} delay={(index % 2) * 100}>
+            <Reveal as="li" key={story.key} delay={(index % 2) * 100}>
               <figure className="flex h-full flex-col border-hairline-strong border-t pt-8 md:pt-10">
                 <QuoteMark className="h-5 w-7 text-highlight" />
                 <blockquote className="mt-5 flex-1 text-fg text-lead">
