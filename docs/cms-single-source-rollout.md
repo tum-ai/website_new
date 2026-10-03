@@ -65,6 +65,17 @@ updated baseline screenshot files covering all 13 routes, both widths and both e
 successful baseline capture; the current Visual comparison status is tracked in the
 [PR #313 checks](https://github.com/tum-ai/website_new/pull/313/checks).
 
+Merge commit `b78e9304d` integrates base `d07fdaa61`; local lint, TypeScript and scoped tests
+pass. [CI run 37153803418](https://github.com/tum-ai/website_new/actions/runs/37153803418)
+passed all 1,260 tests across 155 files, all four E2E shards, Build/performance, TypeGen and
+Knip. Visual comparison failed only the four intended homepage changes from MemberFaces.
+[Snapshot refresh run 37154263068](https://github.com/tum-ai/website_new/actions/runs/37154263068)
+succeeded; [baseline commit](https://github.com/tum-ai/website_new/commit/cfe0ba11f829c501b351f3f4e72802250e62cdb2) updates exactly four homepage screenshot files. A reviewer
+accepted all four: caption spacing changed in Chromium at 390 px and both engines at 1440 px;
+the WebKit 390 px member link wraps, adding 41 px without overflow, overlap or content loss.
+The next comparison runs after this documentation commit; the latest
+[PR #313 checks](https://github.com/tum-ai/website_new/pull/313/checks) are authoritative.
+
 [Vercel deployment](https://vercel.com/tum-ai/website/7CkixqLL99JTVoNnJ8Rmp1g5Pn6y) of commit `fcbfb8e` compiled
 successfully and finished TypeScript checks on 2026-10-03. It then failed during
 `/_not-found` prerendering at 19:32:47Z with `ContentError` at
