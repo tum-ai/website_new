@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { type CSSProperties, useId } from "react";
 import { cn } from "@/lib/cn";
 import {
   constructionCircles,
@@ -92,22 +92,41 @@ export function ConstructionLines({
           />
         </mask>
       </defs>
-      <g strokeOpacity="0.14" mask={`url(#${id}-mask)`}>
-        {guides.map((line) => (
-          <line key={`${line.x1},${line.y1},${line.x2},${line.y2}`} {...line} />
+      {/* Class hooks for a drawn entrance (home.css, `data-draw`): each
+          guide grows from its start point, staggered by `--i`, and each
+          circle traces along its `--circumference` (viewBox units). */}
+      <g
+        className="home-draw-guides"
+        strokeOpacity="0.14"
+        mask={`url(#${id}-mask)`}
+      >
+        {guides.map((line, index) => (
+          <line
+            key={`${line.x1},${line.y1},${line.x2},${line.y2}`}
+            {...line}
+            style={
+              {
+                "--i": index,
+                transformOrigin: `${line.x1}px ${line.y1}px`,
+              } as CSSProperties
+            }
+          />
         ))}
       </g>
-      <g strokeOpacity="0.34">
+      <g className="home-draw-circles" strokeOpacity="0.34">
         {circles.map((circle) => (
           <circle
             key={`${circle.x},${circle.y}`}
             cx={circle.x}
             cy={circle.y}
             r={circle.r}
+            style={
+              { "--circumference": 2 * Math.PI * circle.r } as CSSProperties
+            }
           />
         ))}
       </g>
-      <g strokeOpacity="0.6">
+      <g className="home-draw-ticks" strokeOpacity="0.6">
         {circles.map(({ x, y }) => (
           <path key={`${x},${y}`} d={`M${x - 4} ${y}h8M${x} ${y - 4}v8`} />
         ))}

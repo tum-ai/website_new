@@ -1,6 +1,5 @@
 import {
   Actions,
-  BrandMark,
   ButtonLink,
   Container,
   Reveal,
@@ -11,8 +10,8 @@ import Image from "next/image";
 import { callToActionLabels } from "@/config/calls-to-action";
 import type { MemberStory } from "@/features/community";
 import { MembershipApplyButton } from "@/features/community/server";
-import { ConstructionLines } from "./construction-lines";
 import type { HomeCopy } from "./data/homepage";
+import { JoinMark } from "./join-mark";
 
 /**
  * The member call to action on ink, the page's bookend to the hero: the
@@ -43,21 +42,7 @@ export function JoinSection({
     >
       {/* Runs past the band's bottom edge; the footer's mark continues it
           (home.css, `data-footer-bleed`). */}
-      <div
-        aria-hidden="true"
-        data-footer-bleed=""
-        className="home-join-mark absolute -z-10 aspect-[477/406] opacity-60 lg:opacity-100"
-      >
-        <BrandMark
-          drift={false}
-          intensity="medium"
-          className="absolute inset-0 size-full"
-        />
-        <ConstructionLines
-          reach="long"
-          className="absolute inset-0 hidden size-full text-violet-300 lg:block"
-        />
-      </div>
+      <JoinMark />
 
       <Container>
         <div className="max-w-[46rem]">
