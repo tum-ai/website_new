@@ -1,5 +1,5 @@
 /**
- * Excerpts quoted from a longer text: the homepage's member quote and the
+ * Excerpts quoted from a longer text: the homepage's member quotes and the
  * member journey's evidence each quote a sentence of a member's story, word
  * for word. The story is the source; the excerpt must stay inside it, or the
  * page attributes words to a member that their story no longer says.

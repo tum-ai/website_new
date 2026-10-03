@@ -68,7 +68,9 @@ describe("the homepage content slice", () => {
       ],
       label: "parity",
     });
-    expect(result?.join?.quote?.name).toBe(homeCopyTemplate.join.quote.name);
+    expect(result?.join?.quotes?.map((quote) => quote.name)).toStrictEqual(
+      homeCopyTemplate.join.quotes.map((quote) => quote.name),
+    );
     expect(result?.partners?.quote).toBe(homeCopyTemplate.partners.quote);
   });
 
@@ -88,19 +90,24 @@ describe("CMS copy over the code copy", () => {
   const merged = (copy: Parameters<typeof selectHomeCopy>[0]) =>
     mergeOverFallback(code.copy, selectHomeCopy(copy));
 
-  test("the join quote takes the CMS member and words together", () => {
+  test("the CMS quotes replace the code quotes, members and words together", () => {
     const { join } = merged({
-      join: { quote: { name: "Ada Lovelace", excerpt: "CMS words" } },
+      join: {
+        quotes: [
+          { name: "Ada Lovelace", excerpt: "CMS words" },
+          { excerpt: "Words whose member did not resolve" },
+          { name: "Grace Hopper" },
+        ],
+      },
     });
-    expect(join.quote).toStrictEqual({
-      name: "Ada Lovelace",
-      excerpt: "CMS words",
-    });
+    expect(join.quotes).toStrictEqual([
+      { name: "Ada Lovelace", excerpt: "CMS words" },
+    ]);
   });
 
-  test("words whose member did not resolve never go to the code member", () => {
-    const { join } = merged({ join: { quote: { excerpt: "CMS words" } } });
-    expect(join.quote).toStrictEqual(code.copy.join.quote);
+  test("words whose member did not resolve never go to a code member", () => {
+    const { join } = merged({ join: { quotes: [{ excerpt: "CMS words" }] } });
+    expect(join.quotes).toStrictEqual(code.copy.join.quotes);
   });
 
   test("a program links only to a page of this site", () => {

@@ -16,23 +16,23 @@ test("the partner quote is an E-Lab testimonial", async () => {
   );
 });
 
-test("the member quote belongs to a member story", async () => {
-  const stories = await getMemberStories();
-  expect(stories.map((story) => story.name)).toContain(
-    homeCopyTemplate.join.quote.name,
-  );
+test("every member quote belongs to a member story, each member once", async () => {
+  const names = homeCopyTemplate.join.quotes.map((quote) => quote.name);
+  const stories = (await getMemberStories()).map((story) => story.name);
+  for (const name of names) expect(stories).toContain(name);
+  expect(new Set(names).size).toBe(names.length);
 });
 
 test.each(["code", "sanity"])(
-  "the member quote stays word for word in the %s story",
+  "the member quotes stay word for word in the %s stories",
   async (source) => {
     vi.stubEnv("CMS_CONTENT_SOURCE", source);
     vi.stubEnv("USE_MOCK_CMS", "1");
     vi.stubEnv("VERCEL", "");
-    const { name, excerpt } = homeCopyTemplate.join.quote;
-    const story = (await getMemberStories()).find(
-      (entry) => entry.name === name,
-    );
-    expect(story && isExcerptOf(excerpt, story.story), name).toBe(true);
+    const stories = await getMemberStories();
+    for (const { name, excerpt } of homeCopyTemplate.join.quotes) {
+      const story = stories.find((entry) => entry.name === name);
+      expect(story && isExcerptOf(excerpt, story.story), name).toBe(true);
+    }
   },
 );
