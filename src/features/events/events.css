@@ -280,4 +280,64 @@
       }
     }
   }
+
+  /*
+   * The poster wall pasted up (PosterGrid sets data-paste and, per tile,
+   * data-pasted and --paste-delay): each tile rises in under a sheet of
+   * Dark Indigo, the sheet peels up off it like paper, and the poster settles
+   * from a slight zoom under the colour layer. About 1.1s a tile, only
+   * transforms and opacity. The sheet shows only while it peels, so a pasted
+   * tile is exactly the static one.
+   */
+  @keyframes events-paste-in {
+    from {
+      opacity: 0;
+      transform: scale(0.94);
+    }
+  }
+
+  @keyframes events-paste-peel {
+    from {
+      opacity: 1;
+      transform: scaleY(1);
+    }
+    to {
+      opacity: 1;
+      transform: scaleY(0);
+    }
+  }
+
+  @keyframes events-paste-settle {
+    from {
+      transform: scale(1.12);
+    }
+  }
+
+  .events-poster-sheet {
+    opacity: 0;
+    transform-origin: top;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    [data-paste="pending"] > li {
+      &:not([data-pasted]) {
+        opacity: 0;
+      }
+
+      &[data-pasted] {
+        animation: events-paste-in 400ms var(--ease-brand) var(--paste-delay)
+          both;
+      }
+
+      &[data-pasted] .events-poster-sheet {
+        animation: events-paste-peel 600ms var(--ease-brand)
+          calc(var(--paste-delay) + 250ms) both;
+      }
+
+      &[data-pasted] .events-poster-image {
+        animation: events-paste-settle 850ms var(--ease-brand)
+          calc(var(--paste-delay) + 250ms) both;
+      }
+    }
+  }
 }

@@ -2,7 +2,6 @@ import {
   BrandPanel,
   Container,
   FallbackImage,
-  Reveal,
   Section,
   SectionHeader,
 } from "@tum.ai/ui-kit";
@@ -17,6 +16,7 @@ import {
   toEventDetails,
 } from "./events";
 import { Lockup } from "./lockup";
+import { PosterGrid } from "./poster-grid";
 
 /**
  * Every past event as it was announced: its poster, in an exact grid of
@@ -27,7 +27,8 @@ import { Lockup } from "./lockup";
  * fades the layer, shows the poster as it was and names the event and its
  * co-hosts, and a click opens the event. Events without a poster are left out.
  * The tiles load eagerly at low priority, so the wall is complete by the time
- * the reader scrolls to it instead of filling in tile by tile.
+ * the reader scrolls to it instead of filling in tile by tile; with motion
+ * allowed the tiles are pasted up row by row as they scroll in (PosterGrid).
  * Reads its copy from the content slice itself.
  */
 export async function PosterWall({ events }: { events: Event[] }) {
@@ -46,15 +47,13 @@ export async function PosterWall({ events }: { events: Event[] }) {
           title={copy.title}
           lead={copy.lead}
         />
-        <Reveal variant="fade">
-          <ul className="grid grid-cols-3 gap-px md:grid-cols-4 lg:grid-cols-6">
-            {posters.map((event) => (
-              <li key={event.id}>
-                <PosterTile event={event} />
-              </li>
-            ))}
-          </ul>
-        </Reveal>
+        <PosterGrid className="grid grid-cols-3 gap-px md:grid-cols-4 lg:grid-cols-6">
+          {posters.map((event) => (
+            <li key={event.id}>
+              <PosterTile event={event} />
+            </li>
+          ))}
+        </PosterGrid>
       </Container>
     </Section>
   );
@@ -79,12 +78,16 @@ function PosterTile({ event }: { event: Event & { poster: string } }) {
         loading="eager"
         fetchPriority="low"
         sizes="(min-width: 1024px) 13rem, (min-width: 768px) 25vw, 33vw"
-        className="object-cover"
+        className="events-poster-image object-cover"
         fallback={<BrandPanel />}
       />
       <span
         aria-hidden="true"
         className="absolute inset-0 bg-violet-950 mix-blend-color transition-opacity duration-500 ease-brand group-hover/poster:opacity-0 group-focus-visible/poster:opacity-0 motion-reduce:transition-none"
+      />
+      <span
+        aria-hidden="true"
+        className="events-poster-sheet absolute inset-0 bg-violet-950"
       />
       <PosterCaption event={event} title={title} />
       <span className="sr-only">Read More about {title}</span>
