@@ -82,12 +82,12 @@ export const recommendations = {
   hackathon: {
     name: "Hackathon Participation",
     description:
-      "Bring your challenge to one of our hackathons (our signature Makeathon or a European Hackathon League match in {{league.cities}}). What you can pack into it: your own challenge track, the participant list including CVs, on-site branding and a booth, a company pitch, and optional add-ons like a workshop slot or catering sponsorship.",
+      "Bring your challenge to one of our hackathons (our signature Makeathon or a European Hackathon League match in {{league.cities}}). What you can pack into it: your own challenge track, recruiting access to participants, on-site branding and a booth, a company pitch, and optional add-ons like a workshop slot or catering sponsorship.",
   },
   talent: {
     name: "Talent Activation",
     description:
-      "The fastest way to get in front of our talent for hiring. What you can pack into it: job postings to our community, access to the CV database, and a targeted mail to the community. Easy to upgrade into a Long-Term Partnership later.",
+      "The fastest way to get in front of our talent for hiring. What you can pack into it: job postings to our community, access to our talent profiles, and a targeted mail to the community. Easy to upgrade into a Long-Term Partnership later.",
   },
   brand: {
     name: "Community & Brand Activation",

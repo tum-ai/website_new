@@ -216,7 +216,7 @@ export const hackathonsCopyTemplate: HackathonsCopy = {
     lead: "Partners set the problems our hackathons are built around. At the Makeathon or a league match, a challenge comes with:",
     items: [
       "Your own challenge track",
-      "The participant list, CVs included",
+      "Recruiting access to the participants",
       "Your brand on site, and a booth",
       "A company pitch on stage",
     ],
