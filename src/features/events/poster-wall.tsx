@@ -6,6 +6,7 @@ import {
   Section,
   SectionHeader,
 } from "@tum.ai/ui-kit";
+import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
 import type { Event } from "@/lib/types";
 import { getEventsCopy } from "./content";
 import { EventDetailsDialog } from "./event-details";
@@ -25,6 +26,8 @@ import { Lockup } from "./lockup";
  * Dark Indigo) that keeps the wall one tone; hovering or focusing a tile
  * fades the layer, shows the poster as it was and names the event and its
  * co-hosts, and a click opens the event. Events without a poster are left out.
+ * The tiles load eagerly at low priority, so the wall is complete by the time
+ * the reader scrolls to it instead of filling in tile by tile.
  * Reads its copy from the content slice itself.
  */
 export async function PosterWall({ events }: { events: Event[] }) {
@@ -72,7 +75,9 @@ function PosterTile({ event }: { event: Event & { poster: string } }) {
         src={event.poster}
         alt=""
         fill
-        unoptimized
+        unoptimized={isUnoptimizedRemoteImage(event.poster)}
+        loading="eager"
+        fetchPriority="low"
         sizes="(min-width: 1024px) 13rem, (min-width: 768px) 25vw, 33vw"
         className="object-cover"
         fallback={<BrandPanel />}

@@ -1,8 +1,15 @@
 import { axe } from "@test/axe";
-import { render, screen, within } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ButtonLink } from "@tum.ai/ui-kit";
-import { describe, expect, test } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { resetRouteImagePreloadForTests } from "@/components/shell/route-image-preload";
 import { EventDetailsDialog, type EventDialogTrigger } from "./event-details";
 import type { EventDetails } from "./events";
 import { categoryLabel } from "./filters";
@@ -78,9 +85,11 @@ describe("event details dialog integration", () => {
         within(dialog).getByRole("link", { name: "Register" }),
       ).toHaveAttribute("href", "/events#register");
       expect(document.getElementById("app-root")?.inert).toBe(true);
-      expect(
-        within(dialog).getByRole("button", { name: "Close" }),
-      ).toHaveFocus();
+      await waitFor(() =>
+        expect(
+          within(dialog).getByRole("button", { name: "Close" }),
+        ).toHaveFocus(),
+      );
       expect(await axe(baseElement)).toHaveNoViolations();
 
       await user.keyboard("{Escape}");
@@ -101,5 +110,77 @@ describe("event details dialog integration", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(opener).toHaveFocus();
     expect(document.getElementById("app-root")?.inert).toBe(false);
+  });
+});
+
+describe("event details dialog image warm-up", () => {
+  const posterSrc =
+    "https://cdn.sanity.io/images/o9uuv2sq/test/synthetic-event-poster-800x800.webp";
+  /** The images the warm-up created, as the browser would fetch them. */
+  let created: { src: string; srcset: string; sizes: string }[];
+
+  beforeEach(() => {
+    resetRouteImagePreloadForTests();
+    created = [];
+    vi.stubGlobal(
+      "Image",
+      class {
+        src = "";
+        srcset = "";
+        sizes = "";
+        fetchPriority = "auto";
+        constructor() {
+          created.push(this);
+        }
+      },
+    );
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    Object.defineProperty(navigator, "connection", {
+      value: undefined,
+      configurable: true,
+    });
+  });
+
+  function renderWithPoster() {
+    render(
+      <EventDetailsDialog
+        details={{
+          ...details,
+          image: { src: posterSrc, alt: "poster" },
+        }}
+        trigger={{ kind: "bare", className: "" }}
+      >
+        {triggerLabel}
+      </EventDetailsDialog>,
+    );
+    return screen.getByRole("button", { name: triggerLabel });
+  }
+
+  test("pointing at or focusing the trigger loads the dialog's image once", () => {
+    const opener = renderWithPoster();
+    fireEvent.pointerEnter(opener);
+    fireEvent.focus(opener);
+    fireEvent.pointerDown(opener);
+
+    expect(created).toStrictEqual([
+      expect.objectContaining({
+        src: expect.stringContaining(encodeURIComponent(posterSrc)),
+        srcset: expect.stringMatching(/\d+w/),
+        sizes: "(min-width: 768px) 28rem, 100vw",
+        fetchPriority: "high",
+      }),
+    ]);
+  });
+
+  test("leaves the image alone with Save-Data", () => {
+    Object.defineProperty(navigator, "connection", {
+      value: { saveData: true },
+      configurable: true,
+    });
+    fireEvent.pointerEnter(renderWithPoster());
+    expect(created).toStrictEqual([]);
   });
 });
