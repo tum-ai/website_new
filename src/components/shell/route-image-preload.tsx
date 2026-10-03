@@ -9,9 +9,32 @@ const IDLE_TIMEOUT_MS = 4000;
 /** The warm-ups started, by list URL: one each per page load, across navigations. */
 const warming = new Map<string, Promise<void>>();
 
+/** The single images warmed, by `srcSet` or `src`: one request each per page load. */
+const warmed = new Set<string>();
+
 /** Resets the module's state between tests. */
 export function resetRouteImagePreloadForTests() {
   warming.clear();
+  warmed.clear();
+}
+
+/**
+ * Fetches one image into the HTTP cache the way an `<img>` with the same
+ * `srcSet` and `sizes` would, so that image is a cache hit once it renders.
+ * Once per image and page load.
+ */
+export function warmImage(
+  { src, srcSet, sizes }: ImagePreload,
+  priority: "high" | "low" | "auto" = "low",
+) {
+  const key = srcSet ?? src;
+  if (warmed.has(key)) return;
+  warmed.add(key);
+  const image = new Image();
+  image.fetchPriority = priority;
+  if (sizes) image.sizes = sizes;
+  if (srcSet) image.srcset = srcSet;
+  image.src = src;
 }
 
 /**
@@ -52,13 +75,7 @@ export function warmImages(imagesUrl: string): Promise<void> {
     warm = fetch(imagesUrl)
       .then((response) => (response.ok ? response.json() : []))
       .then((images: ImagePreload[]) => {
-        for (const { src, srcSet, sizes } of images) {
-          const image = new Image();
-          image.fetchPriority = "low";
-          if (sizes) image.sizes = sizes;
-          if (srcSet) image.srcset = srcSet;
-          image.src = src;
-        }
+        for (const image of images) warmImage(image);
       })
       .catch(() => undefined);
     warming.set(imagesUrl, warm);
