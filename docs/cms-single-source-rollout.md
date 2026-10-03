@@ -33,6 +33,30 @@ record that boundary as unknown. An available `SANITY_API_READ_TOKEN` enables au
 raw draft preflight; future apply also reads raw drafts and guards their revisions. Those
 remain separate rollout checks after the maintainer authorizes migration apply.
 
+## CI and deployment verification
+
+[CI run 37148785762](https://github.com/tum-ai/website_new/actions/runs/37148785762)
+at commit `4ccd722e` passed all 1,216 unit tests across 150 files, all four Playwright
+E2E shards, Build/performance checks, Knip, Sanity TypeGen and lint. Build and browser
+checks used the explicit synthetic mock mode and fixed clock; these results do not certify
+live CMS readiness.
+
+Two reviewers inspected the expected, actual and diff captures for all 52 visual
+comparisons: 13 routes at 390 and 1440 px in Chromium and WebKit. They found no unintended
+layout issues. Screenshot CSS hides images, video, canvas and grain while preserving their
+layout boxes; rotating regions and count-up figures are masked. This review therefore covers
+layout and visible text, not image content, image rendering or CDN delivery. The initial
+`/events` captures showed one co-host; the final synthetic dataset supplies two across separate
+events, and the functional E2E keyboard checks pass with that fixture. A reviewer also inspected
+the final events baselines at both widths in both engines at `352d36436`: the two co-hosts,
+count and attribution fit without overflow, overlap, clipping or lost structure.
+
+[Snapshot refresh run 37149263956](https://github.com/tum-ai/website_new/actions/runs/37149263956)
+succeeded at tested source commit `4ccd722e`. Bot commit `352d36436` contains exactly 52
+updated baseline screenshot files covering all 13 routes, both widths and both engines. This records
+successful baseline capture; the current Visual comparison status is tracked in the
+[PR #313 checks](https://github.com/tum-ai/website_new/pull/313/checks).
+
 [Vercel deployment](https://vercel.com/tum-ai/website/7CkixqLL99JTVoNnJ8Rmp1g5Pn6y) of commit `fcbfb8e` compiled
 successfully and finished TypeScript checks on 2026-10-03. It then failed during
 `/_not-found` prerendering at 19:32:47Z with `ContentError` at
