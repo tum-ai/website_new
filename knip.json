@@ -5,16 +5,18 @@
   // scripts/sanity/backfill.ts through tsx, which knip finds in package.json
   // by itself.)
   // scripts/sanity/repair-assets.ts, apply-partner-migration.ts,
-  // migrate-content-dedup-apply.ts and migrate-org-references-apply.ts: run
-  // by path through `sanity exec` from backfill.ts, migrate-partners.ts,
-  // migrate-content-dedup.ts and migrate-org-references.ts.
+  // migrate-content-dedup-apply.ts, migrate-org-references-apply.ts and
+  // migrate-home-quotes-apply.ts: run by path through `sanity exec` from
+  // backfill.ts, migrate-partners.ts, migrate-content-dedup.ts,
+  // migrate-org-references.ts and migrate-home-quotes.ts.
   "entry": [
     "test/stubs/*.ts",
     "src/sanity/sanity.cli.ts",
     "scripts/sanity/repair-assets.ts",
     "scripts/sanity/apply-partner-migration.ts",
     "scripts/sanity/migrate-content-dedup-apply.ts",
-    "scripts/sanity/migrate-org-references-apply.ts"
+    "scripts/sanity/migrate-org-references-apply.ts",
+    "scripts/sanity/migrate-home-quotes-apply.ts"
   ],
   // Loaded by path: playwright.config.ts `toHaveScreenshot.stylePath`.
   "ignoreFiles": ["e2e/visual-screenshot.css"],

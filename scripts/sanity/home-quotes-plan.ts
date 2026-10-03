@@ -30,7 +30,7 @@ export type PlanInput = {
 };
 
 /** One document's patch, to apply at the revision it was planned from. */
-export type QuotesPatch = {
+type QuotesPatch = {
   id: string;
   rev?: string;
   set: Record<string, unknown>;
