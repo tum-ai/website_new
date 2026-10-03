@@ -28,6 +28,9 @@ importers:
       '@tailwindcss/typography':
         specifier: ^0.5.20
         version: 0.5.20(tailwindcss@4.3.3)
+      '@tum.ai/ui-kit':
+        specifier: 0.2.0
+        version: 0.2.0(@date-fns/tz@1.5.0)(@types/react@19.3.0)(date-fns@4.4.0)(next@16.3.6(@babel/core@7.29.7)(@playwright/test@1.63.0)(@types/node@24.19.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(tailwindcss@4.3.3)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -3786,6 +3789,15 @@ packages:
   '@ts-morph/common@0.11.1':
     resolution: {integrity: sha512-7hWZS0NRpEsNV8vWJzg7FEz6V8MaLNeJOmwmghqUXTpzk16V1LLZhdo+4QvE/+zv4cVci0OviuJFnqhEfoV3+g==}
 
+  '@tum.ai/ui-kit@0.2.0':
+    resolution: {integrity: sha512-Ra63febFqQmivULkQjfGbvLfHoE4yNFJARDoObnxSeI2HRRa9r6SVICSnzOQzj47YejeY2uie0QYzr2TxF+26w==}
+    engines: {node: 24.x}
+    peerDependencies:
+      next: ^16.3.6
+      react: ^19.3.0
+      react-dom: ^19.3.0
+      tailwindcss: ^4.3.3
+
   '@tybys/wasm-util@0.10.3':
     resolution: {integrity: sha512-F3fo1MYrRJYL3zER0OUOmkutjr1Vp23m7OsSgp7nq4SP6OqX6C/56XFIPAl5bt3zaBRjmW7SGz3u/6LwFpYcOg==}
 
@@ -4949,6 +4961,17 @@ packages:
       react-dom:
         optional: true
 
+  framer-motion@13.5.0:
+    resolution: {integrity: sha512-5KDKvhGTKKEQPWl8xg2mZRC+pGsenooz9v+ar6BpoXcD1mae4wdhvjxLaK+3jvFbge0jk4C8JeIjIC8m98z7hg==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+
   fs-extra@11.1.0:
     resolution: {integrity: sha512-0rcTq621PD5jM/e0a3EJoGC/1TC5ZBCERW82LQuwfGnCa1V8w7dpYH1yNu+SLb6E5dkeCBzKEyLGlFrnr+dUyw==}
     engines: {node: '>=14.14'}
@@ -5822,8 +5845,14 @@ packages:
   motion-dom@13.4.5:
     resolution: {integrity: sha512-p63p2Doq+US/O5wADauIPUVx0/eONHMLPzsudBM9XMWRuBQLXogdxH0vwIA8WYQZw864pyzoV723xoDqakwWTg==}
 
+  motion-dom@13.5.1:
+    resolution: {integrity: sha512-/7CVCD20Mz1KobktorpdgvowV0V41J7UxqE+qWS3GkSJqrRr5ft+2RloOYtEKv+wvBp3JaSFBclhxt4ja8ovHg==}
+
   motion-utils@13.3.0:
     resolution: {integrity: sha512-sgSschQp7EseHInIlR7hBbMuvet3RA0bs28KPZAXJcGKGdxHGvh1ogpYDilY3bOMtl73EqPNmp75sAKHYPU5sg==}
+
+  motion-utils@13.5.0:
+    resolution: {integrity: sha512-Hqe/sqjIKliPZg8sVjWAkdySDPJNIeKH+euVkDOG8ri3DUUU7ZjndmHsGqEPz2iHpiyVaV5I22iguCMHU2he+Q==}
 
   motion@13.4.3:
     resolution: {integrity: sha512-Js4rk+VUxSRMKOFT4hOMyMKlxyF11ee9jomiLT3uuwMOU88EoSro0ZEbTYes4m457pqZQ2G3RsLdHQzoEDyBCQ==}
@@ -11047,6 +11076,24 @@ snapshots:
       mkdirp: 1.0.4
       path-browserify: 1.0.1
 
+  '@tum.ai/ui-kit@0.2.0(@date-fns/tz@1.5.0)(@types/react@19.3.0)(date-fns@4.4.0)(next@16.3.6(@babel/core@7.29.7)(@playwright/test@1.63.0)(@types/node@24.19.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(tailwindcss@4.3.3)':
+    dependencies:
+      '@base-ui/react': 1.8.0(@date-fns/tz@1.5.0)(@types/react@19.3.0)(date-fns@4.4.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@tailwindcss/typography': 0.5.20(tailwindcss@4.3.3)
+      class-variance-authority: 0.7.1
+      clsx: 2.1.1
+      framer-motion: 13.5.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      lucide-react: 1.48.0(react@19.3.0)
+      next: 16.3.6(@babel/core@7.29.7)(@playwright/test@1.63.0)(@types/node@24.19.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      react: 19.3.0
+      react-dom: 19.3.0(react@19.3.0)
+      tailwind-merge: 3.7.0
+      tailwindcss: 4.3.3
+    transitivePeerDependencies:
+      - '@date-fns/tz'
+      - '@types/react'
+      - date-fns
+
   '@tybys/wasm-util@0.10.3':
     dependencies:
       tslib: 2.8.1
@@ -12413,6 +12460,15 @@ snapshots:
       react: 19.3.0
       react-dom: 19.3.0(react@19.3.0)
 
+  framer-motion@13.5.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
+    dependencies:
+      motion-dom: 13.5.1
+      motion-utils: 13.5.0
+      tslib: 2.8.1
+    optionalDependencies:
+      react: 19.3.0
+      react-dom: 19.3.0(react@19.3.0)
+
   fs-extra@11.1.0:
     dependencies:
       graceful-fs: 4.2.11
@@ -13210,7 +13266,13 @@ snapshots:
     dependencies:
       motion-utils: 13.3.0
 
+  motion-dom@13.5.1:
+    dependencies:
+      motion-utils: 13.5.0
+
   motion-utils@13.3.0: {}
+
+  motion-utils@13.5.0: {}
 
   motion@13.4.3(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
     dependencies:

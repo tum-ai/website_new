@@ -1,6 +1,7 @@
 import { JsonLd } from "@/components/json-ld";
 import { buildMetadata, getJsonLd } from "@/config/seo";
 import { HackathonsPage } from "@/features/hackathons/hackathons-page";
+import "@tum.ai/ui-kit/halftone.css";
 import "@/features/hackathons/hackathons.css";
 import { getCmsNow } from "@/lib/mock-cms-env";
 import { getSanityEvents } from "@/lib/sanity";

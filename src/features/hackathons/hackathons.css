@@ -73,3 +73,57 @@
     }
   }
 }
+
+/*
+ * The Makeathon opener's dawn (MakeathonDawn). The sun waits below the
+ * horizon, the band's bottom edge: only its glow and the top of its arc show.
+ * While the band scrolls through the screen it lifts a little, never fully
+ * up; it rises on the Makeathon's own site. Translate only; still under
+ * reduced motion and where scroll timelines are missing.
+ */
+@layer components {
+  .mk-sky {
+    --halftone-mask: linear-gradient(to top, #000 10%, transparent 82%);
+  }
+
+  .mk-dawn {
+    position: absolute;
+    inset: 0;
+    z-index: -10;
+    pointer-events: none;
+    /* Cut at the horizon only; the glow may reach up into the sky. */
+    clip-path: inset(-100vh -100vw 0 -100vw);
+  }
+
+  .mk-dawn .sun {
+    bottom: 0;
+    left: 50%;
+    width: clamp(9rem, 22vw, 20rem);
+    translate: -50% 78%;
+  }
+
+  @media (min-width: 64rem) {
+    .mk-dawn .sun {
+      left: 79%;
+    }
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .mk-dawn .sun {
+        animation: mk-dawn linear both;
+        animation-timeline: view();
+        animation-range: entry 0% exit 40%;
+      }
+    }
+  }
+
+  @keyframes mk-dawn {
+    from {
+      translate: -50% 90%;
+    }
+    to {
+      translate: -50% 72%;
+    }
+  }
+}
