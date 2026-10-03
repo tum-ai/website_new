@@ -5,9 +5,10 @@ API. No CMS mutations, uploads or migration apply were performed.
 
 | Check | Verified result |
 |---|---|
-| Live runtime readiness (2026-10-03T19:30:02.960Z) | 14/28 registered getters pass. The other 14 fail visibly, primarily through missing `siteSettings.organization.startedApplicationsPerBatch`; E-Lab voice references are also absent. |
-| Proposed migration projection (2026-10-03T19:30:00.795Z) | 28/28 real getter/parser checks pass using the same GROQ over live documents plus proposed patches in memory. |
+| Live runtime readiness (2026-10-03T21:01:34.613Z) | 14/28 registered getters pass. The other 14 fail visibly, primarily through missing `siteSettings.organization.startedApplicationsPerBatch`; E-Lab voice references are also absent. |
+| Proposed migration projection (2026-10-03T21:01:31.603Z) | 28/28 real getter/parser checks pass using the same GROQ over live documents plus proposed patches in memory; the separate CMS-only home quote overlay requires 0 conversions. |
 | Focused migration dry run | 3 creates, 21 guarded fill steps, 0 blocked published prerequisites; draft visibility is **unknown**. |
+| Home quote migration dry run | 0 conversions: published homeCopy already has editor-set join.quotes; preserved without append or replacement. Draft visibility is unknown. |
 | Production copy dry run | 0 missing source IDs; 86 existing target IDs skipped; no downloads or imports. |
 | Partner migration dry run | 0 creates, 0 updates, 54 unchanged organizations, 2 duplicate partner representations merged in the plan. |
 | Organization-reference dry run | 0 changes/deletions/creates; 0 unmatched or blocked; 2 edited roles preserved. |
@@ -24,6 +25,13 @@ handoff also protects initially existing fields and documents, so later editor u
 deletions cannot be restored by rerunning this migration version. No completion record was
 written during these read-only checks. The exact narrow source payload lives in
 `scripts/sanity/single-source-migration-data.json`; it is not a full content snapshot.
+
+After merging the homepage quote-list change, a separate CMS-only migration preserves an
+existing legacy join.quote as one join.quotes entry only when the new field is absent and the
+published member's story supports that excerpt. It never appends repository copy. Existing
+arrays and null stay untouched, and its independent durable completion record prevents later
+editor removals from being reseeded. The fresh dry run and projection required no conversion
+because the published homepage already contains join.quotes. No CMS writes were performed.
 
 The projection simulates planned image assets from retained files' measured dimensions. It
 proves query/parser compatibility only. It does **not** prove asset uploads, CDN delivery, live
@@ -75,6 +83,7 @@ in the environment or `.env.local`:
 
 ```sh
 pnpm sanity:migrate-single-source --dataset redesign
+pnpm sanity:migrate-home-quotes --dataset redesign
 pnpm sanity:ready --dataset redesign
 pnpm sanity:ready --dataset redesign --plan .sanity-backfill/redesign.single-source-migration.json
 pnpm sanity:copy-production --dataset redesign

@@ -6,23 +6,24 @@ import {
   Section,
   TextLink,
 } from "@tum.ai/ui-kit";
-import Image from "next/image";
 import { callToActionLabels } from "@/config/calls-to-action";
 import type { MemberStory } from "@/features/community";
 import { MembershipApplyButton } from "@/features/community/server";
 import type { HomeCopy } from "./data/homepage";
 import { JoinMark } from "./join-mark";
+import { MemberFaces } from "./member-faces";
 
 /**
  * The member call to action on ink, the page's bookend to the hero: the
  * logomark and its construction sheet in the background, running on into
- * the footer, a large invitation, a
- * member's own words and the faces of the people who run TUM.ai, beside the
+ * the footer, a large invitation, the
+ * members' own words and their faces, beside the
  * steps of a recruiting round (a real sequence, so these are the page's
  * only numbered items; their dates are the membership config's, through the
  * copy's placeholders). The apply button follows the dated application
  * window (`MembershipApplyButton`). `stories` are the member stories
- * (`getMemberStories()`): the quote's name picks its author.
+ * (`getMemberStories()`): each quote's stable key picks its member, whose face
+ * a visitor picks to read it (`MemberFaces`).
  */
 export function JoinSection({
   join,
@@ -31,8 +32,21 @@ export function JoinSection({
   join: HomeCopy["join"];
   stories: readonly MemberStory[];
 }) {
-  const { quote } = join;
-  const quoted = stories.find((story) => story.key === quote.key);
+  const quoted = join.quotes.flatMap(({ key, excerpt }) => {
+    const story = stories.find((entry) => entry.key === key);
+    return story
+      ? [
+          {
+            key,
+            name: story.name,
+            excerpt,
+            role: story.role,
+            image: story.image,
+            imagePosition: story.imagePosition,
+          },
+        ]
+      : [];
+  });
   return (
     <Section
       tone="ink"
@@ -93,32 +107,12 @@ export function JoinSection({
             </ol>
           </Reveal>
 
-          {quoted ? (
+          {quoted.length > 0 ? (
             <Reveal delay={160}>
-              <figure className="mt-12 max-w-xl border-hairline border-t pt-8 md:mt-16">
-                <blockquote className="text-fg text-heading-sm sm:text-heading-md">
-                  “{quote.excerpt}”
-                </blockquote>
-                <figcaption className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-4">
-                  <div className="flex -space-x-3">
-                    {stories.map((story) => (
-                      <Image
-                        key={story.key}
-                        src={story.image}
-                        alt=""
-                        width={48}
-                        height={48}
-                        className="size-9 rounded-full object-cover ring-2 ring-canvas sm:size-11"
-                        style={{ objectPosition: story.imagePosition }}
-                      />
-                    ))}
-                  </div>
-                  <div>
-                    <p className="font-medium text-fg text-small">
-                      {quoted.name}
-                    </p>
-                    <p className="text-fg-muted text-meta">{quoted.role}</p>
-                  </div>
+              <MemberFaces
+                key={JSON.stringify(quoted.map(({ key }) => key))}
+                members={quoted}
+                link={
                   <TextLink
                     href="/community#memberStories"
                     arrow
@@ -126,8 +120,8 @@ export function JoinSection({
                   >
                     Meet our members
                   </TextLink>
-                </figcaption>
-              </figure>
+                }
+              />
             </Reveal>
           ) : null}
         </div>

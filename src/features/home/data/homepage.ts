@@ -52,11 +52,11 @@ export type HomeCopy = {
     /** The recruiting round in order; the dates are placeholders. */
     steps: { title: string; dates: string }[];
     /**
-     * The member quoted in the join band: a sentence from their story on
+     * The members quoted in the join band: passages from their stories on
      * /community (the member stories), which supplies the name, role and
-     * portrait. The CMS reference supplies a stable key for matching the story.
+     * portrait. Each CMS reference supplies a stable key for matching its story.
      */
-    quote: { key: string; name: string; excerpt: string };
+    quotes: { key: string; name: string; excerpt: string }[];
   };
   /** The partner band: the case for partners, their quote, the partner wall. */
   partners: {

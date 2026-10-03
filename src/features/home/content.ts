@@ -50,7 +50,7 @@ const HOME_COPY_QUERY = defineQuery(`*[_id == "homeCopy"][0]{
     lead,
     stepsTitle,
     steps[]{ title, dates },
-    quote{ "key": person->key, "name": person->name, "story": person->story, "placement": person->placement, excerpt }
+    quotes[]{ "key": person->key, "name": person->name, "story": person->story, "placement": person->placement, excerpt }
   },
   partners{ title, lead, moreLabel, "quote": quote->key, "quotePlacement": quote->placement }
 }`);
@@ -110,13 +110,13 @@ const homeCopyParser = contentObject({
     steps: contentArray(
       contentObject({ title: contentString, dates: contentString }),
     ),
-    quote: (value, label, path) => {
+    quotes: contentArray((value, label, path) => {
       const quote = requireObject(value, label, path);
       const evidence = parseMemberEvidence(quote, label, path);
       if (!evidence)
         return contentError(label, path, "requires a member quote");
       return evidence;
-    },
+    }),
   }),
   partners: (value, label, path) => {
     const source = requireObject(value, label, path);
@@ -160,11 +160,18 @@ function selectHomeCopy(value: unknown): HomeCopy {
       "join.steps",
       "requires 1 to 4 recruiting steps",
     );
+  if (copy.join.quotes.length < 1 || copy.join.quotes.length > 8)
+    contentError(
+      "the homepage copy",
+      "join.quotes",
+      "requires 1 to 8 member quotes",
+    );
   for (const [path, keys] of [
     ["ledger", copy.ledger.map(({ key }) => key)],
     ["programs.items", copy.programs.items.map(({ id }) => id)],
     ["room.photos", copy.room.photos.map(({ key }) => key)],
     ["join.steps", copy.join.steps.map(({ title }) => title)],
+    ["join.quotes", copy.join.quotes.map(({ key }) => key)],
   ] as const) {
     if (new Set(keys).size !== keys.length)
       contentError(

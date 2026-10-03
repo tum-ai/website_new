@@ -28,6 +28,9 @@ delete process.env.MOCK_CMS_NOW;
 const { contentClient } = await import("../../src/lib/cms-content");
 contentClient.config({ useCdn: false });
 let draftPreflight: "verified" | "unknown" = "unknown";
+let homeQuotesProjection:
+  | { conversions: number; blocked: string[] }
+  | undefined;
 if (values.plan) {
   const { applyPlanToDocuments } = await import(
     "./single-source-migration-readiness"
@@ -43,7 +46,20 @@ if (values.plan) {
   const publishedDocuments = await contentClient.fetch<
     import("./single-source-migration").MigrationDocument[]
   >('*[!(_id in path("drafts.**")) && !(_id in path("versions.**"))]');
-  const projectedDocuments = applyPlanToDocuments(plan, publishedDocuments);
+  let projectedDocuments = applyPlanToDocuments(plan, publishedDocuments);
+  const { homeQuotesInput, planHomeQuotes, projectHomeQuotes } = await import(
+    "./home-quotes-plan"
+  );
+  const quotePlan = planHomeQuotes(homeQuotesInput(projectedDocuments), {
+    projectId,
+    dataset,
+  });
+  homeQuotesProjection = {
+    conversions: quotePlan.patches.length,
+    blocked: quotePlan.blocked,
+  };
+  if (!quotePlan.blocked.length)
+    projectedDocuments = projectHomeQuotes(quotePlan, projectedDocuments);
   const { evaluate, parse } = await import("groq-js");
   // Audit-process override only: the normal production reader and parsers stay unchanged.
   contentClient.fetch = (async (
@@ -142,6 +158,7 @@ const report = {
   plannedImages: Boolean(values.plan),
   uploadReadinessVerified: false,
   draftPreflight,
+  homeQuotesProjection,
   checkedAt: new Date().toISOString(),
   ready: results.every(({ ready }) => ready),
   results,
@@ -163,6 +180,16 @@ process.stdout.write(
 if (values.plan)
   process.stdout.write(
     "Projected validation uses simulated planned image assets. It does not verify uploads, CDN delivery, or live CMS readiness.\n",
+  );
+if (homeQuotesProjection)
+  process.stdout.write(
+    "Additional CMS-only home quote projection: " +
+      homeQuotesProjection.conversions +
+      " conversion(s)" +
+      (homeQuotesProjection.blocked.length
+        ? `; blocked: ${homeQuotesProjection.blocked.join("; ")}`
+        : "") +
+      ". Any proposed conversion requires the separate reviewed home quote migration.\n",
   );
 if (!report.ready) process.exitCode = 1;
 

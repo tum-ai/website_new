@@ -41,12 +41,16 @@ test("home copy has serializable complete quote groups and resolved artwork", as
   const content = await getHomeContent();
   expect(content.copy.hero.title).toBe("A place to build");
   expect(content.copy.room.photos).toHaveLength(5);
-  expect(content.copy.join.quote).toEqual({
-    key: "example-member",
-    name: "Example Member",
-    excerpt: "I built a small project with the team.",
-  });
-  expect(Object.getPrototypeOf(content.copy.join.quote)).toBe(Object.prototype);
+  expect(content.copy.join.quotes).toEqual([
+    {
+      key: "example-member",
+      name: "Example Member",
+      excerpt: "I built a small project with the team.",
+    },
+  ]);
+  expect(Object.getPrototypeOf(content.copy.join.quotes[0])).toBe(
+    Object.prototype,
+  );
   expect(JSON.parse(JSON.stringify(content.copy))).toEqual(content.copy);
   expect(content.copy.partners.quote).toBe("example-founder");
   expect(content.departmentCount).toBe(1);
@@ -58,7 +62,7 @@ test("empty departments yield zero without a local count", async () => {
 test("a missing member reference cannot acquire another author", async () => {
   state.edit = (docs) =>
     docs.filter((doc) => doc._id !== "person-member-story-example-member");
-  await expect(getHomeContent()).rejects.toThrow(/quote.key/);
+  await expect(getHomeContent()).rejects.toThrow(/quotes\[0\].key/);
 });
 test("the quoted excerpt must still occur in the resolved story", async () => {
   state.edit = (docs) =>
@@ -90,4 +94,75 @@ test("structural home lists retain required counts", async () => {
 test("missing required singleton fails visibly", async () => {
   state.edit = (docs) => docs.filter((doc) => doc._id !== "homeCopy");
   await expect(getHomeContent()).rejects.toBeInstanceOf(ContentError);
+});
+
+function replaceQuotes(docs: CmsFixtureDocument[], quotes: unknown) {
+  return docs.map((doc) =>
+    doc._id === "homeCopy"
+      ? { ...doc, join: { ...(doc.join as Record<string, unknown>), quotes } }
+      : doc,
+  );
+}
+const exampleQuote = {
+  _key: "example-member",
+  _type: "memberQuote",
+  person: { _type: "reference", _ref: "person-member-story-example-member" },
+  excerpt: "I built a small project with the team.",
+};
+
+test.each([undefined, null, [], Array.from({ length: 9 }, () => exampleQuote)])(
+  "required member quotes reject a missing, cleared or oversized list (%j)",
+  async (quotes) => {
+    state.edit = (docs) => replaceQuotes(docs, quotes);
+    await expect(getHomeContent()).rejects.toThrow(/join.quotes/);
+  },
+);
+
+test("each member can be quoted only once", async () => {
+  state.edit = (docs) =>
+    replaceQuotes(docs, [exampleQuote, { ...exampleQuote, _key: "duplicate" }]);
+  await expect(getHomeContent()).rejects.toThrow(/identifiers must be unique/);
+});
+
+test("each quote requires its own complete excerpt and member-story reference", async () => {
+  state.edit = (docs) =>
+    replaceQuotes(docs, [exampleQuote, { ...exampleQuote, excerpt: "" }]);
+  await expect(getHomeContent()).rejects.toThrow(/quotes\[1\].excerpt/);
+  state.edit = (docs) =>
+    docs.map((doc) =>
+      doc._id === exampleQuote.person._ref
+        ? { ...doc, placement: "e-lab-testimonial" }
+        : doc,
+    );
+  await expect(getHomeContent()).rejects.toThrow(/resolved member story/);
+});
+
+test("distinct members with the same name retain independent identity and order", async () => {
+  state.edit = (docs) => {
+    const member = docs.find((doc) => doc._id === exampleQuote.person._ref);
+    if (!member) throw new Error("Missing test person");
+    const second = {
+      ...member,
+      _id: "person-second",
+      key: "second-member",
+      story: "A second independent story.",
+    };
+    return replaceQuotes(
+      [...docs, second],
+      [
+        exampleQuote,
+        {
+          _key: "second",
+          _type: "memberQuote",
+          person: { _type: "reference", _ref: second._id },
+          excerpt: second.story,
+        },
+      ],
+    );
+  };
+  const { copy } = await getHomeContent();
+  expect(copy.join.quotes.map(({ key, name }) => ({ key, name }))).toEqual([
+    { key: "example-member", name: "Example Member" },
+    { key: "second-member", name: "Example Member" },
+  ]);
 });

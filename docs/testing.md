@@ -207,6 +207,15 @@ fails on missing or malformed content. For a reviewed dry-run plan, append
 changes in memory and evaluates the same queries and parsers, writing
 `redesign.projected-readiness.json`. Planned local images use simulated asset metadata; a
 passing projection proves content/query compatibility, not successful uploads or live readiness.
+The projection also checks a separate CMS-only home quote migration in memory and reports its
+additional conversions/blockers as homeQuotesProjection. It converts only a complete existing
+legacy join.quote into one join.quotes item with the same published member-story reference and
+excerpt. Existing arrays, including empty arrays or null, stay untouched and remain subject to
+the actual required runtime parser. No repository quote corpus is appended. The separate
+sanity:migrate-home-quotes command defaults to dry run and refuses production; future apply
+replans raw documents and atomically records revision-guarded conversions in the independent
+migration-home-quotes-2026-10 completion document. Its final handoff preserves later removals,
+including initially existing arrays. Without a read token, draft visibility remains unknown.
 Neither command changes CMS documents, assets or ledgers. A projected parser pass does not
 certify draft safety. Migration preflight uses raw-perspective draft inspection when
 `SANITY_API_READ_TOKEN` is available; without authentication it reports

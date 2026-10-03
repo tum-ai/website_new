@@ -8,7 +8,8 @@
     "scripts/sanity/apply-partner-migration.ts",
     "scripts/sanity/migrate-content-dedup-apply.ts",
     "scripts/sanity/migrate-org-references-apply.ts",
-    "scripts/sanity/single-source-migration-apply.ts"
+    "scripts/sanity/single-source-migration-apply.ts",
+    "scripts/sanity/migrate-home-quotes-apply.ts"
   ],
   // Loaded by path: playwright.config.ts `toHaveScreenshot.stylePath`.
   "ignoreFiles": ["e2e/visual-screenshot.css"],

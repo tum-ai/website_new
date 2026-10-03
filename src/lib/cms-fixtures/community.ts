@@ -226,7 +226,14 @@ export const communityFixtureDocuments: CmsFixtureDocument[] = [
           dates: "{{recruiting.application}}",
         },
       ],
-      quote: { person: member, excerpt },
+      quotes: [
+        {
+          _key: "example-member",
+          _type: "memberQuote",
+          person: member,
+          excerpt,
+        },
+      ],
     },
     partners: {
       title: "Build with us",

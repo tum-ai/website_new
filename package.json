@@ -31,7 +31,8 @@
     "sanity:copy-production": "tsx --tsconfig scripts/sanity/tsconfig.json scripts/sanity/copy-production.ts",
     "sanity:ready": "tsx --tsconfig scripts/sanity/tsconfig.json scripts/sanity/ready.ts",
     "sanity:repair-assets": "tsx --tsconfig scripts/sanity/tsconfig.json scripts/sanity/repair-assets-command.ts",
-    "sanity:migrate-single-source": "tsx --tsconfig scripts/sanity/tsconfig.json scripts/sanity/single-source-migration-cli.ts"
+    "sanity:migrate-single-source": "tsx --tsconfig scripts/sanity/tsconfig.json scripts/sanity/single-source-migration-cli.ts",
+    "sanity:migrate-home-quotes": "tsx --tsconfig scripts/sanity/tsconfig.json scripts/sanity/migrate-home-quotes.ts"
   },
   "dependencies": {
     "@calcom/embed-react": "^1.5.3",
