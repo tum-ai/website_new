@@ -63,8 +63,6 @@ export const HACKATHONS_COPY_QUERY = defineQuery(`*[_id == "hackathonsCopy"][0]{
     title,
     lead,
     linkLabel,
-    "photo": photo${CONTENT_IMAGE_PROJECTION},
-    photoCaption,
     figures{
       latest{ value, label },
       editions{ value, label },
@@ -160,7 +158,6 @@ export function buildHackathonsBackfill(): BackfillDocument[] {
       },
       makeathon: {
         ...makeathon,
-        photo: backfillContentImage(makeathon.photo),
         editionsPhoto: backfillContentImage(makeathon.editionsPhoto),
         editions: keyedItems(
           "makeathonEdition",

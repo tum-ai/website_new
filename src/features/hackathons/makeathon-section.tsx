@@ -1,4 +1,3 @@
-import Image from "next/image";
 import {
   ButtonLink,
   Container,
@@ -11,14 +10,17 @@ import {
   TextLink,
 } from "@/components/ds";
 import type { hackathonsView } from "./hackathons-view";
+import { MakeathonDawn } from "./makeathon-dawn";
 import { formatDayRange } from "./ribbon";
 
 type View = ReturnType<typeof hackathonsView>;
 
 /**
- * The flagship in two bands. The opener on night is the team on stage,
- * full bleed: the name set as large as the league's, what the Makeathon
- * is, its figures, and the way to its own site. Then on paper every
+ * The flagship in two bands. The opener on night is the hour before the
+ * Makeathon site's sunrise (`MakeathonDawn`): its dots gather above a
+ * horizon, its sun waits below it, and above them the name set as large as
+ * the league's, what the Makeathon is, its figures, and the way to its own
+ * site, where the sun rises. Then on paper every
  * edition as a ledger, newest first, the year set large like a figure (the
  * ribbon's top lane, read as a record), beside a photo that stays in view.
  */
@@ -27,7 +29,6 @@ export function MakeathonSection({
 }: {
   makeathon: View["makeathon"];
 }) {
-  const { photo } = makeathon;
   return (
     <>
       <Section
@@ -37,20 +38,8 @@ export function MakeathonSection({
         aria-labelledby="makeathon-title"
         className="scroll-mt-header overflow-clip"
       >
-        <div className="relative flex min-h-[88svh] flex-col justify-end">
-          <Image
-            src={photo.src}
-            alt={photo.alt}
-            fill
-            sizes="100vw"
-            className="-z-10 object-cover"
-            style={{ objectPosition: photo.objectPosition }}
-          />
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 -z-10 bg-linear-to-t from-canvas via-canvas/80 to-canvas/10 lg:bg-linear-to-r lg:via-canvas/65 lg:to-canvas/45"
-          />
-          <Container className="pt-48 pb-16 md:pt-64 md:pb-20">
+        <MakeathonDawn>
+          <Container className="pt-40 pb-24 md:pt-56 md:pb-32">
             <div className="grid gap-12 lg:grid-cols-12 lg:items-end lg:gap-16">
               <div className="lg:col-span-7">
                 <Reveal>
@@ -88,11 +77,8 @@ export function MakeathonSection({
                 />
               </Reveal>
             </div>
-            <p className="mt-12 text-fg-muted text-meta md:mt-16">
-              {makeathon.photoCaption}
-            </p>
           </Container>
-        </div>
+        </MakeathonDawn>
       </Section>
 
       <Section

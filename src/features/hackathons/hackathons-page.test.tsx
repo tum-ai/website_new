@@ -89,6 +89,17 @@ test("the league comes right after the hero, then the Makeathon", async () => {
   ]);
 });
 
+test("the Makeathon opener's dawn is decoration, with no photo of its own", async () => {
+  await renderPage();
+  const opener = document.getElementById("makeathon");
+  expect(opener).not.toBeNull();
+  if (!opener) return;
+  expect(within(opener).queryByRole("img")).toBeNull();
+  for (const layer of opener.querySelectorAll(".halftone, .sun"))
+    expect(layer.closest("[aria-hidden='true']")).not.toBeNull();
+  expect(opener.querySelectorAll(".halftone, .sun")).toHaveLength(2);
+});
+
 test("the league and the Makeathon each say Learn more, named by their site", async () => {
   await renderPage();
   for (const [name, url] of [

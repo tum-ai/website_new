@@ -171,13 +171,6 @@ export const hackathonsCopyType = defineType({
         copyString({ name: "title", title: "Title", max: 40 }),
         copyText({ name: "lead", title: "Lead", max: 400, placeholders: true }),
         copyString({ name: "linkLabel", title: "Link label", max: 40 }),
-        contentImageField({ name: "photo", title: "Photo", required: true }),
-        copyString({
-          name: "photoCaption",
-          title: "Photo caption",
-          description: "What, where and when the photo shows, factually.",
-          max: 80,
-        }),
         defineField({
           name: "figures",
           title: "Figures",

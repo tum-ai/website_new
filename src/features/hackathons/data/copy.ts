@@ -82,9 +82,6 @@ export type HackathonsCopy = {
     lead: string;
     /** The button to the Makeathon's site. */
     linkLabel: string;
-    photo: ContentImage;
-    /** What, where and when the photo shows. */
-    photoCaption: string;
     /**
      * The figures beside the opener. `{{editions}}`: the editions so far;
      * `{{since}}`: the year of the first.
@@ -185,15 +182,6 @@ export const hackathonsCopyTemplate: HackathonsCopy = {
     title: "The Makeathon",
     lead: "Our flagship. A weekend in which students and young professionals build AI for problems that companies, hospitals and research labs bring. It is free to take part, and our Makeathon team runs it from start to finish.",
     linkLabel: "Learn more",
-    photo: {
-      src: "/assets/homepage/Makeathon.webp",
-      width: 1920,
-      height: 1280,
-      alt: "The Makeathon team, in Makeathon shirts and lanyards, on stage in front of the event screen",
-      objectPosition: "50% 60%",
-    },
-    // TODO(content): which edition the photo is from.
-    photoCaption: "The Makeathon team on stage.",
     figures: {
       latest: {
         value: "{{community.makeathonSize}}+",
