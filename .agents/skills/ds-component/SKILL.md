@@ -35,8 +35,10 @@ Update the exact package version with pnpm and regenerate the lockfile. Read the
 release's public contracts and account for any pre-1.0 breaking changes. Keep the
 kit CSS imports and compiled-source registration; this app continues loading
 Manrope through Next.js. Retain `#app-root`, `#main-content`, `MotionProvider` and
-app-owned partner-rotation mechanics. Set media optimizer props explicitly where
-the application's CMS policy requires them.
+app-owned partner-rotation mechanics. Apply `isUnoptimizedRemoteImage` from
+`@/lib/image-optimization` to explicit kit media props, including nested images:
+Sanity image CDN URLs stay optimized, other HTTP(S) hosts bypass the optimizer,
+and local assets keep Next defaults. The kit's generic defaults differ from this policy.
 
 ## 4. Showcase and documentation
 

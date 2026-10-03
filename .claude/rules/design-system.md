@@ -16,8 +16,10 @@ Read `docs/design-system.md` for site rules and versioned kit API links.
   components come from `@tum.ai/ui-kit/shell`. Never deep-import internals,
   recreate a local primitive barrel, copy kit components or patch `node_modules`.
 - Keep navigation, site facts, CMS fetching and image policy in app adapters.
-  Supply them to kit components through public props. Explicitly set
-  `unoptimized` for CMS media where the app serves the original URL.
+  Supply them to kit components through public props. Set kit media `unoptimized`
+  using `isUnoptimizedRemoteImage` from `@/lib/image-optimization`: Sanity image CDN
+  URLs stay optimized, other HTTP(S) hosts bypass the optimizer. Apply the same
+  policy to nested media props; kit defaults differ from this app.
 - Use semantic tone tokens, type-scale utilities and public styling hooks.
   Do not locally override shared hover, press, focus or reduced-motion behaviour.
 - A shared variant, token or behaviour change belongs in the kit repository.

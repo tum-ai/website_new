@@ -150,9 +150,13 @@ website's rotating partner artwork; route CSS remains app-owned too.
 The layout provides `MotionProvider`, `#app-root` (the inert background for
 modals), and `#main-content` (the skip-link target). Header and footer adapters
 shape site facts, navigation, CMS content and logo URLs into kit props. Routes,
-image policy and data fetching remain in this application. Kit media receives
-explicit `unoptimized` where the app serves CMS URLs without the Next optimizer;
-local asset choices remain the caller's policy.
+image policy and data fetching remain in this application. Use the local
+`isUnoptimizedRemoteImage` helper in `src/lib/image-optimization.ts` and pass
+explicit `unoptimized` props (including nested image props) to kit media: Sanity
+image CDN URLs stay optimized (`false`), while other HTTP(S) image hosts bypass
+Next's optimizer (`true`). Local assets retain Next's default handling, including
+SVG passthrough. The kit's generic remote-image defaults differ from this app's
+policy, so callers must apply the helper when supplying dynamic media.
 
 `/design-system` demonstrates the installed package inside the website shell in
 development and Vercel previews. Production returns 404. Its coverage test compares

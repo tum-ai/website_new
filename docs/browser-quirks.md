@@ -1,9 +1,10 @@
 # Browser quirks
 
-Workarounds for browser behaviour, mostly Safari 26 on iPhone. Each entry says what Safari does,
-what the code does about it, and where. The code comments at those places are tagged "Safari"
-(`rg -n Safari src`); read them before changing the root background, the header, dialogs or the
-motion utilities.
+Workarounds for browser behaviour, mostly Safari 26 on iPhone. Each entry says what Safari does
+and how the website integrates the shared workaround. Read the
+[kit 0.2.0 browser notes](https://github.com/tum-ai/ui-kit/tree/v0.2.0/docs/browser-quirks.md)
+for implementation locations and Safari-tagged comments before changing the root background,
+header, dialogs or motion utilities. Shared mechanics no longer live in this app's source tree.
 
 WebKit in Playwright (Linux or macOS) does not reproduce the tinted status bar and toolbar. Check
 those items on a real iPhone with the checklist in
@@ -23,17 +24,22 @@ It ignores `theme-color`.
 **What the code does.**
 
 - The root canvas is brand black (`--color-black`, #0D0214): `html { background-color }` in
-  the kit `shell.css` imported by `src/styles/index.css`. Every page starts with a dark hero and ends with the night footer, so
+  the kit `shell.css` imported by `src/styles/index.css`. Every page starts with a dark hero
+  and ends with the night footer, so
   both ends of the page meet the browser chrome in the same colour. Page content sits on its own
   bands and `#main-content` is white, so the black never shows through.
 - `TopBlend` (the kit public export) fades a dark band's decorative layers (aurora,
-  logomark) into that flat canvas: at the top of heroes, and at the bottom of the footer
-  (`src/components/shell/footer.tsx`), so there is no seam against the status bar or toolbar.
+  logomark) into that flat canvas at the top of heroes and bottom of the kit `Footer`,
+  so there is no seam against the status bar or toolbar. The app footer adapter
+  (`src/components/shell/footer.tsx`) supplies content and links; the blend mechanics
+  belong to the kit implementation documented in its browser notes.
 - The layout still declares `themeColor: "#0d0214"` (`src/app/(site)/layout.tsx`) for browsers
   that read it, such as Chrome on Android.
 - The header's fixed container starts 12 px below the top edge
-  (the kit `Header`, configured by `src/components/shell/header.tsx`), so Safari doesn't tint the status bar from the header; once
-  the page scrolls, the page itself shows through behind the status bar.
+  in the kit `Header`, so Safari does not tint the status bar from the header; once the
+  page scrolls, the page itself shows through behind the status bar. The app header adapter
+  (`src/components/shell/header.tsx`) provides navigation, scheduled CTAs and pathname
+  options; positioning and scroll mechanics are implemented by the kit.
 
 History: #262 (`8b9be3c`, `9a13d68`, `ea80095`).
 
@@ -48,10 +54,12 @@ collapses and expands, so the visible viewport changes height while the large vi
   bar and toolbar (the kit `DialogContent`).
 - Modal dialogs are laid out in the dynamic viewport (`h-dvh`), so they always sit in the visible
   area and never under the toolbar.
-- The mobile menu is the ds `DialogContent variant="fullscreen"`: a flat ink panel over the whole
+- The kit `Header` mobile menu uses `DialogContent variant="fullscreen"`: a flat ink panel over the whole
   large viewport, so both bars tint to the same colour and no page shows below it. Its content
   uses `min-h-lvh` with a bottom padding of `100lvh - 100dvh`, so the last row can still scroll
-  above the toolbar on small phones and in landscape (`src/components/shell/header.tsx`).
+  above the toolbar on small phones and in landscape. Those viewport mechanics belong to the
+  kit `Header` and `DialogContent`; the app header adapter supplies the menu's navigation
+  and content. See the versioned kit browser notes for implementation locations.
 
 History: #262 (`401bd5f`, `9a13d68`, `9bab38f`).
 

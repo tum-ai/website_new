@@ -5,8 +5,8 @@ describe("isUnoptimizedRemoteImage", () => {
   test.each([
     "https://cdn.sanity.io/images/project/redesign/portrait-800x1200.webp",
     "https://cdn.sanity.io/images/project/redesign/photo.webp?w=600&fit=crop",
-    "/assets/people/portrait.webp",
-    "/assets/partners/logo.svg",
+    "/assets/homepage/IBM_visit.webp",
+    "/assets/tum_ai_logo_new.svg",
     "",
   ])("keeps configured Sanity images and local assets optimized: %s", (src) => {
     expect(isUnoptimizedRemoteImage(src)).toBe(false);
