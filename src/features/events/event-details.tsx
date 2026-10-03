@@ -10,13 +10,39 @@ import {
   DialogTrigger,
   FallbackImage,
 } from "@tum.ai/ui-kit";
+import { getImageProps } from "next/image";
 import type { ReactNode } from "react";
+import {
+  shouldWarmImages,
+  warmImage,
+} from "@/components/shell/route-image-preload";
+import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
 import type { EventDetails } from "./events";
 import { categoryLabel } from "./filters";
 import { HostLine } from "./host-line";
 import { Lockup } from "./lockup";
 
 const imageSizes = "(min-width: 768px) 28rem, 100vw";
+
+/**
+ * Loads the dialog's image as the reader shows intent to open it (points at,
+ * focuses or touches the trigger), with the request the dialog's `<img>` will
+ * make, so it is already there when the dialog opens.
+ */
+function warmDialogImage(src: string | undefined) {
+  if (!src || !shouldWarmImages()) return;
+  const { props } = getImageProps({
+    src,
+    alt: "",
+    fill: true,
+    sizes: imageSizes,
+    unoptimized: isUnoptimizedRemoteImage(src),
+  });
+  warmImage(
+    { src: props.src, srcSet: props.srcSet, sizes: props.sizes },
+    "high",
+  );
+}
 
 /**
  * What opens the dialog: a ds `Button` with a trailing arrow, or a plain
@@ -52,10 +78,14 @@ export function EventDetailsDialog({
 }) {
   const { title, date, location, category, hosts, description, image } =
     details;
+  const warm = () => warmDialogImage(image?.src);
 
   return (
     <Dialog>
       <DialogTrigger
+        onPointerEnter={warm}
+        onPointerDown={warm}
+        onFocus={warm}
         render={
           trigger.kind === "button" ? (
             <Button variant={trigger.variant} arrow />
@@ -73,7 +103,7 @@ export function EventDetailsDialog({
               src={image?.src}
               alt={image?.alt ?? ""}
               fill
-              unoptimized
+              unoptimized={isUnoptimizedRemoteImage(image?.src ?? "")}
               sizes={imageSizes}
               className="object-cover"
               fallback={<BrandPanel />}

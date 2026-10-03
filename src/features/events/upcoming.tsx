@@ -10,6 +10,7 @@ import {
 } from "@tum.ai/ui-kit";
 import { Fragment, type ReactNode } from "react";
 import { getSiteFacts } from "@/config/site-settings-content";
+import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
 import type { Event } from "@/lib/types";
 import { getEventsCopy } from "./content";
 import { EventDetailsDialog } from "./event-details";
@@ -162,7 +163,7 @@ function UpcomingEvent({ event }: { event: Event }) {
             src={event.poster}
             alt={`${title}, poster`}
             fill
-            unoptimized
+            unoptimized={isUnoptimizedRemoteImage(event.poster)}
             sizes="16rem"
             className="object-cover"
             fallback={<BrandPanel />}
