@@ -1,5 +1,6 @@
+import { ButtonLink, LogoTile } from "@tum.ai/ui-kit";
 import type { CSSProperties } from "react";
-import { ButtonLink, LogoTile } from "@/components/ds";
+import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
 import type { Partner } from "@/lib/types";
 import type { PartnersSections } from "./data/partners";
 import { getPartnerKey } from "./partner-key";
@@ -60,6 +61,7 @@ export function PartnerMarquee({
                   eager
                   name={partner.name}
                   src={image}
+                  unoptimized={isUnoptimizedRemoteImage(image ?? "")}
                   wordmark={
                     image && symbolOnlyLogos.has(image)
                       ? partner.name

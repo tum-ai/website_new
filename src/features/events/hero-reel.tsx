@@ -1,12 +1,12 @@
 "use client";
 
+import { Section } from "@tum.ai/ui-kit";
 import {
   type ComponentProps,
   type CSSProperties,
   useEffect,
   useRef,
 } from "react";
-import { Section } from "@/components/ds";
 import { useMediaQuery } from "@/lib/use-media-query";
 
 /** Pixels per line, for wheel events that report lines (Firefox). */

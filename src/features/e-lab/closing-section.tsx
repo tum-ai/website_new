@@ -5,7 +5,7 @@ import {
   Reveal,
   Section,
   TextLink,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
 import { callToActionLabels } from "@/config/calls-to-action";
 import { eLabPhaseCopyOf, eLabWindowClock } from "@/config/e-lab";
 import { getELabWindow } from "@/config/schedule-content";

@@ -4,7 +4,7 @@ import {
   Eyebrow,
   Reveal,
   Section,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
 import { callToActionLabels } from "@/config/calls-to-action";
 import { openSeatSlug } from "./data/projects";
 import { OverlapsFigure } from "./overlaps-figure";

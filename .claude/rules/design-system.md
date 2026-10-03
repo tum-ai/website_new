@@ -1,36 +1,31 @@
 ---
 paths:
-  - "src/components/ds/**"
+  - "src/features/design-system/**"
+  - "src/components/shell/**"
+  - "package.json"
 ---
 
-# Design system (`src/components/ds`)
+# UI kit integration
 
-Every page is built from these components, so a change here changes the whole site. Usage, tokens
-and composition rules: `docs/design-system.md` (with the props of every component). API
-conventions: the header of `index.ts`; where it and this file disagree, the header wins.
+The exact dependency `@tum.ai/ui-kit@0.2.0` owns shared primitives, tokens,
+utilities, interaction behaviour and generic shell components. This repository
+owns content, page composition and the adapters in `src/components/shell/`.
+Read `docs/design-system.md` for site rules and versioned kit API links.
 
-- **Imports:** only sibling ds files and `@/lib/cn`. Never features, shell, config or other `lib`
-  modules (Biome `noRestrictedImports` + `src/architecture.test.ts`). Data comes in through props.
-- **Public API:** export every public component and its `XProps` type from `index.ts`; consumers
-  import from `@/components/ds`, never from a file path.
-- **API shape:** cva for every variant prop. `as` picks the root element and `headingAs` the heading
-  level. `tone` means band tone only; text colour is `emphasis`. Props extend `ComponentProps<...>`
-  (React 19 ref as prop), not `ComponentPropsWithoutRef`. `className` targets the root;
-  multi-part components take a `classNames` object. Avoid prop names that collide with HTML
-  attributes (`byline`, not `role`). Links go through `Anchor`. TSDoc on every export and prop;
-  a renamed prop keeps a `@deprecated` alias naming its replacement for one release.
-- **Tokens:** read semantic tokens (`bg-canvas`, `bg-raised`, `text-fg`, `text-fg-muted`,
-  `border-hairline`, `text-highlight`, `bg-fg/[0.07]`) so the component works on every tone. No raw
-  hex or `rgb()`, no stock palette, no arbitrary font sizes: use the type-scale utilities.
-- **Server first:** no `"use client"` unless the file uses state, effects, refs to the DOM or
-  browser APIs. Interactive behaviour comes from Base UI (`@base-ui/react`), never a clickable `div`.
-- **Motion:** CSS first. `motion-safe:` on entrances and loops, `motion-reduce:` fallbacks on
-  transitions that move. Animate only `transform` and `opacity` (no `filter` on text), use
-  `ease-brand`, stay within 300 ms to 1.2 s. framer-motion only through `m` inside `LazyMotion`.
-- **Accessibility:** next/image instead of `<img>`; decorative SVGs get `aria-hidden`; links that
-  open a new tab say so; icon-only buttons require `aria-label`; no array-index keys.
-- **Every change** needs, in the same PR:
-  - a colocated `<name>.test.tsx` for behaviour (Testing Library, user-event, `axe()`),
-  - the showcase in `src/features/design-system/design-system-page.tsx` rendering each variant,
-  - the component list and API reference in `docs/design-system.md` updated.
-  The `ds-component` skill walks through it; run the `design-reviewer` subagent before the PR.
+- Import primitives and public types from `@tum.ai/ui-kit`; generic shell
+  components come from `@tum.ai/ui-kit/shell`. Never deep-import internals,
+  recreate a local primitive barrel, copy kit components or patch `node_modules`.
+- Keep navigation, site facts, CMS fetching and image policy in app adapters.
+  Supply them to kit components through public props. Explicitly set
+  `unoptimized` for CMS media where the app serves the original URL.
+- Use semantic tone tokens, type-scale utilities and public styling hooks.
+  Do not locally override shared hover, press, focus or reduced-motion behaviour.
+- A shared variant, token or behaviour change belongs in the kit repository.
+  Consume it after an upstream release by deliberately updating the exact pin.
+- A kit upgrade updates the showcase and versioned documentation links together.
+  `showcase-coverage.test.ts` checks the installed public runtime exports against
+  the showcase; `MotionProvider` is exercised by the site layout.
+- Package component tests, generated API docs and Storybook belong upstream.
+  Website tests cover app adapters, content, routing and package integration.
+  Locally run lint, typecheck and targeted tests; full suites/build/E2E/Visual
+  run in PR CI. Follow the `ds-component` skill for the handoff and integration.

@@ -1,4 +1,4 @@
-import type { LogoItem } from "@/components/ds";
+import type { LogoItem } from "@tum.ai/ui-kit";
 import { getPartnerKey } from "@/features/partners";
 import { getSafeExternalUrl } from "@/lib/security";
 import type { Partner, ResearchProject, ResearchStatus } from "@/lib/types";

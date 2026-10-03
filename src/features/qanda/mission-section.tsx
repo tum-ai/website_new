@@ -4,7 +4,7 @@ import {
   Section,
   SectionHeader,
   TextLink,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
 import { segmentPassage } from "@/lib/passage-spans";
 import type { QandaCopy, QandaEntry } from "./data/qanda";
 import { type AnswerItem, MissionAnswers } from "./mission-answers";

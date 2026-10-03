@@ -1,4 +1,4 @@
-import { Reveal } from "@/components/ds";
+import { Reveal } from "@tum.ai/ui-kit";
 import { ContactActions } from "../contact-actions";
 
 /** "Let’s talk." style closing row under a section's cards. */

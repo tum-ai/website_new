@@ -36,8 +36,8 @@ worktree (or a clone whose hooks aren't installed) reports `lefthook` as unused.
 
 Coverage: `pnpm test:coverage` writes `coverage/` (v8; `src/**` without tests, `src/sanity/**` and
 `src/app/studio/**`). CI uploads it as an artifact. The run fails below these line-coverage
-thresholds (`vitest.config.ts`): `src/lib/**` and `src/features/**/*.ts` 90 %,
-`src/components/ds/**` 80 %.
+thresholds (`vitest.config.ts`): `src/lib/**` and `src/features/**/*.ts` 90 %.
+Shared primitive coverage is owned by the UI kit.
 
 ### Vitest
 
@@ -122,8 +122,8 @@ keeps them in `knownIssues`; the list is empty today.
 | Change | Test |
 | --- | --- |
 | Logic in `lib/`, `config/`, `features/**/*.ts` | unit test next to the file (`*.test.ts`) |
-| Interactive UI: islands, ds behaviour | component test (`*.test.tsx`) with role queries, user-event and `axe()` |
-| New or changed ds component or prop | colocated test, showcase entry (`showcase-coverage.test.ts` fails on a missing export), docs table |
+| Interactive UI: islands, app adapters | component test (`*.test.tsx`) with role queries, user-event and `axe()` |
+| UI kit upgrade or app adapter change | app integration test, showcase coverage against installed exports, versioned API links; primitive tests stay upstream |
 | Site facts | `content-facts` and `e-lab-content` stay green without editing them; expectations derive from config |
 | CMS schema or query | a groq-js case in `src/lib/sanity-queries.test.ts`, fixtures in `mock-cms.ts` |
 | New route or user flow | the route in `siteRoutes` (`e2e/fixtures.ts`), a spec for the flow, and a visual baseline |

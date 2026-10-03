@@ -1,7 +1,7 @@
 "use client";
 
+import { Actions, Button, ButtonLink } from "@tum.ai/ui-kit";
 import { CalendarDays, Mail } from "lucide-react";
-import { Actions, Button, ButtonLink } from "@/components/ds";
 import { usePartnership } from "./partnership-context";
 import { getPartnershipEmailUrl } from "./partnerships";
 

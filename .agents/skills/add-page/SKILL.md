@@ -14,7 +14,7 @@ the route segment, the folder and every file.
 Create `src/features/<domain>/<domain>-page.tsx`, a server component that renders one `<main>`:
 
 ```tsx
-import { Container, PageHero, Section, SectionHeader } from "@/components/ds";
+import { Container, PageHero, Section, SectionHeader } from "@tum.ai/ui-kit";
 import { intro } from "./data/<domain>";
 
 /** The /<route> page. */

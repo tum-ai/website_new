@@ -1,5 +1,3 @@
-import { Brain, Handshake, Inbox, Rocket, Sparkles } from "lucide-react";
-import type { ReactNode } from "react";
 import {
   Accordion,
   AccordionItem,
@@ -54,7 +52,9 @@ import {
   TextLink,
   type Tone,
   TopBlend,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
+import { Brain, Handshake, Inbox, Rocket, Sparkles } from "lucide-react";
+import type { ReactNode } from "react";
 import { socialLinks } from "@/config/contact";
 import { eLabConfig } from "@/config/e-lab";
 import { organizationFacts } from "@/config/organization";
@@ -62,7 +62,7 @@ import { faqs } from "@/features/qanda/server";
 import { DesignSystemInteractive } from "./design-system-interactive";
 
 /*
- * Every export of src/components/ds appears on this page at least once, and
+ * Every runtime export of @tum.ai/ui-kit appears on this page at least once, and
  * every variant a component offers is shown side by side. `MotionProvider`
  * has no visuals: the site layout renders it.
  */
@@ -138,7 +138,7 @@ export function DesignSystemPage() {
         eyebrow="Living reference"
         title="Precise, calm, alive."
         emphasis="highlight"
-        lead="Every component on this page is the one used on the site. Tones, type, motion and interaction live in src/components/ds and src/styles/index.css."
+        lead="Every component on this page is the one used on the site. Tones, type, motion and interaction come from @tum.ai/ui-kit 0.2.0."
         actions={
           <>
             <ButtonLink href="#tones" arrow>

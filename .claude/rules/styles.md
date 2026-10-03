@@ -6,30 +6,27 @@ paths:
 
 # Styles and tokens
 
-`src/styles/index.css` is the only global stylesheet: Tailwind v4 configured in CSS (`@theme`),
-brand anchors, the violet and ink scales, the type scale, motion tokens and the tone surfaces. It
-imports its partials (`partner-rotation.css`: mechanics several routes share, which page CSS
-cannot hold because it loads only on its own route).
+`src/styles/index.css` imports Tailwind v4, `@tum.ai/ui-kit/tailwind.css`,
+`@tum.ai/ui-kit/shell.css` and app-specific `partner-rotation.css`. The kit owns
+brand scales, type scale, motion tokens, tone surfaces and shared utilities.
+The Next.js font loader in the site layout supplies Manrope and `--font-manrope`;
+keep the optional kit `fonts.css` out of this app to avoid duplicate loading.
 
-- **Cascade layers:** every rule lives in `@layer base`, `@layer components`, `@layer utilities`
-  or an `@utility`. Unlayered CSS beats every Tailwind utility and breaks overrides. Page CSS
-  (`src/features/<domain>/<domain>.css`) follows the same contract.
-- **Brand values:** anchors come from `docs/brand/source` (see the `tumai-ci` skill). Tonal steps
-  are derived from them; never invent hues. Raw hex and `rgb()` belong only in token definitions
-  here, never in components or page CSS: reference `var(--...)` or theme colours instead.
-- **Tones:** each `[data-tone]` block defines the full semantic set (`--tone-canvas`, `-raised`,
-  `-sunken`, `-fg`, `-fg-muted`, `-fg-subtle`, `-hairline`, `-hairline-strong`, `-accent`,
-  `-glow`). Every foreground pair must meet WCAG AA on its canvas; check contrast when you change one.
-- **New utilities:** write `@utility name { ... }`, not a plain class. Use the existing
-  `zoom-media` (hover zoom, with `group/zoom`) and `scroll-mt-header` (anchor offset) instead of
-  copies.
-- **Type:** add a `--text-*` token rather than arbitrary sizes in markup.
-- **Motion:** keyframes animate `transform` and `opacity`; never `filter` on text (Safari clips
-  filtered boxes and cuts descenders). Use `--ease-brand`; entrances at most 1.2 s. Anything that
-  loops or enters needs a reduced-motion path.
-- **Safari:** the `html` background is brand black on purpose (Safari tints its status bar and
-  toolbar from it). Read `docs/browser-quirks.md` and the comments tagged Safari before changing
-  root, header or dialog styles.
-- Biome lints CSS (`css.parser.tailwindDirectives`). Token changes affect every page: CI's Visual
-  job shows which routes moved; accept intended diffs with the `update-snapshots` label and list
-  them in the PR (`docs/testing.md`).
+- Keep the kit's Tailwind source registration so compiled package classes are
+  generated. Do not copy the package's stylesheet or utility lists locally.
+- Shared token or shell-style changes belong in an upstream kit release and an
+  exact dependency upgrade. Keep route composition and partner rotation here.
+- Every app rule lives in a cascade layer or an `@utility`: unlayered rules beat
+  Tailwind utilities and break overrides. Route CSS follows the same contract.
+- Use semantic theme tokens. Brand anchors come from `docs/brand/source` and the
+  versioned kit brand guide linked in `docs/design-system.md`. Never invent hues
+  or use raw hex, `rgb()` or stock palette values in app markup or page CSS.
+- Use the kit type scale, `zoom-media` (with `group/zoom`) and `scroll-mt-header`
+  instead of arbitrary font sizes or copied utilities.
+- Motion uses `transform`, `opacity` and `--ease-brand`, with reduced-motion
+  paths. Never animate filters on text. Partner artwork swaps retain their
+  existing app-owned mechanics and image policy.
+- The kit shell intentionally sets a brand-black root canvas for Safari chrome.
+  Read `docs/browser-quirks.md` before changing root, header or dialog integration.
+- Biome lints app CSS. CI Visual checks route changes; accept intended baselines
+  through `update-snapshots` and list the diffs in the PR (`docs/testing.md`).

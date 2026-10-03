@@ -22,7 +22,13 @@
       "enabled": true
     }
   },
-  "assist": { "actions": { "source": { "organizeImports": "on" } } },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
   "linter": {
     "enabled": true,
     "domains": {
@@ -37,7 +43,9 @@
         "useSortedClasses": {
           "level": "error",
           "fix": "safe",
-          "options": { "functions": ["cn", "cva"] }
+          "options": {
+            "functions": ["cn", "cva"]
+          }
         }
       },
       "performance": {
@@ -49,14 +57,34 @@
       "style": {
         "useFilenamingConvention": {
           "level": "error",
-          "options": { "filenameCases": ["kebab-case"] }
+          "options": {
+            "filenameCases": ["kebab-case"]
+          }
+        },
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "patterns": [
+              {
+                "group": [
+                  "@/components/ds",
+                  "@/components/ds/**",
+                  "@tum.ai/ui-kit/dist/**",
+                  "@tum.ai/ui-kit/src/**"
+                ],
+                "message": "Use the published @tum.ai/ui-kit entry points, not copied components or package internals."
+              }
+            ]
+          }
         }
       },
       "suspicious": {
         "noArrayIndexKey": "error",
         "noConsole": {
           "level": "error",
-          "options": { "allow": ["error", "warn"] }
+          "options": {
+            "allow": ["error", "warn"]
+          }
         }
       }
     }
@@ -69,34 +97,9 @@
   "overrides": [
     {
       "includes": ["knip.json"],
-      "json": { "parser": { "allowComments": true } }
-    },
-    {
-      "includes": ["src/components/ds/**"],
-      "linter": {
-        "rules": {
-          "style": {
-            "noRestrictedImports": {
-              "level": "error",
-              "options": {
-                "patterns": [
-                  {
-                    "group": [
-                      "@/features",
-                      "@/features/**",
-                      "@/components/shell",
-                      "@/components/shell/**",
-                      "@/config",
-                      "@/config/**",
-                      "@/lib/**",
-                      "!@/lib/cn"
-                    ],
-                    "message": "The design system may import only `@/lib/cn` and its own files."
-                  }
-                ]
-              }
-            }
-          }
+      "json": {
+        "parser": {
+          "allowComments": true
         }
       }
     },

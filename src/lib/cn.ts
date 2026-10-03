@@ -3,8 +3,8 @@ import { extendTailwindMerge } from "tailwind-merge";
 
 /**
  * tailwind-merge only knows Tailwind's stock scales. Every custom token and
- * utility from src/styles/index.css that competes with a stock class is
- * registered here; without it `text-display-xl` would read as a text color
+ * utility from @tum.ai/ui-kit/tailwind.css that competes with a stock class is
+ * registered here (the kit does not export its cn helper); without it `text-display-xl` would read as a text color
  * and be dropped next to `text-fg`. Keep this list in sync with the theme
  * (`src/lib/cn.test.ts` checks the important pairs).
  *
@@ -47,9 +47,20 @@ const twMerge = extendTailwindMerge({
       ],
       radius: ["signature"],
       ease: ["brand", "snappy", "in-out-soft"],
-      animate: ["rise", "rise-sm", "fade", "aurora", "drift", "pulse-ring"],
+      animate: [
+        "rise",
+        "rise-sm",
+        "fade",
+        "aurora",
+        "drift",
+        "pulse-ring",
+        "draw",
+      ],
     },
     classGroups: {
+      duration: [
+        { duration: ["press", "hover", "surface", "media", "entrance"] },
+      ],
       "fvn-spacing": ["tabular"],
       "scroll-mt": [{ "scroll-mt": ["header"] }],
     },

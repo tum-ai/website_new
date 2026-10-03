@@ -1,5 +1,5 @@
+import { Container, Section, SectionHeader } from "@tum.ai/ui-kit";
 import { Plus } from "lucide-react";
-import { Container, Section, SectionHeader } from "@/components/ds";
 import { fillPageTokens } from "@/lib/content-copy";
 import type { Event } from "@/lib/types";
 import { getEventsCopy } from "./content";

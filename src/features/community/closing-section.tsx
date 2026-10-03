@@ -5,7 +5,7 @@ import {
   Reveal,
   Section,
   TextLink,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
 import { callToActionLabels } from "@/config/calls-to-action";
 import type { CommunityCopy } from "./data/copy";
 import { MembershipApplyButton } from "./membership-apply-button";

@@ -4,7 +4,8 @@ import {
   Reveal,
   Section,
   SectionHeader,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
+import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
 import type { ELabCopy } from "./data/copy";
 import { eLabVoices, type TestimonialCard } from "./data/venture-page";
 import { getTestimonialCards } from "./venture-content";
@@ -38,6 +39,7 @@ function VoiceColumn({
               name={voice.name}
               byline={voice.role}
               portrait={{
+                unoptimized: isUnoptimizedRemoteImage(voice.portraitSrc),
                 src: voice.portraitSrc,
                 position: voice.portraitPosition,
               }}

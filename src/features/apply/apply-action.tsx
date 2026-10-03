@@ -1,5 +1,5 @@
+import { Button, ButtonLink, StatusBadge } from "@tum.ai/ui-kit";
 import type { ReactNode } from "react";
-import { Button, ButtonLink, StatusBadge } from "@/components/ds";
 import { callToActionLabels } from "@/config/calls-to-action";
 import { MembershipPhase } from "@/features/community";
 import {

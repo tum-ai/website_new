@@ -9,8 +9,9 @@ hold only adapters (see "Agent setup").
 The public website of TUM.ai, the AI student initiative at TUM (tum-ai.com): landing page, events,
 hackathons, research, projects, E-Lab (startup incubator), partners, community, apply, Q&A and
 legal pages.
-Stack: Next.js 16 App Router, React 19, TypeScript, Tailwind CSS v4 (CSS-first tokens), a Base UI
-design system in `src/components/ds`, Sanity CMS embedded at `/studio`, Vercel. pnpm 10, Node 24.
+Stack: Next.js 16 App Router, React 19, TypeScript, Tailwind CSS v4 (CSS-first tokens), the Base UI
+design system from `@tum.ai/ui-kit` (exact version 0.2.0), Sanity CMS embedded at `/studio`,
+Vercel. pnpm 10, Node 24.
 Biome lints and formats; Vitest runs unit and component tests; Playwright runs E2E, axe and visual.
 
 ## Commands
@@ -69,8 +70,7 @@ src/features/<domain>/            <domain>-page.tsx, sections, data/ (static cop
                                   content.ts and <topic>-content.ts (CMS content slices, server
                                   only), optional index.ts (isomorphic) and server.ts (server
                                   only): the only entries for other features
-src/components/ds/                design system (Base UI + tone tokens), barrel `@/components/ds`
-src/components/shell/             header, footer, skip link
+src/components/shell/             site adapters for @tum.ai/ui-kit/shell
 src/components/json-ld.tsx        JSON-LD script tag
 src/config/                       site facts and their slices (site-settings-content,
                                   schedule-content), content-tokens, navigation (incl. header CTA),
@@ -87,7 +87,7 @@ src/sanity/                       Studio config, desk structure and schemas (Typ
 scripts/sanity/                   backfill script, slice registry, copy from production, content
                                   migrations (migrate-partners, migrate-content-dedup,
                                   migrate-org-references)
-src/styles/index.css              tokens, tones, cascade layers, utilities
+src/styles/index.css              kit Tailwind/shell CSS imports + app-specific partner rotation
 src/proxy.ts                      host redirects (join.tum-ai.com to /apply)
 test/                             repo-wide fitness tests (content facts, assets, perf budget)
 e2e/                              Playwright specs, fixtures (siteRoutes) and Linux visual baselines
@@ -100,15 +100,16 @@ the rules it can express.
 |---|---|
 | `app` | one `features/<x>/<x>-page.tsx` and that feature's CSS only, plus components, config, lib, styles |
 | `app/studio` | sanity, lib |
-| `features/<x>` | own files, `features/<y>` via its `index.ts` (isomorphic) or `server.ts` (server only), ds, shell, `components/json-ld`, config, lib |
-| `components/ds` | own files, `lib/cn` |
-| `components/shell` | own files, ds, config, lib |
-| `components/*.tsx` | ds, config, lib |
+| `features/<x>` | own files, `features/<y>` via its `index.ts` (isomorphic) or `server.ts` (server only), kit, shell, `components/json-ld`, config, lib |
+| `components/shell` | own files, kit root and `/shell`, config, lib |
+| `components/*.tsx` | kit, config, lib |
 | `config` / `lib` / `sanity` | config and lib / lib / sanity and lib |
 | `src/proxy.ts` | config, lib |
 
-Outside the design system, import it through its barrel `@/components/ds`. The test has no
-exceptions.
+Import primitives and public types directly from `@tum.ai/ui-kit`; generic shell components
+come from `@tum.ai/ui-kit/shell`. The kit owns primitives, tokens and shared behaviour. Keep site
+content and integration adapters here; never copy kit source, deep-import its internals or add a
+local primitive barrel. See `docs/design-system.md` for versioned API links and upgrade guidance.
 
 Every feature folder has a `<name>-page.tsx`, and routes import exactly that module. A feature
 `index.ts` or `server.ts` never re-exports a page, and features never import CSS (the route
@@ -126,7 +127,8 @@ also fails when any `"use client"` module reaches a `server-only` module, `next/
 - Server components by default. `"use client"` only on leaf islands; shape data on the server and
   pass plain props. No `new Date()` during render in client code (hydration mismatch).
 - Styling uses tokens only: no raw hex or `rgb()` and no stock Tailwind palette (`gray-*`,
-  `slate-*`, `purple-*`) outside `src/styles/`. Use the type-scale utilities, not arbitrary sizes.
+  `slate-*`, `purple-*`) in app markup or styles. Shared tokens belong to the kit.
+  Use the type-scale utilities, not arbitrary sizes.
   Biome sorts classes inside `className`, `cn()` and `cva()`.
 - Site facts (dates, counts, emails, links, URLs) come from `src/config`, never from page code
   (`test/content-facts.test.ts` enforces this). Pages read them per render: `await
@@ -147,10 +149,10 @@ also fails when any `"use client"` module reaches a `server-only` module, `next/
 | Change a standing CTA label | `src/config/calls-to-action.ts` | |
 | Change a CMS type or field | `src/sanity/schemas/` then query, types, mock, UI | `cms-content-model` |
 | Move hard-coded content to the CMS | a content slice: schema in `src/sanity/schemas/content/`, `features/<x>/content.ts`, `scripts/sanity/slices.ts`, parity test; owners in `docs/cms-content-inventory.md` | `cms-content-model` |
-| Add or change a ds component | `src/components/ds/` + showcase + docs table | `ds-component` |
+| Add or change a shared UI primitive | upstream UI kit release, then exact dependency version + showcase | `ds-component` |
 | Change navigation or the header CTA | `src/config/navigation.ts` (links, `headerCtaSetting`, `getHeaderOptions`) | |
 | Change SEO or JSON-LD | `src/config/seo.ts` | |
-| Tokens, brand, logos, imagery | `src/styles/index.css`, ds components, `public/assets/` | `tumai-ci` |
+| Tokens, brand, logos, imagery | kit-owned tokens/primitives; app composition and `public/assets/` here | `tumai-ci` |
 | Host redirects | `src/lib/redirects.ts`, `src/proxy.ts` | |
 | A Safari workaround | the code tagged Safari + `docs/browser-quirks.md` | `ui-verify` |
 
@@ -159,7 +161,7 @@ also fails when any `"use client"` module reaches a `server-only` module, `next/
 | Change | Required test |
 |---|---|
 | Logic in `lib/`, `config/`, `features/**/*.ts` | unit test next to it (`*.test.ts`, node) |
-| Interactive UI (islands, ds behaviour) | component test (`*.test.tsx`: Testing Library, user-event, `axe()` from `@test/axe`) |
+| Interactive UI (islands, app adapters) | component test (`*.test.tsx`: Testing Library, user-event, `axe()` from `@test/axe`) |
 | Site facts | `content-facts` and `e-lab-content` tests stay green; derive expectations from config |
 | New route or user flow | the route in `siteRoutes` (`e2e/fixtures.ts`) and a spec for the flow; axe runs on every route |
 | Visible UI change | Visual baselines regenerated in CI: add the `update-snapshots` label to the PR. The bot commits only the changed PNG files and starts no CI; the next push runs it. Restore foreign PNG files in a `[skip ci]` commit, and list each intended diff in the PR's Visual changes table |
@@ -171,9 +173,10 @@ Layers, the visual baseline workflow and known flakes: `docs/testing.md`.
 
 ## Design and content rules
 
-Read `docs/design-system.md` before UI work. The ds API conventions (cva variants, `as` vs
-`headingAs`, `tone` vs `emphasis`, ref as prop, TSDoc) are in the header of
-`src/components/ds/index.ts` and in `docs/design-system.md`, with the props of every component.
+Read `docs/design-system.md` before UI work. It owns site composition guidance and links to the
+[kit 0.2.0 API conventions](https://github.com/tum-ai/ui-kit/tree/v0.2.0/docs/design-system.md)
+and [public API](https://github.com/tum-ai/ui-kit/tree/v0.2.0/docs/api.md). Shared primitive
+changes belong in the kit; upgrade this app through its exact dependency version.
 Hard rules:
 
 - Pages are `PageHero` (the `h1`) followed by full-bleed `<Section tone>` bands; the last band is
@@ -181,8 +184,9 @@ Hard rules:
 - Brand colours only, through tone tokens (`bg-canvas`, `text-fg`, `text-highlight`, ...). Primary
   actions are violet-600 for AA contrast, with dark purple on hover.
 - Motion: only `transform` and `opacity`, never `filter` on text; `motion-safe:` on every entrance
-  or loop; `ease-brand`; 300 ms to 1.2 s. No `Reveal` above the fold. framer-motion runs in
-  `LazyMotion strict`: import `m`, not `motion`.
+  or loop; `ease-brand`; 300 ms to 1.2 s. No `Reveal` above the fold. Use public kit
+  motion components (`MotionProvider`, `Reveal`, `SplitWords`, `CountUp`) or CSS utilities;
+  shared motion implementation belongs upstream.
 - Group actions in `Actions`; a button and a badge side by side share one size step. No meta rows,
   respect nested-corner radii, no `hyphens-auto` on `SplitWords` headlines.
 - Accessibility: one `main`, ordered headings, Base UI for anything interactive, meaningful `alt`,
@@ -232,7 +236,7 @@ Hard rules:
 - **`/design-system`** renders only in development and on Vercel previews; production returns 404.
 - **Safari 26.** The root canvas is brand black because Safari tints its status bar and toolbar from
   it; the header and dialogs have Safari-specific workarounds. `docs/browser-quirks.md` lists
-  them and the code comments tagged Safari (`rg -n Safari src`). Verify on a real iPhone
+  the app integration and link to the versioned kit browser notes. Verify on a real iPhone
   (`ui-verify`).
 - **`server-only`** modules (`lib/sanity.ts`) are stubbed in Vitest; mock `next/headers` in tests.
   Vitest resolves only the first of several concurrent dynamic imports of a `vi.mock`ed module
@@ -246,7 +250,7 @@ Hard rules:
 - Subagents (`.claude/agents/`): `design-reviewer` (diff vs design rules), `a11y-reviewer` (diff and
   axe), `docs-sync` (stale docs). Other harnesses: read the file and follow its procedure.
 - Scoped rules (`.claude/rules/`) load automatically in Claude; other agents read the matching file
-  before editing: `design-system.md` (`src/components/ds/**`), `features.md` (`src/features/**`),
+  before editing: `design-system.md` (`src/features/design-system/**`, `src/components/shell/**`, `package.json`), `features.md` (`src/features/**`),
   `app-router.md` (`src/app/**`), `styles.md` (`src/styles/**`, `**/*.css`),
   `content-and-config.md` (`src/config/**`, `src/features/**/data/**`), `sanity.md`
   (`src/sanity/**`, `src/lib/sanity*`, `src/lib/mock-cms*`, `src/lib/cms-*`, content slices,

@@ -1,7 +1,7 @@
 "use client";
 
+import { FaqList, TextLink } from "@tum.ai/ui-kit";
 import { Fragment, type ReactNode, useState } from "react";
-import { FaqList, TextLink } from "@/components/ds";
 import type { PassageSegment } from "@/lib/passage-spans";
 
 /** A question as the island receives it: its anchor id and rendered answer. */

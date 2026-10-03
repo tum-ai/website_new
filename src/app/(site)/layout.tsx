@@ -1,12 +1,12 @@
+import { MotionProvider } from "@tum.ai/ui-kit";
+import { SkipLink } from "@tum.ai/ui-kit/shell";
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity/visual-editing";
-import { MotionProvider } from "@/components/ds";
 import { Footer } from "@/components/shell/footer";
 import { Header } from "@/components/shell/header";
 import { RouteImagePreload } from "@/components/shell/route-image-preload";
-import { SkipLink } from "@/components/shell/skip-link";
 import { eLabCohortNameOf } from "@/config/e-lab";
 import {
   headerConnectLinksFor,

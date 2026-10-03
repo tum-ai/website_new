@@ -1,68 +1,57 @@
 ---
 name: ds-component
-description: How to add or change a component in the TUM.ai design system (src/components/ds). Use whenever you create a new ds component, add a variant, size or prop to an existing one, change its markup or behaviour, or replace a hand-rolled feature pattern with a shared component, even for a one-line variant tweak. It covers the API conventions (cva, as/headingAs, tone/emphasis, ref as prop, TSDoc), the colocated test with axe, the barrel export, the /design-system showcase and the docs table.
+description: Use when a website change needs a shared UI primitive, variant, token or behaviour, or when upgrading @tum.ai/ui-kit. Routes primitive changes to the standalone kit and covers consumer imports, app adapters, the exact dependency pin, showcase coverage and versioned documentation.
 ---
 
-# Add or change a ds component
+# Use or upgrade a shared UI component
 
-The design system is the only place shared UI is defined, and every page depends on it. A change
-is done when the component, its test, its showcase entry and its docs row all agree.
+`@tum.ai/ui-kit` owns shared UI. This website consumes its exact pinned release
+(currently 0.2.0), and owns page composition, content and site-specific adapters.
+Do not create a local primitive barrel, copy kit source or patch installed files.
 
-## 1. Check before building
+## 1. Check the public contract
 
-- Read `docs/design-system.md` (conventions and the API reference) and the header of
-  `src/components/ds/index.ts` (if the header and this skill disagree, the header wins).
-- Search for an existing component or variant first (`rg -n "export function" src/components/ds`).
-  Prefer a new variant on an existing component to a near-duplicate component.
+Read `docs/design-system.md` and its versioned links to the kit's public API,
+component notes and API conventions. Inspect the installed public declarations
+when checking a prop. Search existing page usage before inventing another pattern.
 
-## 2. Write the component
+Import primitives and public types from `@tum.ai/ui-kit`; generic header, footer
+and skip link come from `@tum.ai/ui-kit/shell`. Never deep-import implementation
+files. `references/component-template.md` shows a consumer composition example.
 
-Follow `references/component-template.md`. The short version:
+## 2. Choose the owner
 
-- One kebab-case file per component family in `src/components/ds/`.
-- Imports: React, Base UI, `class-variance-authority`, `lucide-react`, `next/*`, sibling ds files
-  and `@/lib/cn`. Nothing from features, shell, config or other `lib` modules.
-- Every variant prop is a cva variant with `defaultVariants`; export the `xStyles` function when
-  other components compose it.
-- `as` changes the root element; `headingAs` changes the heading level. `tone` only means a band
-  tone; text colour is `emphasis`.
-- Props: `ComponentProps<"div">` (React 19 passes `ref` as a prop) intersected with
-  `VariantProps<typeof xStyles>`; export the type as `XProps`.
-- TSDoc on the component and on every prop you add: what it is for, not how it works.
-- Semantic tone tokens only, type-scale utilities, `motion-safe:`/`motion-reduce:`, `ease-brand`.
-- No `"use client"` unless the component needs state, effects or browser APIs; use Base UI for
-  interactive behaviour.
+- Existing public component or variant: compose it in the feature using semantic
+  tokens and its public styling hooks.
+- App-specific content, CMS data, navigation, logo URLs or image policy: keep it
+  in the feature or `src/components/shell/` adapter and pass plain props.
+- Shared primitive, variant, token or interaction behaviour: implement and test
+  it in the standalone kit, following that repository's instructions. Release
+  upstream before consuming the change here; do not fork it inside the website.
 
-Export it (and `XProps`) from `src/components/ds/index.ts`.
+## 3. Integrate the release
 
-## 3. Test it
+Update the exact package version with pnpm and regenerate the lockfile. Read the
+release's public contracts and account for any pre-1.0 breaking changes. Keep the
+kit CSS imports and compiled-source registration; this app continues loading
+Manrope through Next.js. Retain `#app-root`, `#main-content`, `MotionProvider` and
+app-owned partner-rotation mechanics. Set media optimizer props explicitly where
+the application's CMS policy requires them.
 
-Colocate `src/components/ds/<name>.test.tsx` (jsdom project). Cover what could regress:
+## 4. Showcase and documentation
 
-- Rendering and the accessible role and name of each variant that changes semantics.
-- Keyboard and pointer behaviour with `userEvent` (open, close, arrow keys, Escape, focus return).
-- Reduced motion or no-JS output where the component animates (`matchMedia` stub, or
-  `renderToString` for server output).
-- `expect(await axe(container)).toHaveNoViolations()` with `axe` from `@test/axe`.
-- Type-level contracts with `expectTypeOf` when a prop is required (for example `aria-label`).
+Update `src/features/design-system/design-system-page.tsx` and interactive demos
+for changed public variants. `showcase-coverage.test.ts` reads the installed root
+public API and verifies its runtime exports are used. Check the dev or preview
+`/design-system`; it remains 404 in production.
 
-## 4. Showcase and docs
-
-- Render every variant in `src/features/design-system/design-system-page.tsx`, inside the fitting
-  `Block` (or a new one); interactive demos go in `design-system-interactive.tsx`.
-  `showcase-coverage.test.ts` fails when a barrel export isn't used there. Check it at
-  `/design-system` with `pnpm dev` or on the PR's Vercel preview.
-- Update `docs/design-system.md`: the entry under "Components" and the component's table under
-  "API reference" (prop, type, TSDoc), and the rules if the component introduces one.
+Update versioned kit links in `docs/design-system.md` and other consumer guidance
+when the dependency changes. Keep API tables and component tests upstream;
+document website-specific integration contracts here.
 
 ## 5. Verify
 
-```bash
-pnpm lint && pnpm typecheck
-pnpm exec vitest run src/components/ds/<name>.test.tsx src/features/design-system
-```
-
-A change to an existing component can move pixels on every page that uses it
-(`rg -l "<ComponentName>" src/features`). CI's Visual job shows which routes moved; follow the
-`ui-verify` skill to check and accept the diffs, and run the `design-reviewer` subagent before
-the PR.
+Run `pnpm lint`, `pnpm typecheck` and targeted Vitest for changed app tests,
+including `src/features/design-system/showcase-coverage.test.ts`. Full suites,
+build, E2E and visual checks run in this website's PR CI. Follow `ui-verify` for
+intended visual diffs and `.claude/agents/design-reviewer.md` for design review.

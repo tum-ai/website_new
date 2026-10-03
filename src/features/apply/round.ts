@@ -1,4 +1,4 @@
-import type { KeyDateItem } from "@/components/ds";
+import type { KeyDateItem } from "@tum.ai/ui-kit";
 import {
   type ApplicationProgress,
   applicationProgress,

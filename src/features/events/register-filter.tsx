@@ -1,7 +1,7 @@
 "use client";
 
+import { ChipGroup, Reveal } from "@tum.ai/ui-kit";
 import { type ReactNode, useMemo, useState } from "react";
-import { ChipGroup, Reveal } from "@/components/ds";
 import type { EventCategory } from "@/lib/types";
 import {
   ALL_EVENTS,

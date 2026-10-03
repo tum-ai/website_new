@@ -6,12 +6,12 @@ paths:
 # Feature folders (`src/features/<domain>`)
 
 One folder per domain: `home`, `apply`, `community`, `events`, `hackathons`, `e-lab`, `partners`,
-`projects`, `qanda`, `research`, `legal`, `design-system` (dev only).
+`projects`, `qanda`, `research`, `legal`, `design-system` (development and Vercel previews only).
 
 - **Layout:** `<domain>-page.tsx` exports the page component the route renders (for example
   `PartnersPage`). Sections and islands sit beside it (or in `sections/`), static copy in `data/`,
   domain logic in `*.ts`, tests next to the file they test. Every folder needs a `-page.tsx`.
-- **Imports:** own files; `@/components/ds` (the barrel); `@/components/shell/*`;
+- **Imports:** own files; `@tum.ai/ui-kit` (public primitives and types); `@/components/shell/*`;
   `@/components/json-ld`; `@/config/*`; `@/lib/*`. Another feature only through its entries,
   `@/features/partners` (its `index.ts`) or `@/features/partners/server`, never a deep path.
   `src/architecture.test.ts` enforces this.
@@ -33,7 +33,7 @@ One folder per domain: `home`, `apply`, `community`, `events`, `hackathons`, `e-
   `KeyDates`, `DayRuler`, `Steps`, `IndexList`, `Photo`, `QuoteCard` (with `editorial` and
   `ruled`), `PersonCard`, `LogoTile`, `LogoWall`, `FaqSection` (or `FaqList` inside a custom
   band), `CtaBand`, `BulletList`, `Actions`, and `Anchor` for links that bring their own styling.
-  If one lacks a variant you need, note it as a ds handoff rather than forking it.
+  If one lacks a variant you need, hand it off to the UI kit and consume a release; do not copy or fork primitives here.
 - **Tokens only:** no hex, `rgb()`, stock palette or arbitrary font sizes. Use the `zoom-media`
   (with `group/zoom`) and `scroll-mt-header` utilities for hover zoom and anchor offsets.
 - **Copy and facts:** facts per render from `await getSiteFacts()` and the windows

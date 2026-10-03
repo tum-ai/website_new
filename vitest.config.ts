@@ -20,7 +20,7 @@ export default defineConfig({
       deps: {
         // Imports `next/*` without file extensions, which Node's ESM resolver
         // rejects (`next` has no exports map); let Vite resolve them.
-        inline: ["next-sanity"],
+        inline: ["next-sanity", "@tum.ai/ui-kit"],
       },
     },
     coverage: {
@@ -29,15 +29,11 @@ export default defineConfig({
       exclude: ["src/**/*.test.{ts,tsx}", "src/sanity/**", "src/app/studio/**"],
       reporter: ["text-summary", "html", "json-summary"],
       reportsDirectory: "coverage",
-      // Line coverage per group, enforced by `pnpm test:coverage` (CI's Unit
-      // job). Logic is held to 90 %; ds components to 80 %, because their
-      // motion branches (such as CountUp's animation frames) only run in a
-      // real browser, where E2E and visual cover them. Measured at the
-      // time of adding: lib 99 %, features/**/*.ts 93 %, ds 90 %.
+      // Application logic keeps its existing coverage gates. Primitive coverage
+      // belongs to the published UI kit; website adapters are integration-tested.
       thresholds: {
         "src/lib/**": { lines: 90 },
         "src/features/**/*.ts": { lines: 90 },
-        "src/components/ds/**": { lines: 80 },
       },
     },
     projects: [

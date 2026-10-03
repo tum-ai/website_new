@@ -14,15 +14,15 @@ The caller may give a base ref. Otherwise use the PR base: `main`, or
 
 Guidance files: `AGENTS.md`, `CLAUDE.md`, `README.md`, `docs/**/*.md`, `.claude/rules/*.md`,
 `.claude/agents/*.md`, `.agents/skills/**/*.md`, `.github/pull_request_template.md`,
-`.env.example`, and TSDoc headers that describe layout (`src/components/ds/index.ts`,
-`src/architecture.test.ts`, feature `index.ts` files).
+`.env.example`, and TSDoc headers that describe layout (`src/architecture.test.ts`,
+feature `index.ts` files).
 
 ## Procedure
 
 1. **What changed:** `git diff --name-status -M <base>...HEAD`. Collect renamed, deleted and added
    paths; `package.json` script changes (`git diff <base>...HEAD -- package.json`); env var
-   names added or removed (`rg -o "process\.env\.[A-Z_]+"` in the diff); changed exports of
-   `src/components/ds/index.ts` and `src/config/*`; new or changed Biome rules and CI jobs.
+   names added or removed (`rg -o "process\.env\.[A-Z_]+"` in the diff); changed UI kit
+   dependency versions/public API usage and exports of `src/config/*`; new or changed Biome rules and CI jobs.
 2. **Stale references:** for every old path, script, env var or export, search the guidance files
    (`rg -n --fixed-strings "<old>" <guidance files>`).
 3. **Dead paths:** list backticked repository paths in the guidance files that no longer exist:
@@ -43,9 +43,9 @@ Guidance files: `AGENTS.md`, `CLAUDE.md`, `README.md`, `docs/**/*.md`, `.claude/
 4. **Forward references:** lines saying "coming in ...", "will", "once ... lands" or naming a
    future wave, whose target now exists, should drop the marker.
 5. **Missing guidance:** new conventions, commands, env vars or ds components that no guidance
-   mentions yet (for example a new script absent from the AGENTS.md command list, a new ds
-   component missing from `docs/design-system.md`, or a ds prop added, renamed or removed without
-   a matching row in its "API reference" table).
+   mentions yet (for example a new script absent from the AGENTS.md command list, a kit upgrade
+   without matching versioned links in `docs/design-system.md`, a runtime
+   export missing from the showcase, or an app adapter contract without documented ownership).
 6. **Sync contract:** every `.agents/skills/<name>` has a `.claude/skills/<name>` relative symlink
    that resolves (`ls -L .claude/skills/*/SKILL.md`), and `CLAUDE.md` still starts with
    `@AGENTS.md`.

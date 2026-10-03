@@ -1,9 +1,9 @@
 "use client";
 
+import { IconButton } from "@tum.ai/ui-kit";
 import { Minus, Plus } from "lucide-react";
 import type { CSSProperties, KeyboardEvent } from "react";
 import { useEffect, useId, useRef, useState } from "react";
-import { IconButton } from "@/components/ds";
 import { cn } from "@/lib/cn";
 import { EARTH_RADIUS_KM, type LocatedSite } from "./research";
 

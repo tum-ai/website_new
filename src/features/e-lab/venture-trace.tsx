@@ -6,7 +6,8 @@ import {
   Reveal,
   Section,
   SectionHeader,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
+import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
 import type { ELabCopy } from "./data/copy";
 import type { Gate } from "./data/selection";
 import {
@@ -67,6 +68,7 @@ export async function VentureTrace({
               name={founder.name}
               byline={founder.role}
               portrait={{
+                unoptimized: isUnoptimizedRemoteImage(founder.portraitSrc),
                 src: founder.portraitSrc,
                 position: founder.portraitPosition,
               }}
@@ -90,6 +92,7 @@ export async function VentureTrace({
             logos={otherVentures.map((startup) => ({
               name: startup.name,
               src: startup.logoSrc,
+              unoptimized: isUnoptimizedRemoteImage(startup.logoSrc),
               alt: startup.logoAlt,
               href: startup.href,
               wordmark: startup.wordmarkLabel,
@@ -127,6 +130,7 @@ function Trail({
           variant="chip"
           name={venture.name}
           src={venture.logoSrc}
+          unoptimized={isUnoptimizedRemoteImage(venture.logoSrc ?? "")}
           alt={venture.logoAlt}
           href={venture.href}
           wordmark={venture.wordmarkLabel}

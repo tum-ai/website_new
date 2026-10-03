@@ -7,7 +7,7 @@ import {
   Section,
   Text,
   TextLink,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
 import type { HomeCopy } from "./data/homepage";
 
 /**

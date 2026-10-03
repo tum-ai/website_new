@@ -1,4 +1,3 @@
-import { Fragment, type ReactNode } from "react";
 import {
   Actions,
   BrandPanel,
@@ -8,7 +7,8 @@ import {
   Section,
   SectionHeader,
   TextLink,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
+import { Fragment, type ReactNode } from "react";
 import { getSiteFacts } from "@/config/site-settings-content";
 import type { Event } from "@/lib/types";
 import { getEventsCopy } from "./content";

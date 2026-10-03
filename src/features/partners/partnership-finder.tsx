@@ -1,5 +1,6 @@
 "use client";
 
+import { Button, Highlight, IconBadge, Text } from "@tum.ai/ui-kit";
 import {
   ArrowLeft,
   ArrowRight,
@@ -20,7 +21,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { Button, Highlight, IconBadge, Text } from "@/components/ds";
 import { cn } from "@/lib/cn";
 import { splitAtPageToken } from "@/lib/content-copy";
 import { ContactActions } from "./contact-actions";

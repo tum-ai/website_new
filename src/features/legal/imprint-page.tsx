@@ -1,4 +1,4 @@
-import { Container, Eyebrow, PageHero, Prose, Section } from "@/components/ds";
+import { Container, Eyebrow, PageHero, Prose, Section } from "@tum.ai/ui-kit";
 import { registeredOfficeAddressLine } from "@/config/contact";
 import { legalEntity } from "@/config/organization";
 import { getSiteFacts } from "@/config/site-settings-content";

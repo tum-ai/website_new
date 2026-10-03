@@ -5,7 +5,7 @@ import {
   Reveal,
   Section,
   SectionHeader,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
 import type { Event } from "@/lib/types";
 import { getEventsCopy } from "./content";
 import { EventDetailsDialog } from "./event-details";

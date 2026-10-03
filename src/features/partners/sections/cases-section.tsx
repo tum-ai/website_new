@@ -5,7 +5,8 @@ import {
   Reveal,
   Section,
   SectionHeader,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
+import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
 import type { PartnerCaseStudy, PartnersSections } from "../data/partners";
 import { ContactRow } from "./contact-row";
 import { Lines } from "./lines";
@@ -39,6 +40,7 @@ export function CasesSection({
             >
               <Photo
                 src={study.image}
+                unoptimized={isUnoptimizedRemoteImage(study.image)}
                 alt={study.alt}
                 aspect="3/2"
                 position={study.imagePosition}

@@ -1,0 +1,48 @@
+name: UI kit migration reference
+
+# Temporary evidence capture for the migration; removed once its artifacts
+# establish the exact unmodified PR #264 rendering in the same CI container.
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ui-kit-reference-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  reference:
+    if: ${{ github.head_ref == 'refactor/use-ui-kit' }}
+    name: Reference (${{ matrix.browser }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, webkit]
+    env:
+      USE_MOCK_CMS: "1"
+      BROWSER: ${{ matrix.browser }}
+    steps:
+      - name: Checkout unmodified migration base
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: 8b58699d82ba87daa75a7dab2886f3b527ea3498
+          persist-credentials: false
+      - name: Set up toolchain
+        uses: ./.github/actions/setup
+      - name: Check the image matches Playwright
+        uses: ./.github/actions/check-playwright-image
+      - name: Capture current base rendering
+        run: pnpm test:e2e:visual --project="visual-$BROWSER" --update-snapshots=all
+      - name: Preserve reference screenshots
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ui-kit-base-${{ matrix.browser }}
+          path: e2e/__screenshots__/linux/visual-${{ matrix.browser }}/
+          if-no-files-found: error
+          retention-days: 30

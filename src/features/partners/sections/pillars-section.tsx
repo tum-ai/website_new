@@ -1,5 +1,3 @@
-import { ArrowUpRight } from "lucide-react";
-import Link from "next/link";
 import {
   Container,
   CountUp,
@@ -7,7 +5,10 @@ import {
   Reveal,
   Section,
   SectionHeader,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
+import { ArrowUpRight } from "lucide-react";
+import Link from "next/link";
+import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
 import type { PartnerPillar, PartnersSections } from "../data/partners";
 import { Lines } from "./lines";
 
@@ -42,6 +43,7 @@ export function PillarsSection({
             >
               <Photo
                 src={pillar.image.src}
+                unoptimized={isUnoptimizedRemoteImage(pillar.image.src)}
                 alt={pillar.image.alt}
                 aspect="4/3"
                 position={pillar.image.objectPosition}

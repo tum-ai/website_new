@@ -1,4 +1,4 @@
-import { FaqSection } from "@/components/ds";
+import { FaqSection } from "@tum.ai/ui-kit";
 import { eLabCohortNameOf } from "@/config/e-lab";
 import { getSiteFacts } from "@/config/site-settings-content";
 import { ApplicationField } from "./application-field";

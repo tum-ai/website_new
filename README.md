@@ -7,7 +7,7 @@ startup incubator, partners, community, apply, Q&A and the legal pages.
 ## Stack
 
 - Next.js 16 (App Router) and React 19, TypeScript
-- Tailwind CSS v4, configured in CSS, with a Base UI design system in `src/components/ds`
+- Tailwind CSS v4, configured in CSS, with the Base UI design system from `@tum.ai/ui-kit` (pinned to 0.2.0)
 - Sanity CMS for events, research projects and partners (and, step by step, page content), with
   the Studio embedded at `/studio` (one dataset, `NEXT_PUBLIC_SANITY_DATASET`: `redesign` for
   the new site)
@@ -66,12 +66,11 @@ src/
 ├── app/studio/                   the embedded Sanity Studio (its own root layout)
 ├── app/api/                      public JSON API and draft-mode routes
 ├── features/<domain>/            everything a page owns: page module, sections, data, logic, tests
-├── components/ds/                the design system (import from @/components/ds)
-├── components/shell/             header, footer, skip link
+├── components/shell/             site adapters for @tum.ai/ui-kit/shell
 ├── config/                       site facts, navigation and SEO
 ├── lib/                          Sanity fetch layer and queries, mock CMS, time, security
 ├── sanity/                       Studio config and schemas
-└── styles/index.css              tokens, tones, cascade layers
+└── styles/index.css              kit styles and app-owned partner rotation
 e2e/                              Playwright specs, fixtures and visual baselines
 test/                             repo-wide fitness tests
 docs/                             contributor docs, ADRs, brand sources
@@ -88,7 +87,7 @@ The import rules between these layers are enforced by `src/architecture.test.ts`
 | Events, research or partners content | `/studio` (locally or on a preview deployment) |
 | Navigation or the header call to action | `src/config/navigation.ts` |
 | SEO or JSON-LD | `src/config/seo.ts` |
-| A shared component or token | `src/components/ds/`, `src/styles/index.css` |
+| A shared component or token | [UI kit 0.2.0](https://github.com/tum-ai/ui-kit/tree/v0.2.0); release upstream, then update the exact package pin |
 
 ## Draft preview
 
@@ -101,7 +100,7 @@ the page shows drafts live. The token stays on the server. Details:
 
 - [docs/architecture.md](docs/architecture.md): layout, import rules, data flow
 - [docs/contributor-guide.md](docs/contributor-guide.md): recipes for common changes
-- [docs/design-system.md](docs/design-system.md): tones, typography, components and their props
+- [docs/design-system.md](docs/design-system.md): site composition, integration and versioned kit API links
 - [docs/testing.md](docs/testing.md): test layers, what to test, visual baselines
 - [docs/github-actions.md](docs/github-actions.md): CI, the snapshot workflow, Dependabot
 - [docs/browser-quirks.md](docs/browser-quirks.md): Safari 26 workarounds

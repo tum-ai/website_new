@@ -4,8 +4,9 @@ import {
   Reveal,
   Section,
   SectionHeader,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
 import type { Department } from "@/lib/community-model";
+import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
 import type { CommunityCopy } from "./data/copy";
 
 /**
@@ -52,6 +53,7 @@ export function DepartmentsSection({
               {department.photo ? (
                 <Photo
                   src={department.photo.src}
+                  unoptimized={isUnoptimizedRemoteImage(department.photo.src)}
                   alt={department.photo.alt}
                   caption={department.photoCaption}
                   position={department.photo.objectPosition}

@@ -5,16 +5,19 @@ description: TUM.ai corporate identity for the website. Use whenever a change to
 
 # TUM.ai CI
 
-The site's look is the 2026 TUM.ai brand guide, implemented as tokens in `src/styles/index.css`
-and components in `src/components/ds`. Work from those files, not from memory: the tokens are
-already tuned for WCAG AA, and guessed values usually break contrast or drift off brand.
+The site's look is the 2026 TUM.ai brand guide, implemented by the pinned
+`@tum.ai/ui-kit` 0.2.0 primitives and `@tum.ai/ui-kit/tailwind.css`. Work from the
+installed public contracts and versioned kit docs linked in `docs/design-system.md`,
+not from memory. The app stylesheet imports the kit; shared token or primitive
+changes belong upstream and reach this site through an exact dependency upgrade.
 
 ## Read first
 
 - `references/brand-tokens.md`: palette, tones, type scale, logos, buttons, identity.
 - `docs/design-system.md`: tones, typography, components, motion and composition rules.
 - Sources when the summary isn't enough: `docs/brand/source/brand-guidelines.pdf`,
-  `docs/brand/source/colors.jpeg`, `src/styles/index.css`, `src/components/ds/button.tsx`.
+  `docs/brand/source/colors.jpeg`, the installed kit public API and
+  [kit brand guide](https://github.com/tum-ai/ui-kit/tree/v0.2.0/docs/brand.md).
 
 ## Workflow
 

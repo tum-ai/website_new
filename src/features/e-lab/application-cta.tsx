@@ -1,4 +1,4 @@
-import { ButtonLink, StatusBadge } from "@/components/ds";
+import { ButtonLink, StatusBadge } from "@tum.ai/ui-kit";
 import {
   eLabApplicationCopyOf,
   eLabPhaseCopyOf,

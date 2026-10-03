@@ -5,9 +5,10 @@ import {
   LogoTile,
   Section,
   SplitWords,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
 import { callToActionLabels } from "@/config/calls-to-action";
 import { getHighlightedPartners, getPartnerKey } from "@/features/partners";
+import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
 import type { Partner } from "@/lib/types";
 import type { HomeCopy } from "./data/homepage";
 import { HeroAperture } from "./hero-aperture";
@@ -99,6 +100,7 @@ export function HomeHero({
                     variant="bare"
                     name={partner.name}
                     src={partner.image}
+                    unoptimized={isUnoptimizedRemoteImage(partner.image ?? "")}
                     className="h-full w-full max-w-28 justify-start"
                   />
                 </li>

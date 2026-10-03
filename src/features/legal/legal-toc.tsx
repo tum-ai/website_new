@@ -1,12 +1,12 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
-import { type MouseEvent, useEffect, useState } from "react";
 import {
   Collapsible,
   CollapsiblePanel,
   CollapsibleTrigger,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
+import { ChevronDown } from "lucide-react";
+import { type MouseEvent, useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
 
 export type LegalTocItem = {

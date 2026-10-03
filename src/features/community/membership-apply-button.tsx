@@ -1,4 +1,4 @@
-import { ButtonLink } from "@/components/ds";
+import { ButtonLink } from "@tum.ai/ui-kit";
 import { callToActionLabels } from "@/config/calls-to-action";
 import { membershipWindowClock } from "@/config/membership";
 import { getMembershipWindow } from "@/config/schedule-content";

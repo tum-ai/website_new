@@ -10,9 +10,10 @@ import {
   SectionHeader,
   Steps,
   Text,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
 import { callToActionLabels } from "@/config/calls-to-action";
 import { getResearchPartners } from "@/features/partners/server";
+import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
 import type { ResearchProject } from "@/lib/types";
 import { AffiliationIndex } from "./affiliations";
 import { getLabSiteList, getResearchCopy } from "./content";
@@ -121,7 +122,12 @@ export async function ResearchPage({
             <Reveal variant="fade">
               <LogoWall
                 layout="strip"
-                logos={partnerLogos}
+                logos={partnerLogos.map((logo) => ({
+                  ...logo,
+                  unoptimized:
+                    logo.unoptimized ??
+                    isUnoptimizedRemoteImage(logo.src ?? ""),
+                }))}
                 label={copy.partnersLabel}
                 className="mt-8 border-hairline border-b pb-16 md:pb-20"
               />
@@ -210,7 +216,11 @@ export async function ResearchPage({
           <LogoWall
             layout="strip"
             logos={rexInstitutions.map(
-              ({ key: _key, shortName: _shortName, ...logo }) => logo,
+              ({ key: _key, shortName: _shortName, ...logo }) => ({
+                ...logo,
+                unoptimized:
+                  logo.unoptimized ?? isUnoptimizedRemoteImage(logo.src ?? ""),
+              }),
             )}
             label={rex.logosLabel}
             className="mt-8"

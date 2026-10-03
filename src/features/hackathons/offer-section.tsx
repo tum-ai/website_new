@@ -4,7 +4,7 @@ import {
   Reveal,
   Section,
   SectionHeader,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
 import type { HackathonsCopy } from "./data/copy";
 
 /** A partner's result from one hackathon, as its case study states it. */

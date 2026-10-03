@@ -2,6 +2,7 @@ import { axe } from "@test/axe";
 import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { usePathname } from "next/navigation";
+import { renderToString } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import type { Campaign } from "@/config/campaigns";
 import { eLabApplicationCopy } from "@/config/e-lab";
@@ -53,8 +54,8 @@ function renderHeader(
   vi.mocked(usePathname).mockReturnValue(pathname);
   // The site-wide CTA the server rendered for this membership state.
   const initialCta = getHeaderOptions("/", { membershipOpen }).cta;
-  // The ds Dialog makes `#app-root` inert while the menu is open.
-  return render(
+  // The packaged dialog makes the website root inert while its menu is open.
+  const view = () => (
     <div id="app-root">
       <Header
         ctaSchedule={schedule}
@@ -62,8 +63,16 @@ function renderHeader(
         connectLinks={headerConnectLinks}
         liveClock={liveClock}
       />
-    </div>,
+    </div>
   );
+  const result = render(view());
+  return {
+    ...result,
+    rerenderAt(nextPathname: string) {
+      vi.mocked(usePathname).mockReturnValue(nextPathname);
+      result.rerender(view());
+    },
+  };
 }
 
 beforeEach(() => {
@@ -75,6 +84,49 @@ afterEach(() => {
 });
 
 describe("header CTA", () => {
+  test("server HTML preserves the supplied CTA before the live clock mounts", () => {
+    const schedule = scheduleWith();
+    const initialCta = getHeaderOptions("/", { membershipOpen: true }).cta;
+    if (!initialCta) throw new Error("expected a server CTA");
+    vi.mocked(usePathname).mockReturnValue("/events");
+    vi.useFakeTimers({ toFake: ["Date"] });
+    try {
+      vi.setSystemTime((schedule.membership.closesAt ?? 0) + 60_000);
+      const markup = renderToString(
+        <Header
+          ctaSchedule={schedule}
+          initialCta={initialCta}
+          connectLinks={headerConnectLinks}
+        />,
+      );
+      const serverPage = document.createElement("div");
+      serverPage.innerHTML = markup;
+      expect(
+        within(serverPage).getByRole("link", { name: initialCta.label }),
+      ).toHaveAttribute("href", initialCta.href);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  test("a fixed render clock keeps the supplied CTA after the browser deadline", () => {
+    const schedule = scheduleWith();
+    const initialCta = getHeaderOptions("/", { membershipOpen: true }).cta;
+    if (!initialCta) throw new Error("expected a server CTA");
+    vi.useFakeTimers({ toFake: ["Date"] });
+    try {
+      vi.setSystemTime((schedule.membership.closesAt ?? 0) + 60_000);
+      renderHeader("/events", { schedule, liveClock: false });
+      expect(
+        within(screen.getByRole("banner")).getByRole("link", {
+          name: initialCta.label,
+        }),
+      ).toHaveAttribute("href", initialCta.href);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   test.each([
     ["/events", true],
     ["/events", false],
@@ -178,6 +230,25 @@ describe("logo", () => {
 });
 
 describe("mobile menu", () => {
+  test("route navigation closes the menu and applies the new route CTA", async () => {
+    const user = userEvent.setup();
+    const { rerenderAt } = renderHeader("/events");
+    await user.click(screen.getByRole("button", { name: "Open menu" }));
+    await screen.findByRole("dialog", { name: "Menu" });
+
+    rerenderAt("/partners");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(document.getElementById("app-root")?.inert).toBe(false);
+    const { cta } = getHeaderOptions("/partners", { membershipOpen: true });
+    if (!cta) throw new Error("expected the partner route CTA");
+    expect(
+      within(screen.getByRole("banner")).getByRole("link", { name: cta.label }),
+    ).toHaveAttribute("href", cta.href);
+
+    rerenderAt("/events");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
   test("opens as a modal dialog with the main links and closes on Escape", async () => {
     const user = userEvent.setup();
     const { baseElement } = renderHeader("/events");
@@ -186,6 +257,9 @@ describe("mobile menu", () => {
     await user.click(trigger);
     const menu = await screen.findByRole("dialog", { name: "Menu" });
     expect(document.getElementById("app-root")?.inert).toBe(true);
+    expect(
+      within(menu).getByRole("button", { name: "Close menu" }),
+    ).toHaveFocus();
 
     const nav = within(menu).getByRole("navigation", { name: "Main" });
     expect(
@@ -213,6 +287,7 @@ describe("mobile menu", () => {
 
     await user.click(within(menu).getByRole("link", { name: "Research" }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(document.getElementById("app-root")?.inert).toBe(false);
   });
 
   test("external connect links announce the new tab", async () => {

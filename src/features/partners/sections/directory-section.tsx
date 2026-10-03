@@ -1,4 +1,4 @@
-import { Container, Reveal, Section, SectionHeader } from "@/components/ds";
+import { Container, Reveal, Section, SectionHeader } from "@tum.ai/ui-kit";
 import type { Partner } from "@/lib/types";
 import type { PartnersSections } from "../data/partners";
 import { getPartnerKey } from "../partner-key";

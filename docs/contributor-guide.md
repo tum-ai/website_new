@@ -9,12 +9,12 @@ in [testing.md](testing.md).
 - `src/app/(site)/<route>/page.tsx`: thin routes (metadata, JSON-LD, the page module).
 - `src/features/<domain>/`: everything a page owns: `<domain>-page.tsx`, sections, islands,
   `data/` (static copy), domain logic and tests.
-- `src/components/ds/`: the design system; `src/components/shell/`: header, footer, skip link.
+- `@tum.ai/ui-kit` 0.2.0: shared primitives; `src/components/shell/`: adapters for the kit shell.
 - `src/config/`: site facts (the code fallback of the CMS site settings), navigation, CTA labels
   and SEO.
 - `src/lib/`: the Sanity fetch layer and queries, the content source and shared content slices,
   mock CMS, Munich time, security, redirects.
-- `src/sanity/schemas/`: the CMS content model. `src/styles/index.css`: tokens and tones.
+- `src/sanity/schemas/`: the CMS content model. `src/styles/index.css`: kit stylesheet imports and app-specific CSS.
 
 If you're unsure where to edit, start at the route in `src/app/(site)/`, follow its import to the
 page module, then to the section.
@@ -214,11 +214,12 @@ return `NextResponse.json(...)`, and don't duplicate query logic in the handler.
 
 ### Change styling, tokens or a component
 
-- Tokens, tones and utilities: `src/styles/index.css`. Every rule goes in a cascade layer or an
-  `@utility`.
-- Components: `src/components/ds/`, following the conventions in
-  [design-system.md](design-system.md) and the `ds-component` skill (test, showcase entry, docs
-  table in the same PR).
+- Tokens, tones and shared utilities: `@tum.ai/ui-kit/tailwind.css`. The app imports it from
+  `src/styles/index.css`; keep app CSS in a cascade layer or an `@utility`.
+- Components: import the public API from `@tum.ai/ui-kit`. Shared primitive changes belong in
+  the [kit repository](https://github.com/tum-ai/ui-kit/tree/v0.2.0), followed by a release and
+  exact dependency upgrade here. Follow [design-system.md](design-system.md) and the
+  `ds-component` skill for the app integration and showcase.
 - Page-only CSS, if unavoidable: `src/features/<domain>/<domain>.css`, imported by the route.
 
 ### Add or replace assets

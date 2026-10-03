@@ -1,4 +1,4 @@
-import { LogoTile, type LogoTileProps } from "@/components/ds";
+import { LogoTile, type LogoTileProps } from "@tum.ai/ui-kit";
 import { getSafeExternalUrl } from "@/lib/security";
 import type { Partner } from "@/lib/types";
 

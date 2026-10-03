@@ -1,4 +1,4 @@
-import { FallbackImage, Reveal, Tag, TextLink } from "@/components/ds";
+import { FallbackImage, Reveal, Tag, TextLink } from "@tum.ai/ui-kit";
 import { AffiliationNames } from "./affiliations";
 import type { ResearchEntry } from "./research";
 

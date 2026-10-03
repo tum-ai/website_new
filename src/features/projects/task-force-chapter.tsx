@@ -1,5 +1,6 @@
-import { Photo, Reveal } from "@/components/ds";
+import { Photo, Reveal } from "@tum.ai/ui-kit";
 import { cn } from "@/lib/cn";
+import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
 import type { TaskForce } from "./data/projects";
 import { OverlapsLocator } from "./overlaps-figure";
 
@@ -82,6 +83,7 @@ export function TaskForceChapter({
         <Reveal delay={100} className="md:col-span-5 lg:col-span-4 lg:pt-3">
           <Photo
             src={photo.src}
+            unoptimized={isUnoptimizedRemoteImage(photo.src)}
             alt={photo.alt}
             caption={photoCaption}
             position={photo.objectPosition}

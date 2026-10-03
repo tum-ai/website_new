@@ -1,4 +1,3 @@
-import Image from "next/image";
 import {
   Container,
   Photo,
@@ -6,9 +5,11 @@ import {
   Section,
   SectionHeader,
   TextLink,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
+import Image from "next/image";
 import type { JourneyStep, MemberStory } from "@/features/community";
 import type { JourneyStage } from "@/lib/community-model";
+import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
 import type { ApplyCopy } from "./data/apply";
 
 /** One track: what it is, and a member who took it, in their own words. */
@@ -110,6 +111,7 @@ export function Tracks({
           <Photo
             aspect="panorama"
             src={copy.photo.src}
+            unoptimized={isUnoptimizedRemoteImage(copy.photo.src)}
             alt={copy.photo.alt}
             position={copy.photo.objectPosition}
             sizes="(min-width: 80rem) 80rem, 100vw"

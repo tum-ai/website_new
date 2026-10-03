@@ -4,7 +4,8 @@ import {
   type IndexListItem,
   Section,
   SectionHeader,
-} from "@/components/ds";
+} from "@tum.ai/ui-kit";
+import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
 
 /** The five ways into TUM.ai as a typographic index with photo previews. */
 export function ProgramsSection({
@@ -32,7 +33,19 @@ export function ProgramsSection({
           size="lg"
           lead={lead}
         />
-        <IndexList items={items} />
+        <IndexList
+          items={items.map((item) => ({
+            ...item,
+            image: item.image
+              ? {
+                  ...item.image,
+                  unoptimized:
+                    item.image.unoptimized ??
+                    isUnoptimizedRemoteImage(item.image.src),
+                }
+              : undefined,
+          }))}
+        />
       </Container>
     </Section>
   );
