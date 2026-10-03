@@ -1,14 +1,32 @@
 /**
  * Single source for TUM.ai contact details: role email addresses, social
- * profiles and the registered office. The header, footer, Q&A, imprint,
+ * profiles and the Imprint's address line. The header, footer, Q&A, imprint,
  * partner flows and JSON-LD read them. See "Updating site facts" in
  * docs/contributor-guide.md.
  */
+import { registeredOfficeLinesDe } from "./organization";
+
 export const contactEmails = {
   general: "contact@tum-ai.com",
   partners: "partners@tum-ai.com",
   venture: "venture@tum-ai.com",
   recruitment: "recruitment@tum-ai.com",
+} as const;
+
+/**
+ * Who handles partnership requests from /partners. The finder's email goes to
+ * `contactEmails.partners` with `cc` copied in, and "Book a call" embeds the
+ * `bookingUrl` Cal.eu page, introduced as a chat with `bookingHost`. All three
+ * change together when the partnership leads hand over.
+ *
+ * TODO(content): `cc`, `bookingUrl` and `bookingHost` name people, not roles.
+ * Does partners@ reach the leads on its own (then drop `cc`), and is there a
+ * shared Cal.eu team page to use instead of a personal one?
+ */
+export const partnershipContact = {
+  cc: ["silas.zamzow@tum-ai.com", "kim.schlemmer@tum-ai.com"],
+  bookingUrl: "https://cal.eu/silaszamzow/tumai-quick-chat",
+  bookingHost: "Silas",
 } as const;
 
 export const socialLinks = {
@@ -23,13 +41,28 @@ export const socialLinks = {
     "https://join.slack.com/t/tumaipublic/shared_invite/zt-10kg0t1f9-JLRXDxY_d_vprKWgab0cVw",
 } as const;
 
-export const registeredOfficeStreetAddress = "Arcisstr. 21";
+/** Role addresses, as the CMS `siteSettings` document holds them. */
+export type ContactEmails = {
+  readonly [Role in keyof typeof contactEmails]: string;
+};
 
-export const registeredOfficeAddressLine = `${registeredOfficeStreetAddress}, 80333 München`;
+/** Social profiles, as the CMS `siteSettings` document holds them. */
+export type SocialLinks = {
+  readonly [Network in keyof typeof socialLinks]: string;
+};
 
-export const registeredOfficePostalAddress = {
-  streetAddress: registeredOfficeStreetAddress,
-  postalCode: "80333",
-  addressLocality: "Munich",
-  addressCountry: "Germany",
-} as const;
+/**
+ * The partnership booking page, as the CMS `siteSettings` document holds it.
+ * `partnershipContact.cc` stays in code: it names people.
+ */
+export type PartnershipBooking = {
+  readonly bookingUrl: string;
+  readonly bookingHost: string;
+};
+
+/**
+ * German one-line form of the registered office for the Imprint ("Arcisstraße
+ * 21, 80333 München"), joined from `registeredOfficeLinesDe` in
+ * config/organization.ts.
+ */
+export const registeredOfficeAddressLine = registeredOfficeLinesDe.join(", ");

@@ -1,0 +1,42 @@
+/**
+ * Where `pnpm sanity:backfill` and the content migrations
+ * (`pnpm sanity:migrate-partners`, `pnpm sanity:migrate-content-dedup`) may
+ * write: the guard behind their `--dataset` flag, kept apart from the scripts
+ * so tests can call it.
+ */
+import { legacyDataset } from "@/lib/sanity-config";
+
+/** The dataset and project a backfill targets. */
+export type BackfillTarget = { dataset: string; projectId: string | null };
+
+type Env = Record<string, string | undefined>;
+
+/**
+ * The target for `--dataset <dataset>`, or an error: the flag is required
+ * (no default, so a run always names where it goes), must be a dataset
+ * name, and is never `production`, the old site's dataset: the site on
+ * `main` renders every document there, and the backfill only ever reads it.
+ * `env` must already hold `.env.local` (the script loads it first).
+ */
+export function backfillTarget(
+  dataset: string | undefined,
+  env: Env,
+  /** The command, for the message when `--dataset` is missing. */
+  command = "pnpm sanity:backfill",
+): BackfillTarget {
+  if (!dataset) {
+    throw new Error(`Name the target dataset: ${command} --dataset redesign`);
+  }
+  if (!/^[a-z0-9][a-z0-9_-]{0,63}$/.test(dataset)) {
+    throw new Error(`Not a dataset name: "${dataset}"`);
+  }
+  if (dataset === legacyDataset) {
+    throw new Error(
+      `Refusing "${dataset}": it is the old site's dataset, which these scripts only read. Write to the new site's dataset (--dataset redesign).`,
+    );
+  }
+  return {
+    dataset,
+    projectId: env.NEXT_PUBLIC_SANITY_PROJECT_ID?.trim() || null,
+  };
+}

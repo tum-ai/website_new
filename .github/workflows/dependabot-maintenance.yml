@@ -10,14 +10,16 @@ concurrency:
   group: dependabot-maintenance
   cancel-in-progress: false
 
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {}
 
 jobs:
   refresh:
     if: github.event_name == 'workflow_dispatch' || github.event.schedule == '43 4 * * 1-5'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
 
     # No checkout step in this job, so `gh` can't infer the repo from a git
     # remote; GH_REPO tells it explicitly.
@@ -44,6 +46,10 @@ jobs:
   merge:
     if: github.event_name == 'workflow_dispatch' || github.event.schedule == '17 * * * *'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
 
     # No checkout step in this job, so `gh` can't infer the repo from a git
     # remote; GH_REPO tells it explicitly.

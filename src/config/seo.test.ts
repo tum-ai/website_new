@@ -1,0 +1,118 @@
+import { expect, test } from "vitest";
+import { contactEmails } from "@/config/contact";
+import { eLabProgramSummary } from "@/config/e-lab";
+import { hackathonFacts } from "@/config/hackathons";
+import {
+  buildMetadata,
+  getJsonLd,
+  rootMetadata,
+  type SEOPageKey,
+} from "@/config/seo";
+import { absoluteUrl, siteConfig, siteTitle } from "@/config/site";
+
+const keys: SEOPageKey[] = [
+  "home",
+  "events",
+  "hackathons",
+  "research",
+  "projects",
+  "entrepreneurship",
+  "community",
+  "partners",
+  "apply",
+  "qanda",
+  "imprint",
+  "data-privacy",
+  "disclaimer",
+];
+
+/** Every string value in a JSON-LD tree that looks like a URL. */
+function urlsIn(value: unknown): string[] {
+  if (typeof value === "string")
+    return /^https?:\/\//.test(value) ? [value] : [];
+  if (Array.isArray(value)) return value.flatMap(urlsIn);
+  if (value && typeof value === "object")
+    return Object.values(value).flatMap(urlsIn);
+  return [];
+}
+
+test.each(keys)("%s: canonical and Open Graph URL agree", (key) => {
+  const metadata = buildMetadata(key);
+  const canonical = metadata.alternates?.canonical;
+  expect(new URL(String(canonical)).origin).toBe(siteConfig.url);
+  expect(metadata.openGraph).toMatchObject({
+    url: canonical,
+    siteName: siteConfig.name,
+  });
+});
+
+test("the homepage canonical is the bare origin", () => {
+  expect(buildMetadata("home").alternates?.canonical).toBe(absoluteUrl());
+  expect(buildMetadata("entrepreneurship").alternates?.canonical).toBe(
+    absoluteUrl("/e-lab"),
+  );
+});
+
+test.each(keys)(
+  "%s: JSON-LD starts with the Organization and names the page URL",
+  (key) => {
+    const [organization, page] = getJsonLd(key) as Record<string, unknown>[];
+    expect(organization["@type"]).toBe("Organization");
+    expect(page.url).toBe(buildMetadata(key).alternates?.canonical);
+    // Every URL on the site's own domain uses the canonical origin.
+    const { hostname } = new URL(siteConfig.url);
+    const siteDomain = hostname.replace(/^www\./, "");
+    for (const url of urlsIn(page)) {
+      const host = new URL(url).hostname;
+      if (host === siteDomain || host.endsWith(`.${siteDomain}`)) {
+        expect(new URL(url).origin).toBe(siteConfig.url);
+      }
+    }
+  },
+);
+
+test("/e-lab adds the Venture Department as a TUM.ai sub-organization", () => {
+  const [organization, , eLab] = getJsonLd("entrepreneurship") as Record<
+    string,
+    unknown
+  >[];
+  expect(eLab).toMatchObject({
+    "@type": "Organization",
+    url: absoluteUrl("/e-lab"),
+    email: contactEmails.venture,
+    parentOrganization: { url: organization.url, name: organization.name },
+  });
+  expect(eLab.description).toContain(eLabProgramSummary);
+  // Only /e-lab carries the extra node.
+  expect(getJsonLd("events")).toHaveLength(2);
+});
+
+test("/hackathons adds the Makeathon as a series TUM.ai organises", () => {
+  const [organization, , makeathon] = getJsonLd("hackathons") as Record<
+    string,
+    unknown
+  >[];
+  expect(makeathon).toMatchObject({
+    "@type": "EventSeries",
+    url: hackathonFacts.makeathonUrl,
+    organizer: { url: organization.url, name: organization.name },
+  });
+});
+
+test("page fields from the page's content join the page node", () => {
+  const mainEntity = [{ "@type": "Question", name: "Who can apply?" }];
+  const [, page] = getJsonLd("qanda", { mainEntity }) as Record<
+    string,
+    unknown
+  >[];
+  expect(page).toMatchObject({ "@type": "FAQPage", mainEntity });
+  expect(page.url).toBe(absoluteUrl("/qanda"));
+});
+
+test("the root layout defaults come from the site config", () => {
+  expect(rootMetadata.metadataBase.href).toBe(`${siteConfig.url}/`);
+  expect(rootMetadata.title).toStrictEqual({
+    default: siteTitle,
+    template: `%s | ${siteConfig.name}`,
+  });
+});
