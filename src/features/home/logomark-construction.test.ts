@@ -7,6 +7,7 @@ import {
   edgeGuides,
   edgeX,
   strokeEdges,
+  verticalGuides,
 } from "./logomark-construction";
 
 /** Perpendicular distance from a circle's centre to an edge's line. */
@@ -80,5 +81,13 @@ describe("logomark construction", () => {
     const guide = guides[0];
     expect(guide?.x1).toBeCloseTo(edgeX(outer, guide?.y1 ?? 0), 6);
     expect(edgeX(outer, outer.from.y)).toBeCloseTo(outer.from.x, 6);
+  });
+
+  test("vertical guides run only through the cap centres", () => {
+    // The counter's centre is 2.26 units off the apex cap's; a guide through
+    // both would draw two hairlines side by side.
+    expect(verticalGuides().map((guide) => guide.x1)).toEqual(
+      Object.values(capCircles).map((circle) => circle.x),
+    );
   });
 });
