@@ -37,6 +37,8 @@ export const RESEARCH_QUERY = defineQuery(`*[_type == "research"]{
   status,
   field,
   startYear,
+  motif,
+  "highlights": coalesce(highlights, []),
   publication,
   "keywords": coalesce(keywords, [])
 }`);

@@ -1287,6 +1287,15 @@ export type Research = {
   >;
   field?: string;
   startYear?: number;
+  motif?:
+    | "camera-frustum"
+    | "vector-field"
+    | "decision-tree"
+    | "nested-clusters"
+    | "long-timeline"
+    | "splat-graph"
+    | "phase-diagram";
+  highlights?: Array<string>;
   desc?: string;
   status?: "ongoing" | "completed";
   publication?: string;
@@ -3799,7 +3808,7 @@ export type EVENTS_QUERY_RESULT = Array<{
 
 // Source: ../lib/sanity-queries.ts
 // Variable: RESEARCH_QUERY
-// Query: *[_type == "research"]{  "id": _id,  title,  "institutions": institutions[]->{ key, name, "logo": logo.asset->url },  "description": coalesce(desc, ""),  status,  field,  startYear,  publication,  "keywords": coalesce(keywords, [])}
+// Query: *[_type == "research"]{  "id": _id,  title,  "institutions": institutions[]->{ key, name, "logo": logo.asset->url },  "description": coalesce(desc, ""),  status,  field,  startYear,  motif,  "highlights": coalesce(highlights, []),  publication,  "keywords": coalesce(keywords, [])}
 export type RESEARCH_QUERY_RESULT = Array<{
   id: string;
   title: string;
@@ -3812,6 +3821,16 @@ export type RESEARCH_QUERY_RESULT = Array<{
   status: "completed" | "ongoing" | null;
   field: string | null;
   startYear: number | null;
+  motif:
+    | "camera-frustum"
+    | "decision-tree"
+    | "long-timeline"
+    | "nested-clusters"
+    | "phase-diagram"
+    | "splat-graph"
+    | "vector-field"
+    | null;
+  highlights: Array<string> | Array<never>;
   publication: string | null;
   keywords: Array<string> | Array<never>;
 }>;

@@ -33,6 +33,7 @@ const preprint: ResearchProject = {
   status: "ongoing",
   publication: "https://www.arxiv.org/abs/2601.00001",
   keywords: [],
+  highlights: [],
 };
 const unpublished: ResearchProject = {
   id: "ongoing-unpublished",
@@ -40,6 +41,7 @@ const unpublished: ResearchProject = {
   description: "No paper yet.",
   status: "ongoing",
   keywords: [],
+  highlights: [],
 };
 
 describe("ProjectList", () => {
@@ -60,6 +62,40 @@ describe("ProjectList", () => {
       name: "Tool Calling Benchmarks",
     });
     expect(within(withoutPaper).queryByRole("link")).not.toBeInTheDocument();
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  test("draws the CMS motif behind the logos and lists the highlights", async () => {
+    const { ongoing } = getResearchIndex([
+      {
+        ...unpublished,
+        motif: "nested-clusters",
+        highlights: ["2.3M single cells", "208 cell classes"],
+      },
+      preprint,
+    ]);
+    const { container } = render(<ProjectList projects={ongoing} />);
+
+    const withMotif = screen.getByRole("article", {
+      name: "Tool Calling Benchmarks",
+    });
+    const art = withMotif.querySelector("svg[data-motif]");
+    expect(art).toHaveAttribute("data-motif", "nested-clusters");
+    // Decorative: inside the tile assistive tech skips.
+    expect(art?.closest("[aria-hidden='true']")).not.toBeNull();
+    expect(
+      within(
+        within(withMotif).getByRole("list", { name: "Highlights" }),
+      ).getAllByRole("listitem"),
+    ).toHaveLength(2);
+
+    const plain = screen.getByRole("article", {
+      name: "Sparse Attention for Long Documents",
+    });
+    expect(plain.querySelector("svg[data-motif]")).toBeNull();
+    expect(
+      within(plain).queryByRole("list", { name: "Highlights" }),
+    ).not.toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
   });
 });

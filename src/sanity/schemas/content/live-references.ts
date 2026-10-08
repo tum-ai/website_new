@@ -17,12 +17,51 @@ import { researchType } from "../research";
  * (docs/adr/0009-cms-content-source.md).
  *
  * - `research.institutions`: the new site cites these instead of the names
- *   before the colon in the title.
+ *   before the colon in the title. `field`, `startYear`, `motif` and
+ *   `highlights` dress the project's row on /research; the old site ignores
+ *   them.
  * - `event.coHosts`: the new site lists these instead of the names in
  *   `hosts`, which it reads only for an event without any.
  * - `event.city`: any city (the league plays in Paris and Zurich), where the
  *   old site's list offers Munich and Online only.
  */
+
+/**
+ * The research tile motifs editors can pick. Each value needs a drawing in
+ * `src/features/research/research-motifs.tsx`; TypeGen turns this list into
+ * the union the site's motif map must cover, so a value without a drawing
+ * fails the typecheck.
+ */
+const researchMotifOptions = [
+  {
+    value: "camera-frustum",
+    title: "Camera over city blocks (localization, mapping, aerial vision)",
+  },
+  {
+    value: "vector-field",
+    title: "Field pulled off true (alignment, safety, bias)",
+  },
+  {
+    value: "decision-tree",
+    title: "Branching decision path (agents, planning, tool use)",
+  },
+  {
+    value: "nested-clusters",
+    title: "Nested clusters (embeddings, representation learning)",
+  },
+  {
+    value: "long-timeline",
+    title: "Long timeline with linked moments (video, time series)",
+  },
+  {
+    value: "splat-graph",
+    title: "Gaussian splats with a scene graph (3D and 4D reconstruction)",
+  },
+  {
+    value: "phase-diagram",
+    title: "Ternary phase diagram (materials, chemistry)",
+  },
+] as const;
 
 /** `fields` with `added` inserted after the field named `after`. */
 function withFieldsAfter(
@@ -81,6 +120,28 @@ const researchWithInstitutions = defineType({
       description:
         "The year the project started; /research shows “Since 2025” on an ongoing project.",
       validation: (Rule) => Rule.integer().min(2020).max(2100),
+    }),
+    defineField({
+      name: "motif",
+      title: "Motif",
+      type: "string",
+      description:
+        "The line drawing behind the logos on the project's tile on /research, picked for its subject. Leave empty for a plain tile. Add a new motif in code (src/features/research/research-motifs.tsx) before listing it here.",
+      options: { list: [...researchMotifOptions], layout: "radio" },
+    }),
+    defineField({
+      name: "highlights",
+      title: "Highlights",
+      type: "array",
+      of: [
+        defineArrayMember({
+          type: "string",
+          validation: (Rule) => Rule.max(32),
+        }),
+      ],
+      description:
+        "Up to three concrete facts from the project or its paper (“2.3M single cells”, “GNSS-free”). /research lists them under the tile. Only facts you can source; leave empty otherwise.",
+      validation: (Rule) => Rule.max(3).unique(),
     }),
   ]),
 });

@@ -75,7 +75,10 @@ export async function getMockEvents(now: Date = new Date()): Promise<Event[]> {
   return result.map(omitNulls);
 }
 
-/** Both statuses, an optional publication, field and start year exercise research states. */
+/**
+ * Both statuses, an optional publication, field, start year, motif and
+ * highlights exercise research states.
+ */
 export async function getMockResearchProjects(): Promise<ResearchProject[]> {
   const docs: CmsFixtureDocument[] = [
     {
@@ -86,6 +89,8 @@ export async function getMockResearchProjects(): Promise<ResearchProject[]> {
       status: "ongoing",
       field: "Planning",
       startYear: 2025,
+      motif: "decision-tree",
+      highlights: ["Example highlight", "Second highlight"],
       keywords: ["Planning"],
       institutions: [
         {

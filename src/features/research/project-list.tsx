@@ -1,6 +1,7 @@
 import { FallbackImage, Reveal, Tag, TextLink } from "@tum.ai/ui-kit";
 import { AffiliationNames } from "./affiliations";
 import type { ResearchEntry } from "./research";
+import { ResearchMotifArt } from "./research-motifs";
 
 function KeywordTags({ keywords }: { keywords: string[] }) {
   if (keywords.length === 0) return null;
@@ -57,18 +58,20 @@ function logoWidth(aspectRatio: number | undefined, count: number) {
 
 /**
  * Who the project is with: the institutions' logos on a quiet 4:3 tile,
- * every row the same size so the list reads as one column. Logos are
+ * every row the same size so the list reads as one column, over the line
+ * drawing of the project's subject when the CMS picks one. Logos are
  * decorative (the affiliations name the institutions); a project whose
  * institutions have no logo sets their names instead, so no row is empty.
  * CMS images are served unoptimized: CMS hosts are outside next/image's list.
  */
 function LogoTile({ project }: { project: ResearchEntry }) {
-  const { logos, affiliations } = project;
+  const { logos, affiliations, motif } = project;
   return (
     <div
       aria-hidden="true"
-      className="flex aspect-[4/3] flex-col items-center justify-center gap-5 rounded-2xl bg-sunken p-6 max-md:max-w-sm md:self-start"
+      className="relative isolate flex aspect-[4/3] flex-col items-center justify-center gap-5 overflow-hidden rounded-2xl bg-sunken p-6"
     >
+      {motif ? <ResearchMotifArt motif={motif} /> : null}
       {logos.length > 0
         ? logos.map((logo) => (
             <div
@@ -93,12 +96,32 @@ function LogoTile({ project }: { project: ResearchEntry }) {
         : affiliations.map(({ name }) => (
             <span
               key={name}
-              className="text-balance text-center font-semibold text-fg-muted text-heading-sm"
+              className="relative text-balance text-center font-semibold text-fg-muted text-heading-sm"
             >
               {name}
             </span>
           ))}
     </div>
+  );
+}
+
+/**
+ * A project's highlights ("2.3M single cells") as a ruled list under its
+ * tile, read like a figure's legend.
+ */
+function ProjectHighlights({ highlights }: { highlights: string[] }) {
+  if (highlights.length === 0) return null;
+  return (
+    <ul aria-label="Highlights" className="mt-4 text-fg-muted text-meta">
+      {highlights.map((highlight) => (
+        <li
+          key={highlight}
+          className="tabular border-hairline border-b py-2 first:border-t"
+        >
+          {highlight}
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -140,7 +163,10 @@ export function ProjectList({ projects }: { projects: ResearchEntry[] }) {
               <PublicationLink project={project} />
               <KeywordTags keywords={project.keywords} />
             </div>
-            <LogoTile project={project} />
+            <div className="max-md:max-w-sm md:self-start">
+              <LogoTile project={project} />
+              <ProjectHighlights highlights={project.highlights} />
+            </div>
           </article>
         </Reveal>
       ))}

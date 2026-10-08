@@ -120,6 +120,7 @@ describe("ResearchPage", () => {
             description: "A lab no lab site lists.",
             status: "ongoing",
             keywords: [],
+            highlights: [],
           },
         ],
       }),

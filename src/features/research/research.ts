@@ -3,6 +3,7 @@ import { getPartnerKey } from "@/features/partners";
 import { getSafeExternalUrl } from "@/lib/security";
 import type { Partner, ResearchProject, ResearchStatus } from "@/lib/types";
 import type { LabSite, LabSiteOrganization } from "./data/lab-sites";
+import { isResearchMotif, type ResearchMotif } from "./data/research-motifs";
 import { sameName, splitResearchTitle } from "./research-title";
 
 /**
@@ -19,7 +20,7 @@ export type ProjectAffiliation = {
 };
 
 /** An institution's logo for a project's tile. */
-export type ProjectLogo = {
+type ProjectLogo = {
   name: string;
   src: string;
   /** Width over height, from the Sanity asset's file name when it has one. */
@@ -42,6 +43,13 @@ export type ResearchEntry = {
   field?: string;
   /** The year the project started, if the CMS gives one. */
   startYear?: number;
+  /** The line drawing on the project's tile, when the CMS picks one this site draws. */
+  motif?: ResearchMotif;
+  /**
+   * Short facts about the project ("2.3M single cells"), trimmed and
+   * de-duplicated in CMS order, at most {@link MAX_HIGHLIGHTS}.
+   */
+  highlights: string[];
   /**
    * Logos of the project's institutions that have one, in citation order
    * and without repeats. The page sets the institutions' names instead when
@@ -74,6 +82,9 @@ export type ResearchIndex = {
   ongoing: ResearchEntry[];
   completed: ResearchEntry[];
 };
+
+/** How many highlights a row lists; the rest of a longer CMS list is dropped. */
+const MAX_HIGHLIGHTS = 3;
 
 /** Trims keywords and drops empty and repeated ones (they key the tag list). */
 export function cleanKeywords(keywords: readonly string[]): string[] {
@@ -167,6 +178,8 @@ export function getResearchIndex(
       description: project.description,
       field: project.field?.trim() || undefined,
       startYear: project.startYear,
+      motif: isResearchMotif(project.motif) ? project.motif : undefined,
+      highlights: cleanKeywords(project.highlights).slice(0, MAX_HIGHLIGHTS),
       logos: logosOf(project),
       publicationUrl,
       publicationHost: publicationUrl ? getHost(publicationUrl) : undefined,

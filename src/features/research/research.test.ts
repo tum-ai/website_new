@@ -20,6 +20,7 @@ function project(overrides: Partial<ResearchProject> = {}): ResearchProject {
     description: "Grounding instructions in manipulation policies.",
     status: "ongoing",
     keywords: [],
+    highlights: [],
     ...overrides,
   };
 }
@@ -178,6 +179,8 @@ describe("getResearchIndex", () => {
         publication: "https://www.arxiv.org/abs/2411.02083",
         field: " Numerical reasoning ",
         startYear: 2024,
+        motif: "decision-tree",
+        highlights: [" Number tokens "],
       }),
     ]);
     expect(entry).toEqual({
@@ -187,6 +190,8 @@ describe("getResearchIndex", () => {
       description: "Grounding instructions in manipulation policies.",
       field: "Numerical reasoning",
       startYear: 2024,
+      motif: "decision-tree",
+      highlights: ["Number tokens"],
       logos: [],
       publicationUrl: "https://www.arxiv.org/abs/2411.02083",
       publicationHost: "arxiv.org",
@@ -205,6 +210,43 @@ describe("getResearchIndex", () => {
     expect(entry?.publicationUrl).toBeUndefined();
     expect(entry?.publicationHost).toBeUndefined();
     expect(entry?.field).toBeUndefined();
+  });
+
+  test("keeps only motifs the site draws; a stale key leaves the tile plain", () => {
+    const { ongoing } = getResearchIndex([
+      project({ id: "known", motif: "phase-diagram" }),
+      // A key the Studio no longer offers, as an old document may still hold.
+      project({ id: "stale", motif: "retired-motif" as never }),
+      project({ id: "none" }),
+    ]);
+    expect(ongoing.map(({ id, motif }) => [id, motif])).toEqual([
+      ["known", "phase-diagram"],
+      ["stale", undefined],
+      ["none", undefined],
+    ]);
+  });
+
+  test("trims highlights, drops blank and repeated ones, keeps at most three", () => {
+    const {
+      ongoing: [entry],
+    } = getResearchIndex([
+      project({
+        highlights: [
+          " 2.3M cells",
+          "",
+          "2.3M cells",
+          "20 datasets",
+          "  ",
+          "208 classes",
+          "ECCV",
+        ],
+      }),
+    ]);
+    expect(entry?.highlights).toEqual([
+      "2.3M cells",
+      "20 datasets",
+      "208 classes",
+    ]);
   });
 
   test("takes each institution's logo once, in order, with its Sanity ratio", () => {
