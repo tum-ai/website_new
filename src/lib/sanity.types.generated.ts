@@ -1285,6 +1285,8 @@ export type Research = {
       _key: string;
     } & OrganizationReference
   >;
+  field?: string;
+  startYear?: number;
   desc?: string;
   status?: "ongoing" | "completed";
   publication?: string;
@@ -3797,19 +3799,21 @@ export type EVENTS_QUERY_RESULT = Array<{
 
 // Source: ../lib/sanity-queries.ts
 // Variable: RESEARCH_QUERY
-// Query: *[_type == "research"]{  "id": _id,  title,  "institutions": institutions[]->{ key, name },  "description": coalesce(desc, ""),  status,  publication,  "keywords": coalesce(keywords, []),  "image": img.asset->url}
+// Query: *[_type == "research"]{  "id": _id,  title,  "institutions": institutions[]->{ key, name, "logo": logo.asset->url },  "description": coalesce(desc, ""),  status,  field,  startYear,  publication,  "keywords": coalesce(keywords, [])}
 export type RESEARCH_QUERY_RESULT = Array<{
   id: string;
   title: string;
   institutions: Array<{
     key: string;
     name: string;
+    logo: string | null;
   }> | null;
   description: string | "";
   status: "completed" | "ongoing" | null;
+  field: string | null;
+  startYear: number | null;
   publication: string | null;
   keywords: Array<string> | Array<never>;
-  image: string | null;
 }>;
 
 // Source: ../lib/sanity-queries.ts

@@ -18,6 +18,14 @@ export type ProjectAffiliation = {
   index: number;
 };
 
+/** An institution's logo for a project's tile. */
+export type ProjectLogo = {
+  name: string;
+  src: string;
+  /** Width over height, from the Sanity asset's file name when it has one. */
+  aspectRatio?: number;
+};
+
 /**
  * A research project shaped for the page on the server: plain, serializable
  * props, so client islands only receive what they render.
@@ -30,8 +38,16 @@ export type ResearchEntry = {
   /** The title without the institutions before its colon. */
   title: string;
   description: string;
-  /** Image URL from the CMS, if any. */
-  image?: string;
+  /** The research area ("LLM safety"), if the CMS names one. */
+  field?: string;
+  /** The year the project started, if the CMS gives one. */
+  startYear?: number;
+  /**
+   * Logos of the project's institutions that have one, in citation order
+   * and without repeats. The page sets the institutions' names instead when
+   * none has a logo.
+   */
+  logos: ProjectLogo[];
   /** Publication link, only when it is a safe http(s) URL. */
   publicationUrl?: string;
   /** The publication's host without "www." ("arxiv.org"), its link label. */
@@ -97,6 +113,29 @@ function institutionsOf(project: ResearchProject): Institution[] {
   }));
 }
 
+/* Sanity asset file names end in "-<width>x<height>.<ext>". */
+const sanityDimensions = /-(\d+)x(\d+)\.[a-z0-9]+(?:\?.*)?$/i;
+
+/** Width over height from a Sanity asset URL, or undefined for other URLs. */
+function aspectRatioOf(src: string): number | undefined {
+  const match = sanityDimensions.exec(src);
+  const width = Number(match?.[1]);
+  const height = Number(match?.[2]);
+  return width > 0 && height > 0 ? width / height : undefined;
+}
+
+/** The referenced institutions' logos, in order, each image once. */
+function logosOf(project: ResearchProject): ProjectLogo[] {
+  const seen = new Set<string>();
+  return (project.institutions ?? []).flatMap((organization) => {
+    const name = organization?.name?.trim();
+    const src = organization?.logo?.trim();
+    if (!name || !src || seen.has(src)) return [];
+    seen.add(src);
+    return [{ name, src, aspectRatio: aspectRatioOf(src) }];
+  });
+}
+
 /** Whether two institutions are one: the same organisation, or the same name. */
 function sameInstitution(a: Institution, b: Institution) {
   return a.key && b.key ? a.key === b.key : sameName(a.name, b.name);
@@ -126,7 +165,9 @@ export function getResearchIndex(
       titleId: `research-${project.id}-title`,
       title,
       description: project.description,
-      image: project.image || undefined,
+      field: project.field?.trim() || undefined,
+      startYear: project.startYear,
+      logos: logosOf(project),
       publicationUrl,
       publicationHost: publicationUrl ? getHost(publicationUrl) : undefined,
       keywords: cleanKeywords(project.keywords),
@@ -149,9 +190,6 @@ export function getResearchIndex(
   };
 }
 
-/* Sanity asset file names end in "-<width>x<height>.<ext>". */
-const sanityDimensions = /-(\d+)x(\d+)\.[a-z0-9]+(?:\?.*)?$/i;
-
 /**
  * The research partners for the logo strip, in CMS order: those with
  * artwork, linked when their link is a safe http(s) URL. The aspect ratio
@@ -162,15 +200,12 @@ export function getPartnerLogos(partners: readonly Partner[]): LogoItem[] {
   return partners.flatMap(({ name, image, link }) => {
     const label = name?.trim();
     if (!label || !image) return [];
-    const match = sanityDimensions.exec(image);
-    const width = Number(match?.[1]);
-    const height = Number(match?.[2]);
     return [
       {
         name: label,
         src: image,
         href: getSafeExternalUrl(link) ?? undefined,
-        aspectRatio: width > 0 && height > 0 ? width / height : undefined,
+        aspectRatio: aspectRatioOf(image),
       },
     ];
   });

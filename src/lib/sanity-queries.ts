@@ -32,12 +32,13 @@ export const EVENTS_QUERY = defineQuery(`*[_type == "event"]{
 export const RESEARCH_QUERY = defineQuery(`*[_type == "research"]{
   "id": _id,
   title,
-  "institutions": institutions[]->{ key, name },
+  "institutions": institutions[]->{ key, name, "logo": logo.asset->url },
   "description": coalesce(desc, ""),
   status,
+  field,
+  startYear,
   publication,
-  "keywords": coalesce(keywords, []),
-  "image": img.asset->url
+  "keywords": coalesce(keywords, [])
 }`);
 
 /** `/api/getNotes` response body. Frozen: includes the legacy `detail` text. */

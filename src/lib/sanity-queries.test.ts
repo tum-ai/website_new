@@ -141,7 +141,18 @@ test("research query: keywords stay an array, description falls back", async () 
 
 test("research query: institutions resolve to organisations, in order", async () => {
   const dataset = [
-    { _id: "org-mit", _type: "organization", key: "mit", name: "MIT" },
+    {
+      _id: "org-mit",
+      _type: "organization",
+      key: "mit",
+      name: "MIT",
+      logo: { _type: "image", asset: { _ref: "image-mit" } },
+    },
+    {
+      _id: "image-mit",
+      _type: "sanity.imageAsset",
+      url: "https://cdn/mit.svg",
+    },
     { _id: "org-tum", _type: "organization", key: "tum", name: "TUM" },
     {
       _id: "res-refs",
@@ -159,9 +170,9 @@ test("research query: institutions resolve to organisations, in order", async ()
   const [referenced, titled] = await run(RESEARCH_QUERY, dataset);
 
   expect(referenced.institutions).toStrictEqual([
-    { key: "tum", name: "TUM" },
+    { key: "tum", name: "TUM", logo: null },
     null,
-    { key: "mit", name: "MIT" },
+    { key: "mit", name: "MIT", logo: "https://cdn/mit.svg" },
   ]);
   expect(referenced.title).toBe("TUM, MIT: Study");
   expect(titled.institutions).toBeNull();

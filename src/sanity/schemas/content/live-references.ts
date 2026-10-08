@@ -64,7 +64,23 @@ const researchWithInstitutions = defineType({
       name: "institutions",
       title: "Institutions",
       description:
-        "The labs and institutions of this project, in the order the page cites them. The new site numbers these instead of the names before the colon in the title; keep that lead in the title while the old site still reads it.",
+        "The labs and institutions of this project, in the order the page cites them. The new site numbers these instead of the names before the colon in the title; keep that lead in the title while the old site still reads it. Their logos fill the project's tile on /research.",
+    }),
+    defineField({
+      name: "field",
+      title: "Field",
+      type: "string",
+      description:
+        "The research area in two or three words (“LLM safety”, “Materials science”, “Surgical AI”). /research shows it before the status.",
+      validation: (Rule) => Rule.max(32),
+    }),
+    defineField({
+      name: "startYear",
+      title: "Started",
+      type: "number",
+      description:
+        "The year the project started; /research shows “Since 2025” on an ongoing project.",
+      validation: (Rule) => Rule.integer().min(2020).max(2100),
     }),
   ]),
 });

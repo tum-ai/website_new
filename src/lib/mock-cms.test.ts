@@ -101,7 +101,9 @@ test("mock research covers both statuses, events and research use local images o
       event.poster,
       ...(event.images ?? []),
     ]),
-    ...projects.map((project) => project.image),
+    ...projects.flatMap((project) =>
+      (project.institutions ?? []).map((organization) => organization?.logo),
+    ),
   ].filter((image): image is string => Boolean(image));
 
   for (const image of images) {

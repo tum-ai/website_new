@@ -111,15 +111,17 @@ describe("getResearchIndex", () => {
       project({
         id: "a",
         title: "Helmholtz Zentrum: Cells",
-        institutions: [{ key: "helmholtz-munich", name: "Helmholtz Munich" }],
+        institutions: [
+          { key: "helmholtz-munich", name: "Helmholtz Munich", logo: null },
+        ],
       }),
       project({ id: "b", title: "TUM CAMP: Video" }),
       project({
         id: "c",
         title: "TUM CAMP, Helmholtz Zentrum: Graphs",
         institutions: [
-          { key: "tum-camp", name: "TUM CAMP" },
-          { key: "helmholtz-munich", name: "Helmholtz Munich" },
+          { key: "tum-camp", name: "TUM CAMP", logo: null },
+          { key: "helmholtz-munich", name: "Helmholtz Munich", logo: null },
         ],
       }),
     ]);
@@ -174,7 +176,8 @@ describe("getResearchIndex", () => {
         status: "completed",
         keywords: ["NLP", " NLP "],
         publication: "https://www.arxiv.org/abs/2411.02083",
-        image: "https://cdn.sanity.io/images/x.webp",
+        field: " Numerical reasoning ",
+        startYear: 2024,
       }),
     ]);
     expect(entry).toEqual({
@@ -182,7 +185,9 @@ describe("getResearchIndex", () => {
       titleId: "research-x1-title",
       title: "Regression-like Loss on Number Tokens",
       description: "Grounding instructions in manipulation policies.",
-      image: "https://cdn.sanity.io/images/x.webp",
+      field: "Numerical reasoning",
+      startYear: 2024,
+      logos: [],
       publicationUrl: "https://www.arxiv.org/abs/2411.02083",
       publicationHost: "arxiv.org",
       keywords: ["NLP"],
@@ -191,15 +196,37 @@ describe("getResearchIndex", () => {
     });
   });
 
-  test("drops unsafe publication links and empty images", () => {
+  test("drops unsafe publication links and a blank field", () => {
     const {
       ongoing: [entry],
     } = getResearchIndex([
-      project({ publication: "javascript:alert(1)", image: "" }),
+      project({ publication: "javascript:alert(1)", field: "  " }),
     ]);
     expect(entry?.publicationUrl).toBeUndefined();
     expect(entry?.publicationHost).toBeUndefined();
-    expect(entry?.image).toBeUndefined();
+    expect(entry?.field).toBeUndefined();
+  });
+
+  test("takes each institution's logo once, in order, with its Sanity ratio", () => {
+    const ibm =
+      "https://cdn.sanity.io/images/o9uuv2sq/redesign/ab12-2560x1024.png";
+    const {
+      ongoing: [entry],
+    } = getResearchIndex([
+      project({
+        title: "IBM Almaden, IBM Research, TUM CAMP: Agents",
+        institutions: [
+          { key: "ibm-almaden", name: "IBM Almaden", logo: ibm },
+          { key: "ibm-research", name: "IBM Research", logo: ibm },
+          { key: "tum-camp", name: "TUM CAMP", logo: null },
+          { key: "mit", name: "MIT", logo: "/assets/fixtures/logo.svg" },
+        ],
+      }),
+    ]);
+    expect(entry?.logos).toEqual([
+      { name: "IBM Almaden", src: ibm, aspectRatio: 2.5 },
+      { name: "MIT", src: "/assets/fixtures/logo.svg", aspectRatio: undefined },
+    ]);
   });
 });
 

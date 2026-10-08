@@ -30,12 +30,83 @@ function PublicationLink({ project }: { project: ResearchEntry }) {
 }
 
 /**
+ * The field, status and start of an ongoing project as one quiet line
+ * ("LLM safety · Ongoing · Since 2025"); only the status when the CMS gives
+ * neither field nor year.
+ */
+function ProjectFacts({ project }: { project: ResearchEntry }) {
+  const facts = [
+    project.field,
+    "Ongoing",
+    project.startYear ? `Since ${project.startYear}` : undefined,
+  ].filter(Boolean);
+  return <p className="mt-2 text-fg-subtle text-meta">{facts.join(" · ")}</p>;
+}
+
+/* Share of the 4:3 tile each logo covers, so wide wordmarks and square
+   crests read at the same weight; capped so a wordmark keeps a margin. */
+const LOGO_AREA = 0.13;
+const LOGO_MAX_WIDTH = 82;
+
+/** A logo's width in percent of the tile, for its aspect ratio and how many share the tile. */
+function logoWidth(aspectRatio: number | undefined, count: number) {
+  const area = (LOGO_AREA / count) * 4 * 3;
+  const width = (Math.sqrt(area * (aspectRatio ?? 3)) / 4) * 100;
+  return Math.min(width, LOGO_MAX_WIDTH);
+}
+
+/**
+ * Who the project is with: the institutions' logos on a quiet 4:3 tile,
+ * every row the same size so the list reads as one column. Logos are
+ * decorative (the affiliations name the institutions); a project whose
+ * institutions have no logo sets their names instead, so no row is empty.
+ * CMS images are served unoptimized: CMS hosts are outside next/image's list.
+ */
+function LogoTile({ project }: { project: ResearchEntry }) {
+  const { logos, affiliations } = project;
+  return (
+    <div
+      aria-hidden="true"
+      className="flex aspect-[4/3] flex-col items-center justify-center gap-5 rounded-2xl bg-sunken p-6 max-md:max-w-sm md:self-start"
+    >
+      {logos.length > 0
+        ? logos.map((logo) => (
+            <div
+              key={logo.src}
+              className="relative"
+              style={{
+                width: `${logoWidth(logo.aspectRatio, logos.length)}%`,
+                aspectRatio: logo.aspectRatio ?? 3,
+              }}
+            >
+              <FallbackImage
+                src={logo.src}
+                alt=""
+                fill
+                unoptimized
+                sizes="12rem"
+                className="object-contain"
+                fallback={null}
+              />
+            </div>
+          ))
+        : affiliations.map(({ name }) => (
+            <span
+              key={name}
+              className="text-balance text-center font-semibold text-fg-muted text-heading-sm"
+            >
+              {name}
+            </span>
+          ))}
+    </div>
+  );
+}
+
+/**
  * Ongoing projects as hairline rows, set like a paper's first lines: the
- * title, the institutions with their index numbers, the abstract, and the
- * paper when the CMS links one (a preprint often precedes completion). The
- * project's CMS image sits beside it when there is one (served unoptimized:
- * CMS hosts are outside next/image's list); a missing or broken image leaves
- * the row text-only.
+ * title, the institutions with their index numbers, a facts line, the
+ * abstract, and the paper when the CMS links one (a preprint often precedes
+ * completion). Beside it, a tile with the institutions' logos.
  */
 export function ProjectList({ projects }: { projects: ResearchEntry[] }) {
   return (
@@ -62,25 +133,14 @@ export function ProjectList({ projects }: { projects: ResearchEntry[] }) {
                 affiliations={project.affiliations}
                 className="mt-3"
               />
+              <ProjectFacts project={project} />
               <p className="mt-5 max-w-2xl text-body text-fg-muted">
                 {project.description}
               </p>
               <PublicationLink project={project} />
               <KeywordTags keywords={project.keywords} />
             </div>
-            {project.image ? (
-              <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-sunken max-md:max-w-sm md:self-start">
-                <FallbackImage
-                  src={project.image}
-                  alt=""
-                  fill
-                  unoptimized
-                  sizes="(min-width: 1024px) 17rem, (min-width: 768px) 13rem, 24rem"
-                  className="object-cover"
-                  fallback={null}
-                />
-              </div>
-            ) : null}
+            <LogoTile project={project} />
           </article>
         </Reveal>
       ))}
