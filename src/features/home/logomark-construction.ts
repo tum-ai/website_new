@@ -98,12 +98,14 @@ export function horizontalGuides(overshoot = OVERSHOOT): Segment[] {
 }
 
 /**
- * Vertical guides through every cap centre, `overshoot` past the mark. The
- * counter gets none: its centre sits 2.26 units right of the apex cap's, so
- * its guide would read as a doubled hairline beside the cap's centre mark.
+ * Vertical guides through the circle centres, `overshoot` past the mark. The
+ * apex cap (leftTop) gets none: its centre sits 2.26 units left of the
+ * counter's, so both guides would read as a doubled hairline beside the
+ * counter's centre mark. The counter's guide wins as it is the one in view.
  */
 export function verticalGuides(overshoot = OVERSHOOT): Segment[] {
-  return Object.values(capCircles).map(({ x }) => ({
+  const { leftTop: _apex, ...caps } = capCircles;
+  return [...Object.values(caps), counterCircle].map(({ x }) => ({
     x1: x,
     y1: -overshoot,
     x2: x,

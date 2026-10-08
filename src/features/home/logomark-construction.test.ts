@@ -83,11 +83,12 @@ describe("logomark construction", () => {
     expect(edgeX(outer, outer.from.y)).toBeCloseTo(outer.from.x, 6);
   });
 
-  test("vertical guides run only through the cap centres", () => {
+  test("one vertical guide runs through the counter, none through the apex cap", () => {
     // The counter's centre is 2.26 units off the apex cap's; a guide through
-    // both would draw two hairlines side by side.
-    expect(verticalGuides().map((guide) => guide.x1)).toEqual(
-      Object.values(capCircles).map((circle) => circle.x),
-    );
+    // each would draw two hairlines side by side.
+    const xs = verticalGuides().map((guide) => guide.x1);
+    expect(xs).toContain(counterCircle.x);
+    expect(xs).not.toContain(capCircles.leftTop.x);
+    expect(xs).toHaveLength(5);
   });
 });
