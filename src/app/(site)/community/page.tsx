@@ -4,10 +4,10 @@ import { CommunityPage } from "@/features/community/community-page";
 
 export const metadata = buildMetadata("community");
 
-export default function Page() {
+export default async function Page() {
   return (
     <>
-      <JsonLd data={getJsonLd("community")} />
+      <JsonLd data={await getJsonLd("community")} />
       <CommunityPage />
     </>
   );

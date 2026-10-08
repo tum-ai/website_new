@@ -15,10 +15,11 @@ Create `src/features/<domain>/<domain>-page.tsx`, a server component that render
 
 ```tsx
 import { Container, PageHero, Section, SectionHeader } from "@tum.ai/ui-kit";
-import { intro } from "./data/<domain>";
+import { get<Domain>Copy } from "./content";
 
 /** The /<route> page. */
-export function <Domain>Page() {
+export async function <Domain>Page() {
+  const { intro } = await get<Domain>Copy();
   return (
     <main>
       <PageHero eyebrow={intro.eyebrow} title={intro.title} lead={intro.lead} />
@@ -34,15 +35,16 @@ export function <Domain>Page() {
 
 - `PageHero` is the `h1`; each band is a `<Section tone>` opened by a `SectionHeader` (`h2`).
   End on a light or ink band (the footer is night). See `docs/design-system.md` "Page anatomy".
-- Static copy goes in `data/<domain>.ts`; facts (dates, counts, emails) come from `@/config/*`.
+- Editable copy comes from a required CMS singleton through a server-only query/parser; facts
+  come from `getSiteFacts()` / window readers. `data/` retains types and pure logic only.
 - Interactive parts are small `"use client"` islands next to the page module.
 - Page-only CSS, if unavoidable, goes in `<domain>.css` inside `@layer`; the route imports it.
 - Add `index.ts` only if another feature needs something from this one, and never export the page.
   Keep it isomorphic; server-only exports (content getters, async server components) go in
   `server.ts`, which starts with `import "server-only"`.
-- Editable copy and facts: once the page has copy editors should own, add a content slice and a
-  `<page>Copy` singleton (the `cms-content-model` skill); read facts with `await getSiteFacts()`
-  and the CTA labels from `@/config/calls-to-action`.
+- Follow `cms-content-model` for the `<page>Copy` schema, required reader/parser and independent
+  synthetic fixtures. Preserve optional clearing; never add local editable payloads or fallback
+  builders. Standing CTA labels come from `@/config/calls-to-action`.
 
 ## 2. SEO entry
 
@@ -71,8 +73,10 @@ export default function Page() {
 }
 ```
 
-CMS-backed pages make `Page` async, fetch through `@/lib/sanity` getters, pass the data as props,
-and set `export const revalidate = <seconds>`.
+Events/research routes can fetch through `@/lib/sanity`; page-copy readers belong to the feature
+server component. Set an appropriate `revalidate`. Fact-dependent JSON-LD/metadata reads the
+render's CMS facts. Synthetic CI validates the new query/parser/UI; live readiness remains a
+separate `sanity:ready --dataset redesign` check.
 
 ## 4. Navigation
 

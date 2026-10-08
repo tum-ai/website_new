@@ -1,34 +1,3 @@
-/**
- * `pnpm sanity:migrate-partners --dataset redesign [--apply]`
- *
- * Moves the old site's partners onto organisations in the new site's
- * dataset: every `partner` document (copied from `production` by the
- * backfill) finds its organisation by key and gives it a partnership
- * (`partnerTier`, `partnerCategory`, `partnerFeatured`) and its id
- * (`legacyPartnerId`, which `/api/getPartners` returns), and the code's
- * highlighted partners get their tiers. The plan is `partner-migration.ts`.
- *
- * - Without `--apply` (the default) it is a dry run: it reads the dataset
- *   over the public API (no token), prints every organisation it would
- *   create or update, and writes the plan to
- *   `.sanity-backfill/<dataset>.partner-migration.json` (gitignored).
- *   Nothing is written to Sanity.
- * - `--apply` then carries out that plan through
- *   `sanity exec apply-partner-migration.ts --with-user-token` (your CLI
- *   login, like the backfill's import): it creates missing organisations
- *   with `createIfNotExists` (uploading the code's logo files) and sets
- *   fields with `setIfMissing`, on the published document and its draft, so
- *   an editor's value is never replaced.
- *
- * `--dataset` is required and never `production` (`backfill-target.ts`):
- * the old site reads its `partner` documents there. Run it after
- * `pnpm sanity:backfill --apply` (which copies the partner documents and
- * creates the code's organisations) and before switching the site to the
- * dataset: until an organisation has a tier, `/api/getPartners` answers from
- * the partner documents and the pages from the code. Running it again is
- * safe: organisations it migrated keep what editors changed. See
- * docs/adr/0009-cms-content-source.md.
- */
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { parseArgs } from "node:util";
@@ -42,7 +11,6 @@ import {
   planPartnerMigration,
 } from "./partner-migration";
 import { sanityExec } from "./sanity-exec";
-import { collectBackfill } from "./slices";
 
 const root = join(import.meta.dirname, "..", "..");
 
@@ -71,7 +39,7 @@ if (!projectId) {
 
 const published = `!(_id in path("drafts.**")) && !(_id in path("versions.**"))`;
 const PARTNERS = `*[_type == "partner" && ${published}]{_id, name, link, category, tier, featured, image}`;
-const ORGANIZATIONS = `*[_type == "organization" && ${published}]{_id, key, name, href, logo, partnerTier, partnerCategory, partnerFeatured, legacyPartnerId}`;
+const ORGANIZATIONS = `*[_type == "organization" && ${published}]{_id, key, name, shortName, href, logo, partnerTier, partnerCategory, partnerFeatured, legacyPartnerId}`;
 
 /** Reads published documents over the public API (not the CDN); throws on failure. */
 async function query<T>(groq: string): Promise<T[]> {
@@ -100,9 +68,6 @@ const [partners, organizations] = await Promise.all([
 const plan = planPartnerMigration({
   partners,
   organizations,
-  codeOrganizations: collectBackfill().filter(
-    ({ _type }) => _type === "organization",
-  ),
   companyKey: getPartnerKey,
   organizationId,
 });

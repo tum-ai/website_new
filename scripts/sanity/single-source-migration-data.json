@@ -1,0 +1,193 @@
+{
+  "_id": "hackathonsCopy",
+  "_type": "hackathonsCopy",
+  "hero": {
+    "eyebrow": "Hackathons by TUM.ai",
+    "title": "We run the Makeathon. We founded the EHL.",
+    "lead": "Since {{since}}, {{impact.hackathonParticipants}}+ people have built at our hackathons.",
+    "leagueAction": "European Hackathon League",
+    "makeathonAction": "Makeathon",
+    "ribbonLabel": "Every TUM.ai hackathon, oldest first",
+    "sliderLabel": "Hackathon timeline",
+    "nextLabel": "Next",
+    "legend": {
+      "makeathon": "Makeathon",
+      "league": "League match",
+      "partner": "Other hackathon"
+    }
+  },
+  "league": {
+    "eyebrow": "Founded by TUM.ai in {{league.foundedYear}}",
+    "tagline": "{{league.matchCount}} matches. {{league.cityCount}} cities. One champion.",
+    "lead": "We built Europe's first competitive hackathon league. Teams score points at every match, the standings follow them across the season, and the top {{league.finaleTeams}} meet in the Grand Finale. Our Makeathon was Match 1.",
+    "linkLabel": "Learn more",
+    "routeLabel": "Season one, match by match",
+    "makeathonDetail": "Our Makeathon",
+    "finale": {
+      "label": "Grand Finale",
+      "text": "The top {{league.finaleTeams}} teams of the season play for the league's first title.",
+      "liveLabel": "Live now",
+      "pastText": "Season one is decided. The champions and the final standings are on the league's site.",
+      "actionLabel": "Follow the Grand Finale",
+      "standingsLabel": "See the final standings",
+      "poster": {
+        "_type": "image",
+        "_localAsset": "/assets/events/hackathons/ehl-2026-grand-finale-poster.webp",
+        "alt": "Our poster for the league's finals in Munich: a silver trophy on violet, with the partners BMW Group, tacto, Atira and Entire"
+      },
+      "championLabel": "Season one champion",
+      "runnersUpLabel": "Runners-up"
+    },
+    "partnersTitle": "Partners of season one"
+  },
+  "makeathon": {
+    "eyebrow": "Every year since {{since}}",
+    "title": "The Makeathon",
+    "lead": "Our flagship. A weekend in which students and young professionals build AI for problems that companies, hospitals and research labs bring. It is free to take part, and our Makeathon team runs it from start to finish.",
+    "linkLabel": "Learn more",
+    "figures": {
+      "latest": {
+        "value": "{{community.makeathonSize}}+",
+        "label": "Builders at the latest edition"
+      },
+      "editions": {
+        "value": "{{editions}}",
+        "label": "Editions since {{since}}"
+      },
+      "league": {
+        "value": "Match 1",
+        "label": "Opened the European Hackathon League"
+      }
+    },
+    "editionsTitle": "Every edition so far.",
+    "editionsPhoto": {
+      "_type": "image",
+      "_localAsset": "/assets/events/hackathons/makeathon-2023-group.webp",
+      "alt": "Eleven people from the Makeathon smiling around a wooden lectern with a microphone, a camera and studio light beside them",
+      "hotspot": {
+        "_type": "sanity.imageHotspot",
+        "x": 0.5,
+        "y": 0.4,
+        "width": 1,
+        "height": 1
+      }
+    },
+    "editionsPhotoCaption": "At the Makeathon 2023, AI for everyone.",
+    "editions": [
+      {
+        "_key": "2021",
+        "_type": "makeathonEdition",
+        "key": "2021",
+        "name": "GPT-3 Makeathon",
+        "start": "2021-04-16",
+        "end": "2021-04-18",
+        "city": "Munich",
+        "note": "The first Makeathon, built on GPT-3 with OpenAI, appliedAI and TUM Venture Labs, and judged by a jury from Cherry Ventures, Microsoft and IBM."
+      },
+      {
+        "_key": "2021-autumn",
+        "_type": "makeathonEdition",
+        "key": "2021-autumn",
+        "name": "Virtual Makeathon",
+        "start": "2021-10-15",
+        "end": "2021-10-17",
+        "city": "Online",
+        "note": "A virtual 48-hour edition with Microsoft and appliedAI. Team Cabalytics won with CabMate, which predicts where taxis will be needed across the city."
+      },
+      {
+        "_key": "2022-spring",
+        "_type": "makeathonEdition",
+        "key": "2022-spring",
+        "name": "AI4SocialGood",
+        "start": "2022-04-22",
+        "end": "2022-04-24",
+        "city": "Munich",
+        "note": "Challenges in education, environment and medtech from Infineon, Deloitte, NetApp and MI4People."
+      },
+      {
+        "_key": "2022-autumn",
+        "_type": "makeathonEdition",
+        "key": "2022-autumn",
+        "name": "AI for Global Impact",
+        "start": "2022-09-30",
+        "end": "2022-10-02",
+        "city": "Munich",
+        "note": "A hybrid edition with Microsoft, Roche, IBM and TNG Consulting."
+      },
+      {
+        "_key": "2023",
+        "_type": "makeathonEdition",
+        "key": "2023",
+        "name": "AI for everyone",
+        "start": "2023-04-27",
+        "end": "2023-04-30",
+        "city": "Munich",
+        "note": "On the Garching campus, with ESA, Microsoft, the BMW Group, G-Research, Cohere and Daiki."
+      },
+      {
+        "_key": "2024",
+        "_type": "makeathonEdition",
+        "key": "2024",
+        "name": "Makeathon 2024",
+        "start": "2024-04-26",
+        "end": "2024-04-28",
+        "city": "Munich",
+        "note": "Sixteen partners, from Mercedes and Salesforce to Dr. von Hauner Children's Hospital, whose challenge became a paper.",
+        "link": {
+          "label": "Read the paper",
+          "href": "https://arxiv.org/abs/2510.25277"
+        }
+      },
+      {
+        "_key": "2025",
+        "_type": "makeathonEdition",
+        "key": "2025",
+        "name": "Makeathon 2025",
+        "start": "2025-04-25",
+        "end": "2025-04-27",
+        "city": "Munich",
+        "note": "Challenges from CHECK24 and Reply and an open track by OpenAI, with QuantCo, Jane Street and Entrepreneur First."
+      },
+      {
+        "_key": "2026",
+        "_type": "makeathonEdition",
+        "key": "2026",
+        "name": "Makeathon 2026",
+        "start": "2026-04-17",
+        "end": "2026-04-19",
+        "city": "Munich",
+        "note": "101 teams on challenges from HappyRobot, Spherecast, osapiens and Reply. The first match of the European Hackathon League."
+      }
+    ]
+  },
+  "partners": {
+    "title": "Between Makeathons, hackathons with partners.",
+    "lead": "{{count}} since {{since}}, each on one theme, over a day or a weekend.",
+    "hostsPrefix": "with",
+    "moreLabel": "And many more on our events page"
+  },
+  "offer": {
+    "title": "Bring a challenge.",
+    "lead": "Partners set the problems our hackathons are built around. At the Makeathon or a league match, a challenge comes with:",
+    "items": [
+      "Your own challenge track",
+      "Recruiting access to the participants",
+      "Your brand on site, and a booth",
+      "A company pitch on stage"
+    ],
+    "addOns": "Add a workshop slot, or sponsor the catering."
+  },
+  "closing": {
+    "title": "Build at the next one.",
+    "lead": "Every hackathon is announced on our events page, and the next challenge can be yours.",
+    "student": {
+      "audience": "For students",
+      "text": "Join the next hackathon, with a team or on your own.",
+      "actionLabel": "See upcoming events"
+    },
+    "partner": {
+      "audience": "For partners",
+      "text": "Bring a challenge to the Makeathon, the league or a hackathon of your own."
+    }
+  }
+}

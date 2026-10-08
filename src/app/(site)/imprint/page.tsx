@@ -4,10 +4,10 @@ import { ImprintPage } from "@/features/legal/imprint-page";
 
 export const metadata = buildMetadata("imprint");
 
-export default function Page() {
+export default async function Page() {
   return (
     <>
-      <JsonLd data={getJsonLd("imprint")} />
+      <JsonLd data={await getJsonLd("imprint")} />
       <ImprintPage />
     </>
   );

@@ -1,14 +1,4 @@
-/**
- * Single source for the facts about TUM.ai's hackathon programmes beyond
- * the counts in `community.ts` and `impact.ts`: the Makeathon's own site
- * and the European Hackathon League that TUM.ai founded. /hackathons and
- * the Partners page quote them, so a new season is one edit here. See
- * "Updating site facts" in docs/contributor-guide.md.
- *
- * Source of truth for the league: its own site (`league.url`), as of
- * 2026-10-02. The league's leaderboard and rules live there and are not
- * repeated on this site.
- */
+/** Hackathon programme shapes and pure season summaries. Programme values come from CMS site settings; matches reference existing events. */
 
 import { formatList } from "@/lib/words";
 
@@ -27,80 +17,17 @@ export type LeagueMatch = {
   makeathon?: true;
 };
 
-export const hackathonFacts = {
-  /** The Makeathon's own site, with the current edition. */
-  makeathonUrl: "https://makeathon.tum-ai.com",
+/** CMS-owned programme facts. Match dates and cities are projected from event references. */
+export type HackathonFacts = {
+  makeathonUrl: string;
   league: {
-    name: "European Hackathon League",
-    /** The league's site, on TUM.ai's domain. */
-    url: "https://ehl.tum-ai.com",
-    /** The year TUM.ai founded the league (its first season). */
-    foundedYear: 2026,
-    /** The teams the season's standings send to the Grand Finale. */
-    finaleTeams: 15,
-    /**
-     * Season one's partners, as organisation keys with a logo for dark
-     * bands (`features/partners/data/organizations.ts`), in the league
-     * site's order.
-     */
-    partners: [
-      "reply",
-      "google",
-      "amd",
-      "openai",
-      "entire-io",
-      "inria",
-      "tacto",
-      "bmw",
-      "atira",
-    ],
-    /**
-     * Season one, in calendar order: the Makeathon 2026 was its first match.
-     *
-     * TUM.ai announced every match with its own poster (Paris with Iterate,
-     * Zurich with J Floor). TODO(content): the Grand Finale's venue.
-     */
-    matches: [
-      {
-        key: "munich-1",
-        label: "Match 1",
-        city: "Munich",
-        start: "2026-04-17",
-        end: "2026-04-19",
-        makeathon: true,
-      },
-      {
-        key: "paris",
-        label: "Match 2",
-        city: "Paris",
-        start: "2026-06-27",
-        end: "2026-06-28",
-      },
-      {
-        key: "munich-2",
-        label: "Match 3",
-        city: "Munich",
-        start: "2026-08-22",
-        end: "2026-08-23",
-      },
-      {
-        key: "zurich",
-        label: "Match 4",
-        city: "Zurich",
-        start: "2026-09-12",
-        end: "2026-09-13",
-      },
-      {
-        key: "finale",
-        label: "Grand Finale",
-        city: "Munich",
-        start: "2026-10-10",
-        end: "2026-10-11",
-      },
-    ] satisfies readonly LeagueMatch[],
-  },
-} as const;
-
+    name: string;
+    url: string;
+    foundedYear: number;
+    finaleTeams: number;
+    matches: readonly LeagueMatch[];
+  };
+};
 /** The league's facts as copy states them. */
 export type LeagueSummary = {
   /** The host cities in order of their first match. */

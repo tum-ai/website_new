@@ -1,51 +1,17 @@
 /**
- * Single source for who TUM.ai is: the headline figures and the legal
- * identity (name, registered office, register entry, representatives). The
- * landing, Apply, Partners and Imprint pages and the site JSON-LD read them,
- * so a new count or a new board is one edit here. Counts are lower bounds and
- * render with a trailing "+". See "Updating site facts" in
- * docs/contributor-guide.md.
- */
-export const organizationFacts = {
-  foundingYear: 2020,
-  activeMembers: 150,
-  alumni: 850,
-  majors: 20,
-  universities: 30,
-  nationalities: 35,
-  /**
-   * Share of applicants a recruiting round accepts, in percent with one
-   * decimal. /partners shows it as a figure ("2.3%") and, rounded to a
-   * whole percent ({@link acceptanceRateRoundedOf}), in its "cracked …%"
-   * headings.
-   */
-  acceptanceRate: 2.3,
-  /**
-   * Membership applications started in one recruiting round, a lower bound
-   * shown with "+". /partners draws the round from it, with the admitted
-   * share ({@link admittedPerBatchOf}) lit.
-   */
-  startedApplicationsPerBatch: 2100,
-  /**
-   * TUM.ai's LinkedIn audience, a lower bound. /partners shows it in
-   * thousands ({@link linkedinAudienceLabelOf}): "20k+".
-   */
-  linkedinAudience: 20000,
-} as const;
-
-/**
- * The mission as the 2026 brand guide states it (slide "Brand Story &
- * Mission"). /apply quotes it as the call's scope and /qanda opens on it.
- */
-export const brandMission =
-  "To bridge the gap between theory and practice by empowering students to build the future of AI. We combine academic rigor with a “make-it-happen” mindset to solve real-world challenges.";
-
-/**
  * The headline figures as the CMS `siteSettings` document holds them (see
- * `config/site-facts.ts`); `organizationFacts` is the code fallback.
+ * `config/site-facts.ts`).
  */
 export type OrganizationFacts = {
-  readonly [Key in keyof typeof organizationFacts]: number;
+  readonly foundingYear: number;
+  readonly activeMembers: number;
+  readonly alumni: number;
+  readonly majors: number;
+  readonly universities: number;
+  readonly nationalities: number;
+  readonly acceptanceRate: number;
+  readonly startedApplicationsPerBatch: number;
+  readonly linkedinAudience: number;
 };
 
 /** Everyone who has been an official member: active members plus alumni. */
@@ -88,9 +54,6 @@ export function linkedinAudienceLabelOf(audience: number): string {
     ? `${Math.floor(audience / 1000)}k`
     : String(audience);
 }
-
-/** {@link officialMembersOf} the code facts; per render, derive it from `getSiteFacts()`. */
-export const officialMembers = officialMembersOf(organizationFacts);
 
 type PostalAddress = {
   streetAddress: string;

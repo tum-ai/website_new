@@ -9,10 +9,10 @@ import "@/features/partners/partners.css";
 export const metadata = buildMetadata("partners");
 export const revalidate = 900;
 
-export default function Page() {
+export default async function Page() {
   return (
     <>
-      <JsonLd data={getJsonLd("partners")} />
+      <JsonLd data={await getJsonLd("partners")} />
       <PartnersPage />
     </>
   );

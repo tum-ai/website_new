@@ -27,8 +27,8 @@ const gateFigures = [
  * The gates must use each figure exactly once, in funnel order (applications,
  * admitted, midterm, selectionDay, finalPitch): the page draws every gate as
  * a share of the one before, the hero's field needs decreasing counts and
- * lights the last gate's teams as the Final Pitch, and it renders the code
- * cohort instead of a list with a gate missing, doubled or out of order
+ * lights the last gate's teams as the Final Pitch, and rejects a list
+ * with a gate missing, doubled or out of order
  * (`selectStages` in features/e-lab/content.ts). Phases may sit anywhere
  * between them. Exported for tests.
  */
@@ -99,8 +99,7 @@ async function validatePhaseWeeks(stages: unknown, context: ValidationContext) {
  * The /e-lab page's own copy (one document, `_id` `eLabCopy`): the hero and
  * the gates band, one cohort drawn to scale. The gates' figures come from
  * the site settings; the application state, the ventures and the voices are
- * their own content. Read by `features/e-lab/content.ts`, over the code
- * copy in `features/e-lab/data/copy.ts`.
+ * their own content. Read and validated by `features/e-lab/content.ts`.
  */
 export const eLabCopyType = defineType({
   name: "eLabCopy",
@@ -328,6 +327,21 @@ export const eLabCopyType = defineType({
       fields: [
         copyString({ name: "title", title: "Title", max: 50 }),
         copyText({ name: "lead", title: "Lead", max: 200, rows: 2 }),
+        ...["founders", "investors"].map((name) =>
+          defineField({
+            name,
+            title: name === "founders" ? "Founder quotes" : "Investor quotes",
+            type: "array",
+            of: [
+              defineArrayMember({
+                type: "reference",
+                to: [{ type: "person" }],
+                options: { filter: 'placement == "e-lab-testimonial"' },
+              }),
+            ],
+            validation: (Rule) => Rule.unique(),
+          }),
+        ),
         copyString({
           name: "foundersLabel",
           title: "Founders column",

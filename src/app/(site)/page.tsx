@@ -7,10 +7,10 @@ import "@/features/home/home.css";
 
 export const metadata = buildMetadata("home");
 
-export default function Page() {
+export default async function Page() {
   return (
     <>
-      <JsonLd data={getJsonLd("home")} />
+      <JsonLd data={await getJsonLd("home")} />
       <HomePage />
     </>
   );

@@ -1,33 +1,8 @@
-/**
- * The plan of `pnpm sanity:migrate-partners`: how the old site's `partner`
- * documents in the new site's dataset become partner organisations
- * (`organization` with a `partnerTier`). Pure, so tests run it on fixtures;
- * `migrate-partners.ts` reads the dataset and prints the plan, and
- * `apply-partner-migration.ts` carries it out.
- *
- * Per company (partner documents and code organisations matched by
- * `getPartnerKey`, the organisation by its `key`):
- *
- * - An organisation that exists gets only the fields it lacks
- *   (`setIfMissing`): the partnership, `legacyPartnerId`, and a website and
- *   light logo when it has none. What an editor set is never replaced. An
- *   organisation that already has a `legacyPartnerId` was migrated before
- *   and gets no partnership fields again, so a tier an editor cleared stays
- *   cleared.
- * - A missing organisation is created: from its code document (the
- *   backfill's, with its logo file) when the code has one, otherwise from
- *   the partner document (its name, link and uploaded logo).
- * - Values come from the partner document where an editor set them (tier,
- *   featured, category, link), otherwise from the code (tiers of the
- *   highlighted partners; `supporter` for everyone else).
- * - Several partner documents for one company (IBM and CDTM had one per
- *   category) become one organisation: the one whose category the code
- *   names (or the one the organisation already points at) gives its id and
- *   category; the others are reported as merged.
- */
-import type { BackfillDocument } from "@/lib/cms-backfill";
+/** CMS-only legacy partner migration; never reads a local content catalog. */
+
 import { isPartnerCategory, isPartnerTier } from "@/lib/people-and-logos";
 import { isHttpsUrl } from "@/lib/security";
+import type { BackfillDocument } from "./asset-ledger";
 
 /** A published `partner` document as the migration reads it. */
 export type DatasetPartner = {
@@ -45,6 +20,7 @@ export type DatasetOrganization = {
   _id: string;
   key?: unknown;
   name?: unknown;
+  shortName?: unknown;
   href?: unknown;
   logo?: unknown;
   partnerTier?: unknown;
@@ -73,7 +49,7 @@ export type MigrationStep =
       key: string;
       name: string;
       /** Where the document comes from. */
-      source: "code" | "partner";
+      source: "partner";
       /** The partner document it replaces, if any. */
       partnerId: string | null;
       document: BackfillDocument;
@@ -107,13 +83,11 @@ export type PartnerMigrationPlan = {
 const text = (value: unknown): string | undefined =>
   typeof value === "string" && value.trim() ? value.trim() : undefined;
 
-const isMissing = (value: unknown) =>
-  value === undefined ||
-  value === null ||
-  (typeof value === "string" && !value.trim());
+// Null and empty text may be deliberate editor clears; only absent fields are filled.
+const isMissing = (value: unknown) => value === undefined;
 
 /** Lowercase words joined by hyphens, as the organisation `key` must be. */
-export function keyFromName(name: string): string {
+function keyFromName(name: string): string {
   return name
     .normalize("NFKD")
     .replace(/[̀-ͯ]/g, "")
@@ -145,21 +119,18 @@ function logoFromPartner(
 
 /**
  * The plan for `partners` (the dataset's published partner documents) and
- * `organizations` (its published organisations), with `codeOrganizations`
- * (the code's `organization` backfill documents) as the source of new
- * documents and of the highlighted partners' tiers. `companyKey` is
+ * `organizations` (its published organisations). Names, aliases, logos and
+ * partnership values come exclusively from those CMS documents. `companyKey` is
  * `getPartnerKey` (passed in, so this module stays free of feature code).
  */
 export function planPartnerMigration({
   partners,
   organizations,
-  codeOrganizations,
   companyKey,
   organizationId,
 }: {
   partners: readonly DatasetPartner[];
   organizations: readonly DatasetOrganization[];
-  codeOrganizations: readonly BackfillDocument[];
   companyKey: (name: string) => string;
   /** The `_id` a new organisation gets from its key. */
   organizationId: (key: string) => string;
@@ -173,19 +144,18 @@ export function planPartnerMigration({
 
   const datasetByCompany = new Map<string, DatasetOrganization>();
   for (const organization of organizations) {
-    const key = text(organization.key);
-    if (key && !datasetByCompany.has(companyKey(key))) {
-      datasetByCompany.set(companyKey(key), organization);
+    for (const value of [
+      organization.key,
+      organization.name,
+      organization.shortName,
+    ]) {
+      const alias = text(value);
+      if (alias && !datasetByCompany.has(companyKey(alias))) {
+        datasetByCompany.set(companyKey(alias), organization);
+      }
     }
   }
   const datasetIds = new Set(organizations.map(({ _id }) => _id));
-  const codeByCompany = new Map<string, BackfillDocument>();
-  for (const document of codeOrganizations) {
-    const key = text(document.key);
-    if (document._type === "organization" && key) {
-      codeByCompany.set(companyKey(key), document);
-    }
-  }
 
   const partnersByCompany = new Map<string, DatasetPartner[]>();
   for (const partner of [...partners].sort((a, b) =>
@@ -200,7 +170,11 @@ export function planPartnerMigration({
     } else if (!name) {
       plan.skipped.push({ partnerId: partner._id, reason: "it has no name" });
     } else {
-      const company = companyKey(name);
+      const alias = companyKey(name);
+      const organization = datasetByCompany.get(alias);
+      // Different CMS aliases of one organization must form one migration group.
+      const company = organization ? `organization:${organization._id}` : alias;
+      if (organization) datasetByCompany.set(company, organization);
       partnersByCompany.set(company, [
         ...(partnersByCompany.get(company) ?? []),
         partner,
@@ -208,20 +182,14 @@ export function planPartnerMigration({
     }
   }
 
-  const companies = new Set([
-    ...partnersByCompany.keys(),
-    ...[...codeByCompany]
-      .filter(([, document]) => isPartnerTier(document.partnerTier))
-      .map(([company]) => company),
-  ]);
+  const companies = new Set(partnersByCompany.keys());
 
   for (const company of [...companies].sort()) {
     const existing = datasetByCompany.get(company);
-    const code = codeByCompany.get(company);
     const group = partnersByCompany.get(company) ?? [];
     const primary =
       group.find(({ _id }) => _id === existing?.legacyPartnerId) ??
-      group.find(({ category }) => category === code?.partnerCategory) ??
+      group.find(({ category }) => category === existing?.partnerCategory) ??
       group[0];
     for (const other of group) {
       if (other === primary || !primary) continue;
@@ -229,30 +197,24 @@ export function planPartnerMigration({
         partnerId: other._id,
         name: text(other.name) ?? "",
         category: text(other.category) ?? null,
-        key: text(existing?.key) ?? text(code?.key) ?? company,
+        key: text(existing?.key) ?? company,
         keptPartnerId: primary._id,
       });
     }
 
-    const name =
-      text(existing?.name) ?? text(code?.name) ?? text(primary?.name) ?? "";
+    const name = text(existing?.name) ?? text(primary?.name) ?? "";
     const link = text(primary?.link);
     const wanted: Partial<Record<MigratedField, unknown>> = {
       partnerTier:
         (isPartnerTier(primary?.tier) ? primary.tier : undefined) ??
-        (isPartnerTier(code?.partnerTier) ? code.partnerTier : "supporter"),
-      partnerCategory:
-        (isPartnerCategory(primary?.category) ? primary.category : undefined) ??
-        (isPartnerCategory(code?.partnerCategory)
-          ? code.partnerCategory
-          : undefined),
-      partnerFeatured:
-        primary?.featured === true || code?.partnerFeatured === true
-          ? true
-          : undefined,
+        "supporter",
+      partnerCategory: isPartnerCategory(primary?.category)
+        ? primary.category
+        : undefined,
+      partnerFeatured: primary?.featured === true ? true : undefined,
       legacyPartnerId: primary?._id,
-      href: text(code?.href) ?? (link && isHttpsUrl(link) ? link : undefined),
-      logo: code?.logo ?? logoFromPartner(primary?.image, name),
+      href: link && isHttpsUrl(link) ? link : undefined,
+      logo: logoFromPartner(primary?.image, name),
     };
     const defined = (fields: Partial<Record<MigratedField, unknown>>) =>
       Object.fromEntries(
@@ -294,8 +256,8 @@ export function planPartnerMigration({
       continue;
     }
 
-    const key = text(code?.key) ?? keyFromName(name);
-    const id = code?._id ?? organizationId(key);
+    const key = keyFromName(name);
+    const id = organizationId(key);
     if (!key || !name) {
       plan.skipped.push({
         partnerId: partnerId ?? company,
@@ -310,15 +272,18 @@ export function planPartnerMigration({
       });
       continue;
     }
-    const base: BackfillDocument = code
-      ? { ...code }
-      : { _id: id, _type: "organization", key, name };
+    const base: BackfillDocument = {
+      _id: id,
+      _type: "organization",
+      key,
+      name,
+    };
     plan.steps.push({
       action: "create",
       id,
       key,
       name,
-      source: code ? "code" : "partner",
+      source: "partner",
       partnerId,
       document: { ...base, ...defined(wanted) },
     });

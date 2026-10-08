@@ -1,7 +1,15 @@
-import { expect, test } from "vitest";
-import { contactEmails } from "@/config/contact";
-import { eLabProgramSummary } from "@/config/e-lab";
-import { hackathonFacts } from "@/config/hackathons";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { settingsFixtureFacts } from "@/lib/cms-fixtures/settings";
+import { getSiteFacts } from "./site-settings-content";
+
+const { contactEmails, hackathons: hackathonFacts } = settingsFixtureFacts;
+
+import { eLabProgramSummaryOf } from "@/config/e-lab";
+
+const eLabProgramSummary = eLabProgramSummaryOf(
+  settingsFixtureFacts.eLab.programWeeks,
+);
+
 import {
   buildMetadata,
   getJsonLd,
@@ -36,7 +44,7 @@ function urlsIn(value: unknown): string[] {
   return [];
 }
 
-test.each(keys)("%s: canonical and Open Graph URL agree", (key) => {
+test.each(keys)("%s: canonical and Open Graph URL agree", async (key) => {
   const metadata = buildMetadata(key);
   const canonical = metadata.alternates?.canonical;
   expect(new URL(String(canonical)).origin).toBe(siteConfig.url);
@@ -46,7 +54,7 @@ test.each(keys)("%s: canonical and Open Graph URL agree", (key) => {
   });
 });
 
-test("the homepage canonical is the bare origin", () => {
+test("the homepage canonical is the bare origin", async () => {
   expect(buildMetadata("home").alternates?.canonical).toBe(absoluteUrl());
   expect(buildMetadata("entrepreneurship").alternates?.canonical).toBe(
     absoluteUrl("/e-lab"),
@@ -55,8 +63,11 @@ test("the homepage canonical is the bare origin", () => {
 
 test.each(keys)(
   "%s: JSON-LD starts with the Organization and names the page URL",
-  (key) => {
-    const [organization, page] = getJsonLd(key) as Record<string, unknown>[];
+  async (key) => {
+    const [organization, page] = (await getJsonLd(key)) as Record<
+      string,
+      unknown
+    >[];
     expect(organization["@type"]).toBe("Organization");
     expect(page.url).toBe(buildMetadata(key).alternates?.canonical);
     // Every URL on the site's own domain uses the canonical origin.
@@ -71,11 +82,10 @@ test.each(keys)(
   },
 );
 
-test("/e-lab adds the Venture Department as a TUM.ai sub-organization", () => {
-  const [organization, , eLab] = getJsonLd("entrepreneurship") as Record<
-    string,
-    unknown
-  >[];
+test("/e-lab adds the Venture Department as a TUM.ai sub-organization", async () => {
+  const [organization, , eLab] = (await getJsonLd(
+    "entrepreneurship",
+  )) as Record<string, unknown>[];
   expect(eLab).toMatchObject({
     "@type": "Organization",
     url: absoluteUrl("/e-lab"),
@@ -84,11 +94,11 @@ test("/e-lab adds the Venture Department as a TUM.ai sub-organization", () => {
   });
   expect(eLab.description).toContain(eLabProgramSummary);
   // Only /e-lab carries the extra node.
-  expect(getJsonLd("events")).toHaveLength(2);
+  expect(await getJsonLd("events")).toHaveLength(2);
 });
 
-test("/hackathons adds the Makeathon as a series TUM.ai organises", () => {
-  const [organization, , makeathon] = getJsonLd("hackathons") as Record<
+test("/hackathons adds the Makeathon as a series TUM.ai organises", async () => {
+  const [organization, , makeathon] = (await getJsonLd("hackathons")) as Record<
     string,
     unknown
   >[];
@@ -99,9 +109,9 @@ test("/hackathons adds the Makeathon as a series TUM.ai organises", () => {
   });
 });
 
-test("page fields from the page's content join the page node", () => {
+test("page fields from the page's content join the page node", async () => {
   const mainEntity = [{ "@type": "Question", name: "Who can apply?" }];
-  const [, page] = getJsonLd("qanda", { mainEntity }) as Record<
+  const [, page] = (await getJsonLd("qanda", { mainEntity })) as Record<
     string,
     unknown
   >[];
@@ -109,10 +119,36 @@ test("page fields from the page's content join the page node", () => {
   expect(page.url).toBe(absoluteUrl("/qanda"));
 });
 
-test("the root layout defaults come from the site config", () => {
+test("the root layout defaults come from the site config", async () => {
   expect(rootMetadata.metadataBase.href).toBe(`${siteConfig.url}/`);
   expect(rootMetadata.title).toStrictEqual({
     default: siteTitle,
     template: `%s | ${siteConfig.name}`,
   });
+});
+
+vi.mock("./site-settings-content", () => ({ getSiteFacts: vi.fn() }));
+beforeEach(() =>
+  vi.mocked(getSiteFacts).mockResolvedValue(settingsFixtureFacts),
+);
+afterEach(() => vi.restoreAllMocks());
+test("CMS changes update organization facts and programme JSON-LD", async () => {
+  const changed = {
+    ...settingsFixtureFacts,
+    organization: { ...settingsFixtureFacts.organization, foundingYear: 2030 },
+    contactEmails: {
+      ...settingsFixtureFacts.contactEmails,
+      general: "new@example.org",
+    },
+    eLab: { ...settingsFixtureFacts.eLab, programWeeks: 16 },
+  };
+  vi.mocked(getSiteFacts).mockResolvedValue(changed);
+  const [organization, , venture] = (await getJsonLd(
+    "entrepreneurship",
+  )) as Record<string, unknown>[];
+  expect(organization).toMatchObject({
+    foundingDate: "2030",
+    email: "new@example.org",
+  });
+  expect(venture.description).toContain("16-week");
 });

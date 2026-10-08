@@ -5,8 +5,7 @@ import type { ContentImage } from "./cms-content-model";
  * journey (/community draws it as a timetable, /apply shows its tracks) and
  * the departments (/community lists them, the homepage counts them). The
  * Studio schemas (`journeyStep`, `department`) use the icon keys, so this
- * lives in `lib`. The content itself is in `features/community/data/` (code)
- * or the CMS (`lib/community-content.ts`). Isomorphic.
+ * lives in `lib`. Content comes from the CMS (`lib/community-content.ts`). Isomorphic.
  */
 
 /** One core department. */
@@ -18,13 +17,6 @@ export type Department = {
   /** A factual caption for the photo: what, where, when. */
   photoCaption?: string;
 };
-
-/**
- * A department as code writes it: `key` names its `department` document in
- * the backfill (`department-<key>`), fixed so renaming a department in code
- * never turns into a second document. Pages never see it.
- */
-export type DepartmentTemplate = Department & { key: string };
 
 /**
  * The icons a step can carry, as keys: the CMS stores the key and
@@ -60,10 +52,9 @@ export type JourneyStep = {
   span: "event" | "ongoing";
   /**
    * A member who took this step, in their own words: a verbatim sentence
-   * from their story in `features/community/data/member-stories.ts` (a test
-   * checks it is).
+   * from the referenced member story in the CMS.
    */
-  evidence?: { name: string; excerpt: string };
+  evidence?: { key: string; name: string; excerpt: string };
 };
 
 /**

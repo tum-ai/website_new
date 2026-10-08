@@ -3,10 +3,9 @@ import {
   applicationProgress,
   isMembershipApplicationOpen,
   type MembershipConfig,
-  membershipConfig,
   membershipWindowClock,
   type RecruitingRound,
-  recruitingTimeline,
+  recruitingTimelineOf,
   roundSchedule,
 } from "./membership";
 
@@ -34,7 +33,7 @@ describe("roundSchedule", () => {
   });
 
   test("parses the live round", () => {
-    expect(() => roundSchedule(membershipConfig.round)).not.toThrow();
+    expect(() => roundSchedule(round)).not.toThrow();
   });
 });
 
@@ -112,7 +111,7 @@ describe("applicationProgress", () => {
 
 describe("recruitingTimeline", () => {
   test("names the live round's windows in words", () => {
-    for (const window of Object.values(recruitingTimeline)) {
+    for (const window of Object.values(recruitingTimelineOf(schedule))) {
       expect(window).toMatch(/^[A-Z][a-z]+ \d{1,2}[a-z]{2} - [A-Z]/);
     }
   });

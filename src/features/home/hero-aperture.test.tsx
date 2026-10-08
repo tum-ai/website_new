@@ -1,7 +1,12 @@
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { renderToString } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { heroPhotos } from "./data/homepage";
+
+const heroPhotos = [
+  { src: "/assets/fixtures/photo.svg", width: 960, height: 640, alt: "" },
+  { src: "/assets/fixtures/logo.svg", width: 200, height: 80, alt: "" },
+];
+
 import { HeroAperture, nextPhotoIndex } from "./hero-aperture";
 
 /** jsdom has neither API; the observer never reports, so the hero counts as on screen. */
@@ -60,7 +65,7 @@ describe("HeroAperture", () => {
     expect(images).toHaveLength(1);
     expect(images[0]).toContain('loading="eager"');
     expect(preloads).toHaveLength(1);
-    expect(preloads[0]).toContain(encodeURIComponent(heroPhotos[0]?.src ?? ""));
+    expect(preloads[0]).toContain(heroPhotos[0]?.src ?? "");
   });
 
   test("holds the entrance until the first photo has loaded", async () => {

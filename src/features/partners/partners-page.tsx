@@ -21,7 +21,7 @@ import { ReasonsSection } from "./sections/reasons-section";
 /**
  * The /partners page. The partners (the partner organisations, in directory
  * order), copy, case studies, profiles and logos come from the content
- * slices (`content.ts`, `organization-content.ts`: the CMS or the code), the
+ * slices (`content.ts`, `organization-content.ts`: the published CMS), the
  * member figures and the partnership contact from the site facts. The
  * provider shares the finder's answers and the contact with every contact
  * action on the page.

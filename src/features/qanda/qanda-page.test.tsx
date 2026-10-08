@@ -1,11 +1,32 @@
 import { axe } from "@test/axe";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { contactEmails } from "@/config/contact";
-import { brandMission } from "@/config/organization";
-import { faqs, qandaCopy } from "./data/qanda";
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  test,
+  vi,
+} from "vitest";
+import { settingsFixtureFacts } from "@/lib/cms-fixtures/settings";
+
+import { getQandaContent } from "./content";
+import type { QandaCopy, QandaEntry } from "./data/qanda";
 import { getQandaMainEntity, QandAPage } from "./qanda-page";
+
+let faqs: QandaEntry[];
+let qandaCopy: QandaCopy;
+beforeAll(async () => {
+  vi.stubEnv("USE_MOCK_CMS", "1");
+  vi.stubEnv("VERCEL", "");
+  const content = await getQandaContent();
+  faqs = content.faqs;
+  qandaCopy = content.copy;
+});
+afterAll(() => vi.unstubAllEnvs());
 
 /*
  * Reduced motion keeps every Reveal in its idle, visible state, so jsdom
@@ -50,7 +71,9 @@ describe("QandAPage", () => {
   test("opens on the brand mission and asks the mission question below", async () => {
     render(await QandAPage());
     expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
-    expect(screen.getByText(brandMission)).toBeInTheDocument();
+    expect(
+      screen.getByText(settingsFixtureFacts.brandMission),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", {
         level: 2,
@@ -125,13 +148,15 @@ describe("QandAPage", () => {
   test("closes with the inbox and both readers' next steps", async () => {
     render(await QandAPage());
     const close = screen.getByRole("region", {
-      name: "Not in the paragraph? Ask us.",
+      name: qandaCopy.closing.title,
     });
     expect(
-      within(close).getByRole("link", { name: "Ask your question" }),
+      within(close).getByRole("link", { name: qandaCopy.closing.action }),
     ).toHaveAttribute(
       "href",
-      expect.stringMatching(new RegExp(`^mailto:${contactEmails.general}\\?`)),
+      expect.stringMatching(
+        new RegExp(`^mailto:${settingsFixtureFacts.contactEmails.general}\\?`),
+      ),
     );
     expect(
       within(close).getByRole("link", { name: "Become a Member" }),

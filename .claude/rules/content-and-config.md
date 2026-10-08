@@ -4,51 +4,32 @@ paths:
   - "src/features/**/data/**"
 ---
 
-# Site facts and static copy
+# Site facts and content contracts
 
-Facts that change per semester, cohort or year live in exactly one `src/config` file; pages,
-FAQs and JSON-LD derive their copy from it. The `site-facts` skill maps each fact to its file.
-With the CMS content source, those constants are the code fallback of the `siteSettings`
-singleton and the application windows: pages read the render's values, not the constants.
+Editable facts and copy have one CMS owner; code holds types, derivation and structural wording,
+not a second editorial payload. See `site-facts`, `cms-content-model` and ADR 0009.
 
-- **Where facts live:** `e-lab.ts` (cohort, application phase, deadline, program length, funding,
-  the `selection` funnel), `membership.ts` (recruiting round), `organization.ts` (founding year,
-  member counts, `brandMission`, legal entity, register number, representatives), `contact.ts`
-  (role emails, `partnershipContact`, social links, the Imprint address line), `community.ts`
-  (Makeathon size, `yearsSinceFounding()`), `impact.ts` (publications, venues, hackathon
-  participants), `hackathons.ts` (the Makeathon's site, the European Hackathon League's season),
-  `site.ts` (URL, name, tagline, `absoluteUrl()`), `navigation.ts` (links,
-  `headerCtaSetting`, per-route header options), `calls-to-action.ts` (the standing CTA labels
-  "Become a Member", "Become a Partner", "Apply now", "Questions and answers"; pages and CMS copy
-  never repeat them), `seo.ts` (metadata, JSON-LD). `site-facts.ts` groups the editable facts as
-  `SiteFacts`; `site-settings-content.ts` and `schedule-content.ts` are their slices.
-- **Reading facts in a page:** in a server page or section, `await getSiteFacts()` (derived
-  values with `deriveSiteFacts(facts)`), `await getMembershipWindow()` or `await getELabWindow()`.
-  Pass the values to client islands as props; islands never import a slice.
-- **Never type a fact into page code or `data/`:** read it (above) and build the sentence with a
-  template string, or write `{{placeholder}}` in copy. `test/content-facts.test.ts` fails on
-  hard-coded fact patterns; extend its patterns when you centralize a new fact rather than
-  silencing them.
-- **Derive, don't duplicate:** compute values such as `officialMembers` or
-  `eLabProgramSummary` from the base facts.
-- **CMS fallbacks:** content served by a content slice (`content.ts`, see the `cms-content-model`
-  skill) keeps its code version here as the fallback and backfill source. Keep its shape exactly
-  what the page renders. Facts inside such copy stay `{{placeholders}}` in the template: the
-  slice fills them per render with `await getContentTokens()` (`fillCodeCopy` for the fallback,
-  `fillCmsCopy` for the CMS result, `lib/content-copy.ts`), so CMS text stays derived too.
-  Figures only the page knows are page tokens (`{{count}}`), filled by the section with
-  `fillPageTokens`. A `data/` file never imports `config/content-tokens.ts`, which is server only
-  through its slices; the remaining filled code lists (`apply/data/faq.ts` `faq`,
-  `e-lab/data/faq.ts` `faq`, `qanda/data/qanda.ts`) are for tests and the design-system showcase.
-- **Time:** deadlines are Munich wall-clock strings parsed with `parseMunichDateTime`
-  (`@/lib/munich-time`); never `new Date("...")` on local time.
-- **Imports:** `config` may import only `config` and `lib`.
-- **Data files** are `.ts` (no JSX), kebab-case, typed, and reference only `/assets/...` paths that
-  exist (`test/public-assets.test.ts`).
-- **Copy:** no em or en dashes in visible text (use a comma, colon, period or spaced hyphen). Fix
-  unambiguous typos. Don't invent or change facts, figures, names or legal wording without a
-  source: keep the text, add `// TODO(content): <question>` and flag it in the PR. No personal
-  email addresses in pages; addresses come from `contact.ts`.
-- **Verify:** CI's unit job runs `test/content-facts.test.ts` and
-  `src/features/e-lab/e-lab-content.test.ts`; locally, `pnpm exec vitest run` on those files.
-  Tests derive their expectations from config, so a documented config edit must not break them.
+- **Facts:** site settings own organization/community/impact/E-Lab/league facts, role emails,
+  social links, booking URL/host and footer tagline. Application windows own dates/forms/switches.
+  Campaigns own dated CTAs. Read `getSiteFacts`, `getMembershipWindow`, `getELabWindow` and
+  `getContentTokens` per render; pass plain props to client islands. Required facts fail visibly
+  if missing or malformed. Derive figures and metadata from those rendered facts.
+- **Code owners:** legal wording/identity/addresses, canonical site URL, SEO structure, navigation,
+  standing CTA labels, private partnership CC addresses, geometry and interface strings.
+  Keep types/derivation in their matching `config` or feature module; `config` imports only
+  `config` and `lib`.
+- **Copy:** editable copy comes from a server-only CMS slice. Facts remain `{{placeholders}}`,
+  filled with `fillCmsCopy` per render. Page tokens such as `{{count}}` use `fillPageTokens`.
+  No local copy fallback, backfill builders or source selector. Optional cleared fields and
+  empty lists stay cleared; required singletons and structural content fail visibly.
+- **Time:** parse Munich wall-clock deadlines with `parseMunichDateTime` / `munich-time.ts`,
+  never `new Date` on local-time text.
+- **Data modules:** `.ts` with no JSX, typed, kebab-case, holding contracts/logic only. Synthetic
+  editorial fixtures live independently under `src/lib/cms-fixtures/` and are opt-in local data.
+  Keep pending editorial asset source files local until a separately authorized repair upload.
+- **Content quality:** no em/en dashes in visible text. Fix unambiguous typos; never invent facts,
+  figures, names or legal wording. Keep unclear existing legal content and flag the question.
+  Role emails displayed on pages come from the render's CMS facts.
+- **Verification:** content-facts guards prevent duplicate literals; test parsers, derivation,
+  optional clearing and required failure. Honor task-scoped no-tests requests. Mock checks are
+  distinct from read-only real dataset readiness (`sanity:ready --dataset redesign`).

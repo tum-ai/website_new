@@ -17,7 +17,7 @@ running one; pushes to `main` are never cancelled.
 | Lint | `biome ci --error-on-warnings .` (every rule is an error) | yes |
 | Typecheck | `pnpm typecheck`, then `pnpm sanity:typegen:check` (fails if the generated Sanity types are stale) | yes |
 | Unit tests | `pnpm test:coverage`, which fails below the coverage thresholds in `vitest.config.ts`; uploads `coverage` | yes |
-| Build | `pnpm build`, then `pnpm test:perf` (homepage budget) | yes |
+| Build | `pnpm build`, then `pnpm test:perf` with `USE_MOCK_CMS=1` and `MOCK_CMS_NOW=2026-10-01T12:00:00Z` | yes |
 | E2E (1/4 to 4/4) | `pnpm test:e2e --shard=N/4` in the Playwright container with `USE_MOCK_CMS=1`; uploads a blob report per shard | yes (every shard) |
 | E2E report | merges the shards' blob reports into one HTML report with traces (`playwright-report` artifact) | no |
 | Visual (1/2, 2/2) | `pnpm test:e2e:visual --shard=N/2` in the Playwright container; uploads `visual-report-N` | yes (both shards) |
@@ -25,6 +25,11 @@ running one; pushes to `main` are never cancelled.
 | Verify | fails unless every gating job succeeded | the required check |
 
 Notes:
+
+- **CMS evidence.** Build/perf and Playwright use independent synthetic CMS-shaped fixtures
+  and the fixed clock `2026-10-01T12:00:00Z`. Mock mode is gated off on Vercel. CI validates
+  query/parser/UI behavior; real dataset completeness is a separate read-only
+  `sanity:ready --dataset redesign` check, never inferred from CI.
 
 - **Sharding.** E2E is split across four runners and Visual across two, and each shard builds the
   site itself. A shared build job would put its whole runtime on the critical path, and runner

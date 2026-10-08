@@ -11,10 +11,10 @@ export const metadata = buildMetadata("apply");
  */
 export const revalidate = 3600;
 
-export default function Page() {
+export default async function Page() {
   return (
     <>
-      <JsonLd data={getJsonLd("apply")} />
+      <JsonLd data={await getJsonLd("apply")} />
       <ApplyPage now={getCmsNow()} />
     </>
   );

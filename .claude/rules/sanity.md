@@ -12,91 +12,60 @@ paths:
   - "src/app/api/**"
 ---
 
-# Sanity CMS, data fetching and API routes
+# Sanity CMS, fetching and API routes
 
-One dataset (docs/adr/0009-cms-content-source.md): `NEXT_PUBLIC_SANITY_DATASET`, `redesign` for
-the new site, holds the copies of the old site's events and research projects (`lib/sanity.ts`)
-and partners (which only the partner migration and the API's fallback read: partners are
-organisations with a `partnerTier`), and the page content moving out of code, read through content slices
-(`lib/cms-content.ts`) behind `CMS_CONTENT_SOURCE` (`code` by default). The default when unset is
-`production`, the old site's dataset: `main` renders it, nothing here writes to it, and page
-content never goes there (`datasetHoldsPageContent` in `lib/sanity-config.ts`: the Studio drops
-the content types and the `sanity` source renders code). Everything not yet moved is static in
-Git.
+The new site reads editable content from one explicitly selected page-content dataset
+(`NEXT_PUBLIC_SANITY_DATASET=redesign`); see ADR 0009 and `cms-content-model`. Production remains
+the old site's dataset and is never a migration target. No source selector, local editable
+payloads, fallback merge, slice builders or backfill registry remain.
 
-- **Content slices:** `features/<x>/content.ts` (or `<topic>-content.ts`, server only) with
-  `get<Thing>()` via `loadContent` and `build<X>Backfill()`, registered in
-  `scripts/sanity/slices.ts`; schemas in `src/sanity/schemas/content/` (never in
-  `schemas/index.ts`, which the Studio registers on `production` too); a parity test per slice. The `cms-content-model` skill ("Content slices") has the steps.
-  Facts in copy are filled per render with `await getContentTokens()`, never with the module
-  constant `contentTokens`. Never import `lib/cms-content`, a slice or `config/content-tokens`
-  from a client component: other features reach a slice through the feature's `server.ts`, and
-  `src/architecture.test.ts` fails when a `"use client"` module reaches `server-only`.
-- **References:** a copy field that names a person or organisation is a `reference`
-  (`homeCopy.partners.quote`, `journeyStep.evidence.person`), projected to what the code shape
-  holds (`quote->key`, `person->name`). Its backfill uses the target's deterministic id
-  (`personId`, `organizationId`), and the slice's `mockDocuments` include the target documents so
-  the mock resolves it.
-- **Cache tags:** a slice's `tags` name `content:<type>` for every type its query reads,
-  dereferenced ones included (`lib/cache-tags.ts`); the event and research getters use
-  `liveCacheTags` (the partners, organisations, `content:organization`).
-  `/api/revalidate` (a Sanity webhook, `SANITY_REVALIDATE_SECRET`) expires them on publish; a
-  missing tag means that page ignores the type's edits until its timer (at most an hour: the site
-  layout's `revalidate = 3600` safety net).
-- **Backfill:** `pnpm sanity:backfill --dataset redesign` is a dry run that writes
-  `.sanity-backfill/<dataset>.ndjson`: the code content plus a read-only copy of `production`'s
-  published events, partners and research (`scripts/sanity/production-copy.ts`: same `_id`s,
-  images as CDN `_sanityAsset`s, events' `hosts` from `liveEventHosts` in `lib/mock-cms.ts`,
-  failing on an entry that matches no event). It needs `NEXT_PUBLIC_SANITY_PROJECT_ID` and
-  refuses `production` as a target. Never run `--apply`, `sanity dataset create` or
-  `sanity dataset import` as part of a change: importing is a maintainer's launch step. `--apply`
-  only creates missing documents, then attaches the images its imports left without a file,
-  tracked in `.sanity-backfill/<dataset>.pending-assets.json` so an image an editor removed stays
-  removed (`scripts/sanity/repair-assets.ts`); `--apply --overwrite` replaces existing ones with
-  the code content or the copy and **discards editors' edits**. Backfill ids come from explicit
-  keys in the code data (`id`/`key`), never from text.
-- **Partners:** an `organization` with a `partnerTier` (code: the `partnership` in
-  `features/partners/data/organizations.ts`; getter `getPartners()`). `partner` stays registered
-  everywhere, but the Studio hides it outside `production`. `pnpm sanity:migrate-partners
-  --dataset redesign` is a dry run that plans moving the copied `partner` documents onto
-  organisations (`scripts/sanity/partner-migration.ts`); like the backfill, never run its
-  `--apply` as part of a change.
-- **Studio:** one workspace at `/studio` on `NEXT_PUBLIC_SANITY_DATASET` (`studioConfig` in
-  `src/sanity/sanity.config.ts`) with Presentation; the content types and the merged desk
-  (`siteStructure` in `src/sanity/content-structure.ts`) only when the dataset is not
-  `production` (on those, "Partners" lists the organisations with a partner tier).
-
-- **Change flow** (the `cms-content-model` skill has the steps): schema in `src/sanity/schemas/`,
-  then the GROQ query in `src/lib/sanity-queries.ts` (wrapped in `defineQuery`), then
-  `pnpm sanity:typegen`, then the mock fixtures in `src/lib/mock-cms.ts`, then tests, then the UI.
-- **Types:** `src/lib/sanity.types.generated.ts` is generated from the Studio's schema (extracted
-  with a placeholder dataset so the content types are in it); never edit it
-  (a hook blocks it).
-  `src/lib/types.ts` derives the app types from it. CI's Typecheck job runs
-  `pnpm sanity:typegen:check` and fails when the file is stale.
-- **Fetching:** `src/lib/sanity.ts` is `server-only`. Pages call its getters
-  (`getSanityEvents`, `getSanityResearchProjects`), which return `[]` when
-  Sanity is not configured or a fetch fails (logged), and the fixtures when the build had
-  `USE_MOCK_CMS=1`.
-- **Tokens:** `SANITY_API_READ_TOKEN` stays on the server. Never pass it to `browserToken` or a
-  client component; the browser only ever gets the separate, optional `SANITY_API_BROWSER_TOKEN`.
-- **Draft mode:** Presentation in `/studio` calls `/api/draft-mode/enable` (503 without a token,
-  401 for a wrong secret); `/api/draft-mode/disable` redirects to same-origin paths only.
-- **Public API:** `/api/getNotes` (returns events), `/api/getPartners`, `/api/getResearch` are
-  consumed outside this repo. They use their own frozen `PUBLIC_*` queries; keep response shapes
-  stable and serve the published perspective. `/api/getPartners` answers from the partner
-  organisations (`id` = `legacyPartnerId`) on a dataset with page content, and from the `partner`
-  documents on `production` or while no organisation has a tier (`getPublishedPartners`).
-- **Mock CMS:** fixtures follow the query projections exactly, use neutral links and shipped
-  assets, and contain no personal data. `USE_MOCK_CMS` is inlined at build time
-  (`next.config.ts`), and the gate is off on Vercel. Fixture dates are relative to `MOCK_CMS_NOW`
-  (`lib/mock-cms-env.ts`) when set.
-- **Schemas and Studio config** import only `sanity` packages, `src/sanity` and `lib` (relative
-  paths, which the Sanity CLI resolves for schema extraction).
-- **Tests:** `src/lib/sanity-queries.test.ts` evaluates each query against sample documents with
-  groq-js, so a projection change needs a matching test case; `src/lib/mock-cms.test.ts` checks the
-  fixtures. Mock `next/headers` and `next-sanity` with `vi.mock` when testing the fetch layer.
-  Content slices need no fixtures: under the mock their backfill documents are queried with the
-  real GROQ (`lib/cms-content-mock.ts`), and each slice's parity test compares that with code.
-  A test that `vi.mock`s `lib/cms-content-mock` calls one getter at a time: Vitest hands the mock
-  only to the first of several concurrent dynamic imports (`docs/testing.md`).
+- **Readers:** server-only slices call `loadContent({ query, params, tags, label, select })`.
+  Validate required singletons/facts/structural invariants and throw actionable errors on missing
+  or malformed data. Optional collections may be empty; cleared optional fields stay empty.
+  Never repopulate a deleted image/list from repository copy.
+- **References:** use CMS references for people and organizations. Parse coupled values together.
+  Include `content:<type>` tags for every referenced type. Client islands get plain props;
+  other features use the owner's `server.ts`. No client imports of readers or fixture modules.
+- **Facts:** fill placeholders from `getContentTokens()` per render; no static filled editorial
+  payload. A new placeholder updates both names and mapping. Page tokens reflect page counts.
+- **Schema flow:** schema, `defineQuery` projection, runtime parser, TypeGen, independent synthetic
+  fixture, affected tests and UI. Page types live under `schemas/content/`, registered outside
+  production; base event/research/legacy-partner types preserve old-site compatibility.
+  Schemas and Studio use relative imports resolved by the Sanity CLI.
+- **Types:** regenerate `sanity.types.generated.ts` with `pnpm sanity:typegen`, never hand-edit.
+  CI's Typecheck job checks freshness.
+- **Partners:** pages read organizations with `partnerTier`. Logo-list references own section
+  membership/order. Public partner getters retain compatibility between organization and legacy
+  CMS partner records, including stable legacy IDs. Preserve all three public API shapes and
+  published perspective; change both partner public projections together.
+- **Maintainer tools:** `sanity:copy-production` copies live published events/partners/research,
+  create-only and skipping existing IDs. `sanity:migrate-partners` uses CMS records only.
+  `sanity:migrate-org-references` matches existing CMS key/name/shortName without creations.
+  `sanity:migrate-content-dedup` retains historical comparators/revision guards.
+  `sanity:migrate-single-source` addresses known missing content/references, not a full seed.
+  These default to dry run; no `--apply`, dataset create or import during code delivery.
+  Focused migration target writes and durable CMS completion receipts are atomic. Completed
+  creates/field paths stay hands-off after later editor deletion/unset. Authenticated preflight
+  inspects raw drafts; without a read token report draft visibility unknown, never draft-safe.
+- **Assets:** independent `sanity:repair-assets --dataset redesign` defaults to dry run and uses
+  the existing `.sanity-backfill/<dataset>.pending-assets.json` ledger. Preserve revision guards,
+  editor removal and retry entries. New pending image sources stay local until an authorized
+  apply. Focused migration uses the separate `.sanity-backfill/<dataset>.single-source-assets.json`
+  source-path/digest upload cache; retain it and source files until upload/link confirmation,
+  including retries after a document write fails. Ledger/migration helpers live under
+  `scripts/sanity/`, never the app runtime.
+- **Readiness:** `sanity:ready --dataset redesign` reads the real published dataset using runtime
+  queries/parsers with mocking disabled, reports actionable gaps, and makes no CMS writes.
+  Mock CI success does not certify live readiness.
+- **Mock:** small CMS-shaped documents under `lib/cms-fixtures/{settings,organizations,community,
+  programmes,hackathons}` are queried with actual GROQ using groq-js. The separate
+  `lib/mock-cms.ts` supplies event/research mocks. The literal gate is
+  `USE_MOCK_CMS=1 && !VERCEL`, inlined at build time; ignored on Vercel. Build/perf CI and
+  Playwright fix `MOCK_CMS_NOW=2026-10-01T12:00:00Z`. Never import fixtures outside that gate.
+- **Cache/preview:** published page-content reads use `content:<type>` tags and webhook
+  revalidation with the hourly safety net. Existing event/research draft and live preview behavior
+  remains; no page-content draft expansion here. Server read tokens never reach the browser;
+  the browser token is separate and optional.
+- **Tests:** test query/parser behavior, required failures, empty collections, optional clearing,
+  references and public compatibility. Mock fetch-layer dependencies as needed. A test mocking
+  `cms-content-mock` calls one getter at a time; see `docs/testing.md`. Honor no-tests requests.

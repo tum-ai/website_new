@@ -14,9 +14,9 @@ inventing one.
 | [0004](0004-vitest-and-playwright.md) | Vitest for unit and component tests, Playwright for E2E, a11y and visual | Accepted |
 | [0005](0005-mock-cms.md) | A build-time mock CMS with a fixed clock | Accepted |
 | [0006](0006-sanity-typegen.md) | Sanity TypeGen for query result types | Accepted |
-| [0007](0007-facts-in-config.md) | Site facts live once in `src/config/`, guarded by a test | Accepted |
+| [0007](0007-facts-in-config.md) | Central fact contracts/derivation in `src/config/`; editable ownership superseded by ADR 0009 | Accepted |
 | [0008](0008-dist-dir-isolation.md) | Separate Next.js dist dirs for dev and production | Accepted |
-| [0009](0009-cms-content-source.md) | One Sanity dataset (`redesign`) for the new site: copies of the old site's content plus page content, behind `CMS_CONTENT_SOURCE`, merged over code fallbacks | Accepted |
+| [0009](0009-cms-content-source.md) | CMS single source for editable content, strict required readers, independent synthetic fixtures and targeted maintainer tools | Accepted |
 | [0010](0010-ui-kit-consumption.md) | Consume the standalone UI kit through its public API; keep site composition and adapters app-owned | Accepted |
 
 ## Writing a new ADR

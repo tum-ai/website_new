@@ -24,12 +24,15 @@
     "knip": "knip",
     "sanity:typegen": "cd src/sanity && DO_NOT_TRACK=1 NEXT_PUBLIC_SANITY_DATASET=schema-extract sanity schemas extract --enforce-required-fields --force --path ../../node_modules/.cache/sanity/schema.json && DO_NOT_TRACK=1 sanity typegen generate && cd ../.. && biome format --write src/lib/sanity.types.generated.ts",
     "sanity:typegen:check": "pnpm sanity:typegen && git diff --exit-code -- src/lib/sanity.types.generated.ts",
-    "sanity:backfill": "tsx --tsconfig scripts/sanity/tsconfig.json scripts/sanity/backfill.ts",
     "sanity:migrate-partners": "tsx --tsconfig scripts/sanity/tsconfig.json scripts/sanity/migrate-partners.ts",
     "sanity:migrate-content-dedup": "tsx --tsconfig scripts/sanity/tsconfig.json scripts/sanity/migrate-content-dedup.ts",
     "sanity:migrate-org-references": "tsx --tsconfig scripts/sanity/tsconfig.json scripts/sanity/migrate-org-references.ts",
-    "sanity:migrate-home-quotes": "tsx --tsconfig scripts/sanity/tsconfig.json scripts/sanity/migrate-home-quotes.ts",
-    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm test:perf"
+    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm test:perf",
+    "sanity:copy-production": "tsx --tsconfig scripts/sanity/tsconfig.json scripts/sanity/copy-production.ts",
+    "sanity:ready": "tsx --tsconfig scripts/sanity/tsconfig.json scripts/sanity/ready.ts",
+    "sanity:repair-assets": "tsx --tsconfig scripts/sanity/tsconfig.json scripts/sanity/repair-assets-command.ts",
+    "sanity:migrate-single-source": "tsx --tsconfig scripts/sanity/tsconfig.json scripts/sanity/single-source-migration-cli.ts",
+    "sanity:migrate-home-quotes": "tsx --tsconfig scripts/sanity/tsconfig.json scripts/sanity/migrate-home-quotes.ts"
   },
   "dependencies": {
     "@calcom/embed-react": "^1.5.3",

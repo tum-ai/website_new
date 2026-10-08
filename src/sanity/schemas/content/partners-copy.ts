@@ -387,6 +387,12 @@ export const partnersCopyType = defineType({
         "The bands' headings, leads and labels. Headings set on fixed lines keep their line breaks; the buttons' own labels stay in code.",
       fields: [
         band("hero", "Hero", [
+          photoField({
+            name: "image",
+            title: "Hero image",
+            description:
+              "Opening photo with descriptive alt text and editor-selected crop.",
+          }),
           line("eyebrow", "Eyebrow", 50),
           lines("title", "Title", {
             max: 16,

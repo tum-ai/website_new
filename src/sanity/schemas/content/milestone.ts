@@ -12,8 +12,7 @@ const milestoneKinds = [
 /**
  * One thing TUM.ai's members started, in the year they started it: a cell
  * entry of the "Since 2020" programme grid on /apply (a row per kind, a
- * column per year). Read by `features/apply/content.ts`, over
- * `features/apply/data/milestones.ts`.
+ * column per year). Read and validated by `features/apply/content.ts`.
  */
 export const milestoneType = defineType({
   name: "milestone",

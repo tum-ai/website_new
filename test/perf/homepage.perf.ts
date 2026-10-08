@@ -2,7 +2,6 @@ import { existsSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { JSDOM } from "jsdom";
 import { describe, expect, test } from "vitest";
-import { heroPhotos } from "../../src/features/home/data/homepage.ts";
 
 /**
  * Homepage performance budget, checked against the production build that
@@ -54,19 +53,17 @@ describe("homepage build output", () => {
       (link) =>
         link.getAttribute("href") ?? link.getAttribute("imagesrcset") ?? "",
     );
-    const firstPhoto = encodeURIComponent(heroPhotos[0]?.src ?? "");
-
+    const photo = document.querySelector(".home-aperture img");
+    expect(
+      photo,
+      "hero aperture must render its first CMS photo",
+    ).not.toBeNull();
+    const photoSrc = photo?.getAttribute("src") ?? "";
+    const photoSrcset = photo?.getAttribute("srcset");
     expect(imagePreloads).toHaveLength(2);
     expect(imagePreloads).toContain("/assets/tum_ai_logo_new.svg");
-    expect(imagePreloads.some((preload) => preload.includes(firstPhoto))).toBe(
-      true,
-    );
-    for (const photo of heroPhotos.slice(1)) {
-      const encoded = encodeURIComponent(photo.src);
-      expect(imagePreloads.some((preload) => preload.includes(encoded))).toBe(
-        false,
-      );
-    }
+    expect(imagePreloads).toContain(photoSrcset ?? photoSrc);
+    expect(document.querySelectorAll(".home-aperture img")).toHaveLength(1);
   });
 
   test("hero background stays decorative without server-rendered media tiles", () => {

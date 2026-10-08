@@ -33,7 +33,7 @@ export default async function Page() {
 
   return (
     <>
-      <JsonLd data={getJsonLd("events")} />
+      <JsonLd data={await getJsonLd("events")} />
       <EventsPage events={events} now={now} featuredEventId={featuredEventId} />
     </>
   );

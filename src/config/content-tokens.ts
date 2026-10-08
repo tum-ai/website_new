@@ -1,13 +1,8 @@
 import type { ContentTokens } from "@/lib/content-tokens";
-import {
-  type ELabApplicationWindow,
-  eLabApplicationCopyOf,
-  eLabWindowFallback,
-} from "./e-lab";
-import { hackathonFacts, leagueSummaryOf } from "./hackathons";
+import { type ELabApplicationWindow, eLabApplicationCopyOf } from "./e-lab";
+import { leagueSummaryOf } from "./hackathons";
 import {
   type MembershipConfig,
-  membershipConfig,
   recruitingTimelineOf,
   roundSchedule,
 } from "./membership";
@@ -17,11 +12,7 @@ import {
   linkedinAudienceLabelOf,
 } from "./organization";
 import { getELabWindow, getMembershipWindow } from "./schedule-content";
-import {
-  deriveSiteFacts,
-  type SiteFacts,
-  siteFactsFallback,
-} from "./site-facts";
+import { deriveSiteFacts, type SiteFacts } from "./site-facts";
 import { getSiteFacts } from "./site-settings-content";
 
 /**
@@ -51,7 +42,7 @@ export function contentTokensFor({
   const derived = deriveSiteFacts(facts);
   const recruiting = recruitingTimelineOf(roundSchedule(membership.round));
   const { organization: org, impact } = facts;
-  const league = leagueSummaryOf(hackathonFacts.league.matches);
+  const league = leagueSummaryOf(facts.hackathons.league.matches);
   return {
     "recruiting.application": recruiting.application,
     "recruiting.interview": recruiting.interview,
@@ -89,28 +80,12 @@ export function contentTokensFor({
     "league.cities": league.citiesText,
     "league.cityCount": String(league.cities.length),
     "league.matchCount": String(league.matchCount),
-    "league.foundedYear": String(hackathonFacts.league.foundedYear),
-    "league.finaleTeams": String(hackathonFacts.league.finaleTeams),
+    "league.foundedYear": String(facts.hackathons.league.foundedYear),
+    "league.finaleTeams": String(facts.hackathons.league.finaleTeams),
   };
 }
 
-/**
- * The placeholder values from the config constants alone: for code
- * fallbacks built at module load. Content slices use `getContentTokens()`.
- */
-export const contentTokens: ContentTokens = contentTokensFor({
-  facts: siteFactsFallback,
-  membership: membershipConfig,
-  eLab: eLabWindowFallback,
-});
-
-/**
- * The placeholder values for one render: built from the site facts and the
- * application windows resolved for it (`getSiteFacts()`,
- * `getMembershipWindow()`, `getELabWindow()`), so they follow the CMS when
- * `CMS_CONTENT_SOURCE=sanity` and equal `contentTokens` otherwise. Content
- * slices fill CMS copy with these, never with the `contentTokens` constant.
- */
+/** Resolve placeholder values from CMS facts and application windows for this render. */
 export async function getContentTokens(): Promise<ContentTokens> {
   const [facts, membership, eLab] = await Promise.all([
     getSiteFacts(),

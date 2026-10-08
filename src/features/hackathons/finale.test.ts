@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { hackathonsCopyTemplate } from "./data/copy";
+import { hackathonsFixture as hackathonsCopyTemplate } from "@/lib/cms-fixtures/hackathons";
 import { finaleView } from "./hackathons-view";
 
 const copy = hackathonsCopyTemplate.league.finale;

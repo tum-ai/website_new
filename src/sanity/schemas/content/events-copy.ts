@@ -6,7 +6,7 @@ import { copyString, copyText } from "./copy-fields";
  * empty lead, section headings and the closing. The events themselves are `event`
  * documents. Read by
  * `features/events/content.ts`, over the code copy in
- * `features/events/data/copy.ts`.
+ * `features/events/content.ts` without local fallback wording.
  */
 export const eventsCopyType = defineType({
   name: "eventsCopy",

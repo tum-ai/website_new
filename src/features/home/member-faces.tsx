@@ -22,6 +22,8 @@ import {
 
 /** A member in the join band: their face, who they are and their quote. */
 export type QuotedMember = {
+  /** Stable CMS person identity; names need not be unique. */
+  key: string;
   name: string;
   role: string;
   excerpt: string;
@@ -171,7 +173,7 @@ export function MemberFaces({
       <div className="grid">
         {members.map((member, index) => (
           <blockquote
-            key={member.name}
+            key={member.key}
             aria-hidden={index !== selected}
             className={cn(
               "text-fg text-heading-sm transition-[opacity,translate,visibility] duration-500 ease-brand [grid-area:1/1] motion-reduce:transition-none sm:text-heading-md",
@@ -200,7 +202,7 @@ export function MemberFaces({
         >
           {members.map((member, index) => (
             <button
-              key={member.name}
+              key={member.key}
               ref={(node) => {
                 faceRefs.current[index] = node;
               }}
@@ -216,6 +218,11 @@ export function MemberFaces({
                 zIndex: members.length - Math.abs(index - selected),
               }}
               onFocus={() => pick(index)}
+              onClick={(event) => {
+                // Keyboard and assistive activation selects this button;
+                // pointer intent is picked by its resting slot on the row.
+                if (event.detail === 0) pick(index);
+              }}
             >
               <Image
                 src={member.image}
@@ -231,7 +238,7 @@ export function MemberFaces({
         <div className="grid">
           {members.map((member, index) => (
             <div
-              key={member.name}
+              key={member.key}
               aria-hidden={index !== selected}
               className={cn(
                 "transition-[opacity,visibility] duration-500 ease-brand [grid-area:1/1] motion-reduce:transition-none",

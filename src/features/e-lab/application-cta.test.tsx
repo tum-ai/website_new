@@ -3,28 +3,28 @@ import { render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import {
   type ELabApplicationWindow,
-  eLabConfig,
   eLabPhaseCopyOf,
   eLabWindowClock,
-  eLabWindowFallback,
 } from "@/config/e-lab";
 import { ELabApplicationCta, ELabApplicationStatus } from "./application-cta";
 
-/*
- * The deadline comes from the real config; only the master switch is pinned
- * on, so these tests keep working when a maintainer closes a round early.
- */
 const eLabWindow: ELabApplicationWindow = {
-  ...eLabWindowFallback,
   applicationsOpen: true,
+  applicationUrl: "https://example.org/apply",
+  applicationDeadlineDate: "12.11.2030",
+  applicationDeadlineTime: "17:00",
+  nextApplicationWindow: "Example round",
 };
+vi.mock("@/config/site-settings-content", () => ({
+  getSiteFacts: async () => ({ eLab: { currentIteration: "Example" } }),
+}));
 
 vi.mock("@/config/schedule-content", () => ({
   getELabWindow: async () => eLabWindow,
 }));
 
 const deadline = eLabWindowClock(eLabWindow).closesAt ?? 0;
-const copy = eLabPhaseCopyOf(eLabConfig.currentIteration, eLabWindow);
+const copy = eLabPhaseCopyOf("Example", eLabWindow);
 
 /** Both server components, resolved, as the page renders them side by side. */
 async function renderCta() {

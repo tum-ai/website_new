@@ -1,7 +1,10 @@
 import { expect, test } from "vitest";
+import {
+  projectsCopyFixture as projectsCopyTemplate,
+  taskForcesFixture as taskForces,
+} from "@/lib/cms-fixtures/programmes";
 import { spellCountCapitalized } from "@/lib/words";
-import { projectsCopyTemplate } from "./data/copy";
-import { openSeatSlug, taskForces } from "./data/projects";
+import { openSeatSlug } from "./data/projects";
 import { projectsView } from "./projects-view";
 
 test("the hero counts the task forces and the figure ends on the open seat", () => {

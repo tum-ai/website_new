@@ -2,16 +2,9 @@ import { defineField, defineType } from "sanity";
 import { getCalBooking } from "../../../lib/security";
 import { contentImageField } from "./fields";
 
-/**
- * The `siteSettings` singleton: the facts editors own, read by
- * `getSiteFacts()` in `src/config/site-settings-content.ts` and laid over the
- * config constants (`siteFactsFallback` in `src/config/site-facts.ts`), so an
- * empty field shows the code value. Counts render as lower bounds with a
- * trailing "+". Derived figures (official members, completed cohorts, the
- * program summary) are computed from these fields, never stored.
- *
- * Kept in code on purpose: the legal entity and Imprint wording (the board
- * reviews it; the Imprint's contact email is the general role email here), the site URL and SEO, and the navigation structure.
+/** Published site facts. Required fields fail at the site reader boundary when missing;
+ * derived values are computed from these fields rather than stored twice.
+ * Legal identity, canonical site identity, and navigation remain code-owned.
  */
 
 const countField = (name: string, title: string, description: string) =>
@@ -99,6 +92,7 @@ export const siteSettingsType = defineType({
     { name: "organization", title: "Organization", default: true },
     { name: "contact", title: "Contact and social" },
     { name: "eLab", title: "E-Lab" },
+    { name: "hackathons", title: "Hackathons" },
     { name: "site", title: "Header and footer" },
   ],
   fields: [
@@ -149,7 +143,7 @@ export const siteSettingsType = defineType({
           type: "number",
           description:
             "Membership applications started in one recruiting round; shown with “+”. /partners draws the round from it and lights the accepted share.",
-          validation: (Rule) => Rule.integer().min(1),
+          validation: (Rule) => Rule.required().integer().min(1),
         }),
         countField(
           "linkedinAudience",
@@ -344,6 +338,75 @@ export const siteSettingsType = defineType({
           description:
             "White artwork for the dark /e-lab hero. Change it together with the current cohort.",
           required: true,
+        }),
+      ],
+    }),
+    defineField({
+      name: "hackathons",
+      title: "Hackathon programmes",
+      type: "object",
+      group: "hackathons",
+      validation: (Rule) => Rule.required(),
+      fields: [
+        httpsLink("makeathonUrl", "Makeathon website"),
+        defineField({
+          name: "league",
+          title: "League",
+          type: "object",
+          validation: (Rule) => Rule.required(),
+          fields: [
+            defineField({
+              name: "name",
+              title: "Name",
+              type: "string",
+              validation: (Rule) => Rule.required(),
+            }),
+            httpsLink("url", "League website"),
+            countField("foundedYear", "Founding year", "First league season."),
+            countField(
+              "finaleTeams",
+              "Finale teams",
+              "Teams qualifying for the finale.",
+            ),
+            defineField({
+              name: "matches",
+              title: "Season matches",
+              type: "array",
+              of: [
+                {
+                  type: "object",
+                  name: "leagueMatch",
+                  fields: [
+                    defineField({
+                      name: "key",
+                      title: "Stable key",
+                      type: "string",
+                      validation: (Rule) => Rule.required(),
+                    }),
+                    defineField({
+                      name: "label",
+                      title: "Label",
+                      type: "string",
+                      validation: (Rule) => Rule.required(),
+                    }),
+                    defineField({
+                      name: "event",
+                      title: "Existing event",
+                      type: "reference",
+                      to: [{ type: "event" }],
+                      validation: (Rule) => Rule.required(),
+                    }),
+                    defineField({
+                      name: "makeathon",
+                      title: "Makeathon match",
+                      type: "boolean",
+                    }),
+                  ],
+                },
+              ],
+              validation: (Rule) => Rule.required(),
+            }),
+          ],
         }),
       ],
     }),

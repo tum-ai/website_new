@@ -3,7 +3,6 @@ import {
   type ApplicationProgress,
   applicationProgress,
   type MembershipConfig,
-  membershipConfig,
   membershipWindowClock,
   type RoundSchedule,
   roundSchedule,
@@ -120,13 +119,12 @@ function startsIn(count: number): string {
  * The recruiting round at `now`: its phase, the register rows with each
  * date's state, and the progress of the application window, all on the
  * Munich calendar. The server passes the render's "now" (`getCmsNow()`) and
- * the window resolved for the render (`await getMembershipWindow()`); the
- * default is the code window. Isomorphic: the apply page's date islands
+ * the window resolved for the render (`await getMembershipWindow()`); the window is required. Isomorphic: the apply page's date islands
  * (`live-call-dates.tsx`) recompute it in the browser with the same window.
  */
 export function recruitingCall(
   now: Date,
-  config: MembershipConfig = membershipConfig,
+  config: MembershipConfig,
 ): RecruitingCall {
   const schedule: RoundSchedule = roundSchedule(config.round);
   const progress = applicationProgress(now, schedule);
@@ -231,7 +229,7 @@ export function recruitingCall(
  */
 export function recruitingCallBoundaries(
   from: Date,
-  config: MembershipConfig = membershipConfig,
+  config: MembershipConfig,
 ): Date[] {
   const { round } = config;
   const { opensAt, closesAt } = roundSchedule(round);

@@ -22,8 +22,7 @@ const programTokens = {
 /**
  * The homepage's copy (one document, `_id` `homeCopy`). The figures in the
  * ledger come from the site settings; the quotes reference people, and the
- * partner band's outcomes and logos are partner content. Read by `features/home/content.ts`, over the code copy
- * in `features/home/data/homepage.ts`.
+ * partner band's outcomes and logos are partner content. Read and validated by `features/home/content.ts`.
  */
 export const homeCopyType = defineType({
   name: "homeCopy",
@@ -34,6 +33,7 @@ export const homeCopyType = defineType({
       name: "hero",
       title: "Hero",
       type: "object",
+      validation: (Rule) => Rule.required(),
       fields: [
         copyString({
           name: "title",
@@ -76,6 +76,7 @@ export const homeCopyType = defineType({
       name: "mission",
       title: "Mission",
       type: "object",
+      validation: (Rule) => Rule.required(),
       fields: [
         copyText({
           name: "statement",
@@ -105,6 +106,7 @@ export const homeCopyType = defineType({
           name: "ledgerRow",
           title: "Figure",
           type: "object",
+          validation: (Rule) => Rule.required(),
           fields: [
             defineField({
               name: "key",
@@ -131,6 +133,7 @@ export const homeCopyType = defineType({
       name: "programs",
       title: "Programs",
       type: "object",
+      validation: (Rule) => Rule.required(),
       fields: [
         copyString({ name: "title", title: "Title", max: 40 }),
         copyText({ name: "lead", title: "Lead", max: 200, rows: 2 }),
@@ -143,6 +146,7 @@ export const homeCopyType = defineType({
               name: "program",
               title: "Program",
               type: "object",
+              validation: (Rule) => Rule.required(),
               fields: [
                 defineField({
                   name: "key",
@@ -193,6 +197,7 @@ export const homeCopyType = defineType({
       name: "room",
       title: "In the room",
       type: "object",
+      validation: (Rule) => Rule.required(),
       fields: [
         copyString({ name: "title", title: "Title", max: 40 }),
         copyText({ name: "lead", title: "Lead", max: 200, rows: 2 }),
@@ -207,6 +212,7 @@ export const homeCopyType = defineType({
               name: "roomPhoto",
               title: "Photo",
               type: "object",
+              validation: (Rule) => Rule.required(),
               fields: [
                 contentImageField({
                   name: "image",
@@ -231,6 +237,7 @@ export const homeCopyType = defineType({
       name: "join",
       title: "Join band",
       type: "object",
+      validation: (Rule) => Rule.required(),
       description: "The member call to action at the end of the page.",
       fields: [
         copyString({
@@ -252,6 +259,7 @@ export const homeCopyType = defineType({
               name: "recruitingStep",
               title: "Step",
               type: "object",
+              validation: (Rule) => Rule.required(),
               fields: [
                 copyString({ name: "title", title: "Title", max: 20 }),
                 copyString({
@@ -314,6 +322,7 @@ export const homeCopyType = defineType({
       name: "partners",
       title: "Partners band",
       type: "object",
+      validation: (Rule) => Rule.required(),
       description:
         "The case for partners: a partner's quote, the case-study outcomes and every current partner's logo (partner content).",
       fields: [

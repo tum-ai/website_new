@@ -1,19 +1,27 @@
 import { describe, expect, test } from "vitest";
 import {
+  eLabCopyFixture,
+  eLabSelectionFixture,
+} from "@/lib/cms-fixtures/programmes";
+import {
   createFieldSim,
   type FieldBodies,
   type FieldSim,
   stepField,
 } from "@/lib/spring-field";
 import { applicationField } from "./data/field";
-import { gates } from "./data/selection";
+import { buildStages, gatesOf } from "./data/selection";
+
+const gates = gatesOf(
+  buildStages(eLabCopyFixture.gates.stages, eLabSelectionFixture),
+);
 
 // FieldDots' rest radius and logo size, in lattice units.
 const RADIUS = 0.3;
 const PEAK = 2.4 / RADIUS;
 
 describe("the hero's field as drawn", () => {
-  // The default cohort's layout as ApplicationField builds it: the dots in
+  // The supplied synthetic cohort's layout as ApplicationField builds it: the dots in
   // group order, the last gate's lit ones opening to FieldDots' logo size.
   const field = applicationField([...gates]);
   const finalGate = gates.length - 1;
@@ -46,7 +54,7 @@ describe("the hero's field as drawn", () => {
     return Number.POSITIVE_INFINITY;
   }
 
-  test("uses the default cohort: 500 dots, 10 of them lit", () => {
+  test("uses the supplied cohort counts for the dots and the lit stage", () => {
     expect(drawn).toHaveLength(gates[0]?.teams ?? 0);
     expect(lit).toHaveLength(gates[finalGate]?.teams ?? 0);
   });

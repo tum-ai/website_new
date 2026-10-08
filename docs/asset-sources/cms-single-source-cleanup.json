@@ -1,0 +1,998 @@
+{
+  "verifiedDate": "2026-10-03",
+  "projectId": "o9uuv2sq",
+  "dataset": "redesign",
+  "removedCount": 164,
+  "removedBytes": 10219683,
+  "verification": [
+    "SHA-1 matches current published Sanity image asset",
+    "no remaining source, test, script, E2E or showcase caller",
+    "no pending asset ledger in implementation or original checkout"
+  ],
+  "removed": [
+    {
+      "path": "public/assets/open_ai_speaker_event.webp",
+      "bytes": 840084,
+      "sha1": "abc101c03c3659acb9a9bef9d6b9a8a6c5d9aa7f",
+      "cmsAsset": "image-abc101c03c3659acb9a9bef9d6b9a8a6c5d9aa7f-1920x1280-webp"
+    },
+    {
+      "path": "public/assets/research/rex/inria.svg",
+      "bytes": 1763,
+      "sha1": "1cd6f125485cb039fd7fe3d5b5d38a58b506521b",
+      "cmsAsset": "image-1cd6f125485cb039fd7fe3d5b5d38a58b506521b-283x83-svg"
+    },
+    {
+      "path": "public/assets/research/rex/harvard.svg",
+      "bytes": 30163,
+      "sha1": "9124183d1a15e1827606e8f9e223f450f78661fa",
+      "cmsAsset": "image-9124183d1a15e1827606e8f9e223f450f78661fa-600x165-svg"
+    },
+    {
+      "path": "public/assets/research/rex/cambridge.svg",
+      "bytes": 73168,
+      "sha1": "2adf7d81e73f99f1be69508aef1f413abbb6e08f",
+      "cmsAsset": "image-2adf7d81e73f99f1be69508aef1f413abbb6e08f-249x53-svg"
+    },
+    {
+      "path": "public/assets/research/rex/mit.svg",
+      "bytes": 357,
+      "sha1": "585f45b7812b514d6cbc8076afedeb8849951c70",
+      "cmsAsset": "image-585f45b7812b514d6cbc8076afedeb8849951c70-449x252-svg"
+    },
+    {
+      "path": "public/assets/innovation/robotics_discussion.webp",
+      "bytes": 310198,
+      "sha1": "71ed95734a7db560746b8ce7b1230eff9b821715",
+      "cmsAsset": "image-71ed95734a7db560746b8ce7b1230eff9b821715-1920x1440-webp"
+    },
+    {
+      "path": "public/assets/innovation/women_at_tumai.jpg",
+      "bytes": 627289,
+      "sha1": "24fe3a7de37e0a118e016a7646f4cf86ec418d0a",
+      "cmsAsset": "image-24fe3a7de37e0a118e016a7646f4cf86ec418d0a-2430x1620-jpg"
+    },
+    {
+      "path": "public/assets/innovation/med_ai.webp",
+      "bytes": 493318,
+      "sha1": "a7ef1d2eea6676c96a2344735c9a53d66e01d901",
+      "cmsAsset": "image-a7ef1d2eea6676c96a2344735c9a53d66e01d901-1920x1440-webp"
+    },
+    {
+      "path": "public/assets/innovation/robotics_arm.webp",
+      "bytes": 62598,
+      "sha1": "e3834ebae147110bac8a491f274917366b31e5af",
+      "cmsAsset": "image-e3834ebae147110bac8a491f274917366b31e5af-1533x921-webp"
+    },
+    {
+      "path": "public/assets/apply/jasmin_el-wafi.webp",
+      "bytes": 112918,
+      "sha1": "49b034ee6445dff9816318fda040397bd08838f4",
+      "cmsAsset": "image-49b034ee6445dff9816318fda040397bd08838f4-911x911-webp"
+    },
+    {
+      "path": "public/assets/apply/new_section_photo_1.webp",
+      "bytes": 327698,
+      "sha1": "fdb3a428b1d361910d025a0983b839096743b11a",
+      "cmsAsset": "image-fdb3a428b1d361910d025a0983b839096743b11a-1920x563-webp"
+    },
+    {
+      "path": "public/assets/apply/xabi.webp",
+      "bytes": 386592,
+      "sha1": "eeee70a2f1cb270abb95ff8946eff14ea48eba6e",
+      "cmsAsset": "image-eeee70a2f1cb270abb95ff8946eff14ea48eba6e-1920x1700-webp"
+    },
+    {
+      "path": "public/assets/apply/sami_haddouti.webp",
+      "bytes": 81204,
+      "sha1": "1ac50030f56d0cf33961bff6020a53eb1832d6d2",
+      "cmsAsset": "image-1ac50030f56d0cf33961bff6020a53eb1832d6d2-1280x1280-webp"
+    },
+    {
+      "path": "public/assets/apply/marco_lorenz.webp",
+      "bytes": 171200,
+      "sha1": "cc5ce91d4de0b135591479f68fd1decb8395ed06",
+      "cmsAsset": "image-cc5ce91d4de0b135591479f68fd1decb8395ed06-1920x1789-webp"
+    },
+    {
+      "path": "public/assets/apply/simon_huang.webp",
+      "bytes": 18168,
+      "sha1": "26cde57205c87ad0d41fb7b36c910a5c4afe45e2",
+      "cmsAsset": "image-26cde57205c87ad0d41fb7b36c910a5c4afe45e2-460x460-webp"
+    },
+    {
+      "path": "public/assets/apply/new_section_photo_4.webp",
+      "bytes": 235940,
+      "sha1": "30c1f2cb20bd512accb444b6e8466dd478b60b2d",
+      "cmsAsset": "image-30c1f2cb20bd512accb444b6e8466dd478b60b2d-1920x668-webp"
+    },
+    {
+      "path": "public/assets/apply/zexin_gong.webp",
+      "bytes": 285208,
+      "sha1": "6aca4f0d56359b5e1306e297ef5d121deb89dec1",
+      "cmsAsset": "image-6aca4f0d56359b5e1306e297ef5d121deb89dec1-1716x1716-webp"
+    },
+    {
+      "path": "public/assets/e-lab/E-Lab5Logo.svg",
+      "bytes": 2151,
+      "sha1": "5766c926b7827d6415394c2088efbab9edb1df14",
+      "cmsAsset": "image-5766c926b7827d6415394c2088efbab9edb1df14-2717x530-svg"
+    },
+    {
+      "path": "public/assets/e-lab/startups/invertix.webp",
+      "bytes": 3728,
+      "sha1": "fefed9314dc319f1bfd890d883f4e3132f015003",
+      "cmsAsset": "image-fefed9314dc319f1bfd890d883f4e3132f015003-160x80-webp"
+    },
+    {
+      "path": "public/assets/e-lab/startups/get-ilkigai.svg",
+      "bytes": 9163,
+      "sha1": "a05cadea6960d434c425d77f03a40c71332d62f1",
+      "cmsAsset": "image-a05cadea6960d434c425d77f03a40c71332d62f1-135x25-svg"
+    },
+    {
+      "path": "public/assets/e-lab/startups/Tenmin.svg",
+      "bytes": 5936,
+      "sha1": "e87c62fb58abb58a38363b87922d035ca4d1929d",
+      "cmsAsset": "image-e87c62fb58abb58a38363b87922d035ca4d1929d-105x31-svg"
+    },
+    {
+      "path": "public/assets/e-lab/startups/TauRobotics.svg",
+      "bytes": 905,
+      "sha1": "411baf062749c199c6379c04de8827d55fc4a637",
+      "cmsAsset": "image-411baf062749c199c6379c04de8827d55fc4a637-40x40-svg"
+    },
+    {
+      "path": "public/assets/e-lab/startups/LogoExplaino.svg",
+      "bytes": 77802,
+      "sha1": "d67e913684f92981792d7fb0a2d58ba23cf551b2",
+      "cmsAsset": "image-d67e913684f92981792d7fb0a2d58ba23cf551b2-1329x314-svg"
+    },
+    {
+      "path": "public/assets/e-lab/startups/Spherecast.webp",
+      "bytes": 2916,
+      "sha1": "f0d635f87bf64cc2d86fa84b4758ea77b58966c9",
+      "cmsAsset": "image-f0d635f87bf64cc2d86fa84b4758ea77b58966c9-244x55-webp"
+    },
+    {
+      "path": "public/assets/e-lab/startups/helmit.svg",
+      "bytes": 165023,
+      "sha1": "a4350f62cde063fe4302c23bc379ebed5139d4f1",
+      "cmsAsset": "image-a4350f62cde063fe4302c23bc379ebed5139d4f1-8394x3372-svg"
+    },
+    {
+      "path": "public/assets/e-lab/testimonials/alexandra_reinert.webp",
+      "bytes": 20764,
+      "sha1": "d1c64c584e7bdf7c4a63240612d9192058258be6",
+      "cmsAsset": "image-d1c64c584e7bdf7c4a63240612d9192058258be6-512x512-webp"
+    },
+    {
+      "path": "public/assets/e-lab/testimonials/leon_hergert.png",
+      "bytes": 87846,
+      "sha1": "d3b50231edd9e41f059f90ac9c22c60b6fc03d2d",
+      "cmsAsset": "image-d3b50231edd9e41f059f90ac9c22c60b6fc03d2d-295x295-png"
+    },
+    {
+      "path": "public/assets/e-lab/testimonials/axel_taeubert.webp",
+      "bytes": 17050,
+      "sha1": "16a5294c6d21f4cdae1f8f5fc38519768235076a",
+      "cmsAsset": "image-16a5294c6d21f4cdae1f8f5fc38519768235076a-512x512-webp"
+    },
+    {
+      "path": "public/assets/e-lab/testimonials/viktor_shen.jpeg",
+      "bytes": 28925,
+      "sha1": "29cb50596c20355e3c94d88f4ca7088a0d4ce4d4",
+      "cmsAsset": "image-29cb50596c20355e3c94d88f4ca7088a0d4ce4d4-467x467-jpg"
+    },
+    {
+      "path": "public/assets/e-lab/testimonials/leonardo_benini.png",
+      "bytes": 111212,
+      "sha1": "ef0ef85af7395f96513b4c2e8a371821f177c692",
+      "cmsAsset": "image-ef0ef85af7395f96513b4c2e8a371821f177c692-295x295-png"
+    },
+    {
+      "path": "public/assets/e-lab/testimonials/benedikt_wieser.png",
+      "bytes": 91615,
+      "sha1": "4a74887860f4875207b6e97ea8c4c7c686ab6f02",
+      "cmsAsset": "image-4a74887860f4875207b6e97ea8c4c7c686ab6f02-295x295-png"
+    },
+    {
+      "path": "public/assets/e-lab/testimonials/oliver_schoppe.png",
+      "bytes": 107672,
+      "sha1": "e775f5c494a46a7df63a00e848a25d4f770e62ed",
+      "cmsAsset": "image-e775f5c494a46a7df63a00e848a25d4f770e62ed-295x295-png"
+    },
+    {
+      "path": "public/assets/e-lab/partners/cdtm.webp",
+      "bytes": 1030,
+      "sha1": "093bfa6b2d6bec782c961d056dee11694703772e",
+      "cmsAsset": "image-093bfa6b2d6bec782c961d056dee11694703772e-128x64-webp"
+    },
+    {
+      "path": "public/assets/e-lab/partners/ewor.webp",
+      "bytes": 2470,
+      "sha1": "ffc2536a45b7087a27d5f664f7b0f4c7766554c9",
+      "cmsAsset": "image-ffc2536a45b7087a27d5f664f7b0f4c7766554c9-128x64-webp"
+    },
+    {
+      "path": "public/assets/e-lab/partners/accel.svg",
+      "bytes": 3643,
+      "sha1": "4aeee8a762dffe44dd5beeed43e5d2898a0460bc",
+      "cmsAsset": "image-4aeee8a762dffe44dd5beeed43e5d2898a0460bc-1288x413-svg"
+    },
+    {
+      "path": "public/assets/e-lab/partners/google.svg",
+      "bytes": 918,
+      "sha1": "6265fd1ee20a56404fb8682b755d63ef2b222f96",
+      "cmsAsset": "image-6265fd1ee20a56404fb8682b755d63ef2b222f96-118x120-svg"
+    },
+    {
+      "path": "public/assets/e-lab/partners/y-combinator.webp",
+      "bytes": 552,
+      "sha1": "6fdf8051eea6da65161cd618ca5fd81bd2103ea4",
+      "cmsAsset": "image-6fdf8051eea6da65161cd618ca5fd81bd2103ea4-128x64-webp"
+    },
+    {
+      "path": "public/assets/e-lab/partners/uvc-partners.webp",
+      "bytes": 3296,
+      "sha1": "2d69389cd16aa2ae1f1b14932cf1987e4edbd3fb",
+      "cmsAsset": "image-2d69389cd16aa2ae1f1b14932cf1987e4edbd3fb-128x64-webp"
+    },
+    {
+      "path": "public/assets/homepage/venture_onboarding25.webp",
+      "bytes": 476308,
+      "sha1": "b77891cca546f16e7a5edf8f1534aa910524783b",
+      "cmsAsset": "image-b77891cca546f16e7a5edf8f1534aa910524783b-1440x1920-webp"
+    },
+    {
+      "path": "public/assets/homepage/IBM_visit.webp",
+      "bytes": 326894,
+      "sha1": "5cce9d879fb7c0d2dc6ec8188824f55594e164d5",
+      "cmsAsset": "image-5cce9d879fb7c0d2dc6ec8188824f55594e164d5-1920x1440-webp"
+    },
+    {
+      "path": "public/assets/homepage/Onboarding25.webp",
+      "bytes": 367230,
+      "sha1": "b866c725c095d1e7d507cb874f632dc7c5966391",
+      "cmsAsset": "image-b866c725c095d1e7d507cb874f632dc7c5966391-1920x1280-webp"
+    },
+    {
+      "path": "public/assets/homepage/Makeathon.webp",
+      "bytes": 363590,
+      "sha1": "170666f5a7f53531211ab36f3f70ad2dfcc5cbd5",
+      "cmsAsset": "image-170666f5a7f53531211ab36f3f70ad2dfcc5cbd5-1920x1280-webp"
+    },
+    {
+      "path": "public/assets/homepage/elab.webp",
+      "bytes": 197070,
+      "sha1": "e3a4fb7c3767440c7cfb3b84535e6018e38a34c0",
+      "cmsAsset": "image-e3a4fb7c3767440c7cfb3b84535e6018e38a34c0-1920x1440-webp"
+    },
+    {
+      "path": "public/assets/partners/cases/osapiens.webp",
+      "bytes": 101312,
+      "sha1": "3454cd19967cf89c5ca1b6b0c916936e8803d917",
+      "cmsAsset": "image-3454cd19967cf89c5ca1b6b0c916936e8803d917-1305x864-webp"
+    },
+    {
+      "path": "public/assets/partners/cases/quantco.webp",
+      "bytes": 57876,
+      "sha1": "510de9c0ac33f25124147526d0e0ed1a526ec598",
+      "cmsAsset": "image-510de9c0ac33f25124147526d0e0ed1a526ec598-1330x864-webp"
+    },
+    {
+      "path": "public/assets/partners/cases/bmw.webp",
+      "bytes": 73928,
+      "sha1": "23ef0c3e31a3a5a3bb7eee3651ff176d80820df5",
+      "cmsAsset": "image-23ef0c3e31a3a5a3bb7eee3651ff176d80820df5-864x864-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/hugging-face.webp",
+      "bytes": 11608,
+      "sha1": "39f00acf151ece95f40df6425639dbb9a4193648",
+      "cmsAsset": "image-39f00acf151ece95f40df6425639dbb9a4193648-500x121-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/google.webp",
+      "bytes": 5846,
+      "sha1": "de4b9563c6c4cccfb1949d0484c66b7e8c6812f8",
+      "cmsAsset": "image-de4b9563c6c4cccfb1949d0484c66b7e8c6812f8-270x82-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/reply.webp",
+      "bytes": 9220,
+      "sha1": "368e0971e6658b9dccb6266fd648676cc429182a",
+      "cmsAsset": "image-368e0971e6658b9dccb6266fd648676cc429182a-500x133-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/osapiens.svg",
+      "bytes": 4756,
+      "sha1": "b88ed53741e9c80133b39f4ef94e6bf9efa0bc00",
+      "cmsAsset": "image-b88ed53741e9c80133b39f4ef94e6bf9efa0bc00-143x60-svg"
+    },
+    {
+      "path": "public/assets/partners/logos/bkw.webp",
+      "bytes": 3956,
+      "sha1": "c97372ac73b73ffb76be5ed621c73af24ca8eccc",
+      "cmsAsset": "image-c97372ac73b73ffb76be5ed621c73af24ca8eccc-500x108-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/meta.svg",
+      "bytes": 12066,
+      "sha1": "5cb3b29fe3465f72a8d6ff5609cd61fe386092e9",
+      "cmsAsset": "image-5cb3b29fe3465f72a8d6ff5609cd61fe386092e9-50x11-svg"
+    },
+    {
+      "path": "public/assets/partners/logos/elevenlabs.svg",
+      "bytes": 3518,
+      "sha1": "e6a254369091e29a15eb7a4dfa23663d1013c0fb",
+      "cmsAsset": "image-e6a254369091e29a15eb7a4dfa23663d1013c0fb-694x90-svg"
+    },
+    {
+      "path": "public/assets/partners/logos/openai-wordmark.webp",
+      "bytes": 9588,
+      "sha1": "4ac26f3c6a122cc7cedbf99c717f3bf5d75fdf3d",
+      "cmsAsset": "image-4ac26f3c6a122cc7cedbf99c717f3bf5d75fdf3d-440x121-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/nvidia.webp",
+      "bytes": 9262,
+      "sha1": "aab57ea6002a3ade45c27fdca2724d9602e2aebb",
+      "cmsAsset": "image-aab57ea6002a3ade45c27fdca2724d9602e2aebb-204x150-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/aws.svg",
+      "bytes": 2624,
+      "sha1": "d02fc235d543749fd547484f0ca0271a481e4da5",
+      "cmsAsset": "image-d02fc235d543749fd547484f0ca0271a481e4da5-160x80-svg"
+    },
+    {
+      "path": "public/assets/partners/logos/ministry-for-digital-affairs.svg",
+      "bytes": 303469,
+      "sha1": "7ac2857a4f4d7efa907be4be23d94cb63449cf9d",
+      "cmsAsset": "image-7ac2857a4f4d7efa907be4be23d94cb63449cf9d-484x139-svg"
+    },
+    {
+      "path": "public/assets/partners/logos/10x-founders.webp",
+      "bytes": 13536,
+      "sha1": "c8146b0c9af8fcdea93bef434ac137418e573b54",
+      "cmsAsset": "image-c8146b0c9af8fcdea93bef434ac137418e573b54-500x112-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/entreprenow-community.webp",
+      "bytes": 13514,
+      "sha1": "986142a88a485159c288c555e5b65523dd10251a",
+      "cmsAsset": "image-986142a88a485159c288c555e5b65523dd10251a-500x125-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/initiatives-for-humanity.webp",
+      "bytes": 3804,
+      "sha1": "a04ad3059334fce590121a66f946751017abdb45",
+      "cmsAsset": "image-a04ad3059334fce590121a66f946751017abdb45-176x72-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/unternehmertum.webp",
+      "bytes": 7054,
+      "sha1": "832cbdfa4544b033b1266446409c0ee3044941a8",
+      "cmsAsset": "image-832cbdfa4544b033b1266446409c0ee3044941a8-250x150-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/flower-labs.webp",
+      "bytes": 3004,
+      "sha1": "ed93823f32bde9778d223d9f87ac67f7ca43e3b4",
+      "cmsAsset": "image-ed93823f32bde9778d223d9f87ac67f7ca43e3b4-344x83-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/tum-venture-labs.webp",
+      "bytes": 6010,
+      "sha1": "fc7d1d29894e66d83f65914eeaefc5151bc504e2",
+      "cmsAsset": "image-fc7d1d29894e66d83f65914eeaefc5151bc504e2-464x80-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/siemens.svg",
+      "bytes": 3360,
+      "sha1": "1fbb583e222bf0808a4945edb5e65c1bc06364c8",
+      "cmsAsset": "image-1fbb583e222bf0808a4945edb5e65c1bc06364c8-1000x159-svg"
+    },
+    {
+      "path": "public/assets/partners/logos/ibm.png",
+      "bytes": 13184,
+      "sha1": "982ee8db790d22c48645306531e0156e09f51e63",
+      "cmsAsset": "image-982ee8db790d22c48645306531e0156e09f51e63-500x200-png"
+    },
+    {
+      "path": "public/assets/partners/logos/check24.webp",
+      "bytes": 10264,
+      "sha1": "d286886bab062fdf26f5de5c2e4b52b47f7dc64e",
+      "cmsAsset": "image-d286886bab062fdf26f5de5c2e4b52b47f7dc64e-500x123-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/heimkapital.svg",
+      "bytes": 3753,
+      "sha1": "41bb23c918016263b05845174390265b4980524a",
+      "cmsAsset": "image-41bb23c918016263b05845174390265b4980524a-142x23-svg"
+    },
+    {
+      "path": "public/assets/partners/logos/lovable.svg",
+      "bytes": 9016,
+      "sha1": "724e73da14547d5907239026434a56e08be649fb",
+      "cmsAsset": "image-724e73da14547d5907239026434a56e08be649fb-911x155-svg"
+    },
+    {
+      "path": "public/assets/partners/logos/microsoft.webp",
+      "bytes": 5572,
+      "sha1": "18bae4d2913236f472d95602fd05a154fd3a0611",
+      "cmsAsset": "image-18bae4d2913236f472d95602fd05a154fd3a0611-500x106-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/databricks.svg",
+      "bytes": 4112,
+      "sha1": "0d18a920dfd7e2bcf4a4ef73553b7bf43d8aa5d0",
+      "cmsAsset": "image-0d18a920dfd7e2bcf4a4ef73553b7bf43d8aa5d0-713x113-svg"
+    },
+    {
+      "path": "public/assets/partners/logos/aleph-alpha.webp",
+      "bytes": 4540,
+      "sha1": "abde3ec320ec97f508ae733350ce6dbde7bccb50",
+      "cmsAsset": "image-abde3ec320ec97f508ae733350ce6dbde7bccb50-303x150-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/helmholtz-munich.svg",
+      "bytes": 2651,
+      "sha1": "195be2e92b6aef7577c06b847dab72266d924aa2",
+      "cmsAsset": "image-195be2e92b6aef7577c06b847dab72266d924aa2-1301x100-svg"
+    },
+    {
+      "path": "public/assets/partners/logos/project-a.webp",
+      "bytes": 3576,
+      "sha1": "4902a3e8feac75c5811d32a961124c4dd570f86a",
+      "cmsAsset": "image-4902a3e8feac75c5811d32a961124c4dd570f86a-425x150-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/netlight.webp",
+      "bytes": 7296,
+      "sha1": "0caab8ad0b6cc75deae2a1436500930fc0b8ee42",
+      "cmsAsset": "image-0caab8ad0b6cc75deae2a1436500930fc0b8ee42-500x126-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/mcml.webp",
+      "bytes": 5000,
+      "sha1": "f453fdf37f3539b3fa52d2ab33792576f89dcd0f",
+      "cmsAsset": "image-f453fdf37f3539b3fa52d2ab33792576f89dcd0f-500x136-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/unite.webp",
+      "bytes": 13806,
+      "sha1": "120dfa8065fcd1ce45af1e36e3a927f929807da4",
+      "cmsAsset": "image-120dfa8065fcd1ce45af1e36e3a927f929807da4-500x122-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/n8n.svg",
+      "bytes": 3183,
+      "sha1": "ddbcc340246fab0ba38437df361aba7ccc1b09a4",
+      "cmsAsset": "image-ddbcc340246fab0ba38437df361aba7ccc1b09a4-296x80-svg"
+    },
+    {
+      "path": "public/assets/partners/logos/eth-analytics-club.webp",
+      "bytes": 3298,
+      "sha1": "95ee43d1eff97478765069fab41f01307d0ce23a",
+      "cmsAsset": "image-95ee43d1eff97478765069fab41f01307d0ce23a-115x143-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/gdsc.webp",
+      "bytes": 5778,
+      "sha1": "37865c367714e163b26f5de4502a65b5796794ad",
+      "cmsAsset": "image-37865c367714e163b26f5de4502a65b5796794ad-152x150-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/jane-street.svg",
+      "bytes": 6735,
+      "sha1": "7f345dfc3b612ef2fbcb3477814f829d864ceecd",
+      "cmsAsset": "image-7f345dfc3b612ef2fbcb3477814f829d864ceecd-181x49-svg"
+    },
+    {
+      "path": "public/assets/partners/logos/enactus-munich.webp",
+      "bytes": 3682,
+      "sha1": "645fb5c1660f66c8f94048598ae58657048f91cd",
+      "cmsAsset": "image-645fb5c1660f66c8f94048598ae58657048f91cd-264x150-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/entire-lockup.webp",
+      "bytes": 5686,
+      "sha1": "47a59c51a86173c61b3464f21be38b3c7b1608b6",
+      "cmsAsset": "image-47a59c51a86173c61b3464f21be38b3c7b1608b6-960x237-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/mutagent.svg",
+      "bytes": 28751,
+      "sha1": "f423e72be93b1c59143646971dd3e4e34cca69c1",
+      "cmsAsset": "image-f423e72be93b1c59143646971dd3e4e34cca69c1-672x672-svg"
+    },
+    {
+      "path": "public/assets/partners/logos/mckinsey.svg",
+      "bytes": 21295,
+      "sha1": "ca50f8640d452db6bba39671595037af9d811f19",
+      "cmsAsset": "image-ca50f8640d452db6bba39671595037af9d811f19-160x50-svg"
+    },
+    {
+      "path": "public/assets/partners/logos/hrt.webp",
+      "bytes": 5374,
+      "sha1": "1e1117616960da923fc0f14478443c0279937ec5",
+      "cmsAsset": "image-1e1117616960da923fc0f14478443c0279937ec5-193x150-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/klinikum-rechts-der-isar.svg",
+      "bytes": 26119,
+      "sha1": "e1fcc72cf760da1226edd787ed9bbcd6401b1438",
+      "cmsAsset": "image-e1fcc72cf760da1226edd787ed9bbcd6401b1438-1024x456-svg"
+    },
+    {
+      "path": "public/assets/partners/logos/knust-coe-ic.webp",
+      "bytes": 5864,
+      "sha1": "30a4b517ba13a8ded0b91980cdb1f1c28b79c6cc",
+      "cmsAsset": "image-30a4b517ba13a8ded0b91980cdb1f1c28b79c6cc-120x125-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/cobrowser.webp",
+      "bytes": 8098,
+      "sha1": "aaa436a9ca066a560ebdf2397695c32f85abae9f",
+      "cmsAsset": "image-aaa436a9ca066a560ebdf2397695c32f85abae9f-380x59-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/itcs.webp",
+      "bytes": 3720,
+      "sha1": "b9af4ffe08d82ca9d0255242c294a55e67e1d3ec",
+      "cmsAsset": "image-b9af4ffe08d82ca9d0255242c294a55e67e1d3ec-157x150-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/bmw.svg",
+      "bytes": 11316,
+      "sha1": "c3f98ad5ffd4d83091f06dc5404592532c99f06c",
+      "cmsAsset": "image-c3f98ad5ffd4d83091f06dc5404592532c99f06c-2500x2500-svg"
+    },
+    {
+      "path": "public/assets/partners/logos/start-munich.webp",
+      "bytes": 6186,
+      "sha1": "33c0126134e05dc911de09ba70d0442f1d45a8ef",
+      "cmsAsset": "image-33c0126134e05dc911de09ba70d0442f1d45a8ef-331x150-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/speedinvest.webp",
+      "bytes": 4244,
+      "sha1": "37a7f50751c09ef4d7c5341260c376ab352fd4b3",
+      "cmsAsset": "image-37a7f50751c09ef4d7c5341260c376ab352fd4b3-242x150-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/tensordyne.webp",
+      "bytes": 2556,
+      "sha1": "5c17aa2394fa208c92d512cd25db9f14c3eeb1f5",
+      "cmsAsset": "image-5c17aa2394fa208c92d512cd25db9f14c3eeb1f5-500x36-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/anthropic.webp",
+      "bytes": 7148,
+      "sha1": "601067793a45bf3b79f1b6c6ab9819113aabbb75",
+      "cmsAsset": "image-601067793a45bf3b79f1b6c6ab9819113aabbb75-500x56-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/amd.webp",
+      "bytes": 4962,
+      "sha1": "734c9a8f99a7b493b4ab8127dc499522be231475",
+      "cmsAsset": "image-734c9a8f99a7b493b4ab8127dc499522be231475-600x144-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/auswaertiges-amt.webp",
+      "bytes": 4442,
+      "sha1": "a00fa10fb31b36d163de707325cf108aec737adc",
+      "cmsAsset": "image-a00fa10fb31b36d163de707325cf108aec737adc-274x150-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/lmu.webp",
+      "bytes": 5334,
+      "sha1": "410d3793bcfacec94f78876708e326e9296ab274",
+      "cmsAsset": "image-410d3793bcfacec94f78876708e326e9296ab274-316x150-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/infineon.webp",
+      "bytes": 8638,
+      "sha1": "597dff6d660d2df007eb1fcc46f6424b6a48e3eb",
+      "cmsAsset": "image-597dff6d660d2df007eb1fcc46f6424b6a48e3eb-343x150-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/harvard-medical-school.webp",
+      "bytes": 13946,
+      "sha1": "088f1584c04542e2e7ddaea5ec7bd661543eb0ab",
+      "cmsAsset": "image-088f1584c04542e2e7ddaea5ec7bd661543eb0ab-500x141-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/mi4people.webp",
+      "bytes": 7600,
+      "sha1": "c52f254f8f3362733f7e149cf06ca318d44d72e9",
+      "cmsAsset": "image-c52f254f8f3362733f7e149cf06ca318d44d72e9-150x150-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/vercel.webp",
+      "bytes": 4916,
+      "sha1": "2bb689bb632b3cdedefd979b9bf7e523cf461b75",
+      "cmsAsset": "image-2bb689bb632b3cdedefd979b9bf7e523cf461b75-500x100-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/jetbrains.svg",
+      "bytes": 4175,
+      "sha1": "0771e57a89ed3fd31f33b80fb9336d5324a9dc72",
+      "cmsAsset": "image-0771e57a89ed3fd31f33b80fb9336d5324a9dc72-298x64-svg"
+    },
+    {
+      "path": "public/assets/partners/logos/cohere.svg",
+      "bytes": 5364,
+      "sha1": "e9904d73400564ab27a929a7c91bd47ca9a07a8e",
+      "cmsAsset": "image-e9904d73400564ab27a929a7c91bd47ca9a07a8e-118x20-svg"
+    },
+    {
+      "path": "public/assets/partners/logos/rohde-schwarz.webp",
+      "bytes": 8698,
+      "sha1": "a7fa625fb68798e6d1a88ec36a1727783c6be61f",
+      "cmsAsset": "image-a7fa625fb68798e6d1a88ec36a1727783c6be61f-500x101-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/applied-ai.webp",
+      "bytes": 7050,
+      "sha1": "c8a3330a1c10be041cf6e7f9f83e4e0826a772b6",
+      "cmsAsset": "image-c8a3330a1c10be041cf6e7f9f83e4e0826a772b6-347x64-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/dryft.webp",
+      "bytes": 5452,
+      "sha1": "e654a44bde48c6d2f324ee63b05d0682a866a037",
+      "cmsAsset": "image-e654a44bde48c6d2f324ee63b05d0682a866a037-498x128-webp"
+    },
+    {
+      "path": "public/assets/partners/logos/qsummit.webp",
+      "bytes": 7660,
+      "sha1": "b8e4f047da229e0f8a744a1897b942deac0dd8d8",
+      "cmsAsset": "image-b8e4f047da229e0f8a744a1897b942deac0dd8d8-168x150-webp"
+    },
+    {
+      "path": "public/assets/partners/marquee/spherecast.svg",
+      "bytes": 15296,
+      "sha1": "2130565d665d74d998c631806047483924e692c8",
+      "cmsAsset": "image-2130565d665d74d998c631806047483924e692c8-1588x262-svg"
+    },
+    {
+      "path": "public/assets/partners/marquee/reply.svg",
+      "bytes": 2422,
+      "sha1": "8c598e85280957eee2772d261c5f8245269dc4a6",
+      "cmsAsset": "image-8c598e85280957eee2772d261c5f8245269dc4a6-113x56-svg"
+    },
+    {
+      "path": "public/assets/partners/marquee/nvidia.webp",
+      "bytes": 23462,
+      "sha1": "39bea4b8895b46f8f911c4a5d47c437d58f79876",
+      "cmsAsset": "image-39bea4b8895b46f8f911c4a5d47c437d58f79876-400x311-webp"
+    },
+    {
+      "path": "public/assets/partners/marquee/aws.webp",
+      "bytes": 4034,
+      "sha1": "e14cc7a159cb6b561cc8093afce3c3904d92287e",
+      "cmsAsset": "image-e14cc7a159cb6b561cc8093afce3c3904d92287e-398x238-webp"
+    },
+    {
+      "path": "public/assets/partners/marquee/openai.svg",
+      "bytes": 2151,
+      "sha1": "b0b126f85532f51f2a114b4238a99c1cccaac2e6",
+      "cmsAsset": "image-b0b126f85532f51f2a114b4238a99c1cccaac2e6-928x308-svg"
+    },
+    {
+      "path": "public/assets/partners/marquee/jane-street.svg",
+      "bytes": 6735,
+      "sha1": "de665d3c10facd1dba56ea2c942fc11a98bde0ad",
+      "cmsAsset": "image-de665d3c10facd1dba56ea2c942fc11a98bde0ad-181x49-svg"
+    },
+    {
+      "path": "public/assets/partners/marquee/entire-lockup.webp",
+      "bytes": 5690,
+      "sha1": "95128d92f8841d740fa28cc39edd70c2e16a2dc7",
+      "cmsAsset": "image-95128d92f8841d740fa28cc39edd70c2e16a2dc7-960x237-webp"
+    },
+    {
+      "path": "public/assets/partners/marquee/mckinsey.svg",
+      "bytes": 21295,
+      "sha1": "83c70676500569dc3d7eee8df80ac1a3f8bf9037",
+      "cmsAsset": "image-83c70676500569dc3d7eee8df80ac1a3f8bf9037-160x50-svg"
+    },
+    {
+      "path": "public/assets/partners/marquee/dryft.png",
+      "bytes": 2730,
+      "sha1": "9873b8bc841c96503d2b4a563fcb62621c3e8c22",
+      "cmsAsset": "image-9873b8bc841c96503d2b4a563fcb62621c3e8c22-512x512-png"
+    },
+    {
+      "path": "public/assets/partners/marquee/anthropic.svg",
+      "bytes": 2381,
+      "sha1": "15f9ad9b6cad7d8820f3d775366c3751a2d93d5c",
+      "cmsAsset": "image-15f9ad9b6cad7d8820f3d775366c3751a2d93d5c-570x64-svg"
+    },
+    {
+      "path": "public/assets/partners/marquee/amd.svg",
+      "bytes": 925,
+      "sha1": "d68a9e57c17b453cd98cd7b636ebf0359971687f",
+      "cmsAsset": "image-d68a9e57c17b453cd98cd7b636ebf0359971687f-140x33-svg"
+    },
+    {
+      "path": "public/assets/partners/marquee/jetbrains.svg",
+      "bytes": 3585,
+      "sha1": "cad69a2ceb4971c109aec026e9e9985cd353b9c5",
+      "cmsAsset": "image-cad69a2ceb4971c109aec026e9e9985cd353b9c5-298x64-svg"
+    },
+    {
+      "path": "public/assets/partners/marquee/google.png",
+      "bytes": 13504,
+      "sha1": "26f471f6ebe3b11557506f6ae96156e0a3852e5b",
+      "cmsAsset": "image-26f471f6ebe3b11557506f6ae96156e0a3852e5b-544x184-png"
+    },
+    {
+      "path": "public/assets/partners/people/mohamed-portrait.webp",
+      "bytes": 255546,
+      "sha1": "d255cd607841b1ed05cabed16bfa2cc8a8c966b7",
+      "cmsAsset": "image-d255cd607841b1ed05cabed16bfa2cc8a8c966b7-708x864-webp"
+    },
+    {
+      "path": "public/assets/partners/people/leonie-portrait.webp",
+      "bytes": 376758,
+      "sha1": "25145bad99dd9a12ceb25adc6da4e6d5d4cfa2bf",
+      "cmsAsset": "image-25145bad99dd9a12ceb25adc6da4e6d5d4cfa2bf-708x864-webp"
+    },
+    {
+      "path": "public/assets/partners/people/jasmin-portrait.webp",
+      "bytes": 412864,
+      "sha1": "c2b21827c3029a6f1c13ff947fd8f7e734446758",
+      "cmsAsset": "image-c2b21827c3029a6f1c13ff947fd8f7e734446758-708x864-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/ehl-2026-paris-group.webp",
+      "bytes": 44450,
+      "sha1": "b08236ee201774a3b8ec3eaeeabbed3ba4b2e71d",
+      "cmsAsset": "image-b08236ee201774a3b8ec3eaeeabbed3ba4b2e71d-1080x1080-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/christmas-hackathon-2025-group.webp",
+      "bytes": 70154,
+      "sha1": "8c94d71d3b35699ba0401c6b09fbadbf2c7258c6",
+      "cmsAsset": "image-8c94d71d3b35699ba0401c6b09fbadbf2c7258c6-1080x714-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/makeathon-2024-poster.webp",
+      "bytes": 50166,
+      "sha1": "487f4b427e3cc9248af7a934caec1d9e9e11d53a",
+      "cmsAsset": "image-487f4b427e3cc9248af7a934caec1d9e9e11d53a-1080x1080-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/tensor-tournament-2024-poster.webp",
+      "bytes": 47138,
+      "sha1": "756cfc8b6327d90706750c48fe468ff43a10d4ee",
+      "cmsAsset": "image-756cfc8b6327d90706750c48fe468ff43a10d4ee-800x800-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/benchpress-makeathon-poster.webp",
+      "bytes": 56456,
+      "sha1": "6cf96211f801c78785524edd86b4d51867d08ab5",
+      "cmsAsset": "image-6cf96211f801c78785524edd86b4d51867d08ab5-1080x1082-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/makeathon-2022-spring-poster.webp",
+      "bytes": 41350,
+      "sha1": "2cafe96a45c83ceb97537f7dbbfb34626e8b13af",
+      "cmsAsset": "image-2cafe96a45c83ceb97537f7dbbfb34626e8b13af-1080x1080-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/bkw-hackathon-2025-poster.webp",
+      "bytes": 26480,
+      "sha1": "3a121f34d295bcdf8925a6d7aaeb0d0058c3fad6",
+      "cmsAsset": "image-3a121f34d295bcdf8925a6d7aaeb0d0058c3fad6-800x800-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/ehl-2026-munich-stage.webp",
+      "bytes": 31924,
+      "sha1": "c294e8ca9a32a0fff334fa200bbdf0aaf696c50d",
+      "cmsAsset": "image-c294e8ca9a32a0fff334fa200bbdf0aaf696c50d-1080x709-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/ehl-2026-zurich-poster.webp",
+      "bytes": 67852,
+      "sha1": "076a18a3044e75bbf4bb313aeca8627f40580667",
+      "cmsAsset": "image-076a18a3044e75bbf4bb313aeca8627f40580667-800x800-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/ehl-2026-munich-poster.webp",
+      "bytes": 57642,
+      "sha1": "df902a9c88189acafd9316307e321a31417ccf3e",
+      "cmsAsset": "image-df902a9c88189acafd9316307e321a31417ccf3e-800x800-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/ehl-2026-zurich-winners.webp",
+      "bytes": 73444,
+      "sha1": "ee4dfea7f1a8dec5d17517f54c55e26ec1f7dd00",
+      "cmsAsset": "image-ee4dfea7f1a8dec5d17517f54c55e26ec1f7dd00-1080x720-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/e-lab-hackathon-2024-poster.webp",
+      "bytes": 72710,
+      "sha1": "fcf9d86c69281e704a9062de110bb37de8b34e3a",
+      "cmsAsset": "image-fcf9d86c69281e704a9062de110bb37de8b34e3a-800x800-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/makeathon-2021-gpt-3-poster.webp",
+      "bytes": 83410,
+      "sha1": "922ff8ab45c1d8b4cc6d153be7776606d20cbf9a",
+      "cmsAsset": "image-922ff8ab45c1d8b4cc6d153be7776606d20cbf9a-1080x1080-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/bmw-hackathon-2025-group.webp",
+      "bytes": 53034,
+      "sha1": "c15a975a36583d1655616905f2404512ec6cd0e9",
+      "cmsAsset": "image-c15a975a36583d1655616905f2404512ec6cd0e9-1080x1080-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/makeathon-2022-autumn-stage.webp",
+      "bytes": 15566,
+      "sha1": "a89a5dbf436f7d1c5592b90f3f1a34a03d724e40",
+      "cmsAsset": "image-a89a5dbf436f7d1c5592b90f3f1a34a03d724e40-1080x675-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/benchpress-makeathon-group.webp",
+      "bytes": 54476,
+      "sha1": "b37a717ae1b63febf9a25900d22678f8ed54512a",
+      "cmsAsset": "image-b37a717ae1b63febf9a25900d22678f8ed54512a-800x591-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/phems-kaggle-challenge-2025-poster.webp",
+      "bytes": 40524,
+      "sha1": "02f57ef8e1d6c84b7594b8ba5d02d2e70ba06b13",
+      "cmsAsset": "image-02f57ef8e1d6c84b7594b8ba5d02d2e70ba06b13-640x640-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/makeathon-2025-poster.webp",
+      "bytes": 61498,
+      "sha1": "3af687247e1b9e2052ef0d322f454cf8ef339e99",
+      "cmsAsset": "image-3af687247e1b9e2052ef0d322f454cf8ef339e99-1080x1080-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/ai4good-hackathon-2026-poster.webp",
+      "bytes": 52054,
+      "sha1": "5dafbb0c8d7237f80f0a4f4d9059c79a39e4c660",
+      "cmsAsset": "image-5dafbb0c8d7237f80f0a4f4d9059c79a39e4c660-1080x1350-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/ehl-2026-paris-poster.webp",
+      "bytes": 75672,
+      "sha1": "39fa56df13fa13528d5586241e944864e681ae06",
+      "cmsAsset": "image-39fa56df13fa13528d5586241e944864e681ae06-1080x1080-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/makeathon-2022-autumn-poster.webp",
+      "bytes": 43884,
+      "sha1": "0975f13aca9d42475fd472d79c5e719dee9de40a",
+      "cmsAsset": "image-0975f13aca9d42475fd472d79c5e719dee9de40a-1080x1080-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/bkw-hackathon-2025-group.webp",
+      "bytes": 56882,
+      "sha1": "d11688546b7222b16468adbde2663a4a127f5e62",
+      "cmsAsset": "image-d11688546b7222b16468adbde2663a4a127f5e62-1080x640-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/data-mining-hackathon-2026-winners.webp",
+      "bytes": 35672,
+      "sha1": "0c60ae2487eb8bb9195824a69a2a1661a967f89a",
+      "cmsAsset": "image-0c60ae2487eb8bb9195824a69a2a1661a967f89a-1080x720-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/makeathon-2021-gpt-3-finale.webp",
+      "bytes": 40960,
+      "sha1": "d07d81949d95069c944646bd25060be2fd17d96e",
+      "cmsAsset": "image-d07d81949d95069c944646bd25060be2fd17d96e-1080x542-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/munich-ai-hack-2025-poster.webp",
+      "bytes": 33428,
+      "sha1": "f5597194e0e0638c34c29b5d278b5a0101758fd5",
+      "cmsAsset": "image-f5597194e0e0638c34c29b5d278b5a0101758fd5-1080x1080-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/makeathon-2023-poster.webp",
+      "bytes": 36886,
+      "sha1": "118da2a38533571dafa24abcc335f2dc765438f4",
+      "cmsAsset": "image-118da2a38533571dafa24abcc335f2dc765438f4-1080x1080-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/project-a-yellow-hackathon-2026-group.webp",
+      "bytes": 86768,
+      "sha1": "1d39f9ce3d9987328e1de4cc43c8e4f2b7407717",
+      "cmsAsset": "image-1d39f9ce3d9987328e1de4cc43c8e4f2b7407717-1080x1080-webp"
+    },
+    {
+      "path": "public/assets/events/hackathons/makeathon-2021-autumn-poster.webp",
+      "bytes": 42394,
+      "sha1": "58fb17848d31f76d12b9c7deea855bc81849f4a5",
+      "cmsAsset": "image-58fb17848d31f76d12b9c7deea855bc81849f4a5-1080x1080-webp"
+    },
+    {
+      "path": "public/assets/events/hosts/beyond-presence.svg",
+      "bytes": 13558,
+      "sha1": "879e74c5685c31e1e4e59bd184e758eb737bc360",
+      "cmsAsset": "image-879e74c5685c31e1e4e59bd184e758eb737bc360-226x21-svg"
+    },
+    {
+      "path": "public/assets/events/hosts/hugging-face.svg",
+      "bytes": 17091,
+      "sha1": "c60b151dd168f8ebaae9b63c7cda10368c4d380b",
+      "cmsAsset": "image-c60b151dd168f8ebaae9b63c7cda10368c4d380b-866x192-svg"
+    },
+    {
+      "path": "public/assets/events/hosts/yellow.svg",
+      "bytes": 3588,
+      "sha1": "2653a9b89dd7d5077adfce5f2aef7a77ca82fb49",
+      "cmsAsset": "image-2653a9b89dd7d5077adfce5f2aef7a77ca82fb49-311x91-svg"
+    },
+    {
+      "path": "public/assets/events/hosts/google-cloud.svg",
+      "bytes": 6031,
+      "sha1": "42461aee23d0cd0ecd9a3384eb85a7ef59641abe",
+      "cmsAsset": "image-42461aee23d0cd0ecd9a3384eb85a7ef59641abe-123x20-svg"
+    },
+    {
+      "path": "public/assets/events/hosts/tacto.svg",
+      "bytes": 2967,
+      "sha1": "3d9a305e92734de2658aa2ef974ee5a5ad3f53a9",
+      "cmsAsset": "image-3d9a305e92734de2658aa2ef974ee5a5ad3f53a9-124x40-svg"
+    },
+    {
+      "path": "public/assets/events/hosts/lovable.svg",
+      "bytes": 9903,
+      "sha1": "480b745d2673d7d0420853278c20e74d1c4388a1",
+      "cmsAsset": "image-480b745d2673d7d0420853278c20e74d1c4388a1-950x173-svg"
+    },
+    {
+      "path": "public/assets/events/hosts/red-bull.svg",
+      "bytes": 22145,
+      "sha1": "9bc47cc7f43a35dd82247ef95d82d12f960543c5",
+      "cmsAsset": "image-9bc47cc7f43a35dd82247ef95d82d12f960543c5-224x36-svg"
+    },
+    {
+      "path": "public/assets/events/hosts/n8n.svg",
+      "bytes": 3202,
+      "sha1": "99c9785254669f56db46dd3fb09b16981a80d83f",
+      "cmsAsset": "image-99c9785254669f56db46dd3fb09b16981a80d83f-295x80-svg"
+    },
+    {
+      "path": "public/assets/events/hosts/project-a.svg",
+      "bytes": 4447,
+      "sha1": "4f1bdf61892611df77832ab97de9dc0a86665cfa",
+      "cmsAsset": "image-4f1bdf61892611df77832ab97de9dc0a86665cfa-180x45-svg"
+    },
+    {
+      "path": "public/assets/events/hosts/cdtm.svg",
+      "bytes": 971,
+      "sha1": "319535db2c6d5581e0c7896a42f2b7ddb9aa9308",
+      "cmsAsset": "image-319535db2c6d5581e0c7896a42f2b7ddb9aa9308-85x64-svg"
+    },
+    {
+      "path": "public/assets/events/hosts/mercura-icon.webp",
+      "bytes": 1660,
+      "sha1": "be466ac3d925f6ca3d9fe32fdb0fa847b3047415",
+      "cmsAsset": "image-be466ac3d925f6ca3d9fe32fdb0fa847b3047415-160x160-webp"
+    },
+    {
+      "path": "public/assets/events/hosts/manage-and-more.svg",
+      "bytes": 7703,
+      "sha1": "72100edb993f5fcf62ae4ffd5f878e5d90c7a50c",
+      "cmsAsset": "image-72100edb993f5fcf62ae4ffd5f878e5d90c7a50c-484x113-svg"
+    },
+    {
+      "path": "public/assets/events/hosts/bkw.svg",
+      "bytes": 1239,
+      "sha1": "f8bba01e123de3dff1919d76f12146b38fd7aad6",
+      "cmsAsset": "image-f8bba01e123de3dff1919d76f12146b38fd7aad6-1130x271-svg"
+    }
+  ]
+}

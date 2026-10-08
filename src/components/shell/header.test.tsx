@@ -5,18 +5,50 @@ import { usePathname } from "next/navigation";
 import { renderToString } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import type { Campaign } from "@/config/campaigns";
-import { eLabApplicationCopy } from "@/config/e-lab";
-import { type MembershipConfig, membershipConfig } from "@/config/membership";
+import { eLabApplicationCopyOf } from "@/config/e-lab";
+import type { MembershipConfig } from "@/config/membership";
 import {
-  getHeaderOptions,
+  getHeaderOptions as getHeaderOptionsFrom,
   type HeaderCtaSchedule,
-  headerConnectLinks,
+  headerConnectLinksFor,
+  headerCtaLink,
   headerCtaSchedule,
-  headerCtaSetting,
+  headerCtasFor,
   mainNavigation,
+  selectHeaderCta,
 } from "@/config/navigation";
+import {
+  settingsFixtureMembership as membershipConfig,
+  settingsFixtureELabWindow,
+  settingsFixtureFacts,
+} from "@/lib/cms-fixtures/settings";
 import { Header } from "./header";
 
+const headerCtaSetting = { fallback: settingsFixtureFacts.headerCtaFallback };
+const eLabApplicationCopy = eLabApplicationCopyOf(
+  settingsFixtureFacts.eLab.currentIteration,
+  settingsFixtureELabWindow,
+);
+const headerConnectLinks = headerConnectLinksFor(settingsFixtureFacts);
+const ctas = headerCtasFor(eLabApplicationCopy.cohortName);
+const getHeaderOptions = (
+  path: string,
+  source:
+    | { membershipOpen: boolean }
+    | { cta: Parameters<typeof getHeaderOptionsFrom>[1]["cta"] },
+) =>
+  getHeaderOptionsFrom(path, {
+    cta:
+      "cta" in source
+        ? source.cta
+        : headerCtaLink(
+            selectHeaderCta(
+              { ...headerCtaSetting, membershipOpen: source.membershipOpen },
+              ctas,
+            ),
+            ctas,
+          ),
+  });
 vi.mock("next/navigation", () => ({ usePathname: vi.fn(() => "/events") }));
 
 /** A fixed, switched-on round, so the tests don't move with the live config. */

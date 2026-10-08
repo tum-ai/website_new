@@ -20,7 +20,7 @@ export default async function Page() {
   const events = await getSanityEvents();
   return (
     <>
-      <JsonLd data={getJsonLd("hackathons")} />
+      <JsonLd data={await getJsonLd("hackathons")} />
       <HackathonsPage events={events} now={now} />
     </>
   );

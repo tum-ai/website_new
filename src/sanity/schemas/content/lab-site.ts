@@ -6,8 +6,7 @@ import { copyString, orderField } from "./copy-fields";
  * with there. The research projects' institutions, the research partners
  * and the REX institutions are placed on the site that references their
  * organisation; the globe draws the sites with any, plus the home site.
- * Read by `features/research/content.ts`, over
- * `features/research/data/lab-sites.ts`.
+ * Read and validated by `features/research/content.ts`.
  */
 export const labSiteType = defineType({
   name: "labSite",

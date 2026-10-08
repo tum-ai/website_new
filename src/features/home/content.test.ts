@@ -1,126 +1,168 @@
-import { afterEach, describe, expect, test, vi } from "vitest";
-import { contentTokens } from "@/config/content-tokens";
-import { departments } from "@/features/community";
-import { buildMemberStoriesBackfill } from "@/features/community/server";
-import { buildVentureBackfill } from "@/features/e-lab/server";
-import { fetchContent } from "@/lib/cms-content";
-import { mergeOverFallback } from "@/lib/cms-content-model";
-import { fillCodeCopy } from "@/lib/content-copy";
-import type { HOME_COPY_QUERY_RESULT } from "@/lib/sanity.types.generated";
-import {
-  buildHomeBackfill,
-  getHomeContent,
-  HOME_COPY_QUERY,
-  selectHomeCopy,
-} from "./content";
-import { homeCopyTemplate, homePageTokens } from "./data/homepage";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { ContentError } from "@/lib/cms-content-model";
+import type { CmsFixtureDocument } from "@/lib/cms-fixtures/types";
 
-/**
- * Parity: the backfill document, read back through the real GROQ query
- * under the mock CMS, renders exactly what the code renders.
- */
+const state = vi.hoisted(() => ({
+  edit: (docs: CmsFixtureDocument[]) => docs,
+}));
+vi.mock("@/lib/cms-content", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/cms-content")>();
+  const fixture = await import("@/lib/cms-content-mock");
+  return {
+    ...actual,
+    loadContent: async <T, R>({
+      query,
+      params = {},
+      select,
+    }: {
+      query: string;
+      params?: Record<string, unknown>;
+      select: (result: R) => T;
+    }) =>
+      select(
+        await fixture.evaluateMockQuery<R>(
+          query,
+          params,
+          state.edit(structuredClone(await fixture.getMockContentDocuments())),
+        ),
+      ),
+  };
+});
+beforeEach(() => {
+  state.edit = (docs) => docs;
+});
 afterEach(() => {
-  vi.unstubAllEnvs();
+  vi.restoreAllMocks();
 });
 
-function useSource(source: "code" | "sanity") {
-  vi.stubEnv("CMS_CONTENT_SOURCE", source);
-  vi.stubEnv("USE_MOCK_CMS", "1");
-  vi.stubEnv("VERCEL", "");
-}
+import { getHomeContent } from "./content";
 
-const code = {
-  copy: fillCodeCopy(homeCopyTemplate, contentTokens, homePageTokens),
-  departmentCount: departments.length,
+test("home copy has serializable complete quote groups and resolved artwork", async () => {
+  const content = await getHomeContent();
+  expect(content.copy.hero.title).toBe("A place to build");
+  expect(content.copy.room.photos).toHaveLength(5);
+  expect(content.copy.join.quotes).toEqual([
+    {
+      key: "example-member",
+      name: "Example Member",
+      excerpt: "I built a small project with the team.",
+    },
+  ]);
+  expect(Object.getPrototypeOf(content.copy.join.quotes[0])).toBe(
+    Object.prototype,
+  );
+  expect(JSON.parse(JSON.stringify(content.copy))).toEqual(content.copy);
+  expect(content.copy.partners.quote).toBe("example-founder");
+  expect(content.departmentCount).toBe(1);
+});
+test("empty departments yield zero without a local count", async () => {
+  state.edit = (docs) => docs.filter((doc) => doc._type !== "department");
+  expect((await getHomeContent()).departmentCount).toBe(0);
+});
+test("a missing member reference cannot acquire another author", async () => {
+  state.edit = (docs) =>
+    docs.filter((doc) => doc._id !== "person-member-story-example-member");
+  await expect(getHomeContent()).rejects.toThrow(/quotes\[0\].key/);
+});
+test("the quoted excerpt must still occur in the resolved story", async () => {
+  state.edit = (docs) =>
+    docs.map((doc) =>
+      doc._id === "person-member-story-example-member"
+        ? { ...doc, story: "A different story." }
+        : doc,
+    );
+  await expect(getHomeContent()).rejects.toThrow(/word for word/);
+});
+test("partner quote must resolve to an E-Lab testimonial", async () => {
+  state.edit = (docs) =>
+    docs.map((doc) =>
+      doc._id === "person-e-lab-testimonial-example-founder"
+        ? { ...doc, placement: "member-story" }
+        : doc,
+    );
+  await expect(getHomeContent()).rejects.toThrow(/resolved E-Lab testimonial/);
+});
+test("structural home lists retain required counts", async () => {
+  state.edit = (docs) =>
+    docs.map((doc) =>
+      doc._id === "homeCopy"
+        ? { ...doc, room: { title: "Room", lead: "Lead", photos: [] } }
+        : doc,
+    );
+  await expect(getHomeContent()).rejects.toThrow(/exactly 5 photos/);
+});
+test("missing required singleton fails visibly", async () => {
+  state.edit = (docs) => docs.filter((doc) => doc._id !== "homeCopy");
+  await expect(getHomeContent()).rejects.toBeInstanceOf(ContentError);
+});
+
+function replaceQuotes(docs: CmsFixtureDocument[], quotes: unknown) {
+  return docs.map((doc) =>
+    doc._id === "homeCopy"
+      ? { ...doc, join: { ...(doc.join as Record<string, unknown>), quotes } }
+      : doc,
+  );
+}
+const exampleQuote = {
+  _key: "example-member",
+  _type: "memberQuote",
+  person: { _type: "reference", _ref: "person-member-story-example-member" },
+  excerpt: "I built a small project with the team.",
 };
 
-describe("the homepage content slice", () => {
-  test("code source: the code copy and department count", async () => {
-    useSource("code");
-    await expect(getHomeContent()).resolves.toStrictEqual(code);
-  });
+test.each([undefined, null, [], Array.from({ length: 9 }, () => exampleQuote)])(
+  "required member quotes reject a missing, cleared or oversized list (%j)",
+  async (quotes) => {
+    state.edit = (docs) => replaceQuotes(docs, quotes);
+    await expect(getHomeContent()).rejects.toThrow(/join.quotes/);
+  },
+);
 
-  test("the mock serves the backfill through the real query", async () => {
-    useSource("sanity");
-    const result = await fetchContent<HOME_COPY_QUERY_RESULT>({
-      query: HOME_COPY_QUERY,
-      tags: [],
-      mockDocuments: buildHomeBackfill,
-      label: "parity",
-    });
-    expect(result?.room?.photos).toHaveLength(
-      homeCopyTemplate.room.photos.length,
-    );
-    expect(result?.programs?.items?.map(({ id }) => id)).toStrictEqual(
-      homeCopyTemplate.programs.items.map(({ id }) => id),
-    );
-  });
-
-  test("the quotes resolve their person references", async () => {
-    useSource("sanity");
-    const result = await fetchContent<HOME_COPY_QUERY_RESULT>({
-      query: HOME_COPY_QUERY,
-      tags: [],
-      mockDocuments: () => [
-        ...buildHomeBackfill(),
-        ...buildMemberStoriesBackfill(),
-        ...buildVentureBackfill(),
-      ],
-      label: "parity",
-    });
-    expect(result?.join?.quotes?.map((quote) => quote.name)).toStrictEqual(
-      homeCopyTemplate.join.quotes.map((quote) => quote.name),
-    );
-    expect(result?.partners?.quote).toBe(homeCopyTemplate.partners.quote);
-  });
-
-  test("sanity source over the backfill: the same copy and count", async () => {
-    useSource("sanity");
-    await expect(getHomeContent()).resolves.toStrictEqual(code);
-  });
-
-  test("the backfill holds one homeCopy document", () => {
-    expect(buildHomeBackfill().map(({ _id }) => _id)).toStrictEqual([
-      "homeCopy",
-    ]);
-  });
+test("each member can be quoted only once", async () => {
+  state.edit = (docs) =>
+    replaceQuotes(docs, [exampleQuote, { ...exampleQuote, _key: "duplicate" }]);
+  await expect(getHomeContent()).rejects.toThrow(/identifiers must be unique/);
 });
 
-describe("CMS copy over the code copy", () => {
-  const merged = (copy: Parameters<typeof selectHomeCopy>[0]) =>
-    mergeOverFallback(code.copy, selectHomeCopy(copy));
+test("each quote requires its own complete excerpt and member-story reference", async () => {
+  state.edit = (docs) =>
+    replaceQuotes(docs, [exampleQuote, { ...exampleQuote, excerpt: "" }]);
+  await expect(getHomeContent()).rejects.toThrow(/quotes\[1\].excerpt/);
+  state.edit = (docs) =>
+    docs.map((doc) =>
+      doc._id === exampleQuote.person._ref
+        ? { ...doc, placement: "e-lab-testimonial" }
+        : doc,
+    );
+  await expect(getHomeContent()).rejects.toThrow(/resolved member story/);
+});
 
-  test("the CMS quotes replace the code quotes, members and words together", () => {
-    const { join } = merged({
-      join: {
-        quotes: [
-          { name: "Ada Lovelace", excerpt: "CMS words" },
-          { excerpt: "Words whose member did not resolve" },
-          { name: "Grace Hopper" },
-        ],
-      },
-    });
-    expect(join.quotes).toStrictEqual([
-      { name: "Ada Lovelace", excerpt: "CMS words" },
-    ]);
-  });
-
-  test("words whose member did not resolve never go to a code member", () => {
-    const { join } = merged({ join: { quotes: [{ excerpt: "CMS words" }] } });
-    expect(join.quotes).toStrictEqual(code.copy.join.quotes);
-  });
-
-  test("a program links only to a page of this site", () => {
-    const [first] = code.copy.programs.items;
-    const { programs } = merged({
-      programs: {
-        items: [
-          { ...first, id: "kept", href: "/research" },
-          { ...first, id: "away", href: "//evil.example" },
-          { ...first, id: "backslash", href: "/\\evil.example" },
-        ],
-      },
-    });
-    expect(programs.items.map(({ id }) => id)).toStrictEqual(["kept"]);
-  });
+test("distinct members with the same name retain independent identity and order", async () => {
+  state.edit = (docs) => {
+    const member = docs.find((doc) => doc._id === exampleQuote.person._ref);
+    if (!member) throw new Error("Missing test person");
+    const second = {
+      ...member,
+      _id: "person-second",
+      key: "second-member",
+      story: "A second independent story.",
+    };
+    return replaceQuotes(
+      [...docs, second],
+      [
+        exampleQuote,
+        {
+          _key: "second",
+          _type: "memberQuote",
+          person: { _type: "reference", _ref: second._id },
+          excerpt: second.story,
+        },
+      ],
+    );
+  };
+  const { copy } = await getHomeContent();
+  expect(copy.join.quotes.map(({ key, name }) => ({ key, name }))).toEqual([
+    { key: "example-member", name: "Example Member" },
+    { key: "second-member", name: "Example Member" },
+  ]);
 });

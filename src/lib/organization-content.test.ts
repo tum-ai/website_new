@@ -1,188 +1,134 @@
-import { afterEach, describe, expect, test, vi } from "vitest";
-import { type BackfillDocument, backfillImage } from "./cms-backfill";
+import { evaluate, parse } from "groq-js";
+import { beforeEach, expect, test, vi } from "vitest";
+import { ContentError } from "./cms-content-model";
+import { getFixtureDocuments } from "./cms-fixtures";
 import {
-  buildLogoListDocument,
-  buildOrganizationDocument,
   getLogoLists,
-  logoListId,
-  organizationId,
+  getPartnerOrganizations,
   toOrganization,
 } from "./organization-content";
-import type { Organization } from "./people-and-logos";
 
-afterEach(() => {
-  vi.unstubAllEnvs();
+const fixture = vi.hoisted(() => ({ docs: [] as Record<string, unknown>[] }));
+vi.mock("./cms-content", () => ({
+  loadContent: async ({
+    query,
+    params,
+    select,
+  }: {
+    query: string;
+    params?: Record<string, unknown>;
+    select: (result: unknown) => unknown;
+  }) =>
+    select(
+      await (
+        await evaluate(parse(query), { dataset: fixture.docs, params })
+      ).get(),
+    ),
+}));
+beforeEach(() => {
+  fixture.docs = structuredClone(getFixtureDocuments());
+});
+test("resolves organization reference order and editorial partnership order", async () => {
+  const lists = await getLogoLists({
+    surfaces: ["e-lab-ventures", "partner-marquee"],
+    label: "logos",
+  });
+  expect(lists["e-lab-ventures"][0]?.key).toBe("example-venture");
+  expect(lists["partner-marquee"][0]?.logoOnDark?.src).toBe(
+    "/assets/fixtures/logo.svg",
+  );
+  expect(
+    (await getPartnerOrganizations({ label: "partners" }))[0]?.partnership,
+  ).toMatchObject({ tier: "gold", featured: true, order: 10 });
+});
+test("honors an editor-owned logo list id through its requested surface", async () => {
+  const list = fixture.docs.find((doc) => doc._id === "logolist-ehl-partners");
+  if (!list) throw new Error("fixture EHL list missing");
+  list._id = "editor-ehl";
+  const result = await getLogoLists({
+    surfaces: ["ehl-partners"],
+    label: "EHL logos",
+  });
+  expect(
+    result["ehl-partners"].map((organization) => organization.key),
+  ).toEqual(["example-company"]);
+});
+test("rejects competing documents for the same requested surface", async () => {
+  const list = fixture.docs.find((doc) => doc._id === "logolist-ehl-partners");
+  if (!list) throw new Error("fixture EHL list missing");
+  fixture.docs.push({ ...list, _id: "editor-ehl" });
+  await expect(
+    getLogoLists({ surfaces: ["ehl-partners"], label: "EHL logos" }),
+  ).rejects.toThrow(/duplicate surface/);
 });
 
-function useSanityMock() {
-  vi.stubEnv("CMS_CONTENT_SOURCE", "sanity");
-  vi.stubEnv("USE_MOCK_CMS", "1");
-  vi.stubEnv("VERCEL", "");
-}
-
-const logo = (src: string) => ({
-  src,
-  width: 100,
-  height: 50,
-  alt: "Logo",
-  hotspot: null,
+test("explicit empty or removed optional lists never restore entries", async () => {
+  const doc = fixture.docs.find((doc) => doc._id === "logolist-e-lab-ventures");
+  if (doc) doc.organizations = [];
+  expect(
+    (await getLogoLists({ surfaces: ["e-lab-ventures"], label: "logos" }))[
+      "e-lab-ventures"
+    ],
+  ).toEqual([]);
+  fixture.docs = fixture.docs.filter(
+    (doc) => doc._id !== "logolist-e-lab-ventures",
+  );
+  expect(
+    (await getLogoLists({ surfaces: ["e-lab-ventures"], label: "logos" }))[
+      "e-lab-ventures"
+    ],
+  ).toEqual([]);
 });
-
-describe("toOrganization", () => {
-  test("drops an organisation without key or name (a dangling reference)", () => {
-    expect(toOrganization(null)).toBeNull();
-    expect(toOrganization({ key: " ", name: "Acme" })).toBeNull();
-    expect(toOrganization({ key: "acme", name: null })).toBeNull();
-  });
-
-  test("keeps a website only when it is https", () => {
-    const org = (href: string) => toOrganization({ key: "a", name: "A", href });
-    expect(org("https://a.example/")?.href).toBe("https://a.example/");
-    expect(org("http://a.example/")?.href).toBeUndefined();
-    expect(org("javascript:alert(1)")?.href).toBeUndefined();
-  });
-
-  test("leaves out empty fields and keeps set flags only", () => {
-    expect(
-      toOrganization({
-        key: " acme ",
-        name: "Acme",
-        shortName: "",
-        href: null,
-        logo: logo("/a.svg"),
-        logoSymbolOnly: false,
-        logoAspectRatio: 0,
-        logoOnDark: logo("/b.svg"),
-        logoOnDarkSymbolOnly: true,
-        logoOnDarkAspectRatio: 3.5,
-      }),
-    ).toStrictEqual({
-      key: "acme",
-      name: "Acme",
-      logo: { src: "/a.svg", width: 100, height: 50, alt: "Logo" },
-      logoOnDark: {
-        src: "/b.svg",
-        width: 100,
-        height: 50,
-        alt: "Logo",
-        symbolOnly: true,
-        aspectRatio: 3.5,
-      },
-    });
-  });
-
-  test("keeps short name and link", () => {
-    expect(
-      toOrganization({
-        key: "mit",
-        name: "MIT",
-        shortName: "MIT",
-        href: "https://mit.edu/",
-        logo: null,
-        logoOnDark: { src: null, width: null, height: null, alt: null },
-      }),
-    ).toStrictEqual({
-      key: "mit",
-      name: "MIT",
-      shortName: "MIT",
-      href: "https://mit.edu/",
-    });
-  });
+test("dangling list references fail visibly", async () => {
+  fixture.docs = fixture.docs.filter(
+    (doc) => doc._id !== "organization-example-venture",
+  );
+  await expect(
+    getLogoLists({ surfaces: ["e-lab-ventures"], label: "logos" }),
+  ).rejects.toThrow(ContentError);
 });
-
-const acme: Organization = {
-  key: "acme",
-  name: "Acme",
-  href: "https://acme.test/",
-  logo: {
-    src: "/assets/partners/logos/meta.svg",
-    width: 50,
-    height: 11,
-    alt: "Acme logo",
-    symbolOnly: true,
-    aspectRatio: 4,
-  },
-};
-const globex: Organization = {
-  key: "globex",
-  name: "Globex",
-  logoOnDark: {
-    src: "/assets/partners/logos/cohere.svg",
-    width: 118,
-    height: 20,
-    alt: "Globex logo",
-  },
-};
-
-describe("the backfill builders", () => {
-  test("an organisation document keeps the artwork flags beside the image", () => {
-    expect(buildOrganizationDocument(acme)).toStrictEqual({
-      _id: "organization-acme",
-      _type: "organization",
-      key: "acme",
-      name: "Acme",
-      href: "https://acme.test/",
+test("malformed identities and present artwork are rejected", () => {
+  expect(() => toOrganization(null)).toThrow(ContentError);
+  expect(() =>
+    toOrganization({ key: "sample", name: "Sample", partnerTier: "unknown" }),
+  ).toThrow(/unknown tier/);
+  expect(() =>
+    toOrganization({
+      key: "sample",
+      name: "Sample",
+      logo: { src: null, width: 200, height: 80 },
+    }),
+  ).toThrow(/artwork/);
+});
+test("invalid logo dimensions and missing descriptive alt are rejected", () => {
+  expect(() =>
+    toOrganization({
+      key: "sample",
+      name: "Sample",
       logo: {
-        ...backfillImage("/assets/partners/logos/meta.svg", {
-          alt: "Acme logo",
-        }),
-        symbolOnly: true,
-        aspectRatio: 4,
+        src: "https://example.com/logo",
+        width: -1,
+        height: 80,
+        alt: "Sample",
       },
-    });
-  });
-
-  test("a logo list references organisations in order under a fixed id", () => {
-    expect(
-      buildLogoListDocument("e-lab-ventures", [globex, acme]),
-    ).toStrictEqual({
-      _id: logoListId("e-lab-ventures"),
-      _type: "logoList",
-      surface: "e-lab-ventures",
-      organizations: [
-        { _key: "globex", _type: "reference", _ref: organizationId("globex") },
-        { _key: "acme", _type: "reference", _ref: organizationId("acme") },
-      ],
-    });
-  });
+    }),
+  ).toThrow(/dimensions/);
+  expect(() =>
+    toOrganization({
+      key: "sample",
+      name: "Sample",
+      logo: {
+        src: "https://example.com/logo",
+        width: 200,
+        height: 80,
+        alt: "",
+      },
+    }),
+  ).toThrow(/alt/);
 });
 
-describe("getLogoLists", () => {
-  const documents = (lists: BackfillDocument[]) => () => [
-    buildOrganizationDocument(acme),
-    buildOrganizationDocument(globex),
-    ...lists,
-  ];
-
-  test("a section's CMS list replaces its code list; a missing list keeps code", async () => {
-    useSanityMock();
-    const lists = await getLogoLists({
-      lists: { "e-lab-ventures": [acme], "rex-institutions": [acme] },
-      label: "test",
-      mockDocuments: documents([
-        buildLogoListDocument("e-lab-ventures", [globex, acme]),
-      ]),
-    });
-    expect(lists["e-lab-ventures"].map(({ key }) => key)).toStrictEqual([
-      "globex",
-      "acme",
-    ]);
-    expect(lists["rex-institutions"]).toStrictEqual([acme]);
-  });
-
-  test("dangling references are skipped", async () => {
-    useSanityMock();
-    const list = buildLogoListDocument("e-lab-ventures", [
-      { key: "gone" },
-      globex,
-    ]);
-    const lists = await getLogoLists({
-      lists: { "e-lab-ventures": [acme] },
-      label: "test",
-      mockDocuments: documents([list]),
-    });
-    expect(lists["e-lab-ventures"].map(({ key }) => key)).toStrictEqual([
-      "globex",
-    ]);
-  });
+test("optional organization text can be intentionally cleared", () => {
+  expect(
+    toOrganization({ key: "sample", name: "Sample", shortName: "", href: "" }),
+  ).toEqual({ key: "sample", name: "Sample", shortName: "" });
 });

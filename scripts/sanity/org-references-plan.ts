@@ -23,10 +23,8 @@
  * never shows fewer co-hosts or institutions than before) and only where
  * the new field is still empty, so an editor's value is never replaced;
  * names without an organisation are listed for a maintainer, never
- * invented. Only the organisations this change introduces are created
- * (`PlanInput.newOrganizations`); a reference to another organisation the
- * dataset lacks blocks its document (run `pnpm sanity:migrate-partners`
- * first).
+ * invented. Only existing published CMS organisations may be referenced;
+ * missing names are reported for a maintainer to resolve in Studio.
  *
  * Imports are relative and runtime-free: the Sanity CLI runs the apply
  * step without the `@/` alias.
@@ -35,7 +33,7 @@ import { getPartnerKey } from "../../src/features/partners/partner-key";
 import { splitResearchTitle } from "../../src/features/research/research-title";
 
 /** A document as the dataset holds it. */
-export type StoredDocument = Record<string, unknown> & {
+type StoredDocument = Record<string, unknown> & {
   _id: string;
   _type: string;
   _rev?: string;
@@ -47,17 +45,6 @@ type PlanOrganization = {
   key: string;
   name: string;
   shortName?: string | null;
-};
-
-/** What the plan needs from the code, written by the dry run's parent. */
-export type PlanInput = {
-  /** Every code organisation, so a name finds one the dataset lacks too. */
-  codeOrganizations: readonly Omit<PlanOrganization, "_id">[];
-  /**
-   * The documents of the organisations this change adds (logo-less), each
-   * created when a planned reference needs it and the dataset lacks it.
-   */
-  newOrganizations: readonly StoredDocument[];
 };
 
 /** What the plan reads from the dataset. */
@@ -72,7 +59,7 @@ export type PlanDataset = {
 type FieldChange = { path: string; before: unknown; after: unknown };
 
 /** The patch for one document: `set` and `unset` by Sanity patch path. */
-export type PlannedPatch = {
+type PlannedPatch = {
   id: string;
   /** The revision the plan read; the apply step patches only that one. */
   rev?: string;
@@ -179,7 +166,7 @@ type Resolver = {
   created: StoredDocument[];
 };
 
-function resolverFor(input: PlanInput, dataset: PlanDataset): Resolver {
+function resolverFor(dataset: PlanDataset): Resolver {
   const byName = new Map<string, string>();
   const index = (organization: Omit<PlanOrganization, "_id">) => {
     for (const name of [
@@ -193,7 +180,6 @@ function resolverFor(input: PlanInput, dataset: PlanDataset): Resolver {
   };
   // The dataset's names first: an editor's organisation wins over code's.
   for (const organization of dataset.organizations) index(organization);
-  for (const organization of input.codeOrganizations) index(organization);
 
   const idByKey = new Map(
     dataset.organizations.map(({ key, _id }) => [key, _id]),
@@ -201,20 +187,14 @@ function resolverFor(input: PlanInput, dataset: PlanDataset): Resolver {
   const keyById = new Map(
     dataset.organizations.map(({ key, _id }) => [_id, key]),
   );
-  const creatable = new Map(
-    input.newOrganizations.map((document) => [String(document.key), document]),
-  );
   const created: StoredDocument[] = [];
   return {
     keyOf: (name) => byName.get(getPartnerKey(name)),
-    canReference: (key) => idByKey.has(key) || creatable.has(key),
+    canReference: (key) => idByKey.has(key),
     idOf: (key) => {
       const existing = idByKey.get(key);
       if (existing) return existing;
-      const document = creatable.get(key);
-      if (!document) throw new Error(`No organisation "${key}" to reference`);
-      if (!created.includes(document)) created.push(document);
-      return document._id;
+      throw new Error(`No CMS organisation "${key}" to reference`);
     },
     keyOfId: (id) => keyById.get(id),
     created,
@@ -383,10 +363,7 @@ function planEventHostsList(document: StoredDocument, plan: Plan) {
  * each planned on its own) their organisation references. Documents it
  * doesn't know are ignored.
  */
-export function planOrgReferences(
-  input: PlanInput,
-  dataset: PlanDataset,
-): Plan {
+export function planOrgReferences(dataset: PlanDataset): Plan {
   const plan: Plan = {
     create: [],
     patches: [],
@@ -395,7 +372,7 @@ export function planOrgReferences(
     blocked: [],
     skipped: [],
   };
-  const resolve = resolverFor(input, dataset);
+  const resolve = resolverFor(dataset);
   for (const document of dataset.documents) {
     if (publishedId(document._id) === eventHostsListId) {
       planEventHostsList(document, plan);

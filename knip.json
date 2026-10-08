@@ -1,14 +1,6 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  // Loaded by the Sanity CLI from `src/sanity` by `pnpm sanity:typegen`,
-  // where knip can't follow the path. (`pnpm sanity:backfill` runs
-  // scripts/sanity/backfill.ts through tsx, which knip finds in package.json
-  // by itself.)
-  // scripts/sanity/repair-assets.ts, apply-partner-migration.ts,
-  // migrate-content-dedup-apply.ts, migrate-org-references-apply.ts and
-  // migrate-home-quotes-apply.ts: run by path through `sanity exec` from
-  // backfill.ts, migrate-partners.ts, migrate-content-dedup.ts,
-  // migrate-org-references.ts and migrate-home-quotes.ts.
+  // CLI files launched by path are explicit entry points; tsx package scripts are discovered.
   "entry": [
     "test/stubs/*.ts",
     "src/sanity/sanity.cli.ts",
@@ -16,6 +8,7 @@
     "scripts/sanity/apply-partner-migration.ts",
     "scripts/sanity/migrate-content-dedup-apply.ts",
     "scripts/sanity/migrate-org-references-apply.ts",
+    "scripts/sanity/single-source-migration-apply.ts",
     "scripts/sanity/migrate-home-quotes-apply.ts"
   ],
   // Loaded by path: playwright.config.ts `toHaveScreenshot.stylePath`.

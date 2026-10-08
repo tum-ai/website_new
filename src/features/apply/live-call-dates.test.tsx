@@ -3,7 +3,15 @@ import { act, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import type { MembershipConfig } from "@/config/membership";
 import { ClosingSection } from "./closing-section";
-import { applyCopyTemplate } from "./data/apply";
+
+const heroCopy = {
+  heroTitle: "A sample call",
+  heroLead: "Read the dates.",
+  faqLabel: "Questions",
+  datesTitle: "Dates, {{round}}",
+};
+const closingCopy = { companiesReader: "For organizations" };
+
 import { Hero } from "./hero";
 import { LiveClosingRuler } from "./live-call-dates";
 import { recruitingCall } from "./round";
@@ -69,11 +77,7 @@ function returnAt(iso: string) {
 
 function renderHero(renderedAt: string) {
   return render(
-    <Hero
-      call={serverCall(renderedAt)}
-      membership={config}
-      copy={applyCopyTemplate}
-    />,
+    <Hero call={serverCall(renderedAt)} membership={config} copy={heroCopy} />,
   );
 }
 
@@ -130,7 +134,7 @@ describe("the closing band", () => {
       <ClosingSection
         call={serverCall(renderedAt)}
         membership={config}
-        copy={applyCopyTemplate.closing}
+        copy={closingCopy}
         partnerPitch="Meet our members."
       />,
     );

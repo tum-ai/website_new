@@ -1,9 +1,10 @@
 # Earlier hackathon event assets
 
 File paths below are relative to `public/assets/events/hackathons/`. These are the posters and
-photos of the redesign-only events (`redesignOnlyEvents` in `src/lib/mock-cms.ts`): the Makeathon
-editions before 2026, the hackathons before August 2025 and the league's matches. The mock CMS shows them, and the backfill uploads
-them to the `redesign` dataset.
+photos collected for the redesign's earlier Makeathon editions, hackathons before August 2025
+and league matches. Published content belongs to CMS records; these files are editorial asset
+sources, not local runtime content. Keep pending sources until a separately authorized asset
+repair upload succeeds. Synthetic CMS fixtures are independent of these real event assets.
 
 Retrieved 2026-10-01 from TUM.ai's own LinkedIn posts. Images are encoded as WebP at their
 original size (1920px carousel pages scaled to 1080px), without other edits.
@@ -56,7 +57,7 @@ Retrieved from TUM.ai's own LinkedIn posts (collected with Bright Data). Encoded
 - `ehl-2026-zurich-winners.webp`: https://www.linkedin.com/posts/tum-ai_ehl-europeanhackathonleague-tumai-activity-7505686873454026752-WjKh
 
 The live posters of the hackathons in the copied `production` events, downloaded from the Sanity
-CDN so the mock CMS shows them instead of stock stand-ins: `aws-lovable-n8n-hackathon-2025-poster`,
+CDN as local editorial source files: `aws-lovable-n8n-hackathon-2025-poster`,
 `google-hackathon-2025-poster`, `anthropic-lovable-hackathon-2025-poster`, `bmw-hackathon-2025-poster`,
 `christmas-hackathon-2025-poster`, `data-mining-hackathon-2026-poster`, `agora-hacks-2026-poster`,
 `makeathon-2026-poster`, `project-a-yellow-hackathon-2026-poster`, `energy-hack-2026-poster`.

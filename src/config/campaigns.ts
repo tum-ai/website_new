@@ -6,15 +6,7 @@ import {
 } from "@/lib/munich-time";
 import type { HeaderCtaVariant } from "./navigation";
 
-/**
- * Campaigns: dated windows in which the site promotes something, such as a
- * different header call to action or a featured event. Editors schedule them
- * in the CMS (`campaign` documents, read by `getCampaigns()` in
- * `config/schedule-content.ts`); code has none, so without the CMS the header
- * follows `headerCtaSetting` alone. Everything here is pure and isomorphic:
- * the header resolves the schedule again in the browser, so a campaign
- * starts and ends on time even on a cached page.
- */
+/** Pure campaign scheduling and priority resolution. Published campaigns come from the CMS. */
 
 /** What a campaign does to the header's call to action. */
 export type CampaignHeaderCta = {
@@ -70,9 +62,6 @@ export type ScheduledCampaign = Omit<
   /** Runs until just before this instant; `null`: open-ended. */
   endsAt: number | null;
 };
-
-/** The code campaigns: none. Campaigns come from the CMS only. */
-export const campaignsFallback: readonly Campaign[] = [];
 
 /**
  * The campaign's instants in Munich time: the start at `startTime` (or

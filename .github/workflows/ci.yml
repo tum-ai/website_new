@@ -79,6 +79,9 @@ jobs:
 
   build:
     name: Build
+    env:
+      USE_MOCK_CMS: "1"
+      MOCK_CMS_NOW: "2026-10-01T12:00:00Z"
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:

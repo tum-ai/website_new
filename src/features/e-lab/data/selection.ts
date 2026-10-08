@@ -1,16 +1,20 @@
-import { eLabConfig } from "@/config/e-lab";
 import type { ContentImage } from "@/lib/cms-content-model";
 import type { Duration } from "@/lib/program-duration";
 
-/** The selection figures in `eLabConfig.selection`, one per gate. */
-export type GateFigure = keyof typeof eLabConfig.selection;
+/** The selection figures in `the fetched selection facts`, one per gate. */
+export type GateFigure =
+  | "applications"
+  | "admitted"
+  | "midterm"
+  | "selectionDay"
+  | "finalPitch";
 
 /** A point where teams are selected, with how many reach it. */
 export type Gate = {
   kind: "gate";
   id: string;
   name: string;
-  /** Teams that reach this gate (`eLabConfig.selection`). */
+  /** Teams that reach this gate (`the fetched selection facts`). */
   teams: number;
   /** The figure is rounded ("about 500"). */
   approximate?: boolean;
@@ -52,87 +56,8 @@ type GateCopy = {
   approximate?: boolean;
 };
 
-/** A stage as copy writes it: the code fallback of `eLabCopy.stages`. */
+/** A stage as copy writes it: the CMS model of `eLabCopy.stages`. */
 export type StageCopy = GateCopy | Phase;
-
-/**
- * One E-Lab cohort in order: the gates where teams are selected, and the
- * program phases between them. /e-lab draws each gate's bar to scale from
- * its figure in `eLabConfig.selection`, so the figures set the drawing.
- */
-export const stageCopy: StageCopy[] = [
-  {
-    kind: "gate",
-    figure: "applications",
-    name: "Applications",
-    description:
-      "Solo founders and teams apply, with or without an idea. No university enrolment needed.",
-    approximate: true,
-  },
-  {
-    kind: "gate",
-    figure: "admitted",
-    name: "Admitted to the cohort",
-    description: "The teams that start the program together.",
-  },
-  // TODO(content): the program runs about 12 weeks (eLabConfig.programWeeks),
-  // but the phases add up to 3 days + 4 weeks + 6 weeks (about ten). What
-  // fills the remaining weeks (Selection Day to the Final Pitch)? The Studio
-  // warns about the same gap on the E-Lab page's phases.
-  {
-    kind: "phase",
-    id: "kickoff",
-    name: "Kickoff and onboarding weekend",
-    duration: { amount: 3, unit: "days" },
-    description:
-      "An intensive start: team alignment and ideation. Solo founders find co-founders here.",
-    photo: {
-      src: "/assets/homepage/elab.webp",
-      width: 1920,
-      height: 1440,
-      alt: "A speaker on stage at the AI E-Lab kickoff, in front of a packed brick hall",
-      objectPosition: "50% 40%",
-    },
-    photoCaption: "AI E-Lab kickoff",
-  },
-  {
-    kind: "phase",
-    id: "phase-one",
-    name: "Phase I: MVP build",
-    duration: { amount: 4, unit: "weeks" },
-    description:
-      "Rapid prototyping, problem fit and core tech, from desks at TUM.ai's headquarters, with weekly sessions from founders who have done it before.",
-  },
-  {
-    kind: "gate",
-    figure: "midterm",
-    name: "Midterm Pitch",
-    description:
-      "The MVP gate: a live demo of the MVP and feedback from the jury.",
-  },
-  {
-    kind: "phase",
-    id: "phase-two",
-    name: "Phase II: traction and growth",
-    duration: { amount: 6, unit: "weeks" },
-    description:
-      "User testing, go-to-market, legal and pitch polish, with warm intros and real feedback from European funds.",
-  },
-  {
-    kind: "gate",
-    figure: "selectionDay",
-    name: "Selection Day",
-    description: "Teams are evaluated for the final showcase.",
-  },
-  // TODO(content): is the Final Pitch still in July for E-Lab 6.0, whose
-  // applications closed in late September?
-  {
-    kind: "gate",
-    figure: "finalPitch",
-    name: "Final Pitch",
-    description: "Teams pitch to investors and graduate from the E-Lab.",
-  },
-];
 
 /** A gate's id: its figure in kebab case (`selectionDay` is `selection-day`). */
 const gateId = (figure: GateFigure) =>
@@ -144,7 +69,7 @@ const gateId = (figure: GateFigure) =>
  */
 export function buildStages(
   stages: readonly StageCopy[],
-  selection: Readonly<Record<GateFigure, number>> = eLabConfig.selection,
+  selection: Readonly<Record<GateFigure, number>>,
 ): SelectionStage[] {
   return stages.map((stage) => {
     if (stage.kind === "phase") return stage;
@@ -161,15 +86,9 @@ export function buildStages(
   });
 }
 
-/** The code cohort, as drawn. */
-export const selectionStages: SelectionStage[] = buildStages(stageCopy);
-
 /** The gates of `stages` alone, in order. */
 export const gatesOf = (stages: readonly SelectionStage[]) =>
   stages.filter((stage): stage is Gate => stage.kind === "gate");
-
-/** The code cohort's gates, in order. */
-export const gates = gatesOf(selectionStages);
 
 /**
  * Tick marks for the gates' scale, in teams: every `step` from 0 up to the

@@ -1,9 +1,20 @@
 import { axe } from "@test/axe";
 import { render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { projectsCopyTemplate } from "./data/copy";
-import { openSeatSlug, taskForces } from "./data/projects";
+import {
+  projectsCopyFixture as projectsCopyTemplate,
+  taskForcesFixture as taskForces,
+} from "@/lib/cms-fixtures/programmes";
+import { openSeatSlug } from "./data/projects";
 import { ProjectsPage } from "./projects-page";
+
+let listedForces = taskForces;
+vi.mock("./content", () => ({
+  getProjectsContent: async () => ({
+    copy: projectsCopyTemplate,
+    taskForces: listedForces,
+  }),
+}));
 
 /*
  * Reduced motion keeps every Reveal in its idle, visible state, so jsdom
@@ -27,6 +38,7 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  listedForces = taskForces;
 });
 
 test("the page has one h1 and passes axe", async () => {
@@ -78,4 +90,15 @@ test("the close offers both audiences a way in", async () => {
   expect(
     within(close).getByRole("link", { name: /Become a Partner/ }),
   ).toHaveAttribute("href", "/partners#partner-contact");
+});
+
+test("removing every optional task force keeps the page renderable", async () => {
+  listedForces = [];
+  const { container } = render(await ProjectsPage());
+  expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
+  expect(screen.queryAllByRole("article")).toEqual([]);
+  expect(
+    screen.queryByRole("list", { name: projectsCopyTemplate.hero.figureLabel }),
+  ).not.toBeInTheDocument();
+  expect(await axe(container)).toHaveNoViolations();
 });

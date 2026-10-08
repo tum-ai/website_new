@@ -12,7 +12,7 @@ export default async function Page() {
 
   return (
     <>
-      <JsonLd data={getJsonLd("research")} />
+      <JsonLd data={await getJsonLd("research")} />
       <ResearchPage projects={projects} />
     </>
   );

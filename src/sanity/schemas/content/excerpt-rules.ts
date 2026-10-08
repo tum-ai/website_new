@@ -8,8 +8,7 @@ import { copyText } from "./copy-fields";
  * member quotes (`homeCopy.join.quotes`) and a journey step's evidence
  * (`journeyStep.evidence`). Both hold a `person` reference and the
  * `excerpt`; the story is the source, so the excerpt must stay a passage
- * of it (`lib/quote-excerpt.ts`, the rule the tests apply to the code
- * copy). Checked against the published story: publish a story edit first,
+ * of it (`lib/quote-excerpt.ts`, the rule used by the runtime readers and Studio). Checked against the published story: publish a story edit first,
  * then fix the quotes.
  */
 

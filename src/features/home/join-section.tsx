@@ -22,7 +22,7 @@ import { MemberFaces } from "./member-faces";
  * only numbered items; their dates are the membership config's, through the
  * copy's placeholders). The apply button follows the dated application
  * window (`MembershipApplyButton`). `stories` are the member stories
- * (`getMemberStories()`): each quote's name picks its member, whose face
+ * (`getMemberStories()`): each quote's stable key picks its member, whose face
  * a visitor picks to read it (`MemberFaces`).
  */
 export function JoinSection({
@@ -32,12 +32,13 @@ export function JoinSection({
   join: HomeCopy["join"];
   stories: readonly MemberStory[];
 }) {
-  const quoted = join.quotes.flatMap(({ name, excerpt }) => {
-    const story = stories.find((entry) => entry.name === name);
+  const quoted = join.quotes.flatMap(({ key, excerpt }) => {
+    const story = stories.find((entry) => entry.key === key);
     return story
       ? [
           {
-            name,
+            key,
+            name: story.name,
             excerpt,
             role: story.role,
             image: story.image,
@@ -109,6 +110,7 @@ export function JoinSection({
           {quoted.length > 0 ? (
             <Reveal delay={160}>
               <MemberFaces
+                key={JSON.stringify(quoted.map(({ key }) => key))}
                 members={quoted}
                 link={
                   <TextLink

@@ -5,8 +5,7 @@ import { contentImageField } from "./fields";
 /**
  * The /community page's own copy (one document, `_id` `communityCopy`). The
  * journey steps, departments and member stories are documents of their own.
- * Read by `features/community/content.ts`, over the code copy in
- * `features/community/data/copy.ts`.
+ * Read and validated by `features/community/content.ts`.
  */
 export const communityCopyType = defineType({
   name: "communityCopy",
@@ -17,6 +16,7 @@ export const communityCopyType = defineType({
       name: "hero",
       title: "Hero",
       type: "object",
+      validation: (Rule) => Rule.required(),
       fields: [
         copyString({
           name: "title",
@@ -49,6 +49,7 @@ export const communityCopyType = defineType({
       name: "journey",
       title: "Member journey",
       type: "object",
+      validation: (Rule) => Rule.required(),
       description:
         "The timetable's heading; the steps are Member journey steps.",
       fields: [
@@ -60,6 +61,7 @@ export const communityCopyType = defineType({
       name: "departments",
       title: "Departments",
       type: "object",
+      validation: (Rule) => Rule.required(),
       description: "The roster's heading; the teams are Department documents.",
       fields: [
         copyString({ name: "title", title: "Title", max: 50 }),
@@ -70,6 +72,7 @@ export const communityCopyType = defineType({
       name: "stories",
       title: "Member stories",
       type: "object",
+      validation: (Rule) => Rule.required(),
       description:
         "The member stories band's heading; the stories are People with the placement “Member story”.",
       fields: [
@@ -81,6 +84,7 @@ export const communityCopyType = defineType({
       name: "closing",
       title: "Closing",
       type: "object",
+      validation: (Rule) => Rule.required(),
       description: "The ink band at the end of the page.",
       fields: [
         copyString({

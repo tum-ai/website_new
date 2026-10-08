@@ -1,113 +1,71 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { type ContentTokens, contentTokenNames } from "./content-tokens";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { ContentError } from "@/lib/cms-content-model";
+import type { CmsFixtureDocument } from "@/lib/cms-fixtures/types";
 
-const mocks = vi.hoisted(() => ({ fetch: vi.fn() }));
-
-vi.mock("next-sanity", () => ({
-  createClient: () => ({ fetch: mocks.fetch }),
-  defineQuery: (query: string) => query,
+const state = vi.hoisted(() => ({
+  edit: (docs: CmsFixtureDocument[]) => docs,
 }));
-
-const tokens = Object.fromEntries(
-  contentTokenNames.map((name) => [name, `<${name}>`]),
-) as ContentTokens;
-
-const templates = [
-  { question: "When?", answer: "Until {{eLab.deadline}}.", id: "deadline" },
-  { question: "Who?", answer: "Anyone.", id: "who" },
-];
-
-async function loadFaqContent(source: string) {
-  vi.stubEnv("NEXT_PUBLIC_SANITY_PROJECT_ID", "abc123");
-  vi.stubEnv("NEXT_PUBLIC_SANITY_DATASET", "redesign");
-  vi.stubEnv("CMS_CONTENT_SOURCE", source);
-  vi.stubEnv("USE_MOCK_CMS", "");
-  vi.resetModules();
-  return import("./faq-content");
-}
-
-beforeEach(() => {
-  mocks.fetch.mockReset();
-  vi.spyOn(console, "warn").mockImplementation(() => {});
+vi.mock("@/lib/cms-content", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/cms-content")>();
+  const fixture = await import("@/lib/cms-content-mock");
+  return {
+    ...actual,
+    loadContent: async <T, R>({
+      query,
+      params = {},
+      select,
+    }: {
+      query: string;
+      params?: Record<string, unknown>;
+      select: (result: R) => T;
+    }) =>
+      select(
+        await fixture.evaluateMockQuery<R>(
+          query,
+          params,
+          state.edit(structuredClone(await fixture.getMockContentDocuments())),
+        ),
+      ),
+  };
 });
-
+beforeEach(() => {
+  state.edit = (docs) => docs;
+});
 afterEach(() => {
-  vi.unstubAllEnvs();
   vi.restoreAllMocks();
 });
 
-test("the backfill keeps the placeholders, the order and ids from the keys, not the wording", async () => {
-  const { buildFaqBackfill } = await loadFaqContent("code");
-  expect(buildFaqBackfill("e-lab", templates)).toStrictEqual([
+import { getFaqs } from "./faq-content";
+
+test("FAQ collections query CMS independently and retain published ordering", async () => {
+  expect(await getFaqs("apply", { tokens: {} as never })).toEqual([
     {
-      _id: "faq-e-lab-deadline",
-      _type: "faq",
-      collection: "e-lab",
-      order: 10,
-      question: "When?",
-      answer: "Until {{eLab.deadline}}.",
-    },
-    {
-      _id: "faq-e-lab-who",
-      _type: "faq",
-      collection: "e-lab",
-      order: 20,
-      question: "Who?",
-      answer: "Anyone.",
+      question: "Can I apply?",
+      answer: "Read the current call for applications.",
     },
   ]);
 });
-
-describe("getFaqs", () => {
-  test("code: the templates with their placeholders filled, no request", async () => {
-    const { getFaqs } = await loadFaqContent("code");
-    await expect(
-      getFaqs("e-lab", { templates, tokens }),
-    ).resolves.toStrictEqual([
-      { question: "When?", answer: "Until <eLab.deadline>." },
-      { question: "Who?", answer: "Anyone." },
-    ]);
-    expect(mocks.fetch).not.toHaveBeenCalled();
-  });
-
-  test("sanity: the collection's entries, placeholders filled", async () => {
-    mocks.fetch.mockResolvedValue([
-      { question: "New?", answer: "Closes {{eLab.deadline}}." },
-    ]);
-    const { getFaqs } = await loadFaqContent("sanity");
-    await expect(
-      getFaqs("apply", { templates, tokens }),
-    ).resolves.toStrictEqual([
-      { question: "New?", answer: "Closes <eLab.deadline>." },
-    ]);
-    expect(mocks.fetch).toHaveBeenCalledWith(
-      expect.stringContaining('_type == "faq"'),
-      { collection: "apply" },
-      expect.anything(),
+test("FAQ deletion stays deleted", async () => {
+  state.edit = (docs) => docs.filter((doc) => doc.collection !== "apply");
+  expect(await getFaqs("apply", { tokens: {} as never })).toEqual([]);
+});
+test("unknown placeholders fail instead of silently dropping an answer", async () => {
+  state.edit = (docs) =>
+    docs.map((doc) =>
+      doc.collection === "apply"
+        ? { ...doc, answer: "{{unknown.value}}" }
+        : doc,
     );
-  });
-
-  test("sanity: drops entries with an unknown placeholder or no text", async () => {
-    mocks.fetch.mockResolvedValue([
-      { question: "Typo?", answer: "Closes {{eLab.dedline}}." },
-      { question: "", answer: "No question" },
-      { question: "No answer", answer: null },
-      { question: "Kept?", answer: "Yes." },
-    ]);
-    const { getFaqs } = await loadFaqContent("sanity");
-    await expect(
-      getFaqs("apply", { templates, tokens }),
-    ).resolves.toStrictEqual([{ question: "Kept?", answer: "Yes." }]);
-    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining("Typo?"));
-  });
-
-  test("sanity: an empty collection renders the code list", async () => {
-    mocks.fetch.mockResolvedValue([]);
-    const { getFaqs } = await loadFaqContent("sanity");
-    const faqs = await getFaqs("apply", { templates, tokens });
-    expect(faqs.map(({ question }) => question)).toStrictEqual([
-      "When?",
-      "Who?",
-    ]);
-  });
+  await expect(getFaqs("apply", { tokens: {} as never })).rejects.toThrow(
+    /unknown placeholder/i,
+  );
+});
+test("an incomplete question fails at its field path", async () => {
+  state.edit = (docs) =>
+    docs.map((doc) =>
+      doc.collection === "apply" ? { ...doc, question: "" } : doc,
+    );
+  await expect(
+    getFaqs("apply", { tokens: {} as never }),
+  ).rejects.toBeInstanceOf(ContentError);
 });
