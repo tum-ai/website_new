@@ -1289,7 +1289,7 @@ export type Research = {
   startYear?: number;
   motif?:
     | "camera-frustum"
-    | "vector-field"
+    | "belief-drift"
     | "decision-tree"
     | "nested-clusters"
     | "long-timeline"
@@ -3822,13 +3822,13 @@ export type RESEARCH_QUERY_RESULT = Array<{
   field: string | null;
   startYear: number | null;
   motif:
+    | "belief-drift"
     | "camera-frustum"
     | "decision-tree"
     | "long-timeline"
     | "nested-clusters"
     | "phase-diagram"
     | "splat-graph"
-    | "vector-field"
     | null;
   highlights: Array<string> | Array<never>;
   publication: string | null;

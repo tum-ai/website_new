@@ -38,8 +38,9 @@ const researchMotifOptions = [
     title: "Camera over city blocks (localization, mapping, aerial vision)",
   },
   {
-    value: "vector-field",
-    title: "Field pulled off true (alignment, safety, bias)",
+    value: "belief-drift",
+    title:
+      "Answers drifting from the truth to the user's view (sycophancy, alignment, bias)",
   },
   {
     value: "decision-tree",

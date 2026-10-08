@@ -10,7 +10,7 @@ export type ResearchMotif = NonNullable<ResearchProject["motif"]>;
    typecheck here until the site knows the key. */
 const motifKeys: Record<ResearchMotif, true> = {
   "camera-frustum": true,
-  "vector-field": true,
+  "belief-drift": true,
   "decision-tree": true,
   "nested-clusters": true,
   "long-timeline": true,

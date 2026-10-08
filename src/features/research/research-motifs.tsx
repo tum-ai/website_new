@@ -147,50 +147,69 @@ function CameraFrustum() {
   );
 }
 
-/* Sycophancy: a field of needles that should all point to true north,
-   bent off it the closer they sit to a pull in one corner (the user's
-   stated belief). The needles that give way are drawn in the accent. */
-function VectorField() {
-  const pull: Point = [324, 58];
-  const needles = Array.from({ length: 12 * 9 }, (_, index) => {
-    const x = 22 + (index % 12) * 32;
-    const y = 22 + Math.floor(index / 12) * 32;
-    const distance = Math.hypot(pull[0] - x, pull[1] - y);
-    const towards = Math.atan2(pull[1] - y, pull[0] - x);
-    const north = -Math.PI / 2;
-    let turn = towards - north;
-    if (turn > Math.PI) turn -= 2 * Math.PI;
-    if (turn < -Math.PI) turn += 2 * Math.PI;
-    const angle = north + turn * Math.exp(-distance / 120);
-    const [dx, dy] = [Math.cos(angle) * 8, Math.sin(angle) * 8];
-    return {
-      key: index,
-      from: [x - dx, y - dy] as Point,
-      to: [x + dx, y + dy] as Point,
-      bent: Math.abs(angle - north) > 0.32,
-      skip: distance < 18,
-    };
-  }).filter(({ skip }) => !skip);
-  const draw = (list: typeof needles) =>
-    list.map(({ key, from, to }) => (
-      <g key={key}>
-        <line x1={r1(from[0])} y1={r1(from[1])} x2={r1(to[0])} y2={r1(to[1])} />
-        <circle
-          cx={r1(to[0])}
-          cy={r1(to[1])}
-          r={1.8}
-          className="fill-current"
-          stroke="none"
-        />
-      </g>
-    ));
+/* Sycophancy: a measuring scale along the bottom, the true value a tall
+   tick at the left and the user's stated belief ringed in the accent at
+   the right. The model's answers travel along a wide arc over the tile
+   from the truth to the belief, framing the logos; the answers that have
+   given way are drawn in the accent. */
+function BeliefDrift() {
+  const baseline = 266;
+  const truth: Point = [48, 228];
+  const belief: Point = [352, 236];
+  const ticks = Array.from({ length: 23 }, (_, index) => 24 + index * 16);
+  /* The arc as a cubic Bézier over the top of the tile. */
+  const c1: Point = [44, 36];
+  const c2: Point = [356, 36];
+  const along = (t: number): Point => {
+    const u = 1 - t;
+    const mix = (a: number, b: number, c: number, d: number) =>
+      u * u * u * a + 3 * u * u * t * b + 3 * u * t * t * c + t * t * t * d;
+    return [
+      mix(truth[0], c1[0], c2[0], belief[0]),
+      mix(truth[1], c1[1], c2[1], belief[1]),
+    ];
+  };
+  const answers = [0.1, 0.22, 0.36, 0.5, 0.64, 0.78, 0.9].map((t, index) => ({
+    key: index,
+    at: along(t),
+    given: t > 0.45,
+  }));
   return (
     <>
-      <g className={STRUCTURE}>{draw(needles.filter(({ bent }) => !bent))}</g>
+      <g className={FAINT}>
+        {ticks.map((x, index) => (
+          <line
+            key={x}
+            x1={x}
+            y1={baseline}
+            x2={x}
+            y2={baseline - (index % 4 === 0 ? 10 : 5)}
+          />
+        ))}
+        <path
+          d={`M${truth[0]} ${truth[1]}C${c1[0]} ${c1[1]} ${c2[0]} ${c2[1]} ${belief[0]} ${belief[1]}`}
+          strokeDasharray="2 4"
+        />
+      </g>
+      <g className={STRUCTURE}>
+        <line x1={16} y1={baseline} x2={384} y2={baseline} />
+        <line x1={truth[0]} y1={baseline} x2={truth[0]} y2={truth[1]} />
+        <Node at={truth} radius={3} filled />
+        {answers
+          .filter(({ given }) => !given)
+          .map(({ key, at }) => (
+            <Node key={key} at={at} radius={3} filled />
+          ))}
+      </g>
       <g className={ACCENT}>
-        {draw(needles.filter(({ bent }) => bent))}
-        <circle cx={pull[0]} cy={pull[1]} r={9} strokeDasharray="2 2.5" />
-        <Node at={pull} radius={2.5} filled />
+        {answers
+          .filter(({ given }) => given)
+          .map(({ key, at }) => (
+            <Node key={key} at={at} radius={3} filled />
+          ))}
+        <line x1={belief[0]} y1={baseline} x2={belief[0]} y2={belief[1]} />
+        <circle cx={belief[0]} cy={belief[1]} r={10} strokeDasharray="2 2.5" />
+        <Node at={belief} radius={3} filled />
       </g>
     </>
   );
@@ -655,7 +674,7 @@ function PhaseDiagram() {
  * the typecheck passes. Pick by subject, not by project:
  *
  * - `camera-frustum`: localization, mapping, aerial and 3D vision
- * - `vector-field`: alignment, safety, bias, robustness
+ * - `belief-drift`: sycophancy, alignment, bias, calibration
  * - `decision-tree`: agents, planning, tool use, reinforcement learning
  * - `nested-clusters`: embeddings, representation learning, clustering
  * - `long-timeline`: video, time series, long context
@@ -664,7 +683,7 @@ function PhaseDiagram() {
  */
 const motifs: Record<ResearchMotif, () => ReactNode> = {
   "camera-frustum": CameraFrustum,
-  "vector-field": VectorField,
+  "belief-drift": BeliefDrift,
   "decision-tree": DecisionTree,
   "nested-clusters": NestedClusters,
   "long-timeline": LongTimeline,
