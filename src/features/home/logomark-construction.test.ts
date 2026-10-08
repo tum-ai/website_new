@@ -1,7 +1,10 @@
 import { describe, expect, test } from "vitest";
 import {
+  AXIS_X,
   type Circle,
   capCircles,
+  constructionCircles,
+  constructionMarkPath,
   counterCircle,
   type Edge,
   edgeGuides,
@@ -26,7 +29,8 @@ const TOLERANCE = 0.1;
 
 describe("logomark construction", () => {
   test.each([
-    ["leftTop", capCircles.leftTop, strokeEdges.left],
+    ["apex (left)", capCircles.apex, strokeEdges.left],
+    ["apex (middle)", capCircles.apex, strokeEdges.middle],
     ["leftBottom", capCircles.leftBottom, strokeEdges.left],
     ["middleBottom", capCircles.middleBottom, strokeEdges.middle],
     ["rightTop", capCircles.rightTop, strokeEdges.right],
@@ -44,12 +48,11 @@ describe("logomark construction", () => {
   );
 
   test("cap circles touch the mark's top and baseline", () => {
-    // Top caps reach the path's highest points (y 0.21 and 0).
-    expect(capCircles.leftTop.y - capCircles.leftTop.r).toBeCloseTo(0.21, 1);
+    expect(capCircles.apex.y - capCircles.apex.r).toBeCloseTo(0, 1);
     expect(capCircles.rightTop.y - capCircles.rightTop.r).toBeCloseTo(0, 1);
-    // Bottom caps reach the baseline (y 405.94 and 405.71).
+    // The official baseline (y 405.94 and 405.71).
     expect(capCircles.leftBottom.y + capCircles.leftBottom.r).toBeCloseTo(
-      405.94,
+      405.9,
       1,
     );
     expect(capCircles.rightBottom.y + capCircles.rightBottom.r).toBeCloseTo(
@@ -70,8 +73,30 @@ describe("logomark construction", () => {
           counterCircle.r,
       ),
     ).toBeLessThan(TOLERANCE);
-    // Its top is the arch of the path (y 190.4).
-    expect(counterCircle.y - counterCircle.r).toBeCloseTo(190.4, 1);
+  });
+
+  test("the A is mirror-symmetric about its axis", () => {
+    for (const y of [0, 200, 406]) {
+      expect(
+        edgeX(strokeEdges.left.outer, y) + edgeX(strokeEdges.middle.outer, y),
+      ).toBeCloseTo(2 * AXIS_X, 6);
+      expect(
+        edgeX(strokeEdges.left.inner, y) + edgeX(strokeEdges.middle.inner, y),
+      ).toBeCloseTo(2 * AXIS_X, 6);
+    }
+    expect(capCircles.apex.x).toBe(AXIS_X);
+    expect(counterCircle.x).toBe(AXIS_X);
+  });
+
+  test("the A stays within 0.3 units of the official mark at its feet", () => {
+    // Official edge points near the feet (tum_ai_logo_new.svg).
+    expect(edgeX(strokeEdges.left.outer, 348.31)).toBeCloseTo(4.25, 0);
+    expect(
+      Math.abs(edgeX(strokeEdges.middle.outer, 343.47) - 346.26),
+    ).toBeLessThan(0.3);
+    expect(
+      Math.abs(edgeX(strokeEdges.middle.outer, 36.49) - 217.87),
+    ).toBeLessThan(0.3);
   });
 
   test("edge guides run along the stroke edges", () => {
@@ -83,12 +108,15 @@ describe("logomark construction", () => {
     expect(edgeX(outer, outer.from.y)).toBeCloseTo(outer.from.x, 6);
   });
 
-  test("one vertical guide runs through the counter, none through the apex cap", () => {
-    // The counter's centre is 2.26 units off the apex cap's; a guide through
-    // each would draw two hairlines side by side.
+  test("the apex and the counter share one vertical guide", () => {
     const xs = verticalGuides().map((guide) => guide.x1);
-    expect(xs).toContain(counterCircle.x);
-    expect(xs).not.toContain(capCircles.leftTop.x);
-    expect(xs).toHaveLength(5);
+    expect(xs.filter((x) => x === AXIS_X)).toHaveLength(1);
+    expect(xs).toHaveLength(constructionCircles().length - 1);
+  });
+
+  test("the mark path is the A followed by the official right stroke", () => {
+    expect(constructionMarkPath).toMatch(/^M[\d. ]+A/);
+    expect(constructionMarkPath).toContain("ZM476.36 365.87");
+    expect(constructionMarkPath).not.toMatch(/NaN/);
   });
 });

@@ -1,8 +1,27 @@
 "use client";
 
-import { BrandMark } from "@tum.ai/ui-kit";
-import { useEffect, useRef, useState } from "react";
+import { type ComponentProps, useEffect, useRef, useState } from "react";
 import { ConstructionLines } from "./construction-lines";
+import { constructionMarkPath } from "./logomark-construction";
+
+/**
+ * The construction sheet's symmetric mark (logomark-construction.ts), so the
+ * guides and circles sit exactly on it. Decorative; colour it with a text
+ * colour.
+ */
+function ConstructionMark(props: ComponentProps<"svg">) {
+  return (
+    <svg
+      aria-hidden="true"
+      focusable="false"
+      viewBox="0 0 477 406"
+      fill="currentColor"
+      {...props}
+    >
+      <path d={constructionMarkPath} />
+    </svg>
+  );
+}
 
 /** How much of the mark must show before it starts drawing. */
 const DRAW_THRESHOLD = 0.25;
@@ -73,22 +92,17 @@ export function JoinMark() {
       }}
       className="home-join-mark absolute -z-10 aspect-[477/406] opacity-60 lg:opacity-100"
     >
-      <BrandMark
-        drift={false}
-        intensity="medium"
-        className="home-join-fill absolute inset-0 size-full"
-      />
+      <ConstructionMark className="home-join-fill pointer-events-none absolute inset-0 size-full select-none text-white/[0.07]" />
       <ConstructionLines
         reach="long"
         className="absolute inset-0 hidden size-full text-violet-300 lg:block"
       />
-      <BrandMark
+      <ConstructionMark
         ref={outlineRef}
-        drift={false}
         stroke="currentColor"
         strokeWidth={0.8}
         style={{ fill: "none" }}
-        className="home-join-outline absolute inset-0 size-full text-violet-300"
+        className="home-join-outline pointer-events-none absolute inset-0 size-full select-none text-violet-300"
       />
     </div>
   );

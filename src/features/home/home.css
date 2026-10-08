@@ -58,11 +58,11 @@
     }
   }
 
-  /* The official logomark paths as an alpha mask (public/assets/brand). */
+  /* The construction sheet's symmetric mark as an alpha mask; HeroAperture
+     sets --mark-mask from logomark-construction.ts. */
   .home-aperture {
-    -webkit-mask:
-      url("/assets/brand/logomark-mask.svg") center / 100% 100% no-repeat;
-    mask: url("/assets/brand/logomark-mask.svg") center / 100% 100% no-repeat;
+    -webkit-mask: var(--mark-mask) center / 100% 100% no-repeat;
+    mask: var(--mark-mask) center / 100% 100% no-repeat;
   }
 
   /*

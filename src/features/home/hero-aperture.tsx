@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 import { ConstructionLines } from "./construction-lines";
 import type { HomePhoto } from "./data/homepage";
+import { constructionMarkMask } from "./logomark-construction";
 
 /** How long each photo holds before the next one fades in. */
 const HOLD_MS = 6000;
@@ -102,7 +103,10 @@ export function HeroAperture({
         className="absolute inset-0 hidden size-full text-violet-300 lg:block"
       />
 
-      <div className="home-aperture absolute inset-0 bg-violet-950">
+      <div
+        className="home-aperture absolute inset-0 bg-violet-950"
+        style={{ "--mark-mask": constructionMarkMask } as CSSProperties}
+      >
         {photos.map((photo, photoIndex) =>
           photoIndex === 0 || mounted ? (
             <Image
