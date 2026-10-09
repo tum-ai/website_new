@@ -44,3 +44,21 @@ test("changed facts and windows propagate without copy fallback", () => {
   expect(tokens["org.officialMembers"]).toBe("112");
   expect(tokens["league.finaleTeams"]).toBe("12");
 });
+test("funding and large counts read the same in every sentence and stat", () => {
+  const tokens = contentTokensFor({
+    ...sources,
+    facts: {
+      ...sources.facts,
+      organization: {
+        ...sources.facts.organization,
+        activeMembers: 150,
+        alumni: 850,
+        startedApplicationsPerBatch: 2100,
+      },
+      eLab: { ...sources.facts.eLab, ventureFundingMillions: 7.5 },
+    },
+  });
+  expect(tokens["eLab.ventureFunding"]).toBe("€7.5M+");
+  expect(tokens["org.officialMembers"]).toBe("1,000");
+  expect(tokens["org.startedApplications"]).toBe("2,100");
+});

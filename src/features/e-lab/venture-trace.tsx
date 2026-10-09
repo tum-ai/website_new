@@ -27,17 +27,17 @@ import {
  * it went next. Below it, the other alumni ventures, each linked. Ventures,
  * quotes and the trace come from the venture slice (the CMS or the code);
  * the section hides when the traced venture or its founder quote is missing.
- * `gates` are the cohort's gates as the page draws them; `fundingMillions`
- * is the ventures' funding from the site facts.
+ * `gates` are the cohort's gates as the page draws them; `fundingText` is
+ * the ventures' funding as the site facts state it ("€8M+").
  */
 export async function VentureTrace({
   copy,
   gates,
-  fundingMillions,
+  fundingText,
 }: {
   copy: ELabCopy["ventures"];
   gates: readonly Gate[];
-  fundingMillions: number;
+  fundingText: string;
 }) {
   const [startups, cards, trace] = await Promise.all([
     getNotableStartups(),
@@ -82,7 +82,7 @@ export async function VentureTrace({
         <div className="mt-20 border-hairline-strong border-t pt-10 md:mt-28">
           <h3 className="grid gap-4 lg:grid-cols-12 lg:items-end lg:gap-12">
             <span className="tabular text-display-2xl text-highlight lg:col-span-5">
-              €{fundingMillions}M
+              {fundingText}
             </span>
             <span className="max-w-md text-fg text-heading-lg lg:col-span-7 lg:justify-self-end lg:pb-3 lg:text-right">
               {copy.fundingNote}

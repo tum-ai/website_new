@@ -1,3 +1,4 @@
+import { ventureFundingTextOf } from "@/config/e-lab";
 import type { SiteFacts } from "@/config/site-facts";
 import type { ContentImage } from "@/lib/cms-content-model";
 import type { PartnershipFinderCopy } from "./partnership-finder";
@@ -30,9 +31,8 @@ export const partnerPillarKeys: readonly PartnerPillarKey[] = [
 
 /**
  * Each pillar's headline figure: a site fact, so it is derived from the
- * render's facts (`getSiteFacts()`) rather than written as copy (the
- * hackathon count reads "2500+", without the grouping the
- * `{{impact.hackathonParticipants}}` placeholder has in running text).
+ * render's facts (`getSiteFacts()`) rather than written as copy, in the
+ * same form as the copy's placeholders ("€8M+", "2,500+").
  */
 export function partnerPillarMetricsOf({
   impact,
@@ -42,8 +42,8 @@ export function partnerPillarMetricsOf({
 > {
   return {
     research: `${impact.publications}+`,
-    venture: `${eLab.ventureFundingMillions}M+`,
-    hackathons: `${impact.hackathonParticipants}+`,
+    venture: ventureFundingTextOf(eLab.ventureFundingMillions),
+    hackathons: `${impact.hackathonParticipants.toLocaleString("en")}+`,
   };
 }
 

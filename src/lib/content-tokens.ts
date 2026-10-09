@@ -28,6 +28,7 @@ export const contentTokenNames = [
   "eLab.programSummary",
   "eLab.completedCohorts",
   "eLab.ventureFundingMillions",
+  "eLab.ventureFunding",
   "org.foundingYear",
   "org.activeMembers",
   "org.alumni",
