@@ -3,7 +3,7 @@ import {
   eLabCopyFixture,
   eLabSelectionFixture,
 } from "@/lib/cms-fixtures/programmes";
-import { applicationField } from "./field";
+import { applicationField, heroGatesOf } from "./field";
 import { buildStages, gatesOf } from "./selection";
 
 const gates = gatesOf(
@@ -57,4 +57,23 @@ test("the dots still lit after each gate are exactly that gate's teams", () => {
 
 test("the field is the same on every render", () => {
   expect(applicationField(gates)).toStrictEqual(field);
+});
+
+test("the hero lights every venture plus the invites, not the Final Pitch count", () => {
+  const real = [500, 25, 6, 6, 6].map((teams) => ({ teams }));
+  // 7 ventures + 4 invites: the later gates rise to 11 and the steps where
+  // nothing would go out drop away.
+  expect(heroGatesOf(real, 11).map((gate) => gate.teams)).toEqual([
+    500, 25, 11,
+  ]);
+  const drawn = applicationField(heroGatesOf(real, 11));
+  expect(drawn.groups.at(-1)?.dots).toHaveLength(11);
+  // Larger real figures are kept; never more lit than applied.
+  expect(
+    heroGatesOf(
+      [500, 30, 24, 16, 10].map((teams) => ({ teams })),
+      11,
+    ).map((gate) => gate.teams),
+  ).toEqual([500, 30, 24, 16, 11]);
+  expect(heroGatesOf([{ teams: 8 }, { teams: 2 }], 11)).toEqual([{ teams: 8 }]);
 });
