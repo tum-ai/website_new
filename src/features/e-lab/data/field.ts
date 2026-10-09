@@ -21,6 +21,31 @@ export type Field = {
   groups: FieldGroup[];
 };
 
+/**
+ * The gates as the hero's field draws them. Its lit dots are not the Final
+ * Pitch count but every alumni venture plus a few open places ("Your team"),
+ * `lit` in all, so each gate after the first keeps at least that many teams
+ * (never more than applied). A gate that then loses no team to the next is
+ * left out, so the field does not pause on a step where nothing goes out.
+ * The real figures stay in the gates section.
+ */
+export function heroGatesOf<T extends Pick<Gate, "teams">>(
+  gates: readonly T[],
+  lit: number,
+): T[] {
+  const [first, ...rest] = gates;
+  if (!first) return [];
+  const floor = Math.min(lit, first.teams);
+  const drawn = [
+    first,
+    ...rest.map((gate) => ({ ...gate, teams: Math.max(gate.teams, floor) })),
+  ];
+  return drawn.filter(
+    (gate, index) =>
+      index === drawn.length - 1 || gate.teams !== drawn[index + 1]?.teams,
+  );
+}
+
 /** Row spacing of a hexagonal lattice with a pitch of 1. */
 const ROW_HEIGHT = Math.sqrt(3) / 2;
 

@@ -1,10 +1,18 @@
 import { fillPageTokens } from "@/lib/content-copy";
 import type { ELabCopy } from "./data/copy";
-import { applicationField, type Field, type FieldGroup } from "./data/field";
+import {
+  applicationField,
+  type Field,
+  type FieldGroup,
+  heroGatesOf,
+} from "./data/field";
 import type { Gate } from "./data/selection";
 import type { NotableStartup } from "./data/venture-page";
 import { type FieldDotData, FieldDots } from "./field-dots";
 import { getNotableStartups } from "./venture-content";
+
+/** Lit dots beyond the alumni ventures: open places that read "Your team". */
+const INVITES = 4;
 
 /** Dot radius in lattice units (the pitch between neighbours is 1). */
 const RADIUS = 0.3;
@@ -96,9 +104,9 @@ function fieldDots(
 /**
  * The hero's field: one dot per team application of a round, evenly spaced
  * in an irregular outline. On load the dots go out one by one, gate after
- * gate (`.elab-field-out` in e-lab.css, opacity only), until only the teams
- * that reach the Final Pitch stay lit; with reduced motion it renders in
- * that end state. Pointing at a dot pushes the field aside (see FieldDots),
+ * gate (`.elab-field-out` in e-lab.css, opacity only), until every alumni
+ * venture and {@link INVITES} open places stay lit (`heroGatesOf`); with
+ * reduced motion it renders in that end state. Pointing at a dot pushes the field aside (see FieldDots),
  * and lit dots open into ventures that came out of the E-Lab (the venture
  * slice: the published CMS list). `gates` are the cohort as drawn
  * (from the site facts' selection figures), `cohortName` the current one's.
@@ -114,14 +122,16 @@ export async function ApplicationField({
   cohortName: string;
   className?: string;
 }) {
-  const field = applicationField([...gates]);
-  const finalGate = gates.length - 1;
-  const finalists = gates[finalGate]?.teams ?? 0;
-  const dots = fieldDots(field, finalGate, await getNotableStartups(), [
+  const ventures = await getNotableStartups();
+  const drawn = heroGatesOf(gates, ventures.length + INVITES);
+  const field = applicationField(drawn);
+  const finalists = gates.at(-1)?.teams ?? 0;
+  const dots = fieldDots(field, drawn.length - 1, ventures, [
     copy.inviteLabel,
     cohortName,
   ]);
   const ventureCount = dots.filter((dot) => dot.venture).length;
+  const inviteCount = dots.filter((dot) => dot.invite).length;
   return (
     <figure className={className}>
       <FieldDots
@@ -134,7 +144,7 @@ export async function ApplicationField({
         {fillPageTokens(copy.caption, {
           finalists: String(finalists),
           ventures: String(ventureCount),
-          open: String(finalists - ventureCount),
+          open: String(inviteCount),
         })}
       </figcaption>
     </figure>
