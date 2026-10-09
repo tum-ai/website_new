@@ -32,3 +32,14 @@ export function formatDuration({ amount, unit }: Duration): string {
 export function durationInWeeks({ amount, unit }: Duration): number {
   return unit === "weeks" ? amount : amount / 7;
 }
+
+/**
+ * The program length the phases add up to, in whole weeks: 3 days + 7 weeks
+ * + 5 weeks is 12. The only source of "12 weeks": the site states the
+ * length its phases fill, so the two can't disagree.
+ */
+export function programWeeksOf(durations: readonly Duration[]): number {
+  return Math.round(
+    durations.reduce((sum, duration) => sum + durationInWeeks(duration), 0),
+  );
+}

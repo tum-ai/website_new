@@ -28,31 +28,13 @@ const makeathonEdition = defineArrayMember({
       max: 40,
     }),
     defineField({
-      name: "start",
-      title: "First day",
-      type: "date",
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: "end",
-      title: "Last day",
-      type: "date",
-      description: "The same as the first day for a one-day event.",
-      validation: (Rule) =>
-        Rule.required().custom((end, context) => {
-          const start = (context.parent as { start?: string } | undefined)
-            ?.start;
-          return !start || !end || end >= start
-            ? true
-            : "The last day can't be before the first.";
-        }),
-    }),
-    copyString({
-      name: "city",
-      title: "City",
+      name: "event",
+      title: "Event",
+      type: "reference",
+      to: [{ type: "event" }],
       description:
-        "Where it took place. An event in the same city on the same days is this edition.",
-      max: 30,
+        "The Makeathon's event: the ribbon and the list take its dates and city from it, so they always match the events page.",
+      validation: (Rule) => Rule.required(),
     }),
     copyText({
       name: "note",
@@ -77,7 +59,7 @@ const makeathonEdition = defineArrayMember({
       ],
     }),
   ],
-  preview: { select: { title: "name", subtitle: "start" } },
+  preview: { select: { title: "name", subtitle: "event.event_date" } },
 });
 
 /**

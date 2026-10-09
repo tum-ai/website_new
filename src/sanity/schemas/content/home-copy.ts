@@ -14,8 +14,6 @@ const ledgerFigures = [
 ];
 
 const programTokens = {
-  rexInstitutions:
-    "the REX institutions' short names as a list (Harvard, MIT, Cambridge and Inria)",
   departments: "how many departments the community page lists, as a word",
 };
 

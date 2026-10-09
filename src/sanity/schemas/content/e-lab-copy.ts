@@ -1,16 +1,9 @@
+import { defineArrayMember, defineField, defineType } from "sanity";
 import {
-  defineArrayMember,
-  defineField,
-  defineType,
-  type ValidationContext,
-} from "sanity";
-import {
-  durationInWeeks,
   durationUnits,
   formatDuration,
   isDuration,
 } from "../../../lib/program-duration";
-import { sanityApiVersion } from "../../../lib/sanity-config";
 import { copyString, copyText } from "./copy-fields";
 import { contentImageField } from "./fields";
 
@@ -51,48 +44,6 @@ export function validateStages(stages: unknown): true | string {
     return `Put the gates in funnel order: ${gateFigures.map(({ title }) => title).join(", ")}.`;
   }
   return true;
-}
-
-/**
- * How far the phases may add up away from the program length, in weeks:
- * the gates between them (a pitch day) take a few days of their own.
- */
-const PROGRAM_WEEKS_TOLERANCE = 1;
-
-/**
- * Whether the phases fill the program: their durations add up to
- * `programWeeks` (the site settings) within {@link PROGRAM_WEEKS_TOLERANCE}.
- * The page states both, the program length in its headline and each
- * phase's duration, so a gap reads as a contradiction. A warning, not an
- * error: the facts may legitimately be in review. Exported for tests.
- */
-export function phaseWeeksProblem(
-  stages: unknown,
-  programWeeks: unknown,
-): true | string {
-  if (!Array.isArray(stages) || typeof programWeeks !== "number") return true;
-  const durations = stages
-    .filter((stage) => stage?._type === "phaseStage")
-    .map((stage) => stage.duration)
-    .filter(isDuration);
-  if (durations.length === 0) return true;
-  const weeks = durations.reduce(
-    (sum, duration) => sum + durationInWeeks(duration),
-    0,
-  );
-  if (Math.abs(weeks - programWeeks) <= PROGRAM_WEEKS_TOLERANCE) return true;
-  const total = Number.isInteger(weeks) ? weeks : `about ${weeks.toFixed(1)}`;
-  return `The phases add up to ${total} weeks (${durations.map(formatDuration).join(" + ")}), but the site settings give the program ${programWeeks} weeks. The page states both: adjust a phase or the program length.`;
-}
-
-/** {@link phaseWeeksProblem} against the published site settings. */
-async function validatePhaseWeeks(stages: unknown, context: ValidationContext) {
-  const programWeeks = await context
-    .getClient({ apiVersion: sanityApiVersion })
-    .fetch<number | null>(
-      `*[_id == "siteSettings" && !(_id in path("drafts.**"))][0].eLab.programWeeks`,
-    );
-  return phaseWeeksProblem(stages, programWeeks);
 }
 
 /**
@@ -199,7 +150,7 @@ export const eLabCopyType = defineType({
                   title: "Duration",
                   type: "object",
                   description:
-                    "How long the phase runs; the page shows it as “4 weeks”. The phases together should fill the program length in the site settings.",
+                    "How long the phase runs; the page shows it as “4 weeks”. The phases together are the program length every page states (“12 weeks”), rounded to whole weeks.",
                   options: { columns: 2 },
                   fields: [
                     defineField({
@@ -262,7 +213,6 @@ export const eLabCopyType = defineType({
             Rule.required()
               .min(2)
               .custom((stages) => validateStages(stages)),
-            Rule.custom(validatePhaseWeeks).warning(),
           ],
         }),
       ],

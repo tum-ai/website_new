@@ -29,6 +29,13 @@ export type SanityImageAssetReference = {
   [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
 };
 
+export type EventReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "event";
+};
+
 export type HackathonsCopy = {
   _id: string;
   _type: "hackathonsCopy";
@@ -84,9 +91,7 @@ export type HackathonsCopy = {
     editions: Array<{
       key: string;
       name: string;
-      start: string;
-      end: string;
-      city: string;
+      event: EventReference;
       note: string;
       link?: {
         label: string;
@@ -1053,13 +1058,6 @@ export type Organization = {
   legacyPartnerId?: string;
 };
 
-export type EventReference = {
-  _ref: string;
-  _type: "reference";
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: "event";
-};
-
 export type Campaign = {
   _id: string;
   _type: "campaign";
@@ -1152,7 +1150,6 @@ export type SiteSettings = {
   };
   eLab: {
     currentIteration: string;
-    programWeeks: number;
     ventureFundingMillions: number;
     selection: {
       applications: number;
@@ -1402,6 +1399,7 @@ export type SanityImageAsset = {
 export type AllSanitySchemaTypes =
   | CaseStudyReference
   | SanityImageAssetReference
+  | EventReference
   | HackathonsCopy
   | SanityImageCrop
   | SanityImageHotspot
@@ -1428,7 +1426,6 @@ export type AllSanitySchemaTypes =
   | Person
   | LogoList
   | Organization
-  | EventReference
   | Campaign
   | ApplicationWindow
   | SiteSettings
@@ -1484,7 +1481,7 @@ export type CAMPAIGNS_QUERY_RESULT = Array<{
 
 // Source: ../config/site-settings-content.ts
 // Variable: SITE_SETTINGS_QUERY
-// Query: *[_type == "siteSettings" && _id == "siteSettings"][0]{ organization{foundingYear,activeMembers,alumni,majors,universities,nationalities,acceptanceRate,startedApplicationsPerBatch,linkedinAudience}, brandMission,impact{publications,publicationVenues,hackathonParticipants},community{makeathonSize}, contactEmails{general,partners,venture,recruitment},socialLinks{linkedin,instagram,github,x,youtube,facebook,tiktok,slack}, partnershipBooking{bookingUrl,bookingHost}, eLab{currentIteration,programWeeks,ventureFundingMillions,selection{applications,admitted,midterm,selectionDay,finalPitch},"heroLogo":heroLogo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}}, hackathons{makeathonUrl,league{name,url,foundedYear,finaleTeams,matches[]{key,label,makeathon,"city":event->city,"start":event->event_date,"end":coalesce(event->end_date,event->event_date)}}}, footerTagline,headerCtaFallback}
+// Query: *[_type == "siteSettings" && _id == "siteSettings"][0]{ organization{foundingYear,activeMembers,alumni,majors,universities,nationalities,acceptanceRate,startedApplicationsPerBatch,linkedinAudience}, brandMission,impact{publications,publicationVenues,hackathonParticipants},community{makeathonSize}, contactEmails{general,partners,venture,recruitment},socialLinks{linkedin,instagram,github,x,youtube,facebook,tiktok,slack}, partnershipBooking{bookingUrl,bookingHost}, eLab{currentIteration,"programPhases":*[_type == "eLabCopy" && _id == "eLabCopy"][0].gates.stages[_type == "phaseStage"].duration{amount,unit},ventureFundingMillions,selection{applications,admitted,midterm,selectionDay,finalPitch},"heroLogo":heroLogo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}}, hackathons{makeathonUrl,league{name,url,foundedYear,finaleTeams,matches[]{key,label,makeathon,"city":event->city,"start":event->event_date,"end":coalesce(event->end_date,event->event_date)}}}, footerTagline,headerCtaFallback}
 export type SITE_SETTINGS_QUERY_RESULT = {
   organization: {
     foundingYear: number;
@@ -1528,7 +1525,10 @@ export type SITE_SETTINGS_QUERY_RESULT = {
   };
   eLab: {
     currentIteration: string;
-    programWeeks: number;
+    programPhases: Array<{
+      amount: number;
+      unit: "days" | "weeks";
+    }> | null;
     ventureFundingMillions: number;
     selection: {
       applications: number;
@@ -2219,7 +2219,7 @@ export type EVENTS_COPY_QUERY_RESULT =
 
 // Source: ../features/hackathons/content.ts
 // Variable: HACKATHONS_COPY_QUERY
-// Query: *[_id == "hackathonsCopy"][0]{  "voiceCaseStudyRef": voiceCaseStudy,  "voiceCaseStudy": select(voiceCaseStudy->_type == "caseStudy" => voiceCaseStudy->_id),  "outcomeCaseStudyRef": outcomeCaseStudy,  "outcomeCaseStudy": select(outcomeCaseStudy->_type == "caseStudy" => outcomeCaseStudy->_id),  hero{    eyebrow,    title,    lead,    leagueAction,    makeathonAction,    ribbonLabel,    sliderLabel,    nextLabel,    legend{ makeathon, league, partner }  },  league{    eyebrow,    tagline,    lead,    linkLabel,    routeLabel,    makeathonDetail,    finale{      label,      text,      liveLabel,      pastText,      actionLabel,      standingsLabel,      "poster": poster{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},      championLabel,      champion,      runnersUpLabel,      runnersUp,      "recapPhoto": recapPhoto{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},      recapCaption    },    partnersTitle  },  makeathon{    eyebrow,    title,    lead,    linkLabel,    figures{      latest{ value, label },      editions{ value, label },      league{ value, label }    },    editionsTitle,    "editionsPhoto": editionsPhoto{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},    editionsPhotoCaption,    editions[]{ key, name, start, end, city, note, link{ label, href } }  },  partners{ title, lead, hostsPrefix, moreLabel },  offer{ title, lead, items, addOns },  closing{    title,    lead,    student{ audience, text, actionLabel },    partner{ audience, text }  }}
+// Query: *[_id == "hackathonsCopy"][0]{  "voiceCaseStudyRef": voiceCaseStudy,  "voiceCaseStudy": select(voiceCaseStudy->_type == "caseStudy" => voiceCaseStudy->_id),  "outcomeCaseStudyRef": outcomeCaseStudy,  "outcomeCaseStudy": select(outcomeCaseStudy->_type == "caseStudy" => outcomeCaseStudy->_id),  hero{    eyebrow,    title,    lead,    leagueAction,    makeathonAction,    ribbonLabel,    sliderLabel,    nextLabel,    legend{ makeathon, league, partner }  },  league{    eyebrow,    tagline,    lead,    linkLabel,    routeLabel,    makeathonDetail,    finale{      label,      text,      liveLabel,      pastText,      actionLabel,      standingsLabel,      "poster": poster{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},      championLabel,      champion,      runnersUpLabel,      runnersUp,      "recapPhoto": recapPhoto{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},      recapCaption    },    partnersTitle  },  makeathon{    eyebrow,    title,    lead,    linkLabel,    figures{      latest{ value, label },      editions{ value, label },      league{ value, label }    },    editionsTitle,    "editionsPhoto": editionsPhoto{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},    editionsPhotoCaption,    editions[]{ key, name, "start": event->event_date, "end": coalesce(event->end_date, event->event_date), "city": event->city, note, link{ label, href } }  },  partners{ title, lead, hostsPrefix, moreLabel },  offer{ title, lead, items, addOns },  closing{    title,    lead,    student{ audience, text, actionLabel },    partner{ audience, text }  }}
 export type HACKATHONS_COPY_QUERY_RESULT =
   | {
       voiceCaseStudyRef: null;
@@ -2559,7 +2559,7 @@ export type HACKATHONS_COPY_QUERY_RESULT =
           name: string;
           start: string;
           end: string;
-          city: string;
+          city: string | null;
           note: string;
           link: {
             label: string;

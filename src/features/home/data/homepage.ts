@@ -74,7 +74,7 @@ export type HomeCopy = {
 
 /**
  * The page tokens of the homepage copy (see `fillPageTokens`):
- * `{{rexInstitutions}}` lists the REX institutions' short names, and
- * `{{departments}}` spells how many departments /community lists.
+ * `{{departments}}` spells how many departments /community lists. The REX
+ * list is a site-wide placeholder (`{{rexInstitutions}}`).
  */
-export const homePageTokens = ["rexInstitutions", "departments"] as const;
+export const homePageTokens = ["departments"] as const;

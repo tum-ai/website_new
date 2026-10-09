@@ -2,6 +2,7 @@ import "server-only";
 
 import { defineQuery } from "next-sanity";
 import { getContentTokens } from "@/config/content-tokens";
+import { liveCacheTags } from "@/lib/cache-tags";
 import { loadContent } from "@/lib/cms-content";
 import {
   CONTENT_IMAGE_PROJECTION,
@@ -17,6 +18,7 @@ import {
   requireObject,
 } from "@/lib/cms-content-model";
 import { fillCmsCopy } from "@/lib/content-copy";
+import { munichIsoDate } from "@/lib/munich-time";
 import type { HACKATHONS_COPY_QUERY_RESULT } from "@/lib/sanity.types.generated";
 import {
   type HackathonsCopy,
@@ -78,7 +80,7 @@ export const HACKATHONS_COPY_QUERY = defineQuery(`*[_id == "hackathonsCopy"][0]{
     editionsTitle,
     "editionsPhoto": editionsPhoto${CONTENT_IMAGE_PROJECTION},
     editionsPhotoCaption,
-    editions[]{ key, name, start, end, city, note, link{ label, href } }
+    editions[]{ key, name, "start": event->event_date, "end": coalesce(event->end_date, event->event_date), "city": event->city, note, link{ label, href } }
   },
   partners{ title, lead, hostsPrefix, moreLabel },
   offer{ title, lead, items, addOns },
@@ -90,20 +92,12 @@ export const HACKATHONS_COPY_QUERY = defineQuery(`*[_id == "hackathonsCopy"][0]{
   }
 }`);
 
+/** An edition's event date (`event_date`, `end_date`) as its Munich calendar day. */
 const day: ContentParser<string> = (value, label, path) => {
   const text = contentString(value, label, path);
-  if (
-    !/^\d{4}-\d{2}-\d{2}$/.test(text) ||
-    !Number.isFinite(Date.parse(text)) ||
-    new Date(text).toISOString().slice(0, 10) !== text
-  ) {
-    return contentError(
-      label,
-      path,
-      "expected a valid calendar day (YYYY-MM-DD)",
-    );
-  }
-  return text;
+  if (!Number.isFinite(Date.parse(text)))
+    return contentError(label, path, "expected the edition's event date");
+  return munichIsoDate(new Date(text));
 };
 const link = contentObject({ label: contentString, href: contentString });
 const edition: ContentParser<MakeathonEdition> = (value, label, path) => {
@@ -240,7 +234,11 @@ export async function getHackathonsCopy(): Promise<HackathonsCopy> {
   const tokens = await getContentTokens();
   return loadContent<HackathonsCopy, HACKATHONS_COPY_QUERY_RESULT>({
     query: HACKATHONS_COPY_QUERY,
-    tags: ["content:hackathonsCopy", "content:caseStudy"],
+    tags: [
+      "content:hackathonsCopy",
+      "content:caseStudy",
+      ...liveCacheTags.event,
+    ],
     label: "the /hackathons copy",
     select: (result) =>
       parseHackathonsCopy(

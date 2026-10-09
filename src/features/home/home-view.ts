@@ -1,7 +1,7 @@
 import type { IndexListItem, LedgerItem } from "@tum.ai/ui-kit";
 import { deriveSiteFacts, type SiteFacts } from "@/config/site-facts";
 import { fillPageTokens } from "@/lib/content-copy";
-import { formatList, spellCount } from "@/lib/words";
+import { spellCount } from "@/lib/words";
 import type { HomeCopy, LedgerKey } from "./data/homepage";
 
 /**
@@ -38,8 +38,6 @@ export type HomeViewSources = {
   facts: SiteFacts;
   /** How many departments /community lists. */
   departmentCount: number;
-  /** The REX institutions, in order (`getRexInstitutions()`). */
-  rexInstitutions: readonly { shortName: string }[];
 };
 
 /**
@@ -48,14 +46,9 @@ export type HomeViewSources = {
  */
 export function homeView(
   copy: HomeCopy,
-  { facts, departmentCount, rexInstitutions }: HomeViewSources,
+  { facts, departmentCount }: HomeViewSources,
 ) {
-  const tokens = {
-    rexInstitutions: formatList(
-      rexInstitutions.map((institution) => institution.shortName),
-    ),
-    departments: spellCount(departmentCount),
-  };
+  const tokens = { departments: spellCount(departmentCount) };
   const ledgerFigures = ledgerFiguresOf(facts);
   const ledger: LedgerItem[] = copy.ledger.map(({ key, label, note }) => ({
     label,

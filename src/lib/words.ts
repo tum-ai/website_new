@@ -14,6 +14,16 @@ export function formatList(items: readonly string[]): string {
   return conjunction.format(items);
 }
 
+const disjunction = new Intl.ListFormat("en-GB", {
+  style: "long",
+  type: "disjunction",
+});
+
+/** "Harvard, MIT or Inria": a list of alternatives in running text. */
+export function formatListOr(items: readonly string[]): string {
+  return disjunction.format(items);
+}
+
 const NUMBER_WORDS = [
   "zero",
   "one",

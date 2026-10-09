@@ -42,7 +42,8 @@ export const settingsFixtureFacts = {
   },
   eLab: {
     currentIteration: "2.0",
-    programWeeks: 8,
+    // Derived: the fixture eLabCopy's phases (one of 2 weeks), never stored.
+    programWeeks: 2,
     ventureFundingMillions: 1,
     selection: {
       applications: 20,
@@ -121,6 +122,7 @@ export const settingsFixtureDocuments: CmsFixtureDocument[] = [
     ...settingsFixtureFacts,
     eLab: {
       ...settingsFixtureFacts.eLab,
+      programWeeks: undefined,
       heroLogo: {
         _type: "image",
         asset: { _type: "reference", _ref: "settings-fixture-logo" },

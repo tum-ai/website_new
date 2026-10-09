@@ -1,5 +1,6 @@
 import { evaluate, parse } from "groq-js";
 import { afterEach, expect, test, vi } from "vitest";
+import { programmesFixtureDocuments } from "@/lib/cms-fixtures/programmes";
 import {
   settingsFixtureDocuments,
   settingsFixtureFacts,
@@ -14,7 +15,8 @@ afterEach(() => vi.unstubAllEnvs());
 async function result() {
   return (
     await evaluate(parse(SITE_SETTINGS_QUERY), {
-      dataset: settingsFixtureDocuments,
+      // eLabCopy too: the program length is the sum of its phases.
+      dataset: [...settingsFixtureDocuments, ...programmesFixtureDocuments],
     })
   ).get();
 }
@@ -52,7 +54,10 @@ test("required footer tagline cannot be blank", async () => {
 });
 
 test("match days use Munich time, with one-day events ending at their start", async () => {
-  const docs = structuredClone(settingsFixtureDocuments);
+  const docs = structuredClone([
+    ...settingsFixtureDocuments,
+    ...programmesFixtureDocuments,
+  ]);
   const match = docs.find((doc) => doc._id === "settings-fixture-match");
   if (!match) throw new Error("missing fixture");
   match.event_date = "2026-09-27T22:30:00Z";

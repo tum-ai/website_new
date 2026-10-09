@@ -14,7 +14,6 @@ afterAll(() => vi.unstubAllEnvs());
 const sources = {
   facts: settingsFixtureFacts,
   departmentCount: 2,
-  rexInstitutions: [{ shortName: "Example Lab" }],
 };
 test("ledger labels come from copy and figures from CMS settings", () => {
   const { ledger } = homeView(copy, sources);
@@ -26,10 +25,11 @@ test("ledger labels come from copy and figures from CMS settings", () => {
     suffix: "+",
   });
 });
-test("program descriptions derive department and institution labels", () => {
+test("program descriptions derive department labels; the REX list is a site placeholder", () => {
   const { programs } = homeView(copy, sources);
+  // "Example Company": the fixture REX logo list, filled with the other placeholders.
   expect(programs[0]?.description).toBe(
-    "Members work in two teams with Example Lab.",
+    "Members work in two teams with Example Company.",
   );
   expect(programs[0]?.image).toEqual({
     src: "/assets/fixtures/photo.svg",

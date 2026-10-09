@@ -302,12 +302,6 @@ export const siteSettingsType = defineType({
             Rule.required().regex(/^\d{1,2}\.\d$/, { name: "cohort number" }),
         }),
         defineField({
-          name: "programWeeks",
-          title: "Program length (weeks)",
-          type: "number",
-          validation: (Rule) => Rule.required().integer().min(1).max(52),
-        }),
-        defineField({
           name: "ventureFundingMillions",
           title: "Funding raised by E-Lab ventures (million euros)",
           type: "number",

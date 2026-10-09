@@ -3,6 +3,7 @@ import {
   durationInWeeks,
   formatDuration,
   isDuration,
+  programWeeksOf,
 } from "./program-duration";
 
 test("a duration reads as the page shows it", () => {
@@ -24,4 +25,15 @@ test("only a positive whole amount in a known unit is a duration", () => {
   expect(isDuration({ amount: 2, unit: "months" })).toBe(false);
   expect(isDuration("4 weeks")).toBe(false);
   expect(isDuration(null)).toBe(false);
+});
+
+test("the program length is its phases in whole weeks", () => {
+  expect(
+    programWeeksOf([
+      { amount: 3, unit: "days" },
+      { amount: 7, unit: "weeks" },
+      { amount: 5, unit: "weeks" },
+    ]),
+  ).toBe(12);
+  expect(programWeeksOf([{ amount: 2, unit: "weeks" }])).toBe(2);
 });

@@ -8,6 +8,7 @@ import { callToActionLabels } from "./calls-to-action";
 /** The program: cohort, length, funding, the selection funnel and the logo. */
 export type ELabFacts = {
   currentIteration: string;
+  /** Weeks from kickoff to Final Pitch: the sum of the /e-lab phases (`programWeeksOf`). */
   programWeeks: number;
   /** Money raised by E-Lab ventures, in million euros. */
   ventureFundingMillions: number;

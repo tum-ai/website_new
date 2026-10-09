@@ -29,6 +29,7 @@ export const contentTokenNames = [
   "eLab.completedCohorts",
   "eLab.ventureFundingMillions",
   "eLab.ventureFunding",
+  "eLab.admittedTeams",
   "org.foundingYear",
   "org.activeMembers",
   "org.alumni",
@@ -46,10 +47,14 @@ export const contentTokenNames = [
   "impact.hackathonParticipants",
   "community.makeathonSize",
   "league.cities",
+  "league.citiesOr",
   "league.cityCount",
   "league.matchCount",
   "league.foundedYear",
   "league.finaleTeams",
+  // The REX logo list's short names: "Harvard, MIT and Inria", "… or Inria".
+  "rexInstitutions",
+  "rexInstitutionsOr",
 ] as const;
 
 type ContentTokenName = (typeof contentTokenNames)[number];

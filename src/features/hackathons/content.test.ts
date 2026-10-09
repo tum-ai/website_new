@@ -43,8 +43,17 @@ describe("published hackathons copy", () => {
       {},
       mock.documents,
     );
+    // Dates and city come from each edition's event.
     expect(projected).toMatchObject({
-      makeathon: { editions: hackathonsFixture.makeathon.editions },
+      makeathon: {
+        editions: hackathonsFixture.makeathon.editions.map(
+          ({ start, end, ...edition }) => ({
+            ...edition,
+            start: `${start}T08:00:00Z`,
+            end: `${end}T16:00:00Z`,
+          }),
+        ),
+      },
     });
     const copy = await getHackathonsCopy();
     expect(copy.hero.lead).toContain("{{since}}");
@@ -60,14 +69,23 @@ describe("published hackathons copy", () => {
   });
   test.each([
     ["missing title", { name: null }],
-    ["reversed dates", { end: "2020-01-01" }],
-    ["invalid date", { start: "2025-02-30" }],
+    ["no event", { event: null }],
     ["unknown placeholder", { note: "{{unknown.fact}}" }],
   ])("an edition with %s fails as a whole", async (_, change) => {
     const makeathon = edit().makeathon as {
       editions: Record<string, unknown>[];
     };
     Object.assign(makeathon.editions[0], change);
+    await expect(getHackathonsCopy()).rejects.toThrow();
+  });
+  test.each([
+    ["reversed dates", { end_date: "2020-01-01T00:00:00Z" }],
+    ["invalid date", { event_date: "not a date" }],
+  ])("an edition whose event has %s fails as a whole", async (_, change) => {
+    const event = mock.documents.find(
+      (document) => document._id === "hackathons-fixture-makeathon-2025",
+    );
+    Object.assign(event ?? {}, change);
     await expect(getHackathonsCopy()).rejects.toThrow();
   });
   test("editor deletions replace editions, without restoring the removed edition", async () => {

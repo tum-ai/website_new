@@ -231,7 +231,9 @@ describe("mock CMS gate", () => {
     const events = await sanity.getSanityEvents();
     const projects = await sanity.getSanityResearchProjects();
 
-    expect(events).toHaveLength(9);
+    // 8 generated events and the league match, plus the two Makeathon
+    // editions' events (`cms-fixtures/hackathons.ts`).
+    expect(events).toHaveLength(11);
     expect(events).toEqual(
       expect.arrayContaining([
         expect.objectContaining({

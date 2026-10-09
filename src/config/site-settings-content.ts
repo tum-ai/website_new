@@ -19,6 +19,7 @@ import {
 } from "@/lib/cms-content-model";
 import { fillCmsCopy } from "@/lib/content-copy";
 import { munichDateFromIsoDay, munichIsoDate } from "@/lib/munich-time";
+import { durationUnits, programWeeksOf } from "@/lib/program-duration";
 import { getCalBooking } from "@/lib/security";
 import type { SiteFacts } from "./site-facts";
 
@@ -28,7 +29,7 @@ export const SITE_SETTINGS_QUERY =
  brandMission,impact{publications,publicationVenues,hackathonParticipants},community{makeathonSize},
  contactEmails{general,partners,venture,recruitment},socialLinks{linkedin,instagram,github,x,youtube,facebook,tiktok,slack},
  partnershipBooking{bookingUrl,bookingHost},
- eLab{currentIteration,programWeeks,ventureFundingMillions,selection{applications,admitted,midterm,selectionDay,finalPitch},"heroLogo":heroLogo${CONTENT_IMAGE_PROJECTION}},
+ eLab{currentIteration,"programPhases":*[_type == "eLabCopy" && _id == "eLabCopy"][0].gates.stages[_type == "phaseStage"].duration{amount,unit},ventureFundingMillions,selection{applications,admitted,midterm,selectionDay,finalPitch},"heroLogo":heroLogo${CONTENT_IMAGE_PROJECTION}},
  hackathons{makeathonUrl,league{name,url,foundedYear,finaleTeams,matches[]{key,label,makeathon,"city":event->city,"start":event->event_date,"end":coalesce(event->end_date,event->event_date)}}},
  footerTagline,headerCtaFallback
 }`);
@@ -72,6 +73,12 @@ const match = contentObject({
   end: date,
   makeathon: contentOptional(contentBoolean),
 });
+/** One E-Lab phase's length (`eLabCopy`); the program length is their sum. */
+const phaseDuration = contentObject({
+  amount: positive,
+  unit: (value: unknown, label: string, path: string) =>
+    requireEnum(value, durationUnits, label, path),
+});
 const parser = contentObject({
   organization: contentObject({
     foundingYear: count,
@@ -113,7 +120,7 @@ const parser = contentObject({
   }),
   eLab: contentObject({
     currentIteration: contentString,
-    programWeeks: positive,
+    programPhases: contentArray(phaseDuration),
     ventureFundingMillions: contentNumber,
     selection: contentObject({
       applications: positive,
@@ -176,12 +183,16 @@ export function selectSiteFacts(value: unknown): SiteFacts {
       "eLab.currentIteration",
       "expected a cohort number",
     );
-  if (result.eLab.ventureFundingMillions < 0 || result.eLab.programWeeks > 52)
+  const { programPhases, ...eLab } = result.eLab;
+  const programWeeks = programWeeksOf(programPhases);
+  if (programWeeks < 1 || programWeeks > 52)
     return contentError(
-      "siteSettings",
-      "eLab",
-      "invalid programme length or funding",
+      "eLabCopy",
+      "gates.stages",
+      "the phases must add up to 1..52 weeks",
     );
+  if (eLab.ventureFundingMillions < 0)
+    return contentError("siteSettings", "eLab", "invalid funding");
   const gates = Object.values(result.eLab.selection);
   if (gates.some((n, index) => index > 0 && n > gates[index - 1]))
     return contentError(
@@ -207,6 +218,7 @@ export function selectSiteFacts(value: unknown): SiteFacts {
   }
   return {
     ...result,
+    eLab: { ...eLab, programWeeks },
     hackathons: {
       ...result.hackathons,
       league: {
@@ -225,7 +237,7 @@ export function selectSiteFacts(value: unknown): SiteFacts {
 export const getSiteFacts = cache(() =>
   loadContent({
     query: SITE_SETTINGS_QUERY,
-    tags: ["content:siteSettings", ...liveCacheTags.event],
+    tags: ["content:siteSettings", "content:eLabCopy", ...liveCacheTags.event],
     label: "siteSettings",
     select: selectSiteFacts,
   }),

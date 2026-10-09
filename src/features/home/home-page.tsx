@@ -1,7 +1,6 @@
 import { getSiteFacts } from "@/config/site-settings-content";
 import { getMemberStories } from "@/features/community/server";
 import { getPartnerLogos, getPartners } from "@/features/partners/server";
-import { getRexInstitutions } from "@/features/research/server";
 import { getHomeContent } from "./content";
 import { HomeHero } from "./home-hero";
 import { homeView } from "./home-view";
@@ -18,21 +17,19 @@ import { RoomSection } from "./room-section";
  * and the member call to action (ink). Must stay statically prerendered; see
  * HeroAperture for the image-preload contract. The copy comes from the
  * content slice (`content.ts`), the figures from the site facts, and the
- * member stories, REX institutions, partners and partner artwork from their
+ * member stories, partners and partner artwork from their
  * slices (each the CMS or the code).
  */
 export async function HomePage() {
   const [
     { copy, departmentCount },
     facts,
-    rexInstitutions,
     stories,
     { marqueeLogos },
     partners,
   ] = await Promise.all([
     getHomeContent(),
     getSiteFacts(),
-    getRexInstitutions(),
     getMemberStories(),
     getPartnerLogos(),
     getPartners(),
@@ -40,7 +37,6 @@ export async function HomePage() {
   const { ledger, programs } = homeView(copy, {
     facts,
     departmentCount,
-    rexInstitutions,
   });
   return (
     <main>

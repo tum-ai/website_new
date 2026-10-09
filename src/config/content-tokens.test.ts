@@ -11,6 +11,7 @@ const sources = {
   facts: settingsFixtureFacts,
   membership: settingsFixtureMembership,
   eLab: settingsFixtureELabWindow,
+  rexInstitutions: ["Example Company"],
 };
 afterEach(() => vi.unstubAllEnvs());
 test("every token derives from resolved CMS facts", () => {
@@ -59,6 +60,19 @@ test("funding and large counts read the same in every sentence and stat", () => 
     },
   });
   expect(tokens["eLab.ventureFunding"]).toBe("€7.5M+");
+  expect(tokens["eLab.admittedTeams"]).toBe(
+    String(sources.facts.eLab.selection.admitted),
+  );
   expect(tokens["org.officialMembers"]).toBe("1,000");
   expect(tokens["org.startedApplications"]).toBe("2,100");
+});
+
+test("lists read the same on every page: the REX schools and the league cities", () => {
+  const tokens = contentTokensFor({
+    ...sources,
+    rexInstitutions: ["Harvard", "MIT", "Inria"],
+  });
+  expect(tokens.rexInstitutions).toBe("Harvard, MIT and Inria");
+  expect(tokens.rexInstitutionsOr).toBe("Harvard, MIT or Inria");
+  expect(tokens["league.citiesOr"]).toBe(tokens["league.cities"]);
 });

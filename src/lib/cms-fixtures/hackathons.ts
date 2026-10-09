@@ -145,13 +145,29 @@ export const hackathonsFixtureDocuments: CmsFixtureDocument[] = [
     makeathon: {
       ...hackathonsFixture.makeathon,
       editionsPhoto: rawPhoto,
-      editions: hackathonsFixture.makeathon.editions.map((edition) => ({
-        ...edition,
-        _type: "makeathonEdition",
-        _key: edition.key,
-      })),
+      editions: hackathonsFixture.makeathon.editions.map(
+        ({ start: _start, end: _end, city: _city, ...edition }) => ({
+          ...edition,
+          _type: "makeathonEdition",
+          _key: edition.key,
+          event: {
+            _type: "reference",
+            _ref: `hackathons-fixture-makeathon-${edition.key}`,
+          },
+        }),
+      ),
     },
   },
+  // The editions' events: their dates and city are the editions'.
+  ...hackathonsFixture.makeathon.editions.map((edition) => ({
+    _id: `hackathons-fixture-makeathon-${edition.key}`,
+    _type: "event",
+    title: edition.name,
+    city: edition.city,
+    category: "Hackathon",
+    event_date: `${edition.start}T08:00:00Z`,
+    end_date: `${edition.end}T16:00:00Z`,
+  })),
 ];
 
 /** Minimal synthetic wording for the events singleton query contract. */

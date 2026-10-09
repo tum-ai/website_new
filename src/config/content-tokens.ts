@@ -1,4 +1,6 @@
 import type { ContentTokens } from "@/lib/content-tokens";
+import { getLogoLists } from "@/lib/organization-content";
+import { formatList, formatListOr } from "@/lib/words";
 import { type ELabApplicationWindow, eLabApplicationCopyOf } from "./e-lab";
 import { leagueSummaryOf } from "./hackathons";
 import {
@@ -31,6 +33,8 @@ export type ContentTokenSources = {
   facts: SiteFacts;
   membership: MembershipConfig;
   eLab: ELabApplicationWindow;
+  /** The REX institutions' short names, in the logo list's order. */
+  rexInstitutions: readonly string[];
 };
 
 /** The placeholder values for a set of resolved facts. */
@@ -38,6 +42,7 @@ export function contentTokensFor({
   facts,
   membership,
   eLab,
+  rexInstitutions,
 }: ContentTokenSources): ContentTokens {
   const derived = deriveSiteFacts(facts);
   const recruiting = recruitingTimelineOf(roundSchedule(membership.round));
@@ -56,6 +61,7 @@ export function contentTokensFor({
     // Raw; copy uses "eLab.ventureFunding" ("€8M+"). Kept because the CMS may hold it.
     "eLab.ventureFundingMillions": String(facts.eLab.ventureFundingMillions),
     "eLab.ventureFunding": derived.ventureFundingText,
+    "eLab.admittedTeams": String(facts.eLab.selection.admitted),
     "org.foundingYear": String(org.foundingYear),
     "org.activeMembers": String(org.activeMembers),
     "org.alumni": String(org.alumni),
@@ -82,19 +88,29 @@ export function contentTokensFor({
       impact.hackathonParticipants.toLocaleString("en"),
     "community.makeathonSize": String(facts.community.makeathonSize),
     "league.cities": league.citiesText,
+    "league.citiesOr": league.citiesOrText,
     "league.cityCount": String(league.cities.length),
     "league.matchCount": String(league.matchCount),
     "league.foundedYear": String(facts.hackathons.league.foundedYear),
     "league.finaleTeams": String(facts.hackathons.league.finaleTeams),
+    rexInstitutions: formatList(rexInstitutions),
+    rexInstitutionsOr: formatListOr(rexInstitutions),
   };
 }
 
 /** Resolve placeholder values from CMS facts and application windows for this render. */
 export async function getContentTokens(): Promise<ContentTokens> {
-  const [facts, membership, eLab] = await Promise.all([
+  const [facts, membership, eLab, logoLists] = await Promise.all([
     getSiteFacts(),
     getMembershipWindow(),
     getELabWindow(),
+    getLogoLists({
+      surfaces: ["rex-institutions"],
+      label: "the REX institutions",
+    }),
   ]);
-  return contentTokensFor({ facts, membership, eLab });
+  const rexInstitutions = (logoLists["rex-institutions"] ?? []).map(
+    ({ name, shortName }) => shortName ?? name,
+  );
+  return contentTokensFor({ facts, membership, eLab, rexInstitutions });
 }

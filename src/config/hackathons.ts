@@ -1,6 +1,6 @@
 /** Hackathon programme shapes and pure season summaries. Programme values come from CMS site settings; matches reference existing events. */
 
-import { formatList } from "@/lib/words";
+import { formatList, formatListOr } from "@/lib/words";
 
 /** One match of a league season, as its own site lists it. */
 export type LeagueMatch = {
@@ -34,6 +34,8 @@ export type LeagueSummary = {
   cities: readonly string[];
   /** "Munich, Paris and Zurich" (house style, `formatList`). */
   citiesText: string;
+  /** "Munich, Paris or Zurich" (`formatListOr`). */
+  citiesOrText: string;
   matchCount: number;
 };
 
@@ -45,6 +47,7 @@ export function leagueSummaryOf(
   return {
     cities,
     citiesText: formatList(cities),
+    citiesOrText: formatListOr(cities),
     matchCount: matches.length,
   };
 }
