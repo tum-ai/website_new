@@ -65,9 +65,12 @@ export function homeView(
     ({ image, description, ...program }) => ({
       ...program,
       description: fillPageTokens(description, tokens),
-      image: image.objectPosition
-        ? { src: image.src, position: image.objectPosition }
-        : { src: image.src },
+      image: {
+        src: image.src,
+        width: image.width,
+        height: image.height,
+        ...(image.objectPosition ? { position: image.objectPosition } : {}),
+      },
     }),
   );
   return { ledger, programs };

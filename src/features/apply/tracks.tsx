@@ -9,7 +9,11 @@ import {
 import Image from "next/image";
 import type { JourneyStep, MemberStory } from "@/features/community";
 import type { JourneyStage } from "@/lib/community-model";
-import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
+import {
+  coverSizes,
+  isUnoptimizedRemoteImage,
+  PANORAMA_PHOTO_FRAMES,
+} from "@/lib/image-optimization";
 import type { ApplyCopy } from "./data/apply";
 
 /** One track: what it is, and a member who took it, in their own words. */
@@ -114,7 +118,7 @@ export function Tracks({
             unoptimized={isUnoptimizedRemoteImage(copy.photo.src)}
             alt={copy.photo.alt}
             position={copy.photo.objectPosition}
-            sizes="(min-width: 80rem) 80rem, 100vw"
+            sizes={coverSizes(copy.photo, PANORAMA_PHOTO_FRAMES)}
           />
         </Reveal>
         <p className="mt-10">

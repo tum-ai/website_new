@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
+import { type CoverFrame, coverSizes } from "@/lib/image-optimization";
 import { ConstructionLines } from "./construction-lines";
 import type { HomePhoto } from "./data/homepage";
 import { constructionMarkMask } from "./logomark-construction";
@@ -12,6 +13,18 @@ const HOLD_MS = 6000;
 
 /** The longest the entrance waits for the first photo before it runs anyway. */
 const READY_FALLBACK_MS = 2500;
+
+/**
+ * The aperture frame per breakpoint: `.home-aperture-frame` widths in
+ * home.css (62rem is where min(58vw, 62rem) caps) and the mark's 477:406
+ * box from home-hero.tsx.
+ */
+const APERTURE_FRAMES: CoverFrame[] = [
+  { media: "(min-width: 107rem)", width: 62, unit: "rem", aspect: 477 / 406 },
+  { media: "(min-width: 64rem)", width: 58, unit: "vw", aspect: 477 / 406 },
+  { media: "(min-width: 40rem)", width: 88, unit: "vw", aspect: 477 / 406 },
+  { width: 118, unit: "vw", aspect: 477 / 406 },
+];
 
 /**
  * The next photo index, or the same one when cycling should hold: fewer than
@@ -115,7 +128,7 @@ export function HeroAperture({
               src={photo.src}
               alt=""
               fill
-              sizes="(min-width: 1024px) 60vw, 90vw"
+              sizes={coverSizes(photo, APERTURE_FRAMES)}
               loading={photoIndex === 0 ? "eager" : "lazy"}
               onLoad={photoIndex === 0 ? () => setReady(true) : undefined}
               data-active={photoIndex === active}

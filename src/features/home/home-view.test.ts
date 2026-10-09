@@ -31,7 +31,11 @@ test("program descriptions derive department and institution labels", () => {
   expect(programs[0]?.description).toBe(
     "Members work in two teams with Example Lab.",
   );
-  expect(programs[0]?.image).toEqual({ src: "/assets/fixtures/photo.svg" });
+  expect(programs[0]?.image).toEqual({
+    src: "/assets/fixtures/photo.svg",
+    width: copy.programs.items[0]?.image.width,
+    height: copy.programs.items[0]?.image.height,
+  });
 });
 test("the funding ledger preserves fact precision", () => {
   const funding = (value: number) =>
