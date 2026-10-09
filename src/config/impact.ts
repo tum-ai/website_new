@@ -10,7 +10,7 @@ const venueList = new Intl.ListFormat("en", {
   type: "conjunction",
 });
 
-/** The venues as running text: "NeurIPS, ICML, and ICLR". */
+/** The venues as running text: "ICML, ECCV, NeurIPS, and ICLR". */
 export function publicationVenuesTextOf(venues: readonly string[]): string {
   return venueList.format(venues);
 }

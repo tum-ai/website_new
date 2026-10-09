@@ -42,7 +42,7 @@ export function partnerPillarMetricsOf({
 > {
   return {
     research: `${impact.publications}+`,
-    venture: `${eLab.ventureFundingMillions}M`,
+    venture: `${eLab.ventureFundingMillions}M+`,
     hackathons: `${impact.hackathonParticipants}+`,
   };
 }

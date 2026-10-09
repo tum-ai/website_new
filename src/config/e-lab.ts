@@ -43,9 +43,9 @@ export type ELabApplicationWindow = {
   applicationsOpen: boolean;
   applicationUrl: string;
   /**
-   * Munich time, written as shown on the site: "27.09.2026" and "22:00".
-   * Applications close at exactly this instant: open at 21:59:59, closed at
-   * 22:00:00.
+   * Munich time, written as shown on the site: "27.09.2026" and "21:00".
+   * Applications close at exactly this instant: open at 20:59:59, closed at
+   * 21:00:00.
    */
   applicationDeadlineDate: string;
   applicationDeadlineTime: string;
@@ -112,9 +112,9 @@ export function eLabApplicationCopyOf(
   const deadline = `${window.applicationDeadlineDate} at ${window.applicationDeadlineTime}`;
   return {
     cohortName: eLabCohortNameOf(currentIteration),
-    /** "27.09.2026 at 22:00", for tight UI such as the status badge. */
+    /** "27.09.2026 at 21:00", for tight UI such as the status badge. */
     deadline,
-    /** "27.09.2026 at 22:00 (Munich time)", for prose such as the FAQ. */
+    /** "27.09.2026 at 21:00 (Munich time)", for prose such as the FAQ. */
     deadlineLabel: `${deadline} (Munich time)`,
   } as const;
 }

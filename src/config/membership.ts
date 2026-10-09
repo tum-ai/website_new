@@ -145,7 +145,7 @@ export type RecruitingTimeline = {
 
 /**
  * The round's three phases as sentences' worth of dates ("September 28th -
- * October 27th"), for copy that names them: the Apply FAQ and the home and
+ * October 25th"), for copy that names them: the Apply FAQ and the home and
  * Community closing bands.
  */
 export function recruitingTimelineOf(
