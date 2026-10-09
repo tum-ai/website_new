@@ -36,7 +36,7 @@ export type SiteFacts = {
 export type DerivedSiteFacts = {
   /** Active members plus alumni. */
   officialMembers: number;
-  /** "NeurIPS, ICML, and ICLR". */
+  /** "ICML, ECCV, NeurIPS, and ICLR". */
   publicationVenuesText: string;
   /** "12-week equity-free AI startup incubator". */
   eLabProgramSummary: string;

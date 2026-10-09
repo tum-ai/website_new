@@ -43,7 +43,7 @@ export type RecruitingCall = {
   /** The round's dates as the important-dates register rows. */
   keyDates: KeyDateItem[];
   progress: ApplicationProgress;
-  /** Words for the copy: "28 September", "27 October", "23:59". */
+  /** Words for the copy: "28 September", "25 October", "23:59". */
   words: {
     opens: string;
     deadline: string;
@@ -51,7 +51,7 @@ export type RecruitingCall = {
     interviews: string;
     onboarding: string;
   };
-  /** Short forms for the ruler's labels: "28 Sep", "27 Oct". */
+  /** Short forms for the ruler's labels: "28 Sep", "25 Oct". */
   short: { opens: string; deadline: string };
   /** "26 days left", "1 day left", "Closes today". Empty outside the window. */
   daysLeftLabel: string;
