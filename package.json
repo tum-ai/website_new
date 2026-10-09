@@ -37,7 +37,7 @@
   "dependencies": {
     "@calcom/embed-react": "^1.5.3",
     "@date-fns/tz": "^1.5.0",
-    "@tum.ai/ui-kit": "0.2.0",
+    "@tum.ai/ui-kit": "0.2.1",
     "clsx": "^2.1.1",
     "cobe": "^2.0.1",
     "date-fns": "^4.1.0",

@@ -21,7 +21,9 @@ const nextConfig: NextConfig = {
     root: process.cwd(),
   },
   images: {
-    qualities: [40, 75],
+    // One quality for every photo: next/image snaps its default (75) to the
+    // closest allowed value, so 85 applies without a `quality` prop anywhere.
+    qualities: [85],
     // Editorial images are served from Sanity's CDN. Brand and synthetic
     // fixture files stay under local /assets/. Only this project's assets
     // (every dataset): the optimizer never fetches another project's files

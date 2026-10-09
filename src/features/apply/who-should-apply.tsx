@@ -5,7 +5,11 @@ import {
   Section,
   SectionHeader,
 } from "@tum.ai/ui-kit";
-import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
+import {
+  coverSizes,
+  isUnoptimizedRemoteImage,
+  PANORAMA_PHOTO_FRAMES,
+} from "@/lib/image-optimization";
 import type { ApplyCopy } from "./data/apply";
 
 /**
@@ -114,7 +118,7 @@ export function WhoShouldApply({
             unoptimized={isUnoptimizedRemoteImage(photo.src)}
             alt={photo.alt}
             position={photo.objectPosition}
-            sizes="(min-width: 80rem) 80rem, 100vw"
+            sizes={coverSizes(photo, PANORAMA_PHOTO_FRAMES)}
           />
         </Reveal>
       </Container>
