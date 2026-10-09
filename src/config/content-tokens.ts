@@ -53,11 +53,14 @@ export function contentTokensFor({
       .deadlineLabel,
     "eLab.programSummary": derived.eLabProgramSummary,
     "eLab.completedCohorts": String(derived.eLabCompletedIterations),
+    // Raw; copy uses "eLab.ventureFunding" ("€8M+"). Kept because the CMS may hold it.
     "eLab.ventureFundingMillions": String(facts.eLab.ventureFundingMillions),
+    "eLab.ventureFunding": derived.ventureFundingText,
     "org.foundingYear": String(org.foundingYear),
     "org.activeMembers": String(org.activeMembers),
     "org.alumni": String(org.alumni),
-    "org.officialMembers": String(derived.officialMembers),
+    // Grouped ("1,000"), like the homepage ledger and the people stat.
+    "org.officialMembers": derived.officialMembers.toLocaleString("en"),
     "org.majors": String(org.majors),
     "org.universities": String(org.universities),
     "org.nationalities": String(org.nationalities),
@@ -67,8 +70,9 @@ export function contentTokensFor({
       acceptanceRateRoundedOf(org.acceptanceRate),
     ),
     // "20k", followed by "+" in copy.
-    // Ungrouped ("2100"), as the partner stats count it up.
-    "org.startedApplications": String(org.startedApplicationsPerBatch),
+    // Grouped ("2,100"); the partner stats count grouped figures up too.
+    "org.startedApplications":
+      org.startedApplicationsPerBatch.toLocaleString("en"),
     "org.admittedPerBatch": String(admittedPerBatchOf(org)),
     "org.linkedinAudience": linkedinAudienceLabelOf(org.linkedinAudience),
     "impact.publications": String(impact.publications),

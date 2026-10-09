@@ -1,5 +1,5 @@
 import { FaqSection } from "@tum.ai/ui-kit";
-import { eLabCohortNameOf } from "@/config/e-lab";
+import { eLabCohortNameOf, ventureFundingTextOf } from "@/config/e-lab";
 import { getSiteFacts } from "@/config/site-settings-content";
 import { ApplicationField } from "./application-field";
 import { ClosingSection } from "./closing-section";
@@ -51,7 +51,7 @@ export async function ELabPage() {
       <VentureTrace
         copy={copy.ventures}
         gates={gates}
-        fundingMillions={facts.eLab.ventureFundingMillions}
+        fundingText={ventureFundingTextOf(facts.eLab.ventureFundingMillions)}
       />
       <VoicesSection copy={copy.voices} />
       <FaqSection items={faq} tone="lavender" />

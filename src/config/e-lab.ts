@@ -94,6 +94,15 @@ export function eLabProgramSummaryOf(programWeeks: number): string {
   return `${programWeeks}-week equity-free AI startup incubator`;
 }
 
+/**
+ * The ventures' funding as every page states it: "€8M+" for 8, "€7.5M+" for
+ * 7.5. The only place the figure is formatted, so copy, stats and the ledger
+ * cannot drift apart.
+ */
+export function ventureFundingTextOf(millions: number): string {
+  return `€${millions}M+`;
+}
+
 /** Cohorts that have run so far: the current one ("6.0") is still ahead. */
 export function eLabCompletedIterationsOf(currentIteration: string): number {
   return Number.parseInt(currentIteration, 10) - 1;

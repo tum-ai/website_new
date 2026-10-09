@@ -5,6 +5,7 @@ import {
   eLabCohortNameOf,
   eLabCompletedIterationsOf,
   eLabProgramSummaryOf,
+  ventureFundingTextOf,
 } from "./e-lab";
 import type { HackathonFacts } from "./hackathons";
 import { type ImpactFacts, publicationVenuesTextOf } from "./impact";
@@ -44,6 +45,8 @@ export type DerivedSiteFacts = {
   eLabCompletedIterations: number;
   /** "E-Lab 6.0". */
   eLabCohortName: string;
+  /** "€8M+": the ventures' funding, as every page states it. */
+  ventureFundingText: string;
 };
 
 /**
@@ -62,5 +65,6 @@ export function deriveSiteFacts(facts: SiteFacts): DerivedSiteFacts {
       facts.eLab.currentIteration,
     ),
     eLabCohortName: eLabCohortNameOf(facts.eLab.currentIteration),
+    ventureFundingText: ventureFundingTextOf(facts.eLab.ventureFundingMillions),
   };
 }

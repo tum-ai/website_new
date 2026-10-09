@@ -61,7 +61,7 @@ export function PeopleSection({
               className="flex h-full min-h-72 flex-col rounded-3xl bg-canvas p-5 sm:p-7"
             >
               <strong className="tabular mt-auto text-fg text-stat-lg">
-                <CountUp value={`${members.official}+`} />
+                <CountUp value={`${members.official.toLocaleString("en")}+`} />
               </strong>
               <h3 className="mt-3 text-fg text-heading-sm">{copy.statLabel}</h3>
               <p className="mt-6 border-hairline border-t pt-4 text-fg-muted text-small">
