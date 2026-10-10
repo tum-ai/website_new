@@ -1,0 +1,256 @@
+name: CI
+
+# No `branches:` filter on pull_request: stacked PRs target feature and
+# integration branches, not only main.
+on:
+  pull_request:
+  merge_group:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+# One run per PR (superseded pushes are cancelled). Pushes to main and merge
+# queue runs group by commit, so they are never cancelled.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up toolchain
+        uses: ./.github/actions/setup
+      - name: Biome
+        # Every rule is an error; --error-on-warnings keeps a rule that Biome
+        # itself reports as a warning from slipping through.
+        run: pnpm exec biome ci --error-on-warnings .
+
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up toolchain
+        uses: ./.github/actions/setup
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Sanity TypeGen is fresh
+        # Regenerates src/lib/sanity.types.generated.ts from the schemas and
+        # GROQ queries and fails on any diff. Fix: run `pnpm sanity:typegen`
+        # and commit the result.
+        run: pnpm sanity:typegen:check
+
+  unit:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up toolchain
+        uses: ./.github/actions/setup
+      - name: Vitest with coverage
+        # Fails below the line-coverage thresholds in vitest.config.ts.
+        run: pnpm test:coverage
+      - name: Upload coverage report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: coverage
+          path: coverage/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  build:
+    name: Build
+    env:
+      USE_MOCK_CMS: "1"
+      MOCK_CMS_NOW: "2026-10-01T12:00:00Z"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up toolchain
+        uses: ./.github/actions/setup
+      - name: Production build
+        run: pnpm build
+      - name: Homepage performance budget
+        run: pnpm test:perf
+
+  e2e:
+    # Split across four runners so the specs (about 4 minutes on one runner)
+    # take about a quarter of that. Each shard builds the site itself: waiting
+    # for a shared build job first would add its whole runtime to the critical
+    # path, while runner minutes are free for this public repo.
+    name: E2E (${{ matrix.shard }}/4)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    container:
+      # Browsers and system dependencies preinstalled. The tag must match
+      # @playwright/test; the check-playwright-image step fails when not.
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    env:
+      USE_MOCK_CMS: "1"
+      SHARD: ${{ matrix.shard }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up toolchain
+        uses: ./.github/actions/setup
+      - name: Check the image matches @playwright/test
+        uses: ./.github/actions/check-playwright-image
+      - name: Playwright
+        # Functional, accessibility, keyboard, motion and no-JS specs in
+        # Chromium and WebKit. The visual spec runs in the Visual job.
+        run: pnpm test:e2e --shard="$SHARD/4" --reporter=blob
+      - name: Upload blob report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: blob-report-${{ matrix.shard }}
+          path: blob-report/
+          if-no-files-found: ignore
+          retention-days: 1
+
+  e2e-report:
+    # One HTML report (with traces) for all shards. Informational: the E2E
+    # shards themselves gate Verify.
+    name: E2E report
+    needs: e2e
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up toolchain
+        uses: ./.github/actions/setup
+      - name: Download blob reports
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: blob-report-*
+          path: all-blob-reports
+          merge-multiple: true
+      - name: Merge into one HTML report
+        run: pnpm exec playwright merge-reports --reporter html ./all-blob-reports
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: playwright-report
+          path: playwright-report/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  visual:
+    # Two runners, like the E2E shards: each builds the site and compares
+    # half of the screenshots.
+    name: Visual (${{ matrix.shard }}/2)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    container:
+      # The image e2e-snapshots.yml captures the baselines in; both tags must
+      # match @playwright/test (checked below).
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2]
+    env:
+      USE_MOCK_CMS: "1"
+      SHARD: ${{ matrix.shard }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up toolchain
+        uses: ./.github/actions/setup
+      - name: Check the image matches @playwright/test
+        uses: ./.github/actions/check-playwright-image
+      - name: Visual regression
+        # Compares every route at 390 and 1440 px against the committed Linux
+        # baselines (e2e/__screenshots__/linux). To accept an intended change,
+        # add the `update-snapshots` label to the PR (e2e-snapshots.yml).
+        run: pnpm test:e2e:visual --shard="$SHARD/2"
+      - name: Upload Playwright report
+        # The report carries every expected/actual/diff PNG (~450 MB per
+        # shard), so keep it only for failing runs and only for a day.
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: visual-report-${{ matrix.shard }}
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 1
+
+  knip:
+    name: Knip
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up toolchain
+        uses: ./.github/actions/setup
+      - name: Unused files, exports and dependencies
+        # Configured in knip.json (generated types, ds prop types and the
+        # dependencies that are open questions are ignored there, with reasons).
+        run: pnpm knip
+
+  verify:
+    name: Verify
+    needs:
+      - lint
+      - typecheck
+      - unit
+      - build
+      - e2e
+      - visual
+      - knip
+    # Run even when a dependency failed, so this check fails instead of being
+    # skipped (a skipped check would count as passing).
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require every gating job to pass
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          for result in $RESULTS; do
+            if [ "$result" != "success" ]; then
+              echo "::error::A gating job finished with result '$result'."
+              exit 1
+            fi
+          done

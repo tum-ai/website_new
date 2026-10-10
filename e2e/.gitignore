@@ -1,0 +1,5 @@
+# Visual baselines are committed for Linux only (captured in the Playwright
+# Docker image by .github/workflows/e2e-snapshots.yml). Screenshots taken on
+# macOS or Windows differ in font rendering and stay local.
+__screenshots__/*
+!__screenshots__/linux/
