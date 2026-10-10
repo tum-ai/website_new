@@ -233,7 +233,7 @@ function Reel({
                       className="events-name-icon"
                     />
                   ) : null}
-                  {host.name}
+                  <span className="truncate">{host.name}</span>
                 </span>
               )}
               {host.events.length > 1 ? (

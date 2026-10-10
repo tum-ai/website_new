@@ -2,9 +2,10 @@
  * /events only: the hero's lockup. By default (reduced motion, or no
  * JavaScript) the TUM.ai logo and × sit beside a two-column index of the
  * co-hosts. With motion allowed and scripts running, the names become a reel
- * in the slot after the ×: one row at full strength, its neighbours fading
- * out under a mask (on phones the slot is the row under the logo, from lg
- * the row beside it). The reel holds the index three times, so it wraps
+ * in the slot after the ×: one row at full strength between neighbours that
+ * fade out under a mask, on one line with the logo at every width (sized to
+ * fit a phone). The events of the name in the slot show beside the reel from
+ * lg and under the lockup below it. The reel holds the index three times, so it wraps
  * without end. It turns once on load (CSS), held on the first name until
  * HeroReel marks the hero `data-reel-ready` (the reel's logos have loaded, or
  * a cap ran out), so the turn never runs through empty rows; then wherever
@@ -108,17 +109,30 @@
         min-height: min(100svh, 64rem);
       }
 
+      /*
+       * The title, the × and the reel on one line, the slot's events under
+       * them. --lockup-em is the line's width in em: "TUM.ai ×" is about
+       * 3.85em, the widest co-host with its count about 4.1em (Anthropic),
+       * plus the gap. The type stays at display-lg unless the line would not
+       * fit the column (narrow phones), as `--text-display-fit` does for words.
+       */
       .events-lockup {
+        --lockup-em: 8.6;
         flex: 1;
-        grid-template-columns: minmax(0, 1fr);
+        grid-template-columns: auto minmax(0, 1fr);
         align-content: center;
-        gap: 0;
-        /* Phones: the stage has room, so the lockup grows with the width. */
-        font-size: max(var(--text-display-lg), 13vw);
+        align-items: center;
+        column-gap: 0.28em;
+        row-gap: 2.5rem;
+        font-size: min(
+          var(--text-display-lg),
+          calc((100vw - 2 * var(--gutter)) / var(--lockup-em))
+        );
         line-height: var(--row);
       }
 
       .events-lockup-title {
+        font-size: inherit;
         line-height: var(--row);
       }
 
@@ -144,7 +158,9 @@
         font-weight: 300;
         mask-image: linear-gradient(
           to bottom,
+          transparent,
           black calc(100% / var(--visible)),
+          black calc(100% - 100% / var(--visible)),
           transparent
         );
       }
@@ -164,8 +180,10 @@
         white-space: nowrap;
       }
 
+      /* The slot is the middle row: the reel starts that far down. */
       .events-reel {
         display: block;
+        padding-top: calc(var(--row) * (var(--visible) - 1) / 2);
         translate: 0 calc((var(--names) + var(--roll, 0)) * var(--row) * -1);
         animation: events-roll-in 2.2s var(--ease-brand) both paused;
       }
@@ -194,6 +212,8 @@
         align-self: center;
         align-items: center;
         gap: 0.3em;
+        /* A long name ends in an ellipsis (the inner span truncates). */
+        min-width: 0;
         font-size: 0.58em;
         font-weight: 600;
         letter-spacing: -0.02em;
@@ -222,8 +242,29 @@
         letter-spacing: 0;
       }
 
+      /* Under the lockup, the slot's events: every panel in one cell, so the
+         block keeps the tallest one's height while the reel turns. */
+      .events-host-panels {
+        display: grid;
+        grid-column: 1 / -1;
+        font-size: 1rem;
+        line-height: normal;
+        animation: events-panel-in 600ms var(--ease-brand) 1.8s both paused;
+      }
+
+      .events-host-panel {
+        grid-area: 1 / 1;
+        opacity: 0;
+        transition: opacity 300ms var(--ease-brand);
+
+        &[data-active] {
+          opacity: 1;
+        }
+      }
+
+      /* Clear of the slot's events under the lockup. */
       .events-hero-footer {
-        margin-top: 0;
+        margin-top: 2.5rem;
       }
     }
   }
@@ -235,35 +276,18 @@
       .events-lockup {
         font-size: var(--text-display-lg);
         grid-template-columns: auto minmax(0, 1fr) minmax(0, 17rem);
-        align-items: center;
-        column-gap: 0.28em;
       }
 
       .events-names-window {
         --visible: 5;
       }
 
-      .events-names-viewport {
-        mask-image: linear-gradient(
-          to bottom,
-          transparent,
-          black calc(100% / var(--visible)),
-          black calc(100% - 100% / var(--visible)),
-          transparent
-        );
-      }
-
-      .events-reel {
-        padding-top: calc(var(--row) * (var(--visible) - 1) / 2);
-      }
-
+      /* Beside the reel, centred on the slot. */
       .events-host-panels {
         display: block;
         position: relative;
+        grid-column: auto;
         align-self: stretch;
-        font-size: 1rem;
-        line-height: normal;
-        animation: events-panel-in 600ms var(--ease-brand) 1.8s both paused;
       }
 
       .events-host-panel {
@@ -271,12 +295,10 @@
         inset-inline: 0;
         top: 50%;
         translate: 0 -50%;
-        opacity: 0;
-        transition: opacity 300ms var(--ease-brand);
+      }
 
-        &[data-active] {
-          opacity: 1;
-        }
+      .events-hero-footer {
+        margin-top: 0;
       }
     }
   }
