@@ -213,10 +213,11 @@ function StepRow({
       ) : null}
       <div>
         <h3 className="text-fg text-heading-lg">{step.name}</h3>
-        <div className="mt-2 flex items-center gap-4">
-          <p className="text-fg-subtle text-meta">{opensIn(step)}</p>
-          <SemesterStrip step={step} columns={columns} />
-        </div>
+        {/* Below lg the strip shows it; the words stay for screen readers. */}
+        <p className="mt-2 text-fg-subtle text-meta max-lg:sr-only">
+          {opensIn(step)}
+        </p>
+        <SemesterStrip step={step} columns={columns} />
         <p className="mt-4 max-w-xl text-body text-fg-muted">
           {step.description}
         </p>
@@ -282,34 +283,59 @@ function Rule({ step }: { step: JourneyStep }) {
 }
 
 /**
- * The timetable row in miniature, beside the words, for screens without the
- * columns: one cell per semester, the opening one marked and the rest of the
- * run drawn.
+ * The timetable row in miniature, under the step's name, for screens without
+ * the columns: a dot per semester on a hairline with its numeral under it,
+ * the opening one in violet and, for an ongoing step, the run drawn on to an
+ * arrow at the edge.
  */
 function SemesterStrip({ step, columns }: Columns & { step: JourneyStep }) {
+  const ongoing = step.span === "ongoing";
+  const leftOf = (semester: number) => `${(semester / columns.length) * 100}%`;
   return (
-    <div
-      aria-hidden="true"
-      className="grid h-3 w-24 lg:hidden"
-      style={gridOf(columns.length)}
-    >
-      {columns.map((label, index) => {
-        const opens = index === step.fromSemester;
-        const runs = step.span === "ongoing" && index > step.fromSemester;
-        return (
+    <div aria-hidden="true" className="mt-3 w-36 pl-1 lg:hidden">
+      <div className="relative h-3">
+        <span className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-hairline-strong" />
+        {ongoing ? (
+          <span
+            className="absolute top-1/2 right-0 flex -translate-y-1/2 items-center"
+            style={{ left: leftOf(step.fromSemester) }}
+          >
+            <span className="h-0.5 flex-1 bg-highlight" />
+            <ArrowRight
+              className="-ml-1.5 size-3.5 shrink-0 text-highlight"
+              strokeWidth={2.25}
+            />
+          </span>
+        ) : null}
+        {columns.map((label, index) => (
           <span
             key={label}
-            className="relative border-hairline-strong border-l"
+            className={cn(
+              "absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full",
+              index === step.fromSemester
+                ? "size-2 bg-highlight"
+                : ongoing && index > step.fromSemester
+                  ? "size-1.5 bg-highlight"
+                  : "size-1.5 bg-hairline-strong",
+            )}
+            style={{ left: leftOf(index) }}
+          />
+        ))}
+      </div>
+      <div className="relative mt-1.5 h-4">
+        {columns.map((label, index) => (
+          <span
+            key={label}
+            className={cn(
+              "tabular absolute top-0 -translate-x-1/2 text-meta leading-none",
+              index === step.fromSemester ? "text-highlight" : "text-fg-subtle",
+            )}
+            style={{ left: leftOf(index) }}
           >
-            {opens ? (
-              <span className="absolute top-1/2 left-0 z-10 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-highlight" />
-            ) : null}
-            {(opens && step.span === "ongoing") || runs ? (
-              <span className="absolute inset-x-0 top-1/2 h-0.5 -translate-y-1/2 bg-highlight" />
-            ) : null}
+            {label}
           </span>
-        );
-      })}
+        ))}
+      </div>
     </div>
   );
 }
