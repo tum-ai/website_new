@@ -12,8 +12,8 @@
  * the reader turns it: the names window is a region of its own (HeroReel
  * turns it on drag, horizontal swipe, wheel and arrow keys and sets --roll,
  * in rows within a turn). Over the names the wheel turns the reel; on touch
- * a vertical swipe scrolls the page and a pinch zooms it
- * (`touch-action: pan-y pinch-zoom`).
+ * a swipe either way turns it and a pinch zooms the page
+ * (`touch-action: pinch-zoom`).
  *
  * The load turn runs 2.2s, longer than the usual 1.2s entrance ceiling: a
  * full turn through every name needs the time to read as a roll rather than
@@ -46,12 +46,17 @@
   /*
    * The TUM.ai logo as the lockup's first half, the height of a capital in
    * the display size beside it (the × and the co-host logos), so the pair
-   * reads as one line.
+   * reads as one line. Display-lg set here rather than as a utility, so
+   * the reel's lockup can size the title with the line (utilities would win).
    */
   .events-lockup-title {
     display: flex;
     align-items: center;
     gap: 0.3em;
+    font-size: var(--text-display-lg);
+    font-weight: var(--text-display-lg--font-weight);
+    letter-spacing: var(--text-display-lg--letter-spacing);
+    line-height: var(--text-display-lg--line-height);
   }
 
   .events-lockup-logo {
@@ -111,13 +116,14 @@
 
       /*
        * The title, the × and the reel on one line, the slot's events under
-       * them. --lockup-em is the line's width in em: "TUM.ai ×" is about
-       * 3.85em, the widest co-host with its count about 4.1em (Anthropic),
-       * plus the gap. The type stays at display-lg unless the line would not
-       * fit the column (narrow phones), as `--text-display-fit` does for words.
+       * them, the line as wide as the column. --lockup-em is the line's
+       * width in em with a typical co-host: "TUM.ai ×" is 3.72em, the gap
+       * 0.28em, most co-hosts about 3 to 3.5em. The few wider logos (up to
+       * 4.1em) shrink to fit (`.events-name-logo`). Capped at display-lg's
+       * largest size for tablets; from lg, display-lg.
        */
       .events-lockup {
-        --lockup-em: 8.6;
+        --lockup-em: 7.6;
         flex: 1;
         grid-template-columns: auto minmax(0, 1fr);
         align-content: center;
@@ -125,7 +131,7 @@
         column-gap: 0.28em;
         row-gap: 2.5rem;
         font-size: min(
-          var(--text-display-lg),
+          4.5rem,
           calc((100vw - 2 * var(--gutter)) / var(--lockup-em))
         );
         line-height: var(--row);
@@ -137,12 +143,13 @@
       }
 
       /* The scroll region (focusable); the viewport inside clips and fades.
-         pan-y: a vertical swipe scrolls the page (no trap on phones); a
-         horizontal one reaches hero-reel.tsx and turns the reel. */
+         A swipe on it, up, down or sideways, reaches hero-reel.tsx and turns
+         the reel, as the reel runs vertically; the page scrolls from
+         anywhere else in the hero. A pinch still zooms. */
       .events-names-window {
         --visible: 3;
         cursor: grab;
-        touch-action: pan-y pinch-zoom;
+        touch-action: pinch-zoom;
         user-select: none;
         border-radius: 0.75rem;
 
@@ -227,10 +234,18 @@
         border-radius: 22%;
       }
 
+      /* A logo wider than the column left beside the title shrinks to fit
+         (narrow screens, the widest wordmarks only), kept to its ratio. */
       .events-name-logo {
         position: relative;
         align-self: center;
-        flex: none;
+        flex: 0 1 auto;
+        min-width: 0;
+
+        & img {
+          object-fit: contain;
+          object-position: left center;
+        }
       }
 
       /* Centred on the logo: the same place beside every logo, whatever

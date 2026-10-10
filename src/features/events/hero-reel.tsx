@@ -36,9 +36,8 @@ export function wheelRows(
  * gesture (trackpad swipe, tilt wheel) turns the reel by its x travel, any
  * other by its y travel. Every wheel event over the names turns the reel, as
  * long as the pointer is there, except a zoom gesture (Ctrl-wheel, trackpad
- * pinch); the page scrolls as usual everywhere else in the hero, and on touch
- * a vertical swipe always scrolls the page and a pinch zooms it
- * (`touch-action: pan-y pinch-zoom`).
+ * pinch); the page scrolls as usual everywhere else in the hero. Touch is a
+ * drag ({@link HeroReel}).
  */
 export function reelWheelTravel(deltaX: number, deltaY: number): number {
   return Math.abs(deltaX) > Math.abs(deltaY) ? deltaX : deltaY;
@@ -90,10 +89,10 @@ function showPanel(panels: readonly HTMLElement[], index: number) {
  * The events hero's band and its reel: the names window turns (without end,
  * in both directions) and snaps to the nearest name when the input stops.
  *
- * - Drag: along either axis with a mouse or pen. On touch the window has
- *   `touch-action: pan-y pinch-zoom` (events.css), so a vertical swipe
- *   scrolls the page as everywhere else, a pinch zooms it and a horizontal
- *   swipe turns the reel.
+ * - Drag: along either axis with a mouse, pen or finger. On touch the
+ *   window has `touch-action: pinch-zoom` (events.css), so a swipe on the
+ *   names turns the reel, as it runs vertically, while a pinch still zooms;
+ *   the page scrolls from anywhere else in the hero.
  * - Wheel: over the names, both axes turn it ({@link reelWheelTravel});
  *   Ctrl-wheel and trackpad pinch still zoom the page.
  * - Keys: with focus, the arrow keys step it.

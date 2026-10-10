@@ -54,10 +54,7 @@ export async function EventsHero({
         <TopBlend />
         <Container className="events-hero-inner pt-[calc(var(--header-height)+clamp(3rem,7vw,6rem))] pb-[clamp(3.5rem,7vw,6rem)]">
           <div className="events-lockup">
-            <h1
-              id="events-hero-title"
-              className="events-lockup-title text-display-lg text-fg"
-            >
+            <h1 id="events-hero-title" className="events-lockup-title text-fg">
               <Image
                 src="/assets/tum_ai_logo_new.svg"
                 alt="TUM.ai"
