@@ -10,7 +10,6 @@ import { buildMarks, type HackathonMark } from "./marks";
 import {
   dayNumber,
   formatDayRange,
-  layoutByYear,
   layoutRibbon,
   layoutSeason,
   nearestMark,
@@ -90,7 +89,7 @@ describe("layoutRibbon", () => {
   });
 
   test("no lane collides at the narrowest width it is shown at", () => {
-    expectNoCollisions(layout.marks, RIBBON.referenceWidth.continuous);
+    expectNoCollisions(layout.marks, RIBBON.referenceWidth);
     expect(layout.lanes).toBeGreaterThanOrEqual(1);
   });
 
@@ -123,35 +122,6 @@ describe("layoutRibbon", () => {
   test("no marks: an empty figure", () => {
     const empty = layoutRibbon([], today);
     expect(empty).toMatchObject({ marks: [], lanes: 0, years: [] });
-  });
-});
-
-describe("layoutByYear", () => {
-  const rows = layoutByYear(marks);
-
-  test("a row per year, every mark in the row of its start", () => {
-    expect(rows.map(({ year }) => year)).toStrictEqual([2025, 2026]);
-    expect(rows.flatMap((row) => row.marks).length).toBe(marks.length);
-    for (const row of rows) {
-      for (const placed of row.marks) {
-        const source = marks.find(({ id }) => id === placed.id);
-        expect(source?.start.startsWith(String(row.year))).toBe(true);
-      }
-    }
-  });
-
-  test("each row is its calendar year, and no lane collides on a phone", () => {
-    for (const row of rows) {
-      for (const placed of row.marks) {
-        expect(placed.x + placed.w).toBeLessThanOrEqual(1);
-      }
-      expectNoCollisions(row.marks, RIBBON.referenceWidth.byYear);
-    }
-  });
-
-  test("a hackathon over New Year is cut at 31 December", () => {
-    const [row] = layoutByYear([mark("nye", "2025-12-30", "2026-01-02")]);
-    expect(row.marks[0].x + row.marks[0].w).toBeCloseTo(1, 12);
   });
 });
 

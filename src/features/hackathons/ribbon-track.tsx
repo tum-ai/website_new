@@ -4,23 +4,15 @@ import type { DrawnMark } from "./hackathons-view";
 import { RIBBON } from "./ribbon";
 
 /**
- * Lane sizes per use: the hero's ribbon, and one year's row of it on a
- * phone. `--above` is the Makeathons' height above the
- * axis; `--lane-step` the pitch of the lanes below it, `--lane-h` a mark's
- * height in them.
+ * The lane sizes: `--above` is the Makeathons' height above the axis;
+ * `--lane-step` the pitch of the lanes below it, `--lane-h` a mark's height
+ * in them.
  */
-const sizes = {
-  hero: {
-    "--above": "clamp(4rem, 13svh, 13rem)",
-    "--lane-step": "clamp(1.25rem, 2.8svh, 2rem)",
-    "--lane-h": "clamp(0.875rem, 2svh, 1.5rem)",
-  },
-  year: {
-    "--above": "3rem",
-    "--lane-step": "1.125rem",
-    "--lane-h": "0.75rem",
-  },
-} as const satisfies Record<string, Record<`--${string}`, string>>;
+const laneSizes = {
+  "--above": "clamp(4rem, 13svh, 13rem)",
+  "--lane-step": "clamp(1.25rem, 2.8svh, 2rem)",
+  "--lane-h": "clamp(0.875rem, 2svh, 1.5rem)",
+} as const satisfies Record<`--${string}`, string>;
 
 const kindStyles = {
   makeathon: "bg-highlight",
@@ -64,7 +56,6 @@ type RibbonTrackProps = {
   lanes: number;
   /** 1 January of each year: a hairline across the track. */
   years?: readonly { year: number; x: number }[];
-  size: keyof typeof sizes;
   /** Plays the load moment (`hackathons.css`); the hero only. */
   animate?: boolean;
   className?: string;
@@ -80,7 +71,6 @@ export function RibbonTrack({
   marks,
   lanes,
   years = [],
-  size,
   animate = false,
   className,
 }: RibbonTrackProps) {
@@ -88,7 +78,7 @@ export function RibbonTrack({
     <div
       aria-hidden="true"
       className={cn("relative", animate && "hk-animate", className)}
-      style={sizes[size] as CSSProperties}
+      style={laneSizes as CSSProperties}
     >
       {years.map(({ year, x }) => (
         <span

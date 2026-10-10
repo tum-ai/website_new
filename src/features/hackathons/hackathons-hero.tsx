@@ -25,11 +25,11 @@ const sentencesOf = (text: string) => text.split(/(?<=[.!?])\s+/);
  * every TUM.ai hackathon on one time axis, to scale, full bleed under the
  * heading. On wide screens
  * with motion allowed, scrolling replays the record (`RibbonReplay`); phones
- * get one row per year on the same scale. Screen readers get the list, each
+ * swipe through the same ribbon sideways. Screen readers get the list, each
  * hackathon with its kind and dates.
  */
 export function HackathonsHero({ hero }: { hero: View["hero"] }) {
-  const { entries, continuous, byYear } = hero.ribbon;
+  const { entries, continuous } = hero.ribbon;
   const placed = new Map(continuous.marks.map((mark) => [mark.id, mark]));
   const nextIndex = entries.findIndex(({ next }) => next);
   const defaultIndex = nextIndex === -1 ? entries.length - 1 : nextIndex;
@@ -134,7 +134,6 @@ export function HackathonsHero({ hero }: { hero: View["hero"] }) {
         track={
           <>
             <RibbonTrack
-              size="hero"
               animate
               marks={continuous.marks}
               lanes={continuous.lanes}
@@ -142,24 +141,6 @@ export function HackathonsHero({ hero }: { hero: View["hero"] }) {
             />
             <RibbonYears years={continuous.years} className="mt-3" />
           </>
-        }
-        compact={
-          <div className="hk-animate grid gap-5">
-            {byYear.map((row) => (
-              <div
-                key={row.year}
-                className="grid grid-cols-[2.75rem_minmax(0,1fr)] items-start gap-3"
-              >
-                <span
-                  aria-hidden="true"
-                  className="tabular pt-9 text-fg-subtle text-meta"
-                >
-                  {row.year}
-                </span>
-                <RibbonTrack size="year" marks={row.marks} lanes={row.lanes} />
-              </div>
-            ))}
-          </div>
         }
         legend={
           <ul

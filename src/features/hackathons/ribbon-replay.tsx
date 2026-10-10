@@ -5,6 +5,7 @@ import {
   type CSSProperties,
   Fragment,
   type KeyboardEvent,
+  type MouseEvent,
   type PointerEvent,
   type ReactNode,
   useEffect,
@@ -36,10 +37,8 @@ type RibbonReplayProps = {
   label: string;
   /** The heading block, beside the readout. */
   intro: ReactNode;
-  /** The wide ribbon (md and up), which the slider lies over. */
+  /** The ribbon, which the slider lies over. */
   track: ReactNode;
-  /** The ribbon for narrow screens, without a slider. */
-  compact: ReactNode;
   /** The key under the ribbon. */
   legend: ReactNode;
 };
@@ -56,7 +55,35 @@ const PAGE_STEP = 5;
 const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));
 
-/** Moves the playhead over the wide track; marks after `lit` dim. */
+/**
+ * Where a picked hackathon sits in a phone's view of the strip, as a share of
+ * its width: right of centre, so the run up to it shows.
+ */
+const VIEW_AT = 0.75;
+
+/**
+ * Scrolls the phone strip (`.hk-scroller`) so the track fraction `x` sits at
+ * {@link VIEW_AT}; `ifHidden` leaves it alone while `x` is already in view.
+ * Wide screens have nothing to scroll.
+ */
+function reveal(
+  scroller: HTMLElement | null,
+  x: number,
+  { ifHidden = false, smooth = false } = {},
+) {
+  const track = scroller?.firstElementChild;
+  if (!scroller || !(track instanceof HTMLElement)) return;
+  if (scroller.scrollWidth <= scroller.clientWidth) return;
+  const at = track.offsetLeft + x * track.offsetWidth;
+  const view = at - scroller.scrollLeft;
+  if (ifHidden && view >= 0 && view <= scroller.clientWidth) return;
+  scroller.scrollTo({
+    left: at - scroller.clientWidth * VIEW_AT,
+    behavior: smooth ? "smooth" : "instant",
+  });
+}
+
+/** Moves the playhead over the track; marks after `lit` dim. */
 function paint(wide: HTMLElement | null, playhead: number, lit: number) {
   wide?.style.setProperty("--playhead", String(playhead));
   wide?.style.setProperty("--lit", String(lit));
@@ -71,6 +98,10 @@ function paint(wide: HTMLElement | null, playhead: number, lit: number) {
  * follows it. Arrow keys, Home and End (a slider over the whole ribbon) and
  * the pointer pick a hackathon too. Otherwise the stage is static: every
  * mark lit and the readout on the next hackathon, as the server renders it.
+ *
+ * Phones show the same ribbon, wider than the screen, in a strip that
+ * scrolls sideways (`hackathons.css`). It opens on the next hackathon, the
+ * earlier years a swipe to the left, and a tap on a mark picks it.
  */
 export function RibbonReplay({
   entries,
@@ -78,15 +109,21 @@ export function RibbonReplay({
   label,
   intro,
   track,
-  compact,
   legend,
 }: RibbonReplayProps) {
   const [index, setIndex] = useState(defaultIndex);
   const bandRef = useRef<HTMLDivElement>(null);
   const wideRef = useRef<HTMLDivElement>(null);
+  const scrollerRef = useRef<HTMLDivElement>(null);
   const replay = useMediaQuery(REPLAY_QUERY);
   const centres = entries.map(({ x, w }) => x + w / 2);
   const centresKey = centres.join(",");
+
+  // The phone strip opens on the next hackathon.
+  useEffect(() => {
+    const home = Number(centresKey.split(",")[defaultIndex] ?? 1);
+    reveal(scrollerRef.current, home);
+  }, [centresKey, defaultIndex]);
 
   useEffect(() => {
     const at = centresKey.split(",").map(Number);
@@ -137,6 +174,7 @@ export function RibbonReplay({
     setIndex(target);
     const centre = centres[target] ?? 0;
     paint(wideRef.current, centre, replay ? centre : 1);
+    reveal(scrollerRef.current, centre, { ifHidden: true, smooth: true });
   };
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -156,16 +194,20 @@ export function RibbonReplay({
     choose(target);
   };
 
-  // Down as well as move: a tap on a touch screen fires no move.
-  const onPointer = (event: PointerEvent<HTMLDivElement>) => {
-    const box = event.currentTarget.getBoundingClientRect();
+  const pick = (target: HTMLElement, clientX: number) => {
+    const box = target.getBoundingClientRect();
     if (box.width === 0) return;
-    const nearest = nearestMark(
-      entries,
-      (event.clientX - box.left) / box.width,
-    );
+    const nearest = nearestMark(entries, (clientX - box.left) / box.width);
     if (nearest !== -1 && nearest !== index) choose(nearest);
   };
+
+  // A mouse or pen picks on down as well as move. A finger picks on click
+  // only: the strip scrolls under it, and a swipe fires no click.
+  const onPointer = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== "touch") pick(event.currentTarget, event.clientX);
+  };
+  const onClick = (event: MouseEvent<HTMLDivElement>) =>
+    pick(event.currentTarget, event.clientX);
 
   const home = centres[defaultIndex] ?? 1;
   return (
@@ -194,34 +236,38 @@ export function RibbonReplay({
           </p>
         </Container>
         <div className="mt-12 px-(--gutter) md:mt-auto md:pt-[clamp(1.5rem,5svh,3.5rem)]">
-          <div
-            ref={wideRef}
-            className="relative max-md:hidden"
-            style={{ "--playhead": home, "--lit": 1 } as CSSProperties}
-          >
-            {track}
+          <div ref={scrollerRef} className="hk-scroller">
             <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 translate-x-[calc(var(--playhead)*100%)]"
+              ref={wideRef}
+              // Clipped across: the playhead is a full-width box moved right,
+              // which would otherwise widen the phone strip's scroll.
+              className="relative overflow-x-clip [overflow-clip-margin:2px]"
+              style={{ "--playhead": home, "--lit": 1 } as CSSProperties}
             >
-              <span className="absolute -inset-y-3 left-0 border-highlight border-l" />
+              {track}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 translate-x-[calc(var(--playhead)*100%)]"
+              >
+                <span className="absolute -inset-y-3 left-0 border-highlight border-l" />
+              </div>
+              <div
+                role="slider"
+                tabIndex={0}
+                aria-label={label}
+                aria-orientation="horizontal"
+                aria-valuemin={0}
+                aria-valuemax={last}
+                aria-valuenow={index}
+                aria-valuetext={`${current.label}: ${current.title}, ${current.dates}`}
+                onKeyDown={onKeyDown}
+                onPointerDown={onPointer}
+                onPointerMove={onPointer}
+                onClick={onClick}
+                className="absolute inset-x-0 -inset-y-4 cursor-crosshair rounded-lg"
+              />
             </div>
-            <div
-              role="slider"
-              tabIndex={0}
-              aria-label={label}
-              aria-orientation="horizontal"
-              aria-valuemin={0}
-              aria-valuemax={last}
-              aria-valuenow={index}
-              aria-valuetext={`${current.label}: ${current.title}, ${current.dates}`}
-              onKeyDown={onKeyDown}
-              onPointerDown={onPointer}
-              onPointerMove={onPointer}
-              className="absolute inset-x-0 -inset-y-4 cursor-crosshair rounded-lg"
-            />
           </div>
-          <div className="md:hidden">{compact}</div>
           <div className="mt-6">{legend}</div>
         </div>
       </div>

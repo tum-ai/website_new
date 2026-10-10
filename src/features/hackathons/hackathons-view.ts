@@ -18,7 +18,6 @@ import type { HackathonsCopy } from "./model";
 import {
   dayNumber,
   formatDayRange,
-  layoutByYear,
   layoutRibbon,
   layoutSeason,
   type PlacedMark,
@@ -173,10 +172,6 @@ export function hackathonsView({
       ribbon: {
         entries,
         continuous: { ...continuous, marks: continuous.marks.map(draw) },
-        byYear: layoutByYear(marks).map((row) => ({
-          ...row,
-          marks: row.marks.map(draw),
-        })),
       },
     },
     makeathon: {

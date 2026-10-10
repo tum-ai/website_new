@@ -55,7 +55,6 @@ const renderReplay = () =>
       label="Hackathon timeline"
       intro={<h1>Our hackathons</h1>}
       track={<div data-testid="track" />}
-      compact={<div data-testid="compact" />}
       legend={<p>Key</p>}
     />,
   );
@@ -136,8 +135,13 @@ test("with the replay, scrolling the band moves from the first hackathon to the 
   expect(slider).toHaveAttribute("aria-valuenow", "2");
 });
 
-test("both layouts are rendered for CSS to choose between", () => {
+test("a finger picks on tap, not on touch down, so the strip can scroll", () => {
   renderReplay();
-  expect(screen.getByTestId("track")).toBeInTheDocument();
-  expect(screen.getByTestId("compact")).toBeInTheDocument();
+  const slider = screen.getByRole("slider");
+  slider.getBoundingClientRect = () =>
+    ({ left: 0, width: 1000, top: 0, height: 100 }) as DOMRect;
+  fireEvent.pointerDown(slider, { clientX: 120, pointerType: "touch" });
+  expect(slider).toHaveAttribute("aria-valuenow", "2");
+  fireEvent.click(slider, { clientX: 120 });
+  expect(slider).toHaveAttribute("aria-valuenow", "0");
 });

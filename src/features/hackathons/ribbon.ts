@@ -11,7 +11,7 @@
  * Makeathons sit above the axis in lane 0. Every other hackathon hangs
  * below it, in the first lane (1, 2, ...) where it clears the previous mark
  * by {@link RIBBON.gapPx}; lanes are worked out at the narrowest width the
- * layout is shown at, so they never collide at any wider one.
+ * track is drawn at, so they never collide at any wider one.
  */
 import type { HackathonMark } from "./marks";
 
@@ -21,11 +21,10 @@ export const RIBBON = {
   /** The space a lane keeps between two marks (CSS px). */
   gapPx: 3,
   /**
-   * The narrowest track each layout is shown at: the continuous one from
-   * the md breakpoint (768px less the page gutters), the yearly rows on a
-   * 320px phone (less the gutters and the year column).
+   * The narrowest the track is drawn: from the md breakpoint, 768px less the
+   * page gutters. Phones scroll a wider track sideways (`RibbonReplay`).
    */
-  referenceWidth: { continuous: 680, byYear: 240 },
+  referenceWidth: 680,
   /** Days the axis runs on after the last mark (or today), so it doesn't end on a mark. */
   tailDays: 45,
 } as const;
@@ -121,7 +120,7 @@ export function layoutRibbon(
   }
   const last = Math.max(dayNumber(today), ...spans.map(({ to }) => to));
   const length = last + RIBBON.tailDays - origin + 1;
-  const placed = place(spans, origin, length, RIBBON.referenceWidth.continuous);
+  const placed = place(spans, origin, length, RIBBON.referenceWidth);
   const yearAt = (day: number) => new Date(day * 86_400_000).getUTCFullYear();
   const years = [];
   for (let year = yearAt(origin); year <= yearAt(origin + length - 1); year++) {
@@ -129,42 +128,6 @@ export function layoutRibbon(
     if (x >= 0) years.push({ year, x });
   }
   return { ...placed, years, axis: { origin, days: length } };
-}
-
-/** One row of the yearly ribbon. */
-export type RibbonYear = {
-  year: number;
-  marks: PlacedMark[];
-  /** Lanes below the axis in this row. */
-  lanes: number;
-};
-
-/**
- * The record wrapped into one row per year, each on the same scale (a
- * calendar year across the row), for narrow screens. A hackathon over New
- * Year is cut at 31 December. Every year from the first to the last
- * hackathon's has a row, even one without any.
- */
-export function layoutByYear(marks: readonly HackathonMark[]): RibbonYear[] {
-  if (marks.length === 0) return [];
-  const first = yearOf(marks[0].start);
-  const last = Math.max(...marks.map(({ start }) => yearOf(start)));
-  const rows: RibbonYear[] = [];
-  for (let year = first; year <= last; year++) {
-    const origin = newYear(year);
-    const length = newYear(year + 1) - origin;
-    const spans = marks
-      .filter(({ start }) => yearOf(start) === year)
-      .map((mark) => {
-        const span = spanOf(mark);
-        return { ...span, to: Math.min(span.to, origin + length - 1) };
-      });
-    rows.push({
-      year,
-      ...place(spans, origin, length, RIBBON.referenceWidth.byYear),
-    });
-  }
-  return rows;
 }
 
 /** The index of the mark whose centre is nearest to `x` (a track fraction). */
