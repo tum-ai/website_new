@@ -1,26 +1,24 @@
+/**
+ * Per-page metadata and JSON-LD. Each route calls `buildMetadata(key)` for its
+ * `metadata` export and renders `getJsonLd(key)` through `<JsonLd>`.
+ *
+ * URLs, names and legal facts are not written here: they come from
+ * config/site.ts (origin, name, tagline), config/organization.ts (legal
+ * identity) and config/contact.ts (emails, social profiles), so every
+ * canonical link and structured-data node follows a change there.
+ */
 import type { Metadata } from "next";
-import {
-  contactEmails,
-  registeredOfficePostalAddress,
-  socialLinks,
-} from "@/config/contact";
-import { organizationFacts } from "@/config/organization";
+import { eLabProgramSummaryOf } from "./e-lab";
+import { legalEntity } from "./organization";
+import { absoluteUrl, siteConfig, siteTitle } from "./site";
+import type { SiteFacts } from "./site-facts";
+import { getSiteFacts } from "./site-settings-content";
 
-const siteUrl = "https://www.tum-ai.com";
-const socialImagePath = "/assets/logo_new_white_standard.png";
-
-// Base organization JSON-LD (used across all pages)
-export const baseOrganizationJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "TUM.ai",
-  legalName: "TUM.ai e.V.",
-  alternateName: ["TUM.ai Student Initiative"],
-  description:
-    "TUM.ai is Germany's leading student initiative focused on AI. We empower the next generation of AI innovators by creating a community of students who innovate, research, and build at the forefront of AI, fostering both groundbreaking research and entrepreneurial ventures across diverse industries.",
-  url: "https://www.tum-ai.com",
-  logo: "https://upload.wikimedia.org/wikipedia/commons/a/a2/TUM.ai_Logo_Blue_%26_Violet.svg",
-  sameAs: [
+/** Organization JSON-LD uses the same published facts as the page shell. */
+function organizationJsonLdFor(facts: SiteFacts) {
+  const { contactEmails, socialLinks } = facts;
+  /** Profiles on other sites that describe TUM.ai (JSON-LD `sameAs`). */
+  const externalProfiles = [
     socialLinks.linkedin,
     socialLinks.instagram,
     socialLinks.facebook,
@@ -34,311 +32,363 @@ export const baseOrganizationJsonLd = {
     "https://tum-ai.podbean.com/",
     "https://theorg.com/org/tum-ai",
     "https://www.eventbrite.de/o/tumai-31793295023",
-  ],
-  email: contactEmails.general,
-  foundingDate: String(organizationFacts.foundingYear),
-  foundingLocation: "Munich, Germany",
-  location: [
-    {
-      "@type": "PostalAddress",
-      streetAddress: "Rosenheimer Str. 116A",
-      postalCode: "81669",
-      addressLocality: "Munich",
-      addressCountry: "Germany",
-      contactType: "Headquarters",
-    },
-    {
-      "@type": "PostalAddress",
-      ...registeredOfficePostalAddress,
-      contactType: "Registered office",
-    },
-  ],
-  identifier: {
-    "@type": "PropertyValue",
-    name: "Register of Associations",
-    value: "VR 210726",
-  },
-  contactPoint: {
-    "@type": "ContactPoint",
-    email: contactEmails.partners,
-    contactType: "Partner and sponsorship inquiries",
-  },
-};
+  ];
 
-// Default SEO configuration
-export const defaultSEO = {
-  title: "TUM.ai - Germany's Leading AI Student Initiative",
-  description:
-    "TUM.ai is Germany's leading student initiative focused on AI. We empower the next generation of AI innovators by creating a community of students who innovate, research, and build at the forefront of AI, fostering both groundbreaking research and entrepreneurial ventures across diverse industries.",
-};
-
-// Page-specific SEO configurations
-export const pageSEOConfig = {
-  home: {
-    title: "TUM.ai - AI Student Initiative at Technical University of Munich",
-    description:
-      "Join TUM.ai, Munich's leading AI student initiative. We organize hackathons, research projects, workshops, and run an AI startup incubator. Connect with AI enthusiasts and drive positive societal impact.",
-    canonical: "https://www.tum-ai.com",
-    jsonLd: [
-      baseOrganizationJsonLd,
+  /** The Organization node every page starts its JSON-LD with. */
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: siteConfig.name,
+    legalName: legalEntity.legalName,
+    alternateName: [...legalEntity.alternateNames],
+    description: siteConfig.description,
+    url: absoluteUrl(),
+    logo: "https://upload.wikimedia.org/wikipedia/commons/a/a2/TUM.ai_Logo_Blue_%26_Violet.svg",
+    sameAs: externalProfiles,
+    email: contactEmails.general,
+    foundingDate: String(facts.organization.foundingYear),
+    foundingLocation: legalEntity.foundingLocation,
+    location: [
       {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        name: "TUM.ai",
-        url: "https://www.tum-ai.com",
+        "@type": "PostalAddress",
+        ...legalEntity.headquarters,
+        contactType: "Headquarters",
+      },
+      {
+        "@type": "PostalAddress",
+        ...legalEntity.registeredOffice,
+        contactType: "Registered office",
       },
     ],
-  },
+    identifier: {
+      "@type": "PropertyValue",
+      name: "Register of Associations",
+      value: legalEntity.registerNumber,
+    },
+    contactPoint: {
+      "@type": "ContactPoint",
+      email: contactEmails.partners,
+      contactType: "Partner and sponsorship inquiries",
+    },
+  };
+}
+type PageSeo = {
+  /** Site path; the canonical URL is `absoluteUrl(path)`. */
+  path: string;
+  title: string;
+  description: string;
+  /** The page's own JSON-LD node, after the Organization node. */
+  page: {
+    type: "WebPage" | "FAQPage";
+    name: string;
+    description: string;
+    /** Repeat the Organization node as `publisher` (every page but /projects). */
+    publisher?: false;
+  };
+  /** Further JSON-LD nodes after the page node (e.g. the E-Lab organization). */
+  extra?: readonly object[];
+};
 
+/**
+ * The Venture Department (E-Lab) as its own Organization, a sub-organization
+ * of TUM.ai, on /e-lab.
+ */
+function eLabJsonLdFor(facts: SiteFacts) {
+  const organizationJsonLd = organizationJsonLdFor(facts);
+  const { contactEmails } = facts;
+  const eLabProgramSummary = eLabProgramSummaryOf(facts.eLab.programWeeks);
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Venture Department",
+    alternateName: [
+      "AI Entrepreneurship Lab",
+      "E-Lab",
+      "E-Lab by TUM.ai",
+      "AI Entrepreneurship Lab by TUM.ai",
+    ],
+    description: `The Venture Department is the entrepreneurial arm of TUM.ai and organizes the AI Entrepreneurship Lab, a ${eLabProgramSummary}.`,
+    url: absoluteUrl("/e-lab"),
+    email: contactEmails.venture,
+    sameAs: [
+      "https://www.startbase.de/organization/ai-e-lab/",
+      "https://www.startup-insider.com/investor/ai-e-lab-by-tum-ai",
+      "https://www.munich-startup.de/startups/tum-ai-entrepreneurship-lab/",
+    ],
+    parentOrganization: {
+      "@type": "Organization",
+      name: organizationJsonLd.name,
+      legalName: organizationJsonLd.legalName,
+      alternateName: organizationJsonLd.alternateName,
+      url: organizationJsonLd.url,
+      logo: organizationJsonLd.logo,
+      email: organizationJsonLd.email,
+    },
+    contactPoint: {
+      "@type": "ContactPoint",
+      email: contactEmails.venture,
+      contactType: "Venture Department",
+    },
+  };
+}
+
+/**
+ * The Makeathon as an event series organised by TUM.ai, on /hackathons; its
+ * own site has the current edition.
+ */
+function makeathonJsonLdFor(facts: SiteFacts) {
+  const organizationJsonLd = organizationJsonLdFor(facts);
+  return {
+    "@context": "https://schema.org",
+    "@type": "EventSeries",
+    name: "TUM.ai Makeathon",
+    description:
+      "TUM.ai's yearly Makeathon in Munich: students and young professionals build AI for challenges that partners bring.",
+    url: facts.hackathons.makeathonUrl,
+    organizer: {
+      "@type": "Organization",
+      name: organizationJsonLd.name,
+      url: organizationJsonLd.url,
+    },
+  };
+}
+
+const pages = {
   events: {
+    path: "/events",
     title: "Events",
     description:
       "Explore TUM.ai's upcoming events including workshops, hackathons, and meetups. Join us to learn, network, and innovate in the field of artificial intelligence.",
-    canonical: "https://www.tum-ai.com/events",
-    jsonLd: [
-      baseOrganizationJsonLd,
-      {
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        name: "TUM.ai Events",
-        description: "Events, Workshops, and Hackathons by TUM.ai",
-        url: "https://www.tum-ai.com/events",
-        publisher: baseOrganizationJsonLd,
-      },
-    ],
+    page: {
+      type: "WebPage",
+      name: "TUM.ai Events",
+      description: "Events, Workshops, and Hackathons by TUM.ai",
+    },
   },
-
+  hackathons: {
+    path: "/hackathons",
+    title: "Hackathons",
+    description:
+      "Every hackathon TUM.ai has run since 2021: the Makeathon each spring, hackathons with partners, and the European Hackathon League. Bring a challenge or build at the next one.",
+    page: {
+      type: "WebPage",
+      name: "TUM.ai Hackathons",
+      description:
+        "The Makeathon, partner hackathons and the European Hackathon League by TUM.ai",
+    },
+  },
   research: {
+    path: "/research",
     title: "Research",
     description:
       "Explore cutting-edge AI research projects conducted by TUM.ai students. From machine learning to computer vision, discover innovative research initiatives.",
-    canonical: "https://www.tum-ai.com/research",
-    jsonLd: [
-      baseOrganizationJsonLd,
-      {
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        name: "TUM.ai Research Projects",
-        description: "AI Research Projects and Publications by TUM.ai",
-        url: "https://www.tum-ai.com/research",
-        publisher: baseOrganizationJsonLd,
-      },
-    ],
+    page: {
+      type: "WebPage",
+      name: "TUM.ai Research Projects",
+      description: "AI Research Projects and Publications by TUM.ai",
+    },
   },
-
   projects: {
+    path: "/projects",
     title: "Task Forces and Projects",
     description:
       "Discover TUM.ai's current task forces and the research, education, and community initiatives they are driving.",
-    canonical: "https://www.tum-ai.com/projects",
-    jsonLd: [
-      baseOrganizationJsonLd,
-      {
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        name: "TUM.ai Task Forces and Projects",
-        description:
-          "Current task forces and projects across research, education, and community at TUM.ai.",
-        url: "https://www.tum-ai.com/projects",
-      },
-    ],
+    page: {
+      type: "WebPage",
+      name: "TUM.ai Task Forces and Projects",
+      description:
+        "Current task forces and projects across research, education, and community at TUM.ai.",
+      publisher: false,
+    },
   },
-
   entrepreneurship: {
+    path: "/e-lab",
     title: "Entrepreneurship",
     description:
       "Explore TUM.ai's startup incubator. Learn how we support AI-driven startups and foster innovation.",
-    canonical: "https://www.tum-ai.com/e-lab",
-    jsonLd: [
-      baseOrganizationJsonLd,
-      {
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        name: "TUM.ai Entrepreneurship",
-        description: "Startup Incubator by TUM.ai",
-        url: "https://www.tum-ai.com/e-lab",
-        publisher: baseOrganizationJsonLd,
-      },
-    ],
+    page: {
+      type: "WebPage",
+      name: "TUM.ai Entrepreneurship",
+      description: "Startup Incubator by TUM.ai",
+    },
   },
-
   community: {
+    path: "/community",
     title: "Community",
     description:
       "Wanna join us? See our organizational structure, member journey, and member testimonials.",
-    canonical: "https://www.tum-ai.com/community",
-    jsonLd: [
-      baseOrganizationJsonLd,
-      {
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        name: "TUM.ai Community",
-        description: "TUM.ai Community",
-        url: "https://www.tum-ai.com/community",
-        publisher: baseOrganizationJsonLd,
-      },
-    ],
+    page: {
+      type: "WebPage",
+      name: "TUM.ai Community",
+      description: "TUM.ai Community",
+    },
   },
-
   partners: {
+    path: "/partners",
     title: "Partners",
     description:
       "Meet the cracked & the curious. Partner with TUM.ai for exceptional AI talent, research, hackathons, and a place in Europe's next generation of AI companies.",
-    canonical: "https://www.tum-ai.com/partners",
-    jsonLd: [
-      baseOrganizationJsonLd,
-      {
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        name: "TUM.ai Partners",
-        description:
-          "Find your partnership with TUM.ai: talent, decision makers, network and exposure.",
-        url: "https://www.tum-ai.com/partners",
-        publisher: baseOrganizationJsonLd,
-      },
-    ],
+    page: {
+      type: "WebPage",
+      name: "TUM.ai Partners",
+      description:
+        "Find your partnership with TUM.ai: talent, decision makers, network and exposure.",
+    },
   },
-
   apply: {
+    path: "/apply",
     title: "Become a Member",
     description:
       "Apply to join TUM.ai and become part of Munich's leading AI student initiative.",
-    canonical: "https://www.tum-ai.com/apply",
-    jsonLd: [
-      baseOrganizationJsonLd,
-      {
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        name: "Apply to TUM.ai",
-        description: "Join TUM.ai - Application",
-        url: "https://www.tum-ai.com/apply",
-        publisher: baseOrganizationJsonLd,
-      },
-    ],
+    page: {
+      type: "WebPage",
+      name: "Apply to TUM.ai",
+      description: "Join TUM.ai - Application",
+    },
   },
-
   qanda: {
+    path: "/qanda",
     title: "FAQ - Frequently Asked Questions",
     description:
       "Find answers to frequently asked questions about TUM.ai, our programs, application process, and AI initiatives at Technical University of Munich.",
-    canonical: "https://www.tum-ai.com/qanda",
-    jsonLd: [
-      baseOrganizationJsonLd,
-      {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        name: "TUM.ai FAQ",
-        description: "Frequently Asked Questions about TUM.ai",
-        url: "https://www.tum-ai.com/qanda",
-        publisher: baseOrganizationJsonLd,
-      },
-    ],
+    page: {
+      type: "FAQPage",
+      name: "TUM.ai FAQ",
+      description: "Frequently Asked Questions about TUM.ai",
+    },
   },
-
-  // Footer pages
   imprint: {
+    path: "/imprint",
     title: "Imprint - Legal Information",
     description:
       "Legal information and imprint for TUM.ai e.V., Germany's leading AI student initiative.",
-    canonical: "https://www.tum-ai.com/imprint",
-    jsonLd: [
-      baseOrganizationJsonLd,
-      {
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        name: "TUM.ai Imprint",
-        description: "Legal Information and Imprint",
-        url: "https://www.tum-ai.com/imprint",
-        publisher: baseOrganizationJsonLd,
-      },
-    ],
+    page: {
+      type: "WebPage",
+      name: "TUM.ai Imprint",
+      description: "Legal Information and Imprint",
+    },
   },
-
   "data-privacy": {
+    path: "/data-privacy",
     title: "Data Privacy Policy",
     description:
       "Learn about TUM.ai's data privacy policy and how we protect your personal information in compliance with GDPR regulations.",
-    canonical: "https://www.tum-ai.com/data-privacy",
-    jsonLd: [
-      baseOrganizationJsonLd,
-      {
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        name: "TUM.ai Privacy Policy",
-        description: "Data Privacy and Protection Policy",
-        url: "https://www.tum-ai.com/data-privacy",
-        publisher: baseOrganizationJsonLd,
-      },
-    ],
+    page: {
+      type: "WebPage",
+      name: "TUM.ai Privacy Policy",
+      description: "Data Privacy and Protection Policy",
+    },
   },
-
   disclaimer: {
+    path: "/disclaimer",
     title: "Disclaimer",
     description:
       "Read the legal disclaimer for TUM.ai and the information published on this website.",
-    canonical: "https://www.tum-ai.com/disclaimer",
-    jsonLd: [
-      baseOrganizationJsonLd,
-      {
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        name: "TUM.ai Disclaimer",
-        description: "Legal disclaimer for TUM.ai",
-        url: "https://www.tum-ai.com/disclaimer",
-        publisher: baseOrganizationJsonLd,
-      },
-    ],
-  },
-};
-
-// Helper function to get SEO config for a page
-export const getSEOConfig = (pageKey: keyof typeof pageSEOConfig) => {
-  return {
-    ...defaultSEO,
-    ...pageSEOConfig[pageKey],
-  };
-};
-
-export type SEOPageKey = keyof typeof pageSEOConfig;
-
-export function buildMetadata(pageKey: SEOPageKey): Metadata {
-  const seo = getSEOConfig(pageKey);
-
-  return {
-    title: seo.title,
-    description: seo.description,
-    robots: {
-      index: true,
-      follow: true,
+    page: {
+      type: "WebPage",
+      name: "TUM.ai Disclaimer",
+      description: "Legal disclaimer for TUM.ai",
     },
-    alternates: seo.canonical
-      ? {
-          canonical: seo.canonical,
-        }
-      : undefined,
+  },
+} satisfies Record<string, PageSeo>;
+
+const home = {
+  path: "/",
+  title: "TUM.ai - AI Student Initiative at Technical University of Munich",
+  description:
+    "Join TUM.ai, Munich's leading AI student initiative. We organize hackathons, research projects, workshops, and run an AI startup incubator. Connect with AI enthusiasts and drive positive societal impact.",
+};
+
+export type SEOPageKey = "home" | keyof typeof pages;
+
+function seoOf(
+  key: SEOPageKey,
+): Pick<PageSeo, "path" | "title" | "description"> {
+  return key === "home" ? home : pages[key];
+}
+
+/** The Next.js `metadata` for a page: title, description, canonical, social cards. */
+export function buildMetadata(key: SEOPageKey): Metadata {
+  const { path, title, description } = seoOf(key);
+  const canonical = absoluteUrl(path);
+
+  return {
+    title,
+    description,
+    robots: { index: true, follow: true },
+    alternates: { canonical },
     openGraph: {
-      title: seo.title,
-      description: seo.description,
-      url: seo.canonical ?? siteUrl,
-      siteName: "TUM.ai",
-      locale: "en_US",
+      title,
+      description,
+      url: canonical,
+      siteName: siteConfig.name,
+      locale: siteConfig.locale,
       type: "website",
       images: [
-        {
-          url: socialImagePath,
-          alt: "TUM.ai logo",
-        },
+        { url: siteConfig.socialImagePath, alt: `${siteConfig.name} logo` },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: seo.title,
-      description: seo.description,
-      images: [socialImagePath],
+      title,
+      description,
+      images: [siteConfig.socialImagePath],
     },
   };
 }
 
-export function getJsonLd(pageKey: SEOPageKey) {
-  return getSEOConfig(pageKey).jsonLd ?? [];
+/**
+ * The JSON-LD nodes for a page: the Organization, the page itself, then any
+ * page-specific nodes. `pageFields` adds properties to the page node that
+ * the page's own content supplies, such as an FAQPage's `mainEntity`.
+ */
+export async function getJsonLd(
+  key: SEOPageKey,
+  pageFields: Record<string, unknown> = {},
+): Promise<object[]> {
+  const facts = await getSiteFacts();
+  const organizationJsonLd = organizationJsonLdFor(facts);
+  if (key === "home") {
+    return [
+      organizationJsonLd,
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: siteConfig.name,
+        url: absoluteUrl(),
+      },
+    ];
+  }
+
+  const { path, page } = pages[key] as PageSeo;
+  const extra =
+    key === "entrepreneurship"
+      ? [eLabJsonLdFor(facts)]
+      : key === "hackathons"
+        ? [makeathonJsonLdFor(facts)]
+        : [];
+  return [
+    organizationJsonLd,
+    {
+      "@context": "https://schema.org",
+      "@type": page.type,
+      name: page.name,
+      description: page.description,
+      url: absoluteUrl(path),
+      ...(page.publisher === false ? {} : { publisher: organizationJsonLd }),
+      ...pageFields,
+    },
+    ...extra,
+  ];
 }
+
+/**
+ * Site-wide defaults for the `(site)` root layout: `metadataBase` (so relative
+ * image paths resolve against the canonical origin), the title template and
+ * the fallback title and description for pages without their own.
+ */
+export const rootMetadata = {
+  metadataBase: new URL(siteConfig.url),
+  title: { default: siteTitle, template: `%s | ${siteConfig.name}` },
+  description: siteConfig.summary,
+} satisfies Metadata;

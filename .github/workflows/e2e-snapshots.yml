@@ -1,0 +1,124 @@
+name: E2E snapshots
+
+# Captures the Linux visual-regression baselines (e2e/visual.spec.ts) inside
+# the official Playwright Docker image, so they match what CI renders (the
+# Visual job in ci.yml uses the same image). Run it after a deliberate visual
+# change:
+#
+# - Pull request: add the `update-snapshots` label. The job commits the
+#   baselines to the PR's branch as github-actions[bot] and removes the label,
+#   so adding it again runs it again. This is the only way while this file is
+#   not on the default branch: GitHub resolves `workflow_dispatch` there.
+# - Manual dispatch (once this file is on main): commits to the dispatched
+#   branch unless `commit` is off.
+#
+# Pushes made with GITHUB_TOKEN don't start other workflows, so CI does not run
+# on the baseline commit by itself. Push again, or close and reopen the PR.
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: Commit the updated baselines to the dispatched branch
+        type: boolean
+        default: true
+  pull_request:
+    types:
+      - labeled
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  snapshots:
+    name: Update visual baselines
+    # Label runs only for this label and for branches of this repository: a
+    # fork's PR gets a read-only token and its branch can't be pushed to.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.label.name == 'update-snapshots' &&
+      github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    container:
+      # Must match @playwright/test (the check below fails when they drift)
+      # and ci.yml's E2E and Visual jobs.
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+    env:
+      USE_MOCK_CMS: "1"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # A label run checks out the PR branch itself (not the merge ref),
+          # so the baseline commit lands on that branch. Credentials are kept
+          # only when the job pushes that commit.
+          ref: ${{ github.head_ref }}
+          persist-credentials: ${{ github.event_name == 'pull_request' || inputs.commit }}
+      - name: Set up toolchain
+        uses: ./.github/actions/setup
+      - name: Check the image matches @playwright/test
+        uses: ./.github/actions/check-playwright-image
+      - name: Capture baselines
+        # `changed` rewrites only baselines that fail the comparison (and
+        # writes missing ones). `all` also rewrote untouched routes with
+        # byte-level noise below the threshold, so every PR touched every PNG.
+        run: pnpm test:e2e:visual --update-snapshots=changed
+      - name: Upload baselines
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: e2e-snapshots
+          path: e2e/__screenshots__/linux/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: e2e-snapshots-report
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 1
+      - name: Commit baselines
+        if: ${{ github.event_name == 'pull_request' || inputs.commit }}
+        env:
+          BRANCH: ${{ github.head_ref || github.ref_name }}
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add e2e/__screenshots__/linux
+          if git diff --cached --quiet; then
+            echo "Baselines unchanged."
+            exit 0
+          fi
+          git commit -m "test(e2e): update visual baselines"
+          git push origin "HEAD:refs/heads/$BRANCH"
+
+  remove-label:
+    name: Remove the update-snapshots label
+    needs: snapshots
+    # Also after a failed capture, so re-adding the label retries.
+    if: >-
+      always() && github.event_name == 'pull_request' &&
+      needs.snapshots.result != 'skipped'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Remove the label
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: gh pr edit "$PR" --repo "$REPO" --remove-label update-snapshots
