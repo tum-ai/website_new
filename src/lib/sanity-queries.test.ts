@@ -178,6 +178,26 @@ test("research query: institutions resolve to organisations, in order", async ()
   expect(titled.institutions).toBeNull();
 });
 
+test("research query: newest start year first, then by id", async () => {
+  const dataset = [
+    { _id: "b-undated", _type: "research", title: "B" },
+    { _id: "z-2025", _type: "research", title: "Z", startYear: 2025 },
+    { _id: "a-undated", _type: "research", title: "A" },
+    { _id: "y-2026", _type: "research", title: "Y", startYear: 2026 },
+    { _id: "x-2026", _type: "research", title: "X", startYear: 2026 },
+  ];
+
+  const projects = await run(RESEARCH_QUERY, dataset);
+
+  expect(projects.map(({ id }: { id: string }) => id)).toStrictEqual([
+    "x-2026",
+    "y-2026",
+    "z-2025",
+    "a-undated",
+    "b-undated",
+  ]);
+});
+
 test("the page event query no longer fetches the unused detail text", async () => {
   const [event] = await run(EVENTS_QUERY, [
     {

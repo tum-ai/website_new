@@ -29,7 +29,13 @@ export const EVENTS_QUERY = defineQuery(`*[_type == "event"]{
   sign_up
 }`);
 
-export const RESEARCH_QUERY = defineQuery(`*[_type == "research"]{
+/**
+ * Research for /research: the most recently started projects first, then
+ * by id, the order the unordered query returned (so projects without a
+ * start year keep their places).
+ */
+export const RESEARCH_QUERY =
+  defineQuery(`*[_type == "research"] | order(coalesce(startYear, 0) desc, _id asc){
   "id": _id,
   title,
   "institutions": institutions[]->{ key, name, "logo": logo.asset->url },
