@@ -62,6 +62,27 @@ const researchMotifOptions = [
     value: "phase-diagram",
     title: "Ternary phase diagram (materials, chemistry)",
   },
+  {
+    value: "magnet-circuit",
+    title:
+      "Magnet in its circuit, a solver converging (physics simulation, solvers)",
+  },
+  {
+    value: "talking-heads",
+    title: "Two heads in conversation (avatars, faces, human motion)",
+  },
+  {
+    value: "robot-arm",
+    title: "Robot arm with demonstrated paths (robot learning, manipulation)",
+  },
+  {
+    value: "crash-mesh",
+    title: "Car mesh crumpling at a barrier (crash and structural simulation)",
+  },
+  {
+    value: "cell-fate",
+    title: "Tracked cells ending in their fates (cell tracking, microscopy)",
+  },
 ] as const;
 
 /** `fields` with `added` inserted after the field named `after`. */

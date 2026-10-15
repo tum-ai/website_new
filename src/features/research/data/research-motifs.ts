@@ -16,6 +16,11 @@ const motifKeys: Record<ResearchMotif, true> = {
   "long-timeline": true,
   "splat-graph": true,
   "phase-diagram": true,
+  "magnet-circuit": true,
+  "talking-heads": true,
+  "robot-arm": true,
+  "crash-mesh": true,
+  "cell-fate": true,
 };
 
 /** Every motif key the site draws, in the Studio's order. */

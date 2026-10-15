@@ -668,6 +668,519 @@ function PhaseDiagram() {
   );
 }
 
+/* Magnet circuits: a quadrupole's cross-section (four coil blocks round
+   the beam pipe) over the circuit its magnets sit in, six coils in series
+   with a power supply, an extraction resistor and a switch. At the top
+   right a solver's residual falls towards its tolerance: slowly as it is,
+   in a few steps in the accent, with a learned preconditioner. */
+function MagnetCircuit() {
+  const centre: Point = [84, 84];
+  const polar = (radius: number, angle: number): Point => [
+    centre[0] + Math.cos(angle) * radius,
+    centre[1] + Math.sin(angle) * radius,
+  ];
+  const coils = [0, 1, 2, 3].map((quarter) => {
+    const mid = Math.PI / 4 + (quarter * Math.PI) / 2;
+    const [inner, outer] = [22, 34];
+    const [from, to] = [mid - 0.52, mid + 0.52];
+    return [
+      `M${points([polar(outer, from)])}`,
+      `A${outer} ${outer} 0 0 1 ${points([polar(outer, to)])}`,
+      `L${points([polar(inner, to)])}`,
+      `A${inner} ${inner} 0 0 0 ${points([polar(inner, from)])}Z`,
+    ].join("");
+  });
+  const [top, bottom, left, right] = [206, 266, 28, 372];
+  const magnets = Array.from({ length: 6 }, (_, index) => 52 + index * 52);
+  const coil = (x: number) =>
+    `L${x} ${bottom}a5 5 0 0 1 10 0a5 5 0 0 1 10 0a5 5 0 0 1 10 0`;
+  const resistor = Array.from(
+    { length: 7 },
+    (_, index): Point => [index % 2 ? right + 6 : right - 6, 248 - index * 4],
+  );
+  const tolerance = 116;
+  const slow = Array.from(
+    { length: 17 },
+    (_, index): Point => [
+      240 + index * 8,
+      36 + 66 * (1 - Math.exp(-index / 8)),
+    ],
+  );
+  const steps = [36, 62, 84, 100, 110, tolerance];
+  const fast = steps
+    .map((y, index) => `${index ? `H${240 + index * 10}V` : "M240 "}${y}`)
+    .join("");
+  return (
+    <>
+      <g className={FAINT}>
+        <circle cx={centre[0]} cy={centre[1]} r={52} />
+        <line
+          x1={centre[0]}
+          y1={centre[1] + 52}
+          x2={magnets[0] ?? left}
+          y2={bottom - 10}
+          strokeDasharray="2 3"
+        />
+        <path d={`M236 28V124H${right}`} />
+        <line
+          x1={236}
+          y1={tolerance}
+          x2={right}
+          y2={tolerance}
+          strokeDasharray="2 3"
+        />
+      </g>
+      <g className={STRUCTURE}>
+        <circle cx={centre[0]} cy={centre[1]} r={8} />
+        {coils.map((d) => (
+          <path key={d} d={d} />
+        ))}
+        <path
+          d={`M${left} ${bottom}${magnets.map(coil).join("")}L${right} ${bottom}`}
+        />
+        <polyline
+          points={points([
+            [right, bottom],
+            [right, 252],
+            ...resistor,
+            [right, 220],
+            [right, top],
+            [320, top],
+          ])}
+        />
+        <line x1={320} y1={top} x2={302} y2={top - 9} />
+        <polyline
+          points={points([
+            [298, top],
+            [left, top],
+            [left, 230],
+          ])}
+        />
+        <line x1={left - 10} y1={230} x2={left + 10} y2={230} />
+        <line x1={left - 5} y1={236} x2={left + 5} y2={236} />
+        <line x1={left} y1={236} x2={left} y2={bottom} />
+        <polyline points={points(slow)} strokeDasharray="1.5 3" />
+      </g>
+      <g className={ACCENT}>
+        <path d={fast} />
+        <circle cx={290} cy={tolerance} r={7} />
+        <Node at={[290, tolerance]} radius={2.5} filled />
+      </g>
+    </>
+  );
+}
+
+/* A wireframe head on its shoulders, turned by `yaw` (radians, positive to
+   the viewer's right): the meridians on the side it faces and three
+   parallels, seen a little from above. Returns the head's size, the
+   wireframe, the bust's outline and the point the face looks out from. */
+function wireframeHead(centre: Point, yaw: number) {
+  const [cx, cy] = centre;
+  const [rx, ry] = [34, 44];
+  const neck = cy + ry - 4;
+  const bust = [
+    `M${cx - 62} ${neck + 52}C${cx - 58} ${neck + 26} ${cx - 34} ${neck + 18} ${cx - 13} ${neck + 14}V${neck}`,
+    `M${cx + 62} ${neck + 52}C${cx + 58} ${neck + 26} ${cx + 34} ${neck + 18} ${cx + 13} ${neck + 14}V${neck}`,
+  ];
+  const meridians = [-60, -30, 0, 30, 60].flatMap((degrees) => {
+    const longitude = (degrees * Math.PI) / 180 + yaw;
+    if (Math.cos(longitude) <= 0) return [];
+    const width = Math.abs(rx * Math.sin(longitude));
+    const sweep = Math.sin(longitude) > 0 ? 1 : 0;
+    return [
+      width < 0.5
+        ? `M${cx} ${cy - ry}V${cy + ry}`
+        : `M${cx} ${cy - ry}A${r1(width)} ${ry} 0 0 ${sweep} ${cx} ${cy + ry}`,
+    ];
+  });
+  const parallels = [-0.55, 0, 0.55].map((latitude) => {
+    const y = r1(cy - ry * Math.sin(latitude));
+    const half = r1(rx * Math.cos(latitude));
+    const depth = r1(ry * Math.cos(latitude) * 0.2);
+    return `M${r1(cx - half)} ${y}A${half} ${depth} 0 0 0 ${r1(cx + half)} ${y}`;
+  });
+  const face: Point = [cx + rx * Math.sin(yaw), cy + 4];
+  return { centre, rx, ry, paths: [...meridians, ...parallels], bust, face };
+}
+
+/* Conversational avatars: two wireframe heads turned towards each other,
+   each over the waveform of its voice (the partner speaks, the avatar
+   listens). The avatar's gaze to its partner and the rhythm of its nods
+   are the accent. */
+function TalkingHeads() {
+  const random = seeded(31);
+  const avatar = wireframeHead([84, 92], 0.7);
+  const partner = wireframeHead([316, 92], -0.7);
+  const axis = 260;
+  const waveform = (cx: number, loudness: number) =>
+    Array.from({ length: 17 }, (_, index) => {
+      const x = cx - 48 + index * 6;
+      const envelope = Math.sin(((index + 1) / 18) * Math.PI);
+      return { x, height: 2 + envelope * loudness * (0.35 + random() * 0.65) };
+    });
+  const voices = [...waveform(84, 5), ...waveform(316, 20)];
+  const nods = Array.from({ length: 9 }, (_, index): Point => {
+    const x = 40 + index * 11;
+    return [x, 24 + Math.sin(index * 1.1) * 5];
+  });
+  return (
+    <>
+      <g className={FAINT}>
+        {[avatar, partner].flatMap(({ paths }) =>
+          paths.map((d) => <path key={d} d={d} />),
+        )}
+        <line x1={24} y1={axis} x2={376} y2={axis} strokeDasharray="2 4" />
+      </g>
+      <g className={STRUCTURE}>
+        {[avatar, partner].map(({ centre, rx, ry, bust }) => (
+          <g key={`${centre}`}>
+            <ellipse cx={centre[0]} cy={centre[1]} rx={rx} ry={ry} />
+            {bust.map((d) => (
+              <path key={d} d={d} />
+            ))}
+          </g>
+        ))}
+        {voices.map(({ x, height }) => (
+          <line
+            key={x}
+            x1={x}
+            y1={r1(axis - height)}
+            x2={x}
+            y2={r1(axis + height)}
+          />
+        ))}
+      </g>
+      <g className={ACCENT}>
+        <line
+          x1={r1(avatar.face[0])}
+          y1={r1(avatar.face[1])}
+          x2={r1(partner.face[0])}
+          y2={r1(partner.face[1])}
+          strokeDasharray="2 4"
+        />
+        <Node at={avatar.face} radius={2.5} filled />
+        <circle
+          cx={r1(partner.face[0])}
+          cy={r1(partner.face[1])}
+          r={7}
+          strokeDasharray="2 2.5"
+        />
+        <polyline points={points(nods)} strokeOpacity={0.7} />
+        {nods.map((nod) => (
+          <Node key={`${nod}`} at={nod} radius={2} />
+        ))}
+      </g>
+    </>
+  );
+}
+
+/* Learning from demonstration: an arm over a bin of parts and a kitting
+   tray. The demonstrations it learns from are faint dashed paths; its own
+   path is the accent, with the point where a person corrected it (the
+   dashed stub shows where it was heading). */
+function RobotArm() {
+  const random = seeded(17);
+  const shoulder: Point = [40, 246];
+  const elbow: Point = [60, 140];
+  const wrist: Point = [112, 150];
+  const grip: Point = [112, 200];
+  const link = (a: Point, b: Point, width: number) => {
+    const length = Math.hypot(b[0] - a[0], b[1] - a[1]);
+    const nx = ((a[1] - b[1]) / length) * (width / 2);
+    const ny = ((b[0] - a[0]) / length) * (width / 2);
+    return points([
+      [a[0] + nx, a[1] + ny],
+      [b[0] + nx, b[1] + ny],
+      [b[0] - nx, b[1] - ny],
+      [a[0] - nx, a[1] - ny],
+    ]);
+  };
+  const parts = Array.from(
+    { length: 8 },
+    (): Point => [80 + random() * 62, 252 + random() * 12],
+  );
+  const columns = [301, 331, 361];
+  const rows = [232, 252];
+  const kitted: Point[] = [
+    [301, 232],
+    [331, 232],
+    [301, 252],
+  ];
+  const target: Point = [361, 232];
+  const demos = kitted.map(([x, y], index): string => {
+    const from: Point = [96 + index * 16, 246];
+    return `M${from[0]} ${from[1]}C${from[0] + 30} ${60 + index * 10} ${x - 40} ${64 + index * 12} ${x} ${y}`;
+  });
+  const correction: Point = [280, 84];
+  return (
+    <>
+      <g className={FAINT}>
+        {demos.map((d) => (
+          <path key={d} d={d} strokeDasharray="2 3" />
+        ))}
+        <line x1={16} y1={274} x2={384} y2={274} />
+      </g>
+      <g className={STRUCTURE}>
+        <rect x={22} y={260} width={36} height={14} rx={2} />
+        <polygon points={link(shoulder, elbow, 14)} className="fill-sunken" />
+        <polygon points={link(elbow, wrist, 11)} className="fill-sunken" />
+        <polygon
+          points={link([40, 260], shoulder, 18)}
+          className="fill-sunken"
+        />
+        {[shoulder, elbow, wrist].map((joint) => (
+          <circle
+            key={`${joint}`}
+            cx={joint[0]}
+            cy={joint[1]}
+            r={7}
+            className="fill-sunken"
+          />
+        ))}
+        <line x1={wrist[0]} y1={wrist[1] + 7} x2={grip[0]} y2={grip[1] - 14} />
+        <polyline
+          points={points([
+            [grip[0] - 10, grip[1]],
+            [grip[0] - 10, grip[1] - 14],
+            [grip[0] + 10, grip[1] - 14],
+            [grip[0] + 10, grip[1]],
+          ])}
+        />
+        <path d="M72 232V270H150V232" />
+        {parts.map(([x, y]) => (
+          <circle key={`${x}-${y}`} cx={r1(x)} cy={r1(y)} r={3} />
+        ))}
+        <rect x={286} y={222} width={90} height={40} rx={1.5} />
+        {columns.slice(1).map((x) => (
+          <line key={x} x1={x - 15} y1={222} x2={x - 15} y2={262} />
+        ))}
+        <line x1={286} y1={rows[0] + 10} x2={376} y2={rows[0] + 10} />
+        {kitted.map(([x, y]) => (
+          <rect key={`${x}-${y}`} x={x - 4} y={y - 4} width={8} height={8} />
+        ))}
+      </g>
+      <g className={ACCENT}>
+        <path
+          d={`M${grip[0]} ${grip[1] + 4}C126 96 236 52 ${correction[0]} ${correction[1]}`}
+        />
+        <path
+          d={`M${correction[0]} ${correction[1]}L300 140`}
+          strokeDasharray="2 3"
+          strokeOpacity={0.6}
+        />
+        <path
+          d={`M${correction[0]} ${correction[1]}C322 80 362 140 ${target[0]} ${target[1]}`}
+        />
+        <circle cx={correction[0]} cy={correction[1]} r={7} />
+        <Node at={correction} radius={2.5} filled />
+        <rect
+          x={target[0] - 4}
+          y={target[1] - 4}
+          width={8}
+          height={8}
+          className="fill-sunken"
+        />
+      </g>
+    </>
+  );
+}
+
+/* Crash simulation: a car's side as a structured mesh driven into a rigid
+   barrier. The crumple zone buckles in the accent; the dashed outline is
+   where the undeformed front would have been. */
+function CrashMesh() {
+  const outline: Point[] = [
+    [24, 214],
+    [28, 196],
+    [64, 188],
+    [100, 184],
+    [138, 148],
+    [230, 146],
+    [266, 180],
+    [322, 188],
+    [348, 200],
+    [352, 216],
+  ];
+  const floor = 234;
+  const roof = (x: number) => {
+    for (let index = 1; index < outline.length; index++) {
+      const [a, b] = [outline[index - 1], outline[index]];
+      if (a && b && x <= b[0])
+        return a[1] + ((b[1] - a[1]) * (x - a[0])) / (b[0] - a[0]);
+    }
+    return outline.at(-1)?.[1] ?? floor;
+  };
+  const crumple = 292;
+  /* A point of the mesh at `x`, `fraction` of the way from roof to floor,
+     after the impact: the front squashed to half its length and buckled. */
+  const deform = (x: number, fraction: number): Point => {
+    const y = roof(x) + (floor - roof(x)) * fraction;
+    if (x <= crumple) return [x, y];
+    const depth = (x - crumple) / 60;
+    const wave = Math.sin(depth * Math.PI * 3);
+    return [
+      crumple + (x - crumple) * 0.5 + wave * 4 * (fraction - 0.5),
+      y + wave * 5 * depth,
+    ];
+  };
+  const columns = [
+    ...Array.from({ length: 28 }, (_, index) => 24 + index * 12),
+    352,
+  ];
+  const fractions = [0, 0.25, 0.5, 0.75, 1];
+  const mesh = (xs: number[]) => [
+    ...xs.map((x) => points(fractions.map((fraction) => deform(x, fraction)))),
+    ...fractions.map((fraction) => points(xs.map((x) => deform(x, fraction)))),
+  ];
+  const body = mesh(columns.filter((x) => x <= crumple));
+  const front = mesh(columns.filter((x) => x >= crumple));
+  const ghost: Point[] = [
+    [crumple, roof(crumple)],
+    ...outline.filter(([x]) => x > crumple),
+    [352, floor],
+  ];
+  return (
+    <>
+      <g className={FAINT}>
+        <line x1={16} y1={254} x2={384} y2={254} />
+        <polyline points={points(ghost)} strokeDasharray="2 3" />
+        {[0, 1, 2, 3, 4, 5].map((index) => (
+          <line
+            key={index}
+            x1={326}
+            y1={164 + index * 16}
+            x2={340}
+            y2={150 + index * 16}
+          />
+        ))}
+      </g>
+      <g className={STRUCTURE}>
+        {body.map((list) => (
+          <polyline key={list} points={list} />
+        ))}
+        <rect x={326} y={150} width={14} height={104} />
+        {[84, 258].map((x) => (
+          <g key={x}>
+            <circle cx={x} cy={238} r={16} className="fill-sunken" />
+            <circle cx={x} cy={238} r={4} />
+          </g>
+        ))}
+      </g>
+      <g className={ACCENT}>
+        {front.map((list) => (
+          <polyline key={list} points={list} />
+        ))}
+      </g>
+    </>
+  );
+}
+
+/* Cell fate: time-lapse frames as ticks, cells tracked from left to right
+   and one dividing on the way. Most stay the progenitors they were (the
+   rings at the end); the accent track, called early (the dashed ring),
+   ends as a neuron. */
+function CellFate() {
+  const random = seeded(59);
+  const frames = Array.from({ length: 8 }, (_, index) => 40 + index * 44);
+  const track = (start: number, from = 0) => {
+    let y = start;
+    return frames.slice(from).map((x, index): Point => {
+      if (index) y = Math.min(272, Math.max(28, y + (random() - 0.5) * 12));
+      return [x, y];
+    });
+  };
+  const tracks = [44, 104, 160, 212].map((start) => track(start));
+  const dividing = tracks[3] ?? [];
+  const split = 4;
+  /* The daughter leaves the mother at the division and drifts down. */
+  const daughter = dividing.map(
+    ([x, y], index): Point => [x, y + Math.max(0, index - split) * 10],
+  );
+  const fated = tracks[1] ?? [];
+  const others = [...tracks.filter((list) => list !== fated), daughter];
+  const called = 2;
+  const end = (list: Point[]): Point => list.at(-1) ?? [0, 0];
+  const neuron = end(fated);
+  const dendrites: Point[][] = [
+    [
+      [0, 0],
+      [10, -9],
+      [20, -12],
+    ],
+    [
+      [10, -9],
+      [14, -20],
+    ],
+    [
+      [0, 0],
+      [12, 7],
+      [22, 13],
+    ],
+    [
+      [12, 7],
+      [14, 18],
+    ],
+    [
+      [0, 0],
+      [-3, 14],
+    ],
+  ];
+  return (
+    <>
+      <g className={FAINT}>
+        {frames.map((x) => (
+          <g key={x}>
+            <line x1={x} y1={14} x2={x} y2={22} />
+            <line x1={x} y1={278} x2={x} y2={286} />
+          </g>
+        ))}
+      </g>
+      <g className={STRUCTURE}>
+        {others.map((list) => (
+          <g key={`${list[0]}-${end(list)}`}>
+            <polyline points={points(list)} />
+            {list.map((at) => (
+              <Node key={`${at}`} at={at} radius={2.5} />
+            ))}
+            <circle cx={r1(end(list)[0] + 14)} cy={r1(end(list)[1])} r={6} />
+            <line
+              x1={r1(end(list)[0] + 2.5)}
+              y1={r1(end(list)[1])}
+              x2={r1(end(list)[0] + 8)}
+              y2={r1(end(list)[1])}
+            />
+          </g>
+        ))}
+        <polyline points={points(fated.slice(0, called + 1))} />
+        {fated.slice(0, called).map((at) => (
+          <Node key={`${at}`} at={at} radius={2.5} />
+        ))}
+      </g>
+      <g className={ACCENT}>
+        <polyline points={points(fated.slice(called))} />
+        {fated.slice(called).map((at) => (
+          <Node key={`${at}`} at={at} radius={2.5} />
+        ))}
+        {fated[called] ? (
+          <circle
+            cx={r1(fated[called][0])}
+            cy={r1(fated[called][1])}
+            r={8}
+            strokeDasharray="2 2.5"
+          />
+        ) : null}
+        <g transform={`translate(${r1(neuron[0] + 14)} ${r1(neuron[1])})`}>
+          <line x1={-11.5} y1={0} x2={-4} y2={0} />
+          {dendrites.map((branch) => (
+            <polyline key={`${branch}`} points={points(branch)} />
+          ))}
+          <circle r={4} className="fill-current" />
+        </g>
+      </g>
+    </>
+  );
+}
+
 /**
  * The drawing for each motif key the Studio offers (`motif` on research).
  * Keyed by the schema's union, so a new option needs a drawing here before
@@ -680,6 +1193,11 @@ function PhaseDiagram() {
  * - `long-timeline`: video, time series, long context
  * - `splat-graph`: 3D and 4D reconstruction, scene understanding
  * - `phase-diagram`: materials, chemistry, structured prediction
+ * - `magnet-circuit`: physics simulation, numerical solvers, emulators
+ * - `talking-heads`: avatars, faces, human motion, dialogue
+ * - `robot-arm`: robot learning, manipulation, imitation
+ * - `crash-mesh`: structural and crash simulation, mesh-based learning
+ * - `cell-fate`: cell tracking, microscopy, fate and lineage
  */
 const motifs: Record<ResearchMotif, () => ReactNode> = {
   "camera-frustum": CameraFrustum,
@@ -689,6 +1207,11 @@ const motifs: Record<ResearchMotif, () => ReactNode> = {
   "long-timeline": LongTimeline,
   "splat-graph": SplatGraph,
   "phase-diagram": PhaseDiagram,
+  "magnet-circuit": MagnetCircuit,
+  "talking-heads": TalkingHeads,
+  "robot-arm": RobotArm,
+  "crash-mesh": CrashMesh,
+  "cell-fate": CellFate,
 };
 
 /**

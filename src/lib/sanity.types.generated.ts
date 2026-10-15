@@ -1291,7 +1291,12 @@ export type Research = {
     | "nested-clusters"
     | "long-timeline"
     | "splat-graph"
-    | "phase-diagram";
+    | "phase-diagram"
+    | "magnet-circuit"
+    | "talking-heads"
+    | "robot-arm"
+    | "crash-mesh"
+    | "cell-fate";
   highlights?: Array<string>;
   desc?: string;
   status?: "ongoing" | "completed";
@@ -3808,7 +3813,7 @@ export type EVENTS_QUERY_RESULT = Array<{
 
 // Source: ../lib/sanity-queries.ts
 // Variable: RESEARCH_QUERY
-// Query: *[_type == "research"]{  "id": _id,  title,  "institutions": institutions[]->{ key, name, "logo": logo.asset->url },  "description": coalesce(desc, ""),  status,  field,  startYear,  motif,  "highlights": coalesce(highlights, []),  publication,  "keywords": coalesce(keywords, [])}
+// Query: *[_type == "research"] | order(coalesce(startYear, 0) desc, _id asc){  "id": _id,  title,  "institutions": institutions[]->{ key, name, "logo": logo.asset->url },  "description": coalesce(desc, ""),  status,  field,  startYear,  motif,  "highlights": coalesce(highlights, []),  publication,  "keywords": coalesce(keywords, [])}
 export type RESEARCH_QUERY_RESULT = Array<{
   id: string;
   title: string;
@@ -3824,11 +3829,16 @@ export type RESEARCH_QUERY_RESULT = Array<{
   motif:
     | "belief-drift"
     | "camera-frustum"
+    | "cell-fate"
+    | "crash-mesh"
     | "decision-tree"
     | "long-timeline"
+    | "magnet-circuit"
     | "nested-clusters"
     | "phase-diagram"
+    | "robot-arm"
     | "splat-graph"
+    | "talking-heads"
     | null;
   highlights: Array<string> | Array<never>;
   publication: string | null;
