@@ -1,14 +1,13 @@
 import {
   Container,
   LogoTile,
-  LogoWall,
   QuoteCard,
   Reveal,
   Section,
   SectionHeader,
 } from "@tum.ai/ui-kit";
 import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
-import type { ELabCopy } from "./data/copy";
+import type { ELabCopy, FounderRow } from "./data/copy";
 import type { Gate } from "./data/selection";
 import {
   type NotableStartup,
@@ -24,9 +23,11 @@ import {
 /**
  * One venture followed through the gates (the page's bold element, in
  * miniature): the founder's words beside the gates the team passed and where
- * it went next. Below it, the other alumni ventures, each linked. Ventures,
- * quotes and the trace come from the venture slice (the CMS or the code);
- * the section hides when the traced venture or its founder quote is missing.
+ * it went next. Below it, the ventures' funding and the founders of past
+ * batches as a table, with the figures each venture reported. Ventures,
+ * quotes and the trace come from the venture slice, the table from the page
+ * copy; the section hides when the traced venture or its founder quote is
+ * missing.
  * `gates` are the cohort's gates as the page draws them; `fundingText` is
  * the ventures' funding as the site facts state it ("€8M+").
  */
@@ -46,9 +47,6 @@ export async function VentureTrace({
   ]);
   const venture = startups.find((startup) => startup.id === trace.startupId);
   const founder = cards.find((card) => card.id === trace.testimonialId);
-  const otherVentures = startups.filter(
-    (startup) => startup.id !== trace.startupId,
-  );
   if (!venture || !founder) return null;
   return (
     <Section tone="ink" spacing="lg" aria-labelledby="venture-trace-title">
@@ -88,23 +86,94 @@ export async function VentureTrace({
               {copy.fundingNote}
             </span>
           </h3>
-          <LogoWall
-            logos={otherVentures.map((startup) => ({
-              name: startup.name,
-              src: startup.logoSrc,
-              unoptimized: isUnoptimizedRemoteImage(startup.logoSrc),
-              alt: startup.logoAlt,
-              href: startup.href,
-              wordmark: startup.wordmarkLabel,
-            }))}
-            columns={6}
-            size="md"
-            label={copy.logosLabel}
-            className="mt-10"
-          />
+          {copy.founders.length > 0 ? (
+            <FoundersTable
+              title={copy.foundersTitle}
+              founders={copy.founders}
+            />
+          ) : null}
         </div>
       </Container>
     </Section>
+  );
+}
+
+/**
+ * "Founders from past batches": one row per venture, its name, cohort and
+ * line on the left, up to four figures in a row, and who backs it. From lg a
+ * table on hairlines; on phones each venture stacks, its figures two by two.
+ */
+function FoundersTable({
+  title,
+  founders,
+}: {
+  title: string;
+  founders: readonly FounderRow[];
+}) {
+  return (
+    <div className="mt-16 md:mt-20">
+      <h3 id="founders-title" className="text-display-md text-fg">
+        {title}
+      </h3>
+      <ul aria-labelledby="founders-title" className="mt-8 md:mt-10">
+        {founders.map((row) => (
+          <li
+            key={row.key}
+            className="grid gap-6 border-hairline-strong border-t py-7 lg:grid-cols-12 lg:gap-x-8 lg:py-8"
+          >
+            <div className="lg:col-span-3">
+              <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                {row.href ? (
+                  <a
+                    href={row.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-fg text-heading-md underline-offset-4 hover:underline"
+                  >
+                    {row.name}
+                  </a>
+                ) : (
+                  <span className="text-fg text-heading-md">{row.name}</span>
+                )}
+                {row.edition ? (
+                  <span className="rounded-md bg-highlight/15 px-2 py-0.5 font-medium text-highlight text-meta">
+                    {row.edition}
+                  </span>
+                ) : null}
+              </p>
+              <p className="mt-2 max-w-xs text-fg-muted text-small">
+                {row.summary}
+              </p>
+            </div>
+            <dl className="grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4 lg:col-span-6">
+              {row.metrics.map((metric) => (
+                <div key={metric.label} className="flex flex-col">
+                  <dt className="order-last mt-1 text-fg-subtle text-meta">
+                    {metric.label}
+                  </dt>
+                  <dd className="tabular text-fg text-heading-md">
+                    {metric.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+            {row.backedBy ? (
+              <div className="lg:col-span-3">
+                <p className="text-fg-subtle text-meta">Backed by</p>
+                <p className="mt-1 font-medium text-body text-fg">
+                  {row.backedBy.name}
+                </p>
+                {row.backedBy.note ? (
+                  <p className="mt-1 text-fg-muted text-meta">
+                    {row.backedBy.note}
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 

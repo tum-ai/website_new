@@ -5,6 +5,7 @@ import {
   Section,
   SectionHeader,
 } from "@tum.ai/ui-kit";
+import { teamCountTextOf } from "@/config/e-lab";
 import { cn } from "@/lib/cn";
 import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
 import { formatDuration } from "@/lib/program-duration";
@@ -150,7 +151,24 @@ function Scale({ label, max }: { label: string; max: number }) {
 const unit = (gate: Gate) =>
   gate.id === "applications" ? "team applications" : "teams";
 
-/** A gate: its name and what happens there, its figure and its bar. */
+/** "~500", "500+" or "15–20": the gate's figure as the page sets it. */
+function figureText(gate: Gate) {
+  const count = teamCountTextOf(gate.teams, gate.teamsUpTo);
+  return `${gate.approximate ? "~" : ""}${count}${gate.atLeast ? "+" : ""}`;
+}
+
+/** The gate's figure in words, for assistive technology. */
+function figureWords(gate: Gate) {
+  const count = gate.teamsUpTo
+    ? `${gate.teams} to ${gate.teamsUpTo}`
+    : String(gate.teams);
+  return `${gate.approximate ? "About " : gate.atLeast ? "More than " : ""}${count} ${unit(gate)}`;
+}
+
+/**
+ * A gate: its name and what happens there, its figure and its bar, and up
+ * to two photos from it under the bar.
+ */
 function GateRow({ gate, index }: { gate: Gate; index: number }) {
   return (
     <li
@@ -169,15 +187,11 @@ function GateRow({ gate, index }: { gate: Gate; index: number }) {
         <p className="lg:pl-6">
           <span aria-hidden="true" className="flex items-baseline gap-3">
             <span className="tabular text-fg text-stat-lg">
-              {gate.approximate ? "~" : ""}
-              {gate.teams}
+              {figureText(gate)}
             </span>
             <span className="text-fg-muted text-small">{unit(gate)}</span>
           </span>
-          <span className="sr-only">
-            {gate.approximate ? "About " : ""}
-            {gate.teams} {unit(gate)}
-          </span>
+          <span className="sr-only">{figureWords(gate)}</span>
         </p>
         <div
           aria-hidden="true"
@@ -191,6 +205,31 @@ function GateRow({ gate, index }: { gate: Gate; index: number }) {
             style={{ width: `${gate.share * 100}%` }}
           />
         </div>
+        {gate.photos?.length ? (
+          <div
+            className={cn(
+              "mt-8 grid gap-4 lg:pl-6",
+              gate.photos.length > 1 ? "max-w-2xl grid-cols-2" : "max-w-sm",
+            )}
+          >
+            {gate.photos.map((photo) => (
+              <Photo
+                key={photo.image.src}
+                src={photo.image.src}
+                unoptimized={isUnoptimizedRemoteImage(photo.image.src)}
+                alt={photo.image.alt}
+                caption={photo.caption}
+                position={photo.image.objectPosition}
+                aspect="3/2"
+                sizes={
+                  gate.photos && gate.photos.length > 1
+                    ? "(min-width: 1024px) 21rem, 45vw"
+                    : "(min-width: 1024px) 24rem, 90vw"
+                }
+              />
+            ))}
+          </div>
+        ) : null}
       </div>
     </li>
   );

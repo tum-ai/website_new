@@ -2,22 +2,37 @@ import type { ContentImage } from "@/lib/cms-content-model";
 import type { Duration } from "@/lib/program-duration";
 
 /** The selection figures in `the fetched selection facts`, one per gate. */
-export type GateFigure =
-  | "applications"
-  | "admitted"
-  | "midterm"
-  | "selectionDay"
-  | "finalPitch";
+export type GateFigure = "applications" | "admitted" | "midterm" | "finalPitch";
+
+/** The selection figures as the site settings hold them. */
+export type SelectionFigures = Readonly<Record<GateFigure, number>> & {
+  /** The top of a range of admitted teams ("15–20"). */
+  admittedUpTo?: number;
+};
+
+/** A real photo from a gate, such as the Final Pitch on stage. */
+type GatePhoto = {
+  image: ContentImage;
+  /** Its factual caption. */
+  caption?: string;
+};
 
 /** A point where teams are selected, with how many reach it. */
 export type Gate = {
   kind: "gate";
   id: string;
   name: string;
-  /** Teams that reach this gate (`the fetched selection facts`). */
+  /**
+   * Teams that reach this gate (`the fetched selection facts`); the bottom of
+   * the range when the gate has one.
+   */
   teams: number;
+  /** The top of a range of teams ("15–20"), drawn but not scaled. */
+  teamsUpTo?: number;
   /** The figure is rounded ("about 500"). */
   approximate?: boolean;
+  /** The figure is a floor ("500+"). */
+  atLeast?: boolean;
   /** What happens at the gate, in one sentence. */
   description: string;
   /**
@@ -25,6 +40,8 @@ export type Gate = {
    * to 1. The first gate is the whole field, 1.
    */
   share: number;
+  /** Up to two real photos from the gate. */
+  photos?: GatePhoto[];
 };
 
 /** A stretch of the program between two gates, where teams build. */
@@ -54,12 +71,14 @@ type GateCopy = {
   name: string;
   description: string;
   approximate?: boolean;
+  atLeast?: boolean;
+  photos?: GatePhoto[];
 };
 
 /** A stage as copy writes it: the CMS model of `eLabCopy.stages`. */
 export type StageCopy = GateCopy | Phase;
 
-/** A gate's id: its figure in kebab case (`selectionDay` is `selection-day`). */
+/** A gate's id: its figure in kebab case (`finalPitch` is `final-pitch`). */
 const gateId = (figure: GateFigure) =>
   figure.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
 
@@ -69,17 +88,22 @@ const gateId = (figure: GateFigure) =>
  */
 export function buildStages(
   stages: readonly StageCopy[],
-  selection: Readonly<Record<GateFigure, number>>,
+  selection: SelectionFigures,
 ): SelectionStage[] {
   return stages.map((stage) => {
     if (stage.kind === "phase") return stage;
     const { figure, approximate, ...words } = stage;
     const teams = selection[figure];
+    const teamsUpTo =
+      figure === "admitted" && (selection.admittedUpTo ?? 0) > teams
+        ? selection.admittedUpTo
+        : undefined;
     return {
       ...words,
       kind: "gate",
       id: gateId(figure),
       teams,
+      ...(teamsUpTo ? { teamsUpTo } : {}),
       approximate,
       share: teams / selection.applications,
     };

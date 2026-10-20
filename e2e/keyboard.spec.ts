@@ -348,7 +348,7 @@ test.describe("interactive figures", { tag: "@keyboard" }, () => {
     page,
   }) => {
     await page.goto("/e-lab");
-    const ventures = page.getByRole("link", { name: /, an E-Lab venture/ });
+    const ventures = page.getByRole("link", { name: /, an ELAB venture/ });
     const first = ventures.first();
     const second = ventures.nth(1);
 

@@ -8,9 +8,9 @@ import type { ELabCopy } from "./data/copy";
 const HERO_TITLE_ID = "elab-hero-title";
 
 /**
- * Cohort logo "by" TUM.ai (both white artwork, made for the ink hero). The
- * cohort SVG's viewBox starts 248 units left of the letterforms, so a negative
- * margin (0.468 × its height) aligns the "E" with the headline below.
+ * Program logo "by" TUM.ai (both white artwork, made for the ink hero). The
+ * ELAB wordmark's viewBox is tight to its letterforms, so it lines up with
+ * the headline below as it is; its width follows the file's aspect ratio.
  */
 function LogoLockup({ logo }: { logo: ContentImage }) {
   return (
@@ -18,10 +18,10 @@ function LogoLockup({ logo }: { logo: ContentImage }) {
       <Image
         src={logo.src}
         alt={logo.alt}
-        width={287}
-        height={56}
+        width={logo.width}
+        height={logo.height}
         preload
-        className="-ml-[1.17rem] h-10 w-auto md:-ml-[1.64rem] md:h-14"
+        className="h-8 w-auto md:h-11"
       />
       <span className="flex items-center gap-3 pb-0.5 md:pb-1">
         <span className="text-fg-subtle">by</span>
@@ -38,7 +38,7 @@ function LogoLockup({ logo }: { logo: ContentImage }) {
 }
 
 /**
- * E-Lab hero: the cohort lockup, the program in one sentence, the terms in
+ * ELAB hero: the program lockup, the program in one sentence, the terms in
  * the lead and the live application action, beside the field of a round's
  * applications thinning to the teams that reach the Final Pitch (the page's
  * idea, which the gates band then draws to scale). `logo` is the cohort's

@@ -25,6 +25,20 @@ test("updated facts change the same structural drawing", () => {
     stages.find((stage) => stage.kind === "phase"),
   );
 });
+test("an admitted range keeps its bottom on the scale", () => {
+  const ranged = gatesOf(
+    buildStages(eLabCopyFixture.gates.stages, {
+      ...eLabSelectionFixture,
+      admittedUpTo: 90,
+    }),
+  );
+  const admitted = ranged.find((gate) => gate.id === "admitted");
+  expect(admitted).toMatchObject({ teams: 80, teamsUpTo: 90 });
+  expect(admitted?.share).toBe(80 / eLabSelectionFixture.applications);
+  expect(ranged.find((gate) => gate.id === "midterm")?.teamsUpTo).toBe(
+    undefined,
+  );
+});
 test("tick positions are shares of the supplied maximum", () => {
   expect(scaleTicks(120, 40)).toEqual([
     { teams: 0, at: 0 },

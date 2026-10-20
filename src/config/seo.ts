@@ -102,10 +102,12 @@ function eLabJsonLdFor(facts: SiteFacts) {
     "@type": "Organization",
     name: "Venture Department",
     alternateName: [
+      "ELAB",
+      "ELAB by TUM.ai",
       "AI Entrepreneurship Lab",
-      "E-Lab",
-      "E-Lab by TUM.ai",
       "AI Entrepreneurship Lab by TUM.ai",
+      // The name before ELAB, which listings still use.
+      "E-Lab",
     ],
     description: `The Venture Department is the entrepreneurial arm of TUM.ai and organizes the AI Entrepreneurship Lab, a ${eLabProgramSummary}.`,
     url: absoluteUrl("/e-lab"),

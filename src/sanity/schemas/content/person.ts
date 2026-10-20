@@ -36,9 +36,9 @@ const requiredFor =
 
 /**
  * A person as one page shows them: a member story (/community), a partner
- * profile (/partners) or an E-Lab testimonial (/e-lab, homepage). One
+ * profile (/partners) or an ELAB testimonial (/e-lab, homepage). One
  * document per appearance, since role and portrait differ per page. Code
- * picks people by `key` (the E-Lab voices, the traced venture and the
+ * picks people by `key` (the ELAB voices, the traced venture and the
  * homepage quote), so keys stay stable. Read by `lib/person-content.ts`.
  */
 export const personType = defineType({
@@ -60,7 +60,7 @@ export const personType = defineType({
       title: "Key",
       type: "string",
       description:
-        "Stable id the site picks this person by: the name in lowercase with hyphens, “leon-hergert”. Don't change it once published: the E-Lab voices, the traced venture and the homepage quote refer to it.",
+        "Stable id the site picks this person by: the name in lowercase with hyphens, “leon-hergert”. Don't change it once published: the ELAB voices, the traced venture and the homepage quote refer to it.",
       validation: (Rule) =>
         Rule.required()
           .regex(kebabKey, { name: "lowercase words joined by hyphens" })
@@ -93,7 +93,7 @@ export const personType = defineType({
       title: "Context",
       type: "string",
       description:
-        "Testimonials: the cohort or relation shown with the quote (“E-Lab 3.0”, “Mentor & Investor”); the traced venture's founder must name the traced cohort. Partner profiles: an optional line under the role (“5M raised”).",
+        "Testimonials: the cohort or relation shown with the quote (“ELAB 3.0”, “Mentor & Investor”); the traced venture's founder must name the traced cohort. Partner profiles: an optional line under the role (“5M raised”).",
       hidden: onlyFor("e-lab-testimonial", "partner-profile"),
       validation: (Rule) => Rule.max(60),
     }),

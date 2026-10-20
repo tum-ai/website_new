@@ -16,7 +16,7 @@ import { validateMunichTime } from "./application-window";
 const campaignCtaVariants = [
   { title: "Become a Member (/apply)", value: "member" },
   { title: "Become a Partner (/partners)", value: "partner" },
-  { title: "Explore the current E-Lab cohort (/e-lab)", value: "elab" },
+  { title: "Explore the current ELAB cohort (/e-lab)", value: "elab" },
   { title: "Get Notified (the signup link below)", value: "notify" },
 ] as const;
 
@@ -84,7 +84,7 @@ export const campaignType = defineType({
       title: "Name",
       type: "string",
       description:
-        "For editors only, for example “E-Lab applications autumn”. Not shown on the site.",
+        "For editors only, for example “ELAB applications autumn”. Not shown on the site.",
       validation: (Rule) => Rule.required().max(80),
     }),
     defineField({

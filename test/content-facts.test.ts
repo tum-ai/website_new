@@ -3,7 +3,6 @@ import { join, relative, sep } from "node:path";
 import { beforeEach, expect, test, vi } from "vitest";
 import { getContentTokens } from "@/config/content-tokens";
 import {
-  eLabCompletedIterationsOf,
   eLabPhaseCopyOf,
   eLabProgramSummaryOf,
   eLabWindowClock,
@@ -58,7 +57,14 @@ test("phase and program wording derive from supplied CMS facts", () => {
   expect(eLabProgramSummaryOf(8)).toBe(
     "8-week equity-free AI startup incubator",
   );
-  expect(eLabCompletedIterationsOf("3.0")).toBe(2);
+  expect(
+    eLabPhaseCopyOf(settingsFixtureFacts.eLab.currentIteration, {
+      ...settingsFixtureELabWindow,
+      nextApplicationWindow: undefined,
+    }).closed.roundStatus,
+  ).toBe(
+    `Applications for ELAB ${settingsFixtureFacts.eLab.currentIteration} are closed. The next round is announced on LinkedIn.`,
+  );
 });
 test("CMS member totals and content tokens follow edited published facts", async () => {
   const facts = await getSiteFacts();

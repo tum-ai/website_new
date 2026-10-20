@@ -225,7 +225,7 @@ export function FieldDots({
       ref={svgRef}
       viewBox={viewBox}
       className={className}
-      aria-label="One round of team applications, with links to ventures from the E-Lab"
+      aria-label="One round of team applications, with links to ventures from ELAB"
       onPointerMove={(event) => aim(dotAt(event.clientX, event.clientY))}
       onPointerDown={(event) => {
         const index = dotAt(event.clientX, event.clientY);
@@ -264,7 +264,7 @@ export function FieldDots({
             href={dot.venture.href}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={`${dot.venture.name}, an E-Lab venture (opens in a new tab)`}
+            aria-label={`${dot.venture.name}, an ELAB venture (opens in a new tab)`}
             data-expanded={active === index}
             className="elab-field-venture outline-none"
             onClick={(event) => {

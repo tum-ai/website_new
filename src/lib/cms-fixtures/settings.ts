@@ -41,15 +41,15 @@ export const settingsFixtureFacts = {
     bookingHost: "Fixture host",
   },
   eLab: {
-    currentIteration: "2.0",
+    currentIteration: "SPRING ’27",
+    completedCohorts: 1,
     // Derived: the fixture eLabCopy's phases (one of 2 weeks), never stored.
     programWeeks: 2,
     ventureFundingMillions: 1,
     selection: {
       applications: 20,
       admitted: 10,
-      midterm: 8,
-      selectionDay: 6,
+      midterm: 6,
       finalPitch: 4,
     },
     heroLogo: {

@@ -129,11 +129,15 @@ export function selectELabWindow(value: unknown): ELabApplicationWindow {
     applicationUrl: https(result.applicationUrl, "applicationUrl"),
     applicationDeadlineDate: day(result.deadlineDate, "deadlineDate"),
     applicationDeadlineTime: time(result.deadlineTime, "deadlineTime"),
-    nextApplicationWindow: contentString(
-      result.nextWindowLabel,
-      label,
-      "nextWindowLabel",
-    ),
+    ...(result.nextWindowLabel
+      ? {
+          nextApplicationWindow: contentString(
+            result.nextWindowLabel,
+            label,
+            "nextWindowLabel",
+          ),
+        }
+      : {}),
   };
 }
 function loadWindow<T>(

@@ -38,18 +38,33 @@ const roleEmail = (name: string, title: string, description: string) =>
 const funnelGates = [
   ["applications", "Team applications"],
   ["admitted", "Teams admitted"],
-  ["midterm", "Teams at the Midterm Pitch"],
-  ["selectionDay", "Teams on Selection Day"],
+  ["midterm", "Teams selected for the Midterm Pitch"],
   ["finalPitch", "Teams at the Final Pitch"],
 ] as const;
 
 /**
  * Every gate of the selection funnel is at most the one before, because
- * /e-lab draws them to scale against each other.
+ * /e-lab draws them to scale against each other. A range of admitted teams
+ * ("15–20") tops out between the applications and the admitted figure.
  */
 export function validateFunnel(value: unknown): true | string {
   if (typeof value !== "object" || value === null) return true;
   const figures = value as Record<string, unknown>;
+  const { admitted, admittedUpTo, applications } = figures;
+  if (
+    typeof admittedUpTo === "number" &&
+    typeof admitted === "number" &&
+    admittedUpTo < admitted
+  ) {
+    return `The top of the admitted range (${admittedUpTo}) can't be less than teams admitted (${admitted}).`;
+  }
+  if (
+    typeof admittedUpTo === "number" &&
+    typeof applications === "number" &&
+    admittedUpTo > applications
+  ) {
+    return `The top of the admitted range (${admittedUpTo}) can't be more than team applications (${applications}).`;
+  }
   for (let index = 1; index < funnelGates.length; index++) {
     const [key, title] = funnelGates[index];
     const [previousKey, previousTitle] = funnelGates[index - 1];
@@ -81,7 +96,7 @@ export function validateBookingUrl(value: unknown): true | string {
 const headerCtaFallbackOptions = [
   { title: "Become a Partner (/partners)", value: "partner" },
   { title: "Become a Member (/apply)", value: "member" },
-  { title: "Explore the current E-Lab cohort (/e-lab)", value: "elab" },
+  { title: "Explore the current ELAB cohort (/e-lab)", value: "elab" },
 ] as const;
 
 export const siteSettingsType = defineType({
@@ -91,7 +106,7 @@ export const siteSettingsType = defineType({
   groups: [
     { name: "organization", title: "Organization", default: true },
     { name: "contact", title: "Contact and social" },
-    { name: "eLab", title: "E-Lab" },
+    { name: "eLab", title: "ELAB" },
     { name: "hackathons", title: "Hackathons" },
     { name: "site", title: "Header and footer" },
   ],
@@ -223,7 +238,7 @@ export const siteSettingsType = defineType({
           "Partnerships",
           "Partner requests from /partners.",
         ),
-        roleEmail("venture", "Venture", "E-Lab and startup questions."),
+        roleEmail("venture", "Venture", "ELAB and startup questions."),
         roleEmail(
           "recruitment",
           "Recruitment",
@@ -285,11 +300,11 @@ export const siteSettingsType = defineType({
     }),
     defineField({
       name: "eLab",
-      title: "E-Lab program",
+      title: "ELAB program",
       type: "object",
       group: "eLab",
       description:
-        "The program facts. The application deadline and form live in the E-Lab application window.",
+        "The program facts. The application deadline and form live in the ELAB application window.",
       validation: (Rule) => Rule.required(),
       fields: [
         defineField({
@@ -297,13 +312,23 @@ export const siteSettingsType = defineType({
           title: "Current cohort",
           type: "string",
           description:
-            "The cohort now running or recruiting, as a number with one decimal (for example 6.0). Earlier cohorts count as completed.",
+            "The cohort now running or recruiting, by season and year (for example FALL ’26). The site shows it after ELAB.",
           validation: (Rule) =>
-            Rule.required().regex(/^\d{1,2}\.\d$/, { name: "cohort number" }),
+            Rule.required()
+              .max(20)
+              .regex(/^\S(?:.*\S)?$/, { name: "cohort name" }),
+        }),
+        defineField({
+          name: "completedCohorts",
+          title: "Completed cohorts",
+          type: "number",
+          description:
+            "Cohorts that have run so far, not counting the current one (copy uses it as {{eLab.completedCohorts}}).",
+          validation: (Rule) => Rule.required().integer().min(0),
         }),
         defineField({
           name: "ventureFundingMillions",
-          title: "Funding raised by E-Lab ventures (million euros)",
+          title: "Funding raised by ELAB ventures (million euros)",
           type: "number",
           description: "In millions, with at most one decimal: 7.5 for €7.5M.",
           validation: (Rule) => Rule.required().min(0).precision(1),
@@ -317,14 +342,24 @@ export const siteSettingsType = defineType({
           options: { columns: 2 },
           validation: (Rule) =>
             Rule.required().custom((value) => validateFunnel(value)),
-          fields: funnelGates.map(([name, title]) =>
+          fields: [
+            ...funnelGates.map(([name, title]) =>
+              defineField({
+                name,
+                title,
+                type: "number",
+                validation: (Rule) => Rule.required().integer().min(1),
+              }),
+            ),
             defineField({
-              name,
-              title,
+              name: "admittedUpTo",
+              title: "Teams admitted, top of the range",
               type: "number",
-              validation: (Rule) => Rule.required().integer().min(1),
+              description:
+                "Optional: with 15 above and 20 here, the page shows 15–20 admitted teams. Leave empty for one number.",
+              validation: (Rule) => Rule.integer().min(1),
             }),
-          ),
+          ],
         }),
         contentImageField({
           name: "heroLogo",

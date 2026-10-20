@@ -80,7 +80,6 @@ export const eLabSelectionFixture = {
   applications: 120,
   admitted: 80,
   midterm: 50,
-  selectionDay: 30,
   finalPitch: 20,
 };
 /** Synthetic E-Lab copy with every required gate in funnel order. */
@@ -118,12 +117,6 @@ export const eLabCopyFixture = {
       },
       {
         kind: "gate" as const,
-        figure: "selectionDay" as const,
-        name: "Select",
-        description: "Example selection.",
-      },
-      {
-        kind: "gate" as const,
         figure: "finalPitch" as const,
         name: "Pitch",
         description: "Example pitch.",
@@ -134,7 +127,44 @@ export const eLabCopyFixture = {
   ventures: {
     title: "Example venture",
     fundingNote: "Example funding note.",
-    logosLabel: "Example ventures",
+    foundersTitle: "Example founders",
+    founders: [
+      {
+        key: "example-venture",
+        name: "Example Venture",
+        href: "https://example.com/venture",
+        edition: "Example 1.0",
+        summary: "An example product.",
+        metrics: [
+          { value: "$1M", label: "pre-seed" },
+          { value: "5", label: "team members" },
+        ],
+        backedBy: { name: "Example Backer", note: "Example round." },
+      },
+      {
+        key: "example-venture-two",
+        name: "Example Venture Two",
+        href: "https://example.com/venture-two",
+        summary: "Another example product.",
+        metrics: [{ value: "100+", label: "customers" }],
+      },
+    ],
+  },
+  partners: {
+    title: "Example partners",
+    lead: "Example partner lead.",
+    iterationLabel: "Main partners",
+    workshopLabel: "Workshop partners",
+    pastLabel: "Past partners",
+  },
+  involve: {
+    eyebrow: "Take part",
+    title: "Example ways in",
+    lead: "Example involvement lead.",
+    options: [
+      { key: "jury" as const, title: "Judge", detail: "Judge an example." },
+      { key: "other" as const, title: "Other", detail: "Suggest an example." },
+    ],
   },
   voices: {
     title: "Example voices",
@@ -183,6 +213,27 @@ export const programmesFixtureDocuments: readonly CmsFixtureDocument[] = [
           ? { ...stage, _type: "gateStage", _key: stage.figure }
           : { ...stage, _type: "phaseStage", _key: stage.id, key: stage.id },
       ),
+    },
+    ventures: {
+      ...eLabCopyFixture.ventures,
+      founders: eLabCopyFixture.ventures.founders.map(
+        ({ key, name: _name, href: _href, metrics, ...row }) => ({
+          ...row,
+          _key: key,
+          venture: { _type: "reference", _ref: `organization-${key}` },
+          metrics: metrics.map((metric) => ({
+            ...metric,
+            _key: metric.label,
+          })),
+        }),
+      ),
+    },
+    involve: {
+      ...eLabCopyFixture.involve,
+      options: eLabCopyFixture.involve.options.map((option) => ({
+        ...option,
+        _key: option.key,
+      })),
     },
     voices: {
       ...eLabCopyFixture.voices,

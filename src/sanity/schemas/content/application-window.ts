@@ -3,7 +3,7 @@ import { isMunichTime } from "../../../lib/munich-time";
 
 /**
  * An application phase: the membership recruiting round (/apply, the header
- * and the closing bands) or the E-Lab application round (/e-lab). There is
+ * and the closing bands) or the ELAB application round (/e-lab). There is
  * one document per program, pinned in the Studio; editors update it in place
  * for each round. Read by `getMembershipWindow()` and `getELabWindow()` in
  * `src/config/schedule-content.ts`, which validates the required published
@@ -25,7 +25,7 @@ export const applicationPrograms = [
   },
   {
     value: "e-lab",
-    title: "E-Lab applications (/e-lab)",
+    title: "ELAB applications (/e-lab)",
     documentId: "applicationwindow-e-lab",
   },
 ] as const;
@@ -231,10 +231,9 @@ export const applicationWindowType = defineType({
       title: "Next round opens",
       type: "string",
       description:
-        "Shown while applications are closed, after “Applications open in”, for example “August”.",
+        "Shown while applications are closed, after “Applications open in”, for example “August”. Leave empty while no next round is scheduled.",
       hidden: onlyFor("e-lab"),
-      validation: (Rule) =>
-        Rule.max(40).custom(requiredFor("e-lab", "next round")),
+      validation: (Rule) => Rule.max(40),
     }),
   ],
   preview: {

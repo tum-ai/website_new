@@ -1,5 +1,6 @@
 import { evaluate, parse } from "groq-js";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { organizationsFixtureDocuments } from "@/lib/cms-fixtures/organizations";
 import { programmesFixtureDocuments } from "@/lib/cms-fixtures/programmes";
 import type { CmsFixtureDocument } from "@/lib/cms-fixtures/types";
 
@@ -22,7 +23,10 @@ vi.mock("@/lib/cms-content-mock", () => ({
   },
 }));
 beforeEach(() => {
-  documents = structuredClone(programmesFixtureDocuments);
+  documents = structuredClone([
+    ...programmesFixtureDocuments,
+    ...organizationsFixtureDocuments,
+  ]);
   vi.stubEnv("USE_MOCK_CMS", "1");
   vi.stubEnv("VERCEL", "");
 });
@@ -37,8 +41,20 @@ const stages = eLabCopyFixture.gates.stages.map((stage) =>
     : { ...stage, _type: "phaseStage" },
 );
 test("real queries read synthetic CMS copy and FAQ", async () => {
-  expect((await getELabCopy()).hero.title).toBe("Example programme");
+  const copy = await getELabCopy();
+  expect(copy.hero.title).toBe("Example programme");
+  expect(copy.ventures.founders).toEqual(eLabCopyFixture.ventures.founders);
+  expect(copy.involve.options.map((option) => option.key)).toEqual([
+    "jury",
+    "other",
+  ]);
   expect(await getELabFaqs()).toHaveLength(1);
+});
+test("a founders row whose venture is gone fails visibly", async () => {
+  documents = documents.filter(
+    (doc) => doc._id !== "organization-example-venture-two",
+  );
+  await expect(getELabCopy()).rejects.toThrow(/founders\[1\]\.key/);
 });
 test("deleted optional FAQ collection stays empty", async () => {
   documents = documents.filter((doc) => doc._type !== "faq");

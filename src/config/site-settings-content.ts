@@ -29,7 +29,7 @@ export const SITE_SETTINGS_QUERY =
  brandMission,impact{publications,publicationVenues,hackathonParticipants},community{makeathonSize},
  contactEmails{general,partners,venture,recruitment},socialLinks{linkedin,instagram,github,x,youtube,facebook,tiktok,slack},
  partnershipBooking{bookingUrl,bookingHost},
- eLab{currentIteration,"programPhases":*[_type == "eLabCopy" && _id == "eLabCopy"][0].gates.stages[_type == "phaseStage"].duration{amount,unit},ventureFundingMillions,selection{applications,admitted,midterm,selectionDay,finalPitch},"heroLogo":heroLogo${CONTENT_IMAGE_PROJECTION}},
+ eLab{currentIteration,completedCohorts,"programPhases":*[_type == "eLabCopy" && _id == "eLabCopy"][0].gates.stages[_type == "phaseStage"].duration{amount,unit},ventureFundingMillions,selection{applications,admitted,admittedUpTo,midterm,finalPitch},"heroLogo":heroLogo${CONTENT_IMAGE_PROJECTION}},
  hackathons{makeathonUrl,league{name,url,foundedYear,finaleTeams,matches[]{key,label,makeathon,"city":event->city,"start":event->event_date,"end":coalesce(event->end_date,event->event_date)}}},
  footerTagline,headerCtaFallback
 }`);
@@ -120,13 +120,14 @@ const parser = contentObject({
   }),
   eLab: contentObject({
     currentIteration: contentString,
+    completedCohorts: count,
     programPhases: contentArray(phaseDuration),
     ventureFundingMillions: contentNumber,
     selection: contentObject({
       applications: positive,
       admitted: positive,
+      admittedUpTo: contentOptional(positive),
       midterm: positive,
-      selectionDay: positive,
       finalPitch: positive,
     }),
     heroLogo: contentImage,
@@ -177,11 +178,11 @@ export function selectSiteFacts(value: unknown): SiteFacts {
       "organization.foundingYear",
       "expected year in 2000..2100",
     );
-  if (!/^\d{1,2}\.\d$/.test(result.eLab.currentIteration))
+  if (!/^\S(?:.{0,18}\S)?$/.test(result.eLab.currentIteration))
     return contentError(
       "siteSettings",
       "eLab.currentIteration",
-      "expected a cohort number",
+      "expected a cohort name of at most 20 characters",
     );
   const { programPhases, ...eLab } = result.eLab;
   const programWeeks = programWeeksOf(programPhases);
@@ -193,8 +194,18 @@ export function selectSiteFacts(value: unknown): SiteFacts {
     );
   if (eLab.ventureFundingMillions < 0)
     return contentError("siteSettings", "eLab", "invalid funding");
-  const gates = Object.values(result.eLab.selection);
-  if (gates.some((n, index) => index > 0 && n > gates[index - 1]))
+  const { admittedUpTo, ...funnel } = result.eLab.selection;
+  const gates = [
+    funnel.applications,
+    funnel.admitted,
+    funnel.midterm,
+    funnel.finalPitch,
+  ];
+  if (
+    gates.some((n, index) => index > 0 && n > (gates[index - 1] ?? 0)) ||
+    (admittedUpTo !== undefined &&
+      (admittedUpTo < funnel.admitted || admittedUpTo > funnel.applications))
+  )
     return contentError(
       "siteSettings",
       "eLab.selection",

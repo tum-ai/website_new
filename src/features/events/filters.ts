@@ -11,7 +11,7 @@ import type { EventCategory } from "@/lib/types";
 const categoryNames = {
   Hackathon: { one: "Hackathon", many: "Hackathons" },
   Speaker: { one: "Talk", many: "Talks" },
-  "E-Lab": { one: "E-Lab", many: "E-Lab" },
+  "E-Lab": { one: "ELAB", many: "ELAB" },
   Event: { one: "Event", many: "Other events" },
 } satisfies Record<EventCategory, { one: string; many: string }>;
 

@@ -11,14 +11,21 @@ import { contentImageField } from "./fields";
 const gateFigures = [
   { title: "Team applications", value: "applications" },
   { title: "Admitted to the cohort", value: "admitted" },
-  { title: "Midterm Pitch", value: "midterm" },
-  { title: "Selection Day", value: "selectionDay" },
+  { title: "Selection Day and Midterm Pitch", value: "midterm" },
   { title: "Final Pitch", value: "finalPitch" },
+];
+
+/** The ways in for partners of the program (`eLabInvolveKeys`), each with its icon. */
+const involveKeys = [
+  { title: "Join the jury", value: "jury" },
+  { title: "Deliver a keynote", value: "keynote" },
+  { title: "Host a workshop", value: "workshop" },
+  { title: "Another idea", value: "other" },
 ];
 
 /**
  * The gates must use each figure exactly once, in funnel order (applications,
- * admitted, midterm, selectionDay, finalPitch): the page draws every gate as
+ * admitted, midterm, finalPitch): the page draws every gate as
  * a share of the one before, the hero's field needs decreasing counts and
  * lights the last gate's teams as the Final Pitch, and rejects a list
  * with a gate missing, doubled or out of order
@@ -38,7 +45,7 @@ export function validateStages(stages: unknown): true | string {
   }
   const missing = gateFigures.filter(({ value }) => !figures.includes(value));
   if (missing.length > 0) {
-    return `Add a gate for ${missing.map(({ title }) => title).join(", ")}: the page needs all five.`;
+    return `Add a gate for ${missing.map(({ title }) => title).join(", ")}: the page needs all four.`;
   }
   if (figures.some((figure, index) => figure !== gateFigures[index]?.value)) {
     return `Put the gates in funnel order: ${gateFigures.map(({ title }) => title).join(", ")}.`;
@@ -54,7 +61,7 @@ export function validateStages(stages: unknown): true | string {
  */
 export const eLabCopyType = defineType({
   name: "eLabCopy",
-  title: "E-Lab page",
+  title: "ELAB page",
   type: "document",
   fields: [
     defineField({
@@ -128,8 +135,53 @@ export const eLabCopyType = defineType({
                   description: "Shows the figure as about (~500).",
                   initialValue: false,
                 }),
+                defineField({
+                  name: "atLeast",
+                  title: "At least",
+                  type: "boolean",
+                  description: "Shows the figure as a floor (500+).",
+                  initialValue: false,
+                }),
+                defineField({
+                  name: "photos",
+                  title: "Photos",
+                  type: "array",
+                  description:
+                    "Optional: one or two real photos from this gate, such as the pitch on stage, at 3:2.",
+                  of: [
+                    defineArrayMember({
+                      name: "gatePhoto",
+                      title: "Photo",
+                      type: "object",
+                      fields: [
+                        contentImageField({
+                          name: "image",
+                          title: "Image",
+                          required: true,
+                        }),
+                        copyString({
+                          name: "caption",
+                          title: "Caption",
+                          description: "What, where and when, factually.",
+                          max: 60,
+                          required: false,
+                        }),
+                      ],
+                      preview: {
+                        select: { title: "caption", media: "image" },
+                      },
+                    }),
+                  ],
+                  validation: (Rule) => Rule.max(2),
+                }),
               ],
-              preview: { select: { title: "name", subtitle: "figure" } },
+              preview: {
+                select: {
+                  title: "name",
+                  subtitle: "figure",
+                  media: "photos.0.image",
+                },
+              },
             }),
             defineArrayMember({
               name: "phaseStage",
@@ -238,33 +290,186 @@ export const eLabCopyType = defineType({
           name: "inviteLabel",
           title: "Open place label",
           description:
-            "On a lit dot without a venture, before the cohort's name (E-Lab 6.0).",
+            "On a lit dot without a venture, before the cohort's name (ELAB FALL ’26).",
           max: 20,
         }),
       ],
     }),
     defineField({
       name: "ventures",
-      title: "Traced venture",
+      title: "Traced venture and founders",
       type: "object",
       description:
-        "The traced venture band's headings; the venture, its trail and the other ventures are their own content.",
+        "The traced venture band: its headings and the founders of past batches. The traced venture and its trail are their own content.",
       fields: [
         copyString({ name: "title", title: "Title", max: 50 }),
         copyText({
           name: "fundingNote",
           title: "Funding note",
           description:
-            "Beside the funding figure (site settings), over the other ventures' logos. Starts in lower case.",
+            "Beside the funding figure (site settings), over the founders table. Starts in lower case.",
           max: 120,
           rows: 2,
           placeholders: true,
         }),
         copyString({
-          name: "logosLabel",
-          title: "Logos label",
-          description: "The ventures' logo wall, read by screen readers.",
-          max: 60,
+          name: "foundersTitle",
+          title: "Founders title",
+          description: "Over the founders table.",
+          max: 50,
+        }),
+        defineField({
+          name: "founders",
+          title: "Founders from past batches",
+          type: "array",
+          description:
+            "One row per alumni venture, in order. The figures are as the venture reported them.",
+          of: [
+            defineArrayMember({
+              name: "founderRow",
+              title: "Venture",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "venture",
+                  title: "Venture",
+                  type: "reference",
+                  to: [{ type: "organization" }],
+                  description: "Its name and website.",
+                  validation: (Rule) => Rule.required(),
+                }),
+                copyString({
+                  name: "edition",
+                  title: "Cohort",
+                  description: "Only when confirmed, for example ELAB 4.0.",
+                  max: 20,
+                  required: false,
+                }),
+                copyString({
+                  name: "summary",
+                  title: "What it does",
+                  max: 120,
+                }),
+                defineField({
+                  name: "metrics",
+                  title: "Figures",
+                  type: "array",
+                  description: "Up to four, such as $2.2M over pre-seed.",
+                  of: [
+                    defineArrayMember({
+                      name: "founderMetric",
+                      title: "Figure",
+                      type: "object",
+                      options: { columns: 2 },
+                      fields: [
+                        copyString({ name: "value", title: "Value", max: 24 }),
+                        copyString({ name: "label", title: "Label", max: 32 }),
+                      ],
+                      preview: {
+                        select: { title: "value", subtitle: "label" },
+                      },
+                    }),
+                  ],
+                  validation: (Rule) => Rule.required().min(1).max(4),
+                }),
+                defineField({
+                  name: "backedBy",
+                  title: "Backed by",
+                  type: "object",
+                  description:
+                    "Optional: the lead backer and a note on the round.",
+                  fields: [
+                    copyString({
+                      name: "name",
+                      title: "Backer",
+                      description: "For example Y Combinator F26.",
+                      max: 40,
+                    }),
+                    copyString({
+                      name: "note",
+                      title: "Note",
+                      description: "For example Round led by Vireo Ventures.",
+                      max: 90,
+                      required: false,
+                    }),
+                  ],
+                }),
+              ],
+              preview: {
+                select: { title: "venture.name", subtitle: "edition" },
+              },
+            }),
+          ],
+          validation: (Rule) => Rule.required().unique(),
+        }),
+      ],
+    }),
+    defineField({
+      name: "partners",
+      title: "Partners",
+      type: "object",
+      description:
+        "The partners band. Its logos are the three ELAB logo lists (iteration, workshop and past partners).",
+      fields: [
+        copyString({ name: "title", title: "Title", max: 50 }),
+        copyText({ name: "lead", title: "Lead", max: 200, rows: 2 }),
+        copyString({
+          name: "iterationLabel",
+          title: "Iteration partners label",
+          max: 40,
+        }),
+        copyString({
+          name: "workshopLabel",
+          title: "Workshop partners label",
+          max: 40,
+        }),
+        copyString({
+          name: "pastLabel",
+          title: "Past partners label",
+          max: 40,
+        }),
+      ],
+    }),
+    defineField({
+      name: "involve",
+      title: "Get involved",
+      type: "object",
+      description:
+        "Ways for companies and investors to take part. Each card opens a mail to the Venture team (site settings).",
+      fields: [
+        copyString({ name: "eyebrow", title: "Eyebrow", max: 30 }),
+        copyString({ name: "title", title: "Title", max: 50 }),
+        copyText({ name: "lead", title: "Lead", max: 200, rows: 2 }),
+        defineField({
+          name: "options",
+          title: "Ways in",
+          type: "array",
+          of: [
+            defineArrayMember({
+              name: "involveOption",
+              title: "Way in",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "key",
+                  title: "Kind",
+                  type: "string",
+                  description: "Sets the card's icon.",
+                  options: { list: involveKeys },
+                  validation: (Rule) => Rule.required(),
+                }),
+                copyString({ name: "title", title: "Title", max: 40 }),
+                copyText({
+                  name: "detail",
+                  title: "Detail",
+                  max: 200,
+                  rows: 3,
+                }),
+              ],
+              preview: { select: { title: "title", subtitle: "key" } },
+            }),
+          ],
+          validation: (Rule) => Rule.required().min(1).max(4),
         }),
       ],
     }),
@@ -273,7 +478,7 @@ export const eLabCopyType = defineType({
       title: "Voices",
       type: "object",
       description:
-        "The testimonials band's headings; the quotes are E-Lab testimonials (People).",
+        "The testimonials band's headings; the quotes are ELAB testimonials (People).",
       fields: [
         copyString({ name: "title", title: "Title", max: 50 }),
         copyText({ name: "lead", title: "Lead", max: 200, rows: 2 }),
@@ -309,7 +514,7 @@ export const eLabCopyType = defineType({
       title: "Closing",
       type: "object",
       description:
-        "The ink band at the end; its round status follows the E-Lab application window.",
+        "The ink band at the end; its round status follows the ELAB application window.",
       fields: [
         copyString({
           name: "title",
@@ -340,5 +545,5 @@ export const eLabCopyType = defineType({
       ],
     }),
   ],
-  preview: { prepare: () => ({ title: "E-Lab page" }) },
+  preview: { prepare: () => ({ title: "ELAB page" }) },
 });

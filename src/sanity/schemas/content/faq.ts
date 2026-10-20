@@ -11,7 +11,7 @@ import { validateEntrySpans } from "./qanda-spans";
 /** The pages a FAQ entry can appear on. */
 export const faqCollections = [
   { title: "Apply (/apply)", value: "apply" },
-  { title: "E-Lab (/e-lab)", value: "e-lab" },
+  { title: "ELAB (/e-lab)", value: "e-lab" },
   { title: "Q&A (/qanda)", value: "qanda" },
 ] as const;
 

@@ -1,5 +1,40 @@
 import type { StageCopy } from "./selection";
 
+/** One figure in a founders row: "$2.2M" over "pre-seed". */
+type FounderMetric = { value: string; label: string };
+
+/** One alumni venture in the founders table, in the words Venture supplied. */
+export type FounderRow = {
+  /** The venture (an organisation): its name and website. */
+  key: string;
+  name: string;
+  href?: string;
+  /** The cohort it came from ("ELAB 4.0"), where confirmed. */
+  edition?: string;
+  /** What it does, in one line. */
+  summary: string;
+  /** Up to four figures, as given. */
+  metrics: FounderMetric[];
+  /** Its backers: "Y Combinator F26", then a note on the round. */
+  backedBy?: { name: string; note?: string };
+};
+
+/** The ways in for partners of the program, one card each. */
+export const eLabInvolveKeys = [
+  "jury",
+  "keynote",
+  "workshop",
+  "other",
+] as const;
+export type ELabInvolveKey = (typeof eLabInvolveKeys)[number];
+
+/** A mail to the Venture team about one way in, its subject naming it. */
+export function involveMailUrl(email: string, title: string): string {
+  const subject = `ELAB: ${title}`;
+  const body = "Hi ELAB team,\n\n";
+  return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
 /**
  * The /e-lab page's published CMS copy model for the
  * `eLabCopy` singleton (see `../content.ts`). Text may hold `{{name}}`
@@ -29,13 +64,29 @@ export type ELabCopy = {
     /** A lit dot without a venture, before the cohort's name. */
     inviteLabel: string;
   };
-  /** The traced venture and the other alumni ventures. */
+  /** The traced venture and the founders of past batches. */
   ventures: {
     title: string;
-    /** After the funding figure, over the other ventures' logos. */
+    /** After the funding figure, over the founders table. */
     fundingNote: string;
-    /** The logo wall's name for assistive technology. */
-    logosLabel: string;
+    /** The founders table's heading. */
+    foundersTitle: string;
+    founders: FounderRow[];
+  };
+  /** The program's partners in three tiers; the logos are logo lists. */
+  partners: {
+    title: string;
+    lead: string;
+    iterationLabel: string;
+    workshopLabel: string;
+    pastLabel: string;
+  };
+  /** Ways for companies to take part, each a mail to the Venture team. */
+  involve: {
+    eyebrow: string;
+    title: string;
+    lead: string;
+    options: { key: ELabInvolveKey; title: string; detail: string }[];
   };
   /** Founders and investors in their own words. */
   voices: {

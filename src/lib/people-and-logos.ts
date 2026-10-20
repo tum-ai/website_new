@@ -128,7 +128,17 @@ export const logoListSurfaces = [
     value: "partner-marquee",
     title: "Partners: marquee artwork on dark (/partners hero)",
   },
-  { value: "e-lab-ventures", title: "E-Lab: alumni ventures (/e-lab)" },
+  { value: "e-lab-ventures", title: "ELAB: alumni ventures (/e-lab)" },
+  {
+    value: "e-lab-iteration-partners",
+    title:
+      "ELAB: iteration partners, the current cohort's main partners (/e-lab)",
+  },
+  {
+    value: "e-lab-workshop-partners",
+    title: "ELAB: workshop partners of the current cohort (/e-lab)",
+  },
+  { value: "e-lab-past-partners", title: "ELAB: past partners (/e-lab)" },
   {
     value: "rex-institutions",
     title: "Research: REX institutions (/research)",
@@ -161,7 +171,7 @@ export const personPlacements = [
   { value: "partner-profile", title: "Partner profile (/partners)" },
   {
     value: "e-lab-testimonial",
-    title: "E-Lab testimonial (/e-lab, homepage)",
+    title: "ELAB testimonial (/e-lab, homepage)",
   },
 ] as const;
 

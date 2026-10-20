@@ -9,7 +9,8 @@ test("derived facts follow edited base facts", () => {
     impact: { ...siteFactsFallback.impact, publicationVenues: ["A", "B"] },
     eLab: {
       ...siteFactsFallback.eLab,
-      currentIteration: "9.0",
+      currentIteration: "FALL ’29",
+      completedCohorts: 8,
       programWeeks: 3,
     },
   });
@@ -18,6 +19,6 @@ test("derived facts follow edited base facts", () => {
     publicationVenuesText: "A and B",
     eLabProgramSummary: "3-week equity-free AI startup incubator",
     eLabCompletedIterations: 8,
-    eLabCohortName: "E-Lab 9.0",
+    eLabCohortName: "ELAB FALL ’29",
   });
 });

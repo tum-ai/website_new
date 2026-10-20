@@ -5,6 +5,8 @@ import { getContentTokens } from "@/config/content-tokens";
 import { loadContent } from "@/lib/cms-content";
 import {
   CONTENT_IMAGE_PROJECTION,
+  type ContentParser,
+  contentArray,
   contentBoolean,
   contentError,
   contentImage,
@@ -21,7 +23,12 @@ import { fillCmsCopy } from "@/lib/content-copy";
 import { type FaqEntry, getFaqs } from "@/lib/faq-content";
 import { isDuration } from "@/lib/program-duration";
 import type { ELAB_COPY_QUERY_RESULT } from "@/lib/sanity.types.generated";
-import { type ELabCopy, eLabPageTokens } from "./data/copy";
+import {
+  type ELabCopy,
+  eLabInvolveKeys,
+  eLabPageTokens,
+  type FounderRow,
+} from "./data/copy";
 import type { GateFigure, StageCopy } from "./data/selection";
 
 /** The published E-Lab FAQ collection; editors may remove every entry. */
@@ -41,6 +48,8 @@ const ELAB_COPY_QUERY = defineQuery(`*[_id == "eLabCopy"][0]{
       name,
       description,
       approximate,
+      atLeast,
+      "photos": photos[]{ "image": image${CONTENT_IMAGE_PROJECTION}, caption },
       "id": key,
       duration{ amount, unit },
       "photo": photo${CONTENT_IMAGE_PROJECTION},
@@ -48,7 +57,22 @@ const ELAB_COPY_QUERY = defineQuery(`*[_id == "eLabCopy"][0]{
     }
   },
   field{ caption, inviteLabel },
-  ventures{ title, fundingNote, logosLabel },
+  ventures{
+    title,
+    fundingNote,
+    foundersTitle,
+    founders[]{
+      "key": venture->key,
+      "name": venture->name,
+      "href": venture->href,
+      edition,
+      summary,
+      metrics[]{ value, label },
+      backedBy{ name, note }
+    }
+  },
+  partners{ title, lead, iterationLabel, workshopLabel, pastLabel },
+  involve{ eyebrow, title, lead, options[]{ key, title, detail } },
   voices{ title, lead, foundersLabel, investorsLabel },
   closing{ title, followLabel, partnersReader, partnersText }
 }`);
@@ -57,9 +81,12 @@ const figures = [
   "applications",
   "admitted",
   "midterm",
-  "selectionDay",
   "finalPitch",
 ] as const satisfies readonly GateFigure[];
+const gatePhotoParser = contentObject({
+  image: contentImage,
+  caption: contentOptional(contentText),
+});
 const phaseParser = contentObject({
   id: contentString,
   name: contentString,
@@ -99,6 +126,27 @@ export function selectStages(value: unknown): StageCopy[] {
                   `${path}.approximate`,
                 ),
               }),
+          ...(stage.atLeast
+            ? {
+                atLeast: contentBoolean(
+                  stage.atLeast,
+                  label,
+                  `${path}.atLeast`,
+                ),
+              }
+            : {}),
+          ...(Array.isArray(stage.photos) && stage.photos.length > 0
+            ? {
+                photos: contentArray(gatePhotoParser)(
+                  stage.photos,
+                  label,
+                  `${path}.photos`,
+                ).map(({ image, caption }) => ({
+                  image,
+                  ...(caption ? { caption } : {}),
+                })),
+              }
+            : {}),
         };
       if (!isDuration(stage.duration))
         contentError(
@@ -136,6 +184,41 @@ export function selectStages(value: unknown): StageCopy[] {
     contentError(label, "gates.stages", "stage identifiers must be unique");
   return stages;
 }
+/** A founders row: its venture must resolve and carry at most four figures. */
+const founderParser: ContentParser<FounderRow> = (value, label, path) => {
+  const row = contentObject({
+    key: contentString,
+    name: contentString,
+    href: contentOptional(contentString),
+    edition: contentOptional(contentString),
+    summary: contentString,
+    metrics: contentArray(
+      contentObject({ value: contentString, label: contentString }),
+    ),
+    backedBy: contentOptional(
+      contentObject({
+        name: contentString,
+        note: contentOptional(contentString),
+      }),
+    ),
+  })(value, label, path);
+  if (row.metrics.length > 4)
+    contentError(label, `${path}.metrics`, "at most four figures fit a row");
+  const { href, edition, backedBy, ...rest } = row;
+  return {
+    ...rest,
+    ...(href ? { href } : {}),
+    ...(edition ? { edition } : {}),
+    ...(backedBy
+      ? {
+          backedBy: {
+            name: backedBy.name,
+            ...(backedBy.note ? { note: backedBy.note } : {}),
+          },
+        }
+      : {}),
+  };
+};
 const copyParser = contentObject({
   hero: contentObject({ title: contentString, lead: contentString }),
   gates: contentObject({
@@ -148,7 +231,28 @@ const copyParser = contentObject({
   ventures: contentObject({
     title: contentString,
     fundingNote: contentString,
-    logosLabel: contentString,
+    foundersTitle: contentString,
+    founders: contentArray(founderParser),
+  }),
+  partners: contentObject({
+    title: contentString,
+    lead: contentString,
+    iterationLabel: contentString,
+    workshopLabel: contentString,
+    pastLabel: contentString,
+  }),
+  involve: contentObject({
+    eyebrow: contentString,
+    title: contentString,
+    lead: contentString,
+    options: contentArray(
+      contentObject({
+        key: (value: unknown, label: string, path: string) =>
+          requireEnum(value, eLabInvolveKeys, label, path),
+        title: contentString,
+        detail: contentString,
+      }),
+    ),
   }),
   voices: contentObject({
     title: contentString,

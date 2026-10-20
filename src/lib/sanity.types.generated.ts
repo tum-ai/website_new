@@ -212,6 +212,13 @@ export type EventsCopy = {
   };
 };
 
+export type OrganizationReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "organization";
+};
+
 export type PersonReference = {
   _ref: string;
   _type: "reference";
@@ -235,15 +242,24 @@ export type ELabCopy = {
     scaleLabel: string;
     stages: Array<
       | {
-          figure:
-            | "applications"
-            | "admitted"
-            | "midterm"
-            | "selectionDay"
-            | "finalPitch";
+          figure: "applications" | "admitted" | "midterm" | "finalPitch";
           name: string;
           description: string;
           approximate?: boolean;
+          atLeast?: boolean;
+          photos?: Array<{
+            image: {
+              asset?: SanityImageAssetReference;
+              media?: unknown;
+              hotspot?: SanityImageHotspot;
+              crop?: SanityImageCrop;
+              alt?: string;
+              _type: "image";
+            };
+            caption?: string;
+            _type: "gatePhoto";
+            _key: string;
+          }>;
           _type: "gateStage";
           _key: string;
         }
@@ -276,7 +292,43 @@ export type ELabCopy = {
   ventures?: {
     title: string;
     fundingNote: string;
-    logosLabel: string;
+    foundersTitle: string;
+    founders: Array<{
+      venture: OrganizationReference;
+      edition?: string;
+      summary: string;
+      metrics: Array<{
+        value: string;
+        label: string;
+        _type: "founderMetric";
+        _key: string;
+      }>;
+      backedBy?: {
+        name: string;
+        note?: string;
+      };
+      _type: "founderRow";
+      _key: string;
+    }>;
+  };
+  partners?: {
+    title: string;
+    lead: string;
+    iterationLabel: string;
+    workshopLabel: string;
+    pastLabel: string;
+  };
+  involve?: {
+    eyebrow: string;
+    title: string;
+    lead: string;
+    options: Array<{
+      key: "jury" | "keynote" | "workshop" | "other";
+      title: string;
+      detail: string;
+      _type: "involveOption";
+      _key: string;
+    }>;
   };
   voices?: {
     title: string;
@@ -494,13 +546,6 @@ export type HomeCopy = {
     moreLabel: string;
     quote: PersonReference;
   };
-};
-
-export type OrganizationReference = {
-  _ref: string;
-  _type: "reference";
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: "organization";
 };
 
 export type LabSite = {
@@ -1008,6 +1053,9 @@ export type LogoList = {
     | "alumni-destinations"
     | "partner-marquee"
     | "e-lab-ventures"
+    | "e-lab-iteration-partners"
+    | "e-lab-workshop-partners"
+    | "e-lab-past-partners"
     | "rex-institutions";
   organizations: Array<
     {
@@ -1150,13 +1198,14 @@ export type SiteSettings = {
   };
   eLab: {
     currentIteration: string;
+    completedCohorts: number;
     ventureFundingMillions: number;
     selection: {
       applications: number;
       admitted: number;
       midterm: number;
-      selectionDay: number;
       finalPitch: number;
+      admittedUpTo?: number;
     };
     heroLogo: {
       asset?: SanityImageAssetReference;
@@ -1409,12 +1458,12 @@ export type AllSanitySchemaTypes =
   | SanityImageCrop
   | SanityImageHotspot
   | EventsCopy
+  | OrganizationReference
   | PersonReference
   | ELabCopy
   | Milestone
   | ApplyCopy
   | HomeCopy
-  | OrganizationReference
   | LabSite
   | Geopoint
   | Slug
@@ -1486,7 +1535,7 @@ export type CAMPAIGNS_QUERY_RESULT = Array<{
 
 // Source: ../config/site-settings-content.ts
 // Variable: SITE_SETTINGS_QUERY
-// Query: *[_type == "siteSettings" && _id == "siteSettings"][0]{ organization{foundingYear,activeMembers,alumni,majors,universities,nationalities,acceptanceRate,startedApplicationsPerBatch,linkedinAudience}, brandMission,impact{publications,publicationVenues,hackathonParticipants},community{makeathonSize}, contactEmails{general,partners,venture,recruitment},socialLinks{linkedin,instagram,github,x,youtube,facebook,tiktok,slack}, partnershipBooking{bookingUrl,bookingHost}, eLab{currentIteration,"programPhases":*[_type == "eLabCopy" && _id == "eLabCopy"][0].gates.stages[_type == "phaseStage"].duration{amount,unit},ventureFundingMillions,selection{applications,admitted,midterm,selectionDay,finalPitch},"heroLogo":heroLogo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}}, hackathons{makeathonUrl,league{name,url,foundedYear,finaleTeams,matches[]{key,label,makeathon,"city":event->city,"start":event->event_date,"end":coalesce(event->end_date,event->event_date)}}}, footerTagline,headerCtaFallback}
+// Query: *[_type == "siteSettings" && _id == "siteSettings"][0]{ organization{foundingYear,activeMembers,alumni,majors,universities,nationalities,acceptanceRate,startedApplicationsPerBatch,linkedinAudience}, brandMission,impact{publications,publicationVenues,hackathonParticipants},community{makeathonSize}, contactEmails{general,partners,venture,recruitment},socialLinks{linkedin,instagram,github,x,youtube,facebook,tiktok,slack}, partnershipBooking{bookingUrl,bookingHost}, eLab{currentIteration,completedCohorts,"programPhases":*[_type == "eLabCopy" && _id == "eLabCopy"][0].gates.stages[_type == "phaseStage"].duration{amount,unit},ventureFundingMillions,selection{applications,admitted,admittedUpTo,midterm,finalPitch},"heroLogo":heroLogo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}}, hackathons{makeathonUrl,league{name,url,foundedYear,finaleTeams,matches[]{key,label,makeathon,"city":event->city,"start":event->event_date,"end":coalesce(event->end_date,event->event_date)}}}, footerTagline,headerCtaFallback}
 export type SITE_SETTINGS_QUERY_RESULT = {
   organization: {
     foundingYear: number;
@@ -1530,6 +1579,7 @@ export type SITE_SETTINGS_QUERY_RESULT = {
   };
   eLab: {
     currentIteration: string;
+    completedCohorts: number;
     programPhases: Array<{
       amount: number;
       unit: "days" | "weeks";
@@ -1538,8 +1588,8 @@ export type SITE_SETTINGS_QUERY_RESULT = {
     selection: {
       applications: number;
       admitted: number;
+      admittedUpTo: number | null;
       midterm: number;
-      selectionDay: number;
       finalPitch: number;
     };
     heroLogo: {
@@ -1863,13 +1913,15 @@ export type COMMUNITY_COPY_QUERY_RESULT =
 
 // Source: ../features/e-lab/content.ts
 // Variable: ELAB_COPY_QUERY
-// Query: *[_id == "eLabCopy"][0]{  hero{ title, lead },  gates{    title,    lead,    scaleLabel,    stages[]{      _type,      figure,      name,      description,      approximate,      "id": key,      duration{ amount, unit },      "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},      photoCaption    }  },  field{ caption, inviteLabel },  ventures{ title, fundingNote, logosLabel },  voices{ title, lead, foundersLabel, investorsLabel },  closing{ title, followLabel, partnersReader, partnersText }}
+// Query: *[_id == "eLabCopy"][0]{  hero{ title, lead },  gates{    title,    lead,    scaleLabel,    stages[]{      _type,      figure,      name,      description,      approximate,      atLeast,      "photos": photos[]{ "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }}, caption },      "id": key,      duration{ amount, unit },      "photo": photo{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},      photoCaption    }  },  field{ caption, inviteLabel },  ventures{    title,    fundingNote,    foundersTitle,    founders[]{      "key": venture->key,      "name": venture->name,      "href": venture->href,      edition,      summary,      metrics[]{ value, label },      backedBy{ name, note }    }  },  partners{ title, lead, iterationLabel, workshopLabel, pastLabel },  involve{ eyebrow, title, lead, options[]{ key, title, detail } },  voices{ title, lead, foundersLabel, investorsLabel },  closing{ title, followLabel, partnersReader, partnersText }}
 export type ELAB_COPY_QUERY_RESULT =
   | {
       hero: null;
       gates: null;
       field: null;
       ventures: null;
+      partners: null;
+      involve: null;
       voices: null;
       closing: null;
     }
@@ -1881,6 +1933,14 @@ export type ELAB_COPY_QUERY_RESULT =
       gates: null;
       field: null;
       ventures: null;
+      partners: {
+        title: string;
+        lead: string;
+        iterationLabel: null;
+        workshopLabel: null;
+        pastLabel: null;
+      };
+      involve: null;
       voices: null;
       closing: null;
     }
@@ -1889,6 +1949,8 @@ export type ELAB_COPY_QUERY_RESULT =
       gates: null;
       field: null;
       ventures: null;
+      partners: null;
+      involve: null;
       voices: null;
       closing: {
         title: null;
@@ -1902,6 +1964,8 @@ export type ELAB_COPY_QUERY_RESULT =
       gates: null;
       field: null;
       ventures: null;
+      partners: null;
+      involve: null;
       voices: null;
       closing: {
         title: string;
@@ -1918,6 +1982,8 @@ export type ELAB_COPY_QUERY_RESULT =
       gates: null;
       field: null;
       ventures: null;
+      partners: null;
+      involve: null;
       voices: null;
       closing: {
         title: string;
@@ -1934,6 +2000,8 @@ export type ELAB_COPY_QUERY_RESULT =
       gates: null;
       field: null;
       ventures: null;
+      partners: null;
+      involve: null;
       voices: null;
       closing: {
         title: string;
@@ -1950,6 +2018,32 @@ export type ELAB_COPY_QUERY_RESULT =
       gates: null;
       field: null;
       ventures: null;
+      partners: null;
+      involve: null;
+      voices: null;
+      closing: {
+        title: string;
+        followLabel: null;
+        partnersReader: null;
+        partnersText: null;
+      } | null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+      } | null;
+      gates: null;
+      field: null;
+      ventures: null;
+      partners: {
+        title: string;
+        lead: string;
+        iterationLabel: null;
+        workshopLabel: null;
+        pastLabel: null;
+      } | null;
+      involve: null;
       voices: null;
       closing: {
         title: string;
@@ -1970,15 +2064,30 @@ export type ELAB_COPY_QUERY_RESULT =
         stages: Array<
           | {
               _type: "gateStage";
-              figure:
-                | "admitted"
-                | "applications"
-                | "finalPitch"
-                | "midterm"
-                | "selectionDay";
+              figure: "admitted" | "applications" | "finalPitch" | "midterm";
               name: string;
               description: string;
               approximate: boolean | null;
+              atLeast: boolean | null;
+              photos: Array<{
+                image: {
+                  src: string | null;
+                  width: number | null;
+                  height: number | null;
+                  alt: string | null;
+                  hotspot: {
+                    x: number;
+                    y: number;
+                  } | null;
+                  crop: {
+                    top: number;
+                    bottom: number;
+                    left: number;
+                    right: number;
+                  } | null;
+                };
+                caption: string | null;
+              }> | null;
               id: null;
               duration: null;
               photo: null;
@@ -1990,6 +2099,8 @@ export type ELAB_COPY_QUERY_RESULT =
               name: string;
               description: string;
               approximate: null;
+              atLeast: null;
+              photos: null;
               id: string;
               duration: {
                 amount: number;
@@ -2022,7 +2133,39 @@ export type ELAB_COPY_QUERY_RESULT =
       ventures: {
         title: string;
         fundingNote: string;
-        logosLabel: string;
+        foundersTitle: string;
+        founders: Array<{
+          key: string;
+          name: string;
+          href: string | null;
+          edition: string | null;
+          summary: string;
+          metrics: Array<{
+            value: string;
+            label: string;
+          }>;
+          backedBy: {
+            name: string;
+            note: string | null;
+          } | null;
+        }>;
+      } | null;
+      partners: {
+        title: string;
+        lead: string;
+        iterationLabel: string;
+        workshopLabel: string;
+        pastLabel: string;
+      } | null;
+      involve: {
+        eyebrow: string;
+        title: string;
+        lead: string;
+        options: Array<{
+          key: "jury" | "keynote" | "other" | "workshop";
+          title: string;
+          detail: string;
+        }>;
       } | null;
       voices: {
         title: string;
@@ -2344,7 +2487,12 @@ export type HACKATHONS_COPY_QUERY_RESULT =
       } | null;
       league: null;
       makeathon: null;
-      partners: null;
+      partners: {
+        title: string;
+        lead: string;
+        hostsPrefix: null;
+        moreLabel: null;
+      } | null;
       offer: null;
       closing: {
         title: string;
@@ -2768,6 +2916,26 @@ export type HOME_COPY_QUERY_RESULT =
       room: null;
       join: null;
       partners: null;
+    }
+  | {
+      hero: {
+        title: string;
+        lead: string;
+        partnersLabel: null;
+        photos: null;
+      } | null;
+      mission: null;
+      ledger: null;
+      programs: null;
+      room: null;
+      join: null;
+      partners: {
+        title: string;
+        lead: string;
+        moreLabel: null;
+        quote: null;
+        quotePlacement: null;
+      } | null;
     }
   | {
       hero: {
@@ -3568,7 +3736,10 @@ export type FAQ_QUERY_RESULT = Array<{
 export type LOGO_LISTS_QUERY_RESULT = Array<{
   surface:
     | "alumni-destinations"
+    | "e-lab-iteration-partners"
+    | "e-lab-past-partners"
     | "e-lab-ventures"
+    | "e-lab-workshop-partners"
     | "ehl-partners"
     | "partner-marquee"
     | "rex-institutions";

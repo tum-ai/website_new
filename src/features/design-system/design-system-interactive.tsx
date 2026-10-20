@@ -39,7 +39,7 @@ export function DesignSystemInteractive() {
             { value: "all", label: "All", count: 9 },
             { value: "hackathon", label: "Hackathon", count: 1 },
             { value: "speaker", label: "Speaker", count: 2 },
-            { value: "elab", label: "E-Lab", count: 2 },
+            { value: "elab", label: "ELAB", count: 2 },
           ]}
         />
       </div>

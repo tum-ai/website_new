@@ -7,7 +7,10 @@ import { callToActionLabels } from "./calls-to-action";
 
 /** The program: cohort, length, funding, the selection funnel and the logo. */
 export type ELabFacts = {
+  /** The cohort now running or recruiting, by season and year: "FALL ’26". */
   currentIteration: string;
+  /** Cohorts that have run so far; the current one is still ahead. */
+  completedCohorts: number;
   /** Weeks from kickoff to Final Pitch: the sum of the /e-lab phases (`programWeeksOf`). */
   programWeeks: number;
   /** Money raised by E-Lab ventures, in million euros. */
@@ -21,12 +24,12 @@ export type ELabFacts = {
   selection: {
     /** Team applications in one round (about this many). */
     applications: number;
-    /** Teams admitted to the cohort. */
+    /** Teams admitted to the cohort (at least this many). */
     admitted: number;
-    /** Teams that pitch their MVP at the Midterm Pitch. */
+    /** The top of a range of admitted teams ("15–20"), if one is given. */
+    admittedUpTo?: number;
+    /** Teams picked on Selection Day that pitch their MVP at the Midterm Pitch. */
     midterm: number;
-    /** Teams evaluated on Selection Day. */
-    selectionDay: number;
     /** Teams that pitch to investors at the Final Pitch. */
     finalPitch: number;
   };
@@ -50,8 +53,11 @@ export type ELabApplicationWindow = {
    */
   applicationDeadlineDate: string;
   applicationDeadlineTime: string;
-  /** When the next application phase opens; shown while applications are closed. */
-  nextApplicationWindow: string;
+  /**
+   * When the next application phase opens ("August"); shown while applications
+   * are closed. Absent while no next round is scheduled.
+   */
+  nextApplicationWindow?: string;
 };
 
 /** The instant applications close: the deadline itself, in Munich time. */
@@ -104,14 +110,14 @@ export function ventureFundingTextOf(millions: number): string {
   return `€${millions}M+`;
 }
 
-/** Cohorts that have run so far: the current one ("6.0") is still ahead. */
-export function eLabCompletedIterationsOf(currentIteration: string): number {
-  return Number.parseInt(currentIteration, 10) - 1;
+/** "ELAB FALL ’26". The program is written ELAB, without a hyphen. */
+export function eLabCohortNameOf(currentIteration: string): string {
+  return `ELAB ${currentIteration}`;
 }
 
-/** "E-Lab 6.0". */
-export function eLabCohortNameOf(currentIteration: string): string {
-  return `E-Lab ${currentIteration}`;
+/** "15–20" for a range of teams, else the count alone. */
+export function teamCountTextOf(teams: number, upTo?: number): string {
+  return upTo && upTo > teams ? `${teams}–${upTo}` : String(teams);
 }
 
 /** Copy that is the same in every phase. */
@@ -138,22 +144,26 @@ function phaseCopy(
     currentIteration,
     window,
   );
+  const next = window.nextApplicationWindow;
+  const closedStatus = next
+    ? `Applications open in ${next}`
+    : "Applications closed";
   return {
     /** Short status for teasers elsewhere on the site, e.g. the landing page. */
     teaserStatus: open
       ? `Applications open until ${window.applicationDeadlineDate}`
-      : `Applications open in ${window.nextApplicationWindow}`,
+      : closedStatus,
     /**
      * The apply button's label, or, while closed, the status badge in its
-     * place, which says when the next round opens.
+     * place, which says when the next round opens (if one is scheduled).
      */
-    ctaLabel: open
-      ? callToActionLabels.apply
-      : `Applications open in ${window.nextApplicationWindow}`,
+    ctaLabel: open ? callToActionLabels.apply : closedStatus,
     /** One sentence on where the round stands, e.g. for a closing band. */
     roundStatus: open
       ? `Applications for ${cohortName} close on ${deadline} (Munich time).`
-      : `Applications for ${cohortName} are closed. The next round opens in ${window.nextApplicationWindow}.`,
+      : next
+        ? `Applications for ${cohortName} are closed. The next round opens in ${next}.`
+        : `Applications for ${cohortName} are closed. The next round is announced on LinkedIn.`,
   } as const;
 }
 

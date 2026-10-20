@@ -3,7 +3,6 @@ import type { ContactEmails, PartnershipBooking, SocialLinks } from "./contact";
 import {
   type ELabFacts,
   eLabCohortNameOf,
-  eLabCompletedIterationsOf,
   eLabProgramSummaryOf,
   ventureFundingTextOf,
 } from "./e-lab";
@@ -43,7 +42,7 @@ export type DerivedSiteFacts = {
   eLabProgramSummary: string;
   /** Cohorts that have run so far (the current one is still ahead). */
   eLabCompletedIterations: number;
-  /** "E-Lab 6.0". */
+  /** "ELAB FALL ’26". */
   eLabCohortName: string;
   /** "€8M+": the ventures' funding, as every page states it. */
   ventureFundingText: string;
@@ -61,9 +60,7 @@ export function deriveSiteFacts(facts: SiteFacts): DerivedSiteFacts {
       facts.impact.publicationVenues,
     ),
     eLabProgramSummary: eLabProgramSummaryOf(facts.eLab.programWeeks),
-    eLabCompletedIterations: eLabCompletedIterationsOf(
-      facts.eLab.currentIteration,
-    ),
+    eLabCompletedIterations: facts.eLab.completedCohorts,
     eLabCohortName: eLabCohortNameOf(facts.eLab.currentIteration),
     ventureFundingText: ventureFundingTextOf(facts.eLab.ventureFundingMillions),
   };

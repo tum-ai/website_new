@@ -36,7 +36,7 @@ describe("the traced venture", () => {
         list(["organization-spherecast"]),
         list(["organization-accel"], "drafts.logolist-e-lab-ventures"),
       ]),
-    ).resolves.toMatch(/Add this organisation to the E-Lab ventures/);
+    ).resolves.toMatch(/Add this organisation to the ELAB ventures/);
   });
 
   test("is not checked while no list is published (the code list shows)", async () => {

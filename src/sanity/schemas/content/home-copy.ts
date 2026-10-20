@@ -8,7 +8,7 @@ const ledgerFigures = [
   { title: "Founding year", value: "founded" },
   { title: "Official members", value: "members" },
   { title: "Nationalities", value: "nationalities" },
-  { title: "Raised by E-Lab startups (€M)", value: "funding" },
+  { title: "Raised by ELAB startups (€M)", value: "funding" },
   { title: "Makeathon participants", value: "makeathon" },
   { title: "Publications", value: "publications" },
 ];
@@ -339,7 +339,7 @@ export const homeCopyType = defineType({
           to: [{ type: "person" }],
           options: { filter: 'placement == "e-lab-testimonial"' },
           description:
-            "An E-Lab testimonial by an investor or partner; it supplies the quote, name, portrait and logo.",
+            "An ELAB testimonial by an investor or partner; it supplies the quote, name, portrait and logo.",
           validation: (Rule) => Rule.required(),
         }),
       ],

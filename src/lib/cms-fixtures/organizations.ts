@@ -60,6 +60,9 @@ export const organizationsFixtureDocuments: CmsFixtureDocument[] = [
     "partner-marquee",
     "ehl-partners",
     "rex-institutions",
+    "e-lab-iteration-partners",
+    "e-lab-workshop-partners",
+    "e-lab-past-partners",
   ].map((surface) => ({
     _id: `logolist-${surface}`,
     _type: "logoList",

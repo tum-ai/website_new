@@ -302,7 +302,7 @@ export const partnersCopyType = defineType({
               options: {
                 list: [
                   { title: "Research", value: "research" },
-                  { title: "Venture (E-Lab)", value: "venture" },
+                  { title: "Venture (ELAB)", value: "venture" },
                   { title: "Hackathons", value: "hackathons" },
                 ],
                 layout: "radio",

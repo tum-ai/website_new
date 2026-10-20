@@ -54,7 +54,7 @@ export const eventType = defineType({
           { title: "Hackathon", value: "Hackathon" },
           { title: "Speaker", value: "Speaker" },
           { title: "Event", value: "Event" },
-          { title: "E-Lab", value: "E-Lab" },
+          { title: "ELAB", value: "E-Lab" },
         ],
       },
     }),

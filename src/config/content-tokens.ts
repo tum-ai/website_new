@@ -1,7 +1,11 @@
 import type { ContentTokens } from "@/lib/content-tokens";
 import { getLogoLists } from "@/lib/organization-content";
 import { formatList, formatListOr } from "@/lib/words";
-import { type ELabApplicationWindow, eLabApplicationCopyOf } from "./e-lab";
+import {
+  type ELabApplicationWindow,
+  eLabApplicationCopyOf,
+  teamCountTextOf,
+} from "./e-lab";
 import { leagueSummaryOf } from "./hackathons";
 import {
   type MembershipConfig,
@@ -61,7 +65,11 @@ export function contentTokensFor({
     // Raw; copy uses "eLab.ventureFunding" ("€8M+"). Kept because the CMS may hold it.
     "eLab.ventureFundingMillions": String(facts.eLab.ventureFundingMillions),
     "eLab.ventureFunding": derived.ventureFundingText,
-    "eLab.admittedTeams": String(facts.eLab.selection.admitted),
+    // "15–20" while the admitted teams are a range.
+    "eLab.admittedTeams": teamCountTextOf(
+      facts.eLab.selection.admitted,
+      facts.eLab.selection.admittedUpTo,
+    ),
     "org.foundingYear": String(org.foundingYear),
     "org.activeMembers": String(org.activeMembers),
     "org.alumni": String(org.alumni),

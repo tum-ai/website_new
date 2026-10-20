@@ -25,6 +25,9 @@ test("cleared optional logo collections stay empty", async () => {
     "partner-marquee": [],
     "ehl-partners": [],
     "e-lab-ventures": [],
+    "e-lab-iteration-partners": [],
+    "e-lab-workshop-partners": [],
+    "e-lab-past-partners": [],
     "rex-institutions": [],
   });
   expect(await getPartnerLogos()).toEqual({

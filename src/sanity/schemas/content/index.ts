@@ -71,7 +71,7 @@ export const contentSingletons: readonly { type: string; title: string }[] = [
   { type: "siteSettings", title: "Site settings" },
   // Phase 3: organizations (logos) and people
   { type: "partnersCopy", title: "Partners page copy" },
-  { type: "ventureTrace", title: "E-Lab traced venture" },
+  { type: "ventureTrace", title: "ELAB traced venture" },
   // Phase 4: page copy
   { type: "qandaCopy", title: "Q&A page" },
   { type: "communityCopy", title: "Community page" },
@@ -79,7 +79,7 @@ export const contentSingletons: readonly { type: string; title: string }[] = [
   { type: "researchCopy", title: "Research page" },
   { type: "homeCopy", title: "Homepage" },
   { type: "applyCopy", title: "Apply page" },
-  { type: "eLabCopy", title: "E-Lab page" },
+  { type: "eLabCopy", title: "ELAB page" },
   { type: "eventsCopy", title: "Events page" },
   { type: "hackathonsCopy", title: "Hackathons page" },
 ];

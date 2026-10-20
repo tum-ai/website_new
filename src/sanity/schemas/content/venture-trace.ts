@@ -37,7 +37,7 @@ async function validateCohort(cohort: unknown, context: ValidationContext) {
 }
 
 /**
- * The venture must be in the published E-Lab ventures logo list: the
+ * The venture must be in the published ELAB ventures logo list: the
  * runtime reader rejects a trace whose organization is not in that list.
  * Exported for tests.
  */
@@ -56,7 +56,7 @@ export async function validateListedVenture(
   if (!listed) return true;
   return listed.includes(id)
     ? true
-    : "Add this organisation to the E-Lab ventures logo list first: the section hides a venture that is not in it.";
+    : "Add this organisation to the ELAB ventures logo list first: the section hides a venture that is not in it.";
 }
 
 /**
@@ -67,7 +67,7 @@ export async function validateListedVenture(
  */
 export const ventureTraceType = defineType({
   name: "ventureTrace",
-  title: "E-Lab traced venture",
+  title: "ELAB traced venture",
   type: "document",
   description:
     "The alumni venture /e-lab follows through the gates, with its founder's quote and what it did next.",
@@ -78,7 +78,7 @@ export const ventureTraceType = defineType({
       type: "reference",
       to: [{ type: "organization" }],
       description:
-        "Pick one of the organisations in the E-Lab ventures logo list; the section hides if the venture is not in that list.",
+        "Pick one of the organisations in the ELAB ventures logo list; the section hides if the venture is not in that list.",
       validation: (Rule) => Rule.required().custom(validateListedVenture),
     }),
     defineField({
@@ -88,7 +88,7 @@ export const ventureTraceType = defineType({
       to: [{ type: "person" }],
       options: { filter: 'placement == "e-lab-testimonial"' },
       description:
-        "An E-Lab testimonial by one of the venture's founders. Its context must name the cohort below.",
+        "An ELAB testimonial by one of the venture's founders. Its context must name the cohort below.",
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -96,7 +96,7 @@ export const ventureTraceType = defineType({
       title: "Cohort",
       type: "string",
       description:
-        "The cohort the venture came out of, as the lead names it: “E-Lab 1.0”. It must match the founder's testimonial context.",
+        "The cohort the venture came out of, as the lead names it: “ELAB 1.0”. It must match the founder's testimonial context.",
       validation: (Rule) => Rule.required().max(20).custom(validateCohort),
     }),
     defineField({
@@ -109,7 +109,7 @@ export const ventureTraceType = defineType({
     }),
     defineField({
       name: "milestones",
-      title: "After the E-Lab",
+      title: "After ELAB",
       type: "array",
       description:
         "What the venture did next, newest facts last. The first one completes the lead's “went on to …”. Each needs a source the company or its investors publish.",
@@ -141,7 +141,7 @@ export const ventureTraceType = defineType({
   preview: {
     select: { title: "venture.name", subtitle: "cohort" },
     prepare: ({ title, subtitle }) => ({
-      title: title ?? "E-Lab traced venture",
+      title: title ?? "ELAB traced venture",
       subtitle,
     }),
   },

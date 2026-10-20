@@ -36,7 +36,7 @@ describe("FieldDots", () => {
       <FieldDots dots={dots} viewBox="-1 -1 3 3" radius={0.3} />,
     );
     const link = screen.getByRole("link", {
-      name: "Example Venture, an E-Lab venture (opens in a new tab)",
+      name: "Example Venture, an ELAB venture (opens in a new tab)",
     });
     expect(link).toHaveAttribute("href", "https://example.org/venture");
     expect(link).toHaveAttribute("target", "_blank");
