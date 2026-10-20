@@ -131,6 +131,7 @@ function FoundersTable({
                     className="text-fg text-heading-md underline-offset-4 hover:underline"
                   >
                     {row.name}
+                    <span className="sr-only"> (opens in a new tab)</span>
                   </a>
                 ) : (
                   <span className="text-fg text-heading-md">{row.name}</span>
