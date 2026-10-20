@@ -1,0 +1,234 @@
+/*
+ * Homepage-only styles: the hero aperture (the logomark as a window onto
+ * event photos, see HeroAperture) and its construction grid. The entrance is
+ * a single fade and rise that switches off under reduced motion.
+ */
+
+@layer components {
+  @keyframes home-aperture-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 3%, 0);
+    }
+  }
+
+  /*
+   * The aperture enters once its first photo has loaded (HeroAperture sets
+   * data-ready), so the mark and the image arrive together. Only while
+   * scripts run: without them the mark shows at once.
+   */
+  @media (scripting: enabled) {
+    .home-aperture-frame[data-ready="false"] {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .home-aperture-frame[data-ready="true"] {
+      animation: home-aperture-in 1.2s var(--ease-brand) both;
+    }
+  }
+
+  /*
+   * Where the mark sits. Phones and tablets: large and low behind the
+   * copy, dimmed so the headline keeps its contrast. From lg: beside the
+   * copy, cropped by the right edge like the brand guide's section slides.
+   */
+  .home-aperture-frame {
+    right: -34vw;
+    bottom: 7rem;
+    width: 118vw;
+    opacity: 0.5;
+  }
+
+  @media (min-width: 40rem) {
+    .home-aperture-frame {
+      right: -22vw;
+      width: 88vw;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .home-aperture-frame {
+      top: calc(var(--header-height) + 1.5rem);
+      right: -6vw;
+      bottom: auto;
+      width: min(58vw, 62rem);
+      opacity: 1;
+    }
+  }
+
+  /* The construction sheet's symmetric mark as an alpha mask; HeroAperture
+     sets --mark-mask from logomark-construction.ts. */
+  .home-aperture {
+    -webkit-mask: var(--mark-mask) center / 100% 100% no-repeat;
+    mask: var(--mark-mask) center / 100% 100% no-repeat;
+  }
+
+  /*
+   * The join band's logomark and its continuation in the footer (phones and
+   * tablets). The mark runs --join-mark-bleed past the band's bottom edge
+   * (the band clips it);
+   * the footer's own mark takes the same horizontal box and shows exactly
+   * that overflow from its top edge, in the footer's fainter tone, so the
+   * shape carries on across the seam a shade darker. Both boxes are sized in
+   * % of full-width containers, so they line up at every width.
+   */
+  :root:has([data-footer-bleed]) {
+    --join-mark-right: -40%;
+    --join-mark-width: 140%;
+    --join-mark-bleed: 12rem;
+  }
+
+  @media (min-width: 40rem) {
+    :root:has([data-footer-bleed]) {
+      --join-mark-right: -24%;
+      --join-mark-width: 85%;
+      --join-mark-bleed: 14rem;
+    }
+  }
+
+  /* From lg the mark is shown whole, lifted off the seam (a negative bleed),
+     so the footer's mark sits entirely above the footer and stays hidden. */
+  @media (min-width: 64rem) {
+    :root:has([data-footer-bleed]) {
+      --join-mark-right: -7%;
+      --join-mark-width: min(50%, 56rem);
+      --join-mark-bleed: -6rem;
+    }
+  }
+
+  .home-join-mark {
+    right: var(--join-mark-right);
+    bottom: calc(-1 * var(--join-mark-bleed));
+    width: var(--join-mark-width);
+  }
+
+  /*
+   * The join mark drawn on first view (JoinMark sets data-draw): the guides
+   * run out from their start points, the circles trace and their centre
+   * marks appear, the mark's outline traces, then the fill comes up and the
+   * outline fades, leaving the static mark. Two deliberate exceptions to the
+   * motion rules (docs/design-system.md): the traces animate
+   * stroke-dashoffset (a stroke can't be drawn with transform or opacity,
+   * and it repaints one SVG), and the staged sequence runs about 3s, the
+   * outline trace alone 1.6s, so it reads as drawn. The outline layer only
+   * shows while drawing; when its fade ends JoinMark returns to idle, so no
+   * dash outlives the entrance.
+   */
+  .home-join-outline {
+    opacity: 0;
+  }
+
+  @keyframes home-draw-grow {
+    from {
+      transform: scale(0);
+    }
+  }
+
+  @keyframes home-draw-trace {
+    from {
+      stroke-dashoffset: var(--draw-length);
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes home-draw-fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes home-draw-fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  /* The circles' hairlines are non-scaling, so their dashes count in screen
+     pixels: circumference times the sheet's rendered scale (JoinMark sets
+     --sheet-scale). */
+  .home-draw-circles circle {
+    --circle-length: calc(var(--circumference) * var(--sheet-scale, 1) * 1px);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .home-join-mark[data-draw="pending"] {
+      .home-join-fill,
+      .home-draw-ticks {
+        opacity: 0;
+      }
+
+      .home-draw-guides line {
+        transform: scale(0);
+      }
+
+      .home-draw-circles circle {
+        stroke-dasharray: var(--circle-length);
+        stroke-dashoffset: var(--circle-length);
+      }
+
+      .home-join-outline {
+        opacity: 1;
+        stroke-dasharray: var(--mark-length);
+        stroke-dashoffset: var(--mark-length);
+      }
+    }
+
+    .home-join-mark[data-draw="drawing"] {
+      /* An even pen speed for the traces: ease-brand front-loads them, so
+         the outline looked finished before it read as being drawn. */
+      --ease-draw: cubic-bezier(0.65, 0, 0.35, 1);
+
+      .home-draw-guides line {
+        animation: home-draw-grow 0.9s var(--ease-brand) calc(var(--i) * 40ms)
+          both;
+      }
+
+      .home-draw-circles circle {
+        --draw-length: var(--circle-length);
+        stroke-dasharray: var(--circle-length);
+        animation: home-draw-trace 1s var(--ease-draw) 0.3s both;
+      }
+
+      .home-draw-ticks {
+        animation: home-draw-fade-in 0.4s var(--ease-brand) 1.2s both;
+      }
+
+      .home-join-outline {
+        --draw-length: var(--mark-length);
+        stroke-dasharray: var(--mark-length);
+        animation:
+          home-draw-trace 1.6s var(--ease-draw) 0.5s both,
+          home-draw-fade-out 0.8s var(--ease-brand) 2.3s both;
+      }
+
+      .home-join-fill {
+        animation: home-draw-fade-in 0.9s var(--ease-brand) 1.9s both;
+      }
+    }
+  }
+}
+
+/*
+ * The footer is shared by every page and styles its mark with utilities, so
+ * the override lives in the utilities layer; the :has() guard limits it to a
+ * page that carries the join band's mark.
+ */
+@layer utilities {
+  :root:has([data-footer-bleed]) [data-footer-mark] {
+    top: var(--join-mark-bleed);
+    right: var(--join-mark-right);
+    bottom: auto;
+    width: var(--join-mark-width);
+    height: auto;
+    aspect-ratio: 477 / 406;
+    translate: 0 -100%;
+    animation: none;
+  }
+}

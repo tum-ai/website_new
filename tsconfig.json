@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    "target": "ES2022",
     "lib": [
       "dom",
       "dom.iterable",
@@ -25,26 +25,35 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@test/*": [
+        "./test/*"
       ]
     },
     "allowImportingTsExtensions": true
   },
+  // Next.js requires `<distDir>/types` and `<distDir>/dev/types` here for every
+  // dist dir it runs with (`.next` on Vercel, `.next-dev` for `pnpm dev`,
+  // `.next-prod` for build, start and typecheck) and rewrites this file if one
+  // is missing.
   "include": [
+    "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "next-env.d.ts",
-    ".next-test/types/**/*.ts",
-    ".next-test/dev/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     ".next-dev/types/**/*.ts",
     ".next-dev/dev/types/**/*.ts",
     ".next-prod/types/**/*.ts",
-    ".next-prod/dev/types/**/*.ts",
-    ".next-typecheck/types/**/*.ts",
-    ".next-typecheck/dev/types/**/*.ts"
+    ".next-prod/dev/types/**/*.ts"
   ],
+  // Dev-server output is never type-checked by `pnpm build` or `pnpm typecheck`:
+  // each of those validates its own freshly generated route types, so a running
+  // or stale dev server (routes moved since it last ran) cannot break them.
+  // `next-env.d.ts` still imports the dev route types for the editor.
   "exclude": [
-    "node_modules"
+    "node_modules",
+    ".next/dev",
+    ".next-dev"
   ]
 }

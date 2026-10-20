@@ -1,0 +1,25 @@
+/*
+ * /projects only: the load moment of the hero figure. The AI circle fades
+ * in, then each field circle slides out from the centre along its own axis
+ * (--seat-x, --seat-y, set per seat from the geometry) into place, clockwise.
+ * Transform and opacity only; nothing moves under reduced motion.
+ */
+
+@layer components {
+  @keyframes overlaps-part-in {
+    from {
+      opacity: 0;
+      transform: translate(
+        calc(var(--seat-x, 0) * -18%),
+        calc(var(--seat-y, 0) * -18%)
+      );
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .overlaps-hero .overlaps-part {
+      animation: overlaps-part-in 0.9s var(--ease-brand) both;
+      animation-delay: var(--seat-delay, 160ms);
+    }
+  }
+}

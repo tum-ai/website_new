@@ -1,0 +1,9 @@
+# zizmor configuration (workflow-lint.yml passes it with --config).
+# Audits: https://docs.zizmor.sh/audits/
+rules:
+  # Suggests GitHub's self-repository syntax (`uses: $/.github/actions/setup`,
+  # July 2026) over `./.github/actions/setup`. actionlint (the other step in
+  # workflow-lint.yml) doesn't parse `$/` yet and rejects the workflow, so the
+  # local actions keep `./`. Revisit when actionlint supports it.
+  self-repository:
+    disable: true

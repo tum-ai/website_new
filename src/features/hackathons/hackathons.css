@@ -1,0 +1,162 @@
+/*
+ * /hackathons only: the hero's replay and its load moment.
+ *
+ * Replay. On wide screens with motion allowed, the hero's band is taller
+ * than the screen and its stage sticks to the top while the band scrolls
+ * by; `RibbonReplay` turns that scroll into the playhead (--playhead) and
+ * the point up to which marks are lit (--lit). A mark is lit once --lit has
+ * reached its place on the track (--x); the CSS keeps the comparison, so
+ * the marks need no script of their own. Without the replay --lit is 1 and
+ * every mark is lit.
+ *
+ * Load. The axis draws in from the left, and each hackathon grows out of it
+ * as the axis passes its date: Makeathons rise, the others drop into their
+ * lanes. Transform and opacity only; under reduced motion the ribbon is
+ * simply there.
+ */
+
+@layer components {
+  .hk-mark {
+    opacity: clamp(0.16, calc((var(--lit, 1) - var(--x, 0)) * 1000 + 1), 1);
+  }
+
+  @media (min-width: 48rem) {
+    .hk-stage {
+      min-height: 100svh;
+    }
+  }
+
+  /*
+   * Phones: the ribbon at a readable scale, wider than the screen, in a
+   * strip that scrolls sideways edge to edge (`RibbonReplay` opens it on the
+   * next hackathon). The track stays wider than RIBBON.referenceWidth, so
+   * its lanes never collide; the block padding keeps the playhead and the
+   * slider's hit area inside the scroll box, and the edges fade to show the
+   * figure runs on.
+   */
+  @media (max-width: 47.99rem) {
+    .hk-scroller {
+      margin: -1rem calc(var(--gutter) * -1);
+      padding: 1rem var(--gutter);
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scrollbar-width: none;
+      mask-image: linear-gradient(
+        to right,
+        transparent,
+        black var(--gutter),
+        black calc(100% - var(--gutter)),
+        transparent
+      );
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      & > * {
+        min-width: 56rem;
+      }
+    }
+  }
+
+  @media (min-width: 48rem) and (prefers-reduced-motion: no-preference) {
+    /* The scroll the replay takes: the band is this much taller than the stage. */
+    .hk-replay {
+      height: 240svh;
+    }
+
+    .hk-stage {
+      position: sticky;
+      top: 0;
+    }
+  }
+
+  @keyframes hk-axis-in {
+    from {
+      transform: scaleX(0);
+    }
+  }
+
+  @keyframes hk-mark-in {
+    from {
+      transform: scaleY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hk-mark {
+      transition: opacity 0.3s var(--ease-brand);
+    }
+
+    .hk-animate .hk-axis {
+      animation: hk-axis-in 0.8s var(--ease-brand) 0.2s both;
+    }
+
+    .hk-animate .hk-mark {
+      animation: hk-mark-in 0.4s var(--ease-brand) both;
+      animation-delay: calc(0.2s + var(--x, 0) * 0.8s);
+    }
+
+    .hk-animate .hk-mark[data-lane="above"] {
+      transform-origin: bottom;
+    }
+
+    .hk-animate .hk-mark[data-lane="below"] {
+      transform-origin: top;
+    }
+  }
+}
+
+/*
+ * The Makeathon opener's dawn (MakeathonDawn). The sun waits below the
+ * horizon, the band's bottom edge: only its glow and the top of its arc show.
+ * While the band scrolls through the screen it lifts a little, never fully
+ * up; it rises on the Makeathon's own site. Translate only; still under
+ * reduced motion and where scroll timelines are missing.
+ */
+@layer components {
+  .mk-sky {
+    --halftone-mask: linear-gradient(to top, #000 10%, transparent 82%);
+  }
+
+  .mk-dawn {
+    position: absolute;
+    inset: 0;
+    z-index: -10;
+    pointer-events: none;
+    /* Cut at the horizon only; the glow may reach up into the sky. */
+    clip-path: inset(-100vh -100vw 0 -100vw);
+  }
+
+  .mk-dawn .sun {
+    bottom: 0;
+    left: 50%;
+    width: clamp(9rem, 22vw, 20rem);
+    translate: -50% 78%;
+  }
+
+  @media (min-width: 64rem) {
+    .mk-dawn .sun {
+      left: 79%;
+    }
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .mk-dawn .sun {
+        animation: mk-dawn linear both;
+        animation-timeline: view();
+        animation-range: entry 0% exit 40%;
+      }
+    }
+  }
+
+  @keyframes mk-dawn {
+    from {
+      translate: -50% 90%;
+    }
+    to {
+      translate: -50% 72%;
+    }
+  }
+}
