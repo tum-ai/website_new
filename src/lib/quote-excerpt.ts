@@ -25,9 +25,16 @@ export function normaliseQuoteText(text: string): string {
 /**
  * Whether `excerpt` is a passage of `text`, compared after
  * {@link normaliseQuoteText}. Quote marks around the excerpt are ignored
- * (the page adds its own); an empty excerpt is none.
+ * (the page adds its own), and so is the case of its first letter: a quote
+ * cut from mid-sentence ("…: within my first month") may open with a
+ * capital. An empty excerpt is none.
  */
 export function isExcerptOf(excerpt: string, text: string): boolean {
   const words = normaliseQuoteText(excerpt).replace(/^["']+|["']+$/g, "");
-  return words.trim() !== "" && normaliseQuoteText(text).includes(words);
+  if (words.trim() === "") return false;
+  const source = normaliseQuoteText(text);
+  const rest = words.slice(1);
+  return [words[0]?.toLowerCase(), words[0]?.toUpperCase()].some((first) =>
+    source.includes(`${first}${rest}`),
+  );
 }

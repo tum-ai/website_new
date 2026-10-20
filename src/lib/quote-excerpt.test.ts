@@ -11,6 +11,11 @@ test("an excerpt is a passage of the story, word for word", () => {
   expect(isExcerptOf("  ", story)).toBe(false);
 });
 
+test("a quote cut from mid-sentence may capitalise its first letter only", () => {
+  expect(isExcerptOf("Let me lead a team.", story)).toBe(true);
+  expect(isExcerptOf("Let Me lead a team.", story)).toBe(false);
+});
+
 test("typography that doesn't change the words is evened out", () => {
   expect(
     isExcerptOf(`It's the "make-it-happen" mindset that stuck.`, story),
