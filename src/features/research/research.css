@@ -1,0 +1,51 @@
+/*
+ * /research only: the project tiles' motifs (below) and the hero globe's
+ * city labels. cobe publishes each
+ * marker's position as a CSS anchor (`--cobe-<id>`) and whether it faces
+ * the viewer as `--cobe-visible-<id>` on :root (ResearchGlobe sets the
+ * label's opacity from it). Browsers without anchor positioning show the
+ * globe without labels.
+ */
+
+@layer components {
+  .research-globe-label {
+    display: none;
+  }
+
+  @supports (anchor-name: --research) {
+    .research-globe-label {
+      display: block;
+      position: absolute;
+      position-anchor: var(--anchor);
+      bottom: anchor(top);
+      left: anchor(center);
+      translate: -50% -0.5rem;
+      white-space: nowrap;
+      pointer-events: none;
+      transition: opacity 300ms var(--ease-brand);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .research-globe-label {
+      transition: none;
+    }
+  }
+
+  /*
+   * A project tile's motif (research-motifs.tsx): line work kept one pixel
+   * wide however the tile scales, faded out towards the centre so the logos
+   * stand on a clear ground.
+   */
+  .research-motif {
+    mask-image: radial-gradient(
+      ellipse 50% 50% at 50% 50%,
+      transparent 34%,
+      black 82%
+    );
+  }
+
+  .research-motif * {
+    vector-effect: non-scaling-stroke;
+  }
+}

@@ -9,8 +9,8 @@ extend-exclude = [
   "pnpm-lock.yaml",
   "*.svg",
   # German legal prose (Impressum / Datenschutz).
-  "src/views/footer/Imprint.tsx",
-  "src/views/footer/Privacy.tsx",
+  "src/features/legal/imprint-page.tsx",
+  "src/features/legal/privacy-page.tsx",
 ]
 
 [default]
@@ -18,6 +18,8 @@ extend-ignore-re = [
   # Known copy bug (stray German "oder" merging two draft sentences) flagged
   # separately for content review, not silenced as a legitimate word.
   "to the broader community\\. oder The Marketing Department",
+  # The English ordinal suffix for "two" ("22nd"), in config/membership.ts.
+  'two: "nd"',
 ]
 
 [default.extend-words]
@@ -29,3 +31,9 @@ Academicus = "Academicus"
 Subtile = "Subtile"
 Elemente = "Elemente"
 Fokus = "Fokus"
+
+# Sanity document identifiers (`_id`, `_rev`, `_ref`, `_key`) are opaque
+# random strings, e.g. in test/fixtures/production-documents.json, the old
+# site's documents kept with their real ids.
+[type.json]
+extend-ignore-re = ['"_(?:id|rev|ref|key)":\s*"[^"]*"']

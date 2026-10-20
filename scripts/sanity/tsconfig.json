@@ -1,0 +1,14 @@
+{
+  // tsx config for the Sanity tools (copy, readiness and focused migrations): the root
+  // config plus a stub for `server-only`, as in vitest.aliases.ts. The
+  // readiness invokes server-only content readers; outside Next's
+  // react-server bundle the real package throws on import.
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["../../src/*"],
+      "@test/*": ["../../test/*"],
+      "server-only": ["../../test/stubs/empty.ts"]
+    }
+  }
+}

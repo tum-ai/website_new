@@ -54,9 +54,18 @@ export const eventType = defineType({
           { title: "Hackathon", value: "Hackathon" },
           { title: "Speaker", value: "Speaker" },
           { title: "Event", value: "Event" },
-          { title: "E-Lab", value: "E-Lab" },
+          { title: "ELAB", value: "E-Lab" },
         ],
       },
+    }),
+    defineField({
+      name: "hosts",
+      title: "Co-hosts",
+      type: "array",
+      of: [{ type: "string" }],
+      options: { layout: "tags" },
+      description:
+        'Companies, labs and initiatives that ran or backed the event with TUM.ai: co-hosts, sponsors and challenge partners, one name each (e.g. "Anthropic"). Not speakers or jury members. /events lists every name in its hero.',
     }),
     defineField({
       name: "poster",

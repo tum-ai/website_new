@@ -1,0 +1,17 @@
+# Git hooks (https://lefthook.dev). `pnpm install` installs them (skipped when
+# CI is set); run `pnpm exec lefthook install` to install them by hand.
+pre-commit:
+  parallel: true
+  jobs:
+    - name: biome
+      glob: "*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,json,jsonc,css}"
+      run: pnpm exec biome check --write --staged --no-errors-on-unmatched --files-ignore-unknown=true
+      stage_fixed: true
+
+    - name: typos
+      run: |
+        if command -v typos >/dev/null 2>&1; then
+          typos --force-exclude {staged_files}
+        else
+          echo "typos is not installed; skipping (brew install typos-cli)."
+        fi

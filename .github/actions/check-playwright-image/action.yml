@@ -1,0 +1,34 @@
+name: Check the Playwright image
+description: >-
+  Fail early when the job's Playwright container image doesn't carry the
+  browser builds the installed @playwright/test expects, which means the image
+  tag and the package version drifted apart. Run it after the setup action, in
+  a job that runs in mcr.microsoft.com/playwright.
+
+runs:
+  using: composite
+  steps:
+    - name: Compare the image's browsers with @playwright/test
+      shell: bash
+      # The image tag names a Playwright version, and each version pins its
+      # own browser builds (chromium-<rev>, webkit-<rev> under /ms-playwright).
+      # Checking the builds rather than a copied version string keeps the tag
+      # in one place per job.
+      run: |
+        version="$(node -p "require('@playwright/test/package.json').version")"
+        locations="$(pnpm exec playwright install --dry-run chromium webkit \
+          | sed -n 's/^ *Install location: *//p' \
+          | grep -E '/(chromium|webkit)-[0-9]+$' || true)"
+        if [ -z "$locations" ]; then
+          echo "::error::Could not read the browser locations from 'playwright install --dry-run'."
+          exit 1
+        fi
+        status=0
+        for dir in $locations; do
+          if [ ! -d "$dir" ]; then
+            echo "::error::$dir is missing: the container image doesn't match @playwright/test $version. Set the image to mcr.microsoft.com/playwright:v$version-noble in ci.yml (E2E and Visual) and e2e-snapshots.yml."
+            status=1
+          fi
+        done
+        [ "$status" = 0 ] && echo "The image has the browsers of @playwright/test $version."
+        exit "$status"
