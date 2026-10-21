@@ -7,3 +7,20 @@
 /* The site layout supplies --font-manrope through next/font/local.
    Shared tokens, utilities and Safari shell defaults belong to the pinned kit;
    only application-specific styles are maintained here. */
+
+/* Safari 26 tints its status bar and toolbar from the backdrop or the root
+   canvas behind the open mobile menu. Both are brand black, so the ink panel
+   looked cut off at the top and bottom. While the menu is open, both take the
+   panel's colour (the ink tone), so any mix of them still reads as the panel.
+   Stopgap until the kit's fullscreen DialogContent does this itself; the class
+   and `role` come from @tum.ai/ui-kit's Header and Base UI's Dialog.Backdrop. */
+html:has(.group\/menu-panel[data-open]) {
+  background-color: var(--color-violet-950);
+}
+:has(> .group\/menu-panel) > [role="presentation"] {
+  background-color: color-mix(
+    in srgb,
+    var(--color-violet-950) 65%,
+    transparent
+  );
+}
