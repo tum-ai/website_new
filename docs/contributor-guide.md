@@ -190,8 +190,9 @@ Edit `src/config/seo.ts`. Build URLs with `absoluteUrl()` from `src/config/site.
 
 ### Host redirects
 
-`src/lib/redirects.ts` (logic, tested) and `src/proxy.ts` (Next 16's replacement for middleware).
-Today every path on `join.tum-ai.com` redirects to `/apply`.
+`src/lib/redirects.ts` (the rules, tested), returned by `redirects()` in `next.config.ts`. Today
+every path on `join.tum-ai.com` redirects to `/apply`. Keep host redirects in the config rather than
+a `proxy.ts`: a proxy runs before every request on every host.
 
 ## Draft preview and staging
 

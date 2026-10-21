@@ -45,7 +45,6 @@ src/
 │                                  mock CMS, time, security, redirects
 ├── sanity/                        Studio config (one workspace), desk structure, CLI config, schemas
 ├── styles/index.css               kit stylesheet imports and app-owned partner rotation
-├── proxy.ts                       host redirects (Next 16's replacement for middleware)
 └── architecture.test.ts           the import-rule fitness test
 ```
 
@@ -110,7 +109,7 @@ built-in through any chain of imports (Turbopack would fail the production build
 | Module | May import |
 | --- | --- |
 | `app` | `features/<x>/<name>-page.tsx` and page `.css`, components, config, lib, styles, app (not sanity or the studio) |
-| `src/*.ts` (`proxy.ts`) | config, lib |
+| `src/*.ts` (top-level files) | config, lib |
 | `app/studio` | sanity, lib (no site shell, CSS or features) |
 | `features/<x>` | its own files except `.css`, `features/<y>` through its `index.ts` or `server.ts`, `components/shell`, `@tum.ai/ui-kit`, `components/json-ld`, config, lib |
 | `features/<x>/index.ts`, `server.ts` | its own feature's files except pages; an index reaches no server-only module |
@@ -325,8 +324,8 @@ output ([ADR 0008](adr/0008-dist-dir-isolation.md)).
 ## Deployment
 
 Vercel deploys the repository root as one Next.js app (`vercel.json`). Preview deployments act as
-staging for CMS changes and draft preview, and they render `/design-system`. `src/proxy.ts`
-redirects every path on `join.tum-ai.com` to `/apply`.
+staging for CMS changes and draft preview, and they render `/design-system`. `next.config.ts`
+redirects every path on `join.tum-ai.com` to `/apply` (rules in `src/lib/redirects.ts`).
 
 ## Tests
 
