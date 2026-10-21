@@ -104,12 +104,21 @@ describe("ResearchGlobe on a touch screen", () => {
   const globe = { update: vi.fn(), destroy: vi.fn() };
   let frames = new Map<number, FrameRequestCallback>();
   let nextFrame = 1;
+  let frameTime = 0;
 
-  /** Runs every animation frame asked for so far. */
+  /** Runs every animation frame asked for so far, one 60 Hz frame later. */
   function flushFrames() {
     const due = [...frames.values()];
     frames = new Map();
-    for (const callback of due) callback(0);
+    frameTime += 16;
+    for (const callback of due) callback(frameTime);
+  }
+
+  /** Runs frames until nothing asks for another (a zoom has settled). */
+  function settle() {
+    for (let frame = 0; frames.size > 0 && frame < 500; frame++) {
+      flushFrames();
+    }
   }
 
   /** What the last draw put on screen. */
@@ -222,6 +231,36 @@ describe("ResearchGlobe on a touch screen", () => {
     expect(zoomIn).toBeDisabled();
     doubleTap();
     expect(zoomOut).toBeDisabled();
+  });
+
+  test("a turn during a zoom animation stays where the reader left it", async () => {
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn((query: string) => ({
+        matches: false,
+        media: query,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      })),
+    );
+    await renderTouchGlobe();
+    const globe = screen.getByRole("slider");
+    const zoomIn = screen.getByRole("button", { name: "Zoom in" });
+
+    // An undisturbed first zoom ends centred on home.
+    fireEvent.click(zoomIn);
+    act(settle);
+    const centred = Number(globe.getAttribute("aria-valuenow"));
+
+    // A second zoom keeps the centre; a turn made while it runs must hold
+    // instead of being eased back to the zoom's starting angles.
+    fireEvent.click(zoomIn);
+    act(flushFrames);
+    fireEvent.keyDown(globe, { key: "ArrowRight" });
+    act(settle);
+    expect(Number(globe.getAttribute("aria-valuenow"))).toBeGreaterThan(
+      centred,
+    );
   });
 
   test("a drag between two taps is no double tap", async () => {
