@@ -78,7 +78,12 @@ describe("HeroAperture", () => {
   test("mounts only the next photo after the page load, hidden from assistive technology", () => {
     const photos = [
       ...heroPhotos,
-      { src: "/assets/fixtures/photo-3.svg", width: 960, height: 640, alt: "" },
+      {
+        src: "/assets/fixtures/photo.svg?third",
+        width: 960,
+        height: 640,
+        alt: "",
+      },
     ];
     const { container } = render(<HeroAperture photos={photos} />);
     expect(container.querySelectorAll("img")).toHaveLength(2);
@@ -102,7 +107,12 @@ describe("HeroAperture", () => {
     vi.useFakeTimers();
     const photos = [
       ...heroPhotos,
-      { src: "/assets/fixtures/photo-3.svg", width: 960, height: 640, alt: "" },
+      {
+        src: "/assets/fixtures/photo.svg?third",
+        width: 960,
+        height: 640,
+        alt: "",
+      },
     ];
     const { container } = render(<HeroAperture photos={photos} />);
     expect(container.querySelectorAll("img")).toHaveLength(2);
