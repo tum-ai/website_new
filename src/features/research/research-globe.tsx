@@ -49,8 +49,9 @@ const DOUBLE_TAP_PX = 24;
 /** A touch that travels further than this (px) is a drag, not a tap. */
 const TAP_SLOP_PX = 8;
 /**
- * Share of the remaining distance a zoom covers per animation frame: an
- * ease-out that settles in about half a second at 60 Hz.
+ * Share of the remaining distance a zoom covers per 60 Hz frame (`FRAME_MS`),
+ * scaled to the real frame time: an ease-out that settles in about half a
+ * second however fast the device draws.
  */
 const ZOOM_EASE = 0.18;
 /** A zoom has arrived once scale and angles are this close to the goal. */
@@ -296,7 +297,11 @@ export function ResearchGlobe({
     };
     const report = () => setLongitude(centerLongitude(view.phi));
 
+    // Whether a running zoom still steers the angles; a turn by the reader
+    // takes over, or the zoom would pull the view back under their finger.
+    let steering = false;
     const turn = (phi: number, theta: number) => {
+      steering = false;
       // Turns slow down as the view closes in.
       view.phi += phi / view.scale;
       view.theta = Math.max(
@@ -330,20 +335,34 @@ export function ResearchGlobe({
         report();
         return;
       }
-      const step = () => {
-        view.scale += (goal - view.scale) * ZOOM_EASE;
-        view.phi += (goalPhi - view.phi) * ZOOM_EASE;
-        view.theta += (goalTheta - view.theta) * ZOOM_EASE;
+      steering = true;
+      let last: number | undefined;
+      const step = (now: number) => {
+        // The first frame has no frame time yet: it moves one 60 Hz step.
+        const elapsed = last === undefined ? FRAME_MS : now - last;
+        last = now;
+        const ease = 1 - (1 - ZOOM_EASE) ** (elapsed / FRAME_MS);
+        view.scale += (goal - view.scale) * ease;
+        if (steering) {
+          view.phi += (goalPhi - view.phi) * ease;
+          view.theta += (goalTheta - view.theta) * ease;
+        }
         const settled =
           Math.abs(goal - view.scale) < ZOOM_SETTLED_SCALE &&
-          Math.abs(goalPhi - view.phi) < ZOOM_SETTLED_ANGLE &&
-          Math.abs(goalTheta - view.theta) < ZOOM_SETTLED_ANGLE;
+          (!steering ||
+            (Math.abs(goalPhi - view.phi) < ZOOM_SETTLED_ANGLE &&
+              Math.abs(goalTheta - view.theta) < ZOOM_SETTLED_ANGLE));
         if (settled) {
-          Object.assign(view, { scale: goal, phi: goalPhi, theta: goalTheta });
+          view.scale = goal;
+          if (steering) Object.assign(view, { phi: goalPhi, theta: goalTheta });
+          steering = false;
         }
         drawNow(settled);
-        if (settled) report();
-        else zooming = requestAnimationFrame(step);
+        if (settled) {
+          if (!pointers.size && !glide) report();
+        } else {
+          zooming = requestAnimationFrame(step);
+        }
       };
       zooming = requestAnimationFrame(step);
     };
