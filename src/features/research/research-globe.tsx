@@ -30,6 +30,24 @@ const MAP_SAMPLES = 16000;
 const MAP_SAMPLES_MAX = 50000;
 /** How long the globe redraws after creation, while its map loads. */
 const SETTLE_MS = 1500;
+/** How often it redraws in that time: the fade-in hides the gaps. */
+const SETTLE_EVERY_MS = 150;
+/** The globe is built once it comes this close to the viewport. */
+const NEAR_VIEWPORT = "200px";
+/** Longest wait for an idle moment before building it anyway. */
+const IDLE_TIMEOUT_MS = 1000;
+/**
+ * Markers and arcs are rebuilt for a new scale once it drifts this far
+ * (as a share) from the scale they were drawn at, and again at rest.
+ */
+const REBUILD_DRIFT = 0.1;
+/** A trackpad pinch has ended once no wheel event came for this long. */
+const WHEEL_REST_MS = 150;
+/** Two touch taps this close in time (ms) and space (px) are a double tap. */
+const DOUBLE_TAP_MS = 300;
+const DOUBLE_TAP_PX = 24;
+/** A touch that travels further than this (px) is a drag, not a tap. */
+const TAP_SLOP_PX = 8;
 /**
  * Share of the remaining distance a zoom covers per animation frame: an
  * ease-out that settles in about half a second at 60 Hz.
@@ -98,6 +116,18 @@ class NoResizeObserver {
   disconnect() {}
 }
 
+type Point = { x: number; y: number };
+
+/** The midpoint and spread of a two-finger gesture. */
+function pinchOf(points: Iterable<Point>) {
+  const [a, b] = [...points];
+  return {
+    x: (a.x + b.x) / 2,
+    y: (a.y + b.y) / 2,
+    distance: Math.hypot(a.x - b.x, a.y - b.y) || 1,
+  };
+}
+
 /** Imperative handles the effect gives the React controls. */
 type GlobeControls = {
   turn: (phi: number, theta: number) => void;
@@ -117,16 +147,23 @@ function sameSites(a: readonly LocatedSite[], b: readonly LocatedSite[]) {
  * - turn: drag, or the arrow keys when focused (a slider whose value is the
  *   longitude at the centre), with a short glide after a drag unless
  *   reduced motion is set (read at each gesture, so a change applies at
- *   once);
- * - zoom: the + and − buttons, the + and - keys, or a trackpad pinch
- *   (ctrl+wheel; a plain wheel still scrolls the page). A site is labelled
- *   once the gap to its nearest neighbour spans `LABEL_GAP_PX` on screen,
- *   so home's cluster gains its labels as the view closes in.
+ *   once). On a touch screen one finger turns it sideways only, and a
+ *   vertical swipe scrolls the page; two fingers tilt it too;
+ * - zoom: the + and − buttons, the + and - keys, a pinch (two fingers, or
+ *   ctrl+wheel on a trackpad; a plain wheel still scrolls the page), or a
+ *   double tap, which steps in and from the closest view returns to the
+ *   full one. A site is labelled once the gap to its nearest neighbour
+ *   spans `LABEL_GAP_PX` on screen, so home's cluster gains its labels as
+ *   the view closes in.
+ *
+ * Every cobe update draws the frame and rewrites a stylesheet on :root (the
+ * label anchors), which restyles the whole page, so input only moves the
+ * view and the globe draws at most once per animation frame.
  *
  * City labels hang on cobe's CSS anchors where the browser supports anchor
- * positioning (research.css). WebGL renders after hydration from a lazily
- * loaded chunk; without it the box stays empty and the page's lists carry
- * the same facts.
+ * positioning (research.css). WebGL renders from a lazily loaded chunk once
+ * the globe nears the viewport and the page is idle; without it the box
+ * stays empty and the page's lists carry the same facts.
  */
 export function ResearchGlobe({
   sites,
@@ -142,6 +179,8 @@ export function ResearchGlobe({
   const [ready, setReady] = useState(false);
   const [zoom, setZoom] = useState(ZOOM_MIN);
   const [radius, setRadius] = useState(0);
+  // Whether a touch reader has used two fingers, so the hint can go.
+  const [pinched, setPinched] = useState(false);
   const descriptionId = useId();
   const home = sites.find((site) => site.home) ?? sites[0];
   const [longitude, setLongitude] = useState(() =>
@@ -172,16 +211,30 @@ export function ResearchGlobe({
 
     const canvas = document.createElement("canvas");
     canvas.setAttribute("aria-hidden", "true");
+    // One finger may scroll the page vertically; everything else, two
+    // fingers included (see onTouchMove), turns the globe.
     canvas.style.cssText = "width:100%;height:100%;touch-action:pan-y";
     host.append(canvas);
 
     let globe: import("cobe").Globe | undefined;
     let cancelled = false;
+    let frame = 0;
     let glide = 0;
     let zooming = 0;
     let settling = 0;
+    let wheelRest = 0;
+    let cancelIdle = () => {};
+    // Fingers or the mouse on the canvas, by pointer id.
+    const pointers = new Map<number, Point>();
+    // The one-pointer drag; a second pointer turns it into a pinch.
     let drag: { x: number; y: number; t: number } | undefined;
+    let pinch: ReturnType<typeof pinchOf> | undefined;
     let velocity = 0;
+    // Where the current touch began, whether it travelled, and the last tap.
+    let press: Point | undefined;
+    let travelled = false;
+    let lastTap: { x: number; y: number; t: number } | undefined;
+    let zoomChanged = false;
 
     // Markers and arcs keep their on-screen size as the view zooms. The
     // land dots have a fixed size on the sphere, so their density grows only
@@ -199,14 +252,19 @@ export function ResearchGlobe({
       to: site.location,
     }));
     let drawnScale = view.scale;
-    const render = () => {
+    // `exact` rebuilds the markers and arcs for any change of scale: at
+    // rest. In motion they wait until the scale drifts REBUILD_DRIFT.
+    const draw = (exact = false) => {
       if (!globe) return;
-      if (view.scale !== drawnScale) {
+      const angles = { phi: view.phi, theta: view.theta, scale: view.scale };
+      const drift = Math.abs(view.scale / drawnScale - 1);
+      if (drift > (exact ? 0 : REBUILD_DRIFT)) {
         drawnScale = view.scale;
         // cobe bakes the width into the arcs when they are set, so the
         // width goes first and the arcs follow in a second update.
         globe.update({ arcWidth: ARC_WIDTH / view.scale });
         globe.update({
+          ...angles,
           arcs,
           markers: markersAt(view.scale),
           mapSamples: Math.min(
@@ -214,8 +272,27 @@ export function ResearchGlobe({
             Math.round(MAP_SAMPLES * view.scale),
           ),
         });
+        return;
       }
-      globe.update({ phi: view.phi, theta: view.theta, scale: view.scale });
+      globe.update(angles);
+    };
+    // Draws in this frame, dropping a draw already asked for.
+    const drawNow = (exact = false) => {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      draw(exact);
+    };
+    // Input only moves the view; one frame draws all of it.
+    const requestDraw = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        draw();
+        if (zoomChanged) {
+          zoomChanged = false;
+          setZoom(view.scale);
+        }
+      });
     };
     const report = () => setLongitude(centerLongitude(view.phi));
 
@@ -226,8 +303,8 @@ export function ResearchGlobe({
         -THETA_LIMIT,
         Math.min(THETA_LIMIT, view.theta + theta / view.scale),
       );
-      render();
-      if (!drag && !glide) report();
+      requestDraw();
+      if (!pointers.size && !glide) report();
     };
 
     const homeView = centerOn(home.location);
@@ -249,7 +326,7 @@ export function ResearchGlobe({
       const goalTheta = focus ? homeView.theta : view.theta;
       if (motionQuery.matches) {
         Object.assign(view, { scale: goal, phi: goalPhi, theta: goalTheta });
-        render();
+        drawNow(true);
         report();
         return;
       }
@@ -264,7 +341,7 @@ export function ResearchGlobe({
         if (settled) {
           Object.assign(view, { scale: goal, phi: goalPhi, theta: goalTheta });
         }
-        render();
+        drawNow(settled);
         if (settled) report();
         else zooming = requestAnimationFrame(step);
       };
@@ -272,53 +349,82 @@ export function ResearchGlobe({
     };
     controls.current = { turn, zoomTo };
 
-    import("cobe")
-      .then(({ default: createGlobe }) => {
-        if (cancelled) return;
-        const size = host.clientWidth;
-        const baseColor = readColor("--color-violet-800");
-        const markerColor = readColor("--color-violet-300");
-        const glowColor = readColor("--color-violet-950");
-        const arcColor = readColor("--color-violet-400");
-        if (!baseColor || !markerColor || !glowColor || !arcColor) return;
-        try {
-          globe = createGlobe(canvas, {
-            devicePixelRatio: Math.min(window.devicePixelRatio, 2),
-            width: size,
-            height: size,
-            phi: view.phi,
-            theta: view.theta,
-            scale: view.scale,
-            dark: 1,
-            diffuse: 1.1,
-            mapSamples: MAP_SAMPLES,
-            mapBrightness: 5,
-            baseColor,
-            markerColor,
-            glowColor,
-            arcColor,
-            arcWidth: ARC_WIDTH,
-            arcHeight: 0.28,
-            markerElevation: 0.01,
-            markers: markersAt(view.scale),
-            arcs,
-          });
-        } catch {
-          return;
-        }
-        setReady(true);
-        // cobe loads its map texture asynchronously and draws only on
-        // update, so redraw (without moving) until the texture is in.
-        const settleUntil = performance.now() + SETTLE_MS;
-        const settle = () => {
-          render();
-          if (performance.now() < settleUntil) {
-            settling = requestAnimationFrame(settle);
+    const create = () => {
+      import("cobe")
+        .then(({ default: createGlobe }) => {
+          if (cancelled) return;
+          const size = host.clientWidth;
+          const baseColor = readColor("--color-violet-800");
+          const markerColor = readColor("--color-violet-300");
+          const glowColor = readColor("--color-violet-950");
+          const arcColor = readColor("--color-violet-400");
+          if (!baseColor || !markerColor || !glowColor || !arcColor) return;
+          try {
+            globe = createGlobe(canvas, {
+              devicePixelRatio: Math.min(window.devicePixelRatio, 2),
+              width: size,
+              height: size,
+              phi: view.phi,
+              theta: view.theta,
+              scale: view.scale,
+              dark: 1,
+              diffuse: 1.1,
+              mapSamples: MAP_SAMPLES,
+              mapBrightness: 5,
+              baseColor,
+              markerColor,
+              glowColor,
+              arcColor,
+              arcWidth: ARC_WIDTH,
+              arcHeight: 0.28,
+              markerElevation: 0.01,
+              markers: markersAt(view.scale),
+              arcs,
+            });
+          } catch {
+            return;
           }
-        };
-        settling = requestAnimationFrame(settle);
-      })
-      .catch(() => {});
+          setReady(true);
+          // cobe loads its map texture asynchronously and draws only on
+          // update, so redraw (without moving) until the texture is in.
+          const settleUntil = performance.now() + SETTLE_MS;
+          const settle = () => {
+            drawNow();
+            if (performance.now() < settleUntil) {
+              settling = window.setTimeout(settle, SETTLE_EVERY_MS);
+            }
+          };
+          settling = window.setTimeout(settle, SETTLE_EVERY_MS);
+        })
+        .catch(() => {});
+    };
+    // Building it compiles shaders on the main thread: wait until it is
+    // nearly in view (below the title on a phone) and the page is idle.
+    // Safari has no requestIdleCallback: the next task instead.
+    const createWhenIdle = () => {
+      if (typeof window.requestIdleCallback === "function") {
+        const id = window.requestIdleCallback(create, {
+          timeout: IDLE_TIMEOUT_MS,
+        });
+        cancelIdle = () => window.cancelIdleCallback(id);
+      } else {
+        const id = window.setTimeout(create);
+        cancelIdle = () => window.clearTimeout(id);
+      }
+    };
+    const nearby =
+      typeof window.IntersectionObserver === "function"
+        ? new IntersectionObserver(
+            (entries) => {
+              if (!entries.some((entry) => entry.isIntersecting)) return;
+              nearby?.disconnect();
+              createWhenIdle();
+            },
+            { rootMargin: NEAR_VIEWPORT },
+          )
+        : undefined;
+    if (nearby) nearby.observe(host);
+    else createWhenIdle();
 
     const onDown = (event: PointerEvent) => {
       // Only the primary button drags: a secondary click opens the context
@@ -326,14 +432,50 @@ export function ResearchGlobe({
       if (event.button !== 0) return;
       cancelAnimationFrame(glide);
       glide = 0;
-      drag = { x: event.clientX, y: event.clientY, t: event.timeStamp };
-      velocity = 0;
+      pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
       canvas.setPointerCapture(event.pointerId);
-      canvas.style.cursor = "grabbing";
+      if (pointers.size === 1) {
+        drag = { x: event.clientX, y: event.clientY, t: event.timeStamp };
+        velocity = 0;
+        press = { x: event.clientX, y: event.clientY };
+        travelled = false;
+        canvas.style.cursor = "grabbing";
+        return;
+      }
+      // A second finger: the drag becomes a pinch, and no tap.
+      cancelAnimationFrame(zooming);
+      drag = undefined;
+      travelled = true;
+      lastTap = undefined;
+      pinch = pinchOf(pointers.values());
+      setPinched(true);
     };
     const onMove = (event: PointerEvent) => {
-      if (!drag) return;
+      const point = pointers.get(event.pointerId);
+      if (!point) return;
+      point.x = event.clientX;
+      point.y = event.clientY;
+      if (
+        press &&
+        Math.hypot(point.x - press.x, point.y - press.y) > TAP_SLOP_PX
+      ) {
+        travelled = true;
+      }
       const size = host.clientWidth || 1;
+      if (pinch) {
+        // The fingers' midpoint turns the globe on both axes and their
+        // spread zooms it, about the centre like a trackpad pinch.
+        const next = pinchOf(pointers.values());
+        view.scale = clampZoom((view.scale * next.distance) / pinch.distance);
+        zoomChanged = true;
+        turn(
+          ((next.x - pinch.x) / size) * Math.PI,
+          ((next.y - pinch.y) / size) * Math.PI * 0.5,
+        );
+        pinch = next;
+        return;
+      }
+      if (!drag) return;
       const dx = event.clientX - drag.x;
       const dy = event.clientY - drag.y;
       const dt = Math.max(1, event.timeStamp - drag.t);
@@ -342,10 +484,52 @@ export function ResearchGlobe({
       turn(dPhi, (dy / size) * Math.PI * 0.5);
       drag = { x: event.clientX, y: event.clientY, t: event.timeStamp };
     };
-    const onUp = () => {
-      if (!drag) return;
+    // A double tap steps in; from the closest view it returns to the full
+    // one. Returns whether this tap was the second of a double tap.
+    const doubleTapped = (event: PointerEvent) => {
+      const tap = { x: event.clientX, y: event.clientY, t: event.timeStamp };
+      const double =
+        lastTap !== undefined &&
+        tap.t - lastTap.t < DOUBLE_TAP_MS &&
+        Math.hypot(tap.x - lastTap.x, tap.y - lastTap.y) < DOUBLE_TAP_PX;
+      lastTap = double ? undefined : tap;
+      if (double) {
+        zoomTo(view.scale >= ZOOM_MAX ? ZOOM_MIN : view.scale * ZOOM_STEP);
+      }
+      return double;
+    };
+    const onUp = (event: PointerEvent) => {
+      if (!pointers.delete(event.pointerId)) return;
+      if (pointers.size > 1) {
+        pinch = pinchOf(pointers.values());
+        return;
+      }
+      if (pointers.size === 1) {
+        // Down to one finger: it drags on from where it is, without a jump.
+        pinch = undefined;
+        const [rest] = pointers.values();
+        drag = { x: rest.x, y: rest.y, t: event.timeStamp };
+        velocity = 0;
+        drawNow(true);
+        setZoom(view.scale);
+        return;
+      }
+      const wasPinch = pinch !== undefined;
       drag = undefined;
+      pinch = undefined;
+      press = undefined;
       canvas.style.cursor = "grab";
+      if (wasPinch) {
+        drawNow(true);
+        setZoom(view.scale);
+        report();
+        return;
+      }
+      if (event.type === "pointerup" && event.pointerType === "touch") {
+        // A drag between two taps breaks the double tap.
+        if (travelled) lastTap = undefined;
+        else if (doubleTapped(event)) return;
+      }
       if (motionQuery.matches) {
         report();
         return;
@@ -360,10 +544,15 @@ export function ResearchGlobe({
           return;
         }
         view.phi += speed / view.scale;
-        render();
+        drawNow();
         glide = requestAnimationFrame(step);
       };
       glide = requestAnimationFrame(step);
+    };
+    // With pan-y the browser would scroll the page under a two-finger
+    // vertical drag; two fingers belong to the globe. One still scrolls.
+    const onTouchMove = (event: TouchEvent) => {
+      if (event.touches.length > 1) event.preventDefault();
     };
     // A trackpad pinch arrives as ctrl+wheel; a plain wheel scrolls the page.
     const onWheel = (event: WheelEvent) => {
@@ -373,8 +562,10 @@ export function ResearchGlobe({
       view.scale = clampZoom(
         view.scale * Math.exp(-event.deltaY * PINCH_SENSITIVITY),
       );
-      render();
-      setZoom(view.scale);
+      zoomChanged = true;
+      requestDraw();
+      window.clearTimeout(wheelRest);
+      wheelRest = window.setTimeout(() => drawNow(true), WHEEL_REST_MS);
     };
     canvas.style.cursor = "grab";
     canvas.addEventListener("pointerdown", onDown);
@@ -382,6 +573,7 @@ export function ResearchGlobe({
     canvas.addEventListener("pointerup", onUp);
     canvas.addEventListener("pointercancel", onUp);
     canvas.addEventListener("lostpointercapture", onUp);
+    canvas.addEventListener("touchmove", onTouchMove, { passive: false });
     slider.addEventListener("wheel", onWheel, { passive: false });
 
     const resize = new (window.ResizeObserver ?? NoResizeObserver)(() => {
@@ -393,9 +585,13 @@ export function ResearchGlobe({
 
     return () => {
       cancelled = true;
+      nearby?.disconnect();
+      cancelIdle();
+      cancelAnimationFrame(frame);
       cancelAnimationFrame(glide);
       cancelAnimationFrame(zooming);
-      cancelAnimationFrame(settling);
+      window.clearTimeout(settling);
+      window.clearTimeout(wheelRest);
       resize.disconnect();
       slider.removeEventListener("wheel", onWheel);
       globe?.destroy();
@@ -456,7 +652,9 @@ export function ResearchGlobe({
       >
         <p id={descriptionId} className="sr-only">
           Arcs run from {home?.city ?? "Munich"} to {places.join("; ")}. Use the
-          arrow keys to turn the globe, and plus and minus to zoom.
+          arrow keys to turn the globe, and plus and minus to zoom. On a touch
+          screen, drag to turn it, use two fingers to tilt it and pinch to zoom,
+          or double-tap to zoom in.
         </p>
         <div
           ref={hostRef}
@@ -490,6 +688,17 @@ export function ResearchGlobe({
           );
         })}
       </div>
+      {/* Touch screens only: one finger scrolls the page, so the hint says
+          what two fingers do. It goes once they have been used. */}
+      <p
+        aria-hidden="true"
+        className={cn(
+          "mt-3 pointer-coarse:block hidden text-fg-muted text-label-sm transition-opacity duration-1000 ease-brand motion-reduce:transition-none",
+          ready && !pinched ? "opacity-100" : "opacity-0",
+        )}
+      >
+        Drag to turn · two fingers to tilt and zoom
+      </p>
       <div
         className={cn(
           "absolute right-0 bottom-0 flex flex-col gap-2 transition-opacity duration-1000 ease-brand motion-reduce:transition-none",
@@ -499,6 +708,7 @@ export function ResearchGlobe({
         <IconButton
           aria-label="Zoom in"
           size="icon-sm"
+          className="pointer-coarse:size-11"
           disabled={!ready || zoom >= ZOOM_MAX}
           onClick={() => controls.current.zoomTo(zoom * ZOOM_STEP)}
         >
@@ -507,6 +717,7 @@ export function ResearchGlobe({
         <IconButton
           aria-label="Zoom out"
           size="icon-sm"
+          className="pointer-coarse:size-11"
           disabled={!ready || zoom <= ZOOM_MIN}
           onClick={() => controls.current.zoomTo(zoom / ZOOM_STEP)}
         >
