@@ -137,6 +137,26 @@ test("warms once the page is idle", () => {
   expect(fetchMock).toHaveBeenCalledOnce();
 });
 
+test("on a touch device, waits for a touch on a link instead of idle", () => {
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn((query: string) => ({
+      matches: !query.includes("pointer: fine"),
+      media: query,
+    })),
+  );
+  stubIdle(true);
+  render(
+    <>
+      <a href="/events">Events</a>
+      <RouteImagePreload route="/events" imagesUrl={imagesUrl} />
+    </>,
+  );
+  expect(fetchMock).not.toHaveBeenCalled();
+  fireEvent.touchStart(screen.getByRole("link", { name: "Events" }));
+  expect(fetchMock).toHaveBeenCalledOnce();
+});
+
 test("warms when the reader points at a link to the route before idle", () => {
   stubIdle(false);
   render(
