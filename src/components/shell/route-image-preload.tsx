@@ -84,12 +84,20 @@ export function warmImages(imagesUrl: string): Promise<void> {
 }
 
 /**
+ * Where the idle warm-up runs: devices with a fine pointer. Touch devices
+ * (phones, tablets) warm only on intent, so a phone visitor who never opens
+ * the route does not spend its data on that route's images.
+ */
+const IDLE_WARM_MEDIA = "(pointer: fine)";
+
+/**
  * Loads a route's above-the-fold images ahead from other pages, so it
- * shows complete right after a navigation: when the page has gone idle
- * (not on `route` itself, which loads them anyway), or earlier when the
- * reader points at, focuses or touches a link to `route`. Skipped with
- * Save-Data, on 2G and when `media` does not match
- * ({@link shouldWarmImages}). Renders nothing.
+ * shows complete right after a navigation: when the reader points at,
+ * focuses or touches a link to `route`, and, with a fine pointer
+ * ({@link IDLE_WARM_MEDIA}), already once the page has gone idle (not on
+ * `route` itself, which loads them anyway). Skipped with Save-Data, on 2G
+ * and when `media` does not match ({@link shouldWarmImages}). Renders
+ * nothing.
  */
 export function RouteImagePreload({
   route,
@@ -123,6 +131,7 @@ export function RouteImagePreload({
     let cancelIdle = () => {};
     const whenIdle = () => {
       if (window.location.pathname === route) return;
+      if (!window.matchMedia(IDLE_WARM_MEDIA).matches) return;
       // Safari has no requestIdleCallback: a second after load instead.
       if (typeof window.requestIdleCallback === "function") {
         const id = window.requestIdleCallback(warm, {
