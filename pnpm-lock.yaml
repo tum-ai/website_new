@@ -23,8 +23,8 @@ importers:
         specifier: ^1.5.0
         version: 1.5.0
       '@tum.ai/ui-kit':
-        specifier: 0.2.2
-        version: 0.2.2(@date-fns/tz@1.5.0)(@types/react@19.3.0)(date-fns@4.4.0)(next@16.3.8(@babel/core@7.29.7)(@playwright/test@1.63.0)(@types/node@24.19.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(tailwindcss@4.3.3)
+        specifier: 0.2.3
+        version: 0.2.3(@date-fns/tz@1.5.0)(@types/react@19.3.0)(date-fns@4.4.0)(next@16.3.8(@babel/core@7.29.7)(@playwright/test@1.63.0)(@types/node@24.19.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(tailwindcss@4.3.3)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -3687,8 +3687,8 @@ packages:
   '@ts-morph/common@0.11.1':
     resolution: {integrity: sha512-7hWZS0NRpEsNV8vWJzg7FEz6V8MaLNeJOmwmghqUXTpzk16V1LLZhdo+4QvE/+zv4cVci0OviuJFnqhEfoV3+g==}
 
-  '@tum.ai/ui-kit@0.2.2':
-    resolution: {integrity: sha512-n5JMzTu1NhzWMwID8U/lFH53ch6kdgWk0TW+1HGb+n/cdNWT/5W7yc8giUVG0zf2AIMObFse9PmnPL5XEFhfmw==}
+  '@tum.ai/ui-kit@0.2.3':
+    resolution: {integrity: sha512-2E84wHKA3oivyhWacXzrtK8unzRVMgB1ArAHFLkrcPqwyXpyZgrQm1Not8LGaWJk24ZojNU/MDPSoAfCBbwqAA==}
     engines: {node: 24.x}
     peerDependencies:
       next: ^16.3.6
@@ -10846,7 +10846,7 @@ snapshots:
       mkdirp: 1.0.4
       path-browserify: 1.0.1
 
-  '@tum.ai/ui-kit@0.2.2(@date-fns/tz@1.5.0)(@types/react@19.3.0)(date-fns@4.4.0)(next@16.3.8(@babel/core@7.29.7)(@playwright/test@1.63.0)(@types/node@24.19.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(tailwindcss@4.3.3)':
+  '@tum.ai/ui-kit@0.2.3(@date-fns/tz@1.5.0)(@types/react@19.3.0)(date-fns@4.4.0)(next@16.3.8(@babel/core@7.29.7)(@playwright/test@1.63.0)(@types/node@24.19.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(tailwindcss@4.3.3)':
     dependencies:
       '@base-ui/react': 1.8.0(@date-fns/tz@1.5.0)(@types/react@19.3.0)(date-fns@4.4.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@tailwindcss/typography': 0.5.20(tailwindcss@4.3.3)
