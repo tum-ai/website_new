@@ -1,20 +1,27 @@
 import { axe } from "@test/axe";
-import { fireEvent, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { labSitesFixture as labSites } from "@/lib/cms-fixtures/programmes";
 import { getLabSites } from "./research";
 import { ResearchGlobe } from "./research-globe";
 
 // jsdom has no WebGL: cobe fails to start, so the globe stays hidden while
-// the slider semantics and keyboard turning still work.
-vi.mock("cobe", () => ({
-  default: () => {
-    throw new Error("no WebGL");
-  },
-}));
+// the slider semantics and keyboard turning still work. The touch tests
+// swap in a stand-in globe that records what it is asked to draw.
+const cobe = vi.hoisted(() => ({ createGlobe: vi.fn() }));
+vi.mock("cobe", () => ({ default: cobe.createGlobe }));
 
 beforeEach(() => {
+  cobe.createGlobe.mockImplementation(() => {
+    throw new Error("no WebGL");
+  });
   vi.stubGlobal(
     "matchMedia",
     vi.fn((query: string) => ({
@@ -88,8 +95,216 @@ describe("ResearchGlobe dragging", () => {
     const canvas = canvasOf(container);
     fireEvent.pointerDown(canvas, { button: 0, pointerId: 1 });
     expect(await reportsTurns()).toBe(false);
-    fireEvent(canvas, new Event("lostpointercapture"));
+    fireEvent.lostPointerCapture(canvas, { pointerId: 1 });
     expect(await reportsTurns()).toBe(true);
+  });
+});
+
+describe("ResearchGlobe on a touch screen", () => {
+  const globe = { update: vi.fn(), destroy: vi.fn() };
+  let frames = new Map<number, FrameRequestCallback>();
+  let nextFrame = 1;
+  let frameTime = 0;
+
+  /** Runs every animation frame asked for so far, one 60 Hz frame later. */
+  function flushFrames() {
+    const due = [...frames.values()];
+    frames = new Map();
+    frameTime += 16;
+    for (const callback of due) callback(frameTime);
+  }
+
+  /** Runs frames until nothing asks for another (a zoom has settled). */
+  function settle() {
+    for (let frame = 0; frames.size > 0 && frame < 500; frame++) {
+      flushFrames();
+    }
+  }
+
+  /** What the last draw put on screen. */
+  function lastView() {
+    const calls = globe.update.mock.calls.filter(
+      ([state]) => state.phi !== undefined,
+    );
+    return calls.at(-1)?.[0] as { phi: number; theta: number; scale: number };
+  }
+
+  beforeEach(() => {
+    globe.update.mockClear();
+    cobe.createGlobe.mockImplementation(() => globe);
+    for (const [token, hex] of [
+      ["--color-violet-800", "#2e1065"],
+      ["--color-violet-300", "#c4b5fd"],
+      ["--color-violet-950", "#1e0a3c"],
+      ["--color-violet-400", "#a78bfa"],
+    ]) {
+      document.documentElement.style.setProperty(token, hex);
+    }
+    vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => {
+      const id = nextFrame++;
+      frames.set(id, callback);
+      return id;
+    });
+    vi.stubGlobal("cancelAnimationFrame", (id: number) => frames.delete(id));
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    document.documentElement.removeAttribute("style");
+  });
+
+  /** Renders the globe and waits for the stand-in to be built. */
+  async function renderTouchGlobe() {
+    const { container } = render(<ResearchGlobe sites={sites} />);
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Zoom in" })).toBeEnabled(),
+    );
+    const canvas = container.querySelector("canvas");
+    if (!canvas) throw new Error("no canvas");
+    canvas.setPointerCapture = vi.fn();
+    globe.update.mockClear();
+    return canvas;
+  }
+
+  const touch = (pointerId: number, clientX: number, clientY: number) => ({
+    pointerId,
+    pointerType: "touch",
+    button: 0,
+    clientX,
+    clientY,
+  });
+
+  test("draws once per frame however often the finger moves", async () => {
+    const canvas = await renderTouchGlobe();
+    fireEvent.pointerDown(canvas, touch(1, 100, 100));
+    for (const x of [102, 104, 106, 108]) {
+      fireEvent.pointerMove(canvas, touch(1, x, 100));
+    }
+    expect(globe.update).not.toHaveBeenCalled();
+    flushFrames();
+    expect(globe.update).toHaveBeenCalledTimes(1);
+  });
+
+  test("two fingers spread to zoom and move together to tilt", async () => {
+    const canvas = await renderTouchGlobe();
+    fireEvent.pointerDown(canvas, touch(1, 100, 100));
+    fireEvent.pointerDown(canvas, touch(2, 200, 100));
+    fireEvent.pointerMove(canvas, touch(2, 300, 100));
+    flushFrames();
+    const spread = lastView();
+    expect(spread.scale).toBeCloseTo(2);
+
+    fireEvent.pointerMove(canvas, touch(1, 100, 101));
+    fireEvent.pointerMove(canvas, touch(2, 300, 101));
+    flushFrames();
+    expect(lastView().theta).not.toBeCloseTo(spread.theta);
+    expect(lastView().scale).toBeCloseTo(2);
+  });
+
+  test("lifting one of two fingers drags on without a jump", async () => {
+    const canvas = await renderTouchGlobe();
+    fireEvent.pointerDown(canvas, touch(1, 100, 100));
+    fireEvent.pointerDown(canvas, touch(2, 200, 100));
+    fireEvent.pointerUp(canvas, touch(2, 200, 100));
+    const before = lastView();
+    // The remaining finger moves on from where it is, not from where the
+    // pinch or its own drag began.
+    fireEvent.pointerMove(canvas, touch(1, 101, 100));
+    flushFrames();
+    // jsdom lays nothing out: the globe is 1 px wide, so 1 px is π.
+    expect(lastView().phi - before.phi).toBeCloseTo(Math.PI / before.scale);
+  });
+
+  test("a double tap zooms in, and from the closest view back out", async () => {
+    const canvas = await renderTouchGlobe();
+    const zoomIn = screen.getByRole("button", { name: "Zoom in" });
+    const zoomOut = screen.getByRole("button", { name: "Zoom out" });
+    const doubleTap = () => {
+      for (let tap = 0; tap < 2; tap++) {
+        fireEvent.pointerDown(canvas, touch(1, 100, 100));
+        fireEvent.pointerUp(canvas, touch(1, 100, 100));
+      }
+    };
+    doubleTap();
+    expect(zoomOut).toBeEnabled();
+    for (let step = 0; step < 3; step++) doubleTap();
+    expect(zoomIn).toBeDisabled();
+    doubleTap();
+    expect(zoomOut).toBeDisabled();
+  });
+
+  test("a turn during a zoom animation stays where the reader left it", async () => {
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn((query: string) => ({
+        matches: false,
+        media: query,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      })),
+    );
+    await renderTouchGlobe();
+    const globe = screen.getByRole("slider");
+    const zoomIn = screen.getByRole("button", { name: "Zoom in" });
+
+    // An undisturbed first zoom ends centred on home.
+    fireEvent.click(zoomIn);
+    act(settle);
+    const centred = Number(globe.getAttribute("aria-valuenow"));
+
+    // A second zoom keeps the centre; a turn made while it runs must hold
+    // instead of being eased back to the zoom's starting angles.
+    fireEvent.click(zoomIn);
+    act(flushFrames);
+    fireEvent.keyDown(globe, { key: "ArrowRight" });
+    act(settle);
+    expect(Number(globe.getAttribute("aria-valuenow"))).toBeGreaterThan(
+      centred,
+    );
+  });
+
+  test("a drag between two taps is no double tap", async () => {
+    const canvas = await renderTouchGlobe();
+    fireEvent.pointerDown(canvas, touch(1, 100, 100));
+    fireEvent.pointerUp(canvas, touch(1, 100, 100));
+    fireEvent.pointerDown(canvas, touch(1, 100, 100));
+    fireEvent.pointerMove(canvas, touch(1, 140, 100));
+    fireEvent.pointerUp(canvas, touch(1, 140, 100));
+    fireEvent.pointerDown(canvas, touch(1, 140, 100));
+    fireEvent.pointerUp(canvas, touch(1, 140, 100));
+    expect(screen.getByRole("button", { name: "Zoom out" })).toBeDisabled();
+  });
+
+  test("two fingers do not scroll the page; one finger does", async () => {
+    const canvas = await renderTouchGlobe();
+    expect(fireEvent.touchMove(canvas, { touches: [{}] })).toBe(true);
+    expect(fireEvent.touchMove(canvas, { touches: [{}, {}] })).toBe(false);
+  });
+
+  test("waits to be built until it nears the viewport", async () => {
+    let reveal: IntersectionObserverCallback = () => {};
+    vi.stubGlobal(
+      "IntersectionObserver",
+      class {
+        constructor(callback: IntersectionObserverCallback) {
+          reveal = callback;
+        }
+        observe() {}
+        disconnect() {}
+      },
+    );
+    cobe.createGlobe.mockClear();
+    render(<ResearchGlobe sites={sites} />);
+    await act(() => new Promise((resolve) => setTimeout(resolve, 20)));
+    expect(cobe.createGlobe).not.toHaveBeenCalled();
+
+    act(() =>
+      reveal(
+        [{ isIntersecting: true } as IntersectionObserverEntry],
+        {} as IntersectionObserver,
+      ),
+    );
+    await waitFor(() => expect(cobe.createGlobe).toHaveBeenCalled());
   });
 });
 
