@@ -24,6 +24,10 @@ const nextConfig: NextConfig = {
     // One quality for every photo: next/image snaps its default (75) to the
     // closest allowed value, so 85 applies without a `quality` prop anywhere.
     qualities: [85],
+    // AVIF first (browsers that accept it get a markedly smaller file at the
+    // same quality setting), WebP otherwise. AVIF takes longer to encode, but
+    // only once per variant: the optimizer caches the result.
+    formats: ["image/avif", "image/webp"],
     // Editorial images are served from Sanity's CDN. Brand and synthetic
     // fixture files stay under local /assets/. Only this project's assets
     // (every dataset): the optimizer never fetches another project's files
