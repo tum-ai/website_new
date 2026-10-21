@@ -90,7 +90,7 @@ src/sanity/                       Studio config, desk structure and schemas (Typ
 scripts/sanity/                   create-only production copy, targeted migrations, real readiness
                                   checks, independent asset repair and script-only ledger helpers
 src/styles/index.css              kit Tailwind/shell CSS imports + app-specific partner rotation
-src/proxy.ts                      host redirects (join.tum-ai.com to /apply)
+src/lib/redirects.ts              host redirects (join.tum-ai.com to /apply), via next.config.ts
 test/                             repo-wide fitness tests (content facts, assets, perf budget)
 e2e/                              Playwright specs, fixtures (siteRoutes) and Linux visual baselines
 ```
