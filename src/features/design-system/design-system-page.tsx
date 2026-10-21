@@ -60,7 +60,7 @@ import { DesignSystemInteractive } from "./design-system-interactive";
 /*
  * Every runtime export of @tum.ai/ui-kit appears on this page at least once, and
  * every variant a component offers is shown side by side. `MotionProvider`
- * has no visuals: the site layout renders it.
+ * has no visuals, and the site leaves it out (see the (site) layout).
  */
 
 const tones: { tone: Tone; name: string; hex: string }[] = [

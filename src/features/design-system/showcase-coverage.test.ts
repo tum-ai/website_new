@@ -40,7 +40,8 @@ const runtimeExports = publicApi.statements.flatMap((statement) => {
 
 /** Exports with nothing to show, and where they are exercised instead. */
 const withoutVisuals: Record<string, string> = {
-  MotionProvider: "rendered once by the (site) layout around every page",
+  MotionProvider:
+    "not rendered: the site uses no `m.*` components (see the (site) layout)",
 };
 
 const demonstrated = new Set<string>();
