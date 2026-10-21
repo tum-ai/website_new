@@ -48,6 +48,19 @@ const fromColumn = (step: JourneyStep): CSSProperties => ({
   gridColumn: `${step.fromSemester + 1} / -1`,
 });
 
+/** The fewest timetable columns a member's quote spans: one is too narrow. */
+const QUOTE_MIN_COLUMNS = 2;
+
+/**
+ * Places a member's quote from the step's opening semester to the last
+ * column, starting further left when that would leave it fewer than
+ * QUOTE_MIN_COLUMNS (a step opening in the last column). Its canvas
+ * background masks the column rule it then crosses.
+ */
+const quoteColumns = (step: JourneyStep, columns: number): CSSProperties => ({
+  gridColumn: `${Math.max(1, Math.min(step.fromSemester + 1, columns - QUOTE_MIN_COLUMNS + 1))} / -1`,
+});
+
 /** "At the start", "From semester 2": the timetable's cell, in words. */
 const opensIn = (step: JourneyStep) =>
   step.fromSemester === 0
@@ -227,7 +240,7 @@ function StepRow({
         {step.evidence && story ? (
           <figure
             className="relative z-10 mt-8 max-w-md lg:mt-4 lg:ml-px lg:bg-canvas lg:py-2 lg:pr-6 lg:pl-5"
-            style={fromColumn(step)}
+            style={quoteColumns(step, columns.length)}
           >
             <blockquote className="text-body text-fg">
               <p>“{step.evidence.excerpt}”</p>
