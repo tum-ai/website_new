@@ -1,4 +1,3 @@
-import { MotionProvider } from "@tum.ai/ui-kit";
 import { SkipLink } from "@tum.ai/ui-kit/shell";
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
@@ -110,22 +109,24 @@ export default async function RootLayout({
         <SkipLink />
         {/* Isolated root so Base UI portals always stack above page content. */}
         <div id="app-root" className="isolate">
-          <MotionProvider>
-            <Header
-              ctaSchedule={ctaSchedule}
-              initialCta={headerCtaAt(ctaSchedule, getCmsNow())}
-              connectLinks={headerConnectLinksFor(facts)}
-              liveClock={!isCmsClockFixed()}
-            />
-            <div
-              id="main-content"
-              tabIndex={-1}
-              className="min-h-screen bg-white outline-none"
-            >
-              {children}
-            </div>
-            <Footer />
-          </MotionProvider>
+          {/* No kit MotionProvider: nothing on the site renders `m.*`
+              components, and its LazyMotion loaded framer-motion's
+              animation features on every page. CountUp, the one
+              framer-motion user, honours reduced motion itself. */}
+          <Header
+            ctaSchedule={ctaSchedule}
+            initialCta={headerCtaAt(ctaSchedule, getCmsNow())}
+            connectLinks={headerConnectLinksFor(facts)}
+            liveClock={!isCmsClockFixed()}
+          />
+          <div
+            id="main-content"
+            tabIndex={-1}
+            className="min-h-screen bg-white outline-none"
+          >
+            {children}
+          </div>
+          <Footer />
         </div>
         {/* Warms the /events hero's co-host logos, so its load roll starts
             at once. Only the reel shows them, and only with motion allowed. */}
