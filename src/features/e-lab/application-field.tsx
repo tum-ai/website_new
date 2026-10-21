@@ -19,7 +19,8 @@ const RADIUS = 0.3;
 
 /**
  * When each gate's dots start going out and how long the group takes, in
- * ms after load. Dots fade one by one within their group's span, so the
+ * ms after load. Dots fade in turn within their group's span (in batches of
+ * FieldDots' FADE_BATCH_MS), so the
  * field visibly thins: the first gate removes most of the field slowly,
  * the later gates take a few dots each.
  */
@@ -103,8 +104,8 @@ function fieldDots(
 
 /**
  * The hero's field: one dot per team application of a round, evenly spaced
- * in an irregular outline. On load the dots go out one by one, gate after
- * gate (`.elab-field-out` in e-lab.css, opacity only), until every alumni
+ * in an irregular outline. On load the dots go out in small batches, gate
+ * after gate (`.elab-field-out` in e-lab.css, opacity only), until every alumni
  * venture and {@link INVITES} open places stay lit (`heroGatesOf`); with
  * reduced motion it renders in that end state. Pointing at a dot pushes the field aside (see FieldDots),
  * and lit dots open into ventures that came out of the E-Lab (the venture
