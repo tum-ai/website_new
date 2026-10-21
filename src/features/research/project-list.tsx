@@ -1,4 +1,5 @@
 import { FallbackImage, Reveal, Tag, TextLink } from "@tum.ai/ui-kit";
+import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
 import { AffiliationNames } from "./affiliations";
 import type { ResearchEntry } from "./research";
 import { ResearchMotifArt } from "./research-motifs";
@@ -62,7 +63,8 @@ function logoWidth(aspectRatio: number | undefined, count: number) {
  * drawing of the project's subject when the CMS picks one. Logos are
  * decorative (the affiliations name the institutions); a project whose
  * institutions have no logo sets their names instead, so no row is empty.
- * CMS images are served unoptimized: CMS hosts are outside next/image's list.
+ * Raster logos go through the image optimizer (Sanity's CDN is in
+ * next/image's remote patterns); SVGs pass through as they are.
  */
 function LogoTile({ project }: { project: ResearchEntry }) {
   const { logos, affiliations, motif } = project;
@@ -86,7 +88,7 @@ function LogoTile({ project }: { project: ResearchEntry }) {
                 src={logo.src}
                 alt=""
                 fill
-                unoptimized
+                unoptimized={isUnoptimizedRemoteImage(logo.src)}
                 sizes="12rem"
                 className="object-contain"
                 fallback={null}
