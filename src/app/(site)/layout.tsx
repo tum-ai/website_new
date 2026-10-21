@@ -20,8 +20,17 @@ import { getCmsNow, isCmsClockFixed } from "@/lib/mock-cms-env";
 import { isSanityConfigured, SanityLive } from "@/lib/sanity";
 import "@/styles/index.css";
 
+/**
+ * Manrope as a variable woff2, subset to Latin (with Latin Extended,
+ * Vietnamese, punctuation, currency and arrows): 37 KB instead of the 167 KB
+ * TTF, preloaded on every page. Characters outside the subset (emoji in CMS
+ * copy) fall back as before; Manrope has no emoji. Regenerate from the
+ * upstream variable TTF with fontTools' `pyftsubset --flavor=woff2
+ * --layout-features='*'` and the same ranges.
+ */
 const manrope = localFont({
-  src: "../../../public/assets/Manrope.ttf",
+  src: "../../../public/assets/Manrope.woff2",
+  weight: "200 800",
   variable: "--font-manrope",
   display: "swap",
 });
