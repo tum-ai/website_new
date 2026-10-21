@@ -54,6 +54,11 @@ collapses and expands, so the visible viewport changes height while the large vi
   bar and toolbar (the kit `DialogContent`).
 - Modal dialogs are laid out in the dynamic viewport (`h-dvh`), so they always sit in the visible
   area and never under the toolbar.
+- Any fixed layer at the screen's edges makes Safari paint both bars solid, and for transparent
+  layers it falls back to the brand-black root canvas. Event and booking dialogs therefore showed
+  near-black slabs above and below the dimmed page. Since kit 0.2.3, a modal dialog has no fixed
+  layers: it is pinned absolutely at the scroll position it opened at, so the bars stay translucent
+  over the dimmed page (checked on an iPhone through #343).
 - The kit `Header` mobile menu uses `DialogContent variant="fullscreen"`: a flat ink panel over the whole
   large viewport, so both bars tint to the same colour and no page shows below it. Its content
   uses `min-h-lvh` with a bottom padding of `100lvh - 100dvh`, so the last row can still scroll
@@ -61,7 +66,8 @@ collapses and expands, so the visible viewport changes height while the large vi
   kit `Header` and `DialogContent`; the app header adapter supplies the menu's navigation
   and content. See the versioned kit browser notes for implementation locations.
 
-History: #262 (`401bd5f`, `9a13d68`, `9bab38f`).
+History: #262 (`401bd5f`, `9a13d68`, `9bab38f`), #343 and tum-ai/ui-kit#24 (translucent bars
+behind modal dialogs).
 
 ## Focus escaping modals
 
