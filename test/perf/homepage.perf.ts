@@ -81,4 +81,21 @@ describe("homepage build output", () => {
     expect(css).toMatch(/\.min-h-screen\s*\{/);
     expect(css).toMatch(/\.text-minimal-gray\s*\{/);
   });
+
+  test("the hero aperture enters in CSS, never held until hydration", () => {
+    // The aperture's first photo is the LCP element on phones; hiding it
+    // until React marked it ready put LCP after the client bundle (6.3 s).
+    const css = getHomepageCss();
+    expect(css).toContain(".home-aperture-frame");
+    expect(css).not.toMatch(/\.home-aperture-frame\[data-ready/);
+    expect(
+      document.querySelector(".home-aperture-frame[data-ready]"),
+    ).toBeNull();
+  });
+
+  test("preloads the font as woff2, the only font preload", () => {
+    const fonts = hrefs('link[rel="preload"][as="font"]');
+    expect(fonts).toHaveLength(1);
+    expect(fonts[0]).toMatch(/\.woff2$/);
+  });
 });
