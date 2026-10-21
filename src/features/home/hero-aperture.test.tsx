@@ -1,4 +1,4 @@
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { act, render } from "@testing-library/react";
 import { renderToString } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
@@ -58,38 +58,56 @@ function activeSrc(container: HTMLElement) {
 }
 
 describe("HeroAperture", () => {
-  test("server HTML carries only the first photo, eager and preloaded", () => {
+  test("server HTML carries only the first photo, eager and preloaded at high priority", () => {
     const html = renderToString(<HeroAperture photos={heroPhotos} />);
     const images = html.match(/<img[^>]*>/g) ?? [];
     const preloads = html.match(/<link rel="preload"[^>]*>/g) ?? [];
     expect(images).toHaveLength(1);
-    expect(images[0]).toContain('loading="eager"');
+    expect(images[0]).not.toContain('loading="lazy"');
+    expect(images[0]).toContain('fetchPriority="high"');
     expect(preloads).toHaveLength(1);
     expect(preloads[0]).toContain(heroPhotos[0]?.src ?? "");
+    expect(preloads[0]).toContain('fetchPriority="high"');
   });
 
-  test("holds the entrance until the first photo has loaded", async () => {
-    const { container } = render(<HeroAperture photos={heroPhotos} />);
-    const root = container.firstElementChild;
-    expect(root).toHaveAttribute("data-ready", "false");
-    // next/image reports the load after the image decodes (a promise).
-    fireEvent.load(container.querySelector("img") as HTMLImageElement);
-    await waitFor(() => expect(root).toHaveAttribute("data-ready", "true"), {
-      timeout: 1000,
-    });
+  test("never gates the entrance on hydration", () => {
+    const html = renderToString(<HeroAperture photos={heroPhotos} />);
+    expect(html).not.toContain("data-ready");
   });
 
-  test("runs the entrance anyway when the first photo is slow", () => {
-    vi.useFakeTimers();
-    const { container } = render(<HeroAperture photos={heroPhotos} />);
-    act(() => vi.advanceTimersByTime(2500));
-    expect(container.firstElementChild).toHaveAttribute("data-ready", "true");
-  });
-
-  test("mounts the photos after hydration, hidden from assistive technology", () => {
-    const { container } = render(<HeroAperture photos={heroPhotos} />);
-    expect(container.querySelectorAll("img")).toHaveLength(heroPhotos.length);
+  test("mounts only the next photo after the page load, hidden from assistive technology", () => {
+    const photos = [
+      ...heroPhotos,
+      { src: "/assets/fixtures/photo-3.svg", width: 960, height: 640, alt: "" },
+    ];
+    const { container } = render(<HeroAperture photos={photos} />);
+    expect(container.querySelectorAll("img")).toHaveLength(2);
     expect(container.firstElementChild).toHaveAttribute("aria-hidden", "true");
+  });
+
+  test("waits for the load event before mounting the next photo", () => {
+    const readyState = vi
+      .spyOn(document, "readyState", "get")
+      .mockReturnValue("loading");
+    const { container } = render(<HeroAperture photos={heroPhotos} />);
+    expect(container.querySelectorAll("img")).toHaveLength(1);
+    readyState.mockReturnValue("complete");
+    act(() => {
+      window.dispatchEvent(new Event("load"));
+    });
+    expect(container.querySelectorAll("img")).toHaveLength(2);
+  });
+
+  test("mounts each later photo one turn ahead of the crossfade", () => {
+    vi.useFakeTimers();
+    const photos = [
+      ...heroPhotos,
+      { src: "/assets/fixtures/photo-3.svg", width: 960, height: 640, alt: "" },
+    ];
+    const { container } = render(<HeroAperture photos={photos} />);
+    expect(container.querySelectorAll("img")).toHaveLength(2);
+    act(() => vi.advanceTimersByTime(6000));
+    expect(container.querySelectorAll("img")).toHaveLength(3);
   });
 
   test("crossfades to the next photo after the hold", () => {

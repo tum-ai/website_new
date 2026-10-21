@@ -13,18 +13,13 @@
   }
 
   /*
-   * The aperture enters once its first photo has loaded (HeroAperture sets
-   * data-ready), so the mark and the image arrive together. Only while
-   * scripts run: without them the mark shows at once.
+   * The aperture enters from the first paint, in CSS alone. Its first photo
+   * is preloaded at high priority, so it is normally there by then. Never
+   * wait on hydration here: the photo is the page's LCP element, and an
+   * entrance held until scripts ran pushed LCP past 6 s on phones.
    */
-  @media (scripting: enabled) {
-    .home-aperture-frame[data-ready="false"] {
-      opacity: 0;
-    }
-  }
-
   @media (prefers-reduced-motion: no-preference) {
-    .home-aperture-frame[data-ready="true"] {
+    .home-aperture-frame {
       animation: home-aperture-in 1.2s var(--ease-brand) both;
     }
   }
