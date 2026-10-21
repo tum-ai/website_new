@@ -67,6 +67,61 @@ const MAX_STEP_S = 1 / 30;
 const LOGO_MAX_SCALE = 1.2;
 /** A logo is fully opaque once its dot is 1 / this of the way open. */
 const LOGO_FADE_RATE = 1.4;
+/**
+ * Dots whose fades start within this many ms of each other go out together,
+ * drawn as one path with one animation.
+ */
+export const FADE_BATCH_MS = 200;
+/** The fade's length in ms (`.elab-field-out` in e-lab.css). */
+const FADE_MS = 1200;
+
+/** One batch of the load fade: the dots that go out together. */
+export type FadeBatch = { delay: number; d: string };
+
+/** Three decimals are enough for the drawing and keep the markup short. */
+const round3 = (value: number) => Math.round(value * 1000) / 1000;
+
+/**
+ * The load fade's batches: every dot with a `delay`, grouped by
+ * FADE_BATCH_MS, each batch one path of circles that starts with its
+ * earliest dot. Batching keeps the fade to a few dozen animations: one CSS
+ * animation per SVG circle made phones repaint hundreds of animated
+ * elements every frame (a 3.5 s main-thread block on /e-lab).
+ */
+export function fadeBatches(
+  dots: readonly FieldDotData[],
+  radius: number,
+): FadeBatch[] {
+  const batches = new Map<number, { delay: number; d: string[] }>();
+  for (const dot of dots) {
+    if (dot.delay === undefined) continue;
+    const key = Math.floor(dot.delay / FADE_BATCH_MS);
+    const batch = batches.get(key) ?? { delay: dot.delay, d: [] };
+    batch.delay = Math.min(batch.delay, dot.delay);
+    batch.d.push(
+      `M${round3(dot.x - radius)} ${dot.y}a${radius} ${radius} 0 1 0 ${round3(radius * 2)} 0a${radius} ${radius} 0 1 0 ${round3(-radius * 2)} 0`,
+    );
+    batches.set(key, batch);
+  }
+  return [...batches.values()]
+    .sort((a, b) => a.delay - b.delay)
+    .map((batch) => ({ delay: batch.delay, d: batch.d.join("") }));
+}
+
+/**
+ * How far the load fade has run, in ms, read from the last batch's
+ * animation: its clock runs from the first style like every batch's, and it
+ * holds at its end only once every batch has finished. Without one (no Web
+ * Animations support), the page's age.
+ */
+function fadeElapsed(svg: SVGSVGElement | null) {
+  const animation = [...(svg?.querySelectorAll(".elab-field-out") ?? [])]
+    .at(-1)
+    ?.getAnimations?.()
+    .at(0);
+  const time = Number(animation?.currentTime ?? Number.NaN);
+  return Number.isFinite(time) ? time : performance.now();
+}
 
 /**
  * The field's dots as a small spring simulation. Pointing at a lit dot opens
@@ -79,6 +134,13 @@ const LOGO_FADE_RATE = 1.4;
  * opens a venture's dot and the next tap on it follows the link. The loop
  * only runs while something moves, only `transform` and `r` change, and
  * under reduced motion dots jump to their places without the spring.
+ *
+ * Until the first interaction the dots that go out are drawn as
+ * {@link fadeBatches}, so the load fade is a few dozen animations instead of
+ * one per dot. The first pointer or focus swaps them for one circle each
+ * (the simulation moves every dot on its own), carrying on any fade still
+ * running from where its batch is, and mounts the venture logos, which are
+ * only fetched then.
  */
 export function FieldDots({
   dots,
@@ -91,6 +153,13 @@ export function FieldDots({
   const logoRefs = useRef(new Map<number, SVGGElement>());
   const sim = useRef<FieldSim | null>(null);
   const target = useRef(-1);
+  /**
+   * How far the load fade had run when the field went live (one circle per
+   * dot), in ms; null while it is still drawn in batches.
+   */
+  const [liveAt, setLiveAt] = useState<number | null>(null);
+  const live = useRef(false);
+  const batches = useMemo(() => fadeBatches(dots, radius), [dots, radius]);
   /**
    * The dot the current press opened, whose link must not follow that
    * press's click: a tap opens a dot and its click would otherwise land on
@@ -164,16 +233,37 @@ export function FieldDots({
     [dots, radius, peaks, bodies],
   );
 
+  const goLive = useCallback(() => {
+    if (live.current) return;
+    live.current = true;
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    setLiveAt(reduced ? Number.POSITIVE_INFINITY : fadeElapsed(svgRef.current));
+  }, []);
+
   const aim = useCallback(
     (index: number) => {
+      goLive();
       if (target.current === index) return;
       target.current = index;
       setActive(index);
       if (!sim.current) sim.current = createFieldSim(dots.length);
       if (!frame.current) frame.current = requestAnimationFrame(step);
     },
-    [dots.length, step],
+    [dots.length, step, goLive],
   );
+
+  /** A gone-out dot's class and remaining fade delay once the field is live. */
+  const fadeOf = (delay: number, elapsed: number) => {
+    const remaining = Math.round(delay - elapsed);
+    return remaining + FADE_MS <= 0
+      ? { className: "elab-field-dim" }
+      : {
+          className: "elab-field-out",
+          style: { "--delay": `${remaining}ms` } as CSSProperties,
+        };
+  };
 
   useEffect(() => () => cancelAnimationFrame(frame.current), []);
 
@@ -239,23 +329,32 @@ export function FieldDots({
       }}
     >
       <g fill="currentColor">
-        {dots.map((dot, index) => (
-          <circle
-            key={`${dot.x}:${dot.y}`}
-            ref={(node) => {
-              dotRefs.current[index] = node;
-            }}
-            cx={dot.x}
-            cy={dot.y}
-            r={radius}
-            className={dot.delay === undefined ? undefined : "elab-field-out"}
-            style={
-              dot.delay === undefined
-                ? undefined
-                : ({ "--delay": `${dot.delay}ms` } as CSSProperties)
-            }
-          />
-        ))}
+        {liveAt === null
+          ? batches.map((batch) => (
+              <path
+                key={batch.delay}
+                d={batch.d}
+                className="elab-field-out"
+                style={{ "--delay": `${batch.delay}ms` } as CSSProperties}
+              />
+            ))
+          : null}
+        {dots.map((dot, index) =>
+          liveAt === null && dot.delay !== undefined ? null : (
+            <circle
+              key={`${dot.x}:${dot.y}`}
+              ref={(node) => {
+                dotRefs.current[index] = node;
+              }}
+              cx={dot.x}
+              cy={dot.y}
+              r={radius}
+              {...(dot.delay === undefined || liveAt === null
+                ? {}
+                : fadeOf(dot.delay, liveAt))}
+            />
+          ),
+        )}
       </g>
       {dots.map((dot, index) =>
         dot.venture?.href ? (
@@ -281,7 +380,10 @@ export function FieldDots({
               transform={`translate(${dot.x} ${dot.y}) scale(0)`}
               style={{ opacity: 0 }}
             >
-              <VentureArtwork venture={dot.venture} />
+              <VentureArtwork
+                venture={dot.venture}
+                showLogo={liveAt !== null}
+              />
             </g>
           </a>
         ) : dot.venture ? (
@@ -297,7 +399,7 @@ export function FieldDots({
             transform={`translate(${dot.x} ${dot.y}) scale(0)`}
             style={{ opacity: 0 }}
           >
-            <VentureArtwork venture={dot.venture} />
+            <VentureArtwork venture={dot.venture} showLogo={liveAt !== null} />
           </g>
         ) : dot.invite ? (
           // biome-ignore lint/a11y/noAriaHiddenOnFocusable: an SVG <g> without tabindex or a link is not focusable; this hides the repeated decorative "Your team" text from screen readers
@@ -333,8 +435,18 @@ export function FieldDots({
   );
 }
 
-/** A venture's open disc: its logo on white, with the name under a symbol. */
-function VentureArtwork({ venture }: { venture: FieldVenture }) {
+/**
+ * A venture's open disc: its logo on white, with the name under a symbol.
+ * The logo file is only requested once `showLogo` (the field went live):
+ * every disc starts closed, so fetching them all on load was wasted.
+ */
+function VentureArtwork({
+  venture,
+  showLogo,
+}: {
+  venture: FieldVenture;
+  showLogo: boolean;
+}) {
   return (
     <>
       <circle r={LOGO_RADIUS} className="fill-white" />
@@ -344,14 +456,16 @@ function VentureArtwork({ venture }: { venture: FieldVenture }) {
         strokeWidth={0.14}
         className="elab-field-ring stroke-current"
       />
-      <image
-        href={venture.logoSrc}
-        x={-1.8}
-        y={venture.wordmark ? -1.35 : -0.9}
-        width={3.6}
-        height={venture.wordmark ? 1.4 : 1.8}
-        preserveAspectRatio="xMidYMid meet"
-      />
+      {showLogo ? (
+        <image
+          href={venture.logoSrc}
+          x={-1.8}
+          y={venture.wordmark ? -1.35 : -0.9}
+          width={3.6}
+          height={venture.wordmark ? 1.4 : 1.8}
+          preserveAspectRatio="xMidYMid meet"
+        />
+      ) : null}
       {venture.wordmark ? (
         <text
           y={0.85}

@@ -1,8 +1,10 @@
 /*
  * E-Lab-only styles: the hero's application field (see ApplicationField).
- * Once on load the dots go out one by one, each on its own `--delay`, gate
- * after gate; each fade stays within 1.2s and only opacity animates. Under
- * reduced motion the field shows its end state.
+ * Once on load the dots go out in small batches (FieldDots draws each batch
+ * as one path), each on its own `--delay`, gate after gate; each fade stays
+ * within 1.2s and only opacity animates. `.elab-field-dim` is a dot that has
+ * gone out, without the animation. Under reduced motion the field shows its
+ * end state.
  */
 
 @layer components {
@@ -12,7 +14,8 @@
     }
   }
 
-  .elab-field-out {
+  .elab-field-out,
+  .elab-field-dim {
     opacity: 0.16;
   }
 
