@@ -8,6 +8,7 @@ import {
   FlaskConical,
   type LucideIcon,
   Megaphone,
+  Rocket,
   RotateCcw,
   Users,
   Zap,
@@ -32,6 +33,7 @@ const icons = {
   hackathon: Zap,
   brand: Megaphone,
   research: FlaskConical,
+  venture: Rocket,
 };
 
 const steps = ["Your goal", "Your timeframe", "Your fit"];

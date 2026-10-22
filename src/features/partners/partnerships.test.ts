@@ -1,4 +1,5 @@
 import { expect, test } from "vitest";
+import { partnershipIntentIds } from "./data/partnership-finder";
 import { getPartnerDirectory, partnerOf } from "./partner-directory";
 import {
   testPartnershipContact as contact,
@@ -13,15 +14,14 @@ import {
 } from "./partnerships";
 
 test("all paths use the supplied CMS recommendation", () => {
-  for (const intent of ["talent", "hackathon", "brand", "research"] as const) {
+  for (const intent of partnershipIntentIds) {
+    const ownFormat = intent === "research" || intent === "venture";
     expect(
       getPartnershipRecommendation({ intent, duration: "one-off" }, copy),
     ).toBe(copy.recommendations[intent]);
     expect(
       getPartnershipRecommendation({ intent, duration: "ongoing" }, copy),
-    ).toBe(
-      copy.recommendations[intent === "research" ? "research" : "longTerm"],
-    );
+    ).toBe(copy.recommendations[ownFormat ? intent : "longTerm"]);
   }
   expect(
     getPartnershipRecommendation({ intent: null, duration: null }, copy),
@@ -58,9 +58,25 @@ test("email and booking encode render-provided words and contact facts", () => {
   expect(email.searchParams.get("body")).toContain(
     copy.recommendations.longTerm.name,
   );
+  expect(email.searchParams.get("cc")).not.toContain(contact.ventureEmail);
   const booking = new URL(getPartnershipBookingUrl(selection, copy, contact));
   expect(booking.searchParams.get("guest")).toBe(contact.email);
   expect(booking.searchParams.get("notes")).toContain(copy.durations[1]?.label);
+});
+test("founder and VC requests copy in the ELAB team", () => {
+  const email = new URL(
+    getPartnershipEmailUrl(
+      { intent: "venture", duration: "ongoing" },
+      copy,
+      contact,
+    ),
+  );
+  expect(email.searchParams.get("cc")?.split(",")).toContain(
+    contact.ventureEmail,
+  );
+  expect(email.searchParams.get("body")).toContain(
+    copy.recommendations.venture.name,
+  );
 });
 test("directory sorts tier, featured, optional editorial order and alphabetic names", () => {
   const partners = [

@@ -45,7 +45,8 @@ const PARTNERS_COPY_QUERY = defineQuery(`*[_id == "partnersCopy"][0]{
     talent{ label, shortLabel, detail },
     hackathon{ label, shortLabel, detail },
     brand{ label, shortLabel, detail },
-    research{ label, shortLabel, detail }
+    research{ label, shortLabel, detail },
+    venture{ label, shortLabel, detail }
   },
   durations{
     oneOff{ label, detail },
@@ -56,7 +57,8 @@ const PARTNERS_COPY_QUERY = defineQuery(`*[_id == "partnersCopy"][0]{
     hackathon{ name, description },
     talent{ name, description },
     brand{ name, description },
-    research{ name, description }
+    research{ name, description },
+    venture{ name, description }
   },
   reasons[]{ icon, name, title, description },
   stats[]{ value, label, detail },
@@ -189,6 +191,7 @@ const copyParser = contentObject({
     hackathon: intent,
     brand: intent,
     research: intent,
+    venture: intent,
   }),
   durations: contentObject({ oneOff: duration, ongoing: duration }),
   recommendations: contentObject({
@@ -197,6 +200,7 @@ const copyParser = contentObject({
     talent: recommendation,
     brand: recommendation,
     research: recommendation,
+    venture: recommendation,
   }),
   reasons: (value, label, path) =>
     contentArray(

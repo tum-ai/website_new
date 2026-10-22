@@ -1,9 +1,12 @@
-import type { PartnershipFinderCopy } from "./data/partnership-finder";
+import {
+  type PartnershipFinderCopy,
+  partnershipIntentIds,
+} from "./data/partnership-finder";
 import type { PartnershipContact } from "./partnerships";
 /** Synthetic input supplied explicitly to interactive tests. */
 export const partnershipFinderCopy: PartnershipFinderCopy = {
-  intents: ["talent", "hackathon", "brand", "research"].map((id) => ({
-    id: id as "talent" | "hackathon" | "brand" | "research",
+  intents: partnershipIntentIds.map((id) => ({
+    id,
     label: `Sample ${id} goal`,
     shortLabel: `Sample ${id}`,
     detail: "Explore this goal.",
@@ -34,6 +37,10 @@ export const partnershipFinderCopy: PartnershipFinderCopy = {
       name: "Research sample",
       description: "Explore a sample question.",
     },
+    venture: {
+      name: "Venture sample",
+      description: "Meet sample founders.",
+    },
   },
   prompts: {
     intentQuestion: "Choose a sample goal.",
@@ -52,4 +59,5 @@ export const testPartnershipContact: PartnershipContact = {
   email: "partners@example.com",
   bookingUrl: "https://cal.eu/example/sample",
   bookingHost: "Example Host",
+  ventureEmail: "venture@example.com",
 };

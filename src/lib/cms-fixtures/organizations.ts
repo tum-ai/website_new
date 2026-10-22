@@ -189,6 +189,11 @@ export const organizationsFixtureDocuments: CmsFixtureDocument[] = [
         label: "Explore research",
         shortLabel: "Explore research",
       },
+      venture: {
+        ...wording,
+        label: "Back founders",
+        shortLabel: "Back founders",
+      },
     },
     durations: {
       oneOff: { ...wording, label: "One activity" },
@@ -200,6 +205,7 @@ export const organizationsFixtureDocuments: CmsFixtureDocument[] = [
       talent: format,
       brand: format,
       research: format,
+      venture: format,
     },
     reasons: [
       {
