@@ -325,7 +325,7 @@ export function planSingleSourceMigration(
       makeathonUrl: "https://makeathon.tum-ai.com",
       league: {
         name: "European Hackathon League",
-        url: "https://ehl.tum-ai.com",
+        url: "https://ehl.gg",
         foundedYear: 2026,
         finaleTeams: 15,
         matches: matches.map(([key, label, id], index) => ({

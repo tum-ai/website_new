@@ -1,4 +1,9 @@
-export type PartnershipIntent = "talent" | "hackathon" | "brand" | "research";
+export type PartnershipIntent =
+  | "talent"
+  | "hackathon"
+  | "brand"
+  | "research"
+  | "venture";
 export type PartnershipDuration = "one-off" | "ongoing";
 
 /** Isomorphic finder models; all editorial wording is passed by the server. */
@@ -23,7 +28,7 @@ type PartnershipRecommendation = { name: string; description: string };
 
 /** The formats by key; `partnerships.ts` picks one from the answers. */
 type PartnershipRecommendations = Record<
-  "longTerm" | "hackathon" | "talent" | "brand" | "research",
+  "longTerm" | "hackathon" | "talent" | "brand" | "research" | "venture",
   PartnershipRecommendation
 >;
 
@@ -67,5 +72,6 @@ export const partnershipIntentIds = [
   "hackathon",
   "brand",
   "research",
+  "venture",
 ] as const;
 export const partnershipDurationIds = ["one-off", "ongoing"] as const;
