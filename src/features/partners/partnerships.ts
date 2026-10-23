@@ -116,6 +116,11 @@ export function getPartnershipEmailUrl(
   return `mailto:${contact.email}?cc=${encodeURIComponent(cc.join(","))}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Hi TUM.ai team,\n\n${getPartnershipContext(selection, copy)}\n\n`)}`;
 }
 
+/** Whether "Book a call" is offered: the ELAB team takes founder and VC requests by email only. */
+export function partnershipOffersBooking({ intent }: PartnershipSelection) {
+  return intent !== "venture";
+}
+
 export function getPartnershipBookingUrl(
   selection: PartnershipSelection,
   copy: PartnershipFinderCopy,

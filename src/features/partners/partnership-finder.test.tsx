@@ -13,7 +13,7 @@ import { PartnershipProvider } from "./partnership-context";
 import { PartnershipFinder } from "./partnership-finder";
 import { getPartnershipEmailUrl } from "./partnerships";
 
-const [talent, hackathon] = partnershipIntents;
+const [talent, hackathon, , , venture] = partnershipIntents;
 const [oneOff, ongoing] = partnershipDurations;
 
 /** Stubs `matchMedia`; `reducedMotion` answers the reduced-motion query. */
@@ -173,6 +173,22 @@ test("hands the answers to the email and offers a call", async () => {
     ),
   );
   expect(screen.getByRole("button", { name: "Book a call" })).toBeVisible();
+});
+
+test("founder and VC requests go by email only", async () => {
+  const { user } = renderFinder();
+  await user.click(
+    screen.getByRole("button", { name: new RegExp(venture.label) }),
+  );
+  await user.click(
+    screen.getByRole("button", { name: new RegExp(ongoing.label) }),
+  );
+
+  expect(
+    screen.getByRole("heading", { level: 3, name: /first/ }),
+  ).toHaveTextContent(recommendations.venture.name);
+  expect(screen.getByRole("link", { name: "Request via email" })).toBeVisible();
+  expect(screen.queryByRole("button", { name: "Book a call" })).toBeNull();
 });
 
 test("Back returns to the previous question and Start again clears the answers", async () => {
