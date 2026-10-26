@@ -16,7 +16,7 @@ export type PartnershipContact = {
   email: string;
   bookingUrl: string;
   bookingHost: string;
-  /** The ELAB team's role address, copied in on founder and VC requests. */
+  /** The ELAB team's role address, the only recipient of founder and VC requests (no CCs). */
   ventureEmail?: string;
 };
 
@@ -109,11 +109,11 @@ export function getPartnershipEmailUrl(
   const subject = intent
     ? `Partnership request: ${intent.shortLabel}`
     : "Partnership request: TUM.ai";
-  const cc =
-    selection.intent === "venture" && contact.ventureEmail
-      ? [...partnershipContactCc, contact.ventureEmail]
-      : partnershipContactCc;
-  return `mailto:${contact.email}?cc=${encodeURIComponent(cc.join(","))}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Hi TUM.ai team,\n\n${getPartnershipContext(selection, copy)}\n\n`)}`;
+  const message = `subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Hi TUM.ai team,\n\n${getPartnershipContext(selection, copy)}\n\n`)}`;
+  if (selection.intent === "venture" && contact.ventureEmail) {
+    return `mailto:${contact.ventureEmail}?${message}`;
+  }
+  return `mailto:${contact.email}?cc=${encodeURIComponent(partnershipContactCc.join(","))}&${message}`;
 }
 
 /** Whether "Book a call" is offered: the ELAB team takes founder and VC requests by email only. */

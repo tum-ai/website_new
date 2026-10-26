@@ -63,7 +63,7 @@ test("email and booking encode render-provided words and contact facts", () => {
   expect(booking.searchParams.get("guest")).toBe(contact.email);
   expect(booking.searchParams.get("notes")).toContain(copy.durations[1]?.label);
 });
-test("founder and VC requests copy in the ELAB team", () => {
+test("founder and VC requests go to the ELAB team alone", () => {
   const email = new URL(
     getPartnershipEmailUrl(
       { intent: "venture", duration: "ongoing" },
@@ -71,9 +71,8 @@ test("founder and VC requests copy in the ELAB team", () => {
       contact,
     ),
   );
-  expect(email.searchParams.get("cc")?.split(",")).toContain(
-    contact.ventureEmail,
-  );
+  expect(email.pathname).toBe(contact.ventureEmail);
+  expect(email.searchParams.get("cc")).toBeNull();
   expect(email.searchParams.get("body")).toContain(
     copy.recommendations.venture.name,
   );
