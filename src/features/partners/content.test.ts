@@ -34,6 +34,7 @@ test("CMS singleton loads finder, hero image and token-derived facts", async () 
     "hackathon",
     "brand",
     "research",
+    "venture",
   ]);
   expect(copy.sections.hero.image.src).toBe("/assets/fixtures/photo.svg");
   expect(copy.prompts.resultQuestion).toContain("{{format}}");

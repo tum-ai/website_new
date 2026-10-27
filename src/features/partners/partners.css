@@ -208,7 +208,17 @@
    * glides between the heights the component sets. The stage clips only
    * while it moves, so focus rings stay whole at rest. Without motion the
    * swap is instant.
+   *
+   * The stage reaches 1rem past the content on both sides (margin and
+   * padding cancel out), so that clip leaves room for the Back button's
+   * pill, which hangs 1rem left of the text (`-ml-4`) and would otherwise
+   * lose its left edge while it is hovered during a step change.
    */
+  .finder-stage {
+    margin-inline: -1rem;
+    padding-inline: 1rem;
+  }
+
   @media (prefers-reduced-motion: no-preference) {
     .finder-stage:is([data-phase="leaving"], [data-phase="entering"]) {
       overflow: hidden;

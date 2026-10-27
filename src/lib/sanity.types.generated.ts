@@ -836,6 +836,11 @@ export type PartnersCopy = {
       shortLabel?: string;
       detail?: string;
     };
+    venture?: {
+      label?: string;
+      shortLabel?: string;
+      detail?: string;
+    };
   };
   durations?: {
     oneOff?: {
@@ -865,6 +870,10 @@ export type PartnersCopy = {
       description?: string;
     };
     research?: {
+      name?: string;
+      description?: string;
+    };
+    venture?: {
       name?: string;
       description?: string;
     };
@@ -2961,7 +2970,7 @@ export type HOME_COPY_QUERY_RESULT =
 
 // Source: ../features/partners/content.ts
 // Variable: PARTNERS_COPY_QUERY
-// Query: *[_id == "partnersCopy"][0]{  pitch,  intents{    talent{ label, shortLabel, detail },    hackathon{ label, shortLabel, detail },    brand{ label, shortLabel, detail },    research{ label, shortLabel, detail }  },  durations{    oneOff{ label, detail },    ongoing{ label, detail }  },  recommendations{    longTerm{ name, description },    hackathon{ name, description },    talent{ name, description },    brand{ name, description },    research{ name, description }  },  reasons[]{ icon, name, title, description },  stats[]{ value, label, detail },  pillars[]{    key,    title,    metricLabel,    description,    "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},    href  },  prompts{    intentQuestion,    durationQuestion,    resultQuestion,    firstChoice,    bookingTitle,    bookingLead,    bookingSlow  },  sections{    hero{ eyebrow, title, lead, contactLabel, fitLabel, caption, "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }} },    marquee{ label, link },    finder{ eyebrow, title, lead, note },    reasons{ title, lead, contact },    proof{ title, caption },    pillars{ title, lead },    people{ title, lead, statLabel, tagline, alumniTitle },    directory{ title, lead, supportersTitle },    cases{ title, lead, contact },    contact{ title, lead, emailLabel }  }}
+// Query: *[_id == "partnersCopy"][0]{  pitch,  intents{    talent{ label, shortLabel, detail },    hackathon{ label, shortLabel, detail },    brand{ label, shortLabel, detail },    research{ label, shortLabel, detail },    venture{ label, shortLabel, detail }  },  durations{    oneOff{ label, detail },    ongoing{ label, detail }  },  recommendations{    longTerm{ name, description },    hackathon{ name, description },    talent{ name, description },    brand{ name, description },    research{ name, description },    venture{ name, description }  },  reasons[]{ icon, name, title, description },  stats[]{ value, label, detail },  pillars[]{    key,    title,    metricLabel,    description,    "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }},    href  },  prompts{    intentQuestion,    durationQuestion,    resultQuestion,    firstChoice,    bookingTitle,    bookingLead,    bookingSlow  },  sections{    hero{ eyebrow, title, lead, contactLabel, fitLabel, caption, "image": image{  "src": asset->url,  "width": asset->metadata.dimensions.width,  "height": asset->metadata.dimensions.height,  alt,  "hotspot": hotspot{ x, y },  "crop": crop{ top, bottom, left, right }} },    marquee{ label, link },    finder{ eyebrow, title, lead, note },    reasons{ title, lead, contact },    proof{ title, caption },    pillars{ title, lead },    people{ title, lead, statLabel, tagline, alumniTitle },    directory{ title, lead, supportersTitle },    cases{ title, lead, contact },    contact{ title, lead, emailLabel }  }}
 export type PARTNERS_COPY_QUERY_RESULT =
   | {
       pitch: null;
@@ -2997,6 +3006,11 @@ export type PARTNERS_COPY_QUERY_RESULT =
           shortLabel: string | null;
           detail: string | null;
         } | null;
+        venture: {
+          label: string | null;
+          shortLabel: string | null;
+          detail: string | null;
+        } | null;
       } | null;
       durations: {
         oneOff: {
@@ -3026,6 +3040,10 @@ export type PARTNERS_COPY_QUERY_RESULT =
           description: string | null;
         } | null;
         research: {
+          name: string | null;
+          description: string | null;
+        } | null;
+        venture: {
           name: string | null;
           description: string | null;
         } | null;

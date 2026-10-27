@@ -170,6 +170,7 @@ export const partnersCopyType = defineType({
         intentField("hackathon", "Hackathon"),
         intentField("brand", "Brand"),
         intentField("research", "Research"),
+        intentField("venture", "Founders and VCs"),
       ],
     }),
     defineField({
@@ -188,13 +189,14 @@ export const partnersCopyType = defineType({
       type: "object",
       group: "finder",
       description:
-        "Research goals get the research format; any other ongoing goal the long-term partnership; a one-off goal its own format.",
+        "Research and founder goals get their own format at any timeframe; any other ongoing goal the long-term partnership; a one-off goal its own format.",
       fields: [
         recommendationField("longTerm", "Long-term partnership"),
         recommendationField("hackathon", "Hackathon"),
         recommendationField("talent", "Talent"),
         recommendationField("brand", "Community and brand"),
         recommendationField("research", "Research"),
+        recommendationField("venture", "ELAB venture"),
       ],
     }),
     defineField({

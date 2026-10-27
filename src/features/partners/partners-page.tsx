@@ -45,6 +45,7 @@ export async function PartnersPage() {
         email: facts.contactEmails.partners,
         bookingUrl: facts.partnershipBooking.bookingUrl,
         bookingHost: facts.partnershipBooking.bookingHost,
+        ventureEmail: facts.contactEmails.venture,
       }}
     >
       <main>

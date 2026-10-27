@@ -16,6 +16,8 @@ export type PartnershipContact = {
   email: string;
   bookingUrl: string;
   bookingHost: string;
+  /** The ELAB team's role address, the only recipient of founder and VC requests (no CCs). */
+  ventureEmail?: string;
 };
 
 export interface PartnershipSelection {
@@ -60,8 +62,9 @@ export function partnershipFunnelReducer(
 }
 
 /**
- * The format for the answers: research goals get the research format, any
- * other ongoing goal the long-term partnership, a one-off goal its own.
+ * The format for the answers: research and venture goals get their own
+ * format at any timeframe, any other ongoing goal the long-term partnership,
+ * a one-off goal its own.
  */
 export function getPartnershipRecommendation(
   { intent, duration }: PartnershipSelection,
@@ -69,6 +72,7 @@ export function getPartnershipRecommendation(
 ) {
   if (!intent || !duration) return null;
   if (intent === "research") return recommendations.research;
+  if (intent === "venture") return recommendations.venture;
   if (duration === "ongoing") return recommendations.longTerm;
   return recommendations[intent];
 }
@@ -105,7 +109,16 @@ export function getPartnershipEmailUrl(
   const subject = intent
     ? `Partnership request: ${intent.shortLabel}`
     : "Partnership request: TUM.ai";
-  return `mailto:${contact.email}?cc=${encodeURIComponent(partnershipContactCc.join(","))}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Hi TUM.ai team,\n\n${getPartnershipContext(selection, copy)}\n\n`)}`;
+  const message = `subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Hi TUM.ai team,\n\n${getPartnershipContext(selection, copy)}\n\n`)}`;
+  if (selection.intent === "venture" && contact.ventureEmail) {
+    return `mailto:${contact.ventureEmail}?${message}`;
+  }
+  return `mailto:${contact.email}?cc=${encodeURIComponent(partnershipContactCc.join(","))}&${message}`;
+}
+
+/** Whether "Book a call" is offered: the ELAB team takes founder and VC requests by email only. */
+export function partnershipOffersBooking({ intent }: PartnershipSelection) {
+  return intent !== "venture";
 }
 
 export function getPartnershipBookingUrl(

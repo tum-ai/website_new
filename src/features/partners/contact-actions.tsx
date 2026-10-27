@@ -3,9 +3,15 @@
 import { Actions, Button, ButtonLink } from "@tum.ai/ui-kit";
 import { CalendarDays, Mail } from "lucide-react";
 import { usePartnership } from "./partnership-context";
-import { getPartnershipEmailUrl } from "./partnerships";
+import {
+  getPartnershipEmailUrl,
+  partnershipOffersBooking,
+} from "./partnerships";
 
-/** Email (mailto with CCs and finder context) and booking-dialog actions. */
+/**
+ * Email (mailto with CCs and finder context) and booking-dialog actions.
+ * Goals without a call (`partnershipOffersBooking`) get the email alone.
+ */
 export function ContactActions({
   emailLabel = "Request via email",
   bookingFirst = false,
@@ -20,31 +26,33 @@ export function ContactActions({
   className?: string;
 }) {
   const { selection, openBooking, copy, contact } = usePartnership();
+  const canBook = partnershipOffersBooking(selection);
+  const bookingLeads = bookingFirst && canBook;
   const email = (
     <ButtonLink
       key="email"
       href={getPartnershipEmailUrl(selection, copy, contact)}
-      variant={bookingFirst ? "outline" : "primary"}
+      variant={bookingLeads ? "outline" : "primary"}
       size={size}
     >
       <Mail aria-hidden className="size-4" />
       {emailLabel}
     </ButtonLink>
   );
-  const booking = (
+  const booking = canBook ? (
     <Button
       key="booking"
-      variant={bookingFirst ? "primary" : "outline"}
+      variant={bookingLeads ? "primary" : "outline"}
       size={size}
       onClick={openBooking}
     >
       <CalendarDays aria-hidden className="size-4" />
       Book a call
     </Button>
-  );
+  ) : null;
   return (
     <Actions align={align} className={className}>
-      {bookingFirst ? [booking, email] : [email, booking]}
+      {bookingLeads ? [booking, email] : [email, booking]}
     </Actions>
   );
 }

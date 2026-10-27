@@ -1,10 +1,13 @@
 import {
   Container,
+  type LogoItem,
+  LogoTile,
   LogoWall,
   Reveal,
   Section,
   SectionHeader,
 } from "@tum.ai/ui-kit";
+import { cn } from "@/lib/cn";
 import { isUnoptimizedRemoteImage } from "@/lib/image-optimization";
 import { getLogoLists } from "@/lib/organization-content";
 import type { Organization } from "@/lib/people-and-logos";
@@ -25,6 +28,58 @@ function logoOf({ name, href, logo }: Organization) {
         }
       : {}),
   };
+}
+
+/**
+ * The kit's tile caps every logo at one height, so a square or stacked mark
+ * (Senovo, UVC Partners) reads far smaller than the wide wordmarks that fill
+ * their tiles' width. Marks up to 2:1 get a taller cap instead.
+ */
+const COMPACT_ASPECT = 2;
+const compactCap = {
+  md: "[&_img]:max-h-16",
+  xl: "[&_img]:max-h-20",
+} as const;
+
+/**
+ * A grid of white logo tiles, as `LogoWall`'s `grid` layout lays them out
+ * (two columns on phones, three from `sm`), with the taller cap for compact
+ * marks.
+ */
+function PartnerGrid({
+  logos,
+  columns,
+  size,
+  label,
+}: {
+  logos: LogoItem[];
+  columns: 5 | 6;
+  size: keyof typeof compactCap;
+  label: string;
+}) {
+  return (
+    <ul
+      aria-label={label}
+      className={cn(
+        "mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3",
+        columns === 5 ? "lg:grid-cols-5" : "lg:grid-cols-6",
+      )}
+    >
+      {logos.map(({ aspectRatio, ...logo }) => (
+        <li key={logo.name} className="flex">
+          <LogoTile
+            {...logo}
+            size={size}
+            className={
+              aspectRatio && aspectRatio <= COMPACT_ASPECT
+                ? compactCap[size]
+                : undefined
+            }
+          />
+        </li>
+      ))}
+    </ul>
+  );
 }
 
 /**
@@ -66,12 +121,11 @@ export async function PartnersSection({
               <h3 className="font-semibold text-fg text-small">
                 {copy.iterationLabel}
               </h3>
-              <LogoWall
+              <PartnerGrid
                 logos={iteration}
                 columns={5}
                 size="xl"
                 label={copy.iterationLabel}
-                className="mt-6"
               />
             </Reveal>
           ) : null}
@@ -80,12 +134,11 @@ export async function PartnersSection({
               <h3 className="font-semibold text-fg text-small">
                 {copy.workshopLabel}
               </h3>
-              <LogoWall
+              <PartnerGrid
                 logos={workshop}
                 columns={6}
                 size="md"
                 label={copy.workshopLabel}
-                className="mt-6"
               />
             </Reveal>
           ) : null}
