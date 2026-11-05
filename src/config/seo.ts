@@ -241,7 +241,7 @@ const pages = {
     path: "/apply",
     title: "Become a Member",
     description:
-      "Apply to join TUM.ai and become part of Munich's leading AI student initiative.",
+      "Apply to join TUM.ai and become part of Europe's leading AI student initiative.",
     page: {
       type: "WebPage",
       name: "Apply to TUM.ai",
@@ -263,7 +263,7 @@ const pages = {
     path: "/imprint",
     title: "Imprint - Legal Information",
     description:
-      "Legal information and imprint for TUM.ai e.V., Germany's leading AI student initiative.",
+      "Legal information and imprint for TUM.ai e.V., Europe's leading AI student initiative.",
     page: {
       type: "WebPage",
       name: "TUM.ai Imprint",
@@ -298,7 +298,7 @@ const home = {
   path: "/",
   title: "TUM.ai - AI Student Initiative at Technical University of Munich",
   description:
-    "Join TUM.ai, Munich's leading AI student initiative. We organize hackathons, research projects, workshops, and run an AI startup incubator. Connect with AI enthusiasts and drive positive societal impact.",
+    "Join TUM.ai, Europe's leading AI student initiative. We organize hackathons, research projects, workshops, and run an AI startup incubator. Connect with AI enthusiasts and drive positive societal impact.",
 };
 
 export type SEOPageKey = "home" | keyof typeof pages;

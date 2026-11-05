@@ -9,19 +9,19 @@ export const siteConfig = {
   url: "https://www.tum-ai.com",
   name: "TUM.ai",
   /** Canonical tagline: the default `<title>` and the Open Graph fallback. */
-  tagline: "Germany's Leading AI Student Initiative",
+  tagline: "Europe's Leading AI Student Initiative",
   /** One-line summary: the layout's fallback meta description. */
   summary:
-    "TUM.ai is Germany's leading AI student initiative, connecting students, research, and industry.",
+    "TUM.ai is Europe's leading AI student initiative, connecting students, research, and industry.",
   /** The long description: the Organization JSON-LD `description`. */
   description:
-    "TUM.ai is Germany's leading student initiative focused on AI. We empower the next generation of AI innovators by creating a community of students who innovate, research, and build at the forefront of AI, fostering both groundbreaking research and entrepreneurial ventures across diverse industries.",
+    "TUM.ai is Europe's leading student initiative focused on AI. We empower the next generation of AI innovators by creating a community of students who innovate, research, and build at the forefront of AI, fostering both groundbreaking research and entrepreneurial ventures across diverse industries.",
   /** Shared Open Graph and Twitter image, relative to `url`. */
   socialImagePath: "/assets/logo_new_white_standard.png",
   locale: "en_US",
 } as const;
 
-/** "TUM.ai - Germany's Leading AI Student Initiative". */
+/** "TUM.ai - Europe's Leading AI Student Initiative". */
 export const siteTitle = `${siteConfig.name} - ${siteConfig.tagline}`;
 
 /**
