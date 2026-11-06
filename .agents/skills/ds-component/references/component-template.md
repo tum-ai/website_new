@@ -1,7 +1,7 @@
 # Consumer composition example
 
 Shared primitives and their implementation conventions belong to the versioned
-[UI kit](https://github.com/tum-ai/ui-kit/tree/v0.2.0). Compose its public exports
+[UI kit](https://github.com/tum-ai/ui-kit/tree/v0.3.1). Compose its public exports
 in this app; this example is a page pattern, not a new shared primitive.
 
 ```tsx

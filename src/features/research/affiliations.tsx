@@ -16,7 +16,7 @@ function AffiliationMark({
   return (
     <sup
       aria-hidden="true"
-      className={cn("tabular font-semibold text-highlight", className)}
+      className={cn("font-semibold text-highlight tabular", className)}
     >
       {index}
     </sup>
@@ -31,7 +31,7 @@ function IndexNumber({ index }: { index: number }) {
   return (
     <span
       aria-hidden="true"
-      className="tabular mt-1 mr-1.5 font-semibold text-highlight text-label-sm leading-none lg:mt-1.5"
+      className="mt-1 mr-1.5 text-label-sm leading-none font-semibold text-highlight tabular lg:mt-1.5"
     >
       {index}
     </span>
@@ -63,12 +63,12 @@ export function AffiliationIndex({
   const labelId = `${id}-label`;
   return (
     <div className={className}>
-      <p id={labelId} className="text-fg-subtle text-meta">
+      <p id={labelId} className="text-meta text-fg-subtle">
         {label}
       </p>
       <ol
         aria-labelledby={labelId}
-        className="mt-4 flex flex-wrap gap-x-7 gap-y-1 font-light text-fg text-heading-md md:gap-x-10 lg:text-heading-lg"
+        className="mt-4 flex flex-wrap gap-x-7 gap-y-1 text-heading-md font-light text-fg md:gap-x-10 lg:text-heading-lg"
       >
         {affiliations.map((name, position) => (
           <li
@@ -103,7 +103,7 @@ export function AffiliationNames({
 }) {
   if (affiliations.length === 0) return null;
   return (
-    <p className={cn("text-fg-muted text-small", className)}>
+    <p className={cn("text-small text-fg-muted", className)}>
       {affiliations.map(({ name, index }, position) => (
         <Fragment key={name}>
           {position > 0 ? ", " : null}

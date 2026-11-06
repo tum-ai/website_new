@@ -92,7 +92,7 @@ export function JoinMark() {
       }}
       className="home-join-mark absolute -z-10 aspect-[477/406] opacity-60 lg:opacity-100"
     >
-      <ConstructionMark className="home-join-fill pointer-events-none absolute inset-0 size-full select-none text-white/[0.07]" />
+      <ConstructionMark className="home-join-fill pointer-events-none absolute inset-0 size-full text-white/[0.07] select-none" />
       <ConstructionLines
         reach="long"
         className="absolute inset-0 hidden size-full text-violet-300 lg:block"
@@ -102,7 +102,7 @@ export function JoinMark() {
         stroke="currentColor"
         strokeWidth={0.8}
         style={{ fill: "none" }}
-        className="home-join-outline pointer-events-none absolute inset-0 size-full select-none text-violet-300"
+        className="home-join-outline pointer-events-none absolute inset-0 size-full text-violet-300 select-none"
       />
     </div>
   );

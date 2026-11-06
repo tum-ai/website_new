@@ -69,7 +69,7 @@ export function LegalSection({
       id={id}
       aria-labelledby={titleId}
       className={cn(
-        "not-first:mt-10 scroll-mt-header border-hairline not-first:border-t not-first:pt-10 md:not-first:mt-12 md:not-first:pt-12",
+        "scroll-mt-header border-hairline not-first:mt-10 not-first:border-t not-first:pt-10 md:not-first:mt-12 md:not-first:pt-12",
         className,
       )}
     >
@@ -78,11 +78,11 @@ export function LegalSection({
       <h2
         id={titleId}
         tabIndex={-1}
-        className="not-prose mb-5 text-fg text-heading-md"
+        className="not-prose mb-5 text-heading-md text-fg"
       >
         {number ? (
           <>
-            <span className="tabular text-highlight">{number}</span>{" "}
+            <span className="text-highlight tabular">{number}</span>{" "}
           </>
         ) : null}
         {title}
@@ -104,7 +104,7 @@ export function LegalSubsection({
 }) {
   return (
     <div className="mt-10 [h2+&]:mt-7">
-      <h3 className="not-prose mb-3 text-fg text-heading-sm">
+      <h3 className="not-prose mb-3 text-heading-sm text-fg">
         <span className="text-highlight">{letter}</span> {title}
       </h3>
       {children}
@@ -125,11 +125,11 @@ export function AddressCard({
   return (
     <address
       className={cn(
-        "not-prose mt-6 rounded-3xl bg-sunken p-6 text-fg-muted text-small not-italic md:p-7",
+        "not-prose mt-6 rounded-3xl bg-sunken p-6 text-small text-fg-muted not-italic md:p-7",
         className,
       )}
     >
-      <p className="mb-2 font-semibold text-body text-fg">{title}</p>
+      <p className="mb-2 text-body font-semibold text-fg">{title}</p>
       {children}
     </address>
   );

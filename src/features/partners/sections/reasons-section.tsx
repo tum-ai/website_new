@@ -30,16 +30,16 @@ export function ReasonsSection({
               as="li"
               key={reason.name}
               delay={index * 100}
-              className="grid content-start border-hairline-strong border-t pt-6 md:max-lg:grid-cols-[12rem_minmax(0,1fr)] md:max-lg:gap-x-10"
+              className="grid content-start border-t border-hairline-strong pt-6 md:max-lg:grid-cols-[12rem_minmax(0,1fr)] md:max-lg:gap-x-10"
             >
-              <p className="font-semibold text-highlight text-small">
+              <p className="text-small font-semibold text-highlight">
                 {reason.name}
               </p>
               <div className="mt-8 md:max-lg:mt-0 lg:mt-12">
-                <h3 className="max-w-[16em] text-fg text-heading-lg">
+                <h3 className="max-w-[16em] text-heading-lg text-fg">
                   {reason.title}
                 </h3>
-                <p className="mt-5 max-w-md text-fg-muted text-small">
+                <p className="mt-5 max-w-md text-small text-fg-muted">
                   {reason.description}
                 </p>
               </div>

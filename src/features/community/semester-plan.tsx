@@ -104,10 +104,10 @@ export function SemesterPlan({
         <div className="relative">
           <ColumnRules columns={columns} />
           <ColumnHeads columns={columns} />
-          <ol className="border-hairline-strong border-t lg:border-t-0">
+          <ol className="border-t border-hairline-strong lg:border-t-0">
             {journey.map((stage) =>
               stage.kind === "single" ? (
-                <li key={stage.step.step} className="border-hairline border-b">
+                <li key={stage.step.step} className="border-b border-hairline">
                   <StepRow
                     step={stage.step}
                     columns={columns}
@@ -117,7 +117,7 @@ export function SemesterPlan({
               ) : (
                 <li
                   key={stage.steps[0].step}
-                  className="border-hairline border-b"
+                  className="border-b border-hairline"
                 >
                   <StepRow
                     step={stage.steps[0]}
@@ -157,7 +157,7 @@ function ColumnRules({ columns }: Columns) {
       style={gridOf(columns.length)}
     >
       {columns.map((label) => (
-        <span key={label} className="border-hairline border-l" />
+        <span key={label} className="border-l border-hairline" />
       ))}
     </div>
   );
@@ -168,17 +168,17 @@ function ColumnHeads({ columns }: Columns) {
   return (
     <div
       aria-hidden="true"
-      className={cn("hidden border-hairline-strong border-b pb-8", ROW_GRID)}
+      className={cn("hidden border-b border-hairline-strong pb-8", ROW_GRID)}
     >
-      <p className="self-end text-fg-subtle text-meta">Semester</p>
+      <p className="self-end text-meta text-fg-subtle">Semester</p>
       <div className="grid" style={gridOf(columns.length)}>
         {columns.map((label, index) => (
           <div key={label} className="pl-5">
-            <span className="tabular block text-display-lg text-highlight">
+            <span className="block text-display-lg text-highlight tabular">
               {label}
             </span>
             {index === 0 ? (
-              <span className="mt-3 block text-fg-subtle text-meta">
+              <span className="mt-3 block text-meta text-fg-subtle">
                 Recruiting round
               </span>
             ) : null}
@@ -225,9 +225,9 @@ function StepRow({
         />
       ) : null}
       <div>
-        <h3 className="text-fg text-heading-lg">{step.name}</h3>
+        <h3 className="text-heading-lg text-fg">{step.name}</h3>
         {/* Below lg the strip shows it; the words stay for screen readers. */}
-        <p className="mt-2 text-fg-subtle text-meta max-lg:sr-only">
+        <p className="mt-2 text-meta text-fg-subtle max-lg:sr-only">
           {opensIn(step)}
         </p>
         <SemesterStrip step={step} columns={columns} />
@@ -254,7 +254,7 @@ function StepRow({
                 className="size-9 shrink-0 rounded-full object-cover"
                 style={{ objectPosition: story.imagePosition }}
               />
-              <span className="text-fg-muted text-meta">
+              <span className="text-meta text-fg-muted">
                 <span className="font-medium text-fg">{story.name}</span>,{" "}
                 {story.role}
               </span>
@@ -340,7 +340,7 @@ function SemesterStrip({ step, columns }: Columns & { step: JourneyStep }) {
           <span
             key={label}
             className={cn(
-              "tabular absolute top-0 -translate-x-1/2 text-meta leading-none",
+              "absolute top-0 -translate-x-1/2 text-meta leading-none tabular",
               index === step.fromSemester ? "text-highlight" : "text-fg-subtle",
             )}
             style={{ left: leftOf(index) }}
@@ -366,7 +366,7 @@ function ForkDivider({ step, columns }: Columns & { step: JourneyStep }) {
         style={{ left: columnLeft(step.fromSemester, columns.length) }}
       />
       <p
-        className="flex items-center gap-3 text-fg-subtle text-meta lg:absolute lg:top-1/2 lg:ml-4 lg:block lg:-translate-y-1/2"
+        className="flex items-center gap-3 text-meta text-fg-subtle lg:absolute lg:top-1/2 lg:ml-4 lg:block lg:-translate-y-1/2"
         style={{ left: columnLeft(step.fromSemester, columns.length) }}
       >
         <span

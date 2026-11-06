@@ -112,7 +112,7 @@ function Scale({ label, max }: { label: string; max: number }) {
     <div aria-hidden="true" className={cn("pb-3", ROW_GRID)}>
       <p
         className={cn(
-          "hidden self-end text-fg-subtle text-meta lg:block",
+          "hidden self-end text-meta text-fg-subtle lg:block",
           WORDS,
         )}
       >
@@ -123,7 +123,7 @@ function Scale({ label, max }: { label: string; max: number }) {
           <span
             key={tick.teams}
             className={cn(
-              "tabular absolute top-0 text-fg-subtle text-meta",
+              "absolute top-0 text-meta text-fg-subtle tabular",
               index === 0
                 ? "translate-x-0"
                 : index === ticks.length - 1 && tick.at === 1
@@ -173,12 +173,12 @@ function GateRow({ gate, index }: { gate: Gate; index: number }) {
   return (
     <li
       className={cn(
-        "border-hairline-strong border-t py-8 lg:items-baseline lg:py-10",
+        "border-t border-hairline-strong py-8 lg:items-baseline lg:py-10",
         ROW_GRID,
       )}
     >
       <div className={WORDS}>
-        <h3 className="text-fg text-heading-lg">{gate.name}</h3>
+        <h3 className="text-heading-lg text-fg">{gate.name}</h3>
         <p className="mt-3 max-w-md text-body text-fg-muted">
           {gate.description}
         </p>
@@ -186,16 +186,16 @@ function GateRow({ gate, index }: { gate: Gate; index: number }) {
       <div className={cn("mt-6 lg:mt-0", SCALE)}>
         <p className="lg:pl-6">
           <span aria-hidden="true" className="flex items-baseline gap-3">
-            <span className="tabular text-fg text-stat-lg">
+            <span className="text-stat-lg text-fg tabular">
               {figureText(gate)}
             </span>
-            <span className="text-fg-muted text-small">{unit(gate)}</span>
+            <span className="text-small text-fg-muted">{unit(gate)}</span>
           </span>
           <span className="sr-only">{figureWords(gate)}</span>
         </p>
         <div
           aria-hidden="true"
-          className="relative mt-5 h-3 border-hairline-strong border-l lg:border-l-0"
+          className="relative mt-5 h-3 border-l border-hairline-strong lg:border-l-0"
         >
           <span className="absolute inset-x-0 top-1/2 h-px bg-hairline" />
           <Reveal
@@ -245,16 +245,16 @@ function PhaseRow({ phase }: { phase: Phase }) {
     <li className={cn("pb-8 lg:pb-0", ROW_GRID)}>
       <div
         className={cn(
-          "border-hairline-strong border-l-2 pl-5 lg:col-start-5 lg:border-l-0 lg:pt-2 lg:pb-8 lg:pl-6 xl:grid xl:grid-cols-[minmax(0,1fr)_18rem] xl:items-start xl:gap-10",
+          "border-l-2 border-hairline-strong pl-5 lg:col-start-5 lg:border-l-0 lg:pt-2 lg:pb-8 lg:pl-6 xl:grid xl:grid-cols-[minmax(0,1fr)_18rem] xl:items-start xl:gap-10",
           SCALE,
         )}
       >
         <div className="flex flex-col">
-          <h3 className="mt-1 text-fg text-heading-sm">{phase.name}</h3>
-          <p className="order-first font-semibold text-highlight text-small">
+          <h3 className="mt-1 text-heading-sm text-fg">{phase.name}</h3>
+          <p className="order-first text-small font-semibold text-highlight">
             {formatDuration(phase.duration)}
           </p>
-          <p className="mt-2 max-w-lg text-fg-muted text-small">
+          <p className="mt-2 max-w-lg text-small text-fg-muted">
             {phase.description}
           </p>
         </div>

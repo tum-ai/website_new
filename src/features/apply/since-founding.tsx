@@ -17,9 +17,9 @@ function Entry({ milestone }: { milestone: Milestone }) {
         className="mt-[0.45em] size-1.5 shrink-0 bg-highlight"
       />
       <span>
-        <span className="block text-fg text-small">{milestone.title}</span>
+        <span className="block text-small text-fg">{milestone.title}</span>
         {milestone.detail ? (
-          <span className="mt-0.5 block text-fg-subtle text-meta">
+          <span className="mt-0.5 block text-meta text-fg-subtle">
             {milestone.detail}
           </span>
         ) : null}
@@ -71,13 +71,13 @@ export function SinceFounding({
               ))}
             </colgroup>
             <thead>
-              <tr className="border-hairline-strong border-b">
+              <tr className="border-b border-hairline-strong">
                 <td />
                 {milestoneYears.map((year) => (
                   <th
                     key={year}
                     scope="col"
-                    className="tabular border-hairline border-l px-4 pb-5 align-bottom font-normal text-fg text-heading-md"
+                    className="border-l border-hairline px-4 pb-5 align-bottom text-heading-md font-normal text-fg tabular"
                   >
                     {year}
                     <span
@@ -99,10 +99,10 @@ export function SinceFounding({
             </thead>
             <tbody>
               {milestoneKinds.map((kind) => (
-                <tr key={kind.id} className="border-hairline border-b">
+                <tr key={kind.id} className="border-b border-hairline">
                   <th
                     scope="row"
-                    className="py-6 pr-4 align-top font-medium text-fg-muted text-small"
+                    className="py-6 pr-4 align-top text-small font-medium text-fg-muted"
                   >
                     {kind.label}
                   </th>
@@ -111,7 +111,7 @@ export function SinceFounding({
                     return (
                       <td
                         key={year}
-                        className="border-hairline border-l px-4 py-6 align-top"
+                        className="border-l border-hairline px-4 py-6 align-top"
                       >
                         {entries.length ? (
                           <ul className="grid gap-4">
@@ -132,22 +132,22 @@ export function SinceFounding({
           </table>
         </Reveal>
 
-        <ol className="border-hairline-strong border-t lg:hidden">
+        <ol className="border-t border-hairline-strong lg:hidden">
           {milestoneYears.map((year) => (
             <Reveal
               as="li"
               key={year}
-              className="grid gap-5 border-hairline border-b py-8 sm:grid-cols-[6rem_minmax(0,1fr)]"
+              className="grid gap-5 border-b border-hairline py-8 sm:grid-cols-[6rem_minmax(0,1fr)]"
             >
-              <h3 className="tabular text-fg text-heading-md">{year}</h3>
+              <h3 className="text-heading-md text-fg tabular">{year}</h3>
               <ul className="grid gap-4">
                 {milestoneKinds.flatMap((kind) =>
                   milestonesIn(kind.id, year).map((milestone) => (
                     <li key={milestone.title}>
-                      <span className="block text-fg-subtle text-meta">
+                      <span className="block text-meta text-fg-subtle">
                         {kind.label}
                       </span>
-                      <span className="mt-0.5 block text-fg text-small">
+                      <span className="mt-0.5 block text-small text-fg">
                         {milestone.title}
                         {milestone.detail ? (
                           <span className="text-fg-muted">

@@ -102,7 +102,7 @@ export async function ResearchPage({
             id="hero-affiliations"
             label="Affiliations"
             affiliations={affiliationNames}
-            className="border-hairline border-t pt-8 md:pt-10"
+            className="border-t border-hairline pt-8 md:pt-10"
           />
         ) : null}
       </PageHero>
@@ -116,7 +116,7 @@ export async function ResearchPage({
         {partnerLogos.length > 0 ? (
           <Container className="mb-24 md:mb-32">
             {/* The list below carries the same name for assistive tech. */}
-            <p aria-hidden="true" className="text-fg-subtle text-meta">
+            <p aria-hidden="true" className="text-meta text-fg-subtle">
               {copy.partnersLabel}
             </p>
             <Reveal variant="fade">
@@ -129,14 +129,14 @@ export async function ResearchPage({
                     isUnoptimizedRemoteImage(logo.src ?? ""),
                 }))}
                 label={copy.partnersLabel}
-                className="mt-8 border-hairline border-b pb-16 md:pb-20"
+                className="mt-8 border-b border-hairline pb-16 md:pb-20"
               />
             </Reveal>
           </Container>
         ) : null}
         <Container className="grid gap-14 lg:grid-cols-12 lg:gap-12">
           <div className="lg:col-span-6">
-            <h2 id="abstract-title" className="text-fg-subtle text-meta">
+            <h2 id="abstract-title" className="text-meta text-fg-subtle">
               {copy.abstract.label}
             </h2>
             <Display as="p" size="md" className="mt-6 max-w-[16em]">
@@ -210,7 +210,7 @@ export async function ResearchPage({
             lead={rex.lead}
           />
           {/* The list below carries the same name for assistive tech. */}
-          <p aria-hidden="true" className="text-fg-subtle text-meta">
+          <p aria-hidden="true" className="text-meta text-fg-subtle">
             {rex.logosLabel}
           </p>
           <LogoWall
@@ -228,7 +228,7 @@ export async function ResearchPage({
 
           <div className="mt-20 grid gap-14 md:mt-28 lg:grid-cols-12 lg:gap-12">
             <div className="lg:col-span-8">
-              <h3 className="text-fg-subtle text-meta">{rex.processTitle}</h3>
+              <h3 className="text-meta text-fg-subtle">{rex.processTitle}</h3>
               <Steps
                 layout="rows"
                 headingAs="h4"
@@ -272,10 +272,10 @@ export async function ResearchPage({
               label="Affiliations"
               affiliations={affiliationNames}
               openSlot={closing.openSlot}
-              className="mt-12 border-hairline border-t pt-8 md:mt-16"
+              className="mt-12 border-t border-hairline pt-8 md:mt-16"
             />
           </Reveal>
-          <div className="mt-16 grid border-hairline-strong border-t md:mt-24 md:grid-cols-2">
+          <div className="mt-16 grid border-t border-hairline-strong md:mt-24 md:grid-cols-2">
             {[
               {
                 ...closing.partner,
@@ -297,10 +297,10 @@ export async function ResearchPage({
               <Reveal
                 key={fork.audience}
                 delay={position * 100}
-                className="border-hairline py-8 max-md:not-last:border-b md:py-10 md:even:border-l md:even:pl-12 md:odd:pr-12"
+                className="border-hairline py-8 max-md:not-last:border-b md:py-10 md:odd:pr-12 md:even:border-l md:even:pl-12"
               >
-                <p className="text-fg-subtle text-meta">{fork.audience}</p>
-                <p className="mt-3 max-w-md text-fg text-heading-md">
+                <p className="text-meta text-fg-subtle">{fork.audience}</p>
+                <p className="mt-3 max-w-md text-heading-md text-fg">
                   {fork.text}
                 </p>
                 <div className="mt-8">{fork.action}</div>

@@ -6,7 +6,7 @@ indigo bands with the large logomark as a background shape, big light-weight
 Manrope headlines with tight tracking, thin rules, rounded photography, and
 calm light bands for reading. Motion is small, purposeful and always optional.
 
-- Components: [`@tum.ai/ui-kit` 0.2.0](https://github.com/tum-ai/ui-kit/tree/v0.2.0)
+- Components: [`@tum.ai/ui-kit` 0.3.1](https://github.com/tum-ai/ui-kit/tree/v0.3.1)
 - Tokens: `@tum.ai/ui-kit/tailwind.css`, imported by `src/styles/index.css`
 - Live reference: `/design-system` (development and Vercel previews only)
 - Why Base UI, tones and layers: [ADR 0001](adr/0001-base-ui-over-radix.md),
@@ -108,11 +108,11 @@ The website owns page composition, content, CMS data, navigation and app adapter
 Use the versioned kit documentation for component contracts instead of maintaining
 another API table here:
 
-- [Public API](https://github.com/tum-ai/ui-kit/tree/v0.2.0/docs/api.md)
-- [Design system and API conventions](https://github.com/tum-ai/ui-kit/tree/v0.2.0/docs/design-system.md)
-- [Component contracts](https://github.com/tum-ai/ui-kit/tree/v0.2.0/docs/components)
-- [Brand guide](https://github.com/tum-ai/ui-kit/tree/v0.2.0/docs/brand.md)
-- [Getting started](https://github.com/tum-ai/ui-kit/tree/v0.2.0/docs/getting-started.md)
+- [Public API](https://github.com/tum-ai/ui-kit/tree/v0.3.1/docs/api.md)
+- [Design system and API conventions](https://github.com/tum-ai/ui-kit/tree/v0.3.1/docs/design-system.md)
+- [Component contracts](https://github.com/tum-ai/ui-kit/tree/v0.3.1/docs/components)
+- [Brand guide](https://github.com/tum-ai/ui-kit/tree/v0.3.1/docs/brand.md)
+- [Getting started](https://github.com/tum-ai/ui-kit/tree/v0.3.1/docs/getting-started.md)
 
 Import public primitives and types directly from `@tum.ai/ui-kit`. Generic shell
 components come from `@tum.ai/ui-kit/shell`; site pages use the adapters in

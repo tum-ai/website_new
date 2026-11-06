@@ -77,12 +77,12 @@ export async function VentureTrace({
           </Reveal>
         </div>
 
-        <div className="mt-20 border-hairline-strong border-t pt-10 md:mt-28">
+        <div className="mt-20 border-t border-hairline-strong pt-10 md:mt-28">
           <h3 className="grid gap-4 lg:grid-cols-12 lg:items-end lg:gap-12">
-            <span className="tabular text-display-2xl text-highlight lg:col-span-5">
+            <span className="text-display-2xl text-highlight tabular lg:col-span-5">
               {fundingText}
             </span>
-            <span className="max-w-md text-fg text-heading-lg lg:col-span-7 lg:justify-self-end lg:pb-3 lg:text-right">
+            <span className="max-w-md text-heading-lg text-fg lg:col-span-7 lg:justify-self-end lg:pb-3 lg:text-right">
               {copy.fundingNote}
             </span>
           </h3>
@@ -119,7 +119,7 @@ function FoundersTable({
         {founders.map((row) => (
           <li
             key={row.key}
-            className="grid gap-6 border-hairline-strong border-t py-7 lg:grid-cols-12 lg:gap-x-8 lg:py-8"
+            className="grid gap-6 border-t border-hairline-strong py-7 lg:grid-cols-12 lg:gap-x-8 lg:py-8"
           >
             <div className="lg:col-span-3">
               <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
@@ -128,31 +128,31 @@ function FoundersTable({
                     href={row.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-fg text-heading-md underline-offset-4 hover:underline"
+                    className="text-heading-md text-fg underline-offset-4 hover:underline"
                   >
                     {row.name}
                     <span className="sr-only"> (opens in a new tab)</span>
                   </a>
                 ) : (
-                  <span className="text-fg text-heading-md">{row.name}</span>
+                  <span className="text-heading-md text-fg">{row.name}</span>
                 )}
                 {row.edition ? (
-                  <span className="rounded-md bg-highlight/15 px-2 py-0.5 font-medium text-highlight text-meta">
+                  <span className="rounded-md bg-highlight/15 px-2 py-0.5 text-meta font-medium text-highlight">
                     {row.edition}
                   </span>
                 ) : null}
               </p>
-              <p className="mt-2 max-w-xs text-fg-muted text-small">
+              <p className="mt-2 max-w-xs text-small text-fg-muted">
                 {row.summary}
               </p>
             </div>
             <dl className="grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4 lg:col-span-6">
               {row.metrics.map((metric) => (
                 <div key={metric.label} className="flex flex-col">
-                  <dt className="order-last mt-1 text-fg-subtle text-meta">
+                  <dt className="order-last mt-1 text-meta text-fg-subtle">
                     {metric.label}
                   </dt>
-                  <dd className="tabular text-fg text-heading-md">
+                  <dd className="text-heading-md text-fg tabular">
                     {metric.value}
                   </dd>
                 </div>
@@ -160,12 +160,12 @@ function FoundersTable({
             </dl>
             {row.backedBy ? (
               <div className="lg:col-span-3">
-                <p className="text-fg-subtle text-meta">Backed by</p>
-                <p className="mt-1 font-medium text-body text-fg">
+                <p className="text-meta text-fg-subtle">Backed by</p>
+                <p className="mt-1 text-body font-medium text-fg">
                   {row.backedBy.name}
                 </p>
                 {row.backedBy.note ? (
-                  <p className="mt-1 text-fg-muted text-meta">
+                  <p className="mt-1 text-meta text-fg-muted">
                     {row.backedBy.note}
                   </p>
                 ) : null}
@@ -195,7 +195,7 @@ function Trail({
 }) {
   return (
     <div>
-      <div className="border-hairline-strong border-b pb-5">
+      <div className="border-b border-hairline-strong pb-5">
         <LogoTile
           variant="chip"
           name={venture.name}
@@ -221,7 +221,7 @@ function Trail({
             key={milestone.text}
             className={
               index === 0
-                ? "relative mt-8! text-fg text-heading-md"
+                ? "relative mt-8! text-heading-md text-fg"
                 : "relative text-body text-fg"
             }
           >

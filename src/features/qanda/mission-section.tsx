@@ -17,7 +17,7 @@ function Answer({ faq }: { faq: QandaEntry }) {
         // Below lg the passage is out of sight, so each answer quotes the
         // words that mark it; from lg the marks show it, and the quote stays
         // for screen readers, which can't see the marks.
-        <p className="mb-4 text-fg-subtle text-small lg:sr-only">
+        <p className="mb-4 text-small text-fg-subtle lg:sr-only">
           From our mission: “{faq.spans.join(" … ")}”
         </p>
       ) : null}
@@ -28,7 +28,7 @@ function Answer({ faq }: { faq: QandaEntry }) {
       {faq.evidence ? (
         <div className="mt-6">
           {faq.evidence.text ? (
-            <p className="text-fg text-small">{faq.evidence.text}</p>
+            <p className="text-small text-fg">{faq.evidence.text}</p>
           ) : null}
           <p className={faq.evidence.text ? "mt-2" : undefined}>
             <TextLink href={faq.evidence.href} arrow className="text-small">

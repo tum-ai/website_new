@@ -692,7 +692,7 @@ export function ResearchGlobe({
               key={site.id}
               aria-hidden="true"
               className={cn(
-                "research-globe-label rounded-full px-2 py-0.5 font-semibold text-label-sm",
+                "research-globe-label rounded-full px-2 py-0.5 text-label-sm font-semibold",
                 site.home ? "bg-fg text-canvas" : "bg-canvas/70 text-fg",
               )}
               style={
@@ -712,7 +712,7 @@ export function ResearchGlobe({
       <p
         aria-hidden="true"
         className={cn(
-          "mt-3 pointer-coarse:block hidden text-fg-muted text-label-sm transition-opacity duration-1000 ease-brand motion-reduce:transition-none",
+          "mt-3 hidden text-label-sm text-fg-muted transition-opacity duration-1000 ease-brand motion-reduce:transition-none pointer-coarse:block",
           ready && !pinched ? "opacity-100" : "opacity-0",
         )}
       >

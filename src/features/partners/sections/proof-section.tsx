@@ -159,7 +159,7 @@ export function ProofSection({
                 className="hidden h-auto w-full md:block"
               />
             </div>
-            <figcaption className="mt-6 max-w-lg text-fg-muted text-small">
+            <figcaption className="mt-6 max-w-lg text-small text-fg-muted">
               {copy.caption}
             </figcaption>
           </Reveal>

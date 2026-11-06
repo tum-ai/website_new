@@ -57,7 +57,7 @@ export function ClosingSection({
               </h2>
             </Reveal>
             <Reveal delay={100}>
-              <p className="mt-8 max-w-xl text-fg-muted text-lead md:mt-10">
+              <p className="mt-8 max-w-xl text-lead text-fg-muted md:mt-10">
                 {closing.lead}
               </p>
               <Actions className="mt-10 md:mt-12">
@@ -73,9 +73,9 @@ export function ClosingSection({
                 as="li"
                 key={fork.reader}
                 delay={160 + index * 80}
-                className="border-hairline-strong border-t pt-8"
+                className="border-t border-hairline-strong pt-8"
               >
-                <p className="font-medium text-fg text-small">{fork.reader}</p>
+                <p className="text-small font-medium text-fg">{fork.reader}</p>
                 <p className="mt-3 text-body text-fg-muted">{fork.text}</p>
                 <p className="mt-5">
                   <TextLink href={fork.href} arrow className="text-small">

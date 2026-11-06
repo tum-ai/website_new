@@ -34,7 +34,7 @@ Notes:
 - **Sharding.** E2E is split across four runners and Visual across two, and each shard builds the
   site itself. A shared build job would put its whole runtime on the critical path, and runner
   minutes are free for this public repository. The shards run in
-  `mcr.microsoft.com/playwright:v1.63.0-noble`, so browsers are preinstalled.
+  `mcr.microsoft.com/playwright:v1.64.1-noble`, so browsers are preinstalled.
 - **Visual** compares every route at 390 and 1440 px against the committed baselines in
   `e2e/__screenshots__/linux/`, in the same image the baselines are captured in.
 - **Playwright image.** The tag appears in `ci.yml` (E2E, Visual) and `e2e-snapshots.yml` and must

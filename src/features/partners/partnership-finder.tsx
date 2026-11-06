@@ -90,7 +90,7 @@ function FinderOption({
       style={style}
       className={cn(
         partClass,
-        "w-full justify-start gap-3.5 whitespace-normal rounded-2xl border border-hairline bg-canvas p-4 text-left font-normal text-fg tracking-normal hover:border-violet-500/40 hover:bg-violet-50/70 motion-safe:active:scale-[0.995] sm:gap-4 md:px-5",
+        "w-full justify-start gap-3.5 rounded-2xl border border-hairline bg-canvas p-4 text-left font-normal tracking-normal whitespace-normal text-fg hover:border-violet-500/40 hover:bg-violet-50/70 motion-safe:active:scale-[0.995] sm:gap-4 md:px-5",
         className,
       )}
     >
@@ -102,10 +102,10 @@ function FinderOption({
         />
       ) : null}
       <span className="min-w-0 flex-1">
-        <strong className="block font-semibold text-body text-fg">
+        <strong className="block text-body font-semibold text-fg">
           {label}
         </strong>
-        <small className="mt-0.5 block text-fg-muted text-small">
+        <small className="mt-0.5 block text-small text-fg-muted">
           {detail}
         </small>
       </span>
@@ -243,7 +243,7 @@ export function PartnershipFinder() {
               >
                 <span
                   className={cn(
-                    "grid size-6 shrink-0 place-items-center rounded-full font-semibold text-eyebrow tracking-normal transition-[background-color,color,box-shadow] duration-500 ease-brand motion-reduce:transition-none",
+                    "grid size-6 shrink-0 place-items-center rounded-full text-eyebrow font-semibold tracking-normal transition-[background-color,color,box-shadow] duration-500 ease-brand motion-reduce:transition-none",
                     current
                       ? "bg-violet-950 text-white"
                       : complete

@@ -31,12 +31,12 @@ export function CasesSection({
           title={<Lines lines={copy.title} />}
           lead={<Lines lines={copy.lead} />}
         />
-        <ul className="border-hairline-strong border-t">
+        <ul className="border-t border-hairline-strong">
           {caseStudies.map((study) => (
             <Reveal
               as="li"
               key={study.name}
-              className="grid gap-x-10 gap-y-7 border-hairline border-b py-10 last:border-b-0 md:grid-cols-12 md:items-start lg:py-12"
+              className="grid gap-x-10 gap-y-7 border-b border-hairline py-10 last:border-b-0 md:grid-cols-12 md:items-start lg:py-12"
             >
               <Photo
                 src={study.image}
@@ -48,19 +48,19 @@ export function CasesSection({
                 className="md:col-span-5 md:max-lg:row-span-2 lg:col-span-4"
               />
               <div className="md:col-span-7 lg:col-span-3">
-                <h3 className="font-semibold text-highlight text-small">
+                <h3 className="text-small font-semibold text-highlight">
                   {study.name}
                 </h3>
-                <p className="tabular mt-3 text-fg text-stat-xl">
+                <p className="mt-3 text-stat-xl text-fg tabular">
                   <CountUp value={study.metric} />
                 </p>
               </div>
               <div className="md:col-span-7 md:col-start-6 lg:col-span-5 lg:col-start-8">
-                <p className="text-fg text-heading-md">{study.label}</p>
+                <p className="text-heading-md text-fg">{study.label}</p>
                 <blockquote className="mt-5 text-body text-fg-muted">
                   <p>{study.copy}</p>
                   {study.attribution ? (
-                    <cite className="mt-4 block font-medium text-fg text-meta not-italic">
+                    <cite className="mt-4 block text-meta font-medium text-fg not-italic">
                       {study.attribution}
                     </cite>
                   ) : null}

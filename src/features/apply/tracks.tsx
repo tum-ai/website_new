@@ -26,14 +26,14 @@ function Track({
 }) {
   const story = stories.find((entry) => entry.key === step.evidence?.key);
   return (
-    <article className="border-hairline-strong border-t pt-8">
+    <article className="border-t border-hairline-strong pt-8">
       <h3 className="text-display-md text-fg">{step.name}</h3>
       <p className="mt-5 max-w-xl text-body text-fg-muted">
         {step.description}
       </p>
       {step.evidence && story ? (
-        <figure className="mt-8 border-highlight border-l-2 pl-5">
-          <blockquote className="text-fg text-lead">
+        <figure className="mt-8 border-l-2 border-highlight pl-5">
+          <blockquote className="text-lead text-fg">
             <p>“{step.evidence.excerpt}”</p>
           </blockquote>
           <figcaption className="mt-4 flex items-center gap-3">
@@ -45,7 +45,7 @@ function Track({
               className="size-9 shrink-0 rounded-full object-cover"
               style={{ objectPosition: story.imagePosition }}
             />
-            <span className="text-fg-muted text-meta">
+            <span className="text-meta text-fg-muted">
               <span className="font-medium text-fg">{story.name}</span>,{" "}
               {story.role}
             </span>
@@ -93,17 +93,17 @@ export function Tracks({
         </div>
 
         <Reveal className="mt-20 grid gap-8 md:mt-28 lg:grid-cols-12 lg:gap-16">
-          <h3 className="font-medium text-fg-muted text-small lg:col-span-4">
+          <h3 className="text-small font-medium text-fg-muted lg:col-span-4">
             {copy.offeringsTitle}
           </h3>
           <dl className="grid gap-x-10 gap-y-8 sm:grid-cols-3 lg:col-span-8">
             {copy.offerings.map((offering) => (
               <div
                 key={offering.title}
-                className="border-hairline-strong border-t pt-5"
+                className="border-t border-hairline-strong pt-5"
               >
-                <dt className="text-fg text-heading-sm">{offering.title}</dt>
-                <dd className="mt-2 text-fg-muted text-small">
+                <dt className="text-heading-sm text-fg">{offering.title}</dt>
+                <dd className="mt-2 text-small text-fg-muted">
                   {offering.text}
                 </dd>
               </div>

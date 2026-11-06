@@ -17,7 +17,7 @@ changes belong upstream and reach this site through an exact dependency upgrade.
 - `docs/design-system.md`: tones, typography, components, motion and composition rules.
 - Sources when the summary isn't enough: `docs/brand/source/brand-guidelines.pdf`,
   `docs/brand/source/colors.jpeg`, the installed kit public API and
-  [kit brand guide](https://github.com/tum-ai/ui-kit/tree/v0.2.0/docs/brand.md).
+  [kit brand guide](https://github.com/tum-ai/ui-kit/tree/v0.3.1/docs/brand.md).
 
 ## Workflow
 

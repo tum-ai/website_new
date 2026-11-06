@@ -60,16 +60,16 @@ export function PeopleSection({
               data-tone="ink"
               className="flex h-full min-h-72 flex-col rounded-3xl bg-canvas p-5 sm:p-7"
             >
-              <strong className="tabular mt-auto text-fg text-stat-lg">
+              <strong className="mt-auto text-stat-lg text-fg tabular">
                 <CountUp value={`${members.official.toLocaleString("en")}+`} />
               </strong>
-              <h3 className="mt-3 text-fg text-heading-sm">{copy.statLabel}</h3>
-              <p className="mt-6 border-hairline border-t pt-4 text-fg-muted text-small">
+              <h3 className="mt-3 text-heading-sm text-fg">{copy.statLabel}</h3>
+              <p className="mt-6 border-t border-hairline pt-4 text-small text-fg-muted">
                 {members.majors}+ majors
                 <br />
                 {members.universities}+ universities
               </p>
-              <span className="mt-4 text-fg-subtle text-meta">
+              <span className="mt-4 text-meta text-fg-subtle">
                 <Lines lines={copy.tagline} />
               </span>
             </div>
@@ -77,8 +77,8 @@ export function PeopleSection({
         </div>
         {/* Not inside a Reveal: its opacity would isolate the strip, and
             the mono logos' multiply blend needs the band behind them. */}
-        <div className="mt-16 border-hairline-strong border-t pt-8 md:mt-20 md:pt-10">
-          <h3 className="font-semibold text-fg text-small">
+        <div className="mt-16 border-t border-hairline-strong pt-8 md:mt-20 md:pt-10">
+          <h3 className="text-small font-semibold text-fg">
             {copy.alumniTitle}
           </h3>
           <LogoWall

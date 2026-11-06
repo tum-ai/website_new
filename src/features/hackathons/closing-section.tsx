@@ -33,12 +33,12 @@ export function ClosingSection({ closing }: { closing: View["closing"] }) {
           </h2>
         </Reveal>
         <Reveal delay={80}>
-          <p className="mt-8 max-w-xl text-fg-muted text-lead md:mt-10">
+          <p className="mt-8 max-w-xl text-lead text-fg-muted md:mt-10">
             {closing.lead}
           </p>
         </Reveal>
 
-        <div className="mt-16 grid border-hairline-strong border-t md:mt-24 md:grid-cols-2">
+        <div className="mt-16 grid border-t border-hairline-strong md:mt-24 md:grid-cols-2">
           {[
             {
               ...closing.student,
@@ -75,10 +75,10 @@ export function ClosingSection({ closing }: { closing: View["closing"] }) {
             <Reveal
               key={fork.audience}
               delay={position * 100}
-              className="flex flex-col border-hairline py-8 max-md:not-last:border-b md:py-10 md:even:border-l md:even:pl-12 md:odd:pr-12"
+              className="flex flex-col border-hairline py-8 max-md:not-last:border-b md:py-10 md:odd:pr-12 md:even:border-l md:even:pl-12"
             >
               <Eyebrow>{fork.audience}</Eyebrow>
-              <h3 className="mt-3 max-w-md text-fg text-heading-md">
+              <h3 className="mt-3 max-w-md text-heading-md text-fg">
                 {fork.text}
               </h3>
               <div className="mt-auto pt-8">{fork.action}</div>

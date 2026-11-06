@@ -78,12 +78,12 @@ function RegisterRow({ event }: { event: Event }) {
     <article className="group/row relative grid grid-cols-[4.5rem_minmax(0,1fr)] gap-x-4 py-5 sm:grid-cols-[6rem_minmax(0,1fr)_auto] sm:gap-x-8 md:py-6 lg:grid-cols-[8rem_minmax(0,1fr)_9rem_1.5rem]">
       <time
         dateTime={date.dateTime}
-        className="tabular pt-1 text-fg-muted text-small sm:text-body"
+        className="pt-1 text-small text-fg-muted tabular sm:text-body"
       >
         {date.short}
       </time>
       <div className="min-w-0">
-        <h4 className="text-fg text-heading-md transition-colors duration-300 ease-brand group-hover/row:text-highlight">
+        <h4 className="text-heading-md text-fg transition-colors duration-300 ease-brand group-hover/row:text-highlight">
           <EventDetailsDialog
             details={toEventDetails(event)}
             trigger={{
@@ -95,7 +95,7 @@ function RegisterRow({ event }: { event: Event }) {
             <Lockup title={title} />
           </EventDetailsDialog>
         </h4>
-        <p className="mt-1.5 text-fg-muted text-small">
+        <p className="mt-1.5 text-small text-fg-muted">
           {location}
           {hosts.length > 0 ? (
             <>
@@ -105,7 +105,7 @@ function RegisterRow({ event }: { event: Event }) {
           ) : null}
         </p>
       </div>
-      <p className="col-start-2 mt-2 text-fg-subtle text-small sm:col-start-auto sm:mt-0 sm:pt-1 sm:text-right lg:text-left">
+      <p className="col-start-2 mt-2 text-small text-fg-subtle sm:col-start-auto sm:mt-0 sm:pt-1 sm:text-right lg:text-left">
         {event.category ? categoryLabel(event.category) : null}
       </p>
       <Plus

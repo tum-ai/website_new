@@ -2,8 +2,8 @@
 
 Site identity and composition summary of `docs/brand/source/` (brand guide PDF and
 `colors.jpeg`). Runtime tokens are owned by `@tum.ai/ui-kit/tailwind.css` from the exact
-0.2.0 package, imported in `src/styles/index.css`. For token/API details use the
-[versioned kit brand guide](https://github.com/tum-ai/ui-kit/tree/v0.2.0/docs/brand.md);
+0.3.1 package, imported in `src/styles/index.css`. For token/API details use the
+[versioned kit brand guide](https://github.com/tum-ai/ui-kit/tree/v0.3.1/docs/brand.md);
 update this summary when deliberately upgrading the package.
 
 ## Identity

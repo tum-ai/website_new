@@ -220,19 +220,19 @@ export function RibbonReplay({
             key="readout"
             className="grid content-end gap-1 lg:justify-items-end lg:text-right"
           >
-            <span className="font-semibold text-highlight text-label-sm">
+            <span className="text-label-sm font-semibold text-highlight">
               {current.label}
             </span>
             <span
               aria-hidden="true"
-              className="tabular font-light text-display-2xl text-fg leading-none"
+              className="text-display-2xl leading-none font-light text-fg tabular"
             >
               {String(index + 1).padStart(2, "0")}
             </span>
-            <span className="mt-3 text-fg text-heading-md">
+            <span className="mt-3 text-heading-md text-fg">
               {current.title}
             </span>
-            <span className="text-fg-muted text-small">{current.dates}</span>
+            <span className="text-small text-fg-muted">{current.dates}</span>
           </p>
         </Container>
         <div className="mt-12 px-(--gutter) md:mt-auto md:pt-[clamp(1.5rem,5svh,3.5rem)]">
@@ -249,7 +249,7 @@ export function RibbonReplay({
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0 translate-x-[calc(var(--playhead)*100%)]"
               >
-                <span className="absolute -inset-y-3 left-0 border-highlight border-l" />
+                <span className="absolute -inset-y-3 left-0 border-l border-highlight" />
               </div>
               <div
                 role="slider"

@@ -54,9 +54,9 @@ export async function Upcoming({ events }: { events: Event[] }) {
           count={events.length > 0 ? events.length : undefined}
         />
         {events.length > 0 ? (
-          <ol className="border-hairline-strong border-b">
+          <ol className="border-b border-hairline-strong">
             {events.map((event, index) => (
-              <li key={event.id} className="border-hairline-strong border-t">
+              <li key={event.id} className="border-t border-hairline-strong">
                 <Reveal delay={index * 80}>
                   <UpcomingEvent event={event} />
                 </Reveal>
@@ -65,7 +65,7 @@ export async function Upcoming({ events }: { events: Event[] }) {
           </ol>
         ) : (
           <Reveal>
-            <p className="max-w-2xl border-hairline-strong border-t pt-8 text-fg text-lead">
+            <p className="max-w-2xl border-t border-hairline-strong pt-8 text-lead text-fg">
               {withLinks(upcoming.empty, {
                 instagram: (
                   <TextLink href={socialLinks.instagram}>Instagram</TextLink>
@@ -114,22 +114,22 @@ function UpcomingEvent({ event }: { event: Event }) {
       <p className="flex items-baseline gap-4 md:block">
         <time
           dateTime={date.dateTime}
-          className="tabular block text-display-lg text-highlight leading-none"
+          className="block text-display-lg leading-none text-highlight tabular"
         >
           {date.day}
         </time>
-        <span className="block text-fg text-lead md:mt-4">{date.month}</span>
-        <span className="block text-fg-muted text-small md:mt-1">
+        <span className="block text-lead text-fg md:mt-4">{date.month}</span>
+        <span className="block text-small text-fg-muted md:mt-1">
           {date.weekday}
           {date.time ? `, ${date.time}` : null}
         </span>
       </p>
 
       <div className="min-w-0">
-        <h3 className="text-fg text-heading-lg">
+        <h3 className="text-heading-lg text-fg">
           <Lockup title={title} />
         </h3>
-        <p className="mt-3 text-fg-muted text-small">
+        <p className="mt-3 text-small text-fg-muted">
           {[location, event.category ? categoryLabel(event.category) : null]
             .filter(Boolean)
             .join(", ")}

@@ -146,10 +146,10 @@ function Lead({
 }) {
   const { total, since, hackathons, withHosts } = summary;
   if (total === 0) {
-    return <p className="text-fg-muted text-lead">{emptyLead}</p>;
+    return <p className="text-lead text-fg-muted">{emptyLead}</p>;
   }
   return (
-    <p className="text-fg-muted text-lead">
+    <p className="text-lead text-fg-muted">
       {total} {total === 1 ? "event" : "events"}
       {since ? ` since ${since}` : null}
       {hackathons > 0
@@ -167,7 +167,7 @@ function Lead({
 function Count({ count }: { count: number }) {
   if (count < 2) return null;
   return (
-    <span className="events-name-count tabular text-highlight">
+    <span className="events-name-count text-highlight tabular">
       <span aria-hidden="true">×{count}</span>
       <span className="sr-only">, {count} events</span>
     </span>
@@ -234,7 +234,7 @@ function Reel({
                 </span>
               )}
               {host.events.length > 1 ? (
-                <span className="events-name-count tabular text-highlight">
+                <span className="events-name-count text-highlight tabular">
                   ×{host.events.length}
                 </span>
               ) : null}
@@ -260,9 +260,9 @@ function HostPanel({ host, index }: { host: HostEntry<Event>; index: number }) {
         {shown.map((event) => {
           const date = formatEventDate(event.event_date);
           return (
-            <li key={event.id} className="border-hairline-strong border-t pt-3">
-              <p className="tabular text-fg-subtle text-meta">{date.long}</p>
-              <p className="mt-1 text-fg text-small">
+            <li key={event.id} className="border-t border-hairline-strong pt-3">
+              <p className="text-meta text-fg-subtle tabular">{date.long}</p>
+              <p className="mt-1 text-small text-fg">
                 <Lockup title={event.title.trim()} />
               </p>
             </li>
@@ -270,7 +270,7 @@ function HostPanel({ host, index }: { host: HostEntry<Event>; index: number }) {
         })}
       </ol>
       {more > 0 ? (
-        <p className="mt-4 text-fg-subtle text-meta">
+        <p className="mt-4 text-meta text-fg-subtle">
           and {more} more {more === 1 ? "event" : "events"}
         </p>
       ) : null}

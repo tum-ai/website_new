@@ -46,17 +46,17 @@ export function OfferSection({
           </div>
           <div className="lg:col-span-7 lg:pt-3">
             <Reveal>
-              <ul className="border-hairline-strong border-t">
+              <ul className="border-t border-hairline-strong">
                 {offer.items.map((item) => (
                   <li
                     key={item}
-                    className="border-hairline border-b py-5 text-fg text-heading-md md:py-6"
+                    className="border-b border-hairline py-5 text-heading-md text-fg md:py-6"
                   >
                     {item}
                   </li>
                 ))}
               </ul>
-              <p className="mt-6 text-fg-muted text-small">{offer.addOns}</p>
+              <p className="mt-6 text-small text-fg-muted">{offer.addOns}</p>
             </Reveal>
             {outcome ? (
               <Reveal delay={100} className="mt-14 md:mt-20">

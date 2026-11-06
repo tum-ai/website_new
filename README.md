@@ -87,7 +87,7 @@ The import rules between these layers are enforced by `src/architecture.test.ts`
 | Events, research or partners content | `/studio` (locally or on a preview deployment) |
 | Navigation or the header call to action | `src/config/navigation.ts` |
 | SEO or JSON-LD | `src/config/seo.ts` |
-| A shared component or token | [UI kit 0.2.0](https://github.com/tum-ai/ui-kit/tree/v0.2.0); release upstream, then update the exact package pin |
+| A shared component or token | [UI kit 0.3.1](https://github.com/tum-ai/ui-kit/tree/v0.3.1); release upstream, then update the exact package pin |
 
 ## Draft preview
 

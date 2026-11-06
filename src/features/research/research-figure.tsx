@@ -45,14 +45,14 @@ export function ResearchFigure({ panels }: { panels: FigurePanel[] }) {
             />
             <span
               aria-hidden="true"
-              className="absolute top-2 left-2 grid size-6 place-items-center rounded-full bg-canvas/80 font-semibold text-fg text-label-sm leading-none"
+              className="absolute top-2 left-2 grid size-6 place-items-center rounded-full bg-canvas/80 text-label-sm leading-none font-semibold text-fg"
             >
               {panelLabel(position)}
             </span>
           </div>
         ))}
       </div>
-      <figcaption className="mt-4 text-fg-muted text-small">
+      <figcaption className="mt-4 text-small text-fg-muted">
         <span className="font-semibold text-fg">Figure 1.</span>{" "}
         {panels.map((panel, position) => (
           <span key={panel.src}>

@@ -171,7 +171,7 @@ return `NextResponse.json(...)`, and don't duplicate query logic in the handler.
 - Tokens, tones and shared utilities: `@tum.ai/ui-kit/tailwind.css`. The app imports it from
   `src/styles/index.css`; keep app CSS in a cascade layer or an `@utility`.
 - Components: import the public API from `@tum.ai/ui-kit`. Shared primitive changes belong in
-  the [kit repository](https://github.com/tum-ai/ui-kit/tree/v0.2.0), followed by a release and
+  the [kit repository](https://github.com/tum-ai/ui-kit/tree/v0.3.1), followed by a release and
   exact dependency upgrade here. Follow [design-system.md](design-system.md) and the
   `ds-component` skill for the app integration and showcase.
 - Page-only CSS, if unavoidable: `src/features/<domain>/<domain>.css`, imported by the route.

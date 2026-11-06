@@ -48,7 +48,7 @@ export function LeagueSection({ league }: { league: View["league"] }) {
           <Eyebrow>{league.eyebrow}</Eyebrow>
           <h2
             id="league-title"
-            className="mt-6 max-w-[10em] text-balance text-display-2xl text-highlight"
+            className="mt-6 max-w-[10em] text-display-2xl text-balance text-highlight"
           >
             {league.name}
           </h2>
@@ -60,7 +60,7 @@ export function LeagueSection({ league }: { league: View["league"] }) {
           delay={100}
           className="mt-10 grid gap-8 md:mt-12 lg:grid-cols-12 lg:items-end lg:gap-16"
         >
-          <p className="max-w-2xl text-fg-muted text-lead lg:col-span-7">
+          <p className="max-w-2xl text-lead text-fg-muted lg:col-span-7">
             {league.lead}
           </p>
           <div className="lg:col-span-5 lg:justify-self-end">
@@ -99,7 +99,7 @@ export function LeagueSection({ league }: { league: View["league"] }) {
               />
             </Reveal>
             <Reveal delay={100} className="lg:col-span-7">
-              <p className="font-semibold text-highlight text-label">
+              <p className="text-label font-semibold text-highlight">
                 {finale.label}
               </p>
               <h3 className="mt-4 text-display-lg text-fg">
@@ -107,20 +107,20 @@ export function LeagueSection({ league }: { league: View["league"] }) {
                 <time dateTime={finale.dateTime}>{finale.dates}</time>
               </h3>
               {finale.countdown ? (
-                <p className="tabular mt-5 text-display-md text-highlight">
+                <p className="mt-5 text-display-md text-highlight tabular">
                   {finale.countdown}
                 </p>
               ) : null}
               {finale.result ? (
-                <div className="mt-10 border-hairline-strong border-t pt-8">
-                  <p className="font-semibold text-fg-muted text-label">
+                <div className="mt-10 border-t border-hairline-strong pt-8">
+                  <p className="text-label font-semibold text-fg-muted">
                     {finale.result.label}
                   </p>
-                  <p className="mt-3 text-balance text-display-lg text-highlight">
+                  <p className="mt-3 text-display-lg text-balance text-highlight">
                     {finale.result.champion}
                   </p>
                   {finale.result.runnersUp.length > 0 ? (
-                    <p className="mt-5 text-fg-muted text-lead">
+                    <p className="mt-5 text-lead text-fg-muted">
                       {finale.result.runnersUpLabel}:{" "}
                       <span className="text-fg">
                         {formatList(finale.result.runnersUp)}
@@ -130,7 +130,7 @@ export function LeagueSection({ league }: { league: View["league"] }) {
                 </div>
               ) : null}
               {finale.text ? (
-                <p className="mt-6 max-w-xl text-fg-muted text-lead">
+                <p className="mt-6 max-w-xl text-lead text-fg-muted">
                   {finale.text}
                 </p>
               ) : null}
@@ -149,8 +149,8 @@ export function LeagueSection({ league }: { league: View["league"] }) {
         ) : null}
 
         {partners.length > 0 ? (
-          <Reveal className="mt-20 border-hairline-strong border-t pt-10 md:mt-32 md:pt-12">
-            <h3 className="font-semibold text-fg text-small">
+          <Reveal className="mt-20 border-t border-hairline-strong pt-10 md:mt-32 md:pt-12">
+            <h3 className="text-small font-semibold text-fg">
               {league.partnersTitle}
             </h3>
             <ul className="mt-8 flex flex-wrap items-center gap-x-10 gap-y-8 lg:justify-between lg:gap-x-8">

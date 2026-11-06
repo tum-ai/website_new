@@ -34,7 +34,7 @@ function Mark({ mark }: { mark: DrawnMark }) {
           ? "bottom-0 h-full"
           : "top-[calc((var(--lane)-1)*var(--lane-step))] h-(--lane-h)",
         hollow
-          ? "outline-1 outline-highlight -outline-offset-1"
+          ? "outline-1 -outline-offset-1 outline-highlight"
           : kindStyles[mark.kind],
       )}
       style={
@@ -83,7 +83,7 @@ export function RibbonTrack({
       {years.map(({ year, x }) => (
         <span
           key={year}
-          className="absolute inset-y-0 border-hairline border-l"
+          className="absolute inset-y-0 border-l border-hairline"
           style={{ left: percent(x) }}
         />
       ))}
@@ -122,7 +122,7 @@ export function RibbonYears({
       {years.map(({ year, x }) => (
         <span
           key={year}
-          className="tabular absolute top-0 pl-2 text-fg-subtle text-meta"
+          className="absolute top-0 pl-2 text-meta text-fg-subtle tabular"
           style={{ left: percent(x) }}
         >
           {year}

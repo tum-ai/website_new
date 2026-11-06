@@ -74,9 +74,9 @@ export function PartnersHero({
           />
           <div
             aria-hidden
-            className="absolute inset-0 bg-gradient-to-b from-40% from-transparent to-ink-950/85"
+            className="absolute inset-0 bg-gradient-to-b from-transparent from-40% to-ink-950/85"
           />
-          <figcaption className="absolute inset-x-6 bottom-6 z-1 font-medium text-body text-white md:inset-x-7 md:bottom-7 lg:text-lead">
+          <figcaption className="absolute inset-x-6 bottom-6 z-1 text-body font-medium text-white md:inset-x-7 md:bottom-7 lg:text-lead">
             <Lines lines={copy.caption} />
           </figcaption>
         </figure>

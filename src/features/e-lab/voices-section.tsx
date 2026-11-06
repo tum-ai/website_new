@@ -45,7 +45,7 @@ function VoiceGroup({
   return (
     <>
       <h3
-        className={`${COLUMN[column]} font-semibold text-fg-muted text-small lg:row-start-1 ${
+        className={`${COLUMN[column]} text-small font-semibold text-fg-muted lg:row-start-1 ${
           column === "investors" ? "mt-4 lg:mt-0" : ""
         } -mb-6`}
       >
@@ -74,7 +74,7 @@ function VoiceGroup({
               }}
               context={
                 voice.context ? (
-                  <span className="text-fg-subtle text-meta">
+                  <span className="text-meta text-fg-subtle">
                     {voice.context}
                   </span>
                 ) : null

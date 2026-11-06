@@ -53,7 +53,7 @@ export function MakeathonSection({
                   </h2>
                 </Reveal>
                 <Reveal delay={80}>
-                  <p className="mt-8 max-w-xl text-fg text-lead md:mt-10">
+                  <p className="mt-8 max-w-xl text-lead text-fg md:mt-10">
                     {makeathon.lead}
                   </p>
                 </Reveal>

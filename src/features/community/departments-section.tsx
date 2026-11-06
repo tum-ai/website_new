@@ -37,14 +37,14 @@ export function DepartmentsSection({
           layout="stack"
           lead={copy.lead}
         />
-        <ul className="border-hairline-strong border-t">
+        <ul className="border-t border-hairline-strong">
           {departments.map((department) => (
             <Reveal
               as="li"
               key={department.name}
-              className="grid gap-x-12 gap-y-5 border-hairline border-b py-10 md:grid-cols-12 lg:py-12"
+              className="grid gap-x-12 gap-y-5 border-b border-hairline py-10 md:grid-cols-12 lg:py-12"
             >
-              <h3 className="text-fg text-heading-lg md:col-span-4">
+              <h3 className="text-heading-lg text-fg md:col-span-4">
                 {department.name}
               </h3>
               <p className="max-w-xl text-body text-fg-muted md:col-span-8 lg:col-span-5">

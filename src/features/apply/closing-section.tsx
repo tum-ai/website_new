@@ -66,9 +66,9 @@ export function ClosingSection({
           </Reveal>
           <Reveal
             delay={220}
-            className="border-hairline-strong border-t pt-8 lg:col-span-4 lg:self-end"
+            className="border-t border-hairline-strong pt-8 lg:col-span-4 lg:self-end"
           >
-            <p className="font-medium text-fg text-small">
+            <p className="text-small font-medium text-fg">
               {copy.companiesReader}
             </p>
             <p className="mt-3 text-body text-fg-muted">{partnerPitch}</p>

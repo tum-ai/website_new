@@ -141,7 +141,7 @@ export async function ApplicationField({
         radius={RADIUS}
         className="mx-auto block h-auto max-h-[34rem] w-full max-w-xl touch-manipulation overflow-visible text-highlight"
       />
-      <figcaption className="mx-auto mt-6 max-w-xl text-fg-subtle text-meta">
+      <figcaption className="mx-auto mt-6 max-w-xl text-meta text-fg-subtle">
         {fillPageTokens(copy.caption, {
           finalists: String(finalists),
           ventures: String(ventureCount),

@@ -110,7 +110,7 @@ export function EventDetailsDialog({
             />
           </div>
           <div className="flex min-w-0 flex-col px-6 py-8 sm:px-10 sm:py-10 md:pt-14">
-            <p className="font-medium text-highlight text-small">
+            <p className="text-small font-medium text-highlight">
               <time dateTime={date.dateTime}>
                 {date.weekday}, {date.long}
                 {date.time ? `, ${date.time}` : null}
@@ -127,7 +127,7 @@ export function EventDetailsDialog({
               </DialogDescription>
             ) : null}
             <HostLine hosts={hosts} className="mt-2 text-small" />
-            <p className="mt-7 whitespace-pre-line border-hairline border-t pt-7 text-body text-fg-muted">
+            <p className="mt-7 border-t border-hairline pt-7 text-body whitespace-pre-line text-fg-muted">
               {description}
             </p>
             {action ? <div className="mt-9 flex">{action}</div> : null}

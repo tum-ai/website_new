@@ -2,7 +2,7 @@
 
 Workarounds for browser behaviour, mostly Safari 26 on iPhone. Each entry says what Safari does
 and how the website integrates the shared workaround. Read the
-[kit 0.2.0 browser notes](https://github.com/tum-ai/ui-kit/tree/v0.2.0/docs/browser-quirks.md)
+[kit 0.3.1 browser notes](https://github.com/tum-ai/ui-kit/tree/v0.3.1/docs/browser-quirks.md)
 for implementation locations and Safari-tagged comments before changing the root background,
 header, dialogs or motion utilities. Shared mechanics no longer live in this app's source tree.
 
@@ -11,7 +11,7 @@ those items on a real iPhone with the checklist in
 `.agents/skills/ui-verify/references/iphone-safari.md`.
 
 The shared workarounds below are now owned by the pinned kit; its
-[versioned browser notes](https://github.com/tum-ai/ui-kit/tree/v0.2.0/docs/browser-quirks.md)
+[versioned browser notes](https://github.com/tum-ai/ui-kit/tree/v0.3.1/docs/browser-quirks.md)
 track primitive and shell implementations. This page records the website integration
 and historical reasons. Change shared behaviour upstream, then consume a release.
 

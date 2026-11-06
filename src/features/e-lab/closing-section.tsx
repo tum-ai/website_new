@@ -50,7 +50,7 @@ export async function ClosingSection({ copy }: { copy: ELabCopy["closing"] }) {
             </Reveal>
             <div
               aria-hidden="true"
-              className="relative mt-10 h-3 border-hairline-strong border-l md:mt-14"
+              className="relative mt-10 h-3 border-l border-hairline-strong md:mt-14"
             >
               <Reveal
                 variant="line"
@@ -59,7 +59,7 @@ export async function ClosingSection({ copy }: { copy: ELabCopy["closing"] }) {
               />
             </div>
             <Reveal delay={120}>
-              <p className="mt-8 max-w-xl text-fg-muted text-lead md:mt-10">
+              <p className="mt-8 max-w-xl text-lead text-fg-muted md:mt-10">
                 <ELabPhase
                   clock={clock}
                   open={open.roundStatus}
@@ -85,9 +85,9 @@ export async function ClosingSection({ copy }: { copy: ELabCopy["closing"] }) {
           </div>
           <Reveal
             delay={160}
-            className="border-hairline-strong border-t pt-8 lg:col-span-4 lg:self-end"
+            className="border-t border-hairline-strong pt-8 lg:col-span-4 lg:self-end"
           >
-            <p className="font-medium text-fg text-small">
+            <p className="text-small font-medium text-fg">
               {copy.partnersReader}
             </p>
             <p className="mt-3 text-body text-fg-muted">{copy.partnersText}</p>

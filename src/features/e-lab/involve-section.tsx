@@ -61,7 +61,7 @@ export async function InvolveSection({ copy }: { copy: ELabCopy["involve"] }) {
               <li key={option.key} className="flex">
                 <a
                   href={involveMailUrl(email, option.title)}
-                  className="group/option flex w-full items-start gap-3.5 rounded-2xl border border-hairline bg-canvas p-4 text-left text-fg transition-colors duration-300 ease-brand hover:border-violet-500/40 hover:bg-violet-50/70 focus-visible:outline-2 focus-visible:outline-violet-500 focus-visible:outline-offset-2 sm:gap-4 md:p-5"
+                  className="group/option flex w-full items-start gap-3.5 rounded-2xl border border-hairline bg-canvas p-4 text-left text-fg transition-colors duration-300 ease-brand hover:border-violet-500/40 hover:bg-violet-50/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500 sm:gap-4 md:p-5"
                 >
                   <IconBadge
                     icon={icons[option.key]}
@@ -69,10 +69,10 @@ export async function InvolveSection({ copy }: { copy: ELabCopy["involve"] }) {
                     className="transition-colors duration-300 ease-brand group-hover/option:bg-violet-500/20"
                   />
                   <span className="min-w-0 flex-1">
-                    <strong className="block font-semibold text-body text-fg">
+                    <strong className="block text-body font-semibold text-fg">
                       {option.title}
                     </strong>
-                    <small className="mt-1 block text-fg-muted text-small">
+                    <small className="mt-1 block text-small text-fg-muted">
                       {option.detail}
                     </small>
                   </span>

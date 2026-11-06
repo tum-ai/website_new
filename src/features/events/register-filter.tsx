@@ -88,18 +88,18 @@ export function RegisterFilter({
             <Reveal className="flex items-baseline justify-between gap-4">
               <h3
                 id={`${semester.key}-title`}
-                className="text-fg text-heading-lg"
+                className="text-heading-lg text-fg"
               >
                 {semester.label}
               </h3>
-              <p className="tabular shrink-0 text-fg-subtle text-small">
+              <p className="shrink-0 text-small text-fg-subtle tabular">
                 {semester.entries.length}{" "}
                 {semester.entries.length === 1 ? "event" : "events"}
               </p>
             </Reveal>
-            <ol className="mt-5 border-hairline-strong border-b">
+            <ol className="mt-5 border-b border-hairline-strong">
               {semester.entries.map((entry) => (
-                <li key={entry.id} className="border-hairline-strong border-t">
+                <li key={entry.id} className="border-t border-hairline-strong">
                   {entry.row}
                 </li>
               ))}
