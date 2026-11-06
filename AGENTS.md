@@ -179,8 +179,8 @@ Layers, the visual baseline workflow and known flakes: `docs/testing.md`.
 ## Design and content rules
 
 Read `docs/design-system.md` before UI work. It owns site composition guidance and links to the
-[kit 0.2.0 API conventions](https://github.com/tum-ai/ui-kit/tree/v0.2.0/docs/design-system.md)
-and [public API](https://github.com/tum-ai/ui-kit/tree/v0.2.0/docs/api.md). Shared primitive
+[kit 0.3.1 API conventions](https://github.com/tum-ai/ui-kit/tree/v0.3.1/docs/design-system.md)
+and [public API](https://github.com/tum-ai/ui-kit/tree/v0.3.1/docs/api.md). Shared primitive
 changes belong in the kit; upgrade this app through its exact dependency version.
 Hard rules:
 

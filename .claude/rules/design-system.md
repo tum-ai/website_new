@@ -7,7 +7,7 @@ paths:
 
 # UI kit integration
 
-The exact dependency `@tum.ai/ui-kit@0.2.0` owns shared primitives, tokens,
+The exact dependency `@tum.ai/ui-kit@0.3.1` owns shared primitives, tokens,
 utilities, interaction behaviour and generic shell components. This repository
 owns content, page composition and the adapters in `src/components/shell/`.
 Read `docs/design-system.md` for site rules and versioned kit API links.

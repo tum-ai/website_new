@@ -120,7 +120,7 @@ built-in through any chain of imports (Turbopack would fail the production build
 | `sanity` | sanity, lib |
 | `styles` | styles |
 
-The design system is the exact dependency `@tum.ai/ui-kit@0.2.0`. Import primitives and public
+The design system is the exact dependency `@tum.ai/ui-kit@0.3.1`. Import primitives and public
 types from its root and generic shell components from `@tum.ai/ui-kit/shell`. Kit internals are
 private; shared primitive and token changes ship upstream before the app upgrades. Site-specific
 content, CMS queries, routing, imagery and shell adapters stay here. See
