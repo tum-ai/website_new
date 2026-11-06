@@ -146,7 +146,7 @@ freezing live deadlines or cohorts.
 
 Baselines are Linux screenshots in `e2e/__screenshots__/linux/visual-{chromium,webkit}/`, one
 per route at 390 and 1440 px (48 PNG files). They are captured and compared only in the official
-Playwright image `mcr.microsoft.com/playwright:v1.63.0-noble`, so fonts and rendering match.
+Playwright image `mcr.microsoft.com/playwright:v1.64.1-noble`, so fonts and rendering match.
 Screenshots taken on macOS differ and are never committed (`e2e/.gitignore`).
 
 While capturing, `e2e/visual-screenshot.css` hides photos, video and the film grain but keeps

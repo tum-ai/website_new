@@ -58,6 +58,7 @@ function eventMark(event: HackathonEvent): HackathonMark {
     title: stegaClean(event.title).trim(),
     kind: "partner",
     start,
+    // biome-ignore lint/complexity/useMathMinMax: ISO date strings; Math.max would coerce them to NaN.
     end: end < start ? start : end,
     ...(city ? { city } : {}),
     ...(event.sign_up ? { href: event.sign_up } : {}),
