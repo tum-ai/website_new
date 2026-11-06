@@ -42,7 +42,7 @@ function ProjectFacts({ project }: { project: ResearchEntry }) {
     "Ongoing",
     project.startYear ? `Since ${project.startYear}` : undefined,
   ].filter(Boolean);
-  return <p className="mt-2 text-fg-subtle text-meta">{facts.join(" · ")}</p>;
+  return <p className="mt-2 text-meta text-fg-subtle">{facts.join(" · ")}</p>;
 }
 
 /* Share of the 4:3 tile each logo covers, so wide wordmarks and square
@@ -98,7 +98,7 @@ function LogoTile({ project }: { project: ResearchEntry }) {
         : affiliations.map(({ name }) => (
             <span
               key={name}
-              className="relative text-balance text-center font-semibold text-fg-muted text-heading-sm"
+              className="relative text-center text-heading-sm font-semibold text-balance text-fg-muted"
             >
               {name}
             </span>
@@ -114,11 +114,11 @@ function LogoTile({ project }: { project: ResearchEntry }) {
 function ProjectHighlights({ highlights }: { highlights: string[] }) {
   if (highlights.length === 0) return null;
   return (
-    <ul aria-label="Highlights" className="mt-4 text-fg-muted text-meta">
+    <ul aria-label="Highlights" className="mt-4 text-meta text-fg-muted">
       {highlights.map((highlight) => (
         <li
           key={highlight}
-          className="tabular border-hairline border-b py-2 first:border-t"
+          className="border-b border-hairline py-2 tabular first:border-t"
         >
           {highlight}
         </li>
@@ -135,13 +135,13 @@ function ProjectHighlights({ highlights }: { highlights: string[] }) {
  */
 export function ProjectList({ projects }: { projects: ResearchEntry[] }) {
   return (
-    <ul className="border-hairline-strong border-t">
+    <ul className="border-t border-hairline-strong">
       {projects.map((project, position) => (
         <Reveal
           as="li"
           key={project.id}
           delay={Math.min(position, 3) * 60}
-          className="border-hairline border-b"
+          className="border-b border-hairline"
         >
           <article
             aria-labelledby={project.titleId}
@@ -150,7 +150,7 @@ export function ProjectList({ projects }: { projects: ResearchEntry[] }) {
             <div className="min-w-0">
               <h3
                 id={project.titleId}
-                className="max-w-3xl text-balance text-fg text-heading-md md:text-heading-lg"
+                className="max-w-3xl text-heading-md text-balance text-fg md:text-heading-lg"
               >
                 {project.title}
               </h3>
@@ -183,24 +183,24 @@ export function ProjectList({ projects }: { projects: ResearchEntry[] }) {
  */
 export function ReferenceList({ projects }: { projects: ResearchEntry[] }) {
   return (
-    <ol className="border-hairline-strong border-t">
+    <ol className="border-t border-hairline-strong">
       {projects.map((project, position) => (
         <Reveal
           as="li"
           key={project.id}
           delay={Math.min(position, 3) * 60}
-          className="grid grid-cols-[3rem_minmax(0,1fr)] items-baseline gap-x-4 border-hairline border-b py-8 md:grid-cols-[6rem_minmax(0,1fr)] md:gap-x-8 md:py-10"
+          className="grid grid-cols-[3rem_minmax(0,1fr)] items-baseline gap-x-4 border-b border-hairline py-8 md:grid-cols-[6rem_minmax(0,1fr)] md:gap-x-8 md:py-10"
         >
           <span
             aria-hidden="true"
-            className="tabular text-heading-md text-highlight"
+            className="text-heading-md text-highlight tabular"
           >
             [{position + 1}]
           </span>
           <article aria-labelledby={project.titleId} className="min-w-0">
             <h3
               id={project.titleId}
-              className="max-w-3xl text-balance text-fg text-heading-md"
+              className="max-w-3xl text-heading-md text-balance text-fg"
             >
               {project.title}
             </h3>
@@ -208,7 +208,7 @@ export function ReferenceList({ projects }: { projects: ResearchEntry[] }) {
               affiliations={project.affiliations}
               className="mt-2"
             />
-            <p className="mt-4 max-w-2xl text-fg-muted text-small">
+            <p className="mt-4 max-w-2xl text-small text-fg-muted">
               {project.description}
             </p>
             <PublicationLink project={project} />

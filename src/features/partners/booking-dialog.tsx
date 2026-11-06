@@ -74,7 +74,7 @@ export function BookingDialog({
               contact={contact}
             />
           ) : null}
-          <div className="flex flex-wrap justify-between gap-x-6 gap-y-3 border-hairline border-t pt-4 text-small">
+          <div className="flex flex-wrap justify-between gap-x-6 gap-y-3 border-t border-hairline pt-4 text-small">
             <TextLink
               href={getPartnershipBookingUrl(selection, copy, contact)}
               arrow
@@ -159,7 +159,7 @@ function BookingCalendar({
         className={
           status === "ready"
             ? "sr-only"
-            : "flex items-center gap-2.5 p-4 text-fg-muted text-small"
+            : "flex items-center gap-2.5 p-4 text-small text-fg-muted"
         }
       >
         {status === "loading" ? (

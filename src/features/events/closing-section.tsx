@@ -36,7 +36,7 @@ export async function ClosingSection({ next }: { next?: Event }) {
               </h2>
             </Reveal>
             <Reveal delay={100}>
-              <p className="mt-8 max-w-xl text-fg-muted text-lead md:mt-10">
+              <p className="mt-8 max-w-xl text-lead text-fg-muted md:mt-10">
                 {closing.lead}
               </p>
               <Actions className="mt-10 md:mt-12">
@@ -48,9 +48,9 @@ export async function ClosingSection({ next }: { next?: Event }) {
           </div>
           <Reveal
             delay={160}
-            className="border-hairline-strong border-t pt-8 lg:col-span-4 lg:self-end"
+            className="border-t border-hairline-strong pt-8 lg:col-span-4 lg:self-end"
           >
-            <p className="font-medium text-fg text-small">
+            <p className="text-small font-medium text-fg">
               {closing.studentsReader}
             </p>
             {next ? (

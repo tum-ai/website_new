@@ -72,7 +72,7 @@ export function HomeHero({
               {hero.title}
             </SplitWords>
           </h1>
-          <p className="mt-8 max-w-[34rem] text-fg-muted text-lead [animation-delay:620ms] motion-safe:animate-rise-sm md:mt-10">
+          <p className="mt-8 max-w-[34rem] text-lead text-fg-muted [animation-delay:620ms] motion-safe:animate-rise-sm md:mt-10">
             {hero.lead}
           </p>
           <Actions className="mt-10 [animation-delay:760ms] motion-safe:animate-rise-sm md:mt-12">
@@ -87,7 +87,7 @@ export function HomeHero({
 
         <div className="mt-auto pt-16 pb-8 [animation-delay:1000ms] motion-safe:animate-fade md:pt-24 md:pb-10">
           <div className="flex flex-col gap-6 border-hairline md:border-t md:pt-8 lg:flex-row lg:items-center lg:gap-12">
-            <p className="shrink-0 text-fg-subtle text-meta">
+            <p className="shrink-0 text-meta text-fg-subtle">
               {hero.partnersLabel}
             </p>
             <ul className="grid grid-cols-4 items-center gap-x-6 gap-y-5 sm:gap-x-10 lg:flex lg:flex-1 lg:justify-between lg:gap-8">

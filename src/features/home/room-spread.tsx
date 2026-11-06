@@ -34,7 +34,7 @@ export function RoomSpread({ photos }: { photos: readonly RoomPhoto[] }) {
                 style={{ objectPosition: photo.objectPosition }}
               />
             </div>
-            <figcaption className="mt-4 text-fg-subtle text-meta">
+            <figcaption className="mt-4 text-meta text-fg-subtle">
               {photo.caption}
             </figcaption>
           </figure>

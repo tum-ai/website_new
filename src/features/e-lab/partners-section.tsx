@@ -118,7 +118,7 @@ export async function PartnersSection({
         <div className="space-y-14 md:space-y-16">
           {iteration.length ? (
             <Reveal>
-              <h3 className="font-semibold text-fg text-small">
+              <h3 className="text-small font-semibold text-fg">
                 {copy.iterationLabel}
               </h3>
               <PartnerGrid
@@ -131,7 +131,7 @@ export async function PartnersSection({
           ) : null}
           {workshop.length ? (
             <Reveal>
-              <h3 className="font-semibold text-fg text-small">
+              <h3 className="text-small font-semibold text-fg">
                 {copy.workshopLabel}
               </h3>
               <PartnerGrid
@@ -143,8 +143,8 @@ export async function PartnersSection({
             </Reveal>
           ) : null}
           {past.length ? (
-            <Reveal className="border-hairline-strong border-t pt-8 md:pt-10">
-              <h3 className="font-semibold text-fg text-small">
+            <Reveal className="border-t border-hairline-strong pt-8 md:pt-10">
+              <h3 className="text-small font-semibold text-fg">
                 {copy.pastLabel}
               </h3>
               <LogoWall

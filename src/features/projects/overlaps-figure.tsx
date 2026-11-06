@@ -74,7 +74,7 @@ export function OverlapsFigure({
       </svg>
       <p
         aria-hidden="true"
-        className="overlaps-part absolute inset-0 flex items-center justify-center font-light text-display-md text-fg"
+        className="overlaps-part absolute inset-0 flex items-center justify-center text-display-md font-light text-fg"
       >
         AI
       </p>
@@ -207,13 +207,13 @@ function SeatShape({
       >
         <span
           className={cn(
-            "text-balance font-medium @lg:text-label text-label-sm",
+            "text-label-sm font-medium text-balance @lg:text-label",
             seat.open ? "text-highlight" : "text-fg",
           )}
         >
           {seat.name}
         </span>
-        <span className="mt-0.5 @lg:block hidden text-balance text-fg-subtle text-meta">
+        <span className="mt-0.5 hidden text-meta text-balance text-fg-subtle @lg:block">
           {seat.field}
         </span>
       </span>

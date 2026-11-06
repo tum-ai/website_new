@@ -133,7 +133,7 @@ export function LegalToc({
       className="lg:sticky lg:top-(--header-offset) lg:-ml-4 lg:max-h-[calc(100dvh-8rem)] lg:self-start lg:overflow-y-auto"
     >
       <Collapsible className="rounded-3xl bg-sunken lg:hidden">
-        <CollapsibleTrigger className="flex w-full items-center justify-between gap-4 rounded-3xl px-6 py-4 text-left text-fg text-heading-sm">
+        <CollapsibleTrigger className="flex w-full items-center justify-between gap-4 rounded-3xl px-6 py-4 text-left text-heading-sm text-fg">
           <span>{label}</span>
           <ChevronDown
             aria-hidden

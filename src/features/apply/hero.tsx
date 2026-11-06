@@ -54,7 +54,7 @@ export function Hero({
         <div className="lg:pt-3">
           <p
             id="apply-dates-title"
-            className="font-medium text-fg-muted text-small"
+            className="text-small font-medium text-fg-muted"
           >
             {fillPageTokens(copy.datesTitle, {
               round: call.name.toLowerCase(),

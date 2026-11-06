@@ -35,7 +35,7 @@ export function TaskForceChapter({
     <article
       id={slug}
       aria-labelledby={titleId}
-      className="grid scroll-mt-header gap-x-12 gap-y-8 border-hairline border-b py-14 last:border-b-0 md:grid-cols-12 lg:py-20"
+      className="grid scroll-mt-header gap-x-12 gap-y-8 border-b border-hairline py-14 last:border-b-0 md:grid-cols-12 lg:py-20"
     >
       <div className="flex items-center gap-5 md:col-span-12 lg:col-span-3 lg:w-fit lg:flex-col lg:text-center">
         <OverlapsLocator
@@ -43,7 +43,7 @@ export function TaskForceChapter({
           index={index}
           className="size-20 shrink-0 lg:size-32"
         />
-        <p className="font-medium text-highlight text-small">{field}</p>
+        <p className="text-small font-medium text-highlight">{field}</p>
       </div>
 
       <Reveal
@@ -56,7 +56,7 @@ export function TaskForceChapter({
         <h2 id={titleId} className="text-display-md text-fg">
           {name}
         </h2>
-        <p className="mt-5 text-fg text-lead">{description}</p>
+        <p className="mt-5 text-lead text-fg">{description}</p>
         <p className="mt-5 max-w-xl text-body text-fg-muted">
           {detailedDescription}
         </p>
@@ -65,11 +65,11 @@ export function TaskForceChapter({
             <h3 className="text-eyebrow text-fg-muted">
               Research projects with {work.partner} include
             </h3>
-            <ul className="mt-4 border-hairline-strong border-t">
+            <ul className="mt-4 border-t border-hairline-strong">
               {work.items.map((item) => (
                 <li
                   key={item}
-                  className="border-hairline border-b py-3.5 text-body text-fg"
+                  className="border-b border-hairline py-3.5 text-body text-fg"
                 >
                   {item}
                 </li>

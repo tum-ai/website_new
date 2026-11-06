@@ -69,7 +69,7 @@ export function JoinSection({
             </h2>
           </Reveal>
           <Reveal delay={100}>
-            <p className="mt-8 max-w-xl text-fg-muted text-lead md:mt-10">
+            <p className="mt-8 max-w-xl text-lead text-fg-muted md:mt-10">
               {join.lead}
             </p>
             <Actions className="mt-10 md:mt-12">
@@ -81,24 +81,24 @@ export function JoinSection({
           </Reveal>
 
           <Reveal delay={140}>
-            <p className="mt-16 text-fg-muted text-meta md:mt-20">
+            <p className="mt-16 text-meta text-fg-muted md:mt-20">
               {join.stepsTitle}
             </p>
-            <ol className="mt-5 grid border-hairline-strong border-t sm:grid-cols-3">
+            <ol className="mt-5 grid border-t border-hairline-strong sm:grid-cols-3">
               {join.steps.map((step, index) => (
                 <li
                   key={step.title}
-                  className="grid grid-cols-[3rem_minmax(0,1fr)] items-baseline border-hairline border-b py-5 last:border-b-0 sm:block sm:border-b-0 sm:py-8 sm:pr-8"
+                  className="grid grid-cols-[3rem_minmax(0,1fr)] items-baseline border-b border-hairline py-5 last:border-b-0 sm:block sm:border-b-0 sm:py-8 sm:pr-8"
                 >
                   <span
                     aria-hidden="true"
-                    className="tabular block text-heading-lg text-highlight sm:text-stat-md"
+                    className="block text-heading-lg text-highlight tabular sm:text-stat-md"
                   >
                     {String(index + 1).padStart(2, "0")}
                   </span>
                   <div className="sm:mt-4">
-                    <p className="text-fg text-heading-md">{step.title}</p>
-                    <p className="mt-1 text-fg-muted text-small">
+                    <p className="text-heading-md text-fg">{step.title}</p>
+                    <p className="mt-1 text-small text-fg-muted">
                       {step.dates}
                     </p>
                   </div>

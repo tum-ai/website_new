@@ -49,18 +49,18 @@ export function PartnerHackathonsSection({
           lead={partners.lead}
         />
         <div className="mt-14 grid gap-14 md:mt-20 lg:grid-cols-12 lg:gap-16">
-          <ol className="border-hairline-strong border-t lg:col-span-7">
+          <ol className="border-t border-hairline-strong lg:col-span-7">
             {partners.rows.map((row) => (
               <li
                 key={row.id}
-                className="grid gap-x-8 gap-y-2 border-hairline border-b py-6 sm:grid-cols-[minmax(0,1fr)_auto] md:py-7"
+                className="grid gap-x-8 gap-y-2 border-b border-hairline py-6 sm:grid-cols-[minmax(0,1fr)_auto] md:py-7"
               >
                 <div className="min-w-0">
-                  <h3 className="text-fg text-heading-sm">
+                  <h3 className="text-heading-sm text-fg">
                     <Lockup title={row.title} />
                   </h3>
                   {row.place || row.hosts.length > 0 ? (
-                    <p className="mt-1.5 text-fg-muted text-meta">
+                    <p className="mt-1.5 text-meta text-fg-muted">
                       {[
                         row.place,
                         row.hosts.length > 0
@@ -73,7 +73,7 @@ export function PartnerHackathonsSection({
                   ) : null}
                 </div>
                 <div className="flex items-baseline gap-4 sm:flex-col sm:items-end sm:gap-3">
-                  <p className="tabular text-fg-muted text-small sm:text-right">
+                  <p className="text-small text-fg-muted tabular sm:text-right">
                     {row.dates}
                   </p>
                   {row.signUp ? (

@@ -107,7 +107,7 @@ function PosterCaption({ event, title }: { event: Event; title: string }) {
       aria-hidden="true"
       className="absolute inset-x-0 bottom-0 flex translate-y-2 flex-col bg-gradient-to-t from-violet-950/90 via-violet-950/45 to-transparent px-3 pt-14 pb-3 text-left opacity-0 transition-[opacity,translate] duration-300 ease-brand group-hover/poster:translate-y-0 group-hover/poster:opacity-100 group-focus-visible/poster:translate-y-0 group-focus-visible/poster:opacity-100 motion-reduce:translate-y-0 motion-reduce:transition-none sm:px-4 sm:pb-4"
     >
-      <span className="line-clamp-2 font-medium text-small text-white leading-snug">
+      <span className="line-clamp-2 text-small leading-snug font-medium text-white">
         <Lockup title={title} crossClassName="text-violet-300" />
       </span>
       <span className="mt-1 line-clamp-1 text-meta text-violet-100">

@@ -77,7 +77,7 @@ export function HackathonsHero({ hero }: { hero: View["hero"] }) {
             </Eyebrow>
             <h1
               id="hackathons-hero-title"
-              className="mt-6 text-balance text-display-lg text-fg [animation-delay:80ms] motion-safe:animate-rise-sm"
+              className="mt-6 text-display-lg text-balance text-fg [animation-delay:80ms] motion-safe:animate-rise-sm"
             >
               {sentencesOf(hero.title).map((sentence, position) => (
                 <Fragment key={sentence}>
@@ -87,7 +87,7 @@ export function HackathonsHero({ hero }: { hero: View["hero"] }) {
                 </Fragment>
               ))}
             </h1>
-            <p className="mt-7 max-w-2xl text-fg-muted text-lead [animation-delay:240ms] motion-safe:animate-rise-sm">
+            <p className="mt-7 max-w-2xl text-lead text-fg-muted [animation-delay:240ms] motion-safe:animate-rise-sm">
               {hero.lead}
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-3 [animation-delay:320ms] motion-safe:animate-rise-sm">
@@ -112,7 +112,7 @@ export function HackathonsHero({ hero }: { hero: View["hero"] }) {
                   aria-hidden="true"
                   className="size-2 translate-y-[-0.1em] self-center rounded-full bg-highlight"
                 />
-                <span className="font-semibold text-highlight text-label-sm">
+                <span className="text-label-sm font-semibold text-highlight">
                   {hero.line.label}
                 </span>
                 <span className="text-fg underline-offset-4 group-hover:underline">
@@ -123,7 +123,7 @@ export function HackathonsHero({ hero }: { hero: View["hero"] }) {
                   )}
                 </span>
                 {"meta" in hero.line && hero.line.meta ? (
-                  <span className="tabular text-fg-muted">
+                  <span className="text-fg-muted tabular">
                     {hero.line.meta}
                   </span>
                 ) : null}
@@ -145,7 +145,7 @@ export function HackathonsHero({ hero }: { hero: View["hero"] }) {
         legend={
           <ul
             aria-hidden="true"
-            className="flex flex-wrap gap-x-6 gap-y-2 text-fg-muted text-meta"
+            className="flex flex-wrap gap-x-6 gap-y-2 text-meta text-fg-muted"
           >
             {(Object.keys(swatches) as MarkKind[]).map((kind) => (
               <li key={kind} className="flex items-center gap-2">
@@ -154,7 +154,7 @@ export function HackathonsHero({ hero }: { hero: View["hero"] }) {
               </li>
             ))}
             <li className="flex items-center gap-2">
-              <span className="h-2.5 w-1 rounded-xs outline-1 outline-highlight -outline-offset-1" />
+              <span className="h-2.5 w-1 rounded-xs outline-1 -outline-offset-1 outline-highlight" />
               {hero.nextLabel}
             </li>
           </ul>

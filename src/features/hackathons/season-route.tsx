@@ -65,7 +65,7 @@ export function SeasonRoute({
             </span>
             <span
               className={cn(
-                "font-semibold text-label-sm",
+                "text-label-sm font-semibold",
                 stop.state === "past" ? "text-fg-subtle" : "text-highlight",
               )}
             >
@@ -79,16 +79,16 @@ export function SeasonRoute({
             >
               {stop.city}
             </span>
-            <time dateTime={stop.dateTime} className="text-fg-muted text-small">
+            <time dateTime={stop.dateTime} className="text-small text-fg-muted">
               {stop.dates}
             </time>
             {stop.note ? (
-              <span className="tabular font-semibold text-highlight text-small">
+              <span className="text-small font-semibold text-highlight tabular">
                 {stop.note}
               </span>
             ) : null}
             {stop.detail ? (
-              <span className="text-fg-subtle text-meta">{stop.detail}</span>
+              <span className="text-meta text-fg-subtle">{stop.detail}</span>
             ) : null}
           </li>
         ))}

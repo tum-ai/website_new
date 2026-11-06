@@ -42,7 +42,7 @@ export function MissionAnswers({
         <div className="lg:sticky lg:top-(--header-offset)">
           <p
             id="mission-passage"
-            className="font-light text-fg-subtle text-heading-lg"
+            className="text-heading-lg font-light text-fg-subtle"
           >
             {segments.map((segment) =>
               segment.id ? (
@@ -50,7 +50,7 @@ export function MissionAnswers({
                   key={segment.start}
                   data-answers={segment.id}
                   data-active={segment.id === openId ? "" : undefined}
-                  className="underline decoration-2 decoration-transparent underline-offset-[0.22em] transition-[color,text-decoration-color] duration-500 ease-brand data-active:text-fg data-active:decoration-highlight motion-reduce:transition-none"
+                  className="underline decoration-transparent decoration-2 underline-offset-[0.22em] transition-[color,text-decoration-color] duration-500 ease-brand data-active:text-fg data-active:decoration-highlight motion-reduce:transition-none"
                 >
                   {segment.text}
                 </span>
@@ -60,7 +60,7 @@ export function MissionAnswers({
             )}
           </p>
           {unmarked.length > 0 ? (
-            <p className="mt-8 max-w-xl text-fg-muted text-small">
+            <p className="mt-8 max-w-xl text-small text-fg-muted">
               Not in the paragraph:{" "}
               {unmarked.map((entry, index) => (
                 <Fragment key={entry.id}>

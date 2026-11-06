@@ -49,11 +49,11 @@ export function PillarsSection({
                 position={pillar.image.objectPosition}
                 sizes="(min-width: 1024px) 30vw, (min-width: 768px) 45vw, 100vw"
               />
-              <div className="mt-7 flex flex-1 flex-col border-hairline-strong border-t pt-5 md:max-lg:mt-0">
-                <h3 className="flex items-baseline justify-between gap-3 text-fg text-heading-md">
+              <div className="mt-7 flex flex-1 flex-col border-t border-hairline-strong pt-5 md:max-lg:mt-0">
+                <h3 className="flex items-baseline justify-between gap-3 text-heading-md text-fg">
                   <Link
                     href={pillar.href}
-                    className="outline-none after:absolute after:-inset-2 after:z-10 after:rounded-5xl focus-visible:after:outline-3 focus-visible:after:outline-violet-500 focus-visible:after:outline-offset-2"
+                    className="outline-none after:absolute after:-inset-2 after:z-10 after:rounded-5xl focus-visible:after:outline-3 focus-visible:after:outline-offset-2 focus-visible:after:outline-violet-500"
                   >
                     {pillar.title}
                   </Link>
@@ -63,14 +63,14 @@ export function PillarsSection({
                   />
                 </h3>
                 <p className="mt-8 flex items-baseline gap-3">
-                  <strong className="tabular text-fg text-stat-md">
+                  <strong className="text-stat-md text-fg tabular">
                     <CountUp value={pillar.metric} />
                   </strong>
-                  <span className="font-semibold text-highlight text-small">
+                  <span className="text-small font-semibold text-highlight">
                     {pillar.metricLabel}
                   </span>
                 </p>
-                <p className="mt-5 max-w-md text-fg-muted text-small">
+                <p className="mt-5 max-w-md text-small text-fg-muted">
                   {pillar.description}
                 </p>
               </div>

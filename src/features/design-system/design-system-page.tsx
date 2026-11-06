@@ -220,10 +220,10 @@ export function DesignSystemPage() {
                   data-tone={tone}
                   className="flex h-44 flex-col justify-between rounded-3xl border border-hairline p-6"
                 >
-                  <p className="text-fg text-heading-md">{name}</p>
+                  <p className="text-heading-md text-fg">{name}</p>
                   <div>
-                    <p className="text-fg-muted text-small">Muted body text</p>
-                    <p className="text-highlight text-meta">
+                    <p className="text-small text-fg-muted">Muted body text</p>
+                    <p className="text-meta text-highlight">
                       {hex} · highlight
                     </p>
                   </div>
@@ -275,8 +275,8 @@ export function DesignSystemPage() {
             <Text size="meta" emphasis="subtle">
               Meta, subtle emphasis.
             </Text>
-            <p className="text-fg text-label">Label (15px UI text)</p>
-            <p className="text-fg text-label-sm">
+            <p className="text-label text-fg">Label (15px UI text)</p>
+            <p className="text-label-sm text-fg">
               Label sm (13px: sm buttons and badges, logo chips)
             </p>
             <Display as="p" size="md">
@@ -307,7 +307,7 @@ export function DesignSystemPage() {
               </TextLink>
               <Anchor
                 href={demoExternalUrl}
-                className="text-fg text-small underline underline-offset-4"
+                className="text-small text-fg underline underline-offset-4"
               >
                 Anchor: unstyled, route-aware
               </Anchor>
@@ -438,7 +438,7 @@ export function DesignSystemPage() {
             <IconBadge icon={Brain} variant="outline" shape="circle" />
             <a
               href="#cards"
-              className="inline-flex items-center gap-3 font-semibold text-fg text-small"
+              className="inline-flex items-center gap-3 text-small font-semibold text-fg"
             >
               <IconBadge icon={Rocket} size="sm" interactive />
               Interactive: tilts while the link is hovered
@@ -559,14 +559,14 @@ export function DesignSystemPage() {
               portrait={{ src: demoPhoto }}
               context={<Tag>Example context</Tag>}
               footer={
-                <div className="mt-6 flex items-center gap-3 border-hairline border-t pt-5">
+                <div className="mt-6 flex items-center gap-3 border-t border-hairline pt-5">
                   <LogoTile
                     variant="chip"
                     name="TUM.ai"
                     src="/assets/favicon.svg"
                     wordmark="TUM.ai"
                   />
-                  <span className="font-medium text-fg-subtle text-meta">
+                  <span className="text-meta font-medium text-fg-subtle">
                     Alumni
                   </span>
                 </div>
@@ -695,10 +695,10 @@ export function DesignSystemPage() {
           <dl className="grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
             {figures.map((figure) => (
               <div key={figure} className="rounded-2xl bg-sunken p-4">
-                <dt className="text-fg text-stat-sm">
+                <dt className="text-stat-sm text-fg">
                   <CountUp value={figure} />
                 </dt>
-                <dd className="mt-2 text-fg-subtle text-meta">
+                <dd className="mt-2 text-meta text-fg-subtle">
                   {startFrame(figure)}
                 </dd>
               </div>
@@ -759,7 +759,7 @@ export function DesignSystemPage() {
           }))}
           defaultValue={faqs[0] ? [faqs[0].question] : undefined}
         />
-        <p className="mt-6 text-fg-muted text-small">
+        <p className="mt-6 text-small text-fg-muted">
           Items with an <code>id</code> are deep-linkable:{" "}
           <TextLink href="#ds-faq-3">open the third question</TextLink>.
         </p>

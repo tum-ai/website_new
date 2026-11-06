@@ -118,6 +118,6 @@ export function LiveClosingTitle(props: LiveCallDatesProps) {
 export function LiveClosingLead(props: LiveCallDatesProps) {
   const call = useLiveCall(props);
   return (
-    <p className="max-w-xl text-fg-muted text-lead">{closingLead(call)}</p>
+    <p className="max-w-xl text-lead text-fg-muted">{closingLead(call)}</p>
   );
 }

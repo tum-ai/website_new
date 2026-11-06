@@ -41,21 +41,21 @@ export function WhoShouldApply({
           <Reveal className="lg:col-span-7">
             <h3
               id="apply-in-scope"
-              className="font-medium text-fg-muted text-small"
+              className="text-small font-medium text-fg-muted"
             >
               {copy.inScopeTitle}
             </h3>
             <dl
               aria-labelledby="apply-in-scope"
-              className="mt-5 border-hairline-strong border-t"
+              className="mt-5 border-t border-hairline-strong"
             >
               {qualities.map((quality) => (
                 <div
                   key={quality.title}
-                  className="border-hairline border-b py-5 md:py-6"
+                  className="border-b border-hairline py-5 md:py-6"
                 >
                   <dt className="text-display-md text-fg">{quality.title}</dt>
-                  <dd className="mt-2 text-fg-muted text-small">
+                  <dd className="mt-2 text-small text-fg-muted">
                     {quality.text}
                   </dd>
                 </div>
@@ -66,23 +66,23 @@ export function WhoShouldApply({
           <Reveal delay={100} className="lg:col-span-4 lg:col-start-9">
             <h3
               id="apply-not-required"
-              className="font-medium text-fg-muted text-small"
+              className="text-small font-medium text-fg-muted"
             >
               {copy.notRequiredTitle}
             </h3>
             <dl
               aria-labelledby="apply-not-required"
-              className="mt-5 border-hairline-strong border-t"
+              className="mt-5 border-t border-hairline-strong"
             >
               {notRequired.map((point) => (
                 <div
                   key={point.title}
-                  className="border-hairline border-b py-5 md:py-6"
+                  className="border-b border-hairline py-5 md:py-6"
                 >
-                  <dt className="text-fg-muted text-heading-lg">
+                  <dt className="text-heading-lg text-fg-muted">
                     {point.title}
                   </dt>
-                  <dd className="mt-2 text-fg-subtle text-small">
+                  <dd className="mt-2 text-small text-fg-subtle">
                     {point.text}
                   </dd>
                 </div>
@@ -94,18 +94,18 @@ export function WhoShouldApply({
         <Reveal className="mt-16 md:mt-24">
           <h3
             id="apply-values"
-            className="font-medium text-fg-muted text-small"
+            className="text-small font-medium text-fg-muted"
           >
             {copy.valuesTitle}
           </h3>
           <dl
             aria-labelledby="apply-values"
-            className="mt-5 grid gap-x-10 gap-y-8 border-hairline-strong border-t pt-6 sm:grid-cols-2 lg:grid-cols-4"
+            className="mt-5 grid gap-x-10 gap-y-8 border-t border-hairline-strong pt-6 sm:grid-cols-2 lg:grid-cols-4"
           >
             {values.map((value) => (
               <div key={value.title}>
-                <dt className="text-fg text-heading-sm">{value.title}</dt>
-                <dd className="mt-2 text-fg-muted text-small">{value.text}</dd>
+                <dt className="text-heading-sm text-fg">{value.title}</dt>
+                <dd className="mt-2 text-small text-fg-muted">{value.text}</dd>
               </div>
             ))}
           </dl>

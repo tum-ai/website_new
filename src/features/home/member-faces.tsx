@@ -169,14 +169,14 @@ export function MemberFaces({
   const rowWidth = members.length - (members.length - 1) * OVERLAP + 2 * SLACK;
 
   return (
-    <figure className="mt-12 max-w-xl border-hairline border-t pt-8 md:mt-16">
+    <figure className="mt-12 max-w-xl border-t border-hairline pt-8 md:mt-16">
       <div className="grid">
         {members.map((member, index) => (
           <blockquote
             key={member.key}
             aria-hidden={index !== selected}
             className={cn(
-              "text-fg text-heading-sm transition-[opacity,translate,visibility] duration-500 ease-brand [grid-area:1/1] motion-reduce:transition-none sm:text-heading-md",
+              "text-heading-sm text-fg transition-[opacity,translate,visibility] duration-500 ease-brand [grid-area:1/1] motion-reduce:transition-none sm:text-heading-md",
               index === selected
                 ? "opacity-100"
                 : "invisible translate-y-1 opacity-0",
@@ -209,7 +209,7 @@ export function MemberFaces({
               type="button"
               aria-pressed={index === selected}
               aria-label={member.name}
-              className="absolute top-0 size-(--face) cursor-pointer rounded-full outline-none will-change-transform focus-visible:outline-2 focus-visible:outline-fg-muted focus-visible:outline-offset-2"
+              className="absolute top-0 size-(--face) cursor-pointer rounded-full will-change-transform outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg-muted"
               style={{
                 left: `calc(${(SLACK + index * (1 - OVERLAP)).toFixed(3)} * var(--face))`,
                 transform: faceTransform(initial, index),
@@ -245,8 +245,8 @@ export function MemberFaces({
                 index === selected ? "opacity-100" : "invisible opacity-0",
               )}
             >
-              <p className="font-medium text-fg text-small">{member.name}</p>
-              <p className="text-fg-muted text-meta">{member.role}</p>
+              <p className="text-small font-medium text-fg">{member.name}</p>
+              <p className="text-meta text-fg-muted">{member.role}</p>
             </div>
           ))}
         </div>

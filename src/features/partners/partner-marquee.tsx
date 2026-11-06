@@ -30,7 +30,7 @@ export function PartnerMarquee({
   const animated = partners.length > 3;
   return (
     <div
-      className="partner-marquee border-hairline border-t pt-5 md:pt-6"
+      className="partner-marquee border-t border-hairline pt-5 md:pt-6"
       data-animated={animated}
       style={
         {
@@ -40,7 +40,7 @@ export function PartnerMarquee({
       }
     >
       <div className="mb-4 flex items-center justify-between gap-4 md:mb-6">
-        <p className="font-semibold text-fg-muted text-meta">{copy.label}</p>
+        <p className="text-meta font-semibold text-fg-muted">{copy.label}</p>
         <ButtonLink href="#our-partners" variant="link" size="sm" arrow="down">
           {copy.link}
         </ButtonLink>

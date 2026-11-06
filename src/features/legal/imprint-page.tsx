@@ -38,22 +38,22 @@ export async function ImprintPage() {
           >
             <div
               data-tone="lavender"
-              className="wrap-break-word rounded-4xl p-7 md:p-9"
+              className="rounded-4xl p-7 wrap-break-word md:p-9"
             >
               <Eyebrow as="h2" id="organisation-title">
                 Organisation
               </Eyebrow>
-              <p className="mt-5 text-fg text-heading-lg">
+              <p className="mt-5 text-heading-lg text-fg">
                 {legalEntity.legalName}
               </p>
               {/* Term beside value from sm up; stacked in the narrow lg sidebar. */}
-              <dl className="mt-7 divide-y divide-hairline border-hairline border-y">
+              <dl className="mt-7 divide-y divide-hairline border-y border-hairline">
                 {organisation.map((row) => (
                   <div
                     key={row.term}
                     className="py-4 sm:grid sm:grid-cols-[10rem_minmax(0,1fr)] sm:items-baseline sm:gap-6 lg:block"
                   >
-                    <dt className="font-medium text-fg-subtle text-meta">
+                    <dt className="text-meta font-medium text-fg-subtle">
                       {row.term}
                     </dt>
                     <dd className="mt-1 text-body text-fg sm:mt-0 lg:mt-1">
