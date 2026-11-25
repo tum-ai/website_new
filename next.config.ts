@@ -1,5 +1,5 @@
 import type { NextConfig } from "next";
-import { joinHostRedirects } from "./src/lib/redirects";
+import { joinHostRedirects, shortLinkRedirects } from "./src/lib/redirects";
 import { sanityProjectId } from "./src/lib/sanity-config";
 
 const distDir = process.env.NEXT_DIST_DIR;
@@ -42,7 +42,7 @@ const nextConfig: NextConfig = {
     ],
   },
   async redirects() {
-    return joinHostRedirects;
+    return [...joinHostRedirects, ...shortLinkRedirects];
   },
   experimental: {
     // The site and /studio are separate root layouts; unmatched URLs render

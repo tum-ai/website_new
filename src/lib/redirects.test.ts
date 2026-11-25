@@ -2,7 +2,12 @@
 // @ts-expect-error -- Next ships the compiled matcher without types.
 import { pathToRegexp as compile } from "next/dist/compiled/path-to-regexp";
 import { describe, expect, test } from "vitest";
-import { JOIN_HOST, joinHostRedirects } from "@/lib/redirects";
+import {
+  JOIN_HOST,
+  joinHostRedirects,
+  SUMMIT_URL,
+  shortLinkRedirects,
+} from "@/lib/redirects";
 
 const [redirect] = joinHostRedirects;
 const source = (compile as (path: string) => RegExp)(redirect?.source ?? "");
@@ -33,6 +38,26 @@ describe("join host redirect", () => {
       "/robots.txt",
     ]) {
       expect(redirects(pathname), pathname).toBe(false);
+    }
+  });
+});
+
+describe("short link redirects", () => {
+  const momentum = shortLinkRedirects.find((r) => r.source === "/momentum");
+  const matches = (pathname: string) =>
+    (compile as (path: string) => RegExp)(momentum?.source ?? "").test(
+      pathname,
+    );
+
+  test("sends /momentum to the summit site, temporarily", () => {
+    expect(momentum?.destination).toBe(SUMMIT_URL);
+    expect(momentum?.permanent).toBe(false);
+  });
+
+  test("matches /momentum only", () => {
+    expect(matches("/momentum")).toBe(true);
+    for (const pathname of ["/momentum-old", "/events/momentum", "/"]) {
+      expect(matches(pathname), pathname).toBe(false);
     }
   });
 });

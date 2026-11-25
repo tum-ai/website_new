@@ -22,3 +22,15 @@ export const joinHostRedirects = [
     permanent: true,
   },
 ];
+
+/** The site of the Momentum summit, linked as tum-ai.com/momentum. */
+export const SUMMIT_URL = "https://summit.tum-ai.com";
+
+/**
+ * `next.config.ts` redirects for short links to other TUM.ai sites. Temporary
+ * (307), so browsers don't cache them and the paths can be pointed elsewhere
+ * later.
+ */
+export const shortLinkRedirects = [
+  { source: "/momentum", destination: SUMMIT_URL, permanent: false },
+];
